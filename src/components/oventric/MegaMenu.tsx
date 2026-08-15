@@ -175,13 +175,6 @@ export function MegaMenu({ open, onClose }: Props) {
     window.dispatchEvent(new CustomEvent("oventric:open-messages"));
   };
 
-  const openCreate = (choice: "sell" | "course" | "bounty") => {
-    onClose();
-    setTimeout(() => {
-      window.dispatchEvent(new CustomEvent("oventric:open-create", { detail: { choice } }));
-    }, 30);
-  };
-
   const grid = [
     { icon: MessageCircle, label: "Messages", onClick: openMessages },
     { icon: Shield, label: "Circles & Guilds", onClick: () => go("/", "Circles") },
