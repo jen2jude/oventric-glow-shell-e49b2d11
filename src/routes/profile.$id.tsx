@@ -276,7 +276,7 @@ function ProfilePage() {
   const sort = SORT_OPTIONS_BY_TAB[tab].some((o) => o.value === search.sort)
     ? (search.sort as ProfileSortKey)
     : "newest";
-  const [photosMode, setPhotosMode] = useState(false);
+  const [photosMode, setPhotosMode] = useState(search.tab === "photos");
   const [aboutMode, setAboutMode] = useState(false);
   const [connectionsOpen, setConnectionsOpen] = useState(false);
   const [connectionsTab, setConnectionsTab] = useState<ConnectionsTab>("followers");
