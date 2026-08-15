@@ -26,7 +26,25 @@ export function FollowButton({ targetId, className, compact, onStatusChange }: P
   const cancel = useServerFn(cancelFollowRequest);
   const unfollowFn = useServerFn(unfollow);
 
+  // The follow server fns require an authenticated session — never call them
+  // signed out, or they throw "Unauthorized: No authorization header".
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  useEffect(() => {
+    let alive = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (alive) setSignedIn(!!data.session);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setSignedIn(!!session);
+    });
+    return () => {
+      alive = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
   const load = useCallback(async () => {
+    if (!signedIn) return;
     try {
       const r = await fetchStatus({ data: { targetId } });
       setStatus(r.status);
@@ -34,7 +52,7 @@ export function FollowButton({ targetId, className, compact, onStatusChange }: P
     } catch (e) {
       console.error("[FollowButton] load", e);
     }
-  }, [targetId, fetchStatus, onStatusChange]);
+  }, [targetId, fetchStatus, onStatusChange, signedIn]);
 
   useEffect(() => {
     load();
@@ -42,6 +60,7 @@ export function FollowButton({ targetId, className, compact, onStatusChange }: P
 
   // Realtime: watch follows + follow_requests changes involving this pair
   useEffect(() => {
+    if (!signedIn) return;
     const channel = supabase
       .channel(`follow-${targetId}-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "follows" }, load)
