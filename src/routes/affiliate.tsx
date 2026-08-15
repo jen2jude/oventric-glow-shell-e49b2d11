@@ -138,7 +138,7 @@ function AffiliatePage() {
   }
 
   return (
-    <PublicChrome active="Affiliate">
+    <PublicChrome active="Affiliate" hubMobileHeader avatarUrl={avatarUrl} name={name}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         <button
           onClick={goBack}
