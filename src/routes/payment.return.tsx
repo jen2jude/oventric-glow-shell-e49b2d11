@@ -10,6 +10,17 @@ import { formatMoney as fmtMoney } from "@/lib/fx-display";
 
 export const Route = createFileRoute("/payment/return")({
   ssr: false,
+  head: () => ({
+    meta: [
+      { title: "Payment status — Oventric" },
+      { name: "description", content: "We are confirming your Oventric payment and crediting your wallet or order." },
+      { property: "og:title", content: "Payment status — Oventric" },
+      { property: "og:description", content: "We are confirming your Oventric payment and crediting your wallet or order." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   validateSearch: (s: Record<string, unknown>) => ({
     reference:
       typeof s?.reference === "string"

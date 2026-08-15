@@ -29,6 +29,12 @@ import {
 import { listHeldEscrowOrders, adminReleaseOrderEscrow } from "@/lib/marketplace.functions";
 
 export const Route = createFileRoute("/admin/payouts")({
+  head: () => ({
+    meta: [
+      { title: "Payouts · Admin · Oventric" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: AdminPayoutsPage,
   errorComponent: ({ error, reset }) => (
     <div className="p-6 text-red-300">

@@ -15,6 +15,17 @@ function fmt(v: number, c: Currency) {
 
 export const Route = createFileRoute("/order/$id")({
   ssr: false,
+  head: () => ({
+    meta: [
+      { title: "Your order — Oventric" },
+      { name: "description", content: "Track your Oventric order, download digital items and follow fulfilment status." },
+      { property: "og:title", content: "Your order — Oventric" },
+      { property: "og:description", content: "Track your Oventric order, download digital items and follow fulfilment status." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: OrderPage,
 });
 

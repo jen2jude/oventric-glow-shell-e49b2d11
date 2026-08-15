@@ -117,6 +117,17 @@ function methodsForCountry(
 
 export const Route = createFileRoute("/checkout/$id")({
   ssr: false,
+  head: () => ({
+    meta: [
+      { title: "Secure checkout — Oventric" },
+      { name: "description", content: "Complete your Oventric purchase with escrow-protected payments and instant delivery." },
+      { property: "og:title", content: "Secure checkout — Oventric" },
+      { property: "og:description", content: "Complete your Oventric purchase with escrow-protected payments and instant delivery." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   validateSearch: (s: Record<string, unknown>) => ({
     qty: Math.max(1, Math.min(20, Number(s?.qty ?? 1) || 1)),
     pkg: typeof s?.pkg === "string" && s.pkg ? String(s.pkg) : undefined,
