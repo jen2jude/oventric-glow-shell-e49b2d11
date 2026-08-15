@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { PublicChrome } from "@/components/oventric/PublicChrome";
 import { AdvertInquiryModal } from "@/components/oventric/AdvertInquiryModal";
+import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
+import { getMyFullProfile } from "@/lib/profiles.functions";
 import {
   Megaphone,
   Image as ImageIcon,
@@ -472,7 +475,11 @@ function useSimplifyAdvertise() {
 function AdvertisePage() {
   const [open, setOpen] = useState(false);
   const [presetTier, setPresetTier] = useState<"text" | "image" | "video">("image");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [name, setName] = useState<string>("");
   const simple = useSimplifyAdvertise();
+  const { isAuthenticated } = useAuthGate();
+  const loadProfile = useServerFn(getMyFullProfile);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -483,14 +490,33 @@ function AdvertisePage() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setAvatarUrl(null);
+      setName("");
+      return;
+    }
+    let cancelled = false;
+    loadProfile()
+      .then((r) => {
+        if (cancelled || !r?.profile) return;
+        setAvatarUrl(r.profile.avatarUrl ?? null);
+        setName(r.profile.displayName || "");
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, loadProfile]);
+
   const start = (tier: "text" | "image" | "video" = "image") => {
     setPresetTier(tier);
     setOpen(true);
   };
 
   return (
-    <PublicChrome active="Advertise">
-      <div className="mx-auto w-full max-w-6xl px-4 py-8 md:py-14">
+    <PublicChrome active="Advertise" hubMobileHeader avatarUrl={avatarUrl} name={name}>
+      <div className="mx-auto w-full max-w-6xl px-4 py-6 md:py-14">
         {/* Hero */}
         <section className="text-center">
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold uppercase tracking-wider">
