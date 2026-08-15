@@ -212,7 +212,7 @@ function BlogArticle() {
   }
 
   return (
-    <PublicChrome lightDesktop>
+    <PublicChrome lightDesktop hubMobileHeader avatarUrl={avatarUrl} name={name}>
       <div className="min-h-screen bg-[#0b0b0d] md:bg-white text-slate-200 md:text-slate-700">
         <div className="max-w-3xl mx-auto px-4 py-8">
           <Link
