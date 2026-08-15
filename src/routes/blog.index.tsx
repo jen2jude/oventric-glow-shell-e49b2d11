@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Loader2, Share2 } from "lucide-react";
 import { listBlogPosts, type BlogListItem } from "@/lib/blog.functions";
+import { getMyFullProfile } from "@/lib/profiles.functions";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { PublicChrome } from "@/components/oventric/PublicChrome";
 import { ShareSheet } from "@/components/oventric/ShareSheet";
+import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 
 export const Route = createFileRoute("/blog/")({
   head: () => ({
