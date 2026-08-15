@@ -1,5 +1,6 @@
 import { type ReactNode, useState } from "react";
 import { Header } from "@/components/oventric/Header";
+import { HubMobileHeader } from "@/components/oventric/HubMobileHeader";
 import { MessagesDrawer } from "@/components/oventric/MessagesDrawer";
 import { useIsDesktop } from "@/hooks/use-desktop";
 import { useIsAppShell } from "@/hooks/use-launch-context";
@@ -11,19 +12,29 @@ import { useIsAppShell } from "@/hooks/use-launch-context";
  *
  * `lightDesktop` opts the page into the white desktop theme used by
  * Academy / Bounties / Circles (mobile stays dark).
+ *
+ * `hubMobileHeader` swaps the default header for the Home Hub mobile header
+ * when the page is viewed inside the app shell on a narrow viewport.
  */
 export function PublicChrome({
   children,
   active: _active = "",
   lightDesktop = false,
+  hubMobileHeader = false,
+  avatarUrl,
+  name,
 }: {
   children: ReactNode;
   active?: string;
   lightDesktop?: boolean;
+  hubMobileHeader?: boolean;
+  avatarUrl?: string | null;
+  name?: string;
 }) {
   const [messagesOpen, setMessagesOpen] = useState(false);
   const isDesktop = useIsDesktop();
   const isAppShell = useIsAppShell();
+  const useHubHeader = hubMobileHeader && isAppShell && !isDesktop;
 
   return (
     <div
@@ -31,13 +42,17 @@ export function PublicChrome({
         lightDesktop ? "md:bg-white md:text-slate-700" : ""
       }`}
     >
-      <Header
-        onOpenMessages={() => setMessagesOpen(true)}
-        light={lightDesktop || !isDesktop}
-        desktopNav={isDesktop}
-        browserVisitorHeader={!isDesktop}
-        forceSiteNavbar={!isAppShell}
-      />
+      {useHubHeader ? (
+        <HubMobileHeader avatarUrl={avatarUrl} name={name} />
+      ) : (
+        <Header
+          onOpenMessages={() => setMessagesOpen(true)}
+          light={lightDesktop || !isDesktop}
+          desktopNav={isDesktop}
+          browserVisitorHeader={!isDesktop}
+          forceSiteNavbar={!isAppShell}
+        />
+      )}
       <main className="flex-1 min-w-0 w-full max-w-full overflow-x-hidden pb-20 md:pb-0">
         {children}
       </main>
