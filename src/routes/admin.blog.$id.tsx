@@ -27,6 +27,7 @@ import {
   Youtube,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { parseYouTubeId } from "@/lib/youtube";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
 import {
   getBlogAdmin,
@@ -605,6 +606,9 @@ function BlogEditorPage() {
                   className="hidden"
                   onChange={onImagePicked}
                 />
+                <button className={btn} onClick={insertVideo} title="Insert YouTube video">
+                  <Youtube className="w-4 h-4" />
+                </button>
                 <span className="w-px h-5 bg-white/10 mx-1" />
                 <button className={btn} onClick={() => exec("undo")} title="Undo">
                   <Undo className="w-4 h-4" />
