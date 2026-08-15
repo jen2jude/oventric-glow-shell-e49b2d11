@@ -4,6 +4,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
+import { parseYouTubeId } from "@/lib/youtube";
 
 export type BlogStatus = "draft" | "published" | "scheduled";
 export type BlogReaction = "love" | "like" | "laugh" | "crown";

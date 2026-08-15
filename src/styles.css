@@ -1359,6 +1359,31 @@ html.light .dashboard-overview-mobile-safe > * {
 html.light .wallet-earnings-label { color: var(--muted-ink); }
 html.light .wallet-earnings-value { color: var(--strong-ink); }
 
+/* Responsive YouTube embeds inside blog content and the editor. */
+.blog-article .blog-video,
+.prose-editor .blog-video {
+  display: block;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin: 1.25rem 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #000;
+}
+.blog-article .blog-video iframe,
+.prose-editor .blog-video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.blog-article iframe,
+.prose-editor iframe {
+  max-width: 100%;
+}
+
 /* Blog + editor prose: flip whites and dark surfaces to light-mode ink. */
 html.light .prose-editor h1,
 html.light .prose-editor h2,
