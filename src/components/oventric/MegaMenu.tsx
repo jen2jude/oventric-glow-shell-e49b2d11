@@ -167,6 +167,17 @@ export function MegaMenu({ open, onClose }: Props) {
     }
   };
 
+  const goGallery = () => {
+    if (!userId || !userSlug || userSlug === "me") {
+      onClose();
+      openGate("generic");
+      return;
+    }
+    markReturn();
+    onClose();
+    navigate({ to: "/profile/$id", params: { id: userSlug }, search: { tab: "photos" } as never });
+  };
+
   const goFollowers = () => {
     if (!userId) {
       onClose();
@@ -193,7 +204,7 @@ export function MegaMenu({ open, onClose }: Props) {
     { icon: MessageCircle, label: "Messages", onClick: openMessages },
     { icon: Shield, label: "Circles & Guilds", onClick: () => go("/", "Circles") },
     { icon: Users, label: "Followers", onClick: goFollowers },
-    { icon: ImageIcon, label: "Gallery", onClick: () => go("/dashboard") },
+    { icon: ImageIcon, label: "Gallery", onClick: goGallery },
     { icon: ShoppingBag, label: "Marketplace", onClick: () => go("/", "Marketplace") },
     { icon: Target, label: "Bounties", onClick: () => go("/", "Bounties") },
     { icon: WalletIcon, label: "My Wallet", onClick: () => go("/", "Wallet") },

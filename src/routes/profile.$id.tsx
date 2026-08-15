@@ -269,15 +269,21 @@ function ProfilePage() {
   // "Overview" is the curated landing view of the identity hub; every other
 
   // value maps to a live data tab.
-  const overviewMode = !isTab(search.tab);
+  const overviewMode = !isTab(search.tab) && search.tab !== "photos";
   const desiredPages = Math.max(1, Math.min(200, search.pages || 1));
   const restoreY = Math.max(0, search.y || 0);
   const q = (search.q || "").trim();
   const sort = SORT_OPTIONS_BY_TAB[tab].some((o) => o.value === search.sort)
     ? (search.sort as ProfileSortKey)
     : "newest";
-  const [photosMode, setPhotosMode] = useState(false);
+  const [photosMode, setPhotosMode] = useState(search.tab === "photos");
   const [aboutMode, setAboutMode] = useState(false);
+  useEffect(() => {
+    if (search.tab === "photos") {
+      setAboutMode(false);
+      setPhotosMode(true);
+    }
+  }, [search.tab, id]);
   const [connectionsOpen, setConnectionsOpen] = useState(false);
   const [connectionsTab, setConnectionsTab] = useState<ConnectionsTab>("followers");
   const onlineUsers = useOnlineUsers();
