@@ -4,6 +4,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
+import { parseYouTubeId } from "@/lib/youtube";
 
 export type BlogStatus = "draft" | "published" | "scheduled";
 export type BlogReaction = "love" | "like" | "laugh" | "crown";
@@ -60,6 +61,13 @@ function sanitiseHtml(html: string): string {
   out = out.replace(/ on[a-z]+="[^"]*"/gi, "");
   out = out.replace(/ on[a-z]+='[^']*'/gi, "");
   out = out.replace(/javascript:/gi, "");
+  // Allow iframes only when they embed a YouTube video; drop everything else.
+  out = out.replace(/<iframe\b[^>]*>[\s\S]*?<\/iframe>|<iframe\b[^>]*\/?>/gi, (tag) => {
+    const src = /\ssrc=["']([^"']+)["']/i.exec(tag)?.[1] ?? "";
+    const id = parseYouTubeId(src);
+    if (!id) return "";
+    return `<iframe src="https://www.youtube-nocookie.com/embed/${id}" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>`;
+  });
   return out.slice(0, 200_000);
 }
 
