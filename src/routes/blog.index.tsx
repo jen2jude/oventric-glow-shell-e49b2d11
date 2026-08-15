@@ -28,13 +28,37 @@ export const Route = createFileRoute("/blog/")({
 
 function BlogIndex() {
   const listFn = useServerFn(listBlogPosts);
+  const loadProfile = useServerFn(getMyFullProfile);
+  const { isAuthenticated } = useAuthGate();
   const [rows, setRows] = useState<BlogListItem[] | null>(null);
   const [shareItem, setShareItem] = useState<BlogListItem | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [name, setName] = useState<string>("");
+
   useEffect(() => {
     listFn()
       .then((r) => setRows(r.posts))
       .catch(() => setRows([]));
   }, [listFn]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setAvatarUrl(null);
+      setName("");
+      return;
+    }
+    let cancelled = false;
+    loadProfile()
+      .then((r) => {
+        if (cancelled || !r?.profile) return;
+        setAvatarUrl(r.profile.avatarUrl ?? null);
+        setName(r.profile.displayName || "");
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, loadProfile]);
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
 
