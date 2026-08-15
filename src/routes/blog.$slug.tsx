@@ -10,12 +10,14 @@ import {
   type BlogDetail,
   type BlogReaction,
 } from "@/lib/blog.functions";
+import { getMyFullProfile } from "@/lib/profiles.functions";
 import { REACTION_META } from "@/components/oventric/feed/Reactions";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { ReportModal } from "@/components/oventric/ReportModal";
 import { PublicChrome } from "@/components/oventric/PublicChrome";
 import { ShareSheet } from "@/components/oventric/ShareSheet";
+import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/blog/$slug")({
