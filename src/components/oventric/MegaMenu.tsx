@@ -179,17 +179,9 @@ export function MegaMenu({ open, onClose }: Props) {
     { icon: MessageCircle, label: "Messages", onClick: openMessages },
     { icon: Shield, label: "Circles & Guilds", onClick: () => go("/", "Circles") },
     { icon: Users, label: "Followers", onClick: goFollowers },
-    { icon: ImageIcon, label: "Gallery", onClick: goGallery },
-    { icon: ShoppingBag, label: "Marketplace", onClick: () => go("/", "Marketplace") },
-    { icon: Target, label: "Bounties", onClick: () => go("/", "Bounties") },
-    { icon: WalletIcon, label: "My Wallet", onClick: () => go("/", "Wallet") },
-    { icon: GraduationCap, label: "Academy", onClick: () => go("/", "Academy") },
     { icon: Megaphone, label: "Advert", onClick: () => go("/advertise") },
     { icon: Link2, label: "Affiliate", onClick: () => go("/affiliate") },
     { icon: Newspaper, label: "Blog", onClick: () => go("/blog") },
-    { icon: Tag, label: "Sell", onClick: () => openCreate("sell") },
-    { icon: PenSquare, label: "Publish course", onClick: () => openCreate("course") },
-    { icon: Target, label: "Post bounty", onClick: () => openCreate("bounty") },
   ];
 
   const inviteLink =
