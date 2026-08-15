@@ -197,7 +197,7 @@ function BlogArticle() {
   }
   if (post === null) {
     return (
-      <PublicChrome lightDesktop>
+      <PublicChrome lightDesktop hubMobileHeader avatarUrl={avatarUrl} name={name}>
         <div className="min-h-screen bg-[#0b0b0d] md:bg-white text-slate-200 md:text-slate-700 flex flex-col items-center justify-center p-6">
           <p className="text-white md:text-slate-900 text-xl font-black">Article not found.</p>
           <Link
