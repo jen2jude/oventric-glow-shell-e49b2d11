@@ -160,17 +160,6 @@ export function MegaMenu({ open, onClose }: Props) {
     }
   };
 
-  const goGallery = () => {
-    if (!userId || !userSlug || userSlug === "me") {
-      onClose();
-      openGate("generic");
-      return;
-    }
-    markReturn();
-    onClose();
-    navigate({ to: "/profile/$id", params: { id: userSlug }, search: { tab: "photos" } as never });
-  };
-
   const goFollowers = () => {
     if (!userId) {
       onClose();
