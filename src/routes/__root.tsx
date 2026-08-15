@@ -22,6 +22,7 @@ import { ThemeProvider } from "@/lib/theme/ThemeProvider";
 import { ReactivationGate } from "@/components/oventric/ReactivationGate";
 import { GlobalMobileNav } from "@/components/oventric/GlobalMobileNav";
 import { Toaster } from "@/components/ui/sonner";
+import { ProfileSettingsLauncher } from "@/components/oventric/ProfileDropdown";
 import { LiveNotificationToasts } from "@/components/oventric/LiveNotificationToasts";
 import { PushOptInPrompt } from "@/components/oventric/PushOptInPrompt";
 import { BootSplash } from "@/components/oventric/BootSplash";
@@ -463,6 +464,8 @@ function RootComponent() {
               <Outlet />
               <StageModals />
               <ProfileSetupModalHost />
+              <ProfileSettingsLauncher />
+
               <ReactivationGate />
               {!isAppShell ? null : <GlobalMobileNav />}
               <Toaster position="top-center" richColors closeButton />

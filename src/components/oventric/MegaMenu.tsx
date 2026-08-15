@@ -320,7 +320,10 @@ export function MegaMenu({ open, onClose }: Props) {
               <SubItem
                 icon={Settings}
                 label="Settings (Profile & KYC)"
-                onClick={() => go("/dashboard")}
+                onClick={() => {
+                  onClose();
+                  window.dispatchEvent(new Event("oventric:open-profile-settings"));
+                }}
               />
               <SubItem icon={HelpCircle} label="Help" onClick={() => go("/help")} />
               <SubItem icon={Info} label="About Oventric" onClick={() => go("/about")} />
@@ -492,8 +495,11 @@ export function MegaMenu({ open, onClose }: Props) {
               <div className="border-t border-white/10 divide-y divide-white/5">
                 <SubItem
                   icon={Settings}
-                  label="Settings (Profile & KYC)"
-                  onClick={() => go("/dashboard")}
+                label="Settings (Profile & KYC)"
+                  onClick={() => {
+                    onClose();
+                    window.dispatchEvent(new Event("oventric:open-profile-settings"));
+                  }}
                 />
                 <SubItem icon={HelpCircle} label="Help" onClick={() => go("/help")} />
                 <SubItem icon={Info} label="About Oventric" onClick={() => go("/about")} />

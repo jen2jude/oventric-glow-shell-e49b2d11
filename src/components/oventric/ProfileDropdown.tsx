@@ -1622,3 +1622,56 @@ function VisibilityToggle({
     </button>
   );
 }
+
+// ============================================================================
+// Global launcher — lets any surface (e.g. MegaMenu "Settings (Profile & KYC)")
+// open the profile + KYC editor by dispatching:
+//   window.dispatchEvent(new Event("oventric:open-profile-settings"))
+// ============================================================================
+
+export const OPEN_PROFILE_SETTINGS_EVENT = "oventric:open-profile-settings";
+
+export function ProfileSettingsLauncher() {
+  const [open, setOpen] = useState(false);
+  const [userId, setUserId] = useState<string>("me");
+  const [profile, setProfile] = useState<ProfileState>(() => loadProfile(""));
+
+  useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener(OPEN_PROFILE_SETTINGS_EVENT, handler);
+    return () => window.removeEventListener(OPEN_PROFILE_SETTINGS_EVENT, handler);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    let alive = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!alive) return;
+      const id = data.session?.user?.id;
+      if (id) setUserId(id);
+    });
+    setProfile(loadProfile(""));
+    return () => {
+      alive = false;
+    };
+  }, [open]);
+
+  if (!open) return null;
+
+  return (
+    <ProfileSettingsModal
+      open={open}
+      onClose={() => setOpen(false)}
+      profile={profile}
+      userId={userId}
+      onSave={(next) => {
+        setProfile(next);
+        try {
+          window.localStorage.setItem(PROFILE_KEY, JSON.stringify(next));
+        } catch {
+          /* ignore */
+        }
+      }}
+    />
+  );
+}
