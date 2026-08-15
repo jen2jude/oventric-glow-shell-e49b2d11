@@ -63,13 +63,13 @@ function BlogIndex() {
   const origin = typeof window !== "undefined" ? window.location.origin : "";
 
   return (
-    <PublicChrome lightDesktop>
+    <PublicChrome lightDesktop hubMobileHeader avatarUrl={avatarUrl} name={name}>
       <div className="min-h-screen bg-[#0b0b0d] md:bg-white text-slate-200 md:text-slate-700">
         <div className="max-w-6xl mx-auto px-4 py-10">
           <header className="mb-8">
-            <h1 className="text-white md:text-slate-900 text-4xl font-black">The Oventric Blog</h1>
+            <h1 className="text-white md:text-slate-900 text-4xl font-black">Oventric Journal</h1>
             <p className="text-slate-400 md:text-slate-600 mt-2">
-              Deep dives, playbooks, and lessons from the network.
+              Stories, playbooks, and signals for Africa's builder economy.
             </p>
           </header>
           {!rows ? (
