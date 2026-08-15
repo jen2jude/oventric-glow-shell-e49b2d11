@@ -66,9 +66,9 @@ function BlogIndex() {
     <PublicChrome lightDesktop hubMobileHeader avatarUrl={avatarUrl} name={name}>
       <div className="min-h-screen bg-[#0b0b0d] md:bg-white text-slate-200 md:text-slate-700">
         <div className="max-w-6xl mx-auto px-4 py-10">
-          <header className="mb-8">
-            <h1 className="text-white md:text-slate-900 text-4xl font-black">Oventric Journal</h1>
-            <p className="text-slate-400 md:text-slate-600 mt-2">
+          <header className="sticky top-0 z-30 -mx-4 px-4 py-4 mb-6 bg-[#0b0b0d]/90 md:bg-white/90 backdrop-blur-md border-b border-white/5 md:border-slate-200/60">
+            <h1 className="text-white md:text-slate-900 text-2xl md:text-4xl font-black">Oventric Journal</h1>
+            <p className="text-slate-400 md:text-slate-600 mt-1 text-sm md:text-base">
               Stories, playbooks, and signals for Africa's builder economy.
             </p>
           </header>
