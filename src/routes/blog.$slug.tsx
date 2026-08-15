@@ -10,12 +10,14 @@ import {
   type BlogDetail,
   type BlogReaction,
 } from "@/lib/blog.functions";
+import { getMyFullProfile } from "@/lib/profiles.functions";
 import { REACTION_META } from "@/components/oventric/feed/Reactions";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { ReportModal } from "@/components/oventric/ReportModal";
 import { PublicChrome } from "@/components/oventric/PublicChrome";
 import { ShareSheet } from "@/components/oventric/ShareSheet";
+import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/blog/$slug")({
@@ -101,6 +103,8 @@ function BlogArticle() {
   const listCmtFn = useServerFn(listBlogComments);
   const addCmtFn = useServerFn(addBlogComment);
   const reactFn = useServerFn(setBlogReaction);
+  const loadProfile = useServerFn(getMyFullProfile);
+  const { isAuthenticated } = useAuthGate();
 
   const [post, setPost] = useState<BlogDetail | null | undefined>(undefined);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -109,6 +113,8 @@ function BlogArticle() {
   const [reportTarget, setReportTarget] = useState<{ id: string; author: string } | null>(null);
   const [reportedIds, setReportedIds] = useState<Set<string>>(new Set());
   const [shareOpen, setShareOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [name, setName] = useState<string>("");
 
   const refresh = useCallback(async () => {
     const r = await getFn({ data: { slug } });
@@ -122,6 +128,25 @@ function BlogArticle() {
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setAvatarUrl(null);
+      setName("");
+      return;
+    }
+    let cancelled = false;
+    loadProfile()
+      .then((r) => {
+        if (cancelled || !r?.profile) return;
+        setAvatarUrl(r.profile.avatarUrl ?? null);
+        setName(r.profile.displayName || "");
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, loadProfile]);
 
   const openShare = () => setShareOpen(true);
 
@@ -163,7 +188,7 @@ function BlogArticle() {
 
   if (post === undefined) {
     return (
-      <PublicChrome lightDesktop>
+      <PublicChrome lightDesktop hubMobileHeader avatarUrl={avatarUrl} name={name}>
         <div className="min-h-screen bg-[#0b0b0d] md:bg-white flex justify-center pt-20">
           <Loader2 className="w-5 h-5 animate-spin text-slate-500" />
         </div>
@@ -172,7 +197,7 @@ function BlogArticle() {
   }
   if (post === null) {
     return (
-      <PublicChrome lightDesktop>
+      <PublicChrome lightDesktop hubMobileHeader avatarUrl={avatarUrl} name={name}>
         <div className="min-h-screen bg-[#0b0b0d] md:bg-white text-slate-200 md:text-slate-700 flex flex-col items-center justify-center p-6">
           <p className="text-white md:text-slate-900 text-xl font-black">Article not found.</p>
           <Link
@@ -187,7 +212,7 @@ function BlogArticle() {
   }
 
   return (
-    <PublicChrome lightDesktop>
+    <PublicChrome lightDesktop hubMobileHeader avatarUrl={avatarUrl} name={name}>
       <div className="min-h-screen bg-[#0b0b0d] md:bg-white text-slate-200 md:text-slate-700">
         <div className="max-w-3xl mx-auto px-4 py-8">
           <Link

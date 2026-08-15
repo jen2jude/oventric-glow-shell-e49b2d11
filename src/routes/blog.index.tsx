@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Loader2, Share2 } from "lucide-react";
 import { listBlogPosts, type BlogListItem } from "@/lib/blog.functions";
+import { getMyFullProfile } from "@/lib/profiles.functions";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { PublicChrome } from "@/components/oventric/PublicChrome";
 import { ShareSheet } from "@/components/oventric/ShareSheet";
+import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 
 export const Route = createFileRoute("/blog/")({
   head: () => ({
@@ -26,24 +28,48 @@ export const Route = createFileRoute("/blog/")({
 
 function BlogIndex() {
   const listFn = useServerFn(listBlogPosts);
+  const loadProfile = useServerFn(getMyFullProfile);
+  const { isAuthenticated } = useAuthGate();
   const [rows, setRows] = useState<BlogListItem[] | null>(null);
   const [shareItem, setShareItem] = useState<BlogListItem | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [name, setName] = useState<string>("");
+
   useEffect(() => {
     listFn()
       .then((r) => setRows(r.posts))
       .catch(() => setRows([]));
   }, [listFn]);
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setAvatarUrl(null);
+      setName("");
+      return;
+    }
+    let cancelled = false;
+    loadProfile()
+      .then((r) => {
+        if (cancelled || !r?.profile) return;
+        setAvatarUrl(r.profile.avatarUrl ?? null);
+        setName(r.profile.displayName || "");
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, loadProfile]);
+
   const origin = typeof window !== "undefined" ? window.location.origin : "";
 
   return (
-    <PublicChrome lightDesktop>
+    <PublicChrome lightDesktop hubMobileHeader avatarUrl={avatarUrl} name={name}>
       <div className="min-h-screen bg-[#0b0b0d] md:bg-white text-slate-200 md:text-slate-700">
         <div className="max-w-6xl mx-auto px-4 py-10">
           <header className="mb-8">
-            <h1 className="text-white md:text-slate-900 text-4xl font-black">The Oventric Blog</h1>
+            <h1 className="text-white md:text-slate-900 text-4xl font-black">Oventric Journal</h1>
             <p className="text-slate-400 md:text-slate-600 mt-2">
-              Deep dives, playbooks, and lessons from the network.
+              Stories, playbooks, and signals for Africa's builder economy.
             </p>
           </header>
           {!rows ? (
