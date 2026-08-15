@@ -35,12 +35,19 @@ function TopupHistoryPage() {
         if (alive) setRows(data);
       })
       .catch((e) => {
-        if (alive) setError(e instanceof Error ? e.message : "Failed to load history");
+        if (!alive) return;
+        const msg = e instanceof Error ? e.message : "Failed to load history";
+        setError(
+          /unauthor|authorization header|401/i.test(msg)
+            ? "Wallet is Locked, Sign in to view"
+            : msg,
+        );
       });
     return () => {
       alive = false;
     };
   }, [fetchTopups]);
+
 
   const filtered = useMemo(() => {
     if (!rows) return [];
