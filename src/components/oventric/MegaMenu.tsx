@@ -193,7 +193,7 @@ export function MegaMenu({ open, onClose }: Props) {
     { icon: MessageCircle, label: "Messages", onClick: openMessages },
     { icon: Shield, label: "Circles & Guilds", onClick: () => go("/", "Circles") },
     { icon: Users, label: "Followers", onClick: goFollowers },
-    { icon: ImageIcon, label: "Gallery", onClick: () => go("/dashboard") },
+    { icon: ImageIcon, label: "Gallery", onClick: goGallery },
     { icon: ShoppingBag, label: "Marketplace", onClick: () => go("/", "Marketplace") },
     { icon: Target, label: "Bounties", onClick: () => go("/", "Bounties") },
     { icon: WalletIcon, label: "My Wallet", onClick: () => go("/", "Wallet") },
