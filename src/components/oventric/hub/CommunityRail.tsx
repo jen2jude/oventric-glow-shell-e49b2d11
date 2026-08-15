@@ -113,7 +113,15 @@ export function CommunityRail({ onOpenFeed }: { onOpenFeed: () => void }) {
                 ) : null}
                 {thumb ? (
                   <span className="shrink-0 w-16 h-16 rounded-[10px] overflow-hidden bg-[#1A1A1F] border border-white/5">
-                    <img src={thumb} alt="" loading="lazy" className="w-full h-full object-cover" />
+                    <img
+                      src={thumb}
+                      alt=""
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.currentTarget.parentElement as HTMLElement).style.display = "none";
+                      }}
+                    />
                   </span>
                 ) : null}
               </button>
