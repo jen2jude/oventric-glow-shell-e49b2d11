@@ -463,6 +463,8 @@ function RootComponent() {
               <Outlet />
               <StageModals />
               <ProfileSetupModalHost />
+              <ProfileSettingsLauncher />
+
               <ReactivationGate />
               {!isAppShell ? null : <GlobalMobileNav />}
               <Toaster position="top-center" richColors closeButton />
