@@ -278,6 +278,12 @@ function ProfilePage() {
     : "newest";
   const [photosMode, setPhotosMode] = useState(search.tab === "photos");
   const [aboutMode, setAboutMode] = useState(false);
+  useEffect(() => {
+    if (search.tab === "photos") {
+      setAboutMode(false);
+      setPhotosMode(true);
+    }
+  }, [search.tab, id]);
   const [connectionsOpen, setConnectionsOpen] = useState(false);
   const [connectionsTab, setConnectionsTab] = useState<ConnectionsTab>("followers");
   const onlineUsers = useOnlineUsers();
