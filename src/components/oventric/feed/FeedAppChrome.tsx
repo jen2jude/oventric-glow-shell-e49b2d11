@@ -147,7 +147,7 @@ export function FeedAppChrome({
 
 
       {/* Tabs */}
-      <div className="flex border-b border-white/[0.06] overflow-x-auto no-scrollbar scroll-smooth bg-[#0A0A0B]">
+      <div className="flex justify-center border-b border-white/[0.06] overflow-x-auto no-scrollbar scroll-smooth bg-[#0A0A0B]">
         {TABS.map((t) => {
           const active = t.key === tab;
           return (
