@@ -125,7 +125,18 @@ export function MegaMenu({ open, onClose }: Props) {
     };
   }, [open]);
 
-  if (!open) return null;
+  const connectionsNode = connectionsOpen ? (
+    <ConnectionsDialog
+      open={connectionsOpen}
+      onOpenChange={setConnectionsOpen}
+      userId={userId ?? ""}
+      name={fullName || storeName || "Your connections"}
+      viewerId={userId}
+      initialTab="followers"
+    />
+  ) : null;
+
+  if (!open) return connectionsNode;
 
   const invite = INVITE_AMOUNTS[baseCurrency] ?? INVITE_AMOUNTS.USD;
   const displayName = fullName || storeName || "Guest";
