@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { PublicChrome } from "@/components/oventric/PublicChrome";
 import { AdvertInquiryModal } from "@/components/oventric/AdvertInquiryModal";
+import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
+import { getMyFullProfile } from "@/lib/profiles.functions";
 import {
   Megaphone,
   Image as ImageIcon,
