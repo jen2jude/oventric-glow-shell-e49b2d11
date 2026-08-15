@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyAffiliateReservation, reserveAffiliateSpot } from "@/lib/affiliate.functions";
+import { getMyFullProfile } from "@/lib/profiles.functions";
+import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 
 export const Route = createFileRoute("/affiliate")({
   head: () => ({
@@ -45,6 +47,10 @@ function AffiliatePage() {
   const navigate = useNavigate();
   const loadMine = useServerFn(getMyAffiliateReservation);
   const reserve = useServerFn(reserveAffiliateSpot);
+  const loadProfile = useServerFn(getMyFullProfile);
+  const { isAuthenticated } = useAuthGate();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [name, setName] = useState<string>("");
 
   function goBack() {
     if (typeof window !== "undefined" && window.history.length > 1) {
@@ -98,6 +104,25 @@ function AffiliatePage() {
     el.querySelector("input")?.focus({ preventScroll: true });
   }, [state]);
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setAvatarUrl(null);
+      setName("");
+      return;
+    }
+    let cancelled = false;
+    loadProfile()
+      .then((r) => {
+        if (cancelled || !r?.profile) return;
+        setAvatarUrl(r.profile.avatarUrl ?? null);
+        setName(r.profile.displayName || "");
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, loadProfile]);
+
   async function onReserve() {
     setSubmitting(true);
     setErr(null);
@@ -113,7 +138,7 @@ function AffiliatePage() {
   }
 
   return (
-    <PublicChrome active="Affiliate">
+    <PublicChrome active="Affiliate" hubMobileHeader avatarUrl={avatarUrl} name={name}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         <button
           onClick={goBack}
