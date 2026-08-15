@@ -8,11 +8,6 @@ import {
   MessageCircle,
   Shield,
   Users,
-  Image as ImageIcon,
-  Target,
-  Wallet as WalletIcon,
-  ShoppingBag,
-  GraduationCap,
   ChevronDown,
   Settings,
   HelpCircle,
@@ -27,8 +22,6 @@ import {
   Megaphone,
   Newspaper,
   Link2,
-  Tag,
-  PenSquare,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
