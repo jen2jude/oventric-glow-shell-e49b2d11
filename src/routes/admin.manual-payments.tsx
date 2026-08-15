@@ -12,6 +12,12 @@ import {
 import { formatMoney } from "@/lib/fx-display";
 
 export const Route = createFileRoute("/admin/manual-payments")({
+  head: () => ({
+    meta: [
+      { title: "MiniPay Payments · Admin · Oventric" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: AdminManualPaymentsPage,
   errorComponent: ({ error, reset }) => (
     <div className="p-6 text-red-300">

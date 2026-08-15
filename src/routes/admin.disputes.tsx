@@ -11,6 +11,12 @@ import {
 } from "@/lib/fulfilment.functions";
 
 export const Route = createFileRoute("/admin/disputes")({
+  head: () => ({
+    meta: [
+      { title: "Disputes · Admin · Oventric" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: AdminDisputesPage,
   errorComponent: ({ error, reset }) => (
     <div className="p-6 text-red-300">
