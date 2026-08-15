@@ -103,6 +103,8 @@ function BlogArticle() {
   const listCmtFn = useServerFn(listBlogComments);
   const addCmtFn = useServerFn(addBlogComment);
   const reactFn = useServerFn(setBlogReaction);
+  const loadProfile = useServerFn(getMyFullProfile);
+  const { isAuthenticated } = useAuthGate();
 
   const [post, setPost] = useState<BlogDetail | null | undefined>(undefined);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -111,6 +113,8 @@ function BlogArticle() {
   const [reportTarget, setReportTarget] = useState<{ id: string; author: string } | null>(null);
   const [reportedIds, setReportedIds] = useState<Set<string>>(new Set());
   const [shareOpen, setShareOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [name, setName] = useState<string>("");
 
   const refresh = useCallback(async () => {
     const r = await getFn({ data: { slug } });
