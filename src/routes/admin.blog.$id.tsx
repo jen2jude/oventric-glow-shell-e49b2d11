@@ -24,6 +24,7 @@ import {
   Redo,
   Eye,
   Pencil,
+  Youtube,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
