@@ -60,19 +60,10 @@ export function RowCard({ product, onClick }: { product: ProductDTO; onClick: ()
       </div>
       <div className="min-w-0 flex-1">
         <p className="line-clamp-1 text-[14.5px] font-bold text-white">{product.name}</p>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            // Sellers name directs to their shop page (or profile as requested)
-            // The prompt says "make sure sellers name directs to their shop page"
-            // Wait, top sellers says social profile. For trending row card, shop page is standard.
-            onClick(); 
-          }}
-          className="block truncate text-[12px] font-medium text-white/40 hover:text-[#E5484D]"
-        >
+        <span className="block truncate text-[12px] font-medium text-white/40">
           by {product.vendor}
-        </button>
+        </span>
+
         <div className="mt-1.5 flex items-center gap-2">
           <span className="truncate text-[14px] font-black text-[#E5484D]">{price(product)}</span>
           <span className="ml-auto flex shrink-0 items-center gap-0.5 text-[11.5px] font-bold text-white/40">
