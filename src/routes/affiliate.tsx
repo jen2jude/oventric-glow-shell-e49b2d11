@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyAffiliateReservation, reserveAffiliateSpot } from "@/lib/affiliate.functions";
+import { getMyFullProfile } from "@/lib/profiles.functions";
+import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 
 export const Route = createFileRoute("/affiliate")({
   head: () => ({
