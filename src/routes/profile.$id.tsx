@@ -269,7 +269,7 @@ function ProfilePage() {
   // "Overview" is the curated landing view of the identity hub; every other
 
   // value maps to a live data tab.
-  const overviewMode = !isTab(search.tab);
+  const overviewMode = !isTab(search.tab) && search.tab !== "photos";
   const desiredPages = Math.max(1, Math.min(200, search.pages || 1));
   const restoreY = Math.max(0, search.y || 0);
   const q = (search.q || "").trim();
