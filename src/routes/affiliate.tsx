@@ -104,6 +104,25 @@ function AffiliatePage() {
     el.querySelector("input")?.focus({ preventScroll: true });
   }, [state]);
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setAvatarUrl(null);
+      setName("");
+      return;
+    }
+    let cancelled = false;
+    loadProfile()
+      .then((r) => {
+        if (cancelled || !r?.profile) return;
+        setAvatarUrl(r.profile.avatarUrl ?? null);
+        setName(r.profile.displayName || "");
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, loadProfile]);
+
   async function onReserve() {
     setSubmitting(true);
     setErr(null);
