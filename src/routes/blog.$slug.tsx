@@ -129,6 +129,25 @@ function BlogArticle() {
     refresh();
   }, [refresh]);
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setAvatarUrl(null);
+      setName("");
+      return;
+    }
+    let cancelled = false;
+    loadProfile()
+      .then((r) => {
+        if (cancelled || !r?.profile) return;
+        setAvatarUrl(r.profile.avatarUrl ?? null);
+        setName(r.profile.displayName || "");
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, loadProfile]);
+
   const openShare = () => setShareOpen(true);
 
   const react = (r: BlogReaction) => {
