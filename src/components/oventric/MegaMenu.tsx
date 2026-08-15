@@ -44,6 +44,7 @@ const INVITE_AMOUNTS: Record<string, { amount: number; symbol: string; label: st
 };
 
 import { DeleteAccountModal } from "@/components/oventric/DeleteAccountModal";
+import { ConnectionsDialog } from "@/components/oventric/profile/ConnectionsDialog";
 
 interface Props {
   open: boolean;
@@ -84,6 +85,8 @@ export function MegaMenu({ open, onClose }: Props) {
   const navigate = useNavigate();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [userSlug, setUserSlug] = useState<string>("me");
+  const [userId, setUserId] = useState<string | null>(null);
+  const [connectionsOpen, setConnectionsOpen] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -100,6 +103,7 @@ export function MegaMenu({ open, onClose }: Props) {
     (async () => {
       const { data } = await supabase.auth.getUser();
       const uid = data.user?.id;
+      setUserId(uid ?? null);
       if (!uid) return;
       const { data: prof } = await supabase
         .from("profiles")
@@ -164,13 +168,13 @@ export function MegaMenu({ open, onClose }: Props) {
   };
 
   const goFollowers = () => {
-    markReturn();
-    onClose();
-    if (userSlug && userSlug !== "me") {
-      navigate({ to: "/profile/$id", params: { id: userSlug } });
-    } else {
-      navigate({ to: "/dashboard" });
+    if (!userId) {
+      onClose();
+      openGate("generic");
+      return;
     }
+    onClose();
+    setConnectionsOpen(true);
   };
 
   const openMessages = () => {
