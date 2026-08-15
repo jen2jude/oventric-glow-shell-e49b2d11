@@ -47,6 +47,10 @@ function AffiliatePage() {
   const navigate = useNavigate();
   const loadMine = useServerFn(getMyAffiliateReservation);
   const reserve = useServerFn(reserveAffiliateSpot);
+  const loadProfile = useServerFn(getMyFullProfile);
+  const { isAuthenticated } = useAuthGate();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [name, setName] = useState<string>("");
 
   function goBack() {
     if (typeof window !== "undefined" && window.history.length > 1) {
