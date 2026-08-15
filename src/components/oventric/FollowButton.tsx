@@ -69,7 +69,7 @@ export function FollowButton({ targetId, className, compact, onStatusChange }: P
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [targetId, load]);
+  }, [targetId, load, signedIn]);
 
   const act = async (fn: () => Promise<{ status: FollowStatus }>) => {
     setBusy(true);
