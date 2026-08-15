@@ -1,8 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 import { isNativeApp } from "@/lib/native/capacitor";
 
 export type LaunchContext = "native" | "standalone" | "browser";
+
+// Resolve the launch context *before* the browser paints the hydrated tree,
+// so app-shell users never see a frame of the marketing/browser layout.
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 /**
  * How the app was launched:
@@ -15,7 +19,8 @@ export type LaunchContext = "native" | "standalone" | "browser";
 export function useLaunchContext(): LaunchContext | null {
   const [ctx, setCtx] = useState<LaunchContext | null>(null);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
+
     const read = (): LaunchContext => {
       // Manual override for testing
       const params = new URLSearchParams(window.location.search);
