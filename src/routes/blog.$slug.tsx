@@ -188,7 +188,7 @@ function BlogArticle() {
 
   if (post === undefined) {
     return (
-      <PublicChrome lightDesktop>
+      <PublicChrome lightDesktop hubMobileHeader avatarUrl={avatarUrl} name={name}>
         <div className="min-h-screen bg-[#0b0b0d] md:bg-white flex justify-center pt-20">
           <Loader2 className="w-5 h-5 animate-spin text-slate-500" />
         </div>
