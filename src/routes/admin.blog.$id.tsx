@@ -270,6 +270,21 @@ function BlogEditorPage() {
     exec("createLink", url);
   };
 
+  const insertVideo = () => {
+    const url = window.prompt("Paste a YouTube link:");
+    if (!url) return;
+    const id = parseYouTubeId(url.trim());
+    if (!id) {
+      alert("That doesn't look like a YouTube link.");
+      return;
+    }
+    exec(
+      "insertHTML",
+      `<p><span class="blog-video"><iframe src="https://www.youtube-nocookie.com/embed/${id}" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe></span></p><p><br/></p>`,
+    );
+  };
+
+
   const uploadFileToBucket = async (file: File): Promise<{ path: string; url: string }> => {
     const { data: userRes } = await supabase.auth.getUser();
     const uid = userRes.user?.id;
