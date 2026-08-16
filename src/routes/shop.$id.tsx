@@ -321,6 +321,10 @@ function ShopPage() {
             <div className="h-full w-full bg-[#1A1A1F]" />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0B] via-transparent to-transparent" />
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-1/2 web-dark-band md:block"
+            style={{ maskImage: "linear-gradient(to top, black, transparent)", WebkitMaskImage: "linear-gradient(to top, black, transparent)", opacity: 0.85 }}
+          />
         </div>
 
         {/* Identity */}
@@ -353,14 +357,14 @@ function ShopPage() {
           </p>
 
           {/* Stats */}
-          <div className="mt-6 flex items-center justify-between gap-6 overflow-x-auto no-scrollbar py-2">
+          <div className="mt-6 flex items-center justify-between gap-6 overflow-x-auto no-scrollbar py-2 md:grid md:grid-cols-4 md:gap-2">
             {[
               { v: compact(followers), l: "Followers" },
               { v: compact(productTotal), l: "Products" },
               { v: compact(sales), l: "Sales" },
               { v: rating, l: "Rating" },
             ].map((s) => (
-              <div key={s.l} className="shrink-0">
+              <div key={s.l} className="shrink-0 md:web-card-flat md:px-3 md:py-3 md:text-center">
                 <div className="text-lg font-black">{s.v}</div>
                 <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{s.l}</div>
               </div>
@@ -396,7 +400,7 @@ function ShopPage() {
           </div>
 
           {/* Tabs */}
-          <nav className="mt-5 flex items-center gap-1 overflow-x-auto border-b border-white/10">
+          <nav className="mt-5 flex items-center gap-1 overflow-x-auto border-b border-white/10 md:sticky md:top-[57px] md:z-20 md:-mx-5 md:border-b-0 md:px-5 md:web-glass">
             {(
               [
                 ["shop", "Shop"],
@@ -411,8 +415,8 @@ function ShopPage() {
                 onClick={() => setTab(key)}
                 className={`-mb-px shrink-0 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors ${
                   tab === key
-                    ? "border-[#E5484D] text-white"
-                    : "border-transparent text-slate-400 hover:text-white"
+                    ? "border-[#E5484D] text-white md:rounded-full md:border-b-0 md:bg-crimson/10 md:text-crimson"
+                    : "border-transparent text-slate-400 hover:text-white md:rounded-full md:border-b-0 md:hover:bg-white/5"
                 }`}
               >
                 {label}
@@ -764,7 +768,7 @@ function ProductCard({
     <Link
       to="/product/$id"
       params={{ id: item.id }}
-      className="w-[46%] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141417] sm:w-[28%]"
+      className="w-[46%] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141417] sm:w-[28%] md:web-card"
     >
       <Cover url={item.coverUrl} className="aspect-square w-full" />
       <div className="p-2.5">
@@ -802,13 +806,13 @@ function Grid({
     );
   }
   return (
-    <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+    <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3">
       {items.map((p) => (
         <Link
           key={p.id}
           to="/product/$id"
           params={{ id: p.id }}
-          className="overflow-hidden rounded-2xl border border-white/10 bg-[#141417] transition-transform hover:-translate-y-0.5"
+          className="overflow-hidden rounded-2xl border border-white/10 bg-[#141417] transition-transform hover:-translate-y-0.5 md:web-card md:hover:translate-y-0"
         >
           <Cover url={p.coverUrl} className="aspect-square w-full" />
           <div className="p-2.5">

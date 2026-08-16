@@ -478,8 +478,8 @@ export function Bounties() {
                 onClick={() => setFilter(f.key)}
                 className={`shrink-0 px-4 py-3 rounded-full text-sm font-medium border transition-colors whitespace-nowrap ${
                   active
-                    ? "bg-emerald-500/15 border-emerald-500/50 text-emerald-300 md:bg-emerald-600 md:border-emerald-600 md:text-white"
-                    : "bg-[#1E1E24] border-white/10 text-slate-300 hover:text-white hover:border-white/20 md:bg-white md:border-slate-200 md:text-slate-600 md:hover:text-slate-900 md:hover:border-slate-300"
+                    ? "bg-crimson border-crimson text-white"
+                    : "bg-white border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300"
                 }`}
               >
                 {f.label}
@@ -504,39 +504,39 @@ export function Bounties() {
               {bountiesError}
             </div>
           ) : dbBounties.length === 0 ? (
-            <div className="bg-[#1E1E24] border border-dashed border-white/10 rounded-2xl p-8 md:p-12 text-center md:bg-white md:border-slate-300">
-              <div className="w-14 h-14 mx-auto rounded-full bg-emerald-500/10 md:bg-emerald-50 flex items-center justify-center mb-4">
-                <Target className="w-7 h-7 text-emerald-400 md:text-emerald-600" />
+            <div className="web-card-flat border-dashed p-8 md:p-12 text-center">
+              <div className="w-14 h-14 mx-auto rounded-full bg-crimson/10 flex items-center justify-center mb-4">
+                <Target className="w-7 h-7 text-crimson" />
               </div>
-              <h3 className="text-white md:text-slate-900 text-lg font-bold mb-2">
+              <h3 className="text-slate-900 text-lg font-bold mb-2">
                 No live bounties yet
               </h3>
-              <p className="text-slate-400 md:text-slate-600 text-sm max-w-md mx-auto mb-6">
+              <p className="text-slate-600 text-sm max-w-md mx-auto mb-6">
                 The board is clear right now. Be the first to post a task and start attracting
                 verified solvers.
               </p>
               <button
                 onClick={() => require(1, () => setPostOpen(true), "issuer")}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] bg-emerald-500 hover:bg-emerald-400 text-black md:bg-emerald-600 md:hover:bg-emerald-700 md:text-white text-sm font-bold transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] bg-crimson hover:bg-crimson/90 text-white text-sm font-bold transition-colors"
               >
                 <Plus className="w-4 h-4" /> Post the first bounty
               </button>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="bg-[#1E1E24] border border-dashed border-white/10 rounded-2xl p-8 md:p-12 text-center md:bg-white md:border-slate-300">
-              <div className="w-14 h-14 mx-auto rounded-full bg-slate-500/10 md:bg-slate-100 flex items-center justify-center mb-4">
-                <Clock className="w-7 h-7 text-slate-400 md:text-slate-500" />
+            <div className="web-card-flat border-dashed p-8 md:p-12 text-center">
+              <div className="w-14 h-14 mx-auto rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                <Clock className="w-7 h-7 text-slate-500" />
               </div>
-              <h3 className="text-white md:text-slate-900 text-lg font-bold mb-2">
+              <h3 className="text-slate-900 text-lg font-bold mb-2">
                 No matches for this filter
               </h3>
-              <p className="text-slate-400 md:text-slate-600 text-sm max-w-md mx-auto mb-6">
+              <p className="text-slate-600 text-sm max-w-md mx-auto mb-6">
                 No active bounties in this category right now. Try another filter or post a new
                 task.
               </p>
               <button
                 onClick={() => setFilter("all")}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] bg-white/5 hover:bg-white/10 border border-white/10 text-white md:bg-white md:hover:bg-slate-50 md:border-slate-200 md:text-slate-700 text-sm font-bold transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" /> Show all bounties
               </button>
@@ -676,26 +676,26 @@ function BountyRow({
 
   return (
     <div
-      className={`bg-[#1E1E24] md:bg-white rounded-xl p-4 flex flex-col md:flex-row md:items-center gap-4 transition-all duration-700 md:shadow-sm md:hover:shadow-md ${isNew ? "border-2 border-emerald-400/80 shadow-sm md:border-emerald-500" : "border border-white/5 md:border-slate-200"}`}
+      className={`web-card p-4 flex flex-col md:flex-row md:items-center gap-4 transition-all duration-700 ${isNew ? "border-2 border-crimson/80" : ""}`}
     >
       <div className="flex-1 min-w-0">
-        <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-[10px] bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 md:bg-emerald-50 md:border-emerald-200 md:text-emerald-700 text-[10px] font-bold tracking-wider">
-          <Target className="w-3 h-3" />
+        <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-[10px] bg-crimson/10 border border-crimson/30 text-crimson text-[10px] font-bold tracking-wider">
+          <Target className="w-3 h-3 shrink-0" />
           ACTIVE BOUNTY · {bounty.displayFormatted}
         </div>
-        <h3 className="mt-2 text-white md:text-slate-900 font-bold text-base md:text-lg leading-snug">
+        <h3 className="mt-2 text-slate-900 font-bold text-base md:text-lg leading-snug truncate">
           {bounty.title}
         </h3>
-        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400 md:text-slate-600">
+        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
           <span className="inline-flex items-center gap-1">
-            <Clock className="w-3.5 h-3.5 text-amber-400 md:text-amber-500" />
+            <Clock className="w-3.5 h-3.5 text-amber-500 shrink-0" />
             Expires in {formatCountdown(remaining)}
           </span>
           <span className="inline-flex items-center gap-1">
-            <Users className="w-3.5 h-3.5" /> {bounty.applicants.length}{" "}
+            <Users className="w-3.5 h-3.5 shrink-0" /> {bounty.applicants.length}{" "}
             {bounty.applicants.length === 1 ? "Applicant" : "Applicants"}
           </span>
-          <span className="inline-flex items-center gap-1 text-emerald-300/90 md:text-emerald-700">
+          <span className="inline-flex items-center gap-1 text-crimson">
             Solver {formatMoney(bounty.rewardValue * 0.8, bounty.rewardCurrency)} · Fee{" "}
             {formatMoney(bounty.rewardValue * 0.2, bounty.rewardCurrency)}
           </span>
@@ -705,8 +705,8 @@ function BountyRow({
         onClick={onOpen}
         className={`shrink-0 px-4 py-2.5 rounded-[10px] font-bold text-sm transition-colors whitespace-nowrap inline-flex items-center gap-1.5 ${
           alreadyApplied
-            ? "bg-slate-700 hover:bg-slate-600 text-emerald-300 border border-emerald-500/40 md:bg-emerald-50 md:hover:bg-emerald-100 md:text-emerald-700 md:border-emerald-200"
-            : "bg-emerald-500 hover:bg-emerald-400 text-black md:bg-emerald-600 md:hover:bg-emerald-700 md:text-white"
+            ? "bg-crimson/10 hover:bg-crimson/15 text-crimson border border-crimson/30"
+            : "bg-crimson hover:bg-crimson/90 text-white"
         }`}
       >
         {alreadyApplied ? (
@@ -840,7 +840,7 @@ function LiveAdSlot({ index, ads, loading }: { index: number; ads: BountyAd[]; l
             loading="lazy"
           />
         ) : (
-          <span className="shrink-0 px-3 py-3 rounded-[10px] bg-[#1A1A1C] hover:bg-[#1F1F21] text-white md:bg-emerald-600 md:hover:bg-emerald-700 md:text-white text-xs font-semibold border border-white/[0.06] md:border-0">
+          <span className="shrink-0 px-3 py-3 rounded-[10px] bg-[#1A1A1C] hover:bg-[#1F1F21] text-white md:bg-crimson md:hover:bg-crimson/90 md:text-white text-xs font-semibold border border-white/[0.06] md:border-0">
             {ctaLabel}
           </span>
         )}
