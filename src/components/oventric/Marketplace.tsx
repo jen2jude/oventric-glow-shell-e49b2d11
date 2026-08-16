@@ -208,7 +208,16 @@ export function Marketplace() {
               />
             </div>
 
+            {!query.trim() && (
+              <SocialProofRails
+                variant="dark"
+                className="mt-2"
+                onOpenFeed={() => navigate({ to: "/", search: { section: "Feed" } as never })}
+              />
+            )}
+
             {query.trim() ? (
+
               <section className="px-4 pt-6">
                 <h2 className="mb-3 text-[19px] font-bold text-white">
                   {searched.length} result{searched.length === 1 ? "" : "s"}
