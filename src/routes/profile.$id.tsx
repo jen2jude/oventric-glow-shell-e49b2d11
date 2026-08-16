@@ -255,6 +255,7 @@ const SEARCH_PLACEHOLDER: Record<Tab, string> = {
 
 function ProfilePage() {
   const { id } = Route.useParams();
+  const isAppShellView = useIsAppShell();
   const navigate = useNavigate();
   const search = Route.useSearch();
   const profile = useMemo(() => getProfile(id), [id]);
