@@ -268,7 +268,7 @@ export const Academy = ({ hubMode = false }: { hubMode?: boolean }) => {
                     onClick={() => setCategory(c.key)}
                     className={`shrink-0 px-4 py-3 rounded-full text-sm font-medium border transition-colors whitespace-nowrap ${
                       active
-                        ? "bg-emerald-600 border-emerald-600 text-white"
+                        ? "bg-crimson border-crimson text-white"
                         : "bg-white border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300"
                     }`}
                   >
