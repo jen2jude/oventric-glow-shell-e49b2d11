@@ -16,6 +16,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as HelpBoardRouteImport } from './routes/help-board'
 import { Route as HelpRouteImport } from './routes/help'
+import { Route as GetAppRouteImport } from './routes/get-app'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AffiliateRouteImport } from './routes/affiliate'
@@ -111,6 +112,11 @@ const HelpBoardRoute = HelpBoardRouteImport.update({
 const HelpRoute = HelpRouteImport.update({
   id: '/help',
   path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GetAppRoute = GetAppRouteImport.update({
+  id: '/get-app',
+  path: '/get-app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -437,6 +443,7 @@ export interface FileRoutesByFullPath {
   '/affiliate': typeof AffiliateRoute
   '/dashboard': typeof DashboardRoute
   '/faq': typeof FaqRoute
+  '/get-app': typeof GetAppRoute
   '/help': typeof HelpRoute
   '/help-board': typeof HelpBoardRoute
   '/messages': typeof MessagesRoute
@@ -506,6 +513,7 @@ export interface FileRoutesByTo {
   '/affiliate': typeof AffiliateRoute
   '/dashboard': typeof DashboardRoute
   '/faq': typeof FaqRoute
+  '/get-app': typeof GetAppRoute
   '/help': typeof HelpRoute
   '/help-board': typeof HelpBoardRoute
   '/messages': typeof MessagesRoute
@@ -576,6 +584,7 @@ export interface FileRoutesById {
   '/affiliate': typeof AffiliateRoute
   '/dashboard': typeof DashboardRoute
   '/faq': typeof FaqRoute
+  '/get-app': typeof GetAppRoute
   '/help': typeof HelpRoute
   '/help-board': typeof HelpBoardRoute
   '/messages': typeof MessagesRoute
@@ -648,6 +657,7 @@ export interface FileRouteTypes {
     | '/affiliate'
     | '/dashboard'
     | '/faq'
+    | '/get-app'
     | '/help'
     | '/help-board'
     | '/messages'
@@ -717,6 +727,7 @@ export interface FileRouteTypes {
     | '/affiliate'
     | '/dashboard'
     | '/faq'
+    | '/get-app'
     | '/help'
     | '/help-board'
     | '/messages'
@@ -786,6 +797,7 @@ export interface FileRouteTypes {
     | '/affiliate'
     | '/dashboard'
     | '/faq'
+    | '/get-app'
     | '/help'
     | '/help-board'
     | '/messages'
@@ -857,6 +869,7 @@ export interface RootRouteChildren {
   AffiliateRoute: typeof AffiliateRoute
   DashboardRoute: typeof DashboardRoute
   FaqRoute: typeof FaqRoute
+  GetAppRoute: typeof GetAppRoute
   HelpRoute: typeof HelpRoute
   HelpBoardRoute: typeof HelpBoardRoute
   MessagesRoute: typeof MessagesRoute
@@ -938,6 +951,13 @@ declare module '@tanstack/react-router' {
       path: '/help'
       fullPath: '/help'
       preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/get-app': {
+      id: '/get-app'
+      path: '/get-app'
+      fullPath: '/get-app'
+      preLoaderRoute: typeof GetAppRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -1477,6 +1497,7 @@ const rootRouteChildren: RootRouteChildren = {
   AffiliateRoute: AffiliateRoute,
   DashboardRoute: DashboardRoute,
   FaqRoute: FaqRoute,
+  GetAppRoute: GetAppRoute,
   HelpRoute: HelpRoute,
   HelpBoardRoute: HelpBoardRoute,
   MessagesRoute: MessagesRoute,
