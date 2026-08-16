@@ -282,7 +282,7 @@ function ShopPage() {
   const isOwner = !!meId && !!shop && meId === shop.userId;
 
   return (
-    <div className="min-h-screen bg-[#0A0A0B] text-white">
+    <div className={`min-h-screen bg-[#0A0A0B] text-white ${!isAppShell ? "oventric-web" : ""}`}>
       {/* Top bar */}
       <div className="sticky top-0 z-30 flex items-center gap-3 bg-[#0A0A0B]/90 px-4 py-3 backdrop-blur">
         <button
