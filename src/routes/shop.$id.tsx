@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -277,6 +278,7 @@ function ShopPage() {
     [products],
   );
 
+  const isAppShell = useIsAppShell();
   const name = shop?.shopName ?? id;
   const verified = (shop?.verificationTier ?? "none") !== "none";
   const isOwner = !!meId && !!shop && meId === shop.userId;
