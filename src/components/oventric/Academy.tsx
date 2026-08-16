@@ -342,7 +342,7 @@ export const Academy = ({ hubMode = false }: { hubMode?: boolean }) => {
                   }
 
                   return (
-                    <div key={enrollment.id} className={`shrink-0 w-64 rounded-xl border shadow-lg overflow-hidden flex flex-col ${!isAppShell ? "bg-white border-slate-200" : "bg-[#1A1A1C] border-white/5"}`}>
+                    <div key={enrollment.id} className={`shrink-0 w-64 overflow-hidden flex flex-col ${!isAppShell ? "web-card" : "rounded-xl border shadow-lg bg-[#1A1A1C] border-white/5"}`}>
                       <div className="relative aspect-[21/9] bg-[#121214]">
                         {course.coverUrl ? (
                           <img loading="lazy" decoding="async" 
@@ -406,7 +406,7 @@ export const Academy = ({ hubMode = false }: { hubMode?: boolean }) => {
               {Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
-                  className="bg-white border-slate-200 rounded-xl overflow-hidden animate-pulse"
+                  className="web-card-flat overflow-hidden animate-pulse"
                 >
                   <div className="aspect-video bg-slate-100" />
                   <div className="p-4 space-y-2">
