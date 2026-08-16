@@ -47,7 +47,7 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
       </div>
 
       {/* Main Header (White) */}
-      <header className="sticky top-0 z-40 bg-white border-b border-slate-100">
+      <header className="web-glass sticky top-0 z-40">
         <div className="mx-auto flex h-16 w-full max-w-[1200px] items-center gap-4 px-4 sm:px-6 lg:h-20 lg:gap-8">
           {/* Logo */}
           <button
@@ -59,22 +59,22 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
             <img loading="lazy" decoding="async" src={logo} alt="Oventric" className="h-6 sm:h-8 w-auto object-contain" />
           </button>
 
-          <nav className="flex items-center gap-6 ml-4 text-[13px] font-bold hidden lg:flex">
+          <nav className="flex min-w-0 items-center gap-6 ml-4 text-[13px] font-bold hidden lg:flex">
             <button
               onClick={() => onSelect("Marketplace")}
-              className={`hover:text-red-600 transition-colors pb-1 border-b-2 ${activeSection === "Marketplace" ? "text-red-600 border-red-600" : "border-transparent text-slate-900"}`}
+              className={`hover:text-crimson transition-colors pb-1 border-b-2 ${activeSection === "Marketplace" ? "text-crimson border-crimson" : "border-transparent text-slate-900"}`}
             >
               Marketplace
             </button>
             <button
               onClick={() => onSelect("Academy")}
-              className={`hover:text-red-600 transition-colors pb-1 border-b-2 ${activeSection === "Academy" ? "text-red-600 border-red-600" : "border-transparent text-slate-900"}`}
+              className={`hover:text-crimson transition-colors pb-1 border-b-2 ${activeSection === "Academy" ? "text-crimson border-crimson" : "border-transparent text-slate-900"}`}
             >
               Academy
             </button>
             <button
               onClick={() => onSelect("Bounties")}
-              className={`hover:text-red-600 transition-colors pb-1 border-b-2 ${activeSection === "Bounties" ? "text-red-600 border-red-600" : "border-transparent text-slate-900"}`}
+              className={`hover:text-crimson transition-colors pb-1 border-b-2 ${activeSection === "Bounties" ? "text-crimson border-crimson" : "border-transparent text-slate-900"}`}
             >
               Bounties
             </button>

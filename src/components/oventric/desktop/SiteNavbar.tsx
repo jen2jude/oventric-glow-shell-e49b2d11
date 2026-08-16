@@ -40,7 +40,7 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
   return (
     <div className="flex flex-col w-full">
       {/* Main Universal Header */}
-      <header className={`sticky top-0 z-50 w-full transition-colors duration-200 border-b ${solid ? "bg-white border-slate-100 shadow-sm" : "bg-white/80 backdrop-blur-md border-transparent"}`}>
+      <header className={`sticky top-0 z-50 w-full transition-all duration-200 ${solid ? "web-glass shadow-[0_10px_30px_-24px_rgba(15,23,42,0.6)]" : "border-b border-transparent bg-white/70 backdrop-blur-md"}`}>
         <div className="mx-auto flex h-16 w-full max-w-[1200px] items-center gap-4 px-4 sm:px-6 lg:h-20">
           {/* Logo */}
           <button
@@ -59,7 +59,7 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
                 <input
                   type="text"
                   placeholder="Search Oventric..."
-                  className="w-full h-11 pl-5 pr-12 rounded-full border border-slate-200 bg-slate-50 text-sm font-medium focus:outline-none focus:border-emerald-500 focus:bg-white transition-all"
+                  className="w-full h-11 pl-5 pr-12 rounded-full border border-slate-200 bg-slate-50 text-sm font-medium focus:outline-none focus:border-crimson/50 focus:bg-white transition-all"
                 />
                 <button className="absolute right-0 top-0 h-full aspect-square flex items-center justify-center bg-slate-900 text-white rounded-full transition-transform active:scale-95">
                   <Search className="w-5 h-5" />
@@ -93,7 +93,7 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
             {onCreate && (
               <button
                 onClick={onCreate}
-                className="hidden sm:flex items-center gap-1.5 h-10 px-4 rounded-full bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 transition-colors active:scale-95"
+                className="web-glow-crimson hidden sm:flex items-center gap-1.5 h-10 px-4 rounded-full bg-crimson text-white text-sm font-bold transition-all hover:brightness-110 active:scale-95"
               >
                 <Plus className="w-4 h-4" />
                 <span>Post</span>
@@ -107,7 +107,7 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
                 params={{ id: isAuthenticated ? (avatarUrl?.split('/')[avatarUrl?.split('/').length - 2] || "me") : "me" }}
                 className="flex items-center gap-2 cursor-pointer group p-1 rounded-full hover:bg-slate-100 transition-colors"
               >
-                <div className="h-11 w-11 rounded-full overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center">
+                <div className="h-11 w-11 rounded-full overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center transition-colors group-hover:border-crimson/40">
                   {isAuthenticated ? (
                     <AvatarImage src={avatarUrl ?? null} alt={name || "You"} loading="eager" />
                   ) : (
@@ -152,7 +152,7 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
             {onCreate && (
               <button
                 onClick={() => { onCreate(); setMenuOpen(false); }}
-                className="w-full py-4 rounded-2xl bg-emerald-600 text-white font-black text-center text-lg"
+                className="w-full py-4 rounded-[10px] bg-crimson text-white font-black text-center text-lg"
               >
                 Create new post
               </button>

@@ -151,7 +151,7 @@ export function ProfileOverview({
       to="/profile/$id/item/$kind/$itemId"
       params={{ id: profileId, kind, itemId: l.id }}
       search={itemSearch as never}
-      className="group w-[46%] min-w-[150px] max-w-[200px] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141418] md:border-slate-200 md:bg-white md:shadow-sm"
+      className="group w-[46%] min-w-[150px] max-w-[200px] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141418] md:web-card"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-neutral-900 md:bg-slate-100">
         {l.coverUrl ? (
@@ -234,7 +234,7 @@ export function ProfileOverview({
                 key={a.id}
                 to="/blog/$slug"
                 params={{ slug: a.slug }}
-                className="w-[70%] min-w-[220px] max-w-[280px] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141418] md:border-slate-200 md:bg-white md:shadow-sm"
+                className="w-[70%] min-w-[220px] max-w-[280px] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141418] md:web-card"
               >
                 <div className="relative aspect-[16/9] overflow-hidden bg-neutral-900 md:bg-slate-100">
                   {a.coverUrl ? (
@@ -270,7 +270,7 @@ export function ProfileOverview({
                 to="/profile/$id/item/$kind/$itemId"
                 params={{ id: profileId, kind: "post", itemId: p.id }}
                 search={itemSearch as never}
-                className="flex items-start gap-3 rounded-2xl border border-white/10 bg-[#141418] p-3 md:border-slate-200 md:bg-white md:shadow-sm"
+                className="flex items-start gap-3 rounded-2xl border border-white/10 bg-[#141418] p-3 md:web-card"
               >
                 <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-white/[0.06] md:bg-slate-100">
                   <MessageCircle className="h-4 w-4 text-[#E5484D]" />
@@ -298,7 +298,7 @@ export function ProfileOverview({
                 to="/profile/$id/item/$kind/$itemId"
                 params={{ id: profileId, kind: "group", itemId: g.id }}
                 search={itemSearch as never}
-                className="w-[60%] min-w-[180px] max-w-[240px] shrink-0 snap-start rounded-2xl border border-white/10 bg-[#141418] p-3 md:border-slate-200 md:bg-white md:shadow-sm"
+                className="w-[60%] min-w-[180px] max-w-[240px] shrink-0 snap-start rounded-2xl border border-white/10 bg-[#141418] p-3 md:web-card"
               >
                 <span className="grid h-11 w-11 place-items-center rounded-[10px] bg-white/[0.06] md:bg-slate-100">
                   <Users className="h-4 w-4 text-[#E5484D]" />

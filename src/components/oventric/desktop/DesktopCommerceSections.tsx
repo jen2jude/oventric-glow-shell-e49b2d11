@@ -114,7 +114,7 @@ function ProductCard({ p }: { p: ProductDTO }) {
   return (
     <a
       href={`/product/${p.id}`}
-      className="group relative flex w-[220px] shrink-0 flex-col overflow-hidden rounded-2xl bg-slate-900 text-left transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_18px_40px_-16px_rgba(15,23,42,0.45)] focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+      className="web-card group relative flex w-[220px] shrink-0 flex-col overflow-hidden bg-slate-900 text-left focus:outline-none focus:ring-2 focus:ring-crimson focus:ring-offset-2"
     >
       <div className="relative aspect-square w-full overflow-hidden">
         {p.coverUrl ? (
@@ -129,8 +129,8 @@ function ProductCard({ p }: { p: ProductDTO }) {
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
       </div>
       <div className="flex items-start gap-2 p-3">
-        <Package className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" strokeWidth={2.5} />
-        <span className="line-clamp-2 text-sm font-bold leading-snug text-white">{p.name}</span>
+        <Package className="mt-0.5 h-4 w-4 shrink-0 text-crimson" strokeWidth={2.5} />
+        <span className="min-w-0 line-clamp-2 text-sm font-bold leading-snug text-white">{p.name}</span>
       </div>
     </a>
   );
@@ -173,10 +173,10 @@ export function ProductRails({ onSelect }: { onSelect: (section: string) => void
     <section className="mx-auto w-full max-w-[1200px] px-5 pt-12 sm:px-8 sm:pt-16">
       <div className="flex items-end justify-between">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700">
-            <Sparkles className="h-3.5 w-3.5" strokeWidth={2.6} /> Trending on the marketplace
+          <div className="web-eyebrow">
+            <Sparkles className="h-3.5 w-3.5 shrink-0" strokeWidth={2.6} /> Trending on the marketplace
           </div>
-          <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-900">
+          <h2 className="web-accent-underline mt-4 inline-block text-3xl font-bold tracking-tight text-slate-900">
             AI platforms online
           </h2>
           <p className="mt-1 text-sm text-slate-500">
@@ -186,7 +186,7 @@ export function ProductRails({ onSelect }: { onSelect: (section: string) => void
         <button
           type="button"
           onClick={() => onSelect("Marketplace")}
-          className="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-700 hover:text-emerald-800"
+          className="inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-crimson hover:text-[#d13a3f]"
         >
           See all <ArrowRight className="h-4 w-4" strokeWidth={3} />
         </button>
@@ -217,10 +217,10 @@ export function SecuredPayments() {
   return (
     <section className="border-t border-slate-200 bg-white">
       <div className="mx-auto w-full max-w-[1200px] px-5 py-12 text-center sm:px-8 sm:py-16">
-        <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700">
-          <Lock className="h-3.5 w-3.5" strokeWidth={2.6} /> Secured payments
+        <div className="web-eyebrow">
+          <Lock className="h-3.5 w-3.5 shrink-0" strokeWidth={2.6} /> Secured payments
         </div>
-        <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-900">
+        <h2 className="web-accent-underline mt-4 inline-block text-3xl font-bold tracking-tight text-slate-900">
           Pay your way, protected end to end
         </h2>
         <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-500">

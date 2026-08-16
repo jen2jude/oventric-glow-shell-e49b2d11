@@ -45,16 +45,14 @@ function SectionHeader({ icon: Icon, title, hint, isAppShell }: { icon: any; tit
     );
   }
   return (
-    <div className="flex items-end justify-between mb-3 px-1">
-      <div className="flex items-center gap-2">
-        <Icon className={`w-5 h-5 ${!isAppShell ? "text-[#E5484D]" : "text-[#E5484D] md:text-[#E5484D]"}`} strokeWidth={2.5} />
-        <h3 className={`font-black text-lg tracking-tight ${!isAppShell ? "text-slate-900" : "text-white md:text-slate-900"}`}>{title}</h3>
+    <div className="flex items-end justify-between mb-3 px-1 gap-2">
+      <div className="min-w-0">
+        {!isAppShell && <div className="web-eyebrow mb-2">{hint || "Discover"}</div>}
+        <div className="flex items-center gap-2 min-w-0">
+          <Icon className="w-5 h-5 text-crimson shrink-0" strokeWidth={2.5} />
+          <h3 className={`font-black text-lg tracking-tight truncate ${!isAppShell ? "text-slate-900 web-accent-underline inline-block" : "text-white md:text-slate-900"}`}>{title}</h3>
+        </div>
       </div>
-      {hint && (
-        <span className={`text-[11px] uppercase tracking-wider font-medium ${!isAppShell ? "text-slate-500" : "text-slate-500"}`}>
-          {hint}
-        </span>
-      )}
     </div>
   );
 }
@@ -112,7 +110,7 @@ function CourseTile({
   return (
     <button
       onClick={() => onOpen(c.id)}
-      className={`text-left border rounded-xl overflow-hidden transition-colors group ${!isAppShell ? "bg-white border-slate-200 hover:border-[#E5484D]/30 shadow-sm" : "bg-[#1A1A1C] border-white/5 hover:border-[#E5484D]/40"}`}
+      className={`text-left overflow-hidden transition-colors group ${!isAppShell ? "web-card" : "border rounded-xl bg-[#1A1A1C] border-white/5 hover:border-[#E5484D]/40"}`}
     >
       <div className="relative aspect-video bg-[#0A0A0B]">
         {c.coverUrl ? (
