@@ -45,6 +45,7 @@ import marketIcon from "@/assets/marketplace-3d.png.asset.json";
 import academyIcon from "@/assets/academy-3d.png.asset.json";
 import bountiesIcon from "@/assets/bounties-3d.webp.asset.json";
 import circlesIcon from "@/assets/circles-3d.png.asset.json";
+import feedIcon from "@/assets/home-3d.png.asset.json";
 
 export type DesktopHomeProps = {
   onSelect: (section: string) => void;
@@ -107,7 +108,7 @@ const HUB_TILES = [
   { label: "Bounties", section: "Bounties", img: bountiesIcon.url },
   { label: "Wallet", section: "Wallet", img: walletIcon.url },
   { label: "Circles", section: "Circles", img: circlesIcon.url },
-  { label: "Feed", section: "Feed", img: marketIcon.url },
+  { label: "Feed", section: "Feed", img: feedIcon.url },
 ] as const;
 
 const STEPS = [

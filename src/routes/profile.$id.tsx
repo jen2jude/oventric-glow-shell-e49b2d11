@@ -1095,6 +1095,10 @@ function ProfilePage() {
                   <div className="w-full h-full bg-[linear-gradient(135deg,#1b1b20_0%,#26161a_55%,#3a1218_100%)]" />
                 )}
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-[#121214] via-[#121214]/60 to-transparent" />
+                <div
+                  className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-1/2 web-dark-band md:block"
+                  style={{ maskImage: "linear-gradient(to top, black, transparent)", WebkitMaskImage: "linear-gradient(to top, black, transparent)", opacity: 0.85 }}
+                />
 
                 <button
                   type="button"
@@ -1295,12 +1299,12 @@ function ProfilePage() {
                 )}
 
                 {/* Stat strip */}
-                <div className="mt-4 grid grid-cols-4 divide-x divide-white/8 rounded-2xl border border-white/10 bg-[#141418] md:divide-slate-200 md:border-slate-200 md:bg-white md:shadow-sm">
+                <div className="mt-4 grid grid-cols-4 divide-x divide-white/8 rounded-2xl border border-white/10 bg-[#141418] md:divide-x-0 md:gap-2 md:rounded-none md:border-none md:bg-transparent">
                   <button
                     type="button"
                     onClick={() => openRelationships("followers")}
                     aria-controls="relationships"
-                    className="px-2 py-3 text-center"
+                    className="px-2 py-3 text-center md:web-card-flat md:py-4"
                   >
                     <span className="block text-base font-black text-white md:text-slate-900">
                       {compactCount(socialCounts?.followers ?? 0)}
@@ -1313,7 +1317,7 @@ function ProfilePage() {
                     type="button"
                     onClick={() => openRelationships("following")}
                     aria-controls="relationships"
-                    className="px-2 py-3 text-center"
+                    className="px-2 py-3 text-center md:web-card-flat md:py-4"
                   >
                     <span className="block text-base font-black text-white md:text-slate-900">
                       {compactCount(socialCounts?.following ?? 0)}
@@ -1322,13 +1326,13 @@ function ProfilePage() {
                       Following
                     </span>
                   </button>
-                  <div className="px-2 py-3 text-center">
+                  <div className="px-2 py-3 text-center md:web-card-flat md:py-4">
                     <span className="block text-base font-black text-white md:text-slate-900">
                       {liveRep ? compactCount(liveRep.metrics.productsListed) : "…"}
                     </span>
                     <span className="block text-[11px] font-semibold text-slate-500">Products</span>
                   </div>
-                  <div className="px-2 py-3 text-center">
+                  <div className="px-2 py-3 text-center md:web-card-flat md:py-4">
                     <span className="block text-base font-black text-white md:text-slate-900">
                       {compactCount(
                         ecosystemSections.find((s) => s.key === "services")?.count ?? 0,
@@ -1538,7 +1542,7 @@ function ProfilePage() {
               ref={tabsNavRef}
               data-testid="profile-tabs"
 
-              className="mt-5 flex items-center gap-1 overflow-x-auto no-scrollbar border-b border-white/10 md:border-slate-200"
+              className="mt-5 flex items-center gap-1 overflow-x-auto no-scrollbar border-b border-white/10 md:sticky md:top-0 md:z-20 md:-mx-4 md:border-b-0 md:px-4 md:web-glass"
             >
               <button
                 key="overview"
@@ -1558,8 +1562,8 @@ function ProfilePage() {
 
                 className={`shrink-0 px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ${
                   overviewMode && !photosMode && !aboutMode
-                    ? "text-white md:text-slate-900 border-[#E5484D]"
-                    : "text-slate-400 md:text-slate-500 border-transparent hover:text-white md:hover:text-slate-900"
+                    ? "text-white md:text-slate-900 border-[#E5484D] md:rounded-full md:border-b-0 md:bg-crimson/10 md:text-crimson"
+                    : "text-slate-400 md:text-slate-500 border-transparent hover:text-white md:rounded-full md:border-b-0 md:hover:bg-slate-100 md:hover:text-slate-900"
                 }`}
               >
                 Overview
@@ -1581,8 +1585,8 @@ function ProfilePage() {
                       }}
                       className={`shrink-0 px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ${
                         tab === key && !photosMode && !aboutMode && !overviewMode
-                          ? "text-white md:text-slate-900 border-[#E5484D]"
-                          : "text-slate-400 md:text-slate-500 border-transparent hover:text-white md:hover:text-slate-900"
+                          ? "text-white md:text-slate-900 border-[#E5484D] md:rounded-full md:border-b-0 md:bg-crimson/10 md:text-crimson"
+                          : "text-slate-400 md:text-slate-500 border-transparent hover:text-white md:rounded-full md:border-b-0 md:hover:bg-slate-100 md:hover:text-slate-900"
                       }`}
                     >
                       {label}
@@ -1604,8 +1608,8 @@ function ProfilePage() {
                 }}
                 className={`shrink-0 px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ${
                   photosMode && !aboutMode
-                    ? "text-white md:text-slate-900 border-[#E5484D]"
-                    : "text-slate-400 md:text-slate-500 border-transparent hover:text-white md:hover:text-slate-900"
+                    ? "text-white md:text-slate-900 border-[#E5484D] md:rounded-full md:border-b-0 md:bg-crimson/10 md:text-crimson"
+                    : "text-slate-400 md:text-slate-500 border-transparent hover:text-white md:rounded-full md:border-b-0 md:hover:bg-slate-100 md:hover:text-slate-900"
                 }`}
               >
                 Photos
@@ -1621,8 +1625,8 @@ function ProfilePage() {
                 }}
                 className={`shrink-0 px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ${
                   aboutMode
-                    ? "text-white md:text-slate-900 border-[#E5484D]"
-                    : "text-slate-400 md:text-slate-500 border-transparent hover:text-white md:hover:text-slate-900"
+                    ? "text-white md:text-slate-900 border-[#E5484D] md:rounded-full md:border-b-0 md:bg-crimson/10 md:text-crimson"
+                    : "text-slate-400 md:text-slate-500 border-transparent hover:text-white md:rounded-full md:border-b-0 md:hover:bg-slate-100 md:hover:text-slate-900"
                 }`}
               >
                 About

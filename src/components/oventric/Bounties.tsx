@@ -420,48 +420,50 @@ export function Bounties() {
   }
 
   return (
-    <div className="md:bg-white md:min-h-screen">
+    <div className="bg-white min-h-screen">
       <div className="max-w-5xl mx-auto w-full px-4 py-6">
-        <div className="flex items-end justify-between mb-5 gap-3 flex-wrap">
-          <div>
-            <h1 className="text-white md:text-slate-900 text-2xl md:text-3xl font-black inline-flex items-center gap-2">
-              <Target className="w-6 h-6 text-[#E5484D] md:text-[#E5484D]" /> Bounty & Escrow
-              Board
-            </h1>
-            <p className="text-sm text-slate-400 md:text-slate-600 mt-1">
-              Post work, evaluate applicants, run escrow-protected contracts end-to-end.
-            </p>
+        <div className="web-dark-band rounded-[10px] p-5 md:p-6 mb-6">
+          <div className="flex items-end justify-between mb-5 gap-3 flex-wrap">
+            <div className="min-w-0">
+              <div className="web-eyebrow mb-2">Escrow protected</div>
+              <h1 className="text-white text-2xl md:text-3xl font-black inline-flex items-center gap-2 web-accent-underline">
+                <Target className="w-6 h-6 text-crimson shrink-0" /> Bounty & Escrow Board
+              </h1>
+              <p className="text-sm text-slate-400 mt-3">
+                Post work, evaluate applicants, run escrow-protected contracts end-to-end.
+              </p>
+            </div>
+            <button
+              onClick={() => require(1, () => setPostOpen(true), "issuer")}
+              className="shrink-0 inline-flex items-center gap-2 px-4 py-3 rounded-[10px] bg-crimson hover:bg-crimson/90 text-white text-sm font-bold shadow-sm"
+            >
+              <Plus className="w-4 h-4" /> Post a bounty
+            </button>
           </div>
-          <button
-            onClick={() => require(1, () => setPostOpen(true), "issuer")}
-            className="inline-flex items-center gap-2 px-4 py-3 rounded-[10px] bg-[#E5484D] hover:bg-[#E5484D]/90 text-white md:bg-[#E5484D] md:hover:bg-[#E5484D]/90 md:text-white text-sm font-bold shadow-sm md:shadow-sm"
-          >
-            <Plus className="w-4 h-4" /> Post a bounty
-          </button>
-        </div>
 
-        {/* Metric grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-          <div className="bg-[#141416] border border-[#E5484D]/30 rounded-[10px] p-4 shadow-sm md:bg-[#E5484D]/5 md:border-[#E5484D]/20 md:shadow-sm">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-[#E5484D]/80 md:text-[#E5484D] inline-flex items-center gap-1.5">
-              <WalletIcon className="w-3 h-3" /> Total Locked in Escrow
+          {/* Metric grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="bg-white/5 border border-crimson/30 rounded-[10px] p-4">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-crimson inline-flex items-center gap-1.5">
+                <WalletIcon className="w-3 h-3 shrink-0" /> Total Locked in Escrow
+              </div>
+              <div className="mt-2 text-white text-2xl md:text-3xl font-black truncate">
+                {formatMoney(totalLocked, baseCurrency)}
+              </div>
+              <div className="text-xs text-slate-400 mt-1">
+                Across {activeCount} live contracts in {baseCurrency}
+              </div>
             </div>
-            <div className="mt-2 text-white md:text-slate-900 text-2xl md:text-3xl font-black">
-              {formatMoney(totalLocked, baseCurrency)}
-            </div>
-            <div className="text-xs text-slate-500 md:text-slate-600 mt-1">
-              Across {activeCount} live contracts in {baseCurrency}
-            </div>
-          </div>
-          <div className="bg-[#141416] border border-white/10 rounded-[10px] p-4 md:bg-white md:border-slate-200 md:shadow-sm">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 md:text-slate-500 inline-flex items-center gap-1.5">
-              <Target className="w-3 h-3" /> Active Tasks Seeking Solvers
-            </div>
-            <div className="mt-2 text-white md:text-slate-900 text-2xl md:text-3xl font-black">
-              {activeCount}
-            </div>
-            <div className="text-xs text-slate-500 md:text-slate-600 mt-1">
-              Filtered live from open bounties
+            <div className="bg-white/5 border border-white/10 rounded-[10px] p-4">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 inline-flex items-center gap-1.5">
+                <Target className="w-3 h-3 shrink-0" /> Active Tasks Seeking Solvers
+              </div>
+              <div className="mt-2 text-white text-2xl md:text-3xl font-black">
+                {activeCount}
+              </div>
+              <div className="text-xs text-slate-400 mt-1">
+                Filtered live from open bounties
+              </div>
             </div>
           </div>
         </div>
