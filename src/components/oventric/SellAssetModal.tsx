@@ -13,6 +13,7 @@ import {
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { StockToggleField } from "@/components/oventric/StockToggleField";
 import {
   createProduct,
   listMarketplaceCategories,
@@ -102,6 +103,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
   const [externalUrl, setExternalUrl] = useState("");
   const [basicInfo, setBasicInfo] = useState("");
   const [activationGuide, setActivationGuide] = useState("");
+  const [inStock, setInStock] = useState(true);
   const [requiresManualDelivery, setRequiresManualDelivery] = useState(false);
   const [agreedToSplit, setAgreedToSplit] = useState(false);
   const [images, setImages] = useState<File[]>([]);
@@ -279,6 +281,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
           coverPath: imagePaths[0] ?? null,
           imagePaths,
           requiresManualDelivery,
+          inStock,
           basicInfo: basicInfo.trim() || null,
           activationGuide: activationGuide.trim() || null,
         },
@@ -557,6 +560,8 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                   />
                 </label>
               </div>
+
+              <StockToggleField inStock={inStock} onChange={setInStock} />
 
               <div>
                 <span className="text-xs font-medium text-slate-300 sm:text-slate-700">
