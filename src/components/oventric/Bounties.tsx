@@ -287,6 +287,7 @@ export function Bounties() {
   if (isAppShell) {
     return (
       <div className="bg-[#0A0A0B] min-h-screen">
+        <AppStickyHeader />
         <div className="px-4 pt-4 pb-6">
           {/* Premium hero */}
           <div className="rounded-3xl bg-[#0F0F10] border border-white/[0.06] p-5">
