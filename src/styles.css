@@ -2614,3 +2614,10 @@ section + section {
 .oventric-web .bg-\[\#F7F8FA\] {
   background-color: #ffffff;
 }
+
+/* Slate tints picked for the dark canvas need re-weighting on the light web skin */
+.oventric-web .text-slate-100,
+.oventric-web .text-slate-200,
+.oventric-web .text-slate-300 {
+  color: #334155;
+}
