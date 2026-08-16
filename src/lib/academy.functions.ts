@@ -961,7 +961,7 @@ export const enrollPaid = createServerFn({ method: "POST" })
         status: "success",
         occurred_at: new Date().toISOString(),
       });
-      await supabase
+      await supabaseAdmin
         .from("course_enrollments")
         .update({ cashback_usd: cashbackUSD })
         .eq("id", eRow.id);
