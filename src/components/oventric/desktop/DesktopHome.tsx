@@ -426,9 +426,16 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
             src={heroCollage.url}
             alt="Oventric members shopping, learning and chatting across the platform"
             className="hp-float w-full select-none object-contain drop-shadow-[0_30px_80px_rgba(15,23,42,0.14)]"
+            style={{
+              maskImage:
+                "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 12%, #000 26%)",
+              WebkitMaskImage:
+                "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 12%, #000 26%)",
+            }}
             loading="eager"
             decoding="async"
           />
+
         </div>
       </section>
 
