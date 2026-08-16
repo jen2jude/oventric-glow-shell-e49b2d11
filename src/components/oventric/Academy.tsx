@@ -49,6 +49,7 @@ import { computeDisplayPrice } from "@/lib/fx-display";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { AdSlot } from "@/components/oventric/ads/AdSlot";
 import { AcademyRecommendations } from "@/components/oventric/AcademyRecommendations";
+import { AppStickyHeader } from "@/components/oventric/AppStickyHeader";
 
 function courseDisplayPrice(
   c: { priceUSD: number; originalCurrency: Currency; originalAmount: number; fxSnapshot: any },
