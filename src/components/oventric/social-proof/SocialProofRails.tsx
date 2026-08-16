@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { BadgeCheck, Heart, MessageCircle, ShoppingBag, Star } from "lucide-react";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
@@ -41,13 +41,14 @@ function timeAgo(iso: string): string {
 export function SocialProofRails({
   variant = "light",
   onOpenFeed,
+  onOpenMarketplace,
   className = "",
 }: {
   variant?: Variant;
   onOpenFeed?: () => void;
+  onOpenMarketplace?: () => void;
   className?: string;
 }) {
-  const navigate = useNavigate();
   const loadSellers = useServerFn(getTopSellers);
   const loadPosts = useServerFn(listPosts);
   const [sellers, setSellers] = useState<Seller[]>([]);
@@ -100,7 +101,7 @@ export function SocialProofRails({
               eyebrow="Live right now"
               heading="Top Sellers"
               action="See all"
-              onAction={() => navigate({ to: "/", search: { section: "Marketplace" } as never })}
+              onAction={onOpenMarketplace}
             />
             <div className="web-rail no-scrollbar mt-4 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
               {sellers.map((s, i) => (
