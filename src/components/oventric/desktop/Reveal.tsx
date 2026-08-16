@@ -25,6 +25,12 @@ export function Reveal({
       setShown(true);
       return;
     }
+    // Immediate check: anything already within (or above) the viewport shows now.
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 1.1) {
+      setShown(true);
+      return;
+    }
     const io = new IntersectionObserver(
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {
@@ -32,11 +38,17 @@ export function Reveal({
           io.disconnect();
         }
       },
-      { rootMargin: "0px 0px -12% 0px", threshold: 0.08 },
+      { rootMargin: "0px 0px -5% 0px", threshold: 0.01 },
     );
     io.observe(el);
-    return () => io.disconnect();
+    // Safety net: never leave content permanently invisible.
+    const t = window.setTimeout(() => setShown(true), 1200);
+    return () => {
+      io.disconnect();
+      window.clearTimeout(t);
+    };
   }, [shown]);
+
 
   return (
     <Tag
