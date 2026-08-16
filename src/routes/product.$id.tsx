@@ -280,7 +280,10 @@ function ProductPage() {
     };
   }, [product?.kind, id, loadPackages]);
 
+  const outOfStock = product?.inStock === false;
+
   const startCheckout = () => {
+    if (product?.inStock === false) return;
     require(
       2,
       () =>
@@ -294,6 +297,7 @@ function ProductPage() {
   };
 
   const openContact = () => {
+    if (product?.inStock === false) return;
     require(1, () => setContactOpen(true), "buyer");
   };
 
@@ -467,6 +471,11 @@ function ProductPage() {
               <h1 className={`text-2xl md:text-3xl font-black ${isAppShell ? "text-white" : "text-slate-900"} md:text-slate-900 mb-2`}>
                 {product.name}
               </h1>
+              {outOfStock && (
+                <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-[#E5484D]/12 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#E5484D]">
+                  Out of stock
+                </div>
+              )}
               <div className="mb-3 space-y-2">
                 <CreatorChip
                   idOrSlug={product.sellerSlug ?? product.sellerId}
@@ -728,10 +737,11 @@ function ProductPage() {
                       
                       <button
                         onClick={product.kind === "physical" ? openContact : startCheckout}
-                        className="flex-[1.5] inline-flex items-center justify-center gap-2 py-3 text-[13px] rounded-[10px] bg-[#E5484D] hover:bg-[#d13a3f] text-white font-black transition-colors"
+                        disabled={outOfStock}
+                        className={`flex-[1.5] inline-flex items-center justify-center gap-2 py-3 text-[13px] rounded-[10px] font-black transition-colors ${outOfStock ? "bg-white/[0.06] text-white/40 cursor-not-allowed" : "bg-[#E5484D] hover:bg-[#d13a3f] text-white"}`}
                       >
                         <ShoppingCart className="w-4 h-4" />
-                        <span>Buy Now</span>
+                        <span>{outOfStock ? "Out of Stock" : "Buy Now"}</span>
                       </button>
                     </div>
                   </div>
@@ -739,9 +749,10 @@ function ProductPage() {
                   <div className="space-y-2">
                     <button
                       onClick={product.kind === "physical" ? openContact : startCheckout}
-                      className="w-full inline-flex items-center justify-center gap-2 py-3 text-sm rounded-[10px] bg-emerald-500 hover:bg-emerald-400 text-black font-black transition-colors"
+                      disabled={outOfStock}
+                      className={`w-full inline-flex items-center justify-center gap-2 py-3 text-sm rounded-[10px] font-black transition-colors ${outOfStock ? "bg-slate-200 text-slate-500 cursor-not-allowed" : "bg-emerald-500 hover:bg-emerald-400 text-black"}`}
                     >
-                      <ShoppingCart className="w-4 h-4" /> Buy Now
+                      <ShoppingCart className="w-4 h-4" /> {outOfStock ? "Out of Stock" : "Buy Now"}
                     </button>
                     {product.kind !== "physical" && (
                       <button

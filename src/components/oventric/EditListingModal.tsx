@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { updateAndResubmitProduct, type ProductDTO } from "@/lib/marketplace.functions";
+import { StockToggleField } from "@/components/oventric/StockToggleField";
 import { snapshotFxRates } from "@/lib/fx.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 
@@ -51,6 +52,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
   const [name, setName] = useState(product.name);
   const [description, setDescription] = useState(product.description);
   const [basicInfo, setBasicInfo] = useState(product.basicInfo ?? "");
+  const [inStock, setInStock] = useState(product.inStock !== false);
   const [activationGuide, setActivationGuide] = useState(isPhysical ? "" : (product.activationGuide ?? ""));
   const [category, setCategory] = useState(product.category);
   const [subcategory, setSubcategory] = useState(product.subcategory ?? "");
@@ -180,6 +182,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
           id: product.id,
           name: name.trim(),
           description: description.trim(),
+          inStock,
           basicInfo: basicInfo.trim() || null,
           activationGuide: activationGuide.trim() || null,
           category,
@@ -501,6 +504,8 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
                   </label>
                 )}
               </div>
+
+              <StockToggleField inStock={inStock} onChange={setInStock} disabled={submitting} />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <label className="block">

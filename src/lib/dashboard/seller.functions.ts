@@ -93,6 +93,21 @@ export const deleteProduct = createServerFn({ method: "POST" })
     return { success: true };
   });
 
+/** Owner marks one of their listings in/out of stock. */
+export const setProductStock = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(z.object({ productId: z.string().uuid(), inStock: z.boolean() }))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("products")
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .update({ in_stock: data.inStock } as any)
+      .eq("id", data.productId)
+      .eq("seller_id", context.userId);
+    if (error) throw new Error(error.message);
+    return { success: true, inStock: data.inStock };
+  });
+
 export const updateShopSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(z.object({

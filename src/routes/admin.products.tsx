@@ -15,6 +15,8 @@ import {
   Eye,
   MapPin,
   RefreshCw,
+  PackageX,
+  PackageCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,6 +28,7 @@ import {
   adminUpdateProduct,
   approveProduct,
   rejectProduct,
+  adminSetProductStock,
 } from "@/lib/admin.functions";
 import { SellSwitcherModal } from "@/components/oventric/SellSwitcherModal";
 import { computeDisplayPrice, formatMoney, usdRate } from "@/lib/fx-display";
@@ -104,6 +107,7 @@ function ProductsPage() {
   const updateFn = useServerFn(adminUpdateProduct);
   const approveFn = useServerFn(approveProduct);
   const rejectFn = useServerFn(rejectProduct);
+  const stockFn = useServerFn(adminSetProductStock);
 
   const [rows, setRows] = useState<Row[] | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
@@ -553,6 +557,29 @@ function ProductsPage() {
                     aria-label={`Toggle ${kind} product promotion`}
                   >
                     <Star className={`w-3.5 h-3.5 ${p.promoted ? "fill-amber-300" : ""}`} /> Promote
+                  </button>
+                  <button
+                    onClick={async () => {
+                      const next = p.in_stock === false;
+                      setBusy(id);
+                      try {
+                        await stockFn({ data: { id, inStock: next } });
+                        refresh();
+                        toast.success(next ? "Marked in stock" : "Marked out of stock");
+                      } catch (e) {
+                        toast.error((e as Error).message);
+                      }
+                      setBusy(null);
+                    }}
+                    disabled={busy === id}
+                    className={`px-3 py-2 rounded-[10px] bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold flex items-center gap-1.5 disabled:opacity-50 ${p.in_stock === false ? "text-[#E5484D]" : "text-emerald-300"}`}
+                    aria-label={`Toggle ${kind} product stock`}
+                  >
+                    {p.in_stock === false ? (
+                      <><PackageX className="w-3.5 h-3.5" /> Out of stock</>
+                    ) : (
+                      <><PackageCheck className="w-3.5 h-3.5" /> In stock</>
+                    )}
                   </button>
                   <button
                     onClick={() => openEdit(p)}

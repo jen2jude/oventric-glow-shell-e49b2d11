@@ -3,6 +3,7 @@ import { X, ImagePlus, Loader2, CheckCircle2, Trash2, Info } from "lucide-react"
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { StockToggleField } from "@/components/oventric/StockToggleField";
 import {
   createPhysicalProduct,
   listMarketplaceCategories,
@@ -59,6 +60,7 @@ export function SellPhysicalModal({
   const [condition, setCondition] = useState("Brand New");
   const [description, setDescription] = useState("");
   const [basicInfo, setBasicInfo] = useState("");
+  const [inStock, setInStock] = useState(true);
   
   const [priceMode, setPriceMode] = useState<"single" | "bracket">("single");
   const [priceInput, setPriceInput] = useState("");
@@ -314,6 +316,7 @@ export function SellPhysicalModal({
           sellerPhone: digits,
           whatsappNumber: digits,
           socialLink: socialLink.trim() || null,
+          inStock,
           basicInfo: basicInfo.trim() || null,
           activationGuide: null,
         },
@@ -599,6 +602,8 @@ export function SellPhysicalModal({
                   />
                 </label>
               </div>
+
+              <StockToggleField inStock={inStock} onChange={setInStock} />
 
               <div data-field="price">
                 <span className="text-xs font-medium text-slate-300">Pricing</span>
