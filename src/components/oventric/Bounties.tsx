@@ -29,6 +29,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { listMyBountyApplicationIds } from "@/lib/bounties.functions";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { useIsAppShell } from "@/hooks/use-launch-context";
+import { AppStickyHeader } from "@/components/oventric/AppStickyHeader";
 
 type Category = "all" | "frontend" | "database" | "api" | "uiux";
 
@@ -286,6 +287,7 @@ export function Bounties() {
   if (isAppShell) {
     return (
       <div className="bg-[#0A0A0B] min-h-screen">
+        <AppStickyHeader />
         <div className="px-4 pt-4 pb-6">
           {/* Premium hero */}
           <div className="rounded-3xl bg-[#0F0F10] border border-white/[0.06] p-5">

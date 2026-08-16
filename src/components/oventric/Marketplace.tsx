@@ -18,6 +18,7 @@ import { CategoryDiscoverySheet } from "./marketplace-discovery/CategoryDiscover
 import { GridCard, Rail, RowCard, ShopCard, TileCard, type SellerLite } from "./marketplace-discovery/cards";
 import { visualForCategory } from "./marketplace-discovery/utils";
 import { ExploreCategories } from "./hub/ExploreCategories";
+import { AppStickyHeader } from "@/components/oventric/AppStickyHeader";
 
 
 type Mode = "all" | "digital" | "physical";
@@ -164,6 +165,7 @@ export function Marketplace() {
 
   return (
     <div ref={topRef} className="min-h-full bg-[#0A0A0B] pb-24 text-white">
+      {isAppShell && <AppStickyHeader />}
       <div className="mx-auto w-full max-w-[720px]">
         {activeCategory ? (
           <CategoryResults
