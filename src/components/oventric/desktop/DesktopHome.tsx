@@ -349,7 +349,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
       {/* SiteNavbar is now handled at the route level to support universal vs marketplace headers */}
 
       {/* Hero */}
-      <section className="relative overflow-hidden sm:min-h-[62vh] lg:min-h-[74vh]">
+      <section className="relative overflow-hidden">
         <div
           className="pointer-events-none absolute inset-0"
           style={{
@@ -361,7 +361,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
         {/* Left readability gradient — text overlaps the collage */}
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-full bg-gradient-to-r from-white via-white/[0.94] to-transparent sm:w-[56%] lg:w-[50%] xl:w-[46%]" />
 
-        <div className="relative z-20 mx-auto grid h-full w-full max-w-[1400px] grid-cols-1 items-center px-5 py-10 sm:min-h-[62vh] sm:px-6 sm:py-14 lg:min-h-[74vh] lg:px-8 lg:py-16">
+        <div className="relative z-20 mx-auto grid h-full w-full max-w-[1400px] grid-cols-1 items-center px-5 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
           <div className="max-w-2xl">
             <span className="web-eyebrow">
               <Sparkles className="h-3.5 w-3.5" /> 2% cashback on every purchase
