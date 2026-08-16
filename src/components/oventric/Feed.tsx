@@ -1188,7 +1188,7 @@ export function Feed() {
   return (
     <div
       className={`w-full max-w-7xl mx-auto md:bg-white md:min-h-screen lg:flex lg:flex-row lg:gap-6 lg:items-start lg:[scrollbar-gutter:stable] ${
-        isAppShell ? "px-4 pt-3 pb-6 bg-[#0A0A0B]" : "px-4 py-6"
+        isAppShell ? "px-4 pt-3 pb-6 bg-[#0A0A0B]" : "oventric-web px-4 py-6"
       }`}
     >
       <div

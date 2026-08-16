@@ -255,6 +255,7 @@ const SEARCH_PLACEHOLDER: Record<Tab, string> = {
 
 function ProfilePage() {
   const { id } = Route.useParams();
+  const isAppShellView = useIsAppShell();
   const navigate = useNavigate();
   const search = Route.useSearch();
   const profile = useMemo(() => getProfile(id), [id]);
@@ -1017,14 +1018,16 @@ function ProfilePage() {
   })();
 
   return (
-    <div className="profile-render-safe relative min-h-screen overflow-x-hidden bg-[#121214] md:bg-slate-50 text-slate-200 md:text-slate-700 md:h-screen md:overflow-hidden">
+    <div
+      className={`profile-render-safe relative min-h-screen overflow-x-hidden bg-[#121214] md:bg-slate-50 text-slate-200 md:text-slate-700 md:h-screen md:overflow-hidden ${!isAppShellView ? "oventric-web" : ""}`}
+    >
       <div className="pointer-events-none fixed top-0 inset-x-0 h-[2px] z-50  hidden md:block" />
       <div className="pointer-events-none fixed bottom-0 inset-x-0 h-[2px] z-50  hidden md:block" />
       <div className="pointer-events-none fixed top-0 bottom-0 left-0 w-[2px] z-50  hidden md:block" />
       <div className="pointer-events-none fixed top-0 bottom-0 right-0 w-[2px] z-50  hidden md:block" />
 
       <div className="flex min-h-screen flex-col md:h-full md:min-h-0">
-        <Header forceSiteNavbar={!useIsAppShell()} />
+        <Header forceSiteNavbar={!isAppShellView} />
         <main ref={mainRef} className="flex-1 min-w-0 pb-20 md:overflow-y-auto md:pb-0">
           <div className="max-w-3xl mx-auto w-full px-4 py-6">
             {/* Hero — the whole mobile profile surface is intentionally plain:

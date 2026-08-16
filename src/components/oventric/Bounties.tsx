@@ -422,7 +422,7 @@ export function Bounties() {
   }
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="oventric-web bg-white min-h-screen">
       <div className="max-w-5xl mx-auto w-full px-4 py-6">
         <div className="web-dark-band rounded-[10px] p-5 md:p-6 mb-6">
           <div className="flex items-end justify-between mb-5 gap-3 flex-wrap">

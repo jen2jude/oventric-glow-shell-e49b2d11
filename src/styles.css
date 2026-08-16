@@ -2490,3 +2490,134 @@ section + section {
     #0A0A0B;
   color: #ffffff;
 }
+
+/* ------------------------------------------------------------------
+   Web (URL) version light skin.
+   Scope class `oventric-web` is applied to page roots when the visitor
+   is in a normal browser tab (not the installed app / native shell).
+   These rules are intentionally unlayered so they win over Tailwind
+   utilities without touching every component class name.
+   ------------------------------------------------------------------ */
+.oventric-web {
+  background: #f7f8fa;
+  color: #0f172a;
+}
+
+/* Page canvases */
+.oventric-web .bg-\[\#0A0A0B\],
+.oventric-web .bg-\[\#0a0a0b\],
+.oventric-web .bg-\[\#0F0F10\],
+.oventric-web .bg-\[\#0f1012\],
+.oventric-web .bg-black {
+  background-color: #f7f8fa;
+}
+
+/* Card / surface fills */
+.oventric-web .bg-\[\#121214\],
+.oventric-web .bg-\[\#131316\],
+.oventric-web .bg-\[\#141416\],
+.oventric-web .bg-\[\#141417\],
+.oventric-web .bg-\[\#141418\],
+.oventric-web .bg-\[\#16161A\],
+.oventric-web .bg-\[\#17171B\],
+.oventric-web .bg-\[\#18181d\],
+.oventric-web .bg-\[\#1A1A1C\],
+.oventric-web .bg-\[\#1A1A1F\],
+.oventric-web .bg-\[\#1C1C1F\],
+.oventric-web .bg-\[\#1C1C21\],
+.oventric-web .bg-\[\#1E1E24\],
+.oventric-web .bg-\[\#1F1F21\],
+.oventric-web .bg-\[\#22222a\],
+.oventric-web .bg-\[\#232329\] {
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
+}
+
+/* Gradient stops that reference the dark canvas */
+.oventric-web .from-\[\#0A0A0B\],
+.oventric-web .from-\[\#121214\],
+.oventric-web .from-\[\#1E1E24\] {
+  --tw-gradient-from: #ffffff;
+}
+.oventric-web .via-\[\#121214\] {
+  --tw-gradient-via: #f7f8fa;
+}
+.oventric-web .to-\[\#191921\] {
+  --tw-gradient-to: #f1f3f7;
+}
+
+/* Borders & rings that were tuned for a dark canvas */
+.oventric-web [class*="border-white/"],
+.oventric-web [class*="ring-white/"],
+.oventric-web [class*="divide-white/"] {
+  border-color: rgb(15 23 42 / 10%);
+}
+.oventric-web [class*="ring-white/"] {
+  --tw-ring-color: rgb(15 23 42 / 10%);
+}
+.oventric-web .border-\[\#0A0A0B\],
+.oventric-web .border-\[\#121214\],
+.oventric-web .border-\[\#141417\] {
+  border-color: rgb(15 23 42 / 10%);
+}
+
+/* Faint white washes become faint slate washes */
+.oventric-web [class*="bg-white/"] {
+  background-color: rgb(15 23 42 / 4%);
+}
+
+/* Typography: keep the muted hierarchy, invert the palette */
+.oventric-web .text-white,
+.oventric-web .text-white\/90,
+.oventric-web .text-white\/95 {
+  color: #0f172a;
+}
+.oventric-web .text-white\/80,
+.oventric-web .text-white\/75,
+.oventric-web .text-white\/70,
+.oventric-web .text-white\/65 {
+  color: #334155;
+}
+.oventric-web .text-white\/60,
+.oventric-web .text-white\/55,
+.oventric-web .text-white\/50,
+.oventric-web .text-white\/45,
+.oventric-web .text-white\/40,
+.oventric-web .text-white\/35,
+.oventric-web .text-white\/30 {
+  color: #64748b;
+}
+.oventric-web [class*="placeholder:text-white"]::placeholder {
+  color: #94a3b8;
+}
+
+/* Anything sitting on the crimson accent keeps white ink */
+.oventric-web [class*="bg-[#E5484D]"],
+.oventric-web [class*="bg-[#C43D42]"],
+.oventric-web [class*="bg-[#d13a3f]"],
+.oventric-web [class*="bg-[#F35E62]"],
+.oventric-web .web-dark-band,
+.oventric-web .web-dark-band * {
+  color: #ffffff;
+}
+.oventric-web [class*="bg-[#E5484D]"] {
+  background-color: #e5484d;
+  box-shadow: none;
+}
+.oventric-web .web-dark-band {
+  background:
+    radial-gradient(90% 120% at 12% 0%, rgb(229 72 77 / 18%), transparent 60%),
+    #0a0a0b;
+}
+
+/* Media placeholders read better light */
+.oventric-web .bg-\[\#F7F8FA\] {
+  background-color: #ffffff;
+}
+
+/* Slate tints picked for the dark canvas need re-weighting on the light web skin */
+.oventric-web .text-slate-100,
+.oventric-web .text-slate-200,
+.oventric-web .text-slate-300 {
+  color: #334155;
+}
