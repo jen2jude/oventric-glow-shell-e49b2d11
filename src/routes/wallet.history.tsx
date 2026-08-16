@@ -1,3 +1,4 @@
+import { AppOnlyGate } from "@/lib/app-gate";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -17,8 +18,20 @@ export const Route = createFileRoute("/wallet/history")({
       },
     ],
   }),
-  component: TopupHistoryPage,
+  component: TopupHistoryPageGated,
 });
+
+function TopupHistoryPageGated() {
+  return (
+    <AppOnlyGate
+      title="Your wallet lives in the app"
+      description="Top-ups and payment history are only available in the Oventric app."
+      from="wallet"
+    >
+      <TopupHistoryPage />
+    </AppOnlyGate>
+  );
+}
 
 type Filter = "all" | "pending" | "success" | "failed";
 

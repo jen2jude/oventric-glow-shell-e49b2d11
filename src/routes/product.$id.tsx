@@ -1,3 +1,4 @@
+import { GetAppButton } from "@/lib/app-gate";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 import { CreatorChip, EcosystemLinks } from "@/components/oventric/ecosystem/CreatorChip";
 
@@ -747,23 +748,24 @@ function ProductPage() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <button
-                      onClick={product.kind === "physical" ? openContact : startCheckout}
-                      disabled={outOfStock}
-                      className={`w-full inline-flex items-center justify-center gap-2 py-3 text-sm rounded-[10px] font-black transition-colors ${outOfStock ? "bg-slate-200 text-slate-500 cursor-not-allowed" : "bg-crimson hover:bg-[#d13a3f] text-white"}`}
-                    >
-                      <ShoppingCart className="w-4 h-4" /> {outOfStock ? "Out of Stock" : "Buy Now"}
-                    </button>
-                    {product.kind !== "physical" && (
+                    {outOfStock ? (
                       <button
-                        onClick={openSellerChat}
-                        className="w-full inline-flex items-center justify-center gap-2 py-3 text-sm bg-crimson/5 text-crimson border border-crimson/25 hover:bg-crimson/10 rounded-[10px] font-bold transition-colors md:bg-white md:text-crimson md:border-crimson/30"
+                        disabled
+                        className="w-full inline-flex items-center justify-center gap-2 py-3 text-sm rounded-[10px] font-black bg-slate-200 text-slate-500 cursor-not-allowed"
                       >
-                        <MessageCircle className="w-4 h-4" /> Chat with seller
+                        <ShoppingCart className="w-4 h-4" /> Out of Stock
                       </button>
+                    ) : (
+                      <>
+                        <GetAppButton label="Get the app to buy" from="product" className="w-full" />
+                        <p className="text-center text-[11.5px] text-slate-500">
+                          Escrow checkout, chat and delivery tracking live in the Oventric app.
+                        </p>
+                      </>
                     )}
                   </div>
                 )}
+
               </div>
 
               {!isAppShell && (

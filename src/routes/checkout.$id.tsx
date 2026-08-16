@@ -1,3 +1,4 @@
+import { AppOnlyGate } from "@/lib/app-gate";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -132,8 +133,20 @@ export const Route = createFileRoute("/checkout/$id")({
     qty: Math.max(1, Math.min(20, Number(s?.qty ?? 1) || 1)),
     pkg: typeof s?.pkg === "string" && s.pkg ? String(s.pkg) : undefined,
   }),
-  component: CheckoutPage,
+  component: CheckoutPageGated,
 });
+
+function CheckoutPageGated() {
+  return (
+    <AppOnlyGate
+      title="Checkout happens in the app"
+      description="Payments, escrow and order tracking run inside the Oventric app so your money stays protected end to end."
+      from="checkout"
+    >
+      <CheckoutPage />
+    </AppOnlyGate>
+  );
+}
 
 function CheckoutPage() {
   const { id } = Route.useParams();

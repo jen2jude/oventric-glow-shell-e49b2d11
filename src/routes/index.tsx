@@ -24,7 +24,8 @@ import { MarketplaceHeader } from "@/components/oventric/desktop/MarketplaceHead
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 
 import { useIsDesktop } from "@/hooks/use-desktop";
-import { useIsAppShell } from "@/hooks/use-launch-context";
+import { useIsAppShell, useLaunchContext } from "@/hooks/use-launch-context";
+import { AppOnlyScreen } from "@/lib/app-gate";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useSectionLiveCounter } from "@/lib/useSectionLiveCounter";
 import { getMyFullProfile } from "@/lib/profiles.functions";
@@ -68,6 +69,7 @@ function Index() {
   const [returnedToHub, setReturnedToHub] = useState(false);
   const prevActiveRef = useRef<string | null>(null);
 
+  const launchCtx = useLaunchContext();
   const { require, fullName, storeName, country, baseCurrency } = useOnboarding();
   const { isAuthenticated } = useAuthGate();
   const loadProfile = useServerFn(getMyFullProfile);
@@ -131,8 +133,13 @@ function Index() {
   );
 
   // Create flow: auth-gate for anonymous visitors, then open the create panel.
-  const handleCreate = (choice?: ChoiceKey) =>
-    require(
+  const handleCreate = (choice?: ChoiceKey) => {
+    // Publishing (products, bounties, courses, posts) is an app-shell flow.
+    if (typeof window !== "undefined" && launchCtx === "browser") {
+      navigate({ to: "/get-app", search: { from: "create" } });
+      return;
+    }
+    return require(
       1,
       () => {
         setCreateChoice(choice ?? null);
@@ -140,6 +147,7 @@ function Index() {
       },
       "seller",
     );
+  };
 
   // Allow other components (e.g. MegaMenu) to trigger the create panel directly.
   useEffect(() => {
@@ -293,7 +301,15 @@ function Index() {
         />
       )
     ) : active === "Wallet" ? (
-      <Wallet />
+      launchCtx === "browser" ? (
+        <AppOnlyScreen
+          title="Your wallet lives in the app"
+          description="Balances, top-ups, cashback and payouts are handled inside the Oventric app so your funds stay protected."
+          from="wallet"
+        />
+      ) : (
+        <Wallet />
+      )
     ) : active === "Marketplace" ? (
       <Marketplace />
     ) : active === "Academy" ? (
@@ -302,7 +318,15 @@ function Index() {
 
       <Bounties />
     ) : active === "Messages" ? (
-      <Messages variant="page" />
+      launchCtx === "browser" ? (
+        <AppOnlyScreen
+          title="Chat lives in the app"
+          description="Message sellers, negotiate and track orders in real time inside the Oventric app."
+          from="messages"
+        />
+      ) : (
+        <Messages variant="page" />
+      )
     ) : active === "Circles" ? (
       <CirclesHub />
     ) : desktopLanding ? (
