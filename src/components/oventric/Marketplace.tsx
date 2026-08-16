@@ -13,6 +13,7 @@ import {
   type CategoryNode,
 } from "@/lib/marketplace.functions";
 import { TopSellersPanel } from "./marketplace-discovery/TopSellersPanel";
+import { SocialProofRails } from "@/components/oventric/social-proof/SocialProofRails";
 import { CategoryDiscoverySheet } from "./marketplace-discovery/CategoryDiscoverySheet";
 import { GridCard, Rail, RowCard, ShopCard, TileCard, type SellerLite } from "./marketplace-discovery/cards";
 import { visualForCategory } from "./marketplace-discovery/utils";
@@ -212,7 +213,7 @@ export function Marketplace() {
               <SocialProofRails
                 variant="dark"
                 className="mt-2"
-                onOpenFeed={() => navigate({ to: "/", search: { section: "Feed" } as never })}
+                onOpenMarketplace={() => setShowTopSellers(true)}
               />
             )}
 
