@@ -34,6 +34,8 @@ import { Reveal } from "@/components/oventric/desktop/Reveal";
 import { SiteFooter } from "@/components/oventric/desktop/SiteFooter";
 import { DownloadAppSection } from "@/components/oventric/desktop/DownloadAppSection";
 import { DesktopPromo } from "@/components/oventric/desktop/DesktopPromo";
+import { SocialProofRails } from "@/components/oventric/social-proof/SocialProofRails";
+
 import {
   TradeSecurelyBanner,
   ProductRails,
