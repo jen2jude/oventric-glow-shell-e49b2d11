@@ -439,7 +439,15 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
         </div>
       </section>
 
+      {/* Live social proof — Top Sellers + community activity, straight under the fold */}
+      <SocialProofRails
+        variant="light"
+        onOpenFeed={() => onSelect("Feed")}
+        onOpenMarketplace={() => onSelect("Marketplace")}
+      />
+
       {/* Stats */}
+
       <section className="border-y border-slate-200 bg-white">
 
         <div className="mx-auto grid w-full max-w-[1200px] grid-cols-2 gap-6 px-5 py-10 sm:px-8 md:grid-cols-4 md:gap-8 md:py-12">
