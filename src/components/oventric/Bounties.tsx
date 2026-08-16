@@ -29,6 +29,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { listMyBountyApplicationIds } from "@/lib/bounties.functions";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { useIsAppShell } from "@/hooks/use-launch-context";
+import { AppStickyHeader } from "@/components/oventric/AppStickyHeader";
 
 type Category = "all" | "frontend" | "database" | "api" | "uiux";
 
