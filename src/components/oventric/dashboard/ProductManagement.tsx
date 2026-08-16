@@ -11,10 +11,12 @@ import {
   Eye, 
   EyeOff,
   Package,
+  PackageX,
+  PackageCheck,
   ExternalLink
 } from "lucide-react";
 import { listMyProducts, type ProductDTO } from "@/lib/marketplace.functions";
-import { toggleProductStatus, deleteProduct } from "@/lib/dashboard/seller.functions";
+import { toggleProductStatus, deleteProduct, setProductStock } from "@/lib/dashboard/seller.functions";
 import { toast } from "sonner";
 import { EditListingModal } from "@/components/oventric/EditListingModal";
 import { SellSwitcherModal } from "@/components/oventric/SellSwitcherModal";
@@ -29,6 +31,7 @@ export function ProductManagement() {
   const fetchProducts = useServerFn(listMyProducts);
   const toggleStatusFn = useServerFn(toggleProductStatus);
   const deleteFn = useServerFn(deleteProduct);
+  const stockFn = useServerFn(setProductStock);
 
   const { data: products } = useSuspenseQuery({
     queryKey: ["my-products"],
@@ -48,6 +51,16 @@ export function ProductManagement() {
       queryClient.invalidateQueries({ queryKey: ["my-products"] });
     } catch (e) {
       toast.error("Failed to update status");
+    }
+  };
+
+  const handleToggleStock = async (productId: string, inStock: boolean) => {
+    try {
+      await stockFn({ data: { productId, inStock: !inStock } });
+      toast.success(!inStock ? "Marked as in stock" : "Marked as out of stock");
+      queryClient.invalidateQueries({ queryKey: ["my-products"] });
+    } catch (e) {
+      toast.error("Failed to update stock");
     }
   };
 
@@ -117,6 +130,11 @@ export function ProductManagement() {
                     product.status === "pending" ? "bg-amber-500/10 text-amber-400" : "bg-red-500/10 text-red-400"
                   }`}>
                     {product.status}
+                  </div>
+                </div>
+                {product.inStock === false && (
+                  <div className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-[#E5484D]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#E5484D]">
+                    <PackageX className="h-3 w-3" /> Out of stock
                   </div>
                 </div>
                 
