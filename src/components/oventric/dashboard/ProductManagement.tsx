@@ -164,6 +164,13 @@ export function ProductManagement() {
                 >
                   {product.status === "active" ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
+                <button
+                  onClick={() => handleToggleStock(product.id, product.inStock !== false)}
+                  className={`p-2 rounded-[10px] hover:bg-white/5 transition-colors ${product.inStock === false ? "text-[#E5484D]" : "text-slate-400 hover:text-white"}`}
+                  title={product.inStock === false ? "Mark as in stock" : "Mark as out of stock"}
+                >
+                  {product.inStock === false ? <PackageX className="w-4 h-4" /> : <PackageCheck className="w-4 h-4" />}
+                </button>
                 <Link
                   to="/product/$id"
                   params={{ id: product.id }}
