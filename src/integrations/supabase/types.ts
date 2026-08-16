@@ -2847,6 +2847,7 @@ export type Database = {
           hue: string
           id: string
           image_paths: string[]
+          in_stock: boolean
           kind: string
           location: string | null
           name: string
@@ -2884,6 +2885,7 @@ export type Database = {
           hue?: string
           id?: string
           image_paths?: string[]
+          in_stock?: boolean
           kind?: string
           location?: string | null
           name: string
@@ -2921,6 +2923,7 @@ export type Database = {
           hue?: string
           id?: string
           image_paths?: string[]
+          in_stock?: boolean
           kind?: string
           location?: string | null
           name?: string
