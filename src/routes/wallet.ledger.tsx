@@ -1,3 +1,4 @@
+import { AppOnlyGate } from "@/lib/app-gate";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -43,8 +44,20 @@ export const Route = createFileRoute("/wallet/ledger")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: WalletLedgerPage,
+  component: WalletLedgerPageGated,
 });
+
+function WalletLedgerPageGated() {
+  return (
+    <AppOnlyGate
+      title="Your wallet lives in the app"
+      description="Balances, cashback, escrow releases and payouts are only available in the Oventric app."
+      from="wallet"
+    >
+      <WalletLedgerPage />
+    </AppOnlyGate>
+  );
+}
 
 const TABS = ["All", "Cashback", "Bounty", "Escrow", "Payouts"] as const;
 type Tab = (typeof TABS)[number];
