@@ -164,6 +164,7 @@ export function Marketplace() {
 
   return (
     <div ref={topRef} className="min-h-full bg-[#0A0A0B] pb-24 text-white">
+      {isAppShell && <AppStickyHeader />}
       <div className="mx-auto w-full max-w-[720px]">
         {activeCategory ? (
           <CategoryResults
