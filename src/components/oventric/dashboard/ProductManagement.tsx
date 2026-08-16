@@ -136,7 +136,8 @@ export function ProductManagement() {
                   <div className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-[#E5484D]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#E5484D]">
                     <PackageX className="h-3 w-3" /> Out of stock
                   </div>
-                </div>
+                )}
+                
                 
                 <div className="mt-2 flex items-center gap-3">
                   <span className="text-sm font-black text-white">${product.priceUSD.toFixed(2)}</span>
