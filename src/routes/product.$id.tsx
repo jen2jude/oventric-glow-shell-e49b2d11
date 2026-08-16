@@ -351,7 +351,7 @@ function ProductPage() {
         )}
 
         {product && (
-          <div className={`grid grid-cols-1 lg:grid-cols-2 ${isAppShell ? "gap-0" : "gap-8"}`}>
+          <div className={`grid grid-cols-1 ${isAppShell ? "lg:grid-cols-2 gap-0" : "md:grid-cols-2 gap-8"}`}>
             <div className={`flex flex-col ${isAppShell ? "gap-0" : "gap-8"}`}>
               <div className={isAppShell ? "px-0 pt-0" : ""}>
                 {(() => {
@@ -364,7 +364,7 @@ function ProductPage() {
                   const cur = gallery[activeImage] ?? gallery[0];
                   return (
                     <>
-                        <div className={`relative ${isAppShell ? "w-full aspect-[4/3] rounded-b-[10px] bg-[#141416] border-b border-white/[0.06]" : "aspect-[4/3] rounded-[10px] bg-white border border-slate-100 shadow-sm md:bg-slate-100"} overflow-hidden flex items-center justify-center`}>
+                        <div className={`relative ${isAppShell ? "w-full aspect-[4/3] rounded-b-[10px] bg-[#141416] border-b border-white/[0.06]" : "web-card aspect-[4/3] overflow-hidden md:bg-slate-100"} overflow-hidden flex items-center justify-center`}>
                           {cur ? (
                             <ResponsiveImage
                               sizes="(min-width: 1024px) 640px, 100vw"
@@ -436,7 +436,7 @@ function ProductPage() {
                             <button
                               key={url}
                               onClick={() => setActiveImage(i)}
-                              className={`shrink-0 w-16 h-16 rounded-[10px] overflow-hidden border-2 ${i === activeImage ? (isAppShell ? "border-[#E5484D]" : "border-emerald-500") : isAppShell ? "border-white/10" : "border-slate-200"}`}
+                              className={`shrink-0 w-16 h-16 rounded-[10px] overflow-hidden border-2 ${i === activeImage ? (isAppShell ? "border-[#E5484D]" : "border-crimson") : isAppShell ? "border-white/10" : "border-slate-200"}`}
                             >
                               <img
                                 src={url}
@@ -463,12 +463,12 @@ function ProductPage() {
             </div>
 
             <div className={isAppShell ? "px-4 pt-5 pb-28" : ""}>
-              <div className={`text-xs font-bold uppercase tracking-widest ${isAppShell ? "text-[#E5484D]" : "text-emerald-600"} mb-2`}>
+              <div className={`text-xs font-bold uppercase tracking-widest ${isAppShell ? "text-[#E5484D]" : "text-crimson"} mb-2`}>
 
                 {product.category}
                 {product.subcategory ? ` · ${product.subcategory}` : ""}
               </div>
-              <h1 className={`text-2xl md:text-3xl font-black ${isAppShell ? "text-white" : "text-slate-900"} md:text-slate-900 mb-2`}>
+              <h1 className={`min-w-0 text-2xl md:text-3xl font-black ${isAppShell ? "text-white" : "text-slate-900"} md:text-slate-900 mb-2 truncate`}>
                 {product.name}
               </h1>
               {outOfStock && (
@@ -598,7 +598,7 @@ function ProductPage() {
                 </Accordion>
               </div>
 
-              <div className={`${isAppShell ? "bg-transparent border-transparent p-0 mb-5" : "bg-white border-slate-200 shadow-sm md:shadow-sm md:bg-white border rounded-[10px] p-5 mb-4"}`}>
+              <div className={`${isAppShell ? "bg-transparent border-transparent p-0 mb-5" : "web-card p-5 mb-4"}`}>
 
                 <div className="flex items-baseline justify-between mb-4">
                   <div>
@@ -606,7 +606,7 @@ function ProductPage() {
                       const dp = productDisplay(product, baseCurrency);
                       return (
                         <>
-                          <div className={`${isAppShell ? "text-white" : "text-slate-900"} md:text-slate-900 font-black text-3xl`}>
+                          <div className={`${isAppShell ? "text-white" : "text-crimson"} md:text-crimson font-black text-3xl`}>
                             {dp.formatted}
                           </div>
                         </>
@@ -750,14 +750,14 @@ function ProductPage() {
                     <button
                       onClick={product.kind === "physical" ? openContact : startCheckout}
                       disabled={outOfStock}
-                      className={`w-full inline-flex items-center justify-center gap-2 py-3 text-sm rounded-[10px] font-black transition-colors ${outOfStock ? "bg-slate-200 text-slate-500 cursor-not-allowed" : "bg-emerald-500 hover:bg-emerald-400 text-black"}`}
+                      className={`w-full inline-flex items-center justify-center gap-2 py-3 text-sm rounded-[10px] font-black transition-colors ${outOfStock ? "bg-slate-200 text-slate-500 cursor-not-allowed" : "bg-crimson hover:bg-[#d13a3f] text-white"}`}
                     >
                       <ShoppingCart className="w-4 h-4" /> {outOfStock ? "Out of Stock" : "Buy Now"}
                     </button>
                     {product.kind !== "physical" && (
                       <button
                         onClick={openSellerChat}
-                        className="w-full inline-flex items-center justify-center gap-2 py-3 text-sm bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 rounded-[10px] font-bold transition-colors md:bg-white md:text-emerald-600 md:border-emerald-500/40"
+                        className="w-full inline-flex items-center justify-center gap-2 py-3 text-sm bg-crimson/5 text-crimson border border-crimson/25 hover:bg-crimson/10 rounded-[10px] font-bold transition-colors md:bg-white md:text-crimson md:border-crimson/30"
                       >
                         <MessageCircle className="w-4 h-4" /> Chat with seller
                       </button>
@@ -767,18 +767,18 @@ function ProductPage() {
               </div>
 
               {!isAppShell && (
-                <div className="mt-5 flex items-center gap-3 rounded-[10px] border border-white/[0.06] bg-[#141416] p-3.5">
-                  <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-white/10 grid place-items-center text-[13px] font-black text-white">
+                <div className="web-card mt-5 flex items-center gap-3 p-3.5">
+                  <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-crimson/10 grid place-items-center text-[13px] font-black text-crimson">
                     {product.vendor?.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-[14px] font-bold text-white">{product.vendor}</div>
-                    <div className="text-[11.5px] text-white/45">Seller on Oventric</div>
+                    <div className="truncate text-[14px] font-bold text-slate-900">{product.vendor}</div>
+                    <div className="text-[11.5px] text-slate-500">Seller on Oventric</div>
                   </div>
                   <Link
                     to="/shop/$id"
                     params={{ id: product.sellerSlug ?? product.sellerId }}
-                    className="shrink-0 rounded-[10px] border border-white/10 bg-white/[0.04] px-3.5 py-2 text-[12.5px] font-bold text-white"
+                    className="shrink-0 rounded-[10px] border border-crimson/25 bg-crimson/5 px-3.5 py-2 text-[12.5px] font-bold text-crimson"
                   >
                     View Shop
                   </Link>

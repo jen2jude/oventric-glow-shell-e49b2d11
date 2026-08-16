@@ -271,7 +271,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
               else onSelect(results[0].kind === "course" ? "Academy" : "Bounties");
             } else onSelect("Marketplace");
           }}
-          className={`flex items-center rounded-2xl border border-slate-200 bg-white ${
+          className={`flex items-center rounded-[10px] border border-slate-200 bg-white transition-colors focus-within:border-crimson/45 ${
             compact ? "h-10 gap-2 rounded-xl pl-3 pr-1 shadow-sm" : "h-14 gap-3 pl-5 pr-2"
           }`}
         >
@@ -289,8 +289,8 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
           />
           <button
             type="submit"
-            className={`inline-flex items-center bg-emerald-600 font-bold text-white transition-transform active:scale-95 ${
-              compact ? "h-7 rounded-[10px] px-3 text-xs" : "h-10 rounded-xl px-5 text-sm"
+            className={`inline-flex items-center bg-crimson font-bold text-white transition-transform active:scale-95 ${
+              compact ? "h-7 rounded-[10px] px-3 text-xs" : "h-10 rounded-[10px] px-5 text-sm"
             }`}
           >
             Search
@@ -325,7 +325,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
                   )}
                 </span>
                 <span className="min-w-0 flex-1 truncate text-sm text-slate-900">{r.title}</span>
-                <span className="shrink-0 text-xs font-semibold text-emerald-600">{r.meta}</span>
+                <span className="shrink-0 text-xs font-bold text-crimson">{r.meta}</span>
               </button>
             ))}
           </div>
@@ -339,7 +339,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
       {/* SiteNavbar is now handled at the route level to support universal vs marketplace headers */}
 
       {/* Hero */}
-      <section className="relative overflow-hidden sm:min-h-[78vh] lg:min-h-[92vh]">
+      <section className="relative overflow-hidden sm:min-h-[62vh] lg:min-h-[74vh]">
         <div
           className="pointer-events-none absolute inset-0"
           style={{
@@ -351,14 +351,14 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
         {/* Left readability gradient — text overlaps the collage */}
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-full bg-gradient-to-r from-white via-white/[0.94] to-transparent sm:w-[56%] lg:w-[50%] xl:w-[46%]" />
 
-        <div className="relative z-20 mx-auto grid h-full w-full max-w-[1400px] grid-cols-1 items-center px-5 py-10 sm:min-h-[78vh] sm:px-6 sm:py-20 lg:min-h-[92vh] lg:px-8 lg:py-24">
+        <div className="relative z-20 mx-auto grid h-full w-full max-w-[1400px] grid-cols-1 items-center px-5 py-10 sm:min-h-[62vh] sm:px-6 sm:py-14 lg:min-h-[74vh] lg:px-8 lg:py-16">
           <div className="max-w-2xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-600">
+            <span className="web-eyebrow">
               <Sparkles className="h-3.5 w-3.5" /> 2% cashback on every purchase
             </span>
             <h1 className="mt-6 text-[clamp(2.5rem,5.2vw,4.5rem)] font-bold leading-[1.05] tracking-tight text-slate-900">
               The platform where Africa&apos;s builders
-              <span className="text-emerald-600"> sell, learn and get paid.</span>
+              <span className="text-crimson"> sell, learn and get paid.</span>
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-slate-600 [text-shadow:0_1px_16px_rgba(255,255,255,0.9)]">
               Marketplace, academy, bounties and a multi-currency wallet in one place.
@@ -370,7 +370,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
               <button
                 type="button"
                 onClick={primary}
-                className="inline-flex h-12 items-center gap-2 rounded-2xl bg-emerald-600 px-6 text-sm font-bold text-white transition-transform active:scale-95"
+                className="web-glow-crimson inline-flex h-12 items-center gap-2 rounded-[10px] bg-crimson px-6 text-sm font-bold text-white transition-transform hover:brightness-110 active:scale-95"
               >
                 {isAuthenticated ? "Visit feed" : "Get started free"}{" "}
                 <ArrowRight className="h-4 w-4" strokeWidth={3} />
@@ -378,7 +378,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
               <button
                 type="button"
                 onClick={() => onSelect("Marketplace")}
-                className="inline-flex h-12 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 text-sm font-bold text-slate-900 transition-transform active:scale-95"
+                className="inline-flex h-12 items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-6 text-sm font-bold text-slate-900 transition-all hover:border-crimson/40 hover:text-crimson active:scale-95"
               >
                 Explore marketplace
               </button>
@@ -386,7 +386,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
 
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-500 [text-shadow:0_1px_12px_rgba(255,255,255,0.9)]">
               <span className="inline-flex items-center gap-1.5">
-                <ShieldCheck className="h-4 w-4 text-emerald-600" /> Escrow on every order
+                <ShieldCheck className="h-4 w-4 text-crimson" /> Escrow on every order
               </span>
               <span>54 African countries</span>
               <span>Card, bank &amp; mobile money</span>
@@ -456,7 +456,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
             },
           ].map((t) => (
             <div key={t.title} className="flex items-start gap-3">
-              <span className="mt-0.5 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+              <span className="mt-0.5 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] bg-crimson/10 text-crimson">
                 <t.Icon className="h-4 w-4" strokeWidth={2.4} />
               </span>
               <div className="min-w-0">
@@ -485,7 +485,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
                   onClick={() => setCatTab(k)}
                   className={`h-9 rounded-xl px-4 text-sm font-semibold capitalize transition-colors ${
                     catTab === k
-                      ? "bg-emerald-600 text-white"
+                      ? "bg-crimson text-white"
                       : "text-slate-500 hover:text-slate-900"
                   }`}
                 >
@@ -499,7 +499,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
               <Reveal
                 key={c.id}
                 delay={(i % 3) * 90}
-                className="hp-lift rounded-3xl border border-slate-200 bg-white p-6"
+                className="web-card p-6"
               >
                 <button
                   type="button"
@@ -521,7 +521,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
                         key={s.id}
                         type="button"
                         onClick={() => onSelect("Marketplace")}
-                        className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:border-emerald-400 hover:text-slate-900"
+                        className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:border-crimson/50 hover:text-crimson"
                       >
                         {s.name}
                       </button>
@@ -563,7 +563,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
               className={`grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16 ${i % 2 === 1 ? "lg:[&>*:first-child]:order-2" : ""}`}
             >
               <div>
-                <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-emerald-600">
+                <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.08em] text-crimson">
                   <f.icon className="h-4 w-4" strokeWidth={2.5} /> {f.label}
                 </span>
                 <h3 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-slate-900">
@@ -573,13 +573,13 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
                 <button
                   type="button"
                   onClick={() => onSelect(f.section)}
-                  className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 transition-colors hover:text-emerald-700"
+                  className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-crimson transition-colors hover:brightness-110"
                 >
                   Open {f.label} <ChevronRight className="h-4 w-4" />
                 </button>
               </div>
               <div
-                className={`hp-lift flex h-64 items-center justify-center rounded-3xl border border-slate-200 bg-gradient-to-br ${f.tint} to-transparent`}
+                className={`web-card flex h-64 items-center justify-center bg-gradient-to-br ${f.tint} to-transparent`}
               >
                 <img loading="lazy" decoding="async"
                   src={f.img}
@@ -604,9 +604,9 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
               <Reveal
                 key={s.title}
                 delay={i * 110}
-                className="hp-lift rounded-3xl border border-slate-200 bg-white p-7"
+                className="web-card p-7"
               >
-                <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-emerald-50 text-sm font-bold text-emerald-600">
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-crimson/10 text-sm font-black text-crimson">
                   {i + 1}
                 </span>
                 <h3 className="mt-5 text-lg font-bold text-slate-900">{s.title}</h3>
@@ -615,7 +615,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
             ))}
           </div>
 
-          <Reveal className="mt-12 flex flex-col items-start justify-between gap-6 rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/15 to-transparent p-6 sm:p-10 lg:mt-16 lg:flex-row lg:items-center lg:gap-10">
+          <Reveal className="mt-12 flex flex-col items-start justify-between gap-6 rounded-[10px] border border-crimson/25 bg-gradient-to-br from-crimson/10 to-transparent p-6 sm:p-10 lg:mt-16 lg:flex-row lg:items-center lg:gap-10">
             <div>
               <h3 className="text-2xl font-bold text-slate-900">
                 Ready to start earning on Oventric?

@@ -429,11 +429,14 @@ export const Academy = ({ hubMode = false }: { hubMode?: boolean }) => {
           {searchQuery === "" && category === 'all' && (
             <section className="relative">
               <div className="flex items-center justify-between mb-4">
-                <h3 className={`font-bold text-lg ${!isAppShell ? "text-slate-900" : "text-white"}`}>Trending</h3>
-                <button className={`text-xs font-bold ${!isAppShell ? "text-[#E5484D]" : "text-[#E5484D]"}`}>View All</button>
+                <div className="min-w-0">
+                  {!isAppShell && <div className="web-eyebrow mb-2">Featured</div>}
+                  <h3 className={`font-bold text-lg ${!isAppShell ? "text-slate-900 web-accent-underline inline-block" : "text-white"}`}>Trending</h3>
+                </div>
+                <button className="text-xs font-bold text-crimson shrink-0">View All</button>
               </div>
               <div className="overflow-hidden relative w-full">
-                <div ref={scrollRef} className="flex w-full overflow-x-auto scrollbar-none snap-x snap-mandatory gap-4 pb-2">
+                <div ref={scrollRef} className={`flex w-full overflow-x-auto scrollbar-none snap-x snap-mandatory gap-4 pb-2 ${!isAppShell ? "lg:grid lg:grid-cols-2 lg:overflow-visible" : ""}`}>
                   {(courses?.slice(0, 4) ?? []).map((course, idx) => {
                     const gradients = [
                       "bg-gradient-to-br from-[#8B5CF6] via-[#A78BFA] to-[#C4B5FD]",
@@ -456,10 +459,13 @@ export const Academy = ({ hubMode = false }: { hubMode?: boolean }) => {
 
           <section>
             <div className="flex items-center justify-between mb-4">
-              <h3 className={`font-bold text-lg ${!isAppShell ? "text-slate-900" : "text-white"}`}>
-                {searchQuery ? `Search Results (${filtered.length})` : "New"}
-              </h3>
-              {!searchQuery && <button className="text-[#E5484D] text-xs font-bold">View All</button>}
+              <div className="min-w-0">
+                {!isAppShell && <div className="web-eyebrow mb-2">Catalog</div>}
+                <h3 className={`font-bold text-lg ${!isAppShell ? "text-slate-900 web-accent-underline inline-block" : "text-white"}`}>
+                  {searchQuery ? `Search Results (${filtered.length})` : "New"}
+                </h3>
+              </div>
+              {!searchQuery && <button className="text-crimson text-xs font-bold shrink-0">View All</button>}
             </div>
             <div className={`grid ${isAppShell ? "grid-cols-2" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"} gap-4`}>
               {filtered.map((course) => (
@@ -480,8 +486,11 @@ export const Academy = ({ hubMode = false }: { hubMode?: boolean }) => {
           {!searchQuery && category === 'all' && (
             <section>
               <div className="flex items-center justify-between mb-4">
-                <h3 className={`font-bold text-lg ${!isAppShell ? "text-slate-900" : "text-white"}`}>Free Courses</h3>
-                <button className="text-[#E5484D] text-xs font-bold">View All</button>
+                <div className="min-w-0">
+                  {!isAppShell && <div className="web-eyebrow mb-2">No cost</div>}
+                  <h3 className={`font-bold text-lg ${!isAppShell ? "text-slate-900 web-accent-underline inline-block" : "text-white"}`}>Free Courses</h3>
+                </div>
+                <button className="text-crimson text-xs font-bold shrink-0">View All</button>
               </div>
               <div className={`grid ${isAppShell ? "grid-cols-2" : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"} gap-4`}>
                 {courses?.filter(c => c.isFree).slice(0, isAppShell ? 4 : 8).map((course) => (
@@ -644,7 +653,7 @@ function CourseCard({
   }
 
   return (
-    <div className="bg-white border-slate-200 shadow-sm hover:shadow-lg hover:border-emerald-300 rounded-xl overflow-hidden transition-all md:hover:-translate-y-0.5">
+    <div className="web-card overflow-hidden">
       <button onClick={onOpen} className="block w-full text-left">
         <div className="relative aspect-video bg-gradient-to-br from-emerald-600/40 to-indigo-700/40 overflow-hidden">
           {course.coverUrl ? (
@@ -672,14 +681,14 @@ function CourseCard({
               {course.category}
             </span>
             {course.promoted && (
-              <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/80 text-black rounded px-2 py-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider bg-crimson text-white rounded px-2 py-1">
                 <Sparkles className="w-3 h-3 inline mr-1" /> Featured
               </span>
             )}
           </div>
           <div className="absolute top-3 right-3">
             {course.isFree ? (
-              <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-black rounded px-2 py-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider bg-crimson text-white rounded px-2 py-1">
                 Free
               </span>
             ) : (
@@ -690,8 +699,8 @@ function CourseCard({
           </div>
         </div>
       </button>
-      <div className="p-5">
-        <h3 className="text-slate-900 font-black text-lg leading-snug">
+      <div className="p-5 min-w-0">
+        <h3 className="text-slate-900 font-black text-lg leading-snug truncate">
           {course.title}
         </h3>
         <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
@@ -700,7 +709,7 @@ function CourseCard({
               to="/profile/$id"
               params={{ id: course.ownerSlug }}
               onClick={(e) => e.stopPropagation()}
-              className="font-semibold text-emerald-600 hover:underline"
+              className="font-semibold text-crimson hover:underline"
             >
               By {course.ownerName || course.instructorName || "Creator"}
             </Link>
@@ -719,7 +728,7 @@ function CourseCard({
 
         <button
           onClick={onOpen}
-          className="mt-4 w-full py-2.5 rounded-[10px] bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-sm inline-flex items-center justify-center gap-2"
+          className="mt-4 w-full py-2.5 rounded-[10px] bg-crimson hover:bg-crimson/90 text-white font-bold text-sm inline-flex items-center justify-center gap-2"
         >
           {course.isFree ? "Start learning" : "View course"} <ArrowRight className="w-4 h-4" />
         </button>
