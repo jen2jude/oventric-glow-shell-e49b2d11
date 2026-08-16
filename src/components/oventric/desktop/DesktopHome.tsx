@@ -359,7 +359,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
         />
 
         {/* Left readability gradient — text overlaps the collage */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-full bg-gradient-to-r from-white via-white/[0.94] to-transparent sm:w-[56%] lg:w-[50%] xl:w-[46%]" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-full bg-gradient-to-r from-white via-white/[0.94] to-transparent lg:block lg:w-[52%] xl:w-[48%]" />
 
         <div className="relative z-20 mx-auto grid h-full w-full max-w-[1400px] grid-cols-1 items-center px-5 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
           <div className="max-w-2xl">
@@ -414,7 +414,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
         </div>
 
         {/* Hero visual — large but contained so the right edge stays visible */}
-        <div className="pointer-events-none absolute right-[-1%] top-1/2 z-0 hidden w-[78vw] max-w-[1080px] -translate-y-1/2 sm:block">
+        <div className="pointer-events-none absolute right-[-1%] top-1/2 z-0 hidden w-[62vw] max-w-[1000px] -translate-y-1/2 lg:block">
           <div
             className="pointer-events-none absolute -inset-10 -z-10 rounded-full blur-3xl"
             style={{
