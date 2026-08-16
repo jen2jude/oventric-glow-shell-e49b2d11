@@ -18,6 +18,7 @@ import { CategoryDiscoverySheet } from "./marketplace-discovery/CategoryDiscover
 import { GridCard, Rail, RowCard, ShopCard, TileCard, type SellerLite } from "./marketplace-discovery/cards";
 import { visualForCategory } from "./marketplace-discovery/utils";
 import { ExploreCategories } from "./hub/ExploreCategories";
+import { AppStickyHeader } from "@/components/oventric/AppStickyHeader";
 
 
 type Mode = "all" | "digital" | "physical";
