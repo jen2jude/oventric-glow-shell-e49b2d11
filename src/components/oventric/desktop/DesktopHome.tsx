@@ -101,6 +101,15 @@ const FEATURES = [
   },
 ] as const;
 
+const HUB_TILES = [
+  { label: "Marketplace", section: "Marketplace", img: marketIcon.url },
+  { label: "Academy", section: "Academy", img: academyIcon.url },
+  { label: "Bounties", section: "Bounties", img: bountiesIcon.url },
+  { label: "Wallet", section: "Wallet", img: walletIcon.url },
+  { label: "Circles", section: "Circles", img: circlesIcon.url },
+  { label: "Feed", section: "Feed", img: marketIcon.url },
+] as const;
+
 const STEPS = [
   {
     title: "Create your account",
@@ -464,6 +473,37 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
                 <div className="mt-0.5 text-xs leading-relaxed text-slate-500">{t.body}</div>
               </div>
             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Quick navigation — mirrors the app hub's glowing tile grid */}
+      <section className="mx-auto w-full max-w-[1200px] px-5 pt-10 sm:px-8 sm:pt-14">
+        <span className="web-eyebrow">Jump straight in</span>
+        <h2 className="web-accent-underline mt-3 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+          The whole ecosystem, one tap away
+        </h2>
+        <div className="web-rail mt-8 sm:grid sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
+          {HUB_TILES.map((t) => (
+            <button
+              key={t.label}
+              type="button"
+              onClick={() => onSelect(t.section)}
+              className="web-tile aspect-square w-[104px] shrink-0 p-3 sm:w-auto"
+              aria-label={`Open ${t.label}`}
+            >
+              <img
+                loading="lazy"
+                decoding="async"
+                src={t.img}
+                alt=""
+                aria-hidden
+                className="h-10 w-10 object-contain sm:h-12 sm:w-12"
+              />
+              <span className="min-w-0 truncate text-[11px] font-black uppercase tracking-wider text-slate-700 sm:text-xs">
+                {t.label}
+              </span>
+            </button>
           ))}
         </div>
       </section>

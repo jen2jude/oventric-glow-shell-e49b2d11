@@ -31,7 +31,7 @@ function Cover({ url, className }: { url?: string | null; className?: string }) 
 
 function StatCard({ value, label }: { value: string; label: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#141417] px-3 py-4 text-center md:border-slate-200 md:bg-white">
+    <div className="rounded-2xl border border-white/10 bg-[#141417] px-3 py-4 text-center md:web-card">
       <div className="text-xl font-black text-white md:text-slate-900">{value}</div>
       <div className="mt-1 text-[11px] font-semibold text-slate-400 md:text-slate-500">{label}</div>
     </div>
@@ -68,7 +68,7 @@ function CourseRow({
     <Link
       to="/"
       search={{ section: "Academy", course: c.id } as never}
-      className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#141417] p-3 transition-colors hover:bg-[#1A1A1F] md:border-slate-200 md:bg-white md:hover:bg-slate-50"
+      className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#141417] p-3 transition-colors hover:bg-[#1A1A1F] md:web-card md:hover:bg-transparent"
     >
       <Cover url={c.coverUrl} className="h-16 w-16 shrink-0" />
       <div className="min-w-0 flex-1">
@@ -100,7 +100,7 @@ function CourseCard({ c, price }: { c: CourseTileData; price: (usd: number) => s
     <Link
       to="/"
       search={{ section: "Academy", course: c.id } as never}
-      className="group overflow-hidden rounded-2xl border border-white/10 bg-[#141417] transition-transform hover:-translate-y-0.5 md:border-slate-200 md:bg-white"
+      className="group overflow-hidden rounded-2xl border border-white/10 bg-[#141417] transition-transform hover:-translate-y-0.5 md:web-card"
     >
       <Cover url={c.coverUrl} className="aspect-[4/3] w-full rounded-none" />
       <div className="p-2">
@@ -259,7 +259,7 @@ export function ProfileCoursesTab({
               className={`shrink-0 rounded-full px-3.5 py-3 text-xs font-bold transition-colors ${
                 on
                   ? "text-white"
-                  : "border border-white/10 bg-white/[0.04] text-slate-400 hover:text-white md:border-slate-200 md:bg-white md:text-slate-500"
+                  : "border border-white/10 bg-white/[0.04] text-slate-400 hover:text-white md:web-card md:text-slate-500"
               }`}
               {...(on ? { style: { backgroundColor: ACCENT } } : {})}
             >
@@ -271,7 +271,7 @@ export function ProfileCoursesTab({
 
       <div className="mt-3 space-y-3">
         {current.length === 0 ? (
-          <div className="rounded-2xl border border-white/10 bg-[#141417] p-6 text-center text-sm text-slate-400 md:border-slate-200 md:bg-white md:text-slate-500">
+          <div className="rounded-2xl border border-white/10 bg-[#141417] p-6 text-center text-sm text-slate-400 md:web-card md:text-slate-500">
             Nothing here yet.
           </div>
         ) : (

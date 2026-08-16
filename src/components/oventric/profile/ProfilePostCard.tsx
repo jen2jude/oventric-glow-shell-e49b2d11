@@ -63,7 +63,7 @@ export function ProfilePostCard({
   };
 
   return (
-    <article className="rounded-2xl border border-white/10 bg-[#141418] md:border-slate-200 md:bg-white md:shadow-sm">
+    <article className="rounded-2xl border border-white/10 bg-[#141418] md:web-card">
       <header className="flex items-center gap-3 px-4 pt-4">
         <Link
           to="/profile/$id"

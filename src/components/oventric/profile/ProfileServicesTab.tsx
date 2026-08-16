@@ -67,7 +67,7 @@ export function ProfileServicesTab({
           <Link
             to="/product/$id"
             params={{ id: s.id }}
-            className="flex items-stretch gap-3 rounded-2xl border border-white/10 bg-[#141417] p-3 transition-colors hover:bg-[#1A1A1F] md:border-slate-200 md:bg-white md:hover:bg-slate-50"
+            className="flex items-stretch gap-3 rounded-2xl border border-white/10 bg-[#141417] p-3 transition-colors hover:bg-[#1A1A1F] md:web-card md:hover:bg-transparent"
           >
             <Cover url={s.coverUrl} className="h-[104px] w-[92px] shrink-0" />
             <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
@@ -106,7 +106,7 @@ export function ProfileServicesTab({
         ))}
 
         {items.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-white/12 bg-[#121216] p-6 text-center md:border-slate-200 md:bg-white">
+          <div className="rounded-2xl border border-dashed border-white/12 bg-[#121216] p-6 text-center md:web-card">
             <Sparkles className="mx-auto h-6 w-6" style={{ color: ACCENT }} />
             <p className="mt-2 text-sm font-bold text-white md:text-slate-900">
               {isOwner ? "You haven't listed a service yet" : "No services listed yet"}
@@ -131,7 +131,7 @@ export function ProfileServicesTab({
       </div>
 
       <h3 className="mt-8 text-base font-black text-white md:text-slate-900">Work Process</h3>
-      <div className="mt-3 grid grid-cols-3 gap-2 rounded-2xl border border-white/10 bg-[#141417] p-4 md:border-slate-200 md:bg-white">
+      <div className="mt-3 grid grid-cols-3 gap-2 rounded-2xl border border-white/10 bg-[#141417] p-4 md:web-card">
         {STEPS.map((s, i) => (
           <div
             key={s.title}

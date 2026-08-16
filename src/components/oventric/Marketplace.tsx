@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { ChevronLeft, ChevronRight, LayoutGrid, Search, SlidersHorizontal, ShoppingBag, GraduationCap, ArrowLeft } from "lucide-react";
 import { useDominantColor } from "@/hooks/use-dominant-color";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import {
   listProducts,
@@ -37,6 +38,7 @@ interface Discovery {
 }
 
 export function Marketplace() {
+  const isAppShell = useIsAppShell();
   const { require } = useOnboarding();
   const navigate = useNavigate();
 
@@ -247,7 +249,7 @@ export function Marketplace() {
                       <button
                         type="button"
                         onClick={() => setCatalogLimit((n) => n + 8)}
-                        className="mt-5 w-full rounded-[10px] bg-[#141416] py-3 text-[13px] font-semibold text-white/70 ring-1 ring-white/5"
+                        className={`mt-5 w-full rounded-[10px] bg-[#141416] py-3 text-[13px] font-semibold text-white/70 ring-1 ring-white/5 transition-colors ${!isAppShell ? "hover:ring-[#E5484D]/40 hover:text-white" : ""}`}
                       >
                         Show more
                       </button>
