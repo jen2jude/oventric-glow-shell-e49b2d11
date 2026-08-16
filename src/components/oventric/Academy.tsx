@@ -188,10 +188,11 @@ export const Academy = ({ hubMode = false }: { hubMode?: boolean }) => {
 
   return (
     <div className={`w-full ${!isAppShell ? "bg-white min-h-screen" : "bg-black min-h-screen"}`}>
+      {isAppShell && <AppStickyHeader />}
       <AcademyHero isAppShell={isAppShell} />
 
       {isAppShell && (
-        <div className="bg-[#0A0A0B] px-4 pt-1 pb-3 sticky top-0 z-40 border-b border-white/5">
+        <div className="bg-[#0A0A0B] px-4 pt-1 pb-3 sticky top-14 z-30 border-b border-white/5">
           <div className="flex flex-col gap-3 mt-2">
             <div className="flex items-center justify-between">
               <h2 className="text-white font-black text-lg">Browse courses</h2>
