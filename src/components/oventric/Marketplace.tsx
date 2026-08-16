@@ -164,7 +164,10 @@ export function Marketplace() {
   const featured = discovery?.featured?.[0] ?? discovery?.trending?.[0] ?? null;
 
   return (
-    <div ref={topRef} className="min-h-full bg-[#0A0A0B] pb-24 text-white">
+    <div
+      ref={topRef}
+      className={`min-h-full bg-[#0A0A0B] pb-24 text-white ${!isAppShell ? "oventric-web" : ""}`}
+    >
       {isAppShell && <AppStickyHeader />}
       <div className="mx-auto w-full max-w-[720px]">
         {activeCategory ? (
