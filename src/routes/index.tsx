@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 
@@ -75,7 +75,6 @@ function Index() {
   const { require, fullName, storeName, country, baseCurrency } = useOnboarding();
   const { isAuthenticated } = useAuthGate();
   const loadProfile = useServerFn(getMyFullProfile);
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthenticated) {
