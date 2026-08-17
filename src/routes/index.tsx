@@ -26,6 +26,7 @@ import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { useIsDesktop } from "@/hooks/use-desktop";
 import { useIsAppShell, useLaunchContext } from "@/hooks/use-launch-context";
 import { AppOnlyScreen } from "@/lib/app-gate";
+import { GetAppModal } from "@/components/oventric/GetAppModal";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useSectionLiveCounter } from "@/lib/useSectionLiveCounter";
 import { getMyFullProfile } from "@/lib/profiles.functions";
@@ -67,6 +68,7 @@ function Index() {
   const [name, setName] = useState<string>("");
   const [q, setQ] = useState("");
   const [returnedToHub, setReturnedToHub] = useState(false);
+  const [getAppOpen, setGetAppOpen] = useState(false);
   const prevActiveRef = useRef<string | null>(null);
 
   const launchCtx = useLaunchContext();
