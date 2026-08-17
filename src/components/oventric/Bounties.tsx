@@ -422,165 +422,24 @@ export function Bounties() {
   }
 
   return (
-    <div className="oventric-web bg-white min-h-screen">
-      <div className="max-w-5xl mx-auto w-full px-4 py-6">
-        <div className="web-dark-band rounded-[10px] p-5 md:p-6 mb-6">
-          <div className="flex items-end justify-between mb-5 gap-3 flex-wrap">
-            <div className="min-w-0">
-              <div className="web-eyebrow mb-2">Escrow protected</div>
-              <h1 className="text-white text-2xl md:text-3xl font-black inline-flex items-center gap-2 web-accent-underline">
-                <Target className="w-6 h-6 text-crimson shrink-0" /> Bounty & Escrow Board
-              </h1>
-              <p className="text-sm text-slate-400 mt-3">
-                Post work, evaluate applicants, run escrow-protected contracts end-to-end.
-              </p>
-            </div>
-            <button
-              onClick={() => require(1, () => setPostOpen(true), "issuer")}
-              className="shrink-0 inline-flex items-center gap-2 px-4 py-3 rounded-[10px] bg-crimson hover:bg-crimson/90 text-white text-sm font-bold shadow-sm"
-            >
-              <Plus className="w-4 h-4" /> Post a bounty
-            </button>
-          </div>
-
-          {/* Metric grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="bg-white/5 border border-crimson/30 rounded-[10px] p-4">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-crimson inline-flex items-center gap-1.5">
-                <WalletIcon className="w-3 h-3 shrink-0" /> Total Locked in Escrow
-              </div>
-              <div className="mt-2 text-white text-2xl md:text-3xl font-black truncate">
-                {formatMoney(totalLocked, baseCurrency)}
-              </div>
-              <div className="text-xs text-slate-400 mt-1">
-                Across {activeCount} live contracts in {baseCurrency}
-              </div>
-            </div>
-            <div className="bg-white/5 border border-white/10 rounded-[10px] p-4">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 inline-flex items-center gap-1.5">
-                <Target className="w-3 h-3 shrink-0" /> Active Tasks Seeking Solvers
-              </div>
-              <div className="mt-2 text-white text-2xl md:text-3xl font-black">
-                {activeCount}
-              </div>
-              <div className="text-xs text-slate-400 mt-1">
-                Filtered live from open bounties
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="flex gap-2 overflow-x-auto scrollbar-none pb-2 mb-4">
-          {FILTERS.map((f) => {
-            const active = filter === f.key;
-            return (
-              <button
-                key={f.key}
-                onClick={() => setFilter(f.key)}
-                className={`shrink-0 px-4 py-3 rounded-full text-sm font-medium border transition-colors whitespace-nowrap ${
-                  active
-                    ? "bg-crimson border-crimson text-white"
-                    : "bg-white border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300"
-                }`}
-              >
-                {f.label}
-              </button>
-            );
-          })}
-        </div>
-
-
-        {/* Bounty stream */}
-        <div className="space-y-3">
-          {bountiesLoading ? (
-            <div className="space-y-3">
-              <BountySkeleton />
-              <BountySkeleton />
-              <BountySkeleton />
-              <BountySkeleton />
-              <BountySkeleton />
-            </div>
-          ) : bountiesError ? (
-            <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-5 text-sm text-red-100 md:border-red-200 md:bg-red-50 md:text-red-700">
-              {bountiesError}
-            </div>
-          ) : dbBounties.length === 0 ? (
-            <div className="web-card-flat border-dashed p-8 md:p-12 text-center">
-              <div className="w-14 h-14 mx-auto rounded-full bg-crimson/10 flex items-center justify-center mb-4">
-                <Target className="w-7 h-7 text-crimson" />
-              </div>
-              <h3 className="text-slate-900 text-lg font-bold mb-2">
-                No live bounties yet
-              </h3>
-              <p className="text-slate-600 text-sm max-w-md mx-auto mb-6">
-                The board is clear right now. Be the first to post a task and start attracting
-                verified solvers.
-              </p>
-              <button
-                onClick={() => require(1, () => setPostOpen(true), "issuer")}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] bg-crimson hover:bg-crimson/90 text-white text-sm font-bold transition-colors"
-              >
-                <Plus className="w-4 h-4" /> Post the first bounty
-              </button>
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="web-card-flat border-dashed p-8 md:p-12 text-center">
-              <div className="w-14 h-14 mx-auto rounded-full bg-slate-100 flex items-center justify-center mb-4">
-                <Clock className="w-7 h-7 text-slate-500" />
-              </div>
-              <h3 className="text-slate-900 text-lg font-bold mb-2">
-                No matches for this filter
-              </h3>
-              <p className="text-slate-600 text-sm max-w-md mx-auto mb-6">
-                No active bounties in this category right now. Try another filter or post a new
-                task.
-              </p>
-              <button
-                onClick={() => setFilter("all")}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4" /> Show all bounties
-              </button>
-            </div>
-          ) : (
-            filtered.map((b, idx) => {
-              const rows: React.ReactNode[] = [
-                <BountyRow
-                  key={b.id}
-                  bounty={b}
-                  currency={baseCurrency}
-                  onOpen={() => require(2, () => setSelectedId(b.id), "solver")}
-                  isNew={highlightId === b.id}
-                  alreadyApplied={appliedIds.has(b.id)}
-                />,
-              ];
-              if ((idx + 1) % 4 === 0) {
-                rows.push(
-                  <LiveAdSlot
-                    key={`ad-${b.id}`}
-                    index={idx}
-                    ads={bountyAds}
-                    loading={adsLoading}
-                  />,
-                );
-              }
-              return rows;
-            })
-          )}
-        </div>
-
-        <BountyEditorModal
-          open={postOpen}
-          onClose={() => setPostOpen(false)}
-          onPublished={(id) => {
-            setRefreshTick((t) => t + 1);
-            setHighlightId(id);
-          }}
-        />
-      </div>
-    </div>
+    <>
+      <WebBounties
+        bounties={filtered}
+        loading={bountiesLoading}
+        error={bountiesError}
+        currency={baseCurrency}
+        onGated={() => setGetAppOpen(true)}
+      />
+      <GetAppModal
+        open={getAppOpen}
+        onClose={() => setGetAppOpen(false)}
+        from="bounties"
+        title="Bounties & escrow live in the app"
+        description="Browsing the board is open on the web. Funding a bounty, applying, chatting with the other side and releasing escrow all happen inside the Oventric app."
+      />
+    </>
   );
+
 }
 
 function BountySkeleton() {
