@@ -415,8 +415,9 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
           </div>
         </div>
 
-        {/* Hero visual — large but contained so the right edge stays visible */}
-        <div className="pointer-events-none absolute right-[-1%] top-1/2 z-0 hidden w-[52vw] max-w-[1000px] -translate-y-1/2 md:block lg:w-[62vw]">
+        {/* Hero visual — aligned to the same 1440 container gutter as the copy */}
+        <div className="pointer-events-none absolute inset-0 z-0 mx-auto hidden w-full max-w-[1440px] px-4 sm:px-6 lg:px-11 md:block">
+        <div className="pointer-events-none absolute right-4 top-1/2 w-[50%] max-w-[720px] -translate-y-1/2 sm:right-6 lg:right-11">
           <div
             className="pointer-events-none absolute -inset-10 -z-10 rounded-full blur-3xl"
             style={{
@@ -438,6 +439,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
             decoding="async"
           />
 
+        </div>
         </div>
       </section>
 
