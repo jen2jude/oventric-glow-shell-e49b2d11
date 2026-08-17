@@ -362,40 +362,73 @@ export function WebMarketplace() {
           </div>
 
           {featured && (
-            <button
-              type="button"
-              onClick={() => openProduct(featured)}
-              className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-5 overflow-hidden rounded-[10px] border border-slate-200 bg-white p-5 text-left shadow-[0_18px_50px_-24px_rgba(15,23,42,0.35)] transition-shadow hover:shadow-[0_24px_60px_-24px_rgba(229,72,77,0.35)] sm:flex"
-            >
-              <div className="min-w-0">
-                <span className="text-[10.5px] font-black uppercase tracking-[0.14em] text-crimson">
-                  Featured today
-                </span>
-                <p className="mt-2 line-clamp-2 text-[19px] font-black leading-snug text-slate-900">
-                  {featured.name}
-                </p>
-                <p className="mt-1 truncate text-[12.5px] font-medium text-slate-500">
-                  by {featured.vendor}
-                </p>
-                <p className="mt-3 text-[22px] font-black text-crimson">
-                  {priceOf(featured).formatted}
-                </p>
-                <span className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-bold text-slate-900 group-hover:text-crimson">
-                  View product <ChevronRight className="h-4 w-4" />
-                </span>
-              </div>
-              <div className="h-[150px] w-[150px] shrink-0 overflow-hidden rounded-[10px] bg-slate-100">
-                {featured.coverUrl && (
-                  <img
-                    src={featured.coverUrl}
-                    alt={featured.name}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                )}
-              </div>
-            </button>
+            <div className="w-full space-y-3 lg:justify-self-end">
+              <button
+                type="button"
+                onClick={() => openProduct(featured)}
+                className="group flex w-full items-center gap-5 overflow-hidden rounded-[10px] border border-slate-200 bg-white p-5 text-left shadow-[0_18px_50px_-24px_rgba(15,23,42,0.35)] transition-shadow hover:shadow-[0_24px_60px_-24px_rgba(229,72,77,0.35)]"
+              >
+                <div className="min-w-0 flex-1">
+                  <span className="text-[10.5px] font-black uppercase tracking-[0.14em] text-crimson">
+                    Featured today
+                  </span>
+                  <p className="mt-2 line-clamp-2 text-[19px] font-black leading-snug text-slate-900">
+                    {featured.name}
+                  </p>
+                  <p className="mt-1 truncate text-[12.5px] font-medium text-slate-500">
+                    by {featured.vendor}
+                  </p>
+                  <p className="mt-3 text-[22px] font-black text-crimson">
+                    {priceOf(featured).formatted}
+                  </p>
+                  <span className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-bold text-slate-900 group-hover:text-crimson">
+                    View product <ChevronRight className="h-4 w-4" />
+                  </span>
+                </div>
+                <div className="h-[150px] w-[150px] shrink-0 overflow-hidden rounded-[10px] bg-slate-100">
+                  {featured.coverUrl && (
+                    <img
+                      src={featured.coverUrl}
+                      alt={featured.name}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  )}
+                </div>
+              </button>
+
+              {featuredRest.length > 0 && (
+                <div className="grid grid-cols-2 gap-3">
+                  {featuredRest.map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => openProduct(p)}
+                      className="group flex items-center gap-3 overflow-hidden rounded-[10px] border border-slate-200 bg-white p-2.5 text-left shadow-[0_10px_30px_-22px_rgba(15,23,42,0.4)] transition-shadow hover:shadow-[0_16px_40px_-22px_rgba(229,72,77,0.4)]"
+                    >
+                      <div className="h-12 w-12 shrink-0 overflow-hidden rounded-[8px] bg-slate-100">
+                        {p.coverUrl && (
+                          <img
+                            src={p.coverUrl}
+                            alt={p.name}
+                            loading="lazy"
+                            decoding="async"
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-[12.5px] font-bold text-slate-900">{p.name}</p>
+                        <p className="mt-0.5 truncate text-[12px] font-black text-crimson">
+                          {priceOf(p).formatted}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
         </div>
       </section>
