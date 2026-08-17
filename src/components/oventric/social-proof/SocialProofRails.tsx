@@ -92,7 +92,7 @@ export function SocialProofRails({
       className={`${dark ? "" : "border-b border-slate-200 bg-white"} ${className}`}
     >
       <div
-        className={`mx-auto w-full max-w-[1200px] ${dark ? "px-4 py-6" : "px-5 py-10 sm:px-8"} space-y-8`}
+        className={`mx-auto w-full max-w-none ${dark ? "px-4 py-6" : "px-5 py-10 sm:px-8"} space-y-8`}
       >
         {sellers.length > 0 && (
           <div>
