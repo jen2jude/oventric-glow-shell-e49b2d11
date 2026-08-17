@@ -196,7 +196,20 @@ export function WebMarketplace() {
     setMaxPrice(null);
   };
 
-  const featured = discovery?.featured?.[0] ?? discovery?.trending?.[0] ?? null;
+  const featuredList = useMemo(() => {
+    const pool = [...(discovery?.featured ?? []), ...(discovery?.trending ?? [])];
+    const seen = new Set<string>();
+    const out: ProductDTO[] = [];
+    for (const p of pool) {
+      if (seen.has(p.id)) continue;
+      seen.add(p.id);
+      out.push(p);
+      if (out.length === 3) break;
+    }
+    return out;
+  }, [discovery]);
+  const featured = featuredList[0] ?? null;
+  const featuredRest = featuredList.slice(1);
   const sellers = discovery?.topSellers ?? [];
 
   const filterPanel = (
