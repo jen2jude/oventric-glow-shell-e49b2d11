@@ -311,25 +311,44 @@ function ProductPage() {
       className={`min-h-screen overflow-x-hidden ${isAppShell ? "bg-[#0A0A0B] text-slate-300" : "oventric-web bg-[#F7F8FA] text-slate-700"}`}
     >
       {!isAppShell && <Header onOpenMessages={() => {}} forceSiteNavbar={!isAppShell} />}
-      <main className={`max-w-6xl mx-auto w-full ${isAppShell ? "px-0 py-0 gap-0" : "px-4 py-6"} pb-32`}>
+      <main className={`w-full ${isAppShell ? "max-w-6xl px-0 py-0 gap-0" : "max-w-[1240px] px-5 py-6"} mx-auto pb-32`}>
         {!isAppShell && (
-          <button
-            type="button"
-            onClick={() => {
-              navigate({ to: "/" });
-              setTimeout(
-                () =>
-                  window.dispatchEvent(
-                    new CustomEvent("oventric:navigate", { detail: { section: "Marketplace" } }),
-                  ),
-                100,
-              );
-            }}
-            className="inline-flex items-center gap-2 text-sm text-slate-600 bg-white border border-slate-200 hover:text-slate-900 shadow-sm rounded-[10px] px-3 py-2 mb-6"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back to Marketplace
-          </button>
+          <nav className="mb-6 flex items-center gap-1.5 text-[12.5px] font-medium text-slate-500">
+            <Link to="/" className="hover:text-crimson">
+              Home
+            </Link>
+            <span className="text-slate-300">/</span>
+            <button
+              type="button"
+              onClick={() => {
+                navigate({ to: "/" });
+                setTimeout(
+                  () =>
+                    window.dispatchEvent(
+                      new CustomEvent("oventric:navigate", { detail: { section: "Marketplace" } }),
+                    ),
+                  100,
+                );
+              }}
+              className="hover:text-crimson"
+            >
+              Marketplace
+            </button>
+            {product?.category && (
+              <>
+                <span className="text-slate-300">/</span>
+                <span className="capitalize text-slate-500">{product.category}</span>
+              </>
+            )}
+            {product?.name && (
+              <>
+                <span className="text-slate-300">/</span>
+                <span className="max-w-[280px] truncate font-bold text-slate-900">{product.name}</span>
+              </>
+            )}
+          </nav>
         )}
+
 
 
         {error && (
@@ -352,7 +371,7 @@ function ProductPage() {
         )}
 
         {product && (
-          <div className={`grid grid-cols-1 ${isAppShell ? "lg:grid-cols-2 gap-0" : "md:grid-cols-2 gap-8"}`}>
+          <div className={`grid grid-cols-1 items-start ${isAppShell ? "lg:grid-cols-2 gap-0" : "md:grid-cols-[1.1fr_0.9fr] gap-10"}`}>
             <div className={`flex flex-col ${isAppShell ? "gap-0" : "gap-8"}`}>
               <div className={isAppShell ? "px-0 pt-0" : ""}>
                 {(() => {
@@ -463,7 +482,7 @@ function ProductPage() {
               )}
             </div>
 
-            <div className={isAppShell ? "px-4 pt-5 pb-28" : ""}>
+            <div className={isAppShell ? "px-4 pt-5 pb-28" : "md:sticky md:top-24 rounded-[10px] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_-30px_rgba(15,23,42,0.35)]"}>
               <div className={`text-xs font-bold uppercase tracking-widest ${isAppShell ? "text-[#E5484D]" : "text-crimson"} mb-2`}>
 
                 {product.category}
