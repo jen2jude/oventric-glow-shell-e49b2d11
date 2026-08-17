@@ -3890,6 +3890,24 @@ export type Database = {
           following: number
         }[]
       }
+      public_circle_directory: {
+        Args: never
+        Returns: {
+          avatar_hue: string
+          avatar_url: string
+          banner_hue: string
+          category: string
+          cover_url: string
+          created_at: string
+          description: string
+          emoji: string
+          id: string
+          member_count: number
+          name: string
+          post_count: number
+          slug: string
+        }[]
+      }
       purge_expired_stories: { Args: never; Returns: number }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
