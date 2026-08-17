@@ -50,6 +50,7 @@ import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { AdSlot } from "@/components/oventric/ads/AdSlot";
 import { AcademyRecommendations } from "@/components/oventric/AcademyRecommendations";
 import { AppStickyHeader } from "@/components/oventric/AppStickyHeader";
+import { WebAcademy } from "@/components/oventric/desktop/WebAcademy";
 
 function courseDisplayPrice(
   c: { priceUSD: number; originalCurrency: Currency; originalAmount: number; fxSnapshot: any },
@@ -186,10 +187,56 @@ export const Academy = ({ hubMode = false }: { hubMode?: boolean }) => {
     );
   }
 
+  // URL/browser visitors get a dedicated editorial web catalogue instead of the
+  // app-shell layout.
+  if (!isAppShell) {
+    return (
+      <>
+        <WebAcademy
+          courses={courses}
+          enrolled={enrolled}
+          currency={baseCurrency}
+          categories={CATEGORIES}
+          canPublish={!!userId}
+          onOpenCourse={(id) => {
+            setSelectedId(id);
+            setView("course");
+          }}
+          onPublish={() => {
+            setEditingId(undefined);
+            setUseWizard(true);
+            setEditorOpen(true);
+          }}
+        />
+        {editingId ? (
+          <CourseEditorModal
+            open={editorOpen}
+            courseId={editingId}
+            onClose={() => setEditorOpen(false)}
+            onSaved={() => {
+              setEditorOpen(false);
+              setRefreshKey((k) => k + 1);
+            }}
+          />
+        ) : (
+          <CoursePublishWizard
+            open={editorOpen && useWizard}
+            onClose={() => setEditorOpen(false)}
+            onSaved={() => {
+              setEditorOpen(false);
+              setRefreshKey((k) => k + 1);
+            }}
+          />
+        )}
+      </>
+    );
+  }
+
   return (
     <div className={`w-full ${!isAppShell ? "bg-white min-h-screen" : "bg-black min-h-screen"}`}>
       {isAppShell && <AppStickyHeader />}
       <AcademyHero isAppShell={isAppShell} />
+
 
       {isAppShell && (
         <div className="bg-[#0A0A0B] px-4 pt-1 pb-3 sticky top-14 z-30 border-b border-white/5">
