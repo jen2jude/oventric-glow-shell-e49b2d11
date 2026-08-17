@@ -11,7 +11,7 @@ export function SiteFooter({ onSelect, currency, flag }: SiteFooterProps) {
   const year = 2026;
   return (
     <footer className="border-t border-slate-200 bg-[#F7F8FA]">
-      <div className="mx-auto grid w-full max-w-[1440px] grid-cols-2 gap-8 px-5 py-12 sm:px-8 md:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr] lg:gap-10 lg:py-14">
+      <div className="mx-auto grid w-full max-w-[1440px] grid-cols-2 gap-8 px-4 py-12 sm:px-6 lg:px-11 md:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr] lg:gap-10 lg:py-14">
         <div>
           <span className="inline-flex items-center">
             <img loading="lazy" decoding="async" src={logo} alt="Oventric" className="h-6 w-auto object-contain" />

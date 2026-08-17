@@ -170,7 +170,7 @@ export function ProductRails({ onSelect }: { onSelect: (section: string) => void
   if (aiRow.length === 0 && otherRow.length === 0) return null;
 
   return (
-    <section className="mx-auto w-full max-w-[1440px] px-5 pt-12 sm:px-8 sm:pt-16">
+    <section className="mx-auto w-full max-w-[1440px] px-4 pt-12 sm:px-6 lg:px-11 sm:pt-16">
       <div className="flex items-end justify-between">
         <div>
           <div className="web-eyebrow">
