@@ -335,8 +335,8 @@ export function WebMarketplace() {
     <div className="min-h-screen bg-white text-slate-700">
       {/* Editorial hero band */}
       <section className="border-b border-slate-200 bg-gradient-to-br from-slate-50 via-white to-slate-50">
-        <div className="mx-auto grid w-full max-w-[1440px] items-center gap-10 px-4 py-10 sm:px-6 lg:px-11 lg:py-14">
-          <div>
+        <div className="mx-auto grid w-full max-w-[1440px] items-center gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(380px,440px)] lg:gap-14 lg:px-11 lg:py-14">
+          <div className="min-w-0">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-crimson/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.12em] text-crimson">
               Oventric Marketplace
             </span>
