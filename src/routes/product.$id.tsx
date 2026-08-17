@@ -311,7 +311,7 @@ function ProductPage() {
       className={`min-h-screen overflow-x-hidden ${isAppShell ? "bg-[#0A0A0B] text-slate-300" : "oventric-web bg-[#F7F8FA] text-slate-700"}`}
     >
       {!isAppShell && <Header onOpenMessages={() => {}} forceSiteNavbar={!isAppShell} />}
-      <main className={`w-full ${isAppShell ? "max-w-6xl px-0 py-0 gap-0" : "max-w-none px-5 py-6"} mx-auto pb-32`}>
+      <main className={`w-full ${isAppShell ? "max-w-6xl px-0 py-0 gap-0" : "max-w-none px-5 py-6 md:px-8 lg:px-12 xl:px-16"} mx-auto pb-32`}>
         {!isAppShell && (
           <nav className="mb-6 flex items-center gap-1.5 text-[12.5px] font-medium text-slate-500">
             <Link to="/" className="hover:text-crimson">
