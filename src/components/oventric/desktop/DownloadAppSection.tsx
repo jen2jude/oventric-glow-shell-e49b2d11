@@ -1,15 +1,4 @@
-import {
-  LayoutDashboard,
-  Megaphone,
-  Gift,
-  BookOpen,
-  LifeBuoy,
-  Store,
-  Plus,
-  ArrowDownToLine,
-  Target,
-  User,
-} from "lucide-react";
+import { Bell, Search, Filter, Wallet as WalletIcon, ChevronRight, User } from "lucide-react";
 
 import homeIcon from "@/assets/home-3d.png.asset.json";
 import walletIcon from "@/assets/wallet-3d.webp.asset.json";
@@ -17,31 +6,15 @@ import marketIcon from "@/assets/marketplace-3d.png.asset.json";
 import academyIcon from "@/assets/academy-3d.png.asset.json";
 import bountiesIcon from "@/assets/bounties-3d.webp.asset.json";
 import circlesIcon from "@/assets/circles-3d.png.asset.json";
-import messageIcon from "@/assets/message-3d.webp.asset.json";
 
-type Tile = { label: string; img?: string; icon?: typeof LayoutDashboard };
-
-const TILES: Tile[] = [
-  { label: "Feed", img: homeIcon.url },
-  { label: "Market", img: marketIcon.url },
-  { label: "Academy", img: academyIcon.url },
-  { label: "Bounties", img: bountiesIcon.url },
-  { label: "Wallet", img: walletIcon.url },
-  { label: "Circles", img: circlesIcon.url },
-  { label: "Messages", img: messageIcon.url },
-  { label: "Dash", icon: LayoutDashboard },
-  { label: "Ads", icon: Megaphone },
-  { label: "Affiliate", icon: Gift },
-  { label: "Blog", icon: BookOpen },
-  { label: "Help", icon: LifeBuoy },
+const CATEGORIES: { label: string; img: string; glow: string }[] = [
+  { label: "Market", img: marketIcon.url, glow: "rgba(229,72,77,0.35)" },
+  { label: "Academy", img: academyIcon.url, glow: "rgba(59,130,246,0.35)" },
+  { label: "Bounties", img: bountiesIcon.url, glow: "rgba(245,158,11,0.35)" },
+  { label: "Circles", img: circlesIcon.url, glow: "rgba(168,85,247,0.35)" },
+  { label: "Wallet", img: walletIcon.url, glow: "rgba(16,185,129,0.35)" },
+  { label: "Feed", img: homeIcon.url, glow: "rgba(236,72,153,0.35)" },
 ];
-
-const QUICK = [
-  { label: "Sell", icon: Store },
-  { label: "Post", icon: Plus },
-  { label: "Fund", icon: ArrowDownToLine },
-  { label: "Bounty", icon: Target },
-] as const;
 
 export function DownloadAppSection() {
   return (
@@ -66,7 +39,7 @@ export function DownloadAppSection() {
           </span>
 
           <h2 className="mt-5 text-3xl font-bold sm:text-4xl tracking-tight text-slate-900 lg:text-5xl">
-            Your fintech hub, <span className="text-emerald-600">in your pocket.</span>
+            Buy, Sell, Earn &amp; Connect <span className="text-emerald-600">in one App</span>
           </h2>
           <p className="mt-4 text-lg leading-relaxed text-slate-500">
             Download the app to manage your wallet, shop the marketplace, post bounties, and chat
@@ -90,7 +63,7 @@ export function DownloadAppSection() {
           </div>
         </div>
 
-        {/* Phone mockup */}
+        {/* Phone mockup — mirrors the live app home hub */}
         <div className="relative flex justify-center lg:justify-end">
           {/* Floating cards */}
           <div className="app-float-card absolute -left-4 top-8 z-30 hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-xl md:block">
@@ -146,102 +119,135 @@ export function DownloadAppSection() {
             <div className="absolute left-1/2 top-0 z-20 h-6 w-28 -translate-x-1/2 rounded-b-2xl bg-slate-900" />
 
             {/* Screen */}
-            <div className="relative h-[520px] w-full overflow-hidden rounded-[2rem] bg-[#121214] p-3 pt-10 text-slate-200 lg:h-[540px]">
+            <div className="relative h-[520px] w-full overflow-hidden rounded-[2rem] bg-[#0A0A0B] p-3 pt-9 text-slate-200 lg:h-[540px]">
               <div className="app-sheen pointer-events-none absolute inset-0 z-10 rounded-[2rem]" />
-              {/* Identity row */}
+
+              {/* Top bar */}
               <div className="flex items-center gap-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1E1E24] border border-white/10">
-                  <User className="h-4 w-4 text-white" strokeWidth={2.5} />
+                <span className="text-[13px] font-black tracking-tight text-white">
+                  oventric
+                  <span className="text-[#E5484D]">.</span>
                 </span>
-                <div className="min-w-0 flex-1">
-                  <div className="text-[9px] uppercase tracking-wide text-slate-500">
-                    Good morning
-                  </div>
-                  <div className="truncate text-xs font-semibold text-white">Welcome back</div>
-                </div>
-                <span className="inline-flex h-6 items-center rounded-full bg-[#1E1E24] border border-white/10 px-2 text-[10px] font-semibold text-slate-200">
-                  USD
+                <span className="ml-auto flex h-7 w-7 items-center justify-center rounded-full border border-white/5 bg-[#141416]">
+                  <Bell className="h-3.5 w-3.5 text-white/70" strokeWidth={2} />
+                </span>
+                <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-[#141416]">
+                  <User className="h-3.5 w-3.5 text-white/70" strokeWidth={2.5} />
                 </span>
               </div>
 
-              {/* Wallet card */}
-              <div
-                className="mt-3 rounded-2xl border border-emerald-500/25 p-3"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(135deg, rgba(59, 130, 246,0.22) 0%, rgba(20,20,26,0.95) 55%, rgba(20,20,26,1) 100%)",
-                }}
-              >
-                <div className="text-[9px] uppercase tracking-wide text-emerald-300/80">
-                  Main balance
+              {/* Greeting + wallet chip */}
+              <div className="mt-3 flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-[8px] font-medium text-white/40">Good morning, Ada 👋</p>
+                  <p className="mt-1 text-[15px] font-black leading-none tracking-tight text-white">
+                    Discover more.
+                  </p>
+                  <p className="mt-1 text-[8px] font-medium text-white/35">Shop. Connect. Grow.</p>
                 </div>
-                <div className="mt-1 text-lg font-bold text-white tabular-nums">$0.00</div>
-                <div className="mt-2 grid grid-cols-3 gap-1">
-                  {["Cashback", "Bounty", "Escrow"].map((l) => (
-                    <div key={l} className="rounded-[10px] bg-[#1E1E24]/80 p-1 text-center">
-                      <div className="text-[7px] text-slate-500">{l}</div>
-                      <div className="text-[9px] font-semibold text-slate-200">—</div>
+                <div className="w-[92px] shrink-0 rounded-[10px] border border-white/[0.08] bg-[#141416] p-2">
+                  <div className="flex items-start justify-between gap-1">
+                    <div className="min-w-0">
+                      <div className="truncate text-[6px] font-bold uppercase tracking-[0.12em] text-white/35">
+                        Wallet
+                      </div>
+                      <div className="mt-0.5 truncate text-[10px] font-black tracking-tight text-white">
+                        ₦248,900
+                      </div>
+                    </div>
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10">
+                      <WalletIcon className="h-2.5 w-2.5 text-emerald-400" strokeWidth={2} />
+                    </span>
+                  </div>
+                  <div className="mt-1 flex items-center gap-0.5 text-[7px] font-bold text-emerald-400">
+                    View wallet <ChevronRight className="h-2 w-2" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Search */}
+              <div className="mt-3 flex items-center gap-1.5">
+                <div className="relative flex-1">
+                  <Search className="absolute left-2.5 top-1/2 h-3 w-3 -translate-y-1/2 text-white/25" />
+                  <div className="h-8 w-full rounded-full border border-white/5 bg-[#141416] pl-7 pr-3 text-[8px] leading-8 text-white/25">
+                    Search products, shops, people...
+                  </div>
+                </div>
+                <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/5 bg-[#141416]">
+                  <Filter className="h-3 w-3 text-white/40" />
+                </span>
+              </div>
+
+              {/* Hero promo card */}
+              <div className="relative mt-3 overflow-hidden rounded-[10px] border border-white/5 bg-[#141416] p-3">
+                <span
+                  className="pointer-events-none absolute -right-6 -top-8 h-24 w-24 rounded-full blur-2xl"
+                  style={{ background: "rgba(168,85,247,0.45)" }}
+                />
+                <span
+                  className="pointer-events-none absolute -bottom-10 -left-6 h-24 w-24 rounded-full blur-2xl"
+                  style={{ background: "rgba(229,72,77,0.35)" }}
+                />
+                <div className="relative">
+                  <span className="inline-flex rounded-full bg-white/10 px-1.5 py-0.5 text-[6px] font-bold uppercase tracking-widest text-white/70">
+                    Featured
+                  </span>
+                  <p className="mt-1.5 text-[13px] font-black italic uppercase leading-[1.05] tracking-tight text-white">
+                    Discover
+                    <br />
+                    Amazing Things
+                  </p>
+                  <p className="mt-1 text-[7.5px] font-medium text-white/50">
+                    Curated drops from top Oventric sellers.
+                  </p>
+                  <span className="mt-2 inline-flex rounded-full bg-[#E5484D] px-2.5 py-1 text-[7px] font-bold text-white">
+                    Explore now
+                  </span>
+                </div>
+              </div>
+
+              {/* Explore categories */}
+              <div className="mt-3">
+                <div className="flex items-center justify-between px-0.5">
+                  <span className="text-[9px] font-bold text-white">Explore Categories</span>
+                  <span className="text-[7.5px] font-medium text-white/40">See all</span>
+                </div>
+                <div className="mt-2 grid grid-cols-3 gap-1.5">
+                  {CATEGORIES.map((c) => (
+                    <div
+                      key={c.label}
+                      className="relative flex aspect-square flex-col items-center justify-center gap-1 overflow-hidden rounded-[10px] border border-white/5 bg-[#141416]"
+                    >
+                      <span
+                        className="pointer-events-none absolute h-10 w-10 rounded-full blur-lg"
+                        style={{ background: c.glow }}
+                      />
+                      <img
+                        loading="lazy"
+                        decoding="async"
+                        src={c.img}
+                        alt=""
+                        className="relative h-6 w-6 object-contain"
+                      />
+                      <span className="relative text-[7px] font-semibold text-white/70">
+                        {c.label}
+                      </span>
                     </div>
                   ))}
                 </div>
-                <div className="mt-2 flex gap-1">
-                  <span className="flex-1 rounded-xl bg-emerald-500 py-1.5 text-center text-[9px] font-bold text-[#08130f]">
-                    Add
-                  </span>
-                  <span className="flex-1 rounded-xl border border-white/15 bg-[#1E1E24] py-1.5 text-center text-[9px] font-bold text-white">
-                    Withdraw
-                  </span>
+              </div>
+
+              {/* Featured rail teaser */}
+              <div className="mt-3">
+                <div className="flex items-center justify-between px-0.5">
+                  <span className="text-[9px] font-bold text-white">🔥 Featured This Week</span>
+                  <span className="text-[7.5px] font-medium text-white/40">See all</span>
                 </div>
-              </div>
-
-              {/* Quick actions */}
-              <div className="mt-3 grid grid-cols-4 gap-1">
-                {QUICK.map((q) => (
-                  <div key={q.label} className="flex flex-col items-center gap-1">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#1E1E24] border border-white/10">
-                      <q.icon className="h-3.5 w-3.5 text-white" strokeWidth={3} />
-                    </span>
-                    <span className="text-[8px] font-semibold text-slate-300">{q.label}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Feature grid */}
-              <div className="mt-3 grid grid-cols-4 gap-1.5">
-                {TILES.map((t) => {
-                  const Icon = t.icon;
-                  return (
-                    <div key={t.label} className="flex flex-col items-center gap-1">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-b from-emerald-500/25 to-emerald-500/5 border border-white/10">
-                        {t.img ? (
-                          <img loading="lazy" decoding="async"
-                            src={t.img}
-                            alt=""
-                            className="h-5 w-5 object-contain"
-                          />
-                        ) : Icon ? (
-                          <Icon className="h-4 w-4 text-white" strokeWidth={2.5} />
-                        ) : null}
-                      </span>
-                      <span className="text-[7px] font-semibold text-slate-300 text-center leading-none">
-                        {t.label}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Mini rail teaser */}
-              <div className="mt-3 space-y-2">
-                <div className="flex items-center justify-between px-1">
-                  <span className="text-[9px] font-bold text-white">Fresh in the market</span>
-                  <span className="text-[8px] font-semibold text-emerald-400">See all</span>
-                </div>
-                <div className="flex gap-2 overflow-hidden">
-                  {[1, 2, 3].map((i) => (
+                <div className="mt-2 grid grid-cols-3 gap-1.5">
+                  {[0, 1, 2].map((i) => (
                     <div
                       key={i}
-                      className="h-16 w-20 shrink-0 rounded-xl bg-[#1E1E24] border border-white/10"
+                      className="h-14 rounded-[10px] border border-white/5 bg-gradient-to-b from-white/[0.06] to-transparent"
                     />
                   ))}
                 </div>
