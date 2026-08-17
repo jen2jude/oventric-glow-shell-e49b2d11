@@ -50,6 +50,7 @@ import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { AdSlot } from "@/components/oventric/ads/AdSlot";
 import { AcademyRecommendations } from "@/components/oventric/AcademyRecommendations";
 import { AppStickyHeader } from "@/components/oventric/AppStickyHeader";
+import { WebAcademy } from "@/components/oventric/desktop/WebAcademy";
 
 function courseDisplayPrice(
   c: { priceUSD: number; originalCurrency: Currency; originalAmount: number; fxSnapshot: any },
