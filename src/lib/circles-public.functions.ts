@@ -33,12 +33,16 @@ export const getPublicCircleDirectory = createServerFn({ method: "GET" }).handle
     const { data, error } = await sb.rpc("public_circle_directory");
     if (error) throw error;
 
+    // Circle branding lives in private buckets; sign it with the admin client
+    // (only rows the public directory already exposes reach this point).
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
     const sign = async (bucket: string, value: unknown): Promise<string | null> => {
       const v = typeof value === "string" && value ? value : null;
       if (!v) return null;
       if (/^https?:\/\//i.test(v) || v.startsWith("data:")) return v;
       try {
-        const res = await sb.storage.from(bucket).createSignedUrl(v, 60 * 60 * 24 * 7);
+        const res = await supabaseAdmin.storage.from(bucket).createSignedUrl(v, 60 * 60 * 24 * 7);
         return res.data?.signedUrl ?? null;
       } catch {
         return null;
