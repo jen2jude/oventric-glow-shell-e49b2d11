@@ -81,7 +81,10 @@ function fmtPeers(n: number) {
 /* ============================ Root ============================ */
 
 export function CirclesHub() {
+  const isAppShell = useIsAppShell();
+  const [getAppOpen, setGetAppOpen] = useState(false);
   const { isAuthenticated, openGate } = useAuthGate();
+
   const catalogFn = useServerFn(getCircleCatalog);
   const catalogQ = useQuery({
     queryKey: ["circle-catalog"],
