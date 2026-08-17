@@ -30,6 +30,8 @@ import { listMyBountyApplicationIds } from "@/lib/bounties.functions";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 import { AppStickyHeader } from "@/components/oventric/AppStickyHeader";
+import { WebBounties } from "@/components/oventric/desktop/WebBounties";
+import { GetAppModal } from "@/components/oventric/GetAppModal";
 
 type Category = "all" | "frontend" | "database" | "api" | "uiux";
 
@@ -120,6 +122,7 @@ export function Bounties() {
   const [bountyAds, setBountyAds] = useState<BountyAd[]>([]);
   const [adsLoading, setAdsLoading] = useState(true);
   const [postOpen, setPostOpen] = useState(false);
+  const [getAppOpen, setGetAppOpen] = useState(false);
   const [refreshTick, setRefreshTick] = useState(0);
   const [highlightId, setHighlightId] = useState<string | null>(null);
   const [appliedIds, setAppliedIds] = useState<Set<string>>(new Set());
