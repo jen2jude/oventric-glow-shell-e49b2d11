@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { SiteFooterAuto } from "@/components/oventric/desktop/SiteFooterAuto";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -755,6 +756,7 @@ function ShopPage() {
           onSaved={() => setReloadKey((k) => k + 1)}
         />
       )}
+      {!isAppShell && <SiteFooterAuto />}
     </div>
   );
 }

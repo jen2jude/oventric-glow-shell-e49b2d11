@@ -4,6 +4,7 @@ import { HubMobileHeader } from "@/components/oventric/HubMobileHeader";
 import { MessagesDrawer } from "@/components/oventric/MessagesDrawer";
 import { useIsDesktop } from "@/hooks/use-desktop";
 import { useIsAppShell } from "@/hooks/use-launch-context";
+import { SiteFooterAuto } from "@/components/oventric/desktop/SiteFooterAuto";
 
 /**
  * Shared site chrome for standalone routes (blog, profile, etc.).
@@ -56,6 +57,7 @@ export function PublicChrome({
       <main className="flex-1 min-w-0 w-full max-w-full overflow-x-hidden pb-20 md:pb-0">
         {children}
       </main>
+      <SiteFooterAuto />
       <MessagesDrawer open={messagesOpen} onClose={() => setMessagesOpen(false)} />
     </div>
   );

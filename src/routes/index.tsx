@@ -19,6 +19,7 @@ import { CirclesHub } from "@/components/oventric/CirclesHub";
 import { HomeHub } from "@/components/oventric/HomeHub";
 import { DesktopHome } from "@/components/oventric/desktop/DesktopHome";
 import { DesktopAppSidebar } from "@/components/oventric/desktop/DesktopAppSidebar";
+import { SiteFooterAuto } from "@/components/oventric/desktop/SiteFooterAuto";
 import { SiteNavbar } from "@/components/oventric/desktop/SiteNavbar";
 import { MarketplaceHeader } from "@/components/oventric/desktop/MarketplaceHeader";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
@@ -387,6 +388,7 @@ function Index() {
             className={`flex-1 min-w-0 min-h-0 ${isMessages ? "overflow-hidden" : "overflow-y-auto"} ${desktopLanding ? "" : "pb-20 md:pb-0"} ${(!isAppShell || (isDesktop && (active === "Marketplace" || active === "Academy" || active === "Bounties" || active === "Circles" || active === "Feed" || active === "Messages"))) ? "bg-white" : ""}`}
           >
             {view}
+            {desktopLanding && active !== "Home" && <SiteFooterAuto />}
           </main>
         </div>
         {isAppShell && !desktopLanding && (
