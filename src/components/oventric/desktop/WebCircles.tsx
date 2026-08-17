@@ -75,10 +75,10 @@ function CircleCard({ c, onGated }: { c: PublicCircle; onGated: () => void }) {
         </p>
         <div className="mt-4 flex items-center gap-4 text-xs font-bold text-slate-500">
           <span className="inline-flex items-center gap-1.5">
-            <Users className="h-3.5 w-3.5" /> {fmt(c.memberCount)} members
+            <Users className="h-3.5 w-3.5" /> {fmt(c.memberCount)} {c.memberCount === 1 ? "member" : "members"}
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <MessageCircle className="h-3.5 w-3.5" /> {fmt(c.postCount)} posts
+            <MessageCircle className="h-3.5 w-3.5" /> {fmt(c.postCount)} {c.postCount === 1 ? "post" : "posts"}
           </span>
         </div>
         <button
@@ -222,7 +222,7 @@ export function WebCircles({ onGated }: { onGated: () => void }) {
                   {spotlight.emoji} {spotlight.name}
                 </p>
                 <p className="mt-2 text-2xl font-black text-crimson">
-                  {fmt(spotlight.memberCount)} members
+                  {fmt(spotlight.memberCount)} {spotlight.memberCount === 1 ? "member" : "members"}
                 </p>
               </div>
             )}
