@@ -32,13 +32,28 @@ export const getPublicCircleDirectory = createServerFn({ method: "GET" }).handle
     });
     const { data, error } = await sb.rpc("public_circle_directory");
     if (error) throw error;
-    return ((data ?? []) as Record<string, unknown>[]).map((r) => ({
+
+    const sign = async (bucket: string, value: unknown): Promise<string | null> => {
+      const v = typeof value === "string" && value ? value : null;
+      if (!v) return null;
+      if (/^https?:\/\//i.test(v) || v.startsWith("data:")) return v;
+      try {
+        const res = await sb.storage.from(bucket).createSignedUrl(v, 60 * 60 * 24 * 7);
+        return res.data?.signedUrl ?? null;
+      } catch {
+        return null;
+      }
+    };
+
+    const rows = (data ?? []) as Record<string, unknown>[];
+    return Promise.all(
+      rows.map(async (r) => ({
       id: String(r.id),
       name: String(r.name ?? ""),
       slug: String(r.slug ?? ""),
       description: (r.description as string | null) ?? null,
-      avatarUrl: (r.avatar_url as string | null) ?? null,
-      coverUrl: (r.cover_url as string | null) ?? null,
+      avatarUrl: await sign("circle-avatars", r.avatar_url),
+      coverUrl: await sign("circle-covers", r.cover_url),
       category: String(r.category ?? "Community"),
       emoji: String(r.emoji ?? "◎"),
       bannerHue: String(r.banner_hue ?? "#E5484D"),
@@ -46,6 +61,7 @@ export const getPublicCircleDirectory = createServerFn({ method: "GET" }).handle
       createdAt: String(r.created_at ?? new Date().toISOString()),
       memberCount: Number(r.member_count ?? 0),
       postCount: Number(r.post_count ?? 0),
-    }));
+      })),
+    );
   },
 );
