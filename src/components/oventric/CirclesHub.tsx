@@ -144,7 +144,7 @@ export function CirclesHub() {
           open={getAppOpen}
           onClose={() => setGetAppOpen(false)}
           from="circles"
-          title="Circles &amp; Guilds live in the app"
+          title="Circles & Guilds live in the app"
           description="Browsing guilds is open on the web. Joining, the code-of-conduct pledge, guild chat, shared resources and circle bounties all happen inside the Oventric app."
         />
       </>
