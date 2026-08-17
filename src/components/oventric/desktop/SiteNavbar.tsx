@@ -41,7 +41,7 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
     <div className="flex flex-col w-full">
       {/* Main Universal Header */}
       <header className={`sticky top-0 z-50 w-full transition-all duration-200 ${solid ? "web-glass shadow-[0_10px_30px_-24px_rgba(15,23,42,0.6)]" : "border-b border-transparent bg-white/70 backdrop-blur-md"}`}>
-        <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center gap-4 px-4 sm:px-6 lg:h-20">
+        <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center gap-4 px-4 sm:px-6 lg:h-20 lg:px-11">
           {/* Logo */}
           <button
             type="button"
