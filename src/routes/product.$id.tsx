@@ -24,6 +24,7 @@ import {
   Copy,
 } from "lucide-react";
 import { toast } from "sonner";
+import { SiteFooterAuto } from "@/components/oventric/desktop/SiteFooterAuto";
 import { Header } from "@/components/oventric/Header";
 import {
   Accordion,
@@ -825,6 +826,7 @@ function ProductPage() {
           </div>
         )}
       </main>
+      {!isAppShell && <SiteFooterAuto />}
       {product && product.kind !== "physical" && (
         <ProfileMessageModal
           open={chatOpen}
