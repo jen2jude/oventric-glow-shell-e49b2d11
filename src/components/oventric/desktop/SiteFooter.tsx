@@ -54,7 +54,7 @@ export function SiteFooter({ onSelect, currency, flag }: SiteFooterProps) {
       </div>
 
       <div className="border-t border-slate-200">
-        <div className="mx-auto flex w-full max-w-[1440px] flex-col items-center justify-between gap-2 px-5 py-5 text-center sm:flex-row sm:px-8 sm:text-left text-xs text-slate-500">
+        <div className="mx-auto flex w-full max-w-[1440px] flex-col items-center justify-between gap-2 px-4 py-5 text-center sm:flex-row sm:px-6 lg:px-11 sm:text-left text-xs text-slate-500">
           <span>&copy; {year} Oventric. All rights reserved.</span>
           <span>Built for Africa&apos;s builders.</span>
         </div>

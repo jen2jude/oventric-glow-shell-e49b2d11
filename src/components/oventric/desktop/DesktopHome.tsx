@@ -363,7 +363,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
         {/* Left readability gradient — text overlaps the collage */}
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-full bg-gradient-to-r from-white via-white/[0.94] to-transparent lg:block lg:w-[52%] xl:w-[48%]" />
 
-        <div className="relative z-20 mx-auto grid h-full w-full max-w-[1440px] grid-cols-1 items-center px-5 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
+        <div className="relative z-20 mx-auto grid h-full w-full max-w-[1440px] grid-cols-1 items-center px-4 py-8 sm:px-6 sm:py-12 lg:px-11 lg:py-16">
           <div className="max-w-2xl">
             <span className="web-eyebrow">
               <Sparkles className="h-3.5 w-3.5" /> 2% cashback on every purchase
@@ -468,7 +468,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
 
       {/* Trust strip */}
       <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto grid w-full max-w-[1440px] grid-cols-1 gap-6 px-5 py-8 sm:grid-cols-2 sm:px-8 lg:grid-cols-4">
+        <div className="mx-auto grid w-full max-w-[1440px] grid-cols-1 gap-6 px-4 py-8 sm:grid-cols-2 sm:px-6 lg:px-11 lg:grid-cols-4">
           {[
             {
               Icon: ShieldCheck,
@@ -597,7 +597,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
 
       {/* Live rails */}
       <section className="hp-dark border-t border-slate-200">
-        <div className="mx-auto w-full max-w-[1440px] space-y-12 px-5 py-14 sm:space-y-16 sm:px-8 sm:py-20 lg:py-24">
+        <div className="mx-auto w-full max-w-[1440px] space-y-12 px-4 py-14 sm:space-y-16 sm:px-6 lg:px-11 sm:py-20 lg:py-24">
           <CardGrid
             title="Fresh in the market"
             items={products}
