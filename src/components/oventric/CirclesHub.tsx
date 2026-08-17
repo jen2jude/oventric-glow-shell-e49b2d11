@@ -52,6 +52,9 @@ import {
   isImageReaction,
 } from "@/components/oventric/feed/Reactions";
 import { setReaction as setReactionFn, type ReactionType } from "@/lib/posts.functions";
+import { useIsAppShell } from "@/hooks/use-launch-context";
+import { GetAppModal } from "@/components/oventric/GetAppModal";
+import { WebCircles } from "@/components/oventric/desktop/WebCircles";
 
 const DEFAULT_CATEGORIES = [
   "SaaS Builders",
@@ -132,6 +135,21 @@ export function CirclesHub() {
       return catOk && qOk;
     });
   }, [catalog, activeCategory, query]);
+
+  if (!isAppShell) {
+    return (
+      <>
+        <WebCircles onGated={() => setGetAppOpen(true)} />
+        <GetAppModal
+          open={getAppOpen}
+          onClose={() => setGetAppOpen(false)}
+          from="circles"
+          title="Circles &amp; Guilds live in the app"
+          description="Browsing guilds is open on the web. Joining, the code-of-conduct pledge, guild chat, shared resources and circle bounties all happen inside the Oventric app."
+        />
+      </>
+    );
+  }
 
   if (openSlug) {
     return <CircleWorkspace slug={openSlug} onBack={() => setOpenSlug(null)} />;
