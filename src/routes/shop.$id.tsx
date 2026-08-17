@@ -286,7 +286,7 @@ function ShopPage() {
   return (
     <div className={`min-h-screen bg-[#0A0A0B] text-white ${!isAppShell ? "oventric-web" : ""}`}>
       {/* Top bar */}
-      <div className="sticky top-0 z-30 flex items-center gap-3 bg-[#0A0A0B]/90 px-4 py-3 backdrop-blur">
+      <div className="sticky top-0 z-30 flex items-center gap-3 bg-[#0A0A0B]/90 px-4 py-3 backdrop-blur md:px-8 lg:px-12">
         <button
           type="button"
           onClick={() =>
@@ -314,7 +314,7 @@ function ShopPage() {
         )}
       </div>
 
-      <div className="mx-auto w-full max-w-[720px] pb-20">
+      <div className="mx-auto w-full max-w-[720px] px-4 pb-20 md:max-w-[900px] md:px-8 lg:max-w-[1000px] lg:px-12">
         {/* Cover */}
         <div className="relative h-48 w-full overflow-hidden sm:h-64">
           {shop?.coverUrl ? (
@@ -330,7 +330,7 @@ function ShopPage() {
         </div>
 
         {/* Identity */}
-        <div className="-mt-12 px-5">
+        <div className="-mt-12">
           <div className="relative h-24 w-24 overflow-hidden rounded-2xl border border-white/10 bg-[#141417]">
             {shop?.logoUrl ? (
               <img src={shop.logoUrl} alt="" className="h-full w-full object-cover" />
@@ -402,7 +402,7 @@ function ShopPage() {
           </div>
 
           {/* Tabs */}
-          <nav className="mt-5 flex items-center gap-1 overflow-x-auto border-b border-white/10 md:sticky md:top-[57px] md:z-20 md:-mx-5 md:border-b-0 md:px-5 md:web-glass">
+          <nav className="mt-5 flex items-center gap-1 overflow-x-auto border-b border-white/10 md:sticky md:top-[57px] md:z-20 md:-mx-8 md:border-b-0 md:px-8 md:web-glass lg:-mx-12 lg:px-12">
             {(
               [
                 ["shop", "Shop"],
