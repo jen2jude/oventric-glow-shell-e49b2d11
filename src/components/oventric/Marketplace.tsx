@@ -19,6 +19,7 @@ import { GridCard, Rail, RowCard, ShopCard, TileCard, type SellerLite } from "./
 import { visualForCategory } from "./marketplace-discovery/utils";
 import { ExploreCategories } from "./hub/ExploreCategories";
 import { AppStickyHeader } from "@/components/oventric/AppStickyHeader";
+import { WebMarketplace } from "@/components/oventric/desktop/WebMarketplace";
 
 
 type Mode = "all" | "digital" | "physical";
@@ -39,7 +40,13 @@ interface Discovery {
   categoryCounts: Record<string, number>;
 }
 
+/** Routes to the dedicated web storefront for URL visitors, app grid for the shell. */
 export function Marketplace() {
+  const isAppShell = useIsAppShell();
+  return isAppShell ? <AppMarketplace /> : <WebMarketplace />;
+}
+
+function AppMarketplace() {
   const isAppShell = useIsAppShell();
   const { require } = useOnboarding();
   const navigate = useNavigate();
