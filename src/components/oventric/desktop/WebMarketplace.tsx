@@ -322,7 +322,7 @@ export function WebMarketplace() {
     <div className="min-h-screen bg-white text-slate-700">
       {/* Editorial hero band */}
       <section className="border-b border-slate-200 bg-gradient-to-br from-slate-50 via-white to-slate-50">
-        <div className="mx-auto grid max-w-none items-center gap-10 px-5 py-10 lg:grid-cols-[1.1fr_0.9fr] lg:py-14">
+        <div className="mx-auto grid max-w-none items-center gap-10 px-5 py-10 md:px-8 lg:px-12 lg:py-14 xl:px-16">
           <div>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-crimson/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.12em] text-crimson">
               Oventric Marketplace
@@ -390,7 +390,7 @@ export function WebMarketplace() {
       {/* Top sellers strip */}
       {sellers.length > 0 && (
         <section className="border-b border-slate-200 bg-white">
-          <div className="mx-auto flex max-w-none items-center gap-6 overflow-x-auto px-5 py-4 scrollbar-none">
+          <div className="mx-auto flex max-w-none items-center gap-6 overflow-x-auto px-5 py-4 scrollbar-none md:px-8 lg:px-12 xl:px-16">
             <span className="shrink-0 text-[11px] font-black uppercase tracking-[0.14em] text-slate-400">
               Top sellers
             </span>
@@ -416,7 +416,7 @@ export function WebMarketplace() {
       )}
 
       {/* Catalogue */}
-      <div className="mx-auto max-w-none px-5 py-8">
+      <div className="mx-auto max-w-none px-5 py-8 md:px-8 lg:px-12 xl:px-16">
         <div className="grid gap-8 lg:grid-cols-[248px_minmax(0,1fr)]">
           <aside className="hidden lg:block">
             <div className="sticky top-24">{filterPanel}</div>
