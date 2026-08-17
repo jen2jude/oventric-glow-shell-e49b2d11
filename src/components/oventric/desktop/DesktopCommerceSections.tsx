@@ -33,7 +33,7 @@ const PILLARS = [
 
 export function TradeSecurelyBanner({ onLearnMore }: { onLearnMore: () => void }) {
   return (
-    <section className="mx-auto w-full max-w-none px-4 pt-10 sm:px-8 sm:pt-20">
+    <section className="mx-auto w-full max-w-[1440px] px-4 pt-10 sm:px-6 lg:px-11 sm:pt-20">
       <div className="relative overflow-hidden rounded-2xl bg-[linear-gradient(110deg,#6d7cf0_0%,#8b7bf0_45%,#c58ce8_100%)] p-6 sm:rounded-[28px] sm:p-10 lg:pr-[360px]">
         <div className="flex items-start gap-4">
           <div className="flex-1">
@@ -170,7 +170,7 @@ export function ProductRails({ onSelect }: { onSelect: (section: string) => void
   if (aiRow.length === 0 && otherRow.length === 0) return null;
 
   return (
-    <section className="mx-auto w-full max-w-none px-5 pt-12 sm:px-8 sm:pt-16">
+    <section className="mx-auto w-full max-w-[1440px] px-4 pt-12 sm:px-6 lg:px-11 sm:pt-16">
       <div className="flex items-end justify-between">
         <div>
           <div className="web-eyebrow">
@@ -216,7 +216,7 @@ const METHODS = [
 export function SecuredPayments() {
   return (
     <section className="border-t border-slate-200 bg-white">
-      <div className="mx-auto w-full max-w-none px-5 py-12 text-center sm:px-8 sm:py-16">
+      <div className="mx-auto w-full max-w-[1440px] px-4 py-12 text-center sm:px-6 lg:px-11 sm:py-16">
         <div className="web-eyebrow">
           <Lock className="h-3.5 w-3.5 shrink-0" strokeWidth={2.6} /> Secured payments
         </div>
@@ -231,7 +231,7 @@ export function SecuredPayments() {
 
       {/* Solid tinted band — logos only, not interactive */}
       <div aria-hidden={false} className="w-full bg-[#EFEDF4] py-8">
-        <ul className="mx-auto flex w-full max-w-none list-none flex-wrap items-center justify-center gap-x-8 gap-y-6 px-5 sm:gap-x-14 sm:gap-y-7 sm:px-8">
+        <ul className="mx-auto flex w-full max-w-[1440px] list-none flex-wrap items-center justify-center gap-x-8 gap-y-6 px-4 sm:gap-x-14 sm:gap-y-7 sm:px-6 lg:px-11">
           {METHODS.map(({ name, Mark }) => (
             <li key={name} title={name} className="pointer-events-none flex items-center">
               <Mark />

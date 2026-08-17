@@ -27,8 +27,8 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
   return (
     <div className="flex flex-col w-full">
       {/* Top Utility Bar (Black) */}
-      <div className="bg-black text-white py-3 px-4 md:px-8 lg:px-12 xl:px-16 hidden md:block">
-        <div className="mx-auto max-w-none flex items-center justify-between text-[11px] font-bold">
+      <div className="bg-black text-white py-3 px-4 sm:px-6 lg:px-11 hidden md:block">
+        <div className="mx-auto max-w-[1440px] flex items-center justify-between text-[11px] font-bold">
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-1.5 text-emerald-400">
               <Truck className="w-3.5 h-3.5" /> Free shipping on all orders
@@ -48,7 +48,7 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
 
       {/* Main Header (White) */}
       <header className="web-glass sticky top-0 z-40">
-        <div className="mx-auto flex h-16 w-full max-w-none items-center gap-4 px-4 sm:px-6 md:px-8 lg:h-20 lg:gap-8 lg:px-12 xl:px-16">
+        <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center gap-4 px-4 sm:px-6 md:px-8 lg:h-20 lg:gap-8 lg:px-12 xl:px-16">
           {/* Logo */}
           <button
             type="button"

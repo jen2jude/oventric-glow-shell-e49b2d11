@@ -363,7 +363,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
         {/* Left readability gradient — text overlaps the collage */}
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-full bg-gradient-to-r from-white via-white/[0.94] to-transparent lg:block lg:w-[52%] xl:w-[48%]" />
 
-        <div className="relative z-20 mx-auto grid h-full w-full max-w-none grid-cols-1 items-center px-5 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
+        <div className="relative z-20 mx-auto grid h-full w-full max-w-[1440px] grid-cols-1 items-center px-4 py-8 sm:px-6 sm:py-12 lg:px-11 lg:py-16">
           <div className="max-w-2xl">
             <span className="web-eyebrow">
               <Sparkles className="h-3.5 w-3.5" /> 2% cashback on every purchase
@@ -452,7 +452,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
 
       <section className="border-y border-slate-200 bg-white">
 
-        <div className="mx-auto grid w-full max-w-none grid-cols-2 gap-6 px-5 py-10 sm:px-8 md:grid-cols-4 md:gap-8 md:py-12">
+        <div className="mx-auto grid w-full max-w-[1440px] grid-cols-2 gap-6 px-4 py-10 sm:px-6 lg:px-11 md:grid-cols-4 md:gap-8 md:py-12">
           {[
             { v: counts.products, l: "Live products" },
             { v: counts.courses, l: "Courses to learn" },
@@ -468,7 +468,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
 
       {/* Trust strip */}
       <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto grid w-full max-w-none grid-cols-1 gap-6 px-5 py-8 sm:grid-cols-2 sm:px-8 lg:grid-cols-4">
+        <div className="mx-auto grid w-full max-w-[1440px] grid-cols-1 gap-6 px-4 py-8 sm:grid-cols-2 sm:px-6 lg:px-11 lg:grid-cols-4">
           {[
             {
               Icon: ShieldCheck,
@@ -497,7 +497,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
       </section>
 
       {/* Quick navigation — mirrors the app hub's glowing tile grid */}
-      <section className="mx-auto w-full max-w-none px-5 pt-10 sm:px-8 sm:pt-14">
+      <section className="mx-auto w-full max-w-[1440px] px-4 pt-10 sm:px-6 lg:px-11 sm:pt-14">
         <span className="web-eyebrow">Jump straight in</span>
         <h2 className="web-accent-underline mt-3 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
           The whole ecosystem, one tap away
@@ -531,7 +531,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
 
       {/* Explore categories */}
       {catList.length > 0 && (
-        <section className="mx-auto w-full max-w-none px-5 pt-14 sm:px-8 sm:pt-20">
+        <section className="mx-auto w-full max-w-[1440px] px-4 pt-14 sm:px-6 lg:px-11 sm:pt-20">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-4xl">
               Explore categories
@@ -597,7 +597,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
 
       {/* Live rails */}
       <section className="hp-dark border-t border-slate-200">
-        <div className="mx-auto w-full max-w-none space-y-12 px-5 py-14 sm:space-y-16 sm:px-8 sm:py-20 lg:py-24">
+        <div className="mx-auto w-full max-w-[1440px] space-y-12 px-4 py-14 sm:space-y-16 sm:px-6 lg:px-11 sm:py-20 lg:py-24">
           <CardGrid
             title="Fresh in the market"
             items={products}
@@ -611,7 +611,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
       <TradeSecurelyBanner onLearnMore={() => onSelect("Help")} />
 
       {/* Feature blocks */}
-      <section className="mx-auto w-full max-w-none px-5 py-14 sm:px-8 sm:py-20 lg:py-24">
+      <section className="mx-auto w-full max-w-[1440px] px-4 py-14 sm:px-6 lg:px-11 sm:py-20 lg:py-24">
         <h2 className="max-w-2xl text-2xl font-bold leading-tight tracking-tight text-slate-900 sm:text-4xl">
           Everything you need to build an income online.
         </h2>
@@ -654,7 +654,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
 
       {/* How it works */}
       <section className="hp-dark border-y border-slate-200">
-        <div className="mx-auto w-full max-w-none px-5 py-14 sm:px-8 sm:py-20 lg:py-24">
+        <div className="mx-auto w-full max-w-[1440px] px-4 py-14 sm:px-6 lg:px-11 sm:py-20 lg:py-24">
           <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             How it works
           </h2>
@@ -702,7 +702,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
 
       {/* Social connect */}
       <section className="border-t border-slate-200 bg-white">
-        <div className="mx-auto flex w-full max-w-none flex-col items-center justify-between gap-6 px-5 py-10 sm:px-8 md:flex-row">
+        <div className="mx-auto flex w-full max-w-[1440px] flex-col items-center justify-between gap-6 px-4 py-10 sm:px-6 lg:px-11 md:flex-row">
           <div>
             <h3 className="text-lg font-bold text-slate-900">Follow Oventric</h3>
             <p className="mt-1 text-sm text-slate-500">

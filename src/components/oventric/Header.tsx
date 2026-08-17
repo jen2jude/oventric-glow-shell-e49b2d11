@@ -245,7 +245,7 @@ export function Header({
       <header
         className={`sticky top-0 z-40 w-full bg-white border-b border-slate-200 transition-colors duration-200`}
       >
-        <div className="mx-auto flex h-16 w-full max-w-none items-center gap-4 px-4 sm:px-6">
+        <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center gap-4 px-4 sm:px-6 lg:px-11">
           <Link to="/" aria-label="Oventric home" className="shrink-0">
             <ResponsiveImage
               src={logoDark}

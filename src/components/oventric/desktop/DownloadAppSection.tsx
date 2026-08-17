@@ -54,7 +54,7 @@ export function DownloadAppSection() {
         }}
       />
 
-      <div className="relative mx-auto grid w-full max-w-none grid-cols-1 items-center gap-12 px-5 py-14 sm:px-8 sm:py-20 lg:grid-cols-2 lg:py-24">
+      <div className="relative mx-auto grid w-full max-w-[1440px] grid-cols-1 items-center gap-12 px-4 py-14 sm:px-6 lg:px-11 sm:py-20 lg:grid-cols-2 lg:py-24">
         {/* Copy + badges */}
         <div className="max-w-lg">
           <span className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
