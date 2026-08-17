@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 
@@ -26,6 +26,7 @@ import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { useIsDesktop } from "@/hooks/use-desktop";
 import { useIsAppShell, useLaunchContext } from "@/hooks/use-launch-context";
 import { AppOnlyScreen } from "@/lib/app-gate";
+import { GetAppModal } from "@/components/oventric/GetAppModal";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useSectionLiveCounter } from "@/lib/useSectionLiveCounter";
 import { getMyFullProfile } from "@/lib/profiles.functions";
@@ -67,13 +68,13 @@ function Index() {
   const [name, setName] = useState<string>("");
   const [q, setQ] = useState("");
   const [returnedToHub, setReturnedToHub] = useState(false);
+  const [getAppOpen, setGetAppOpen] = useState(false);
   const prevActiveRef = useRef<string | null>(null);
 
   const launchCtx = useLaunchContext();
   const { require, fullName, storeName, country, baseCurrency } = useOnboarding();
   const { isAuthenticated } = useAuthGate();
   const loadProfile = useServerFn(getMyFullProfile);
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -136,7 +137,7 @@ function Index() {
   const handleCreate = (choice?: ChoiceKey) => {
     // Publishing (products, bounties, courses, posts) is an app-shell flow.
     if (typeof window !== "undefined" && launchCtx === "browser") {
-      navigate({ to: "/get-app", search: { from: "create" } });
+      setGetAppOpen(true);
       return;
     }
     return require(
@@ -412,6 +413,7 @@ function Index() {
           setCreateChoice(null);
         }}
       />
+      <GetAppModal open={getAppOpen} onClose={() => setGetAppOpen(false)} from="create" />
       <MessagesDrawer
         open={messagesOpen}
         onClose={() => {
