@@ -136,7 +136,7 @@ function Index() {
   const handleCreate = (choice?: ChoiceKey) => {
     // Publishing (products, bounties, courses, posts) is an app-shell flow.
     if (typeof window !== "undefined" && launchCtx === "browser") {
-      navigate({ to: "/get-app", search: { from: "create" } });
+      setGetAppOpen(true);
       return;
     }
     return require(
