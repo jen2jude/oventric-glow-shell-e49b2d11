@@ -440,6 +440,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
           />
 
         </div>
+        </div>
       </section>
 
       {/* Live social proof — Top Sellers + community activity, straight under the fold */}
