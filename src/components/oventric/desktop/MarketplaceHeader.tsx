@@ -27,7 +27,7 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
   return (
     <div className="flex flex-col w-full">
       {/* Top Utility Bar (Black) */}
-      <div className="bg-black text-white py-3 px-4 md:px-8 lg:px-12 xl:px-16 hidden md:block">
+      <div className="bg-black text-white py-3 px-4 sm:px-6 lg:px-11 hidden md:block">
         <div className="mx-auto max-w-[1440px] flex items-center justify-between text-[11px] font-bold">
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-1.5 text-emerald-400">
