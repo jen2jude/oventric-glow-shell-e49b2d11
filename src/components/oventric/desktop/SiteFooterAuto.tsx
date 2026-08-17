@@ -1,5 +1,5 @@
 import { SiteFooter } from "@/components/oventric/desktop/SiteFooter";
-import { useOnboarding } from "@/lib/onboarding/OnboardingProvider";
+import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { COUNTRY_META } from "@/lib/currency/africa";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 
