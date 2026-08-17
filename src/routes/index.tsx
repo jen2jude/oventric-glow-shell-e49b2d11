@@ -414,6 +414,7 @@ function Index() {
           setCreateChoice(null);
         }}
       />
+      <GetAppModal open={getAppOpen} onClose={() => setGetAppOpen(false)} from="create" />
       <MessagesDrawer
         open={messagesOpen}
         onClose={() => {
