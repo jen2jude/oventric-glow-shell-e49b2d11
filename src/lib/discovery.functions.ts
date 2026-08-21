@@ -28,6 +28,9 @@ export interface DiscoveryProduct {
   coverUrl: string | null;
   hue: string;
   vendor: string;
+  originalCurrency: string;
+  originalAmount: number;
+  fxSnapshot: number | null;
 }
 
 export interface DiscoveryAd {
@@ -120,7 +123,7 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
         .limit(25),
       sb
         .from("products")
-        .select("id, name, category, price_usd, cover_path, hue, vendor, promoted, reviews, rating")
+        .select("id, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, hue, vendor, promoted, reviews, rating")
         .order("promoted", { ascending: false })
         .order("reviews", { ascending: false })
         .order("rating", { ascending: false })
@@ -258,6 +261,9 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
       coverUrl: pCovers[i],
       hue: (p.hue as string) ?? "from-emerald-500 to-teal-600",
       vendor: (p.vendor as string) ?? "",
+      originalCurrency: (p.original_currency as string) ?? "USD",
+      originalAmount: Number(p.original_amount ?? p.price_usd ?? 0),
+      fxSnapshot: p.fx_snapshot == null ? null : Number(p.fx_snapshot),
     }));
     const products = shuffle(productsAll).slice(0, 10);
 
@@ -346,7 +352,7 @@ export const getAcademyRecommendations = createServerFn({ method: "GET" }).handl
       supabaseAdmin.from("course_enrollments").select("course_id"),
       sb
         .from("products")
-        .select("id, name, category, price_usd, cover_path, hue, vendor, kind, status, reviews, rating, promoted")
+        .select("id, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, hue, vendor, kind, status, reviews, rating, promoted")
         .eq("status", "active")
         .order("promoted", { ascending: false })
         .order("reviews", { ascending: false })
@@ -408,6 +414,9 @@ export const getAcademyRecommendations = createServerFn({ method: "GET" }).handl
       coverUrl: pCovers[i],
       hue: p.hue ?? "from-emerald-500 to-teal-600",
       vendor: p.vendor ?? "",
+      originalCurrency: p.original_currency ?? "USD",
+      originalAmount: Number(p.original_amount ?? p.price_usd ?? 0),
+      fxSnapshot: p.fx_snapshot == null ? null : Number(p.fx_snapshot),
     }));
     // Split by kind to keep the mix balanced
     const digital = pRows.map((p: any, i: number) => ({ p: productsAll[i], kind: p.kind }))
