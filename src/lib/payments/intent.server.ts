@@ -118,7 +118,8 @@ export async function buildPaymentIntent(
   // Cashback Wallet spend — debited BEFORE the gateway charge is created so
   // the charge amount is reduced. Refunded if the payment never settles.
   let cashbackAppliedUSD = 0;
-  const requestedCB = Math.max(0, Number(data.applyCashbackUSD ?? 0));
+  // A coupon purchase can never be combined with cashback spend.
+  const requestedCB = discountUSD > 0 ? 0 : Math.max(0, Number(data.applyCashbackUSD ?? 0));
   if (requestedCB > 0) {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: wRow } = await supabaseAdmin

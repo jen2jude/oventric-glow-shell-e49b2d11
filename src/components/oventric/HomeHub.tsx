@@ -114,7 +114,15 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
 
   const [name, setName] = useState<string>(fullName || storeName || "");
   const [products, setProducts] = useState<
-    Array<{ id: string; title: string; coverUrl: string | null; priceUsd: number }>
+    Array<{
+      id: string;
+      title: string;
+      coverUrl: string | null;
+      priceUsd: number;
+      originalCurrency: string;
+      originalAmount: number;
+      fxSnapshot: number | null;
+    }>
   >([]);
   const [courses, setCourses] = useState<
     Array<{ id: string; title: string; coverUrl: string | null; priceUsd: number; isFree: boolean }>
@@ -160,7 +168,17 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
     loadDiscovery()
       .then((r) => {
         if (cancelled) return;
-        setProducts((r?.products ?? []).slice(0, 10));
+        setProducts(
+          (r?.products ?? []).slice(0, 10).map((p) => ({
+            id: p.id,
+            title: p.title,
+            coverUrl: p.coverUrl,
+            priceUsd: p.priceUsd,
+            originalCurrency: p.originalCurrency ?? "USD",
+            originalAmount: Number(p.originalAmount ?? p.priceUsd ?? 0),
+            fxSnapshot: p.fxSnapshot ?? null,
+          })),
+        );
         setBounties(
           (r?.bounties ?? []).slice(0, 10).map((b) => ({
             id: b.id,
@@ -329,9 +347,9 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
               <FeaturedProductCard key={p.id} product={{
                 ...p,
                 priceUSD: p.priceUsd,
-                originalCurrency: "USD",
-                originalAmount: p.priceUsd,
-                fxSnapshot: null,
+                originalCurrency: p.originalCurrency,
+                originalAmount: p.originalAmount,
+                fxSnapshot: p.fxSnapshot,
                 rating: 4.7 + Math.random() * 0.3,
                 vendor: "Oventric",
                 name: p.title
