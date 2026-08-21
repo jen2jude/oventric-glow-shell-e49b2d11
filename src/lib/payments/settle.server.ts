@@ -273,7 +273,8 @@ export async function settleOrder(
 
   // Credit 2% cashback of the FULL gross sale price into the buyer's spend-only
   // Cashback Wallet — regardless of whether they applied cashback this time.
-  const cashbackEarnUSD = Number((splitBaseUSD * WALLET_CASHBACK_PCT).toFixed(2));
+  // Coupon purchases do not earn cashback.
+  const cashbackEarnUSD = discountUSD > 0 ? 0 : Number((splitBaseUSD * WALLET_CASHBACK_PCT).toFixed(2));
   if (cashbackEarnUSD > 0) {
     await supabaseAdmin.rpc("cashback_credit", { _user_id: buyerId, _amount: cashbackEarnUSD });
     await supabaseAdmin.from("wallet_transactions").insert({
