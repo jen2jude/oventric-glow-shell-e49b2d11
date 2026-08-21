@@ -134,7 +134,7 @@ export async function createCharge(opts: {
 
   const stamp = `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`.toUpperCase();
   const reference = provider === "flutterwave" ? `OVF_${stamp}` : `OVP_${stamp}`;
-  const redirectUrl = `${opts.origin}/payment/return`;
+  const redirectUrl = `${opts.origin}/api/public/payment-return`;
 
   let authorizationUrl: string;
   if (provider === "flutterwave") {

@@ -202,12 +202,42 @@ export async function resolveUserEmail(
   return email || `guest-${userId}@guest.oventric.com`;
 }
 
-/** Public origin of the current request (for gateway redirect URLs). */
+const CANONICAL_ORIGIN = "https://oventric.com";
+
+/**
+ * Public origin of the current request (for gateway redirect URLs).
+ *
+ * The gateway sends the shopper back to `${origin}/payment/return`, so the
+ * origin MUST be a real, publicly reachable https site. Native/PWA shells can
+ * send exotic origins (capacitor://localhost, http://localhost) and the
+ * editor preview host sits behind an auth bridge — both produce a
+ * "page not found" instead of the payment status screen. Normalise here.
+ */
+function normalizeOrigin(raw: string | undefined | null): string | null {
+  if (!raw) return null;
+  let u: URL;
+  try {
+    u = new URL(raw);
+  } catch {
+    return null;
+  }
+  if (u.protocol !== "https:" && u.protocol !== "http:") return null;
+  const host = u.host;
+  // Editor preview host is auth-gated; use its stable, ungated twin.
+  const preview = /^id-preview--([0-9a-f-]+)\.lovable\.app$/i.exec(host);
+  if (preview) return `https://project--${preview[1]}-dev.lovable.app`;
+  if (/(^|\.)oventric\.com$/i.test(host)) return `${u.protocol}//${host}`;
+  if (/\.lovable\.app$/i.test(host)) return `https://${host}`;
+  return null;
+}
+
 export function inferOrigin(): string {
-  const explicit = getRequestHeader("origin");
-  if (explicit) return explicit;
   const host = getRequestHeader("host");
   const proto = getRequestHeader("x-forwarded-proto") || "https";
-  if (host) return `${proto}://${host}`;
-  return "https://oventric.com";
+  return (
+    normalizeOrigin(getRequestHeader("origin")) ||
+    normalizeOrigin(host ? `${proto}://${host}` : null) ||
+    CANONICAL_ORIGIN
+  );
 }
+

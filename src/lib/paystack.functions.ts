@@ -245,7 +245,7 @@ export const initPaystackPayment = createServerFn({ method: "POST" })
       amount: subunit(chargeAmount),
       currency: chargeCurrency,
       reference,
-      callback_url: `${origin}/payment/return`,
+      callback_url: `${origin}/api/public/payment-return`,
       metadata,
       ...(channels ? { channels } : {}),
     };
