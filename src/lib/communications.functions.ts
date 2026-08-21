@@ -145,18 +145,24 @@ export const broadcastAnnouncement = createServerFn({ method: "POST" })
     const { data: profiles, error: pErr } = await sb.from("profiles").select("user_id");
     if (pErr) throw new Error(pErr.message);
 
-    // Only fan out to the inbox when the admin selected the in_app channel.
-    const wantsInApp = Array.isArray(ann.channels) && ann.channels.includes("in_app");
+    // Fan out to the inbox when the admin selected in-app OR push. Web push is
+    // dispatched by the `notifications` insert trigger, so a push-only
+    // announcement still needs the notification rows to exist.
+    const channels = Array.isArray(ann.channels) ? (ann.channels as string[]) : [];
+    const wantsInApp = channels.includes("in_app");
+    const wantsPush = channels.includes("push");
 
-    const rows = wantsInApp
-      ? ((profiles ?? []) as Array<{ user_id: string }>).map((p) => ({
-          user_id: p.user_id,
-          kind: "announcement",
-          title: ann.title,
-          body: ann.body,
-          from_user_id: context.userId,
-        }))
-      : [];
+    const rows =
+      wantsInApp || wantsPush
+        ? ((profiles ?? []) as Array<{ user_id: string }>).map((p) => ({
+            user_id: p.user_id,
+            kind: "announcement",
+            title: ann.title,
+            body: ann.body,
+            from_user_id: context.userId,
+          }))
+        : [];
+
 
 
     let delivered = 0;
