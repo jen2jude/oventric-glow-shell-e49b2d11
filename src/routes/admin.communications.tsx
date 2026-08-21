@@ -293,7 +293,8 @@ function AnnouncementsTab() {
               })}
             </div>
             <p className="text-[11px] text-slate-500 mt-1.5">
-              In-app delivers instantly on broadcast. Email/push are queued (require sender domain).
+              In-app and push deliver instantly on broadcast — push reaches only members who
+              enabled device notifications. Email is queued (requires sender domain).
             </p>
           </div>
           <label className="flex items-center gap-2 text-sm text-slate-300">
