@@ -869,10 +869,11 @@ export const createOrder = createServerFn({ method: "POST" })
 
     const grossUSD = Number((product.priceUSD * data.quantity).toFixed(2));
 
-    // Coupon only applies to non-wallet payments (per spec).
+    // Coupon applies to every payment method, but a coupon purchase never
+    // earns cashback and cannot be combined with cashback spend.
     let discountUSD = 0;
     let discountPct = 0;
-    if (data.couponCode && data.paymentMethod !== "wallet") {
+    if (data.couponCode) {
       const { data: c } = await supabase
         .from("coupons")
         .select("discount_pct")
@@ -890,7 +891,7 @@ export const createOrder = createServerFn({ method: "POST" })
     // and remaining total; debit atomically via SECURITY DEFINER helper.
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     let cashbackAppliedUSD = 0;
-    if (data.applyCashbackUSD > 0) {
+    if (data.applyCashbackUSD > 0 && discountUSD <= 0) {
       const { data: wRow } = await supabaseAdmin
         .from("wallets")
         .select("accumulated_cashback")
@@ -992,7 +993,7 @@ export const createOrder = createServerFn({ method: "POST" })
     const netAfterGatewayUSD = Number(Math.max(0, totalUSD - gatewayFeeUSD).toFixed(2));
     const sellerCutUSD = Number((netAfterGatewayUSD * SELLER_SHARE).toFixed(2));
     let cashbackUSD = 0;
-    if (data.paymentMethod === "wallet") {
+    if (data.paymentMethod === "wallet" && discountUSD <= 0) {
       cashbackUSD = Number((netAfterGatewayUSD * WALLET_CASHBACK_PCT).toFixed(2));
     }
     const platformCutUSD = Number((netAfterGatewayUSD - sellerCutUSD - cashbackUSD).toFixed(2));
