@@ -161,6 +161,7 @@ function CheckoutPage() {
   const loadProduct = useServerFn(getProduct);
   const submitOrder = useServerFn(createOrder);
   const initCharge = useServerFn(initPayment);
+  const checkCoupon = useServerFn(validateCoupon);
 
   const [product, setProduct] = useState<ProductDTO | null>(null);
   const [loadErr, setLoadErr] = useState<string | null>(null);
@@ -848,6 +849,82 @@ function CheckoutPage() {
                 </>
               )}
 
+              {/* Coupon — mutually exclusive with cashback. */}
+              <div
+                className={`pt-3 mb-3 border-t ${
+                  isAppShell ? "border-white/5" : "border-white/5 md:border-slate-200"
+                }`}
+              >
+                <div className={`text-[10px] uppercase tracking-widest font-bold mb-1.5 ${isAppShell ? "text-slate-400" : "text-slate-600"}`}>
+                  Coupon
+                </div>
+                {coupon ? (
+                  <div className="flex items-center justify-between gap-3 rounded-[10px] px-3 py-3 border bg-[#E5484D]/10 border-[#E5484D]/30">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <TicketPercent className="w-4 h-4 text-[#E5484D] shrink-0" />
+                      <div className="min-w-0">
+                        <div className={`text-xs font-bold truncate ${isAppShell ? "text-white" : "text-slate-900"}`}>
+                          {coupon.code}
+                        </div>
+                        <div className="text-[11px] text-[#E5484D]">
+                          {coupon.pct}% off applied · cashback not earned on this order
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCoupon(null);
+                        setCouponInput("");
+                      }}
+                      className={`p-1.5 rounded-[8px] ${isAppShell ? "text-slate-400 hover:text-white hover:bg-white/5" : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"}`}
+                      aria-label="Remove coupon"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <input
+                      value={couponInput}
+                      onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                      placeholder="Enter coupon code"
+                      className={`flex-1 min-w-0 rounded-[10px] px-3 py-2.5 text-xs font-semibold tracking-wide outline-none border transition-colors ${
+                        isAppShell
+                          ? "bg-white/[0.03] border-white/10 text-white placeholder:text-slate-500 focus:border-[#E5484D]/50"
+                          : "bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-[#E5484D]/60"
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      disabled={couponBusy || !couponInput.trim()}
+                      onClick={async () => {
+                        const code = couponInput.trim().toUpperCase();
+                        if (!code) return;
+                        setCouponBusy(true);
+                        try {
+                          const res = await checkCoupon({ data: { code } });
+                          if (res.valid) {
+                            setCoupon({ code: res.code, pct: Number(res.discountPct) });
+                            setUseCashback(false);
+                            toast.success(`Coupon applied · ${res.discountPct}% off`);
+                          } else {
+                            toast.error("Invalid or expired coupon code");
+                          }
+                        } catch {
+                          toast.error("Could not verify that coupon");
+                        } finally {
+                          setCouponBusy(false);
+                        }
+                      }}
+                      className="shrink-0 rounded-[10px] px-4 py-2.5 text-xs font-bold bg-[#E5484D] text-white disabled:opacity-40"
+                    >
+                      {couponBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : "Apply"}
+                    </button>
+                  </div>
+                )}
+              </div>
+
               {/* Cashback Wallet — spend-only. Toggle always visible; disabled when empty. */}
               <div
                 className={`pt-3 mb-3 border-t ${
@@ -859,7 +936,7 @@ function CheckoutPage() {
                 </div>
                 <label
                   className={`flex items-start gap-3 rounded-[10px] px-3 py-3 border transition-all ${
-                    cashbackUSD > 0
+                    cashbackUSD > 0 && !coupon
                       ? isAppShell
                         ? "bg-[#E5484D]/5 border-[#E5484D]/20 cursor-pointer shadow-sm"
                         : "bg-[#E5484D]/10 border-[#E5484D]/40 cursor-pointer shadow-sm"
@@ -871,7 +948,7 @@ function CheckoutPage() {
                   <input
                     type="checkbox"
                     checked={useCashback}
-                    disabled={cashbackUSD <= 0}
+                    disabled={cashbackUSD <= 0 || !!coupon}
                     onChange={(e) => setUseCashback(e.target.checked)}
                     className="mt-0.5 w-4 h-4 accent-[#E5484D] cursor-pointer"
                   />
@@ -884,9 +961,15 @@ function CheckoutPage() {
                     >
                       Available: {fmt(cashbackUSD, baseCurrency)} · spend-only, not withdrawable
                     </div>
-                    <div className={`text-[11px] mt-0.5 ${isAppShell ? "text-slate-400" : "text-slate-600"}`}>
-                      You earn back: + {fmt(cashbackEarnUSD, baseCurrency)} (Oventric Bonus)
-                    </div>
+                    {coupon ? (
+                      <div className="text-[11px] mt-0.5 text-slate-500">
+                        Unavailable while a coupon is applied
+                      </div>
+                    ) : (
+                      <div className={`text-[11px] mt-0.5 ${isAppShell ? "text-slate-400" : "text-slate-600"}`}>
+                        You earn back: + {fmt(cashbackEarnUSD, baseCurrency)} (Oventric Bonus)
+                      </div>
+                    )}
                   </div>
                 </label>
               </div>
@@ -900,6 +983,12 @@ function CheckoutPage() {
                   <span>Subtotal</span>
                   <span>{fmtPrice(subtotalUSD, baseCurrency, product, subtotalLocal)}</span>
                 </div>
+                {discountUSD > 0 && (
+                  <div className="flex justify-between text-[#E5484D]">
+                    <span>Coupon ({coupon?.code})</span>
+                    <span>− {fmtPrice(discountUSD, baseCurrency, product, discountLocal)}</span>
+                  </div>
+                )}
                 {cashbackApplyUSD > 0 && (
                   <div className="flex justify-between text-[#E5484D]">
                     <span>Cashback applied</span>
