@@ -14,6 +14,8 @@ import {
   Building2,
   Check,
   Headphones,
+  TicketPercent,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Header } from "@/components/oventric/Header";
@@ -22,6 +24,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   getProduct,
   createOrder,
+  validateCoupon,
   WALLET_CASHBACK_PCT,
   type ProductDTO,
   type PaymentMethod,
@@ -164,6 +167,9 @@ function CheckoutPage() {
   const [balanceUSD, setBalanceUSD] = useState<number | null>(null);
   const [cashbackUSD, setCashbackUSD] = useState<number>(0);
   const [useCashback, setUseCashback] = useState(false);
+  const [couponInput, setCouponInput] = useState("");
+  const [couponBusy, setCouponBusy] = useState(false);
+  const [coupon, setCoupon] = useState<{ code: string; pct: number } | null>(null);
   const [method, setMethod] = useState<PaymentMethod>("card");
   const [submitting, setSubmitting] = useState(false);
   const [shortfallUSD, setShortfallUSD] = useState<number | null>(null);
@@ -227,18 +233,24 @@ function CheckoutPage() {
   // When viewing in the product's ORIGINAL currency, prefer the seller's exact
   // locked amount so the checkout total matches the listing card 1:1.
   const subtotalLocal = useMemo(() => (product ? unitLocal * qty : 0), [product, unitLocal, qty]);
-  // Cashback (spend-only) can now be applied on ANY payment method.
+  // Coupon discount — a coupon and cashback can never be combined.
+  const discountUSD = useMemo(
+    () => (coupon ? Number(((subtotalUSD * coupon.pct) / 100).toFixed(2)) : 0),
+    [coupon, subtotalUSD],
+  );
+  // Cashback (spend-only) can be applied on ANY payment method, unless a coupon is used.
   const cashbackApplyUSD = useMemo(() => {
-    if (!useCashback) return 0;
+    if (!useCashback || coupon) return 0;
     return Math.min(cashbackUSD, Math.max(0, subtotalUSD));
-  }, [useCashback, cashbackUSD, subtotalUSD]);
-  const totalUSD = Number((subtotalUSD - cashbackApplyUSD).toFixed(2));
-  const cashbackApplyLocal =
-    subtotalUSD > 0 ? Number(((cashbackApplyUSD / subtotalUSD) * subtotalLocal).toFixed(2)) : 0;
-  const totalLocalExact = Number((subtotalLocal - cashbackApplyLocal).toFixed(2));
+  }, [useCashback, coupon, cashbackUSD, subtotalUSD]);
+  const totalUSD = Number(Math.max(0, subtotalUSD - discountUSD - cashbackApplyUSD).toFixed(2));
+  const ratio = subtotalUSD > 0 ? subtotalLocal / subtotalUSD : 0;
+  const cashbackApplyLocal = Number((cashbackApplyUSD * ratio).toFixed(2));
+  const discountLocal = Number((discountUSD * ratio).toFixed(2));
+  const totalLocalExact = Number(Math.max(0, subtotalLocal - discountLocal - cashbackApplyLocal).toFixed(2));
   // Cashback earn is ALWAYS 2% of the full gross sale price — regardless of
   // whether the buyer applied any cashback on this order.
-  const cashbackEarnUSD = Number((subtotalUSD * WALLET_CASHBACK_PCT).toFixed(2));
+  const cashbackEarnUSD = coupon ? 0 : Number((subtotalUSD * WALLET_CASHBACK_PCT).toFixed(2));
 
   useEffect(() => {
     let cancelled = false;
@@ -359,7 +371,7 @@ function CheckoutPage() {
             productId: product.id,
             quantity: qty,
             displayCurrency: baseCurrency,
-            couponCode: null,
+            couponCode: coupon?.code ?? null,
             deliveryEmail: needsDelivery ? deliveryEmail.trim() : null,
             deliveryWhatsapp: null,
             applyCashbackUSD: cashbackApplyUSD,
@@ -379,7 +391,7 @@ function CheckoutPage() {
           quantity: qty,
           displayCurrency: baseCurrency,
           paymentMethod: method,
-          couponCode: null,
+          couponCode: coupon?.code ?? null,
           deliveryEmail: needsDelivery ? deliveryEmail.trim() : null,
           deliveryWhatsapp: null,
           applyCashbackUSD: cashbackApplyUSD,
