@@ -384,7 +384,9 @@ export function Feed() {
   const commerceCards = useFeedCommerceCards(isAppShell && feedTab === "foryou");
 
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
-  const [posts, setPosts] = useState<FeedPost[]>([]);
+  // Seed from the session cache so returning to the feed paints instantly.
+  const [posts, setPosts] = useState<FeedPost[]>(() => readCache<FeedPost[]>("feed:posts") ?? []);
+
   const [repostTarget, setRepostTarget] = useState<FeedPost | null>(null);
 
   const [newPostId, setNewPostId] = useState<string | null>(null);
