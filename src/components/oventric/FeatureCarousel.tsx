@@ -219,12 +219,63 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
             <InterestBubbles />
           </div>
 
-          <div className="relative px-6 pb-8 pt-2 shrink-0">
+          <div className="relative px-6 pb-8 pt-2 shrink-0 flex items-center justify-between">
+            <button
+              onClick={handleComplete}
+              className="text-sm font-medium text-slate-400 hover:text-white transition-colors"
+            >
+              Skip
+            </button>
             <button
               onClick={() => setIntroExiting(true)}
-              className="w-full h-12 rounded-full bg-white text-black font-bold text-sm hover:bg-slate-200 transition-colors"
+              aria-label="Next"
+              className="h-12 w-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-slate-200 transition-colors"
             >
-              Continue
+              <ChevronRight className="w-5 h-5" strokeWidth={2.6} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {phase === "journey" && (
+        <div
+          className="absolute inset-0 flex flex-col w-full overflow-hidden"
+          style={{ animation: ENTER }}
+        >
+          <div
+            aria-hidden
+            className="absolute -top-24 left-1/2 -translate-x-1/2 h-72 w-72 rounded-full blur-3xl opacity-40 pointer-events-none"
+            style={{ background: "radial-gradient(circle, rgba(0,194,255,0.4), transparent 70%)" }}
+          />
+          <div className="relative flex items-center justify-center px-5 pt-6 pb-2 shrink-0">
+            <img
+              loading="eager"
+              decoding="async"
+              src={oventricFull}
+              alt="Oventric"
+              className="h-8 w-auto select-none"
+              draggable={false}
+            />
+          </div>
+
+          <div className="relative px-6 pt-4 shrink-0">
+            <h1 className="text-[32px] leading-[1.08] sm:text-4xl font-black tracking-tight text-white">
+              Let's start
+              <br />
+              your journey
+            </h1>
+          </div>
+
+          <div className="relative flex-1 min-h-0 flex items-center justify-center px-5">
+            <JourneyOrbit />
+          </div>
+
+          <div className="relative px-6 pb-8 pt-2 shrink-0">
+            <button
+              onClick={handleComplete}
+              className="w-full h-14 rounded-full bg-white text-black font-bold text-sm hover:bg-slate-200 transition-colors"
+            >
+              Get Started
             </button>
           </div>
         </div>
