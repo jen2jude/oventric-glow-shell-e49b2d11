@@ -482,7 +482,7 @@ function RootComponent() {
               {isPreview && isMounted && (
                 <button
                   onClick={toggleMode}
-                  className="fixed bottom-6 right-6 z-[9999] px-4 py-2 bg-emerald-500 text-black text-xs font-bold uppercase tracking-widest rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all border-2 border-white/20"
+                  className="fixed top-1/2 -translate-y-1/2 right-0 z-[9999] px-2 py-3 bg-emerald-500/90 text-black text-[9px] font-bold uppercase tracking-widest rounded-l-full shadow-2xl hover:scale-105 active:scale-95 transition-all border border-white/20 [writing-mode:vertical-rl]"
                 >
                   {launchCtx === "browser" ? "View App Version" : "View Web Version"}
                 </button>
