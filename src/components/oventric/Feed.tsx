@@ -1205,8 +1205,8 @@ export function Feed() {
             meSlug={meSlug}
           />
         )}
-        {/* Composer — hidden in Discover because Discovery is view-only */}
-        {!(isAppShell && feedTab === "discover") && (
+        {/* Composer — hidden in Discover / Following because those tabs are view-only */}
+        {!(isAppShell && (feedTab === "discover" || feedTab === "following")) && (
           <button
             id="oventric-composer"
             type="button"
