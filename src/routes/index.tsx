@@ -1,21 +1,40 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 
 import { Sidebar } from "@/components/oventric/Sidebar";
 import { MobileNav } from "@/components/oventric/MobileNav";
-import { Feed } from "@/components/oventric/Feed";
-import { FeedSocialBar } from "@/components/oventric/feed/FeedSocialBar";
+const Feed = lazy(() => import("@/components/oventric/Feed").then((m) => ({ default: m.Feed })));
+const FeedSocialBar = lazy(() =>
+  import("@/components/oventric/feed/FeedSocialBar").then((m) => ({ default: m.FeedSocialBar })),
+);
 
-import { Wallet } from "@/components/oventric/Wallet";
-import { Marketplace } from "@/components/oventric/Marketplace";
-import { Academy } from "@/components/oventric/Academy";
-import { Bounties } from "@/components/oventric/Bounties";
-import { CreatePanel, type ChoiceKey } from "@/components/oventric/CreatePanel";
+const Wallet = lazy(() =>
+  import("@/components/oventric/Wallet").then((m) => ({ default: m.Wallet })),
+);
+const Marketplace = lazy(() =>
+  import("@/components/oventric/Marketplace").then((m) => ({ default: m.Marketplace })),
+);
+const Academy = lazy(() =>
+  import("@/components/oventric/Academy").then((m) => ({ default: m.Academy })),
+);
+const Bounties = lazy(() =>
+  import("@/components/oventric/Bounties").then((m) => ({ default: m.Bounties })),
+);
+import type { ChoiceKey } from "@/components/oventric/CreatePanel";
+const CreatePanel = lazy(() =>
+  import("@/components/oventric/CreatePanel").then((m) => ({ default: m.CreatePanel })),
+);
 
-import { Messages } from "@/components/oventric/Messages";
-import { MessagesDrawer } from "@/components/oventric/MessagesDrawer";
-import { CirclesHub } from "@/components/oventric/CirclesHub";
+const Messages = lazy(() =>
+  import("@/components/oventric/Messages").then((m) => ({ default: m.Messages })),
+);
+const MessagesDrawer = lazy(() =>
+  import("@/components/oventric/MessagesDrawer").then((m) => ({ default: m.MessagesDrawer })),
+);
+const CirclesHub = lazy(() =>
+  import("@/components/oventric/CirclesHub").then((m) => ({ default: m.CirclesHub })),
+);
 import { HomeHub } from "@/components/oventric/HomeHub";
 import { DesktopHome } from "@/components/oventric/desktop/DesktopHome";
 import { DesktopAppSidebar } from "@/components/oventric/desktop/DesktopAppSidebar";
@@ -27,11 +46,57 @@ import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { useIsDesktop } from "@/hooks/use-desktop";
 import { useIsAppShell, useLaunchContext } from "@/hooks/use-launch-context";
 import { AppOnlyScreen } from "@/lib/app-gate";
-import { GetAppModal } from "@/components/oventric/GetAppModal";
+const GetAppModal = lazy(() =>
+  import("@/components/oventric/GetAppModal").then((m) => ({ default: m.GetAppModal })),
+);
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useSectionLiveCounter } from "@/lib/useSectionLiveCounter";
 import { getMyFullProfile } from "@/lib/profiles.functions";
 import { Search } from "lucide-react";
+
+/** Lightweight skeleton shown while a section chunk streams in. */
+function SectionFallback() {
+  return (
+    <div className="flex-1 min-h-[60vh] p-4 space-y-3 animate-pulse">
+      <div className="h-28 rounded-[10px] bg-white/5 md:bg-slate-100" />
+      <div className="grid grid-cols-2 gap-3">
+        <div className="h-36 rounded-[10px] bg-white/5 md:bg-slate-100" />
+        <div className="h-36 rounded-[10px] bg-white/5 md:bg-slate-100" />
+        <div className="h-36 rounded-[10px] bg-white/5 md:bg-slate-100" />
+        <div className="h-36 rounded-[10px] bg-white/5 md:bg-slate-100" />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Warm the section chunks once the browser is idle so switching tabs feels
+ * instant even though the initial bundle only ships the landing view.
+ */
+function usePrefetchSections() {
+  useEffect(() => {
+    const warm = () => {
+      void import("@/components/oventric/Feed");
+      void import("@/components/oventric/Marketplace");
+      void import("@/components/oventric/Academy");
+      void import("@/components/oventric/Bounties");
+      void import("@/components/oventric/Wallet");
+      void import("@/components/oventric/CirclesHub");
+      void import("@/components/oventric/Messages");
+      void import("@/components/oventric/CreatePanel");
+    };
+    const ric = (window as unknown as {
+      requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number;
+    }).requestIdleCallback;
+    if (ric) {
+      const id = ric(warm, { timeout: 4000 });
+      return () => (window as unknown as { cancelIdleCallback?: (h: number) => void })
+        .cancelIdleCallback?.(id);
+    }
+    const t = window.setTimeout(warm, 2000);
+    return () => window.clearTimeout(t);
+  }, []);
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -72,6 +137,7 @@ function Index() {
   const [getAppOpen, setGetAppOpen] = useState(false);
   const prevActiveRef = useRef<string | null>(null);
 
+  usePrefetchSections();
   const launchCtx = useLaunchContext();
   const { require, fullName, storeName, country, baseCurrency } = useOnboarding();
   const { isAuthenticated } = useAuthGate();
@@ -283,7 +349,7 @@ function Index() {
     (isDesktop || !isAppShell);
   const isMarketplace = active === "Marketplace";
 
-  const view =
+  const rawView =
     active === "Home" ? (
       desktopLanding ? (
         <DesktopHome onSelect={setActive} onCreate={handleCreate} />
@@ -338,6 +404,13 @@ function Index() {
       </>
     ) : (
       <Feed />
+    );
+
+  const view =
+    active === "Home" && !isHydratedSection ? (
+      rawView
+    ) : (
+      <Suspense fallback={<SectionFallback />}>{rawView}</Suspense>
     );
 
 
