@@ -311,6 +311,10 @@ export const getPeerOrderContext = createServerFn({ method: "POST" })
       deliveredAt: (o.delivered_at as string) ?? null,
       disputeStatus: (o.dispute_status as string) ?? "none",
       autoReleaseAt: (o.auto_release_at as string) ?? null,
+      autoRefundAt: (o.auto_refund_at as string) ?? null,
+      payoutReleaseAt: (o.payout_release_at as string) ?? null,
+      buyerConfirmedAt: (o.buyer_confirmed_at as string) ?? null,
+
       displayCurrency: (o.display_currency as string) ?? "USD",
       displayTotal: Number(o.display_total ?? 0),
     };
