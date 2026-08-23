@@ -674,7 +674,8 @@ export function Messages({
     }
   };
 
-  const wrapperClasses = "flex h-full bg-[#121214] md:bg-white text-slate-200 md:text-slate-700";
+  const wrapperClasses =
+    "flex h-full min-h-0 max-h-full overflow-hidden bg-[#121214] md:bg-white text-slate-200 md:text-slate-700";
 
   if (!me) {
     return (
@@ -822,7 +823,7 @@ export function Messages({
           <EmptyChat hasThreads={threads.length > 0} />
         ) : (
           <>
-            <header className="flex items-center gap-3 px-4 py-3 border-b border-white/10 md:border-slate-200 bg-[#16161B] md:bg-white">
+            <header className="shrink-0 flex items-center gap-3 px-4 py-3 border-b border-white/10 md:border-slate-200 bg-[#16161B] md:bg-white">
               <button
                 onClick={() => setShowListOnMobile(true)}
                 className="md:hidden text-slate-400 hover:text-white text-xs font-semibold"
@@ -931,7 +932,7 @@ export function Messages({
             </div>
 
             <div
-              className="shrink-0 border-t border-white/10 md:border-slate-200 bg-[#16161B] md:bg-white p-3"
+              className="relative z-10 shrink-0 border-t border-white/10 md:border-slate-200 bg-[#16161B] md:bg-white p-3"
               style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.75rem)" }}
             >
               {OFF_PLATFORM_RE.test(draft) && (
