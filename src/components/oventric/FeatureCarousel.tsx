@@ -188,34 +188,21 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
           style={{ animation: ENTER }}
         >
           {/* Header */}
-          <div className="relative flex items-center px-5 pt-6 pb-2 shrink-0">
-            <button
-              onClick={() => setPhase("intro")}
-              aria-label="Back"
-              className="h-9 w-9 rounded-full bg-white shadow-sm flex items-center justify-center text-[#1E1B4B]"
-            >
-              <ChevronLeft className="w-5 h-5" strokeWidth={2.6} />
-            </button>
+          <div className="relative flex items-center justify-center px-5 pt-6 pb-2 shrink-0">
             <img
               loading="eager"
               decoding="async"
               src={oventricDark}
               alt="Oventric"
-              className="h-7 w-auto select-none absolute left-1/2 -translate-x-1/2"
+              className="h-7 w-auto select-none"
               draggable={false}
             />
           </div>
 
-          {/* Headline with orange blob */}
-          <div className="relative px-6 pt-6 pb-2 shrink-0">
-            <div
-              aria-hidden
-              className="absolute -left-10 -top-2 h-40 w-40 rounded-full bg-[#F97316] opacity-95"
-            />
-            <h1 className="relative text-[38px] leading-[1.02] font-black tracking-tight text-[#1E1B4B]">
-              Let's start your
-              <br />
-              journey
+          {/* Headline */}
+          <div className="relative px-6 pt-2 pb-2 shrink-0 text-center">
+            <h1 className="relative text-lg font-semibold tracking-tight text-[#1E1B4B]">
+              Digital Marketplace for creators
             </h1>
           </div>
 
