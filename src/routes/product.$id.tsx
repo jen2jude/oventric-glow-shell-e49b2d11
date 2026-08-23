@@ -695,12 +695,14 @@ function ProductPage() {
                               </div>
                             </div>
                             <span className={`shrink-0 font-black ${isAppShell ? "text-white" : "text-slate-900"}`}>
-                              {formatMoney(
-                                pk.originalCurrency === baseCurrency
-                                  ? pk.originalAmount
-                                  : pk.priceUsd * usdRate(baseCurrency),
-                                baseCurrency,
-                              )}
+                              {pk.priceUsd === 0
+                                ? "Free"
+                                : formatMoney(
+                                    pk.originalCurrency === baseCurrency
+                                      ? pk.originalAmount
+                                      : pk.priceUsd * usdRate(baseCurrency),
+                                    baseCurrency,
+                                  )}
                             </span>
                           </div>
                         </button>
@@ -712,7 +714,9 @@ function ProductPage() {
                   <div className={`flex items-center justify-between text-xs ${isAppShell ? "text-slate-500" : "text-slate-400"} md:text-slate-500 mb-4`}>
                     <span>Line total</span>
                     <span className={`${isAppShell ? "text-white" : "text-slate-900"} md:text-slate-900 font-mono`}>
-                      {formatMoney(productDisplay(product, baseCurrency).value * qty, baseCurrency)}
+                      {productDisplay(product, baseCurrency).value === 0
+                        ? "Free"
+                        : formatMoney(productDisplay(product, baseCurrency).value * qty, baseCurrency)}
                     </span>
                   </div>
                 )}
