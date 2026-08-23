@@ -150,7 +150,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       // Warm the media/storage origin so the first image/video byte arrives sooner.
       ...(STORAGE_ORIGIN
         ? [
-            { rel: "preconnect", href: STORAGE_ORIGIN, crossOrigin: "anonymous" },
+            { rel: "preconnect", href: STORAGE_ORIGIN, crossOrigin: "anonymous" as const },
             { rel: "dns-prefetch", href: STORAGE_ORIGIN },
           ]
         : []),
