@@ -1,6 +1,8 @@
 import { Home, Target, Wallet, Plus, ShoppingBag, GraduationCap, Newspaper } from "lucide-react";
 import { CountBadge } from "@/components/oventric/CountBadge";
 import { haptic } from "@/lib/haptics";
+import { useChatOpen } from "@/hooks/use-chat-open";
+
 
 const left = [
   { icon: Home, label: "Home" },
