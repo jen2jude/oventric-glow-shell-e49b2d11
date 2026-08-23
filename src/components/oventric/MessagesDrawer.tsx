@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { X } from "lucide-react";
 import { Messages } from "./Messages";
+import { setChatOpen } from "@/hooks/use-chat-open";
+
 
 interface MessagesDrawerProps {
   open: boolean;
