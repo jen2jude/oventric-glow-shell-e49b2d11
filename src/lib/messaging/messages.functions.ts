@@ -269,6 +269,9 @@ export interface PeerOrderContext {
   deliveredAt: string | null;
   disputeStatus: string;
   autoReleaseAt: string | null;
+  autoRefundAt: string | null;
+  payoutReleaseAt: string | null;
+  buyerConfirmedAt: string | null;
   displayCurrency: string;
   displayTotal: number;
 }
@@ -287,7 +290,7 @@ export const getPeerOrderContext = createServerFn({ method: "POST" })
     const { data: rows, error } = await supabaseAdmin
       .from("orders")
       .select(
-        "id, buyer_id, seller_id, escrow_status, delivered_at, dispute_status, auto_release_at, display_currency, display_total, products:product_id (name, requires_manual_delivery)",
+        "id, buyer_id, seller_id, escrow_status, delivered_at, dispute_status, auto_release_at, auto_refund_at, payout_release_at, buyer_confirmed_at, display_currency, display_total, products:product_id (name, requires_manual_delivery)",
       )
       .or(
         `and(buyer_id.eq.${me},seller_id.eq.${data.peerId}),and(buyer_id.eq.${data.peerId},seller_id.eq.${me})`,
@@ -308,6 +311,10 @@ export const getPeerOrderContext = createServerFn({ method: "POST" })
       deliveredAt: (o.delivered_at as string) ?? null,
       disputeStatus: (o.dispute_status as string) ?? "none",
       autoReleaseAt: (o.auto_release_at as string) ?? null,
+      autoRefundAt: (o.auto_refund_at as string) ?? null,
+      payoutReleaseAt: (o.payout_release_at as string) ?? null,
+      buyerConfirmedAt: (o.buyer_confirmed_at as string) ?? null,
+
       displayCurrency: (o.display_currency as string) ?? "USD",
       displayTotal: Number(o.display_total ?? 0),
     };

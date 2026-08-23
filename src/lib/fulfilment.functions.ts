@@ -52,6 +52,9 @@ export interface FulfilmentDTO {
   buyerConfirmedAt: string | null;
   releasedAt: string | null;
   autoReleaseAt: string | null;
+  autoRefundAt: string | null;
+  payoutReleaseAt: string | null;
+  refundedAt: string | null;
   disputeStatus: string;
   role: "buyer" | "seller" | "admin";
   buyer: FulfilmentParty;
@@ -84,6 +87,7 @@ function buildSteps(o: Record<string, any>, manual: boolean): FulfilmentStep[] {
   const delivered = manual ? o.delivered_at : paidAt;
   const confirmed = manual ? o.buyer_confirmed_at : paidAt;
   const completed = o.escrow_status === "released" ? o.released_at ?? confirmed : null;
+  const refunded = o.escrow_status === "refunded";
   const disputed = o.dispute_status === "open";
 
   const state = (done: unknown, prevDone: unknown): StepState =>
@@ -101,7 +105,7 @@ function buildSteps(o: Record<string, any>, manual: boolean): FulfilmentStep[] {
       key: "delivered",
       label: delivered ? "Product delivered" : "Awaiting delivery by seller",
       hint: manual
-        ? "The seller marks the item delivered once it is sent to you."
+        ? "The seller has 24 hours to deliver, or the payment is refunded automatically."
         : "Instant download — delivered the moment payment cleared.",
       state: state(delivered, paidAt),
       at: delivered ?? null,
@@ -109,14 +113,20 @@ function buildSteps(o: Record<string, any>, manual: boolean): FulfilmentStep[] {
     {
       key: "confirmed",
       label: confirmed ? "Receipt confirmed" : "Buyer to confirm receipt",
-      hint: "Buyer confirms the item was received. Auto-confirms after 48 hours.",
+      hint: "Buyer confirms the item was received and works. Auto-confirms 24 hours after delivery.",
       state: state(confirmed, delivered),
       at: confirmed ?? null,
     },
     {
       key: "completed",
-      label: completed ? "Trade circle complete" : "Seller wallet funding",
-      hint: "Seller earnings are released and admin is notified.",
+      label: refunded
+        ? "Refunded to buyer"
+        : completed
+          ? "Trade circle complete"
+          : "24-hour payout hold",
+      hint: refunded
+        ? "The delivery window closed, so the payment went back to the buyer's wallet."
+        : "Funds stay in escrow for 24 hours after confirmation, then the seller is paid.",
       state: state(completed, confirmed),
       at: completed ?? null,
     },
@@ -128,7 +138,7 @@ export const getOrderFulfilment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ orderId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }): Promise<FulfilmentDTO> => {
-    const { admin, releaseEscrow } = await import("@/lib/fulfilment.server");
+    const { admin, releaseEscrow, refundBuyer, confirmReceipt } = await import("@/lib/fulfilment.server");
     const sb = await admin();
 
     const { data: isAdmin } = await context.supabase.rpc("has_role", {
@@ -139,7 +149,7 @@ export const getOrderFulfilment = createServerFn({ method: "POST" })
     let { data: o, error } = await sb
       .from("orders")
       .select(
-        "id, buyer_id, seller_id, product_id, quantity, total_usd, display_currency, display_total, seller_share_usd, status, paid_at, created_at, escrow_status, delivered_at, delivery_note, buyer_confirmed_at, released_at, auto_release_at, dispute_status, products:product_id (name, requires_manual_delivery)",
+        "id, buyer_id, seller_id, product_id, quantity, total_usd, display_currency, display_total, seller_share_usd, status, paid_at, created_at, escrow_status, delivered_at, delivery_note, buyer_confirmed_at, released_at, auto_release_at, auto_refund_at, payout_release_at, refunded_at, dispute_status, products:product_id (name, requires_manual_delivery)",
       )
       .eq("id", data.orderId)
       .maybeSingle();
@@ -150,25 +160,35 @@ export const getOrderFulfilment = createServerFn({ method: "POST" })
     const isSeller = o.seller_id === context.userId;
     if (!isBuyer && !isSeller && !isAdmin) throw new Error("Not your order");
 
-    // Lazy auto-release: the 48h window may have elapsed since the last visit.
-    if (
-      o.escrow_status === "held" &&
-      o.dispute_status === "none" &&
-      o.auto_release_at &&
-      new Date(o.auto_release_at).getTime() <= Date.now()
-    ) {
+    // Lazy timer sweep — the escrow clocks may have elapsed since the last visit.
+    if (o.escrow_status === "held" && o.dispute_status === "none") {
+      const due = (iso: string | null | undefined) =>
+        Boolean(iso) && new Date(iso as string).getTime() <= Date.now();
       try {
-        await releaseEscrow(sb, o.id, null, "auto");
-        const { data: fresh } = await sb
-          .from("orders")
-          .select(
-            "id, buyer_id, seller_id, product_id, quantity, total_usd, display_currency, display_total, seller_share_usd, status, paid_at, created_at, escrow_status, delivered_at, delivery_note, buyer_confirmed_at, released_at, auto_release_at, dispute_status, products:product_id (name, requires_manual_delivery)",
-          )
-          .eq("id", o.id)
-          .maybeSingle();
-        if (fresh) o = fresh;
+        let moved = false;
+        if (!o.delivered_at && due(o.auto_refund_at)) {
+          await refundBuyer(sb, o.id, "seller_missed_delivery_window");
+          moved = true;
+        } else if (o.delivered_at && !o.buyer_confirmed_at && due(o.auto_release_at)) {
+          await confirmReceipt(sb, o.id, null, "auto");
+          moved = true;
+        }
+        if (!moved && due(o.payout_release_at)) {
+          await releaseEscrow(sb, o.id, null, "auto");
+          moved = true;
+        }
+        if (moved) {
+          const { data: fresh } = await sb
+            .from("orders")
+            .select(
+              "id, buyer_id, seller_id, product_id, quantity, total_usd, display_currency, display_total, seller_share_usd, status, paid_at, created_at, escrow_status, delivered_at, delivery_note, buyer_confirmed_at, released_at, auto_release_at, auto_refund_at, payout_release_at, refunded_at, dispute_status, products:product_id (name, requires_manual_delivery)",
+            )
+            .eq("id", o.id)
+            .maybeSingle();
+          if (fresh) o = fresh;
+        }
       } catch (e) {
-        console.error("[getOrderFulfilment] auto-release failed", e);
+        console.error("[getOrderFulfilment] timer sweep failed", e);
       }
     }
 
@@ -220,6 +240,9 @@ export const getOrderFulfilment = createServerFn({ method: "POST" })
       buyerConfirmedAt: o.buyer_confirmed_at ?? null,
       releasedAt: o.released_at ?? null,
       autoReleaseAt: o.auto_release_at ?? null,
+      autoRefundAt: o.auto_refund_at ?? null,
+      payoutReleaseAt: o.payout_release_at ?? null,
+      refundedAt: o.refunded_at ?? null,
       disputeStatus: o.dispute_status ?? "none",
       role: isBuyer ? "buyer" : isSeller ? "seller" : "admin",
       buyer: await party(sb, o.buyer_id),
@@ -236,7 +259,7 @@ export const markOrderDelivered = createServerFn({ method: "POST" })
     z.object({ orderId: z.string().uuid(), note: z.string().trim().max(1000).optional() }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    const { admin, notify, AUTO_RELEASE_HOURS } = await import("@/lib/fulfilment.server");
+    const { admin, notify, sendEmail, CONFIRM_WINDOW_HOURS } = await import("@/lib/fulfilment.server");
     const sb = await admin();
     const { data: o, error } = await sb
       .from("orders")
@@ -249,7 +272,7 @@ export const markOrderDelivered = createServerFn({ method: "POST" })
     if (o.delivered_at) return { alreadyDelivered: true as const };
 
     const now = new Date();
-    const autoAt = new Date(now.getTime() + AUTO_RELEASE_HOURS * 3600 * 1000).toISOString();
+    const autoAt = new Date(now.getTime() + CONFIRM_WINDOW_HOURS * 3600 * 1000).toISOString();
     await sb
       .from("orders")
       .update({
@@ -257,6 +280,7 @@ export const markOrderDelivered = createServerFn({ method: "POST" })
         delivered_by: context.userId,
         delivery_note: data.note ?? null,
         auto_release_at: autoAt,
+        auto_refund_at: null,
       })
       .eq("id", data.orderId);
 
@@ -267,7 +291,7 @@ export const markOrderDelivered = createServerFn({ method: "POST" })
       `✅ Delivered — "${name}"\n\n` +
       (data.note ? `${data.note}\n\n` : "") +
       `Please check it over and tap "Confirm receipt" to release the escrowed payment. ` +
-      `It auto-confirms in ${AUTO_RELEASE_HOURS} hours if you don't act. ` +
+      `It auto-confirms in ${CONFIRM_WINDOW_HOURS} hours if you don't act. ` +
       `Keep everything in this chat — we can only mediate trades completed on Oventric.`;
     try {
       await sb.from("direct_messages").insert({
@@ -284,11 +308,21 @@ export const markOrderDelivered = createServerFn({ method: "POST" })
         user_id: o.buyer_id,
         kind: "order_delivered",
         title: "Seller marked your order delivered",
-        body: `"${name}" was marked delivered. Confirm receipt to release payment — it auto-confirms in ${AUTO_RELEASE_HOURS} hours.`,
+        body: `"${name}" was marked delivered. Confirm receipt to release payment — it auto-confirms in ${CONFIRM_WINDOW_HOURS} hours.`,
         link: `/order/${data.orderId}`,
         from_user_id: context.userId,
       },
     ]);
+    await sendEmail(
+      sb,
+      o.buyer_id,
+      `Your order "${name}" was marked delivered`,
+      [
+        `The seller marked "${name}" as delivered on Oventric.`,
+        `Confirm delivery in your chat to complete the trade, or report an issue if something is wrong. It auto-confirms in ${CONFIRM_WINDOW_HOURS} hours.`,
+      ],
+      `/order/${data.orderId}`,
+    );
     return { alreadyDelivered: false as const, autoReleaseAt: autoAt };
   });
 
@@ -297,16 +331,16 @@ export const buyerConfirmReceipt = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ orderId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { admin, releaseEscrow } = await import("@/lib/fulfilment.server");
+    const { admin, confirmReceipt } = await import("@/lib/fulfilment.server");
     const sb = await admin();
     const { data: o } = await sb
       .from("orders")
-      .select("id, buyer_id")
+      .select("id, buyer_id, delivered_at")
       .eq("id", data.orderId)
       .maybeSingle();
     if (!o) throw new Error("Order not found");
     if (o.buyer_id !== context.userId) throw new Error("Not your order");
-    return releaseEscrow(sb, data.orderId, context.userId, "buyer");
+    return confirmReceipt(sb, data.orderId, context.userId, "buyer");
   });
 
 /** Signed upload slot for a dispute evidence image (private post-media bucket). */
@@ -337,7 +371,7 @@ export const openOrderDispute = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ data, context }) => {
-    const { admin, notify, adminUserIds } = await import("@/lib/fulfilment.server");
+    const { admin, notify, adminUserIds, sendChat, sendEmail } = await import("@/lib/fulfilment.server");
     const sb = await admin();
     const { data: o } = await sb
       .from("orders")
@@ -384,6 +418,35 @@ export const openOrderDispute = createServerFn({ method: "POST" })
         from_user_id: context.userId,
       },
     ]);
+
+    const reasonLabel: Record<string, string> = {
+      not_delivered: "I never received the item",
+      wrong_item: "I received the wrong item",
+      not_working: "Received, but it isn't working",
+      seller_unreachable: "The seller isn't replying",
+      other: "Something else",
+    };
+    const label = reasonLabel[data.reason] ?? data.reason;
+    await sendChat(
+      sb,
+      context.userId,
+      o.seller_id,
+      data.orderId,
+      `⚠️ Issue reported — "${name}"\n\nReason: ${label}\n\n${data.details}\n\n` +
+        `${(data.imagePaths ?? []).length} image(s) were attached as proof. ` +
+        `Escrow on this order is frozen while our team reviews it. Please respond here as soon as you can — resolving it in chat is the fastest way to close the dispute.`,
+    );
+    await sendEmail(
+      sb,
+      o.seller_id,
+      `A buyer reported an issue with "${name}"`,
+      [
+        `Reason: ${label}`,
+        data.details,
+        "The payment for this order is frozen until the issue is resolved. Reply to the buyer in your Oventric chat as soon as possible.",
+      ],
+      `/order/${data.orderId}`,
+    );
     return { id: row.id as string };
   });
 
