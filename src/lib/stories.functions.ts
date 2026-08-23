@@ -81,32 +81,18 @@ export const publishStories = createServerFn({ method: "POST" })
     return { ok: true, count: rows.length };
   });
 
-/** Hard-delete expired stories and their media — no trace, unrecoverable. */
-async function purgeExpired() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data: dead } = await supabaseAdmin
-    .from("stories")
-    .select("id, media_path")
-    .lte("expires_at", new Date().toISOString())
-    .limit(500);
-  if (!dead || dead.length === 0) return;
-  const paths = dead.map((d: any) => d.media_path).filter(Boolean);
-  if (paths.length) await supabaseAdmin.storage.from("story-media").remove(paths);
-  await supabaseAdmin
-    .from("stories")
-    .delete()
-    .in(
-      "id",
-      dead.map((d: any) => d.id),
-    );
-}
+/**
+ * Stories disappear from the 24h circle rail but survive as **reels** — they
+ * keep collecting views in Discover and on the author's profile, so nothing is
+ * purged here anymore.
+ */
 
 /** Live story rail: my stories first, then people I follow / who follow me. */
 export const listStories = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<{ groups: StoryGroup[] }> => {
     const { supabase, userId } = context;
-    await purgeExpired().catch(() => {});
+
 
     const [followingRes, followersRes] = await Promise.all([
       supabase.from("follows").select("followee_id").eq("follower_id", userId),
@@ -265,4 +251,110 @@ export const reactToStory = createServerFn({ method: "POST" })
     } as never);
     if (dmErr) throw new Error(dmErr.message);
     return { ok: true, peerId: s.user_id as string };
+  });
+
+export type ReelItem = {
+  id: string;
+  userId: string;
+  slug: string;
+  displayName: string;
+  avatarUrl: string | null;
+  mediaUrl: string;
+  mediaType: "image" | "video";
+  posterUrl: string | null;
+  caption: string | null;
+  viewCount: number;
+  createdAt: string;
+};
+
+/**
+ * Reels: every story ever published, ranked by traction. Stories vanish from
+ * the 24h circle rail but live on here (Discover + profile grid) so authors
+ * keep earning views.
+ */
+export const listReels = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        /** Profile grid: limit to one author (user id or profile slug). */
+        slugOrId: z.string().min(1).max(120).optional(),
+        limit: z.number().int().min(1).max(60).optional(),
+      })
+      .parse(d ?? {}),
+  )
+  .handler(async ({ data, context }): Promise<{ reels: ReelItem[] }> => {
+    const { supabase } = context;
+    const limit = data.limit ?? 24;
+
+    let authorId: string | null = null;
+    if (data.slugOrId) {
+      const { data: prof } = await supabase
+        .from("profiles")
+        .select("user_id")
+        .or(`slug.eq.${data.slugOrId},user_id.eq.${data.slugOrId}`)
+        .maybeSingle();
+      authorId = (prof as any)?.user_id ?? null;
+      if (!authorId) return { reels: [] };
+    }
+
+    let q = supabase
+      .from("stories")
+      .select("id, user_id, media_path, media_type, view_count, created_at")
+      .order(authorId ? "created_at" : "view_count", { ascending: false })
+      .limit(limit);
+    if (authorId) q = q.eq("user_id", authorId);
+    const { data: rows } = await q;
+    if (!rows || rows.length === 0) return { reels: [] };
+
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("user_id, display_name, username, slug, avatar_path")
+      .in("user_id", Array.from(new Set(rows.map((r: any) => r.user_id))));
+
+    const avatarByPath = new Map<string, string>();
+    const avatarPaths = (profiles ?? []).map((p: any) => p.avatar_path).filter(Boolean);
+    if (avatarPaths.length) {
+      const { data: signed } = await supabase.storage
+        .from("avatars")
+        .createSignedUrls(avatarPaths, 60 * 60 * 6);
+      (signed ?? []).forEach((s: any) => {
+        if (s.path && s.signedUrl) avatarByPath.set(s.path, s.signedUrl);
+      });
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const posterPaths = rows
+      .filter((r: any) => r.media_type === "video")
+      .map((r: any) => `${r.media_path}.poster.jpg`);
+    const { data: mediaSigned } = await supabaseAdmin.storage
+      .from("story-media")
+      .createSignedUrls([...rows.map((r: any) => r.media_path), ...posterPaths], 60 * 60 * 6);
+    const mediaByPath = new Map<string, string>();
+    (mediaSigned ?? []).forEach((s: any) => {
+      if (s.path && s.signedUrl) mediaByPath.set(s.path, s.signedUrl);
+    });
+
+    const profById = new Map((profiles ?? []).map((p: any) => [p.user_id, p]));
+    const reels: ReelItem[] = [];
+    rows.forEach((r: any) => {
+      const url = mediaByPath.get(r.media_path);
+      if (!url) return;
+      const p: any = profById.get(r.user_id) ?? {};
+      reels.push({
+        id: r.id,
+        userId: r.user_id,
+        slug: p.slug ?? r.user_id,
+        displayName: p.display_name ?? p.username ?? "Member",
+        avatarUrl: p.avatar_path ? (avatarByPath.get(p.avatar_path) ?? null) : null,
+        mediaUrl: url,
+        mediaType: r.media_type === "video" ? "video" : "image",
+        posterUrl:
+          r.media_type === "video" ? (mediaByPath.get(`${r.media_path}.poster.jpg`) ?? null) : null,
+        caption: null,
+        viewCount: Number(r.view_count ?? 0),
+        createdAt: r.created_at,
+      });
+    });
+    return { reels };
   });

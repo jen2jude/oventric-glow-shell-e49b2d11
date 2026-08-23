@@ -4,8 +4,7 @@ import { Flame, Sparkles, Trophy, GraduationCap, Users, ShoppingBag, PlayCircle,
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { navigateSection } from "@/components/oventric/DiscoveryPanel";
 import { useFeedDiscovery } from "@/components/oventric/feed/useFeedDiscovery";
-import { useStoryRail } from "@/components/oventric/feed/useStories";
-import { StoryViewerModal } from "@/components/oventric/feed/StoryViewerModal";
+import { ReelsRail, useReels } from "@/components/oventric/feed/ReelsShelf";
 import type { FeedPost } from "@/lib/posts.functions";
 import { ExploreHeader, type ExploreTab } from "./ExploreHeader";
 import { PeopleExploreList } from "./PeopleExploreList";
@@ -77,8 +76,7 @@ export function FeedDiscoverExplore({
 }) {
   const { peers, products, bounties, courses, circles, loading } = useFeedDiscovery(true);
   const { baseCurrency } = useOnboarding();
-  const { groups: storyGroups, refresh: refreshStories } = useStoryRail(true);
-  const [reelAt, setReelAt] = useState<number | null>(null);
+  const reels = useReels(true, undefined, 24);
   const [activeTab, setActiveTab] = useState<ExploreTab | "Discovery">("Discovery");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -182,69 +180,12 @@ export function FeedDiscoverExplore({
 
   return (
     <div className="space-y-6">
-      {storyGroups.length > 0 && (
-
+      {reels && reels.length > 0 && (
         <Section icon={PlayCircle} title="Reels">
-          <Rail>
-            {storyGroups.map((g, i) => (
-              <button
-                key={g.userId}
-                type="button"
-                onClick={() => setReelAt(i)}
-                className="relative h-[210px] w-[132px] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/[0.06] bg-[#141416] text-left active:scale-[0.98]"
-              >
-                {g.items[0]?.mediaType === "video" ? (
-                  g.items[0]?.posterUrl ? (
-                    <img loading="lazy"
-                      src={g.items[0].posterUrl}
-                      alt=""
-                      decoding="async"
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <video
-                      src={g.items[0].mediaUrl}
-                      muted
-                      playsInline
-                      preload="metadata"
-                      className="h-full w-full object-cover"
-                    />
-                  )
-                ) : (
-                  <img loading="lazy"
-                    src={g.items[0]?.mediaUrl}
-                    alt=""
-                    decoding="async"
-                    className="h-full w-full object-cover"
-                  />
-                )}
-
-                <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent p-2.5">
-                  <span className="flex items-center gap-1.5">
-                    <span className="h-6 w-6 overflow-hidden rounded-full ring-1 ring-[#E5484D]">
-                      <AvatarImage src={g.avatarUrl} alt={g.displayName} />
-                    </span>
-                    <span className="truncate text-[11.5px] font-semibold text-white">
-                      {g.displayName.split(" ")[0]}
-                    </span>
-                  </span>
-                </span>
-              </button>
-            ))}
-          </Rail>
+          <ReelsRail reels={reels} />
         </Section>
       )}
 
-      {reelAt !== null && (
-        <StoryViewerModal
-          groups={storyGroups}
-          startIndex={reelAt}
-          onClose={() => {
-            setReelAt(null);
-            void refreshStories();
-          }}
-        />
-      )}
 
       {peers.length > 0 && (
 

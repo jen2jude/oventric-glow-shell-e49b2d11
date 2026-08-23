@@ -102,6 +102,8 @@ function CountryFlag({ country }: { country: string | null | undefined }) {
 }
 
 import { listUserPhotos, type UserPhoto } from "@/lib/posts.functions";
+import { ReelsGrid, useReels } from "@/components/oventric/feed/ReelsShelf";
+import { PlayCircle } from "lucide-react";
 import { getDashboardOverview, type DashboardOverview } from "@/lib/dashboard.functions";
 import { ImageLightbox } from "@/components/oventric/feed/ImageLightbox";
 import { PhotoBatches } from "@/components/oventric/PhotoBatches";
@@ -2253,7 +2255,9 @@ function TabFilters({
 function ProfilePhotosGallery({ slug }: { slug: string }) {
   const fetchPhotos = useServerFn(listUserPhotos);
   const [photos, setPhotos] = useState<UserPhoto[] | null>(null);
-  const [filter, setFilter] = useState<"all" | "avatar" | "cover" | "post">("all");
+  const [filter, setFilter] = useState<"all" | "avatar" | "cover" | "post" | "reels">("all");
+  const reels = useReels(true, slug, 60);
+
   useEffect(() => {
     let cancel = false;
     (async () => {
@@ -2276,7 +2280,8 @@ function ProfilePhotosGallery({ slug }: { slug: string }) {
       </div>
     );
   }
-  const filtered = filter === "all" ? photos : photos.filter((p) => p.source === filter);
+  const filtered =
+    filter === "all" || filter === "reels" ? photos : photos.filter((p) => p.source === filter);
   const chip = (v: typeof filter, label: string) => (
     <button
       key={v}
@@ -2290,11 +2295,32 @@ function ProfilePhotosGallery({ slug }: { slug: string }) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
         {chip("all", "All")}
+        {chip("reels", "Reels")}
         {chip("post", "Posts")}
         {chip("avatar", "Profile")}
         {chip("cover", "Cover")}
       </div>
-      {filtered.length === 0 ? (
+      {filter === "reels" ? (
+        reels === null ? (
+          <div className="py-16 flex justify-center">
+            <Loader2 className="w-5 h-5 animate-spin text-slate-500" />
+          </div>
+        ) : reels.length === 0 ? (
+          <div className="bg-[#1E1E24] md:bg-white md:shadow-sm border border-white/10 md:border-slate-200 rounded-2xl py-16 px-6 text-center">
+            <div className="mx-auto mb-3 w-10 h-10 rounded-full bg-[#E5484D]/10 border border-[#E5484D]/30 text-[#E5484D] flex items-center justify-center">
+              <PlayCircle className="w-4 h-4" />
+            </div>
+            <div className="text-sm text-slate-200 md:text-slate-700 font-semibold">
+              No reels yet
+            </div>
+            <p className="mt-1 text-xs text-slate-500 max-w-sm mx-auto">
+              Short videos and stories stay here after 24 hours and keep collecting views.
+            </p>
+          </div>
+        ) : (
+          <ReelsGrid reels={reels} />
+        )
+      ) : filtered.length === 0 ? (
         <div className="bg-[#1E1E24] md:bg-white md:shadow-sm border border-white/10 md:border-slate-200 rounded-2xl py-16 px-6 text-center">
           <div className="mx-auto mb-3 w-10 h-10 rounded-full bg-emerald-500/10 md:bg-emerald-50 border border-emerald-500/30 text-emerald-300 md:text-emerald-700 flex items-center justify-center">
             <Images className="w-4 h-4" />
@@ -2309,6 +2335,7 @@ function ProfilePhotosGallery({ slug }: { slug: string }) {
       ) : (
         <PhotoBatches photos={filtered} />
       )}
+
     </div>
   );
 }
