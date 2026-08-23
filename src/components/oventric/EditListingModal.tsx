@@ -259,10 +259,13 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
             <div className="w-16 h-16 mx-auto rounded-full bg-emerald-500/10 border border-emerald-400/40 flex items-center justify-center mb-4">
               <CheckCircle2 className="w-8 h-8 text-emerald-400" />
             </div>
-            <h2 className="text-xl font-bold text-white mb-2">Resubmitted for review</h2>
+            <h2 className="text-xl font-bold text-white mb-2">
+              {isLive ? "Changes saved" : "Resubmitted for review"}
+            </h2>
             <p className="text-sm text-slate-400 max-w-md mx-auto mb-6">
-              Your changes and response have been sent back to the moderation team. You'll get a
-              notification once they take another look.
+              {isLive
+                ? "Your listing has been updated and stays live in the marketplace."
+                : "Your changes and response have been sent back to the moderation team. You'll get a notification once they take another look."}
             </p>
             <button
               onClick={onClose}
@@ -278,9 +281,14 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
                 <h2 className="text-xl font-bold text-white">Edit Listing</h2>
                 <p className="text-xs text-slate-400 mt-1">
                   {isPhysical ? "Physical goods listing" : "Digital asset listing"} ·{" "}
-                  {product.status === "pending" ? "pending review" : "currently rejected"}
+                  {product.status === "pending"
+                    ? "pending review"
+                    : product.status === "active"
+                      ? "live"
+                      : "currently rejected"}
                 </p>
               </div>
+
               <button
                 onClick={onClose}
                 disabled={submitting}
