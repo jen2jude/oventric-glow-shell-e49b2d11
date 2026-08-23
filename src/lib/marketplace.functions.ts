@@ -684,32 +684,35 @@ export const updateAndResubmitProduct = createServerFn({ method: "POST" })
       .eq("seller_id", context.userId);
     if (updErr) throw new Error(updErr.message);
 
-    // Notify admins so the resubmission surfaces in their moderation queue.
-    try {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const { data: admins } = await supabaseAdmin
-        .from("user_roles")
-        .select("user_id")
-        .eq("role", "admin");
-      const body = data.sellerResponse
-        ? `Seller resubmitted "${current.name as string}" for review. Response: ${data.sellerResponse}`
-        : `Seller resubmitted "${current.name as string}" for review.`;
-      const rows = (admins ?? []).map((a) => ({
-        user_id: a.user_id as string,
-        kind: "system" as const,
-        title: "Listing resubmitted for review",
-        body,
-        link: `/admin/products`,
-        from_user_id: context.userId,
-      }));
-      if (rows.length > 0) {
-        await supabaseAdmin.from("notifications").insert(rows);
+    // Notify admins only when the edit actually needs moderation.
+    if (nextStatus === "pending") {
+      try {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { data: admins } = await supabaseAdmin
+          .from("user_roles")
+          .select("user_id")
+          .eq("role", "admin");
+        const body = data.sellerResponse
+          ? `Seller resubmitted "${current.name as string}" for review. Response: ${data.sellerResponse}`
+          : `Seller resubmitted "${current.name as string}" for review.`;
+        const rows = (admins ?? []).map((a) => ({
+          user_id: a.user_id as string,
+          kind: "system" as const,
+          title: "Listing resubmitted for review",
+          body,
+          link: `/admin/products`,
+          from_user_id: context.userId,
+        }));
+        if (rows.length > 0) {
+          await supabaseAdmin.from("notifications").insert(rows);
+        }
+      } catch (err) {
+        console.error("[updateAndResubmitProduct] admin notify failed", err);
       }
-    } catch (err) {
-      console.error("[updateAndResubmitProduct] admin notify failed", err);
     }
 
-    return { id: data.id, status: "pending" as const };
+    return { id: data.id, status: nextStatus as "pending" | "active" };
+
   });
 
 
