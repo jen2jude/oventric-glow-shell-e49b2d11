@@ -58,7 +58,10 @@ export function MobileNav({
     );
   };
 
+  if (chatOpen) return null;
+
   return (
+
     <nav
       data-testid="mobile-nav"
       className="md:hidden fixed bottom-0 inset-x-0 z-30 max-w-full bg-[#141418] border-t border-white/15 shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.45)] rounded-t-2xl flex items-center px-2"
