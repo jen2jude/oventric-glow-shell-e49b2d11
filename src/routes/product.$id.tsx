@@ -811,6 +811,18 @@ function ProductPage() {
                 </div>
               )}
 
+              {meId && meId === product.sellerId && (
+                <button
+                  type="button"
+                  onClick={() => setEditOpen(true)}
+                  className="mt-4 w-full rounded-[10px] border border-[#E5484D]/30 bg-[#E5484D]/10 px-4 py-3 text-[13px] font-bold text-[#E5484D]"
+                >
+                  Edit this listing
+                </button>
+              )}
+
+
+
               <div className={`${isAppShell ? "mt-4" : ""} text-[11px] text-slate-500 md:text-slate-500 inline-flex items-center gap-1`}>
                 <Sparkles className={`w-3 h-3 ${isAppShell ? "text-[#E5484D]" : "text-emerald-400"}`} />
                 {product.kind === "service"
