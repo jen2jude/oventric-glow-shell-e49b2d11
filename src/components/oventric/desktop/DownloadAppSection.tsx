@@ -1,4 +1,7 @@
 import { Bell, Search, Filter, Wallet as WalletIcon, ChevronRight, User } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+
+import { ANDROID_APK_URL } from "@/lib/app-distribution";
 
 import homeIcon from "@/assets/home-3d.png.asset.json";
 import walletIcon from "@/assets/wallet-3d.webp.asset.json";
