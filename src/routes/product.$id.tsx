@@ -856,6 +856,19 @@ function ProductPage() {
         )}
       </main>
       {!isAppShell && <SiteFooterAuto />}
+      {product && editOpen && meId === product.sellerId && (
+        <EditListingModal
+          product={product}
+          onClose={() => setEditOpen(false)}
+          onResubmitted={() => {
+            setEditOpen(false);
+            load({ data: { id } })
+              .then((p) => setProduct(p))
+              .catch(() => {});
+          }}
+        />
+      )}
+
       {product && product.kind !== "physical" && (
         <ProfileMessageModal
           open={chatOpen}
