@@ -184,29 +184,23 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
     >
       {(phase === "intro" || introExiting) && (
         <div
-          className="absolute inset-0 flex flex-col w-full overflow-hidden"
+          className="absolute inset-0 flex flex-col w-full overflow-hidden bg-[#F5F2FC]"
           style={{ animation: introExiting ? EXIT : ENTER }}
         >
-          <div
-            aria-hidden
-            className="absolute -top-24 left-1/2 -translate-x-1/2 h-72 w-72 rounded-full blur-3xl opacity-40 pointer-events-none"
-            style={{ background: "radial-gradient(circle, rgba(124,58,237,0.55), transparent 70%)" }}
-          />
-
           {/* Header */}
-          <div className="relative flex items-center justify-center px-5 pt-6 pb-2 shrink-0">
+          <div className="relative flex items-center px-5 pt-6 pb-2 shrink-0">
             <img
               loading="eager"
               decoding="async"
-              src={oventricFull}
+              src={oventricDark}
               alt="Oventric"
-              className="h-8 w-auto select-none"
+              className="h-7 w-auto select-none absolute left-1/2 -translate-x-1/2"
               draggable={false}
             />
           </div>
 
-          <div className="relative px-6 pt-4 pb-3 shrink-0">
-            <h1 className="text-[30px] leading-[1.08] sm:text-4xl font-black tracking-tight text-white">
+          <div className="relative px-6 pt-6 pb-3 shrink-0">
+            <h1 className="text-[34px] leading-[1.04] font-black tracking-tight text-[#1E1B4B]">
               Digital Marketplace
               <br />
               &amp; Community
@@ -220,23 +214,24 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
             <InterestBubbles />
           </div>
 
-          <div className="relative px-6 pb-8 pt-2 shrink-0 flex items-center justify-between">
+          <div className="relative px-6 pb-9 pt-2 shrink-0 flex items-center justify-between gap-3">
             <button
               onClick={handleComplete}
-              className="text-sm font-medium text-slate-400 hover:text-white transition-colors"
+              className="text-sm font-semibold text-[#1E1B4B]/50 hover:text-[#1E1B4B] transition-colors"
             >
               Skip
             </button>
             <button
               onClick={() => setIntroExiting(true)}
               aria-label="Next"
-              className="h-12 w-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-slate-200 transition-colors"
+              className="h-14 w-14 rounded-full bg-[#231C56] text-white flex items-center justify-center hover:bg-[#2c2469] transition-colors"
             >
               <ChevronRight className="w-5 h-5" strokeWidth={2.6} />
             </button>
           </div>
         </div>
       )}
+
 
       {phase === "journey" && (
         <div
