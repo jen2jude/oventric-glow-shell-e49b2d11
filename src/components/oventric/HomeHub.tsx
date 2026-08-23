@@ -41,6 +41,8 @@ import { ExploreCategories } from "@/components/oventric/hub/ExploreCategories";
 import { FeaturedProductCard } from "@/components/oventric/hub/FeaturedProductCard";
 import { WalletDetailModal } from "@/components/oventric/hub/WalletDetailModal";
 import { CommunityRail } from "@/components/oventric/hub/CommunityRail";
+import { AddCapitalModal } from "@/components/oventric/wallet/AddCapitalModal";
+import { PayoutModal } from "@/components/oventric/wallet/PayoutModal";
 import { MegaMenu } from "@/components/oventric/MegaMenu";
 import { getWalletBalances } from "@/lib/wallet.functions";
 import logoFull from "@/assets/oventric-full-transparent.png";
@@ -93,6 +95,8 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
   const [notifOpen, setNotifOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
   const [walletOpen, setWalletOpen] = useState(false);
+  const [addFundsOpen, setAddFundsOpen] = useState(false);
+  const [payoutOpen, setPayoutOpen] = useState(false);
   const unreadNotifs = useUnreadNotificationsCount();
   const currency: Currency = country ? baseCurrency : "USD";
 
@@ -489,13 +493,15 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
         escrowLabel={formatMoney(escrow, currency)}
         onAddFunds={() => {
           setWalletOpen(false);
-          onSelect("Wallet");
+          setAddFundsOpen(true);
         }}
         onWithdraw={() => {
           setWalletOpen(false);
-          onSelect("Wallet");
+          setPayoutOpen(true);
         }}
       />
+      {addFundsOpen && <AddCapitalModal onClose={() => setAddFundsOpen(false)} />}
+      {payoutOpen && <PayoutModal onClose={() => setPayoutOpen(false)} />}
     </div>
   );
 }
