@@ -141,10 +141,10 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
     if (!name.trim()) return toast.error("Title required");
     if (!description.trim()) return toast.error("Description required");
     const priceLocal = Number(priceInput);
-    if (!(priceLocal > 0)) return toast.error("Price must be greater than 0");
+    if (!Number.isFinite(priceLocal) || priceLocal < 0)
+      return toast.error("Enter a valid price (use 0 for free)");
 
     let sellerPhone: string | null | undefined = undefined;
-    let imagePaths: string[] | undefined = undefined;
 
     if (isPhysical) {
       const digits = phone.replace(/\D/g, "");
@@ -152,17 +152,20 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
       sellerPhone = digits;
       const totalImages = existing.length + newFiles.length;
       if (totalImages < 3) return toast.error("Keep at least 3 product images");
+    } else if (existing.length + newFiles.length < 1) {
+      return toast.error("Keep at least 1 product image");
     }
 
     setSubmitting(true);
     try {
-      // Upload any new files first (physical).
+      const { data: userData } = await supabase.auth.getUser();
+      const uid = userData.user?.id;
+      if (!uid) throw new Error("Sign in again to save your changes");
+
+      // Upload any newly added gallery images.
       const uploadedPaths: string[] = [];
-      if (isPhysical && newFiles.length > 0) {
+      if (newFiles.length > 0) {
         setProgress("Uploading new images...");
-        const { data: userData } = await supabase.auth.getUser();
-        const uid = userData.user?.id;
-        if (!uid) throw new Error("Sign in again to resubmit");
         for (const img of newFiles) {
           const safe = img.name.replace(/[^\w.\-]+/g, "_");
           const path = `${uid}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safe}`;
@@ -173,8 +176,19 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
           uploadedPaths.push(path);
         }
       }
-      if (isPhysical) {
-        imagePaths = [...existing.map((e) => e.path), ...uploadedPaths];
+      const imagePaths = [...existing.map((x) => x.path), ...uploadedPaths];
+
+      // Optional replacement asset file (digital listings only).
+      let filePath: string | undefined = undefined;
+      if (!isPhysical && assetFile) {
+        setProgress("Uploading replacement file...");
+        const safe = assetFile.name.replace(/[^\w.\-]+/g, "_");
+        const path = `${uid}/${Date.now()}-${safe}`;
+        const { error } = await supabase.storage
+          .from("product-files")
+          .upload(path, assetFile, { contentType: assetFile.type || undefined, upsert: false });
+        if (error) throw new Error(error.message);
+        filePath = path;
       }
 
       setProgress("Locking market rate...");
@@ -182,8 +196,8 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
       const rate = Number(snapshot.rates[baseCurrency] ?? 1);
       const priceUSD = baseCurrency === "USD" ? priceLocal : Number((priceLocal / rate).toFixed(2));
 
-      setProgress("Resubmitting for review...");
-      await persist({
+      setProgress(isLive ? "Saving changes..." : "Resubmitting for review...");
+      const res = await persist({
         data: {
           id: product.id,
           name: name.trim(),
@@ -198,6 +212,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
           originalAmount: priceLocal,
           fxSnapshot: snapshot,
           externalUrl: isPhysical ? null : externalUrl.trim() || null,
+          ...(filePath ? { filePath } : {}),
           imagePaths,
           condition: isPhysical ? condition : null,
           brand: isPhysical ? brand.trim() || null : null,
@@ -211,12 +226,20 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
         },
       });
 
+      if (res.status === "active") {
+        toast.success("Listing updated", { description: "Your changes are live." });
+      } else {
+        toast.success("Sent for review", {
+          description: "Your listing will go live once a moderator approves it.",
+        });
+      }
       setSuccess(true);
       onResubmitted();
     } catch (err) {
-      toast.error("Could not resubmit", {
+      toast.error("Could not save changes", {
         description: err instanceof Error ? err.message : "Try again in a moment.",
       });
+
     } finally {
       setSubmitting(false);
       setProgress("");
