@@ -2638,3 +2638,21 @@ body[data-chat-open="1"] [data-testid="app-tab-bar"] {
 @media (prefers-reduced-motion: reduce) {
   [style*="ov-bubble-float"] { animation: none !important; }
 }
+
+/* Onboarding journey orbit — RGB connective lines + floating nodes */
+@keyframes ov-line-dash {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -32; }
+}
+@keyframes ov-node-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -3px, 0); }
+}
+@keyframes ov-orbit-hue {
+  from { filter: hue-rotate(0deg); }
+  to { filter: hue-rotate(360deg); }
+}
+.ov-orbit-lines { animation: ov-orbit-hue 9s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .ov-orbit-lines, .ov-orbit g { animation: none !important; }
+}

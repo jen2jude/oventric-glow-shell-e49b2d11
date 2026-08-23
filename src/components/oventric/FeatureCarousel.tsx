@@ -10,6 +10,7 @@ import mockBounties from "@/assets/mock-bounties.jpg";
 import mockWallet from "@/assets/mock-wallet.jpg";
 import oventricFull from "@/assets/oventric-full-transparent.png";
 import { InterestBubbles } from "@/components/oventric/onboarding/InterestBubbles";
+import { JourneyOrbit } from "@/components/oventric/onboarding/JourneyOrbit";
 import { markCarouselSeen as markCarouselSeenFn } from "@/lib/carousel.functions";
 
 interface Slide {
@@ -65,7 +66,6 @@ const SLIDES: Slide[] = [
   },
 ];
 
-const INTRO_HOLD_MS = 5000; // intro stays fully visible
 const INTRO_FADE_MS = 600; // fade-out into first slide
 const CONGRATS_MS = 2400;
 const ENTER = "feature-carousel-enter 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards";
@@ -74,7 +74,7 @@ const SLIDE_ENTER = "feature-carousel-enter 0.7s cubic-bezier(0.16, 1, 0.3, 1) f
 const IN_FROM_RIGHT = "feature-carousel-in-right 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards";
 const IN_FROM_LEFT = "feature-carousel-in-left 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards";
 
-type Phase = "intro" | "slides" | "congrats";
+type Phase = "intro" | "journey" | "slides" | "congrats";
 
 export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
   const [phase, setPhase] = useState<Phase>("intro");
@@ -86,46 +86,11 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const markSeenServer = useServerFn(markCarouselSeenFn);
 
-  // Intro frame stays fully visible for 5s *after the boot splash is gone*,
-  // then begins a smooth fade into slides.
-  useEffect(() => {
-    if (phase !== "intro") return;
-    let t: ReturnType<typeof setTimeout> | undefined;
-    let raf: number | undefined;
-
-    const startHold = () => {
-      t = setTimeout(() => setIntroExiting(true), INTRO_HOLD_MS);
-    };
-
-    const bootSplashGone = () =>
-      !document.getElementById("oventric-boot") &&
-      !document.querySelector('[data-oventric-boot="react"]');
-
-    const waitForBootSplash = () => {
-      if (bootSplashGone()) {
-        startHold();
-        return;
-      }
-      const observer = new MutationObserver(() => {
-        if (bootSplashGone()) {
-          observer.disconnect();
-          startHold();
-        }
-      });
-      observer.observe(document.body, { childList: true, subtree: true });
-    };
-
-    raf = requestAnimationFrame(waitForBootSplash);
-    return () => {
-      if (raf) cancelAnimationFrame(raf);
-      if (t) clearTimeout(t);
-    };
-  }, [phase]);
-
+  // Intro is user-driven: tap Next to move into the journey screen.
   useEffect(() => {
     if (!introExiting) return;
     const t = setTimeout(() => {
-      setPhase("slides");
+      setPhase("journey");
       setIntroExiting(false);
     }, INTRO_FADE_MS);
     return () => clearTimeout(t);
@@ -254,12 +219,63 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
             <InterestBubbles />
           </div>
 
-          <div className="relative px-6 pb-8 pt-2 shrink-0">
+          <div className="relative px-6 pb-8 pt-2 shrink-0 flex items-center justify-between">
+            <button
+              onClick={handleComplete}
+              className="text-sm font-medium text-slate-400 hover:text-white transition-colors"
+            >
+              Skip
+            </button>
             <button
               onClick={() => setIntroExiting(true)}
-              className="w-full h-12 rounded-full bg-white text-black font-bold text-sm hover:bg-slate-200 transition-colors"
+              aria-label="Next"
+              className="h-12 w-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-slate-200 transition-colors"
             >
-              Continue
+              <ChevronRight className="w-5 h-5" strokeWidth={2.6} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {phase === "journey" && (
+        <div
+          className="absolute inset-0 flex flex-col w-full overflow-hidden"
+          style={{ animation: ENTER }}
+        >
+          <div
+            aria-hidden
+            className="absolute -top-24 left-1/2 -translate-x-1/2 h-72 w-72 rounded-full blur-3xl opacity-40 pointer-events-none"
+            style={{ background: "radial-gradient(circle, rgba(0,194,255,0.4), transparent 70%)" }}
+          />
+          <div className="relative flex items-center justify-center px-5 pt-6 pb-2 shrink-0">
+            <img
+              loading="eager"
+              decoding="async"
+              src={oventricFull}
+              alt="Oventric"
+              className="h-8 w-auto select-none"
+              draggable={false}
+            />
+          </div>
+
+          <div className="relative px-6 pt-4 shrink-0">
+            <h1 className="text-[32px] leading-[1.08] sm:text-4xl font-black tracking-tight text-white">
+              Let's start
+              <br />
+              your journey
+            </h1>
+          </div>
+
+          <div className="relative flex-1 min-h-0 flex items-center justify-center px-5">
+            <JourneyOrbit />
+          </div>
+
+          <div className="relative px-6 pb-8 pt-2 shrink-0">
+            <button
+              onClick={handleComplete}
+              className="w-full h-14 rounded-full bg-white text-black font-bold text-sm hover:bg-slate-200 transition-colors"
+            >
+              Get Started
             </button>
           </div>
         </div>
@@ -278,7 +294,7 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
         </div>
       )}
 
-      {(phase === "slides" || introExiting) && (
+      {phase === "slides" && (
         <div
           className={`flex flex-col items-center w-full h-full ${
             introExiting ? "absolute inset-0 z-20" : ""
