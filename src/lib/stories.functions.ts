@@ -300,7 +300,7 @@ export const listReels = createServerFn({ method: "POST" })
 
     let q = supabase
       .from("stories")
-      .select("id, user_id, media_path, media_type, caption, view_count, created_at")
+      .select("id, user_id, media_path, media_type, view_count, created_at")
       .order(authorId ? "created_at" : "view_count", { ascending: false })
       .limit(limit);
     if (authorId) q = q.eq("user_id", authorId);
@@ -351,7 +351,7 @@ export const listReels = createServerFn({ method: "POST" })
         mediaType: r.media_type === "video" ? "video" : "image",
         posterUrl:
           r.media_type === "video" ? (mediaByPath.get(`${r.media_path}.poster.jpg`) ?? null) : null,
-        caption: r.caption ?? null,
+        caption: null,
         viewCount: Number(r.view_count ?? 0),
         createdAt: r.created_at,
       });
