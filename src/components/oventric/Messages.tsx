@@ -9,7 +9,6 @@ import {
   MessageSquare,
   Loader2,
   Truck,
-  CheckCircle2,
   ShieldAlert,
   AlertTriangle,
 } from "lucide-react";
