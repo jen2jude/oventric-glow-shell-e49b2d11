@@ -299,41 +299,35 @@ export async function settleOrder(
     const orderId = oRow.id as string;
     const productName = (pRow.name as string) ?? "your listing";
     try {
-      const origin = process.env.VITE_SITE_URL || "https://oventric.com";
-      const productLink = `${origin}/product/${pRow.id}`;
-
-      // Automatic Buyer to Seller message
-      await supabaseAdmin.from("direct_messages").insert({
-        sender_id: buyerId,
-        recipient_id: pRow.seller_id as string,
-        order_id: orderId,
-        body: `hey i just paid for ${productName} please deliver as soon as possible. ${productLink}`,
-      });
-
-      // Automatic Seller to Buyer reply
-      await supabaseAdmin.from("direct_messages").insert({
-        sender_id: pRow.seller_id as string,
-        recipient_id: buyerId,
-        order_id: orderId,
-        body: `Thank you for your payment!. We are preparing your order and will ship it as soon as possible. Thank you and we will make sure everything goes smoothly. ${productLink}`,
-      });
-
-      // Detailed escrow instructions for the seller
+      // 1. Buyer ➜ Seller: payment confirmed, please deliver.
       await supabaseAdmin.from("direct_messages").insert({
         sender_id: buyerId,
         recipient_id: pRow.seller_id as string,
         order_id: orderId,
         body:
-          `📦 New paid order — "${productName}" (Qty ${qty})\n\n` +
-          `Payment is verified and held in escrow. Deliver right here in this chat ` +
-          `(share the link, upload the file, or send the setup steps), then tap "Mark as delivered".\n\n` +
-          `Your wallet is funded once the buyer confirms receipt — or automatically after 48 hours. ` +
-          `Keep the trade on Oventric; we can't protect either side off-platform.\n\n` +
+          `📦 Payment confirmed — "${productName}" (Qty ${qty})\n\n` +
+          `Oventric has verified this payment and it is held in escrow. Please deliver as soon as possible — ` +
+          `share the file, link or setup steps right here in this chat, then tap "Delivered".\n\n` +
+          `You have ${DELIVER_DEADLINE_HOURS} hours to deliver, otherwise the payment is automatically refunded to the buyer. ` +
+          `Once the buyer confirms (or the confirmation window closes), your earnings clear into your wallet.\n\n` +
           `Order ref: ${orderId.slice(0, 8)}`,
       });
+
+      // 2. Seller ➜ Buyer: automatic acknowledgement reply.
+      await supabaseAdmin.from("direct_messages").insert({
+        sender_id: pRow.seller_id as string,
+        recipient_id: buyerId,
+        order_id: orderId,
+        body:
+          `✅ Payment confirmed — "${productName}"\n\n` +
+          `Thank you! Your payment is confirmed and safely held in escrow. The seller has been notified and will deliver as soon as possible.\n\n` +
+          `When you receive it, tap "Confirm delivery" below. If anything goes wrong, tap "Report issue". ` +
+          `Keep the whole trade in this chat — escrow, refunds and mediation only cover deals completed on Oventric.`,
+      });
     } catch (e) {
-      console.error("[settleOrder] seller DM failed", e);
+      console.error("[settleOrder] order DMs failed", e);
     }
+
     try {
       await supabaseAdmin.from("notifications").insert({
         user_id: pRow.seller_id as string,
