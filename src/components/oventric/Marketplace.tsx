@@ -239,6 +239,7 @@ function AppMarketplace() {
                 variant="dark"
                 className="mt-2"
                 onOpenMarketplace={() => setShowTopSellers(true)}
+                hideCommunity
               />
             )}
 
