@@ -476,23 +476,32 @@ function Index() {
         )}
       </div>
 
-      <CreatePanel
-        open={createOpen}
-        initialChoice={createChoice}
-        onClose={() => {
-          setCreateOpen(false);
-          setCreateChoice(null);
-        }}
-      />
-      <GetAppModal open={getAppOpen} onClose={() => setGetAppOpen(false)} from="create" />
-      <MessagesDrawer
-        open={messagesOpen}
-        onClose={() => {
-          setMessagesOpen(false);
-          setMessagesPeer(undefined);
-        }}
-        initialThreadId={messagesPeer}
-      />
+      <Suspense fallback={null}>
+        {createOpen && (
+          <CreatePanel
+            open={createOpen}
+            initialChoice={createChoice}
+            onClose={() => {
+              setCreateOpen(false);
+              setCreateChoice(null);
+            }}
+          />
+        )}
+        {getAppOpen && (
+          <GetAppModal open={getAppOpen} onClose={() => setGetAppOpen(false)} from="create" />
+        )}
+        {messagesOpen && (
+          <MessagesDrawer
+            open={messagesOpen}
+            onClose={() => {
+              setMessagesOpen(false);
+              setMessagesPeer(undefined);
+            }}
+            initialThreadId={messagesPeer}
+          />
+        )}
+      </Suspense>
+
     </div>
   );
 }
