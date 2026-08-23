@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Flame, Sparkles, Trophy, GraduationCap, Users, ShoppingBag, PlayCircle, Search, X, Filter, Star } from "lucide-react";
+import { Flame, Sparkles, Trophy, GraduationCap, Users, ShoppingBag, PlayCircle, Search, Star } from "lucide-react";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { navigateSection } from "@/components/oventric/DiscoveryPanel";
 import { useFeedDiscovery } from "@/components/oventric/feed/useFeedDiscovery";
@@ -11,7 +11,6 @@ import { ExploreHeader, type ExploreTab } from "./ExploreHeader";
 import { PeopleExploreList } from "./PeopleExploreList";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { computeDisplayPrice } from "@/lib/fx-display";
-import { ExploreCategories } from "@/components/oventric/hub/ExploreCategories";
 
 
 function fmtUsd(usd: number, viewer: Currency): string {
@@ -183,36 +182,6 @@ export function FeedDiscoverExplore({
 
   return (
     <div className="space-y-6">
-      {/* Search Header - Hub Style */}
-      <div className="-mx-1 px-1">
-        <div className="flex items-center gap-3">
-          <div 
-            onClick={() => setActiveTab("People")}
-            className="relative flex-1 group cursor-pointer"
-          >
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-white/30 group-focus-within:text-[#E5484D] transition-colors" />
-            <div className="w-full h-[52px] pl-11 pr-4 flex items-center text-[15px] rounded-[10px] bg-[#141416] border border-white/5 text-white/20">
-              Search Oventric...
-            </div>
-          </div>
-          <button className="h-[52px] w-[52px] flex items-center justify-center rounded-[10px] bg-[#141416] border border-white/5 text-white/40 active:scale-95 transition-transform">
-            <Filter className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Explore Categories - Hub Style */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between px-1">
-          <h2 className="text-[17px] font-black text-white uppercase tracking-tight">Explore Categories</h2>
-        </div>
-        <ExploreCategories onSelect={(cat) => {
-          if (cat === "Academy") navigateSection("Academy");
-          else navigateSection("Marketplace");
-        }} />
-      </section>
-
-
       {storyGroups.length > 0 && (
 
         <Section icon={PlayCircle} title="Reels">
