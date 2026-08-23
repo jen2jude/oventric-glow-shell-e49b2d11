@@ -127,7 +127,7 @@ const ORDER_SELECT =
 export async function confirmReceipt(
   sb: any,
   orderId: string,
-  by: string | null,
+  _by: string | null,
   mode: "buyer" | "auto",
 ) {
   const { data: o, error } = await sb.from("orders").select(ORDER_SELECT).eq("id", orderId).maybeSingle();
@@ -144,7 +144,6 @@ export async function confirmReceipt(
     .from("orders")
     .update({
       buyer_confirmed_at: now,
-      confirmed_by: undefined,
       payout_release_at: payoutAt,
       auto_refund_at: null,
     })
