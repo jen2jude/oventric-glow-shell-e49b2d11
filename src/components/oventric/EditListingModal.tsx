@@ -325,6 +325,51 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
                 />
               </label>
 
+              {!isPhysical && digitalCats.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <label className="block">
+                    <span className="text-xs font-medium text-slate-300">Category</span>
+                    <select
+                      value={category}
+                      onChange={(e) => {
+                        setCategory(e.target.value);
+                        setSubcategory("");
+                      }}
+                      className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white"
+                    >
+                      {digitalCats.map((c) => (
+                        <option key={c.id} value={c.slug}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  {(() => {
+                    const chosen = digitalCats.find((c) => c.slug === category);
+                    if (!chosen || chosen.children.length === 0) return null;
+                    return (
+                      <label className="block">
+                        <span className="text-xs font-medium text-slate-300">Subcategory</span>
+                        <select
+                          value={subcategory}
+                          onChange={(e) => setSubcategory(e.target.value)}
+                          className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white"
+                        >
+                          <option value="">Optional</option>
+                          {chosen.children.map((s) => (
+                            <option key={s.id} value={s.slug}>
+                              {s.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    );
+                  })()}
+                </div>
+              )}
+
+
+
               {isPhysical && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <label className="block">
