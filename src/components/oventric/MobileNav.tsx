@@ -1,6 +1,8 @@
 import { Home, Target, Wallet, Plus, ShoppingBag, GraduationCap, Newspaper } from "lucide-react";
 import { CountBadge } from "@/components/oventric/CountBadge";
 import { haptic } from "@/lib/haptics";
+import { useChatOpen } from "@/hooks/use-chat-open";
+
 
 const left = [
   { icon: Home, label: "Home" },
@@ -28,7 +30,9 @@ export function MobileNav({
   onSelect: (label: string) => void;
   counts?: MobileNavCounts;
 }) {
+  const chatOpen = useChatOpen();
   const Item = (it: { icon: typeof Home; label: string }) => {
+
     const isActive = active === it.label;
     const count = counts?.[it.label as keyof MobileNavCounts] ?? 0;
     return (
@@ -54,7 +58,10 @@ export function MobileNav({
     );
   };
 
+  if (chatOpen) return null;
+
   return (
+
     <nav
       data-testid="mobile-nav"
       className="md:hidden fixed bottom-0 inset-x-0 z-30 max-w-full bg-[#141418] border-t border-white/15 shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.45)] rounded-t-2xl flex items-center px-2"
