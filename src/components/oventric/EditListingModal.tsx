@@ -3,7 +3,13 @@ import { X, ImagePlus, Loader2, CheckCircle2, Trash2, AlertTriangle } from "luci
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { updateAndResubmitProduct, type ProductDTO } from "@/lib/marketplace.functions";
+import {
+  updateAndResubmitProduct,
+  listMarketplaceCategories,
+  type CategoryNode,
+  type ProductDTO,
+} from "@/lib/marketplace.functions";
+
 import { StockToggleField } from "@/components/oventric/StockToggleField";
 import { snapshotFxRates } from "@/lib/fx.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
@@ -47,6 +53,19 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
   const { baseCurrency } = useOnboarding();
 
   const isPhysical = product.kind === "physical";
+  // Live listings stay live after an edit unless the deliverable itself changes.
+  const isLive = product.status === "active";
+
+  // Digital taxonomy, loaded lazily so digital sellers can recategorise.
+  const loadCats = useServerFn(listMarketplaceCategories);
+  const [digitalCats, setDigitalCats] = useState<CategoryNode[]>([]);
+  useEffect(() => {
+    if (isPhysical) return;
+    loadCats()
+      .then((rows) => setDigitalCats((rows ?? []).filter((r) => r.kind === "digital")))
+      .catch(() => {});
+  }, [isPhysical, loadCats]);
+
 
   // Shared fields, prefilled.
   const [name, setName] = useState(product.name);
@@ -74,12 +93,15 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
 
   // Digital fields.
   const [externalUrl, setExternalUrl] = useState(product.externalUrl ?? "");
+  // Optional replacement asset file (digital only).
+  const [assetFile, setAssetFile] = useState<File | null>(null);
 
-  // Existing images (physical). Each item pairs a storage path with its signed
-  // preview URL so we can render + remove without re-uploading.
+  // Existing images. Each item pairs a storage path with its signed preview URL
+  // so we can render + remove without re-uploading.
   const [existing, setExisting] = useState<Array<{ path: string; url: string }>>(
     product.imagePaths.map((p, i) => ({ path: p, url: product.imageUrls[i] ?? "" })),
   );
+
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [newPreviews, setNewPreviews] = useState<string[]>([]);
 
@@ -135,10 +157,10 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
     if (!name.trim()) return toast.error("Title required");
     if (!description.trim()) return toast.error("Description required");
     const priceLocal = Number(priceInput);
-    if (!(priceLocal > 0)) return toast.error("Price must be greater than 0");
+    if (!Number.isFinite(priceLocal) || priceLocal < 0)
+      return toast.error("Enter a valid price (use 0 for free)");
 
     let sellerPhone: string | null | undefined = undefined;
-    let imagePaths: string[] | undefined = undefined;
 
     if (isPhysical) {
       const digits = phone.replace(/\D/g, "");
@@ -146,17 +168,20 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
       sellerPhone = digits;
       const totalImages = existing.length + newFiles.length;
       if (totalImages < 3) return toast.error("Keep at least 3 product images");
+    } else if (existing.length + newFiles.length < 1) {
+      return toast.error("Keep at least 1 product image");
     }
 
     setSubmitting(true);
     try {
-      // Upload any new files first (physical).
+      const { data: userData } = await supabase.auth.getUser();
+      const uid = userData.user?.id;
+      if (!uid) throw new Error("Sign in again to save your changes");
+
+      // Upload any newly added gallery images.
       const uploadedPaths: string[] = [];
-      if (isPhysical && newFiles.length > 0) {
+      if (newFiles.length > 0) {
         setProgress("Uploading new images...");
-        const { data: userData } = await supabase.auth.getUser();
-        const uid = userData.user?.id;
-        if (!uid) throw new Error("Sign in again to resubmit");
         for (const img of newFiles) {
           const safe = img.name.replace(/[^\w.\-]+/g, "_");
           const path = `${uid}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safe}`;
@@ -167,8 +192,19 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
           uploadedPaths.push(path);
         }
       }
-      if (isPhysical) {
-        imagePaths = [...existing.map((e) => e.path), ...uploadedPaths];
+      const imagePaths = [...existing.map((x) => x.path), ...uploadedPaths];
+
+      // Optional replacement asset file (digital listings only).
+      let filePath: string | undefined = undefined;
+      if (!isPhysical && assetFile) {
+        setProgress("Uploading replacement file...");
+        const safe = assetFile.name.replace(/[^\w.\-]+/g, "_");
+        const path = `${uid}/${Date.now()}-${safe}`;
+        const { error } = await supabase.storage
+          .from("product-files")
+          .upload(path, assetFile, { contentType: assetFile.type || undefined, upsert: false });
+        if (error) throw new Error(error.message);
+        filePath = path;
       }
 
       setProgress("Locking market rate...");
@@ -176,8 +212,8 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
       const rate = Number(snapshot.rates[baseCurrency] ?? 1);
       const priceUSD = baseCurrency === "USD" ? priceLocal : Number((priceLocal / rate).toFixed(2));
 
-      setProgress("Resubmitting for review...");
-      await persist({
+      setProgress(isLive ? "Saving changes..." : "Resubmitting for review...");
+      const res = await persist({
         data: {
           id: product.id,
           name: name.trim(),
@@ -192,6 +228,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
           originalAmount: priceLocal,
           fxSnapshot: snapshot,
           externalUrl: isPhysical ? null : externalUrl.trim() || null,
+          ...(filePath ? { filePath } : {}),
           imagePaths,
           condition: isPhysical ? condition : null,
           brand: isPhysical ? brand.trim() || null : null,
@@ -205,12 +242,20 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
         },
       });
 
+      if (res.status === "active") {
+        toast.success("Listing updated", { description: "Your changes are live." });
+      } else {
+        toast.success("Sent for review", {
+          description: "Your listing will go live once a moderator approves it.",
+        });
+      }
       setSuccess(true);
       onResubmitted();
     } catch (err) {
-      toast.error("Could not resubmit", {
+      toast.error("Could not save changes", {
         description: err instanceof Error ? err.message : "Try again in a moment.",
       });
+
     } finally {
       setSubmitting(false);
       setProgress("");
@@ -230,10 +275,13 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
             <div className="w-16 h-16 mx-auto rounded-full bg-emerald-500/10 border border-emerald-400/40 flex items-center justify-center mb-4">
               <CheckCircle2 className="w-8 h-8 text-emerald-400" />
             </div>
-            <h2 className="text-xl font-bold text-white mb-2">Resubmitted for review</h2>
+            <h2 className="text-xl font-bold text-white mb-2">
+              {isLive ? "Changes saved" : "Resubmitted for review"}
+            </h2>
             <p className="text-sm text-slate-400 max-w-md mx-auto mb-6">
-              Your changes and response have been sent back to the moderation team. You'll get a
-              notification once they take another look.
+              {isLive
+                ? "Your listing has been updated and stays live in the marketplace."
+                : "Your changes and response have been sent back to the moderation team. You'll get a notification once they take another look."}
             </p>
             <button
               onClick={onClose}
@@ -249,9 +297,14 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
                 <h2 className="text-xl font-bold text-white">Edit Listing</h2>
                 <p className="text-xs text-slate-400 mt-1">
                   {isPhysical ? "Physical goods listing" : "Digital asset listing"} ·{" "}
-                  {product.status === "pending" ? "pending review" : "currently rejected"}
+                  {product.status === "pending"
+                    ? "pending review"
+                    : product.status === "active"
+                      ? "live"
+                      : "currently rejected"}
                 </p>
               </div>
+
               <button
                 onClick={onClose}
                 disabled={submitting}
@@ -287,6 +340,51 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
                   className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60"
                 />
               </label>
+
+              {!isPhysical && digitalCats.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <label className="block">
+                    <span className="text-xs font-medium text-slate-300">Category</span>
+                    <select
+                      value={category}
+                      onChange={(e) => {
+                        setCategory(e.target.value);
+                        setSubcategory("");
+                      }}
+                      className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white"
+                    >
+                      {digitalCats.map((c) => (
+                        <option key={c.id} value={c.slug}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  {(() => {
+                    const chosen = digitalCats.find((c) => c.slug === category);
+                    if (!chosen || chosen.children.length === 0) return null;
+                    return (
+                      <label className="block">
+                        <span className="text-xs font-medium text-slate-300">Subcategory</span>
+                        <select
+                          value={subcategory}
+                          onChange={(e) => setSubcategory(e.target.value)}
+                          className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white"
+                        >
+                          <option value="">Optional</option>
+                          {chosen.children.map((s) => (
+                            <option key={s.id} value={s.slug}>
+                              {s.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    );
+                  })()}
+                </div>
+              )}
+
+
 
               {isPhysical && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -459,18 +557,127 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
               )}
 
               {!isPhysical && (
-                <label className="block">
-                  <span className="text-xs font-medium text-slate-300">
-                    External URL / download link (optional)
-                  </span>
-                  <input
-                    value={externalUrl}
-                    onChange={(e) => setExternalUrl(e.target.value)}
-                    placeholder="https://…"
-                    className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60"
-                  />
-                </label>
+                <>
+                  <div>
+                    <span className="text-xs font-medium text-slate-300">
+                      Product images (first is cover)
+                    </span>
+                    {(existing.length > 0 || newPreviews.length > 0) && (
+                      <div className="mt-2 grid grid-cols-4 gap-2">
+                        {existing.map((img, i) => (
+                          <div
+                            key={`de-${img.path}`}
+                            className={`relative aspect-square rounded-[10px] overflow-hidden border ${i === 0 ? "border-emerald-500/60" : "border-white/10"}`}
+                          >
+                            {img.url ? (
+                              <img
+                                loading="lazy"
+                                src={img.url}
+                                alt=""
+                                decoding="async"
+                                className="w-full h-full object-cover bg-[#121214]"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-[#121214]" />
+                            )}
+                            {i === 0 && (
+                              <span className="absolute top-1 left-1 text-[9px] font-bold uppercase bg-emerald-500/90 text-black rounded px-1">
+                                Cover
+                              </span>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => removeExisting(i)}
+                              className="absolute top-1 right-1 p-1 rounded bg-black/70 text-white hover:bg-red-500/80"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                        {newPreviews.map((src, i) => (
+                          <div
+                            key={`dn-${i}`}
+                            className="relative aspect-square rounded-[10px] overflow-hidden border border-emerald-400/40"
+                          >
+                            <img
+                              loading="lazy"
+                              src={src}
+                              alt=""
+                              decoding="async"
+                              className="w-full h-full object-cover bg-[#121214]"
+                            />
+                            <span className="absolute top-1 left-1 text-[9px] font-bold uppercase bg-emerald-500/90 text-black rounded px-1">
+                              New
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => removeNew(i)}
+                              className="absolute top-1 right-1 p-1 rounded bg-black/70 text-white hover:bg-red-500/80"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <label className="mt-2 flex items-center gap-3 border border-dashed border-white/15 rounded-[10px] p-3 cursor-pointer hover:border-emerald-500/60">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        className="hidden"
+                        onChange={(e) => addImages(e.target.files)}
+                      />
+                      <div className="w-12 h-12 rounded-[10px] bg-[#121214] border border-white/10 flex items-center justify-center text-emerald-400">
+                        <ImagePlus className="w-5 h-5" />
+                      </div>
+                      <div className="text-xs text-slate-400">
+                        Add more images. PNG/JPG up to 5MB each.
+                      </div>
+                    </label>
+                  </div>
+
+                  <label className="block">
+                    <span className="text-xs font-medium text-slate-300">
+                      External URL / download link (optional)
+                    </span>
+                    <input
+                      value={externalUrl}
+                      onChange={(e) => setExternalUrl(e.target.value)}
+                      placeholder="https://…"
+                      className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60"
+                    />
+                  </label>
+
+                  <div>
+                    <span className="text-xs font-medium text-slate-300">
+                      Replace asset file (optional)
+                    </span>
+                    <label className="mt-1 flex items-center gap-3 border border-dashed border-white/15 rounded-[10px] p-3 cursor-pointer hover:border-emerald-500/60">
+                      <input
+                        type="file"
+                        className="hidden"
+                        onChange={(e) => setAssetFile(e.target.files?.[0] ?? null)}
+                      />
+                      <div className="w-12 h-12 rounded-[10px] bg-[#121214] border border-white/10 flex items-center justify-center text-emerald-400">
+                        <ImagePlus className="w-5 h-5" />
+                      </div>
+                      <div className="text-xs text-slate-400 min-w-0 truncate">
+                        {assetFile
+                          ? assetFile.name
+                          : "Keep the current file, or upload a new version."}
+                      </div>
+                    </label>
+                    {isLive && (
+                      <p className="mt-1 text-[10px] text-amber-300/80">
+                        Changing the file or delivery link sends the listing back for a quick
+                        security review.
+                      </p>
+                    )}
+                  </div>
+                </>
               )}
+
 
               <label className="block">
                 <span className="text-xs font-medium text-slate-300">Description</span>
@@ -567,21 +774,23 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
                 </div>
               )}
 
-              <label className="block">
-                <span className="text-xs font-medium text-slate-300">
-                  Response to moderator (optional)
-                </span>
-                <textarea
-                  value={sellerResponse}
-                  onChange={(e) => setSellerResponse(e.target.value)}
-                  rows={3}
-                  placeholder="Explain what you changed or clarify anything about the listing…"
-                  className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60 resize-none"
-                />
-                <span className="text-[10px] text-slate-500 mt-1 block">
-                  This note is sent to the admin team along with your resubmission.
-                </span>
-              </label>
+              {!isLive && (
+                <label className="block">
+                  <span className="text-xs font-medium text-slate-300">
+                    Response to moderator (optional)
+                  </span>
+                  <textarea
+                    value={sellerResponse}
+                    onChange={(e) => setSellerResponse(e.target.value)}
+                    rows={3}
+                    placeholder="Explain what you changed or clarify anything about the listing…"
+                    className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60 resize-none"
+                  />
+                  <span className="text-[10px] text-slate-500 mt-1 block">
+                    This note is sent to the admin team along with your resubmission.
+                  </span>
+                </label>
+              )}
 
               <div className="flex items-center justify-between pt-2 border-t border-white/5">
                 <div className="text-xs text-slate-400 min-h-[1rem]">{progress}</div>
@@ -600,8 +809,15 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
                     className="px-4 py-3 rounded-[10px] bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm flex items-center gap-2 disabled:opacity-60"
                   >
                     {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                    {submitting ? "Resubmitting…" : "Resubmit for review"}
+                    {submitting
+                      ? isLive
+                        ? "Saving…"
+                        : "Resubmitting…"
+                      : isLive
+                        ? "Save changes"
+                        : "Resubmit for review"}
                   </button>
+
                 </div>
               </div>
             </form>

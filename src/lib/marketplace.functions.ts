@@ -622,23 +622,33 @@ export const updateAndResubmitProduct = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     if (!data.id) throw new Error("Product id required");
 
-    // Load and verify ownership + rejected state.
+    // Load and verify ownership. Owners may edit pending, rejected AND live
+    // listings; live listings only fall back into moderation when the actual
+    // deliverable (file / delivery URL) changes and needs a fresh scan.
     const { data: current, error: loadErr } = await context.supabase
       .from("products")
-      .select("id, seller_id, status, kind, name")
+      .select("id, seller_id, status, kind, name, file_path, external_url")
       .eq("id", data.id)
       .maybeSingle();
     if (loadErr) throw new Error(loadErr.message);
     if (!current) throw new Error("Listing not found");
-    if ((current.seller_id as string) !== context.userId) throw new Error("You can only resubmit your own listings");
-    if (!["rejected", "pending"].includes(current.status as string)) {
-      throw new Error("Only pending or rejected listings can be edited");
+    if ((current.seller_id as string) !== context.userId) throw new Error("You can only edit your own listings");
+    if (!["rejected", "pending", "active"].includes(current.status as string)) {
+      throw new Error("This listing can no longer be edited");
     }
 
+    const isLive = (current.status as string) === "active";
+    const deliverableChanged =
+      (data.filePath !== undefined && data.filePath !== (current.file_path as string | null)) ||
+      (data.externalUrl !== undefined &&
+        (data.externalUrl || null) !== ((current.external_url as string | null) || null));
+    const nextStatus = isLive && !deliverableChanged ? "active" : "pending";
+
     const patch: Record<string, unknown> = {
-      status: "pending",
+      status: nextStatus,
       reject_reason: null,
     };
+
     if (data.name !== undefined) patch.name = data.name;
     if (data.category !== undefined) patch.category = data.category;
     if (data.subcategory !== undefined) patch.subcategory = data.subcategory;
@@ -674,32 +684,35 @@ export const updateAndResubmitProduct = createServerFn({ method: "POST" })
       .eq("seller_id", context.userId);
     if (updErr) throw new Error(updErr.message);
 
-    // Notify admins so the resubmission surfaces in their moderation queue.
-    try {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const { data: admins } = await supabaseAdmin
-        .from("user_roles")
-        .select("user_id")
-        .eq("role", "admin");
-      const body = data.sellerResponse
-        ? `Seller resubmitted "${current.name as string}" for review. Response: ${data.sellerResponse}`
-        : `Seller resubmitted "${current.name as string}" for review.`;
-      const rows = (admins ?? []).map((a) => ({
-        user_id: a.user_id as string,
-        kind: "system" as const,
-        title: "Listing resubmitted for review",
-        body,
-        link: `/admin/products`,
-        from_user_id: context.userId,
-      }));
-      if (rows.length > 0) {
-        await supabaseAdmin.from("notifications").insert(rows);
+    // Notify admins only when the edit actually needs moderation.
+    if (nextStatus === "pending") {
+      try {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { data: admins } = await supabaseAdmin
+          .from("user_roles")
+          .select("user_id")
+          .eq("role", "admin");
+        const body = data.sellerResponse
+          ? `Seller resubmitted "${current.name as string}" for review. Response: ${data.sellerResponse}`
+          : `Seller resubmitted "${current.name as string}" for review.`;
+        const rows = (admins ?? []).map((a) => ({
+          user_id: a.user_id as string,
+          kind: "system" as const,
+          title: "Listing resubmitted for review",
+          body,
+          link: `/admin/products`,
+          from_user_id: context.userId,
+        }));
+        if (rows.length > 0) {
+          await supabaseAdmin.from("notifications").insert(rows);
+        }
+      } catch (err) {
+        console.error("[updateAndResubmitProduct] admin notify failed", err);
       }
-    } catch (err) {
-      console.error("[updateAndResubmitProduct] admin notify failed", err);
     }
 
-    return { id: data.id, status: "pending" as const };
+    return { id: data.id, status: nextStatus as "pending" | "active" };
+
   });
 
 

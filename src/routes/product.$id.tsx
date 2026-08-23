@@ -48,6 +48,8 @@ import { getServicePackages, type ServicePackage } from "@/lib/services.function
 import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { ProfileMessageModal } from "@/components/oventric/messaging/ProfileMessageModal";
 import { ProductComments } from "@/components/oventric/ProductComments";
+import { EditListingModal } from "@/components/oventric/EditListingModal";
+
 
 function ProductRating({
   productId,
@@ -246,6 +248,19 @@ function ProductPage() {
   const loadPackages = useServerFn(getServicePackages);
   const [packages, setPackages] = useState<ServicePackage[]>([]);
   const [selectedPkg, setSelectedPkg] = useState<string | null>(null);
+  // Owner-only edit affordance.
+  const [meId, setMeId] = useState<string | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    supabase.auth.getUser().then(({ data }) => {
+      if (!cancelled) setMeId(data.user?.id ?? null);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
 
   useEffect(() => {
     let cancelled = false;
@@ -811,6 +826,18 @@ function ProductPage() {
                 </div>
               )}
 
+              {meId && meId === product.sellerId && (
+                <button
+                  type="button"
+                  onClick={() => setEditOpen(true)}
+                  className="mt-4 w-full rounded-[10px] border border-[#E5484D]/30 bg-[#E5484D]/10 px-4 py-3 text-[13px] font-bold text-[#E5484D]"
+                >
+                  Edit this listing
+                </button>
+              )}
+
+
+
               <div className={`${isAppShell ? "mt-4" : ""} text-[11px] text-slate-500 md:text-slate-500 inline-flex items-center gap-1`}>
                 <Sparkles className={`w-3 h-3 ${isAppShell ? "text-[#E5484D]" : "text-emerald-400"}`} />
                 {product.kind === "service"
@@ -831,6 +858,19 @@ function ProductPage() {
         )}
       </main>
       {!isAppShell && <SiteFooterAuto />}
+      {product && editOpen && meId === product.sellerId && (
+        <EditListingModal
+          product={product}
+          onClose={() => setEditOpen(false)}
+          onResubmitted={() => {
+            setEditOpen(false);
+            load({ data: { id } })
+              .then((p) => setProduct(p))
+              .catch(() => {});
+          }}
+        />
+      )}
+
       {product && product.kind !== "physical" && (
         <ProfileMessageModal
           open={chatOpen}
