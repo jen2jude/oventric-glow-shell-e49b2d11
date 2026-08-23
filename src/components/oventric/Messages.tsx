@@ -34,6 +34,8 @@ import {
   type PeerOrderContext,
 } from "@/lib/messaging/messages.functions";
 import { markOrderDelivered } from "@/lib/fulfilment.functions";
+import { OrderChatActionBar } from "@/components/oventric/OrderChatActionBar";
+
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { usePresence } from "@/hooks/use-presence";
 
