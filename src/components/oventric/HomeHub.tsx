@@ -493,13 +493,15 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
         escrowLabel={formatMoney(escrow, currency)}
         onAddFunds={() => {
           setWalletOpen(false);
-          onSelect("Wallet");
+          setAddFundsOpen(true);
         }}
         onWithdraw={() => {
           setWalletOpen(false);
-          onSelect("Wallet");
+          setPayoutOpen(true);
         }}
       />
+      {addFundsOpen && <AddCapitalModal onClose={() => setAddFundsOpen(false)} />}
+      {payoutOpen && <PayoutModal onClose={() => setPayoutOpen(false)} />
     </div>
   );
 }
