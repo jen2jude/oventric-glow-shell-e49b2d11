@@ -1205,8 +1205,8 @@ export function Feed() {
             meSlug={meSlug}
           />
         )}
-        {/* Composer — hidden in Discover because Discovery is view-only */}
-        {!(isAppShell && feedTab === "discover") && (
+        {/* Composer — hidden in Discover / Following because those tabs are view-only */}
+        {!(isAppShell && (feedTab === "discover" || feedTab === "following")) && (
           <button
             id="oventric-composer"
             type="button"
@@ -1270,7 +1270,7 @@ export function Feed() {
           </button>
         )}
 
-        {isAppShell && searchOpen && (
+        {isAppShell && searchOpen && feedTab !== "following" && (
           <div className="fixed inset-0 z-40 bg-[#0A0A0B] overflow-y-auto pt-16 -mx-4">
             <div className="px-4">
               <FeedSearchBar
@@ -1300,7 +1300,7 @@ export function Feed() {
           />
         )}
 
-        {(debouncedQuery.length >= 1 || isGlobalCategory) && (
+        {(debouncedQuery.length >= 1 || isGlobalCategory) && feedTab !== "following" && (
           <div className="fixed inset-0 z-[41] bg-[#0A0A0B] overflow-y-auto -mx-4">
             <FeedGlobalResults q={debouncedQuery} category={category} />
             <button
@@ -1489,7 +1489,7 @@ export function Feed() {
             </p>
             <p className="mt-1 text-xs text-red-300/80">{postsError}</p>
           </div>
-        ) : filteredPosts.length === 0 && !(isAppShell && feedTab === "discover") ? (
+        ) : filteredPosts.length === 0 && !(isAppShell && (feedTab === "discover" || feedTab === "following")) ? (
           isFiltering ? (
             <div className="bg-[#1E1E24] md:bg-white md:shadow-sm border border-white/10 md:border-slate-200 rounded-xl p-8 text-center">
               <p className="text-sm font-semibold text-white md:text-slate-900">
