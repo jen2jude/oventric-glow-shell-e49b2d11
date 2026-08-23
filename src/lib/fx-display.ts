@@ -211,7 +211,7 @@ export function computeDisplayPrice(row: PriceableRow, viewer: Currency): Displa
     return {
       value: converted,
       currency: safeViewer,
-      formatted: formatMoney(converted, safeViewer),
+      formatted: fallbackAmount === 0 ? "Free" : formatMoney(converted, safeViewer),
       originalFormatted: null,
       originalCurrency: "USD",
       originalAmount: fallbackAmount,
