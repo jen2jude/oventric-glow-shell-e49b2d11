@@ -74,7 +74,7 @@ const SLIDE_ENTER = "feature-carousel-enter 0.7s cubic-bezier(0.16, 1, 0.3, 1) f
 const IN_FROM_RIGHT = "feature-carousel-in-right 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards";
 const IN_FROM_LEFT = "feature-carousel-in-left 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards";
 
-type Phase = "intro" | "slides" | "congrats";
+type Phase = "intro" | "journey" | "slides" | "congrats";
 
 export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
   const [phase, setPhase] = useState<Phase>("intro");
