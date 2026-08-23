@@ -48,6 +48,8 @@ import { getServicePackages, type ServicePackage } from "@/lib/services.function
 import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { ProfileMessageModal } from "@/components/oventric/messaging/ProfileMessageModal";
 import { ProductComments } from "@/components/oventric/ProductComments";
+import { EditListingModal } from "@/components/oventric/EditListingModal";
+
 
 function ProductRating({
   productId,
