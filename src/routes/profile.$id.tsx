@@ -102,6 +102,8 @@ function CountryFlag({ country }: { country: string | null | undefined }) {
 }
 
 import { listUserPhotos, type UserPhoto } from "@/lib/posts.functions";
+import { ReelsGrid, useReels } from "@/components/oventric/feed/ReelsShelf";
+import { PlayCircle } from "lucide-react";
 import { getDashboardOverview, type DashboardOverview } from "@/lib/dashboard.functions";
 import { ImageLightbox } from "@/components/oventric/feed/ImageLightbox";
 import { PhotoBatches } from "@/components/oventric/PhotoBatches";
