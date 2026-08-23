@@ -8,22 +8,38 @@ import {
   MessagesSquare,
   Sparkles,
   ArrowLeft,
+  Apple,
+  Share as ShareIcon,
+  CheckCircle2,
+  QrCode as QrIcon,
 } from "lucide-react";
+
+import { QrCode } from "@/components/oventric/QrCode";
+import {
+  ANDROID_APK_SIZE,
+  ANDROID_APK_URL,
+  ANDROID_APP_VERSION,
+  ANDROID_INSTALL_STEPS,
+  IOS_INSTALL_STEPS,
+  detectPlatform,
+  isStandalonePwa,
+  type MobilePlatform,
+} from "@/lib/app-distribution";
 
 export const Route = createFileRoute("/get-app")({
   head: () => ({
     meta: [
-      { title: "Get the Oventric app — wallet, chat and checkout" },
+      { title: "Install Oventric — Android APK & iPhone app" },
       {
         name: "description",
         content:
-          "Install Oventric to buy with escrow protection, manage your multi-currency wallet, chat with sellers and publish listings, bounties and courses.",
+          "Install Oventric on Android with a direct APK download, or add it to your iPhone home screen. Wallet, escrow checkout, chat and creator tools in one app.",
       },
-      { property: "og:title", content: "Get the Oventric app" },
+      { property: "og:title", content: "Install the Oventric app" },
       {
         property: "og:description",
         content:
-          "Wallet, escrow checkout, chat and creator tools live in the Oventric app. Install it in one tap.",
+          "Direct Android APK download and one-tap iPhone install. Wallet, escrow checkout, chat and creator tools.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -35,9 +51,15 @@ export const Route = createFileRoute("/get-app")({
 type InstallPrompt = Event & { prompt: () => Promise<void> };
 
 function GetAppPage() {
+  const [platform, setPlatform] = useState<MobilePlatform>("desktop");
+  const [installed, setInstalled] = useState(false);
   const [deferred, setDeferred] = useState<InstallPrompt | null>(null);
+  const [pageUrl, setPageUrl] = useState("https://www.oventric.com/get-app");
 
   useEffect(() => {
+    setPlatform(detectPlatform());
+    setInstalled(isStandalonePwa());
+    setPageUrl(`${window.location.origin}/get-app`);
     const onPrompt = (e: Event) => {
       e.preventDefault();
       setDeferred(e as InstallPrompt);
@@ -48,7 +70,7 @@ function GetAppPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="mx-auto max-w-3xl px-5 py-10">
+      <div className="mx-auto w-full max-w-[1100px] px-4 py-10 sm:px-6 lg:px-11">
         <Link
           to="/"
           className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-900"
@@ -56,40 +78,47 @@ function GetAppPage() {
           <ArrowLeft className="h-4 w-4" /> Back to Oventric
         </Link>
 
-        <div className="mt-6 rounded-[10px] border border-slate-200 bg-slate-50 p-7">
-          <div className="flex h-14 w-14 items-center justify-center rounded-[10px] bg-[#E5484D] text-white">
+        <header className="mt-6 max-w-2xl">
+          <div className="flex h-14 w-14 items-center justify-center rounded-[10px] bg-[#E5484D] text-white shadow-[0_16px_40px_-16px_rgba(229,72,77,0.9)]">
             <Smartphone className="h-7 w-7" />
           </div>
-          <h1 className="mt-5 text-2xl font-extrabold tracking-tight text-slate-900">
-            Get the Oventric app
+          <h1 className="mt-5 text-[30px] font-black leading-tight tracking-tight text-slate-900">
+            Install the Oventric app
           </h1>
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-600">
-            Browsing works great on the web. Buying, selling, chatting and everything money-related
-            lives in the app — installed in one tap, no store account needed.
+          <p className="mt-2 text-[14.5px] leading-relaxed text-slate-600">
+            Browsing works great on the web. Buying, selling, chatting and everything
+            money-related lives in the app. Pick your device below.
           </p>
-
-          <button
-            type="button"
-            onClick={async () => {
-              if (deferred) {
-                await deferred.prompt();
-                setDeferred(null);
-              }
-            }}
-            className="mt-6 inline-flex items-center gap-2 rounded-[10px] bg-[#E5484D] px-5 py-3 text-sm font-bold text-white shadow-[0_10px_30px_-12px_rgba(229,72,77,0.9)] transition-transform active:scale-95"
-          >
-            <Download className="h-4 w-4" />
-            {deferred ? "Install Oventric" : "Add Oventric to your home screen"}
-          </button>
-          {!deferred && (
-            <p className="mt-3 text-xs text-slate-500">
-              On iPhone: tap Share → “Add to Home Screen”. On Android: tap the browser menu →
-              “Install app”.
+          {installed && (
+            <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
+              <CheckCircle2 className="h-3.5 w-3.5" /> You’re already using the installed app
             </p>
           )}
+        </header>
+
+        <div className="mt-8 grid gap-4 lg:grid-cols-2">
+          <AndroidCard highlight={platform === "android"} />
+          <IosCard highlight={platform === "ios"} deferred={deferred} onUsed={() => setDeferred(null)} />
         </div>
 
-        <div className="mt-8 grid gap-3 sm:grid-cols-2">
+        {platform === "desktop" && (
+          <section className="mt-4 flex flex-col items-start gap-6 rounded-[10px] border border-slate-200 bg-slate-50 p-6 sm:flex-row sm:items-center">
+            <div className="rounded-[10px] border border-slate-200 bg-white p-3">
+              <QrCode value={pageUrl} size={150} />
+            </div>
+            <div>
+              <div className="inline-flex items-center gap-2 text-sm font-black text-slate-900">
+                <QrIcon className="h-4 w-4 text-[#E5484D]" /> Scan to install on your phone
+              </div>
+              <p className="mt-1.5 max-w-md text-[13px] leading-relaxed text-slate-600">
+                Point your phone camera at this code. Android gets the direct APK download,
+                iPhone gets the one-tap home-screen install.
+              </p>
+            </div>
+          </section>
+        )}
+
+        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Perk icon={<Wallet className="h-4 w-4" />} title="Sovereign wallet" text="Top up, withdraw and track earnings in your own currency." />
           <Perk icon={<ShieldCheck className="h-4 w-4" />} title="Escrow checkout" text="Funds are held safely until your order is delivered." />
           <Perk icon={<MessagesSquare className="h-4 w-4" />} title="Live chat & alerts" text="Talk to sellers and get instant order notifications." />
@@ -97,6 +126,123 @@ function GetAppPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function AndroidCard({ highlight }: { highlight: boolean }) {
+  return (
+    <section
+      className={`relative overflow-hidden rounded-[10px] border p-6 ${
+        highlight ? "border-[#E5484D]/40 bg-[#E5484D]/[0.04]" : "border-slate-200 bg-white"
+      }`}
+    >
+      {highlight && (
+        <span className="absolute right-4 top-4 rounded-full bg-[#E5484D] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-white">
+          Your device
+        </span>
+      )}
+      <div className="flex items-center gap-3">
+        <span className="grid h-11 w-11 place-items-center rounded-[10px] bg-emerald-500/10 text-emerald-600">
+          <Download className="h-5 w-5" />
+        </span>
+        <div>
+          <h2 className="text-[17px] font-black tracking-tight text-slate-900">Android</h2>
+          <p className="text-[11.5px] font-semibold text-slate-500">
+            v{ANDROID_APP_VERSION} · {ANDROID_APK_SIZE} · Direct install
+          </p>
+        </div>
+      </div>
+
+      <p className="mt-3 text-[13px] leading-relaxed text-slate-600">
+        The full native app — real push notifications, camera uploads and offline-safe
+        navigation. Installed straight from us, no store account needed.
+      </p>
+
+      <a
+        href={ANDROID_APK_URL}
+        download
+        className="mt-5 inline-flex items-center gap-2 rounded-[10px] bg-[#E5484D] px-5 py-3 text-sm font-bold text-white shadow-[0_10px_30px_-12px_rgba(229,72,77,0.9)] transition-transform active:scale-95"
+      >
+        <Download className="h-4 w-4" /> Download the APK
+      </a>
+
+      <ol className="mt-5 space-y-2">
+        {ANDROID_INSTALL_STEPS.map((s, i) => (
+          <Step key={s} n={i + 1} text={s} />
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+function IosCard({
+  highlight,
+  deferred,
+  onUsed,
+}: {
+  highlight: boolean;
+  deferred: (Event & { prompt: () => Promise<void> }) | null;
+  onUsed: () => void;
+}) {
+  return (
+    <section
+      className={`relative overflow-hidden rounded-[10px] border p-6 ${
+        highlight ? "border-[#E5484D]/40 bg-[#E5484D]/[0.04]" : "border-slate-200 bg-white"
+      }`}
+    >
+      {highlight && (
+        <span className="absolute right-4 top-4 rounded-full bg-[#E5484D] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-white">
+          Your device
+        </span>
+      )}
+      <div className="flex items-center gap-3">
+        <span className="grid h-11 w-11 place-items-center rounded-[10px] bg-slate-900/5 text-slate-900">
+          <Apple className="h-5 w-5" />
+        </span>
+        <div>
+          <h2 className="text-[17px] font-black tracking-tight text-slate-900">iPhone & iPad</h2>
+          <p className="text-[11.5px] font-semibold text-slate-500">
+            Add to Home Screen · No App Store needed
+          </p>
+        </div>
+      </div>
+
+      <p className="mt-3 text-[13px] leading-relaxed text-slate-600">
+        Oventric installs as a full-screen app on iOS in two taps. Wallet, checkout, chat and
+        creator tools all work exactly like the Android app.
+      </p>
+
+      <button
+        type="button"
+        onClick={async () => {
+          if (deferred) {
+            await deferred.prompt();
+            onUsed();
+          }
+        }}
+        className="mt-5 inline-flex items-center gap-2 rounded-[10px] bg-slate-900 px-5 py-3 text-sm font-bold text-white transition-transform active:scale-95"
+      >
+        <ShareIcon className="h-4 w-4" />
+        {deferred ? "Install Oventric" : "Add to Home Screen"}
+      </button>
+
+      <ol className="mt-5 space-y-2">
+        {IOS_INSTALL_STEPS.map((s, i) => (
+          <Step key={s} n={i + 1} text={s} />
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+function Step({ n, text }: { n: number; text: string }) {
+  return (
+    <li className="flex items-start gap-2.5">
+      <span className="mt-[1px] grid h-5 w-5 shrink-0 place-items-center rounded-full bg-slate-900 text-[10px] font-black text-white">
+        {n}
+      </span>
+      <span className="text-[12.5px] leading-relaxed text-slate-600">{text}</span>
+    </li>
   );
 }
 
