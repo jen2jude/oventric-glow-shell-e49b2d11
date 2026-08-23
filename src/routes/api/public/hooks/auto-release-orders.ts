@@ -12,19 +12,20 @@ export const Route = createFileRoute("/api/public/hooks/auto-release-orders")({
         const anon = process.env.SUPABASE_PUBLISHABLE_KEY;
         if (!anon) return new Response("misconfigured", { status: 500 });
         try {
-          const { autoReleaseDueOrders, notifyPreReleaseDue } = await import("@/lib/fulfilment.server");
-          const { released } = await autoReleaseDueOrders();
+          const { sweepEscrowTimers, notifyPreReleaseDue } = await import("@/lib/fulfilment.server");
+          const swept = await sweepEscrowTimers();
           let warned = 0;
           try {
             ({ warned } = await notifyPreReleaseDue());
           } catch (e) {
             console.error("[auto-release-orders] pre-release notice failed", e);
           }
-          return Response.json({ ok: true, released, warned });
+          return Response.json({ ok: true, ...swept, warned });
         } catch (e) {
           console.error("[auto-release-orders] failed", e);
           return new Response("sweep failed", { status: 500 });
         }
+
       },
     },
   },
