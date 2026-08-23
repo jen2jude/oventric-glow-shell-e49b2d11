@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { CountBadge } from "@/components/oventric/CountBadge";
 import { haptic } from "@/lib/haptics";
+import { useChatOpen } from "@/hooks/use-chat-open";
 
 export type AppTabCounts = Partial<
   Record<"Home" | "Feed" | "Market" | "Academy" | "Bounties" | "Wallet" | "Circles", number>
@@ -52,6 +53,7 @@ export function AppTabBar({
   counts?: AppTabCounts;
 }) {
   const [hubOpen, setHubOpen] = useState(false);
+  const chatOpen = useChatOpen();
 
   useEffect(() => {
     if (!hubOpen) return;
@@ -104,6 +106,8 @@ export function AppTabBar({
       </button>
     );
   };
+
+  if (chatOpen) return null;
 
   return (
     <>
