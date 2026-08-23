@@ -496,18 +496,127 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
               )}
 
               {!isPhysical && (
-                <label className="block">
-                  <span className="text-xs font-medium text-slate-300">
-                    External URL / download link (optional)
-                  </span>
-                  <input
-                    value={externalUrl}
-                    onChange={(e) => setExternalUrl(e.target.value)}
-                    placeholder="https://…"
-                    className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60"
-                  />
-                </label>
+                <>
+                  <div>
+                    <span className="text-xs font-medium text-slate-300">
+                      Product images (first is cover)
+                    </span>
+                    {(existing.length > 0 || newPreviews.length > 0) && (
+                      <div className="mt-2 grid grid-cols-4 gap-2">
+                        {existing.map((img, i) => (
+                          <div
+                            key={`de-${img.path}`}
+                            className={`relative aspect-square rounded-[10px] overflow-hidden border ${i === 0 ? "border-emerald-500/60" : "border-white/10"}`}
+                          >
+                            {img.url ? (
+                              <img
+                                loading="lazy"
+                                src={img.url}
+                                alt=""
+                                decoding="async"
+                                className="w-full h-full object-cover bg-[#121214]"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-[#121214]" />
+                            )}
+                            {i === 0 && (
+                              <span className="absolute top-1 left-1 text-[9px] font-bold uppercase bg-emerald-500/90 text-black rounded px-1">
+                                Cover
+                              </span>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => removeExisting(i)}
+                              className="absolute top-1 right-1 p-1 rounded bg-black/70 text-white hover:bg-red-500/80"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                        {newPreviews.map((src, i) => (
+                          <div
+                            key={`dn-${i}`}
+                            className="relative aspect-square rounded-[10px] overflow-hidden border border-emerald-400/40"
+                          >
+                            <img
+                              loading="lazy"
+                              src={src}
+                              alt=""
+                              decoding="async"
+                              className="w-full h-full object-cover bg-[#121214]"
+                            />
+                            <span className="absolute top-1 left-1 text-[9px] font-bold uppercase bg-emerald-500/90 text-black rounded px-1">
+                              New
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => removeNew(i)}
+                              className="absolute top-1 right-1 p-1 rounded bg-black/70 text-white hover:bg-red-500/80"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <label className="mt-2 flex items-center gap-3 border border-dashed border-white/15 rounded-[10px] p-3 cursor-pointer hover:border-emerald-500/60">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        className="hidden"
+                        onChange={(e) => addImages(e.target.files)}
+                      />
+                      <div className="w-12 h-12 rounded-[10px] bg-[#121214] border border-white/10 flex items-center justify-center text-emerald-400">
+                        <ImagePlus className="w-5 h-5" />
+                      </div>
+                      <div className="text-xs text-slate-400">
+                        Add more images. PNG/JPG up to 5MB each.
+                      </div>
+                    </label>
+                  </div>
+
+                  <label className="block">
+                    <span className="text-xs font-medium text-slate-300">
+                      External URL / download link (optional)
+                    </span>
+                    <input
+                      value={externalUrl}
+                      onChange={(e) => setExternalUrl(e.target.value)}
+                      placeholder="https://…"
+                      className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60"
+                    />
+                  </label>
+
+                  <div>
+                    <span className="text-xs font-medium text-slate-300">
+                      Replace asset file (optional)
+                    </span>
+                    <label className="mt-1 flex items-center gap-3 border border-dashed border-white/15 rounded-[10px] p-3 cursor-pointer hover:border-emerald-500/60">
+                      <input
+                        type="file"
+                        className="hidden"
+                        onChange={(e) => setAssetFile(e.target.files?.[0] ?? null)}
+                      />
+                      <div className="w-12 h-12 rounded-[10px] bg-[#121214] border border-white/10 flex items-center justify-center text-emerald-400">
+                        <ImagePlus className="w-5 h-5" />
+                      </div>
+                      <div className="text-xs text-slate-400 min-w-0 truncate">
+                        {assetFile
+                          ? assetFile.name
+                          : "Keep the current file, or upload a new version."}
+                      </div>
+                    </label>
+                    {isLive && (
+                      <p className="mt-1 text-[10px] text-amber-300/80">
+                        Changing the file or delivery link sends the listing back for a quick
+                        security review.
+                      </p>
+                    )}
+                  </div>
+                </>
               )}
+
 
               <label className="block">
                 <span className="text-xs font-medium text-slate-300">Description</span>
