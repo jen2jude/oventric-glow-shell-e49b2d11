@@ -95,6 +95,8 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
   const [notifOpen, setNotifOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
   const [walletOpen, setWalletOpen] = useState(false);
+  const [addFundsOpen, setAddFundsOpen] = useState(false);
+  const [payoutOpen, setPayoutOpen] = useState(false);
   const unreadNotifs = useUnreadNotificationsCount();
   const currency: Currency = country ? baseCurrency : "USD";
 
