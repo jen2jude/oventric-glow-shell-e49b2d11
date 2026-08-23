@@ -59,6 +59,21 @@ function OrderPage() {
     };
   }, [id, load]);
 
+  // Instant-download orders fire the download automatically once per order.
+  useEffect(() => {
+    if (!order || order.requiresManualDelivery) return;
+    const href = downloadUrl ?? order.externalUrl;
+    if (!href) return;
+    const key = `oventric:auto-dl:${order.id}`;
+    try {
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, "1");
+    } catch {
+      /* private mode — fall through and still trigger once */
+    }
+    window.open(href, "_blank", "noopener");
+  }, [order, downloadUrl]);
+
   const displayAmount = order
     ? order.displayTotal * (FX_FROM_USD[baseCurrency] / FX_FROM_USD[order.displayCurrency])
     : 0;
