@@ -328,49 +328,10 @@ function RootShell({ children }: { children: ReactNode }) {
         />
       </head>
       <body style={{ background: "#121214" }}>
-        {/* Pre-hydration boot splash: painted with the very first HTML frame so
-            there is no white flash / raw logo before React mounts. Removed by
-            <BootSplash /> once the app is interactive. */}
-        <div id="oventric-boot" aria-hidden suppressHydrationWarning>
-          <div className="ob-logo-container">
-            <img
-              src="/__l5e/assets-v1/0d89031e-d4df-4068-9d2d-f54bab306f5b/oventric-full-transparent.png"
-              className="ob-wordmark"
-              alt="Oventric"
-              draggable={false}
-            />
-            <div className="ob-icons">
-              <div className="ob-icon" style={{ "--c": "#ff4d6d" } as any}></div>
-              <div className="ob-icon" style={{ "--c": "#ffb020" } as any}></div>
-              <div className="ob-icon" style={{ "--c": "#22ff88" } as any}></div>
-              <div className="ob-icon" style={{ "--c": "#00c2ff" } as any}></div>
-              <div className="ob-icon" style={{ "--c": "#7aa2ff" } as any}></div>
-              <div className="ob-icon" style={{ "--c": "#a855f7" } as any}></div>
-            </div>
-          </div>
-          <style
-            dangerouslySetInnerHTML={{
-              __html: `#oventric-boot{position:fixed;inset:0;z-index:99998;display:none;flex-direction:column;align-items:center;justify-content:center;background:#121214;transition:opacity .3s}
-#oventric-boot .ob-logo-container{display:flex;flex-direction:column;align-items:center;gap:16px}
-#oventric-boot .ob-wordmark{height:40px;width:auto;user-select:none}
-#oventric-boot .ob-icons{display:flex;gap:12px}
-#oventric-boot .ob-icon{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);animation:ob-sweep 2.4s infinite ease-in-out}
-#oventric-boot .ob-icon:nth-child(1){animation-delay:0s}
-#oventric-boot .ob-icon:nth-child(2){animation-delay:0.15s}
-#oventric-boot .ob-icon:nth-child(3){animation-delay:0.3s}
-#oventric-boot .ob-icon:nth-child(4){animation-delay:0.45s}
-#oventric-boot .ob-icon:nth-child(5){animation-delay:0.6s}
-#oventric-boot .ob-icon:nth-child(6){animation-delay:0.75s}
-@keyframes ob-sweep{
-  0%,100%{transform:scale(1);opacity:0.25;background:rgba(255,255,255,0.18)}
-  50%{transform:scale(1.35);opacity:1;background:var(--c)}
-}`,
-            }}
-          />
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `(function(){try{
-  var root=document.getElementById('oventric-boot');if(!root)return;
+        {/* Standalone-launch detection for the React BootSplash. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{
   var appShell=false;
   try{
     var params=new URLSearchParams(window.location.search);
@@ -381,15 +342,9 @@ function RootShell({ children }: { children: ReactNode }) {
   }catch(e){}
   window.__oventricStandalone=!!appShell;
   if(appShell){document.documentElement.classList.add('standalone-app');}
-  // Keep the node in the DOM (removing it before hydration causes a mismatch);
-  // just leave it hidden when this is not an app-shell launch.
-  if(appShell){root.style.display='flex';}else{root.style.display='none';}
-
 }catch(e){}})();`,
-
-            }}
-          />
-        </div>
+          }}
+        />
         {children}
         <Scripts />
       </body>
