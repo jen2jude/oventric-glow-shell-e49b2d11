@@ -4,8 +4,7 @@ import { Flame, Sparkles, Trophy, GraduationCap, Users, ShoppingBag, PlayCircle,
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { navigateSection } from "@/components/oventric/DiscoveryPanel";
 import { useFeedDiscovery } from "@/components/oventric/feed/useFeedDiscovery";
-import { useStoryRail } from "@/components/oventric/feed/useStories";
-import { StoryViewerModal } from "@/components/oventric/feed/StoryViewerModal";
+import { ReelsRail, useReels } from "@/components/oventric/feed/ReelsShelf";
 import type { FeedPost } from "@/lib/posts.functions";
 import { ExploreHeader, type ExploreTab } from "./ExploreHeader";
 import { PeopleExploreList } from "./PeopleExploreList";
@@ -77,8 +76,7 @@ export function FeedDiscoverExplore({
 }) {
   const { peers, products, bounties, courses, circles, loading } = useFeedDiscovery(true);
   const { baseCurrency } = useOnboarding();
-  const { groups: storyGroups, refresh: refreshStories } = useStoryRail(true);
-  const [reelAt, setReelAt] = useState<number | null>(null);
+  const reels = useReels(true, undefined, 24);
   const [activeTab, setActiveTab] = useState<ExploreTab | "Discovery">("Discovery");
   const [searchQuery, setSearchQuery] = useState("");
 
