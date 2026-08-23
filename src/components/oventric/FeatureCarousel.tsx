@@ -86,46 +86,11 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const markSeenServer = useServerFn(markCarouselSeenFn);
 
-  // Intro frame stays fully visible for 5s *after the boot splash is gone*,
-  // then begins a smooth fade into slides.
-  useEffect(() => {
-    if (phase !== "intro") return;
-    let t: ReturnType<typeof setTimeout> | undefined;
-    let raf: number | undefined;
-
-    const startHold = () => {
-      t = setTimeout(() => setIntroExiting(true), INTRO_HOLD_MS);
-    };
-
-    const bootSplashGone = () =>
-      !document.getElementById("oventric-boot") &&
-      !document.querySelector('[data-oventric-boot="react"]');
-
-    const waitForBootSplash = () => {
-      if (bootSplashGone()) {
-        startHold();
-        return;
-      }
-      const observer = new MutationObserver(() => {
-        if (bootSplashGone()) {
-          observer.disconnect();
-          startHold();
-        }
-      });
-      observer.observe(document.body, { childList: true, subtree: true });
-    };
-
-    raf = requestAnimationFrame(waitForBootSplash);
-    return () => {
-      if (raf) cancelAnimationFrame(raf);
-      if (t) clearTimeout(t);
-    };
-  }, [phase]);
-
+  // Intro is user-driven: tap Next to move into the journey screen.
   useEffect(() => {
     if (!introExiting) return;
     const t = setTimeout(() => {
-      setPhase("slides");
+      setPhase("journey");
       setIntroExiting(false);
     }, INTRO_FADE_MS);
     return () => clearTimeout(t);
