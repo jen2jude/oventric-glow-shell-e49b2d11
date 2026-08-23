@@ -26,10 +26,17 @@ export function MessagesDrawer({
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    // Hide the app's bottom navigation while chatting so the reply composer
+    // is never covered by it on mobile.
+    document.body.setAttribute("data-chat-open", "1");
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.removeAttribute("data-chat-open");
+    };
   }, [open, onClose]);
 
   if (!open) return null;
+
 
   return (
     <>
