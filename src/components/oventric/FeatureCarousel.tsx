@@ -9,6 +9,7 @@ import mockAcademy from "@/assets/mock-academy.jpg";
 import mockBounties from "@/assets/mock-bounties.jpg";
 import mockWallet from "@/assets/mock-wallet.jpg";
 import oventricFull from "@/assets/oventric-full-transparent.png";
+import oventricDark from "@/assets/oventric-logo-dark.png";
 import { InterestBubbles } from "@/components/oventric/onboarding/InterestBubbles";
 import { JourneyOrbit } from "@/components/oventric/onboarding/JourneyOrbit";
 import { markCarouselSeen as markCarouselSeenFn } from "@/lib/carousel.functions";
@@ -239,30 +240,38 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
 
       {phase === "journey" && (
         <div
-          className="absolute inset-0 flex flex-col w-full overflow-hidden"
+          className="absolute inset-0 flex flex-col w-full overflow-hidden bg-[#F5F2FC]"
           style={{ animation: ENTER }}
         >
-          <div
-            aria-hidden
-            className="absolute -top-24 left-1/2 -translate-x-1/2 h-72 w-72 rounded-full blur-3xl opacity-40 pointer-events-none"
-            style={{ background: "radial-gradient(circle, rgba(0,194,255,0.4), transparent 70%)" }}
-          />
-          <div className="relative flex items-center justify-center px-5 pt-6 pb-2 shrink-0">
+          {/* Header */}
+          <div className="relative flex items-center px-5 pt-6 pb-2 shrink-0">
+            <button
+              onClick={() => setPhase("intro")}
+              aria-label="Back"
+              className="h-9 w-9 rounded-full bg-white shadow-sm flex items-center justify-center text-[#1E1B4B]"
+            >
+              <ChevronLeft className="w-5 h-5" strokeWidth={2.6} />
+            </button>
             <img
               loading="eager"
               decoding="async"
-              src={oventricFull}
+              src={oventricDark}
               alt="Oventric"
-              className="h-8 w-auto select-none"
+              className="h-7 w-auto select-none absolute left-1/2 -translate-x-1/2"
               draggable={false}
             />
           </div>
 
-          <div className="relative px-6 pt-4 shrink-0">
-            <h1 className="text-[32px] leading-[1.08] sm:text-4xl font-black tracking-tight text-white">
-              Let's start
+          {/* Headline with orange blob */}
+          <div className="relative px-6 pt-6 pb-2 shrink-0">
+            <div
+              aria-hidden
+              className="absolute -left-10 -top-2 h-40 w-40 rounded-full bg-[#F97316] opacity-95"
+            />
+            <h1 className="relative text-[38px] leading-[1.02] font-black tracking-tight text-[#1E1B4B]">
+              Let's start your
               <br />
-              your journey
+              journey
             </h1>
           </div>
 
@@ -270,16 +279,17 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
             <JourneyOrbit />
           </div>
 
-          <div className="relative px-6 pb-8 pt-2 shrink-0">
+          <div className="relative px-6 pb-9 pt-2 shrink-0">
             <button
               onClick={handleComplete}
-              className="w-full h-14 rounded-full bg-white text-black font-bold text-sm hover:bg-slate-200 transition-colors"
+              className="w-full h-14 rounded-2xl bg-[#231C56] text-white font-semibold text-[15px] hover:bg-[#2c2469] transition-colors"
             >
               Get Started
             </button>
           </div>
         </div>
       )}
+
 
       {phase === "congrats" && (
         <div
