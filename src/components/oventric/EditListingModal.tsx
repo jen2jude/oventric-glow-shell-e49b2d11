@@ -3,7 +3,13 @@ import { X, ImagePlus, Loader2, CheckCircle2, Trash2, AlertTriangle } from "luci
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { updateAndResubmitProduct, type ProductDTO } from "@/lib/marketplace.functions";
+import {
+  updateAndResubmitProduct,
+  listMarketplaceCategories,
+  type CategoryNode,
+  type ProductDTO,
+} from "@/lib/marketplace.functions";
+
 import { StockToggleField } from "@/components/oventric/StockToggleField";
 import { snapshotFxRates } from "@/lib/fx.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
