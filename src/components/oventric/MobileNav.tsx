@@ -30,7 +30,9 @@ export function MobileNav({
   onSelect: (label: string) => void;
   counts?: MobileNavCounts;
 }) {
+  const chatOpen = useChatOpen();
   const Item = (it: { icon: typeof Home; label: string }) => {
+
     const isActive = active === it.label;
     const count = counts?.[it.label as keyof MobileNavCounts] ?? 0;
     return (
