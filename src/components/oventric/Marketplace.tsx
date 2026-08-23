@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
+import { readCache, writeCache } from "@/lib/swr-cache";
 import { ChevronLeft, ChevronRight, LayoutGrid, Search, SlidersHorizontal, ShoppingBag, GraduationCap, ArrowLeft } from "lucide-react";
 import { useDominantColor } from "@/hooks/use-dominant-color";
 import { useIsAppShell } from "@/hooks/use-launch-context";
@@ -70,9 +71,20 @@ function AppMarketplace() {
 
   useEffect(() => {
     (async () => {
-      setLoading(true);
+      const kindParam = mode === "all" ? "all" : mode;
+      const cacheKey = `marketplace:${kindParam}`;
+      type Payload = [Discovery, ProductDTO[], CategoryNode[]];
+      // Paint from the last known payload instantly, then revalidate.
+      const cached = readCache<Payload>(cacheKey);
+      if (cached) {
+        setDiscovery(cached[0]);
+        setProducts(cached[1]);
+        setCats(cached[2]);
+        setLoading(false);
+      } else {
+        setLoading(true);
+      }
       try {
-        const kindParam = mode === "all" ? "all" : mode;
         const [d, p, c] = await Promise.all([
           loadDiscovery({ data: { kind: kindParam } }),
           loadProducts({ data: { kind: kindParam } }),
@@ -81,6 +93,7 @@ function AppMarketplace() {
         setDiscovery(d as Discovery);
         setProducts(p ?? []);
         setCats(c ?? []);
+        writeCache<Payload>(cacheKey, [d as Discovery, p ?? [], c ?? []]);
       } catch (e) {
         console.error("marketplace load failed", e);
       } finally {

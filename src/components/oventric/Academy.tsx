@@ -25,6 +25,7 @@ import {
   MoreVertical,
 } from "lucide-react";
 import { toast } from "sonner";
+import { readCache, writeCache } from "@/lib/swr-cache";
 import {
   listCourses,
   getCourse,
@@ -128,11 +129,18 @@ export const Academy = ({ hubMode = false }: { hubMode?: boolean }) => {
   }, [userId, fetchMyEnrollments, refreshKey]);
 
   useEffect(() => {
+    const cached = readCache<typeof courses>("academy:courses");
+    if (cached) setCourses(cached);
     fetchList()
-      .then(setCourses)
+      .then((list) => {
+        setCourses(list);
+        writeCache("academy:courses", list);
+      })
       .catch((e) => {
-        toast.error(e.message);
-        setCourses([]);
+        if (!cached) {
+          toast.error(e.message);
+          setCourses([]);
+        }
       });
   }, [fetchList, refreshKey]);
 

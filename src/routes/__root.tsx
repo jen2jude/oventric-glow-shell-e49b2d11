@@ -101,6 +101,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
+/** Media/storage origin used for early connection warming. */
+const STORAGE_ORIGIN =
+  (import.meta.env['VITE_SUPABASE_URL'] as string | undefined) ?? "";
+
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
@@ -143,6 +147,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       { rel: "manifest", href: "/manifest.webmanifest" },
+      // Warm the media/storage origin so the first image/video byte arrives sooner.
+      ...(STORAGE_ORIGIN
+        ? [
+            { rel: "preconnect", href: STORAGE_ORIGIN, crossOrigin: "anonymous" as const },
+            { rel: "dns-prefetch", href: STORAGE_ORIGIN },
+          ]
+        : []),
+
     ],
     scripts: [
       {

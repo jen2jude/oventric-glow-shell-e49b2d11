@@ -230,7 +230,7 @@ export function ProfileWall({
                               <video
                                 src={`${m.url}#t=0.1`}
                                 poster={m.poster_url || undefined}
-                                preload="metadata"
+                                preload="none"
                                 controls
                                 playsInline
                                 className="w-full max-h-[420px] object-cover"

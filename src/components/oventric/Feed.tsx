@@ -30,6 +30,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
+import { readCache, writeCache } from "@/lib/swr-cache";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { ReportModal } from "@/components/oventric/ReportModal";
 import { RepostDialog } from "@/components/oventric/feed/RepostDialog";
@@ -383,7 +384,9 @@ export function Feed() {
   const commerceCards = useFeedCommerceCards(isAppShell && feedTab === "foryou");
 
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
-  const [posts, setPosts] = useState<FeedPost[]>([]);
+  // Seed from the session cache so returning to the feed paints instantly.
+  const [posts, setPosts] = useState<FeedPost[]>(() => readCache<FeedPost[]>("feed:posts") ?? []);
+
   const [repostTarget, setRepostTarget] = useState<FeedPost | null>(null);
 
   const [newPostId, setNewPostId] = useState<string | null>(null);
@@ -525,6 +528,7 @@ export function Feed() {
     try {
       const res = await listPosts();
       setPosts(res.posts);
+      writeCache("feed:posts", res.posts);
       setPostsError(null);
       return res.posts;
     } catch (e) {
@@ -1364,7 +1368,10 @@ export function Feed() {
                         m.kind === "video" ? (
                           <video
                             key={m.url}
-                            src={m.url}
+                            src={`${m.url}#t=0.1`}
+                            // Never pull the clip itself while scrolling — the
+                            // uploaded poster stands in until the user taps.
+                            preload="none"
                             muted
                             playsInline
                             className="w-full max-h-72 object-cover rounded-[10px] bg-black/40"

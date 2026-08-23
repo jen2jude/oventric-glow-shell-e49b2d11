@@ -114,10 +114,10 @@ export function ProfilePostCard({
         <div className="px-4 pt-3">
           {isVideo ? (
             <video
-              src={media[0]}
+              src={`${media[0]}#t=0.1`}
               controls
               playsInline
-              preload="metadata"
+              preload="none"
               className="w-full rounded-xl bg-black"
             />
           ) : media.length === 1 ? (
