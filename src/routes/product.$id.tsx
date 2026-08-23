@@ -246,6 +246,19 @@ function ProductPage() {
   const loadPackages = useServerFn(getServicePackages);
   const [packages, setPackages] = useState<ServicePackage[]>([]);
   const [selectedPkg, setSelectedPkg] = useState<string | null>(null);
+  // Owner-only edit affordance.
+  const [meId, setMeId] = useState<string | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    supabase.auth.getUser().then(({ data }) => {
+      if (!cancelled) setMeId(data.user?.id ?? null);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
 
   useEffect(() => {
     let cancelled = false;
