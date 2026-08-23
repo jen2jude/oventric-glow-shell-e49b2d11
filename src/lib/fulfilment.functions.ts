@@ -87,6 +87,7 @@ function buildSteps(o: Record<string, any>, manual: boolean): FulfilmentStep[] {
   const delivered = manual ? o.delivered_at : paidAt;
   const confirmed = manual ? o.buyer_confirmed_at : paidAt;
   const completed = o.escrow_status === "released" ? o.released_at ?? confirmed : null;
+  const refunded = o.escrow_status === "refunded";
   const disputed = o.dispute_status === "open";
 
   const state = (done: unknown, prevDone: unknown): StepState =>
@@ -104,7 +105,7 @@ function buildSteps(o: Record<string, any>, manual: boolean): FulfilmentStep[] {
       key: "delivered",
       label: delivered ? "Product delivered" : "Awaiting delivery by seller",
       hint: manual
-        ? "The seller marks the item delivered once it is sent to you."
+        ? "The seller has 24 hours to deliver, or the payment is refunded automatically."
         : "Instant download — delivered the moment payment cleared.",
       state: state(delivered, paidAt),
       at: delivered ?? null,
@@ -112,14 +113,20 @@ function buildSteps(o: Record<string, any>, manual: boolean): FulfilmentStep[] {
     {
       key: "confirmed",
       label: confirmed ? "Receipt confirmed" : "Buyer to confirm receipt",
-      hint: "Buyer confirms the item was received. Auto-confirms after 48 hours.",
+      hint: "Buyer confirms the item was received and works. Auto-confirms 24 hours after delivery.",
       state: state(confirmed, delivered),
       at: confirmed ?? null,
     },
     {
       key: "completed",
-      label: completed ? "Trade circle complete" : "Seller wallet funding",
-      hint: "Seller earnings are released and admin is notified.",
+      label: refunded
+        ? "Refunded to buyer"
+        : completed
+          ? "Trade circle complete"
+          : "24-hour payout hold",
+      hint: refunded
+        ? "The delivery window closed, so the payment went back to the buyer's wallet."
+        : "Funds stay in escrow for 24 hours after confirmation, then the seller is paid.",
       state: state(completed, confirmed),
       at: completed ?? null,
     },
