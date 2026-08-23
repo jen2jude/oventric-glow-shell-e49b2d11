@@ -34,7 +34,7 @@ import {
   type DMRow,
   type PeerOrderContext,
 } from "@/lib/messaging/messages.functions";
-import { markOrderDelivered, buyerConfirmReceipt } from "@/lib/fulfilment.functions";
+import { markOrderDelivered } from "@/lib/fulfilment.functions";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { usePresence } from "@/hooks/use-presence";
 
