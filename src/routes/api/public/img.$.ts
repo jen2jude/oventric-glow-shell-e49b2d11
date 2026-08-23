@@ -26,7 +26,7 @@ export const Route = createFileRoute("/api/public/img/$")({
             status: 200,
             headers: {
               "content-type": data.type || "image/jpeg",
-              "cache-control": "public, max-age=86400",
+              "cache-control": "public, max-age=31536000, immutable",
             },
           });
         } catch {
