@@ -1489,7 +1489,7 @@ export function Feed() {
             </p>
             <p className="mt-1 text-xs text-red-300/80">{postsError}</p>
           </div>
-        ) : filteredPosts.length === 0 && !(isAppShell && feedTab === "discover") ? (
+        ) : filteredPosts.length === 0 && !(isAppShell && (feedTab === "discover" || feedTab === "following")) ? (
           isFiltering ? (
             <div className="bg-[#1E1E24] md:bg-white md:shadow-sm border border-white/10 md:border-slate-200 rounded-xl p-8 text-center">
               <p className="text-sm font-semibold text-white md:text-slate-900">
