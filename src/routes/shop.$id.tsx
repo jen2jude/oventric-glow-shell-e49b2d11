@@ -168,7 +168,8 @@ function ShopPage() {
   const fx = baseCurrency === "USD" ? 1 : baseCurrency === "NGN" ? 1500 : 14;
   const sym = baseCurrency === "USD" ? "$" : baseCurrency === "NGN" ? "₦" : "₵";
   const price = useCallback(
-    (usd: number) => `${sym}${(usd * fx).toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+    (usd: number) =>
+      usd === 0 ? "Free" : `${sym}${(usd * fx).toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
     [sym, fx],
   );
 
