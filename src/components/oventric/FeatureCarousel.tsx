@@ -182,57 +182,6 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
       role="dialog"
       aria-label="Welcome to Oventric"
     >
-      {(phase === "intro" || introExiting) && (
-        <div
-          className="absolute inset-0 flex flex-col w-full overflow-hidden bg-[#F5F2FC]"
-          style={{ animation: introExiting ? EXIT : ENTER }}
-        >
-          {/* Header */}
-          <div className="relative flex items-center px-5 pt-6 pb-2 shrink-0">
-            <img
-              loading="eager"
-              decoding="async"
-              src={oventricDark}
-              alt="Oventric"
-              className="h-7 w-auto select-none absolute left-1/2 -translate-x-1/2"
-              draggable={false}
-            />
-          </div>
-
-          <div className="relative px-6 pt-6 pb-3 shrink-0">
-            <h1 className="text-[34px] leading-[1.04] font-black tracking-tight text-[#1E1B4B]">
-              Digital Marketplace
-              <br />
-              &amp; Community
-              <br />
-              for Creators.
-            </h1>
-          </div>
-
-          {/* Fluid interest bubbles */}
-          <div className="relative flex-1 min-h-0 overflow-hidden px-4">
-            <InterestBubbles />
-          </div>
-
-          <div className="relative px-6 pb-9 pt-2 shrink-0 flex items-center justify-between gap-3">
-            <button
-              onClick={handleComplete}
-              className="text-sm font-semibold text-[#1E1B4B]/50 hover:text-[#1E1B4B] transition-colors"
-            >
-              Skip
-            </button>
-            <button
-              onClick={() => setIntroExiting(true)}
-              aria-label="Next"
-              className="h-14 w-14 rounded-full bg-[#231C56] text-white flex items-center justify-center hover:bg-[#2c2469] transition-colors"
-            >
-              <ChevronRight className="w-5 h-5" strokeWidth={2.6} />
-            </button>
-          </div>
-        </div>
-      )}
-
-
       {phase === "journey" && (
         <div
           className="absolute inset-0 flex flex-col w-full overflow-hidden bg-[#F5F2FC]"
