@@ -188,7 +188,7 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
           {/* Headline */}
           <div className="relative px-6 pt-2 pb-2 shrink-0 text-center">
             <h1 className="relative text-lg font-semibold tracking-tight text-[#1E1B4B]">
-              Digital Marketplace for creators
+              Digital Marketplace &amp; Community for Creators.
             </h1>
           </div>
 
