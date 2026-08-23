@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Flame, Sparkles, Trophy, GraduationCap, Users, ShoppingBag, PlayCircle, Search, X, Filter, Star } from "lucide-react";
+import { Flame, Sparkles, Trophy, GraduationCap, Users, ShoppingBag, PlayCircle, Search, Star } from "lucide-react";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { navigateSection } from "@/components/oventric/DiscoveryPanel";
 import { useFeedDiscovery } from "@/components/oventric/feed/useFeedDiscovery";
@@ -11,7 +11,6 @@ import { ExploreHeader, type ExploreTab } from "./ExploreHeader";
 import { PeopleExploreList } from "./PeopleExploreList";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { computeDisplayPrice } from "@/lib/fx-display";
-import { ExploreCategories } from "@/components/oventric/hub/ExploreCategories";
 
 
 function fmtUsd(usd: number, viewer: Currency): string {
