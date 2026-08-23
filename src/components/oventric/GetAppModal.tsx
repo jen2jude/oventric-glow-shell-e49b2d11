@@ -11,6 +11,8 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react";
+import { ANDROID_APK_URL } from "@/lib/app-distribution";
+
 
 type InstallPrompt = Event & { prompt: () => Promise<void> };
 
@@ -144,6 +146,13 @@ export function GetAppModal({
           </div>
 
           <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center">
+            <a
+              href={ANDROID_APK_URL}
+              download
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-[10px] bg-[#E5484D] px-5 py-3 text-sm font-bold text-white shadow-[0_16px_40px_-16px_rgba(229,72,77,0.95)] transition-transform active:scale-95"
+            >
+              <Download className="h-4 w-4" /> Download for Android
+            </a>
             <button
               type="button"
               onClick={async () => {
@@ -153,20 +162,22 @@ export function GetAppModal({
                   onClose();
                 }
               }}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-[10px] bg-[#E5484D] px-5 py-3 text-sm font-bold text-white shadow-[0_16px_40px_-16px_rgba(229,72,77,0.95)] transition-transform active:scale-95"
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-[10px] bg-slate-900 px-5 py-3 text-sm font-bold text-white transition-transform active:scale-95"
             >
-              <Download className="h-4 w-4" />
-              {deferred ? "Install Oventric" : "Add to home screen"}
+              <Smartphone className="h-4 w-4" />
+              {deferred ? "Install Oventric" : "Install on iPhone"}
             </button>
-            <Link
-              to="/get-app"
-              search={{ from }}
-              onClick={onClose}
-              className="inline-flex items-center justify-center gap-2 rounded-[10px] border border-slate-200 px-5 py-3 text-sm font-bold text-slate-700 transition-colors hover:border-slate-300 hover:text-slate-900"
-            >
-              See how it works <ArrowRight className="h-4 w-4" />
-            </Link>
           </div>
+
+          <Link
+            to="/get-app"
+            search={{ from }}
+            onClick={onClose}
+            className="mt-3 inline-flex items-center justify-center gap-2 text-[12.5px] font-bold text-slate-600 transition-colors hover:text-slate-900"
+          >
+            See all install options <ArrowRight className="h-4 w-4" />
+          </Link>
+
 
           <button
             type="button"

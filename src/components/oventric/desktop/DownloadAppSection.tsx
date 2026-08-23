@@ -262,39 +262,39 @@ export function DownloadAppSection() {
 
 function AppStoreBadge() {
   return (
-    <button
-      type="button"
-      onClick={() => {}}
-      aria-label="Download Oventric on the App Store (coming soon)"
+    <Link
+      to="/get-app"
+      aria-label="Install Oventric on iPhone"
       className="app-badge-pop inline-flex h-12 items-center gap-3 rounded-xl bg-slate-900 px-4 text-left transition-transform hover:-translate-y-0.5 active:scale-95"
     >
       <svg className="h-7 w-7 fill-white" viewBox="0 0 384 512" aria-hidden>
         <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-48.7-22.7-84.5-22.7-46.9 0-105.6 29.8-130 82.3-52.5 113.1-13.5 279.6 37 354.7 24.9 36 55.2 76.5 94.5 75.1 38.4-1.5 53.1-24.8 99.7-24.8 46.6 0 60.1 24.8 100.3 24.1 40.5-.7 66.8-36.1 91.5-72.2 28.5-41.7 40.2-82.1 40.5-84.2-.9-.4-78.2-30.1-79.1-120.2zM273.1 89.6c20.4-24.8 33.8-59.2 30.1-93.6-29.9 1.2-66.1 20-87.5 45-18.4 21.2-34.7 56.4-30.4 89.6 33.8 2.6 67.4-16.2 87.8-41z" />
       </svg>
       <div className="flex flex-col">
-        <span className="text-[10px] leading-none text-slate-400">Download on the</span>
-        <span className="text-base font-bold leading-none text-white">App Store</span>
+        <span className="text-[10px] leading-none text-slate-400">Install on</span>
+        <span className="text-base font-bold leading-none text-white">iPhone</span>
       </div>
-    </button>
+    </Link>
   );
 }
 
 function GooglePlayBadge() {
   return (
-    <button
-      type="button"
-      onClick={() => {}}
-      aria-label="Get Oventric on Google Play (coming soon)"
-      className="app-badge-pop inline-flex h-12 items-center gap-3 rounded-xl bg-slate-900 px-4 text-left transition-transform hover:-translate-y-0.5 active:scale-95"
+    <a
+      href={ANDROID_APK_URL}
+      download
+      aria-label="Download the Oventric Android app (APK)"
+      className="app-badge-pop inline-flex h-12 items-center gap-3 rounded-xl bg-[#E5484D] px-4 text-left transition-transform hover:-translate-y-0.5 active:scale-95"
       style={{ animationDelay: "120ms" }}
     >
       <svg className="h-7 w-7 fill-white" viewBox="0 0 512 512" aria-hidden>
         <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-10.3 18-28.5-1.2-40.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z" />
       </svg>
       <div className="flex flex-col">
-        <span className="text-[10px] leading-none text-slate-400">Get it on</span>
-        <span className="text-base font-bold leading-none text-white">Google Play</span>
+        <span className="text-[10px] leading-none text-white/70">Direct download</span>
+        <span className="text-base font-bold leading-none text-white">Android APK</span>
       </div>
-    </button>
+    </a>
   );
 }
+
