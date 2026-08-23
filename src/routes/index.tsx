@@ -344,7 +344,7 @@ function Index() {
   const isMessages = active === "Messages";
 
   return (
-    <div className={`relative h-screen overflow-hidden ${!isAppShell ? "bg-white" : "bg-[#0A0A0B]"} text-slate-200`}>
+    <div className={`relative h-screen h-[100dvh] overflow-hidden ${!isAppShell ? "bg-white" : "bg-[#0A0A0B]"} text-slate-200`}>
       <div className="pointer-events-none fixed top-0 inset-x-0 h-[2px] z-50  hidden md:block" />
       <div className="pointer-events-none fixed bottom-0 inset-x-0 h-[2px] z-50  hidden md:block" />
 
