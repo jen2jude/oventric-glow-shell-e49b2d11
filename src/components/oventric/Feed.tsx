@@ -1270,7 +1270,7 @@ export function Feed() {
           </button>
         )}
 
-        {isAppShell && searchOpen && feedTab !== "following" && (
+        {isAppShell && searchOpen && (
           <div className="fixed inset-0 z-40 bg-[#0A0A0B] overflow-y-auto pt-16 -mx-4">
             <div className="px-4">
               <FeedSearchBar
@@ -1300,7 +1300,7 @@ export function Feed() {
           />
         )}
 
-        {(debouncedQuery.length >= 1 || isGlobalCategory) && feedTab !== "following" && (
+        {(debouncedQuery.length >= 1 || isGlobalCategory) && (
           <div className="fixed inset-0 z-[41] bg-[#0A0A0B] overflow-y-auto -mx-4">
             <FeedGlobalResults q={debouncedQuery} category={category} />
             <button

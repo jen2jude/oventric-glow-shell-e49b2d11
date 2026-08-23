@@ -108,15 +108,10 @@ export function FeedAppChrome({
         <div className="ml-auto flex items-center gap-1.5">
           <button
             type="button"
-            onClick={() => tab !== "following" && onToggleSearch()}
-            aria-label={tab === "following" ? "Search not available in Following" : "Search"}
-            disabled={tab === "following"}
+            onClick={onToggleSearch}
+            aria-label="Search"
             className={`grid h-11 w-11 place-items-center rounded-full transition-colors active:scale-95 ${
-              tab === "following"
-                ? "text-white/20 cursor-not-allowed"
-                : searchOpen
-                  ? "bg-[#E5484D]/15 text-[#E5484D]"
-                  : "text-white/80 hover:text-white"
+              searchOpen ? "bg-[#E5484D]/15 text-[#E5484D]" : "text-white/80 hover:text-white"
             }`}
           >
             <Search className="h-[22px] w-[22px]" strokeWidth={1.8} />
