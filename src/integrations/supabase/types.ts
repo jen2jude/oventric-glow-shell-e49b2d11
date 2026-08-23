@@ -3219,6 +3219,7 @@ export type Database = {
           media_path: string
           media_type: string
           user_id: string
+          view_count: number
         }
         Insert: {
           caption?: string | null
@@ -3228,6 +3229,7 @@ export type Database = {
           media_path: string
           media_type?: string
           user_id: string
+          view_count?: number
         }
         Update: {
           caption?: string | null
@@ -3237,6 +3239,7 @@ export type Database = {
           media_path?: string
           media_type?: string
           user_id?: string
+          view_count?: number
         }
         Relationships: []
       }
