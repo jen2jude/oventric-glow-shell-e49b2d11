@@ -501,7 +501,7 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
         }}
       />
       {addFundsOpen && <AddCapitalModal onClose={() => setAddFundsOpen(false)} />}
-      {payoutOpen && <PayoutModal onClose={() => setPayoutOpen(false)} />
+      {payoutOpen && <PayoutModal onClose={() => setPayoutOpen(false)} />}
     </div>
   );
 }
