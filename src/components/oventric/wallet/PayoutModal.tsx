@@ -208,9 +208,9 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="fixed inset-0 z-[60] bg-[#0A0A0B] overflow-y-auto">
+    <div className="fixed inset-0 z-[60] bg-[#0A0A0B] flex flex-col">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-[#0A0A0B]/95 backdrop-blur border-b border-white/5">
+      <div className="shrink-0 bg-[#0A0A0B]/95 backdrop-blur border-b border-white/5">
         <div className="flex items-center justify-between px-4 py-4">
           <button onClick={onClose} className="p-2 -ml-2 text-white">
             <ArrowLeft className="w-5 h-5" />
@@ -222,7 +222,7 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
         </div>
       </div>
 
-      <div className="px-4 pb-28 space-y-6 pt-4">
+      <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-6 pt-4">
         {/* Balance card */}
         <div className="rounded-[10px] border border-[#E5484D]/25 bg-gradient-to-br from-[#17171C] to-[#101014] p-4 relative overflow-hidden">
           <div className="flex items-start justify-between">
@@ -368,8 +368,8 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
         </div>
       </div>
 
-      {/* Sticky CTA */}
-      <div className="fixed bottom-0 inset-x-0 bg-[#0A0A0B]/95 backdrop-blur border-t border-white/5 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))]">
+      {/* Bottom CTA */}
+      <div className="shrink-0 bg-[#0A0A0B]/95 backdrop-blur border-t border-white/5 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))]">
         <button
           onClick={openReview}
           disabled={submitting}
@@ -381,6 +381,7 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
           <Lock className="w-3 h-3" /> Secured by Oventric
         </div>
       </div>
+
 
       {addKind && (
         <AddMethodSheet
