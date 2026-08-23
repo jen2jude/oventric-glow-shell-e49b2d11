@@ -47,6 +47,9 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
   const { baseCurrency } = useOnboarding();
 
   const isPhysical = product.kind === "physical";
+  // Live listings stay live after an edit unless the deliverable itself changes.
+  const isLive = product.status === "active";
+
 
   // Shared fields, prefilled.
   const [name, setName] = useState(product.name);
