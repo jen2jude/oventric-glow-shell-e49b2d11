@@ -2621,3 +2621,10 @@ section + section {
 .oventric-web .text-slate-300 {
   color: #334155;
 }
+
+/* Chat drawer open — hide the mobile bottom navigation so the reply
+   composer is fully reachable on small screens. */
+body[data-chat-open="1"] [data-testid="mobile-nav"],
+body[data-chat-open="1"] [data-testid="app-tab-bar"] {
+  display: none !important;
+}
