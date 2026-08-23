@@ -31,11 +31,14 @@ export function MessagesDrawer({
     // Hide the app's bottom navigation while chatting so the reply composer
     // is never covered by it on mobile.
     document.body.setAttribute("data-chat-open", "1");
+    setChatOpen(true);
     return () => {
       window.removeEventListener("keydown", onKey);
       document.body.removeAttribute("data-chat-open");
+      setChatOpen(false);
     };
   }, [open, onClose]);
+
 
   if (!open) return null;
 
