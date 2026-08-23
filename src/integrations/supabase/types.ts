@@ -1989,6 +1989,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          auto_refund_at: string | null
           auto_release_at: string | null
           buyer_confirmed_at: string | null
           buyer_id: string
@@ -2007,12 +2008,15 @@ export type Database = {
           id: string
           paid_at: string | null
           payment_method: string
+          payout_release_at: string | null
           paystack_ref: string | null
           prerelease_notified_at: string | null
           product_category_snapshot: string | null
           product_id: string | null
           product_name_snapshot: string | null
           quantity: number
+          refund_reason: string | null
+          refunded_at: string | null
           released_at: string | null
           released_by: string | null
           seller_id: string
@@ -2025,6 +2029,7 @@ export type Database = {
           unit_price_usd: number
         }
         Insert: {
+          auto_refund_at?: string | null
           auto_release_at?: string | null
           buyer_confirmed_at?: string | null
           buyer_id: string
@@ -2043,12 +2048,15 @@ export type Database = {
           id?: string
           paid_at?: string | null
           payment_method: string
+          payout_release_at?: string | null
           paystack_ref?: string | null
           prerelease_notified_at?: string | null
           product_category_snapshot?: string | null
           product_id?: string | null
           product_name_snapshot?: string | null
           quantity?: number
+          refund_reason?: string | null
+          refunded_at?: string | null
           released_at?: string | null
           released_by?: string | null
           seller_id: string
@@ -2061,6 +2069,7 @@ export type Database = {
           unit_price_usd: number
         }
         Update: {
+          auto_refund_at?: string | null
           auto_release_at?: string | null
           buyer_confirmed_at?: string | null
           buyer_id?: string
@@ -2079,12 +2088,15 @@ export type Database = {
           id?: string
           paid_at?: string | null
           payment_method?: string
+          payout_release_at?: string | null
           paystack_ref?: string | null
           prerelease_notified_at?: string | null
           product_category_snapshot?: string | null
           product_id?: string | null
           product_name_snapshot?: string | null
           quantity?: number
+          refund_reason?: string | null
+          refunded_at?: string | null
           released_at?: string | null
           released_by?: string | null
           seller_id?: string
