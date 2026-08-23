@@ -816,7 +816,7 @@ export function Messages({
 
       {/* RIGHT — Active Chat */}
       <section
-        className={`${showListOnMobile ? "hidden" : "flex"} md:flex flex-1 min-w-0 flex-col bg-[#121214] md:bg-slate-50`}
+        className={`${showListOnMobile ? "hidden" : "flex"} md:flex flex-1 min-w-0 min-h-0 h-full flex-col bg-[#121214] md:bg-slate-50`}
       >
         {!activeThread ? (
           <EmptyChat hasThreads={threads.length > 0} />
