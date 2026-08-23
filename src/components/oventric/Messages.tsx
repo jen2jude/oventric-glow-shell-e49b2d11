@@ -36,6 +36,7 @@ import {
 } from "@/lib/messaging/messages.functions";
 import { markOrderDelivered, buyerConfirmReceipt } from "@/lib/fulfilment.functions";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
+import { usePresence } from "@/hooks/use-presence";
 
 interface OnlinePeer {
   name: string;
@@ -237,6 +238,12 @@ export function Messages({
   const [orderCtx, setOrderCtx] = useState<PeerOrderContext | null>(null);
   const [showListOnMobile, setShowListOnMobile] = useState(!initialThreadId);
   const [onlinePeers, setOnlinePeers] = useState<Map<string, OnlinePeer>>(new Map());
+  // App-wide presence: realtime peers plus anyone active in the last 5 minutes.
+  const presence = usePresence();
+  const isPeerOnline = useCallback(
+    (id: string) => onlinePeers.has(id) || presence.isOnline(id),
+    [onlinePeers, presence],
+  );
   const peerCacheRef = useRef<Set<string>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
   const [peerTyping, setPeerTyping] = useState(false);
@@ -736,12 +743,22 @@ export function Messages({
           </div>
         </div>
         {(() => {
-          const online = [...onlinePeers.entries()].map(([id, p]) => ({
-            id,
-            name: p.name,
-            avatarUrl: p.avatarUrl,
-            online: true,
-          }));
+          const online = [
+            ...[...onlinePeers.entries()].map(([id, p]) => ({
+              id,
+              name: p.name,
+              avatarUrl: p.avatarUrl,
+              online: true,
+            })),
+            ...threads
+              .filter((t) => !onlinePeers.has(t.peerId) && presence.isOnline(t.peerId))
+              .map((t) => ({
+                id: t.peerId,
+                name: t.peerName,
+                avatarUrl: t.peerAvatarUrl,
+                online: true,
+              })),
+          ];
           const onlineIds = new Set(online.map((o) => o.id));
           const offline = threads
             .filter((t) => !onlineIds.has(t.peerId))
@@ -807,7 +824,7 @@ export function Messages({
                 key={t.peerId}
                 thread={t}
                 active={t.peerId === activePeer}
-                online={onlinePeers.has(t.peerId)}
+                online={isPeerOnline(t.peerId)}
                 onClick={() => selectThread(t.peerId)}
               />
             ))
@@ -839,7 +856,7 @@ export function Messages({
                     loading="eager"
                   />
                 </div>
-                {onlinePeers.has(activeThread.peerId) && (
+                {isPeerOnline(activeThread.peerId) && (
                   <span
                     className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#16161B] md:border-white shadow-sm"
                     title="Online"
@@ -861,12 +878,15 @@ export function Messages({
                     <span className="text-emerald-400 md:text-emerald-600 font-semibold">
                       typing…
                     </span>
-                  ) : onlinePeers.has(activeThread.peerId) ? (
+                  ) : isPeerOnline(activeThread.peerId) ? (
                     <span className="text-emerald-400 md:text-emerald-600 font-semibold">
                       ● Online now
                     </span>
                   ) : (
-                    <>last active {relative(activeThread.lastAt)}</>
+                    <>
+                      {presence.lastSeenLabel(activeThread.peerId) ??
+                        `last active ${relative(activeThread.lastAt)}`}
+                    </>
                   )}
                 </div>
               </div>
