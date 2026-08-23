@@ -41,6 +41,8 @@ import { ExploreCategories } from "@/components/oventric/hub/ExploreCategories";
 import { FeaturedProductCard } from "@/components/oventric/hub/FeaturedProductCard";
 import { WalletDetailModal } from "@/components/oventric/hub/WalletDetailModal";
 import { CommunityRail } from "@/components/oventric/hub/CommunityRail";
+import { AddCapitalModal } from "@/components/oventric/wallet/AddCapitalModal";
+import { PayoutModal } from "@/components/oventric/wallet/PayoutModal";
 import { MegaMenu } from "@/components/oventric/MegaMenu";
 import { getWalletBalances } from "@/lib/wallet.functions";
 import logoFull from "@/assets/oventric-full-transparent.png";
