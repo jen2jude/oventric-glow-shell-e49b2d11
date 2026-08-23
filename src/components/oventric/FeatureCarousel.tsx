@@ -9,7 +9,7 @@ import mockAcademy from "@/assets/mock-academy.jpg";
 import mockBounties from "@/assets/mock-bounties.jpg";
 import mockWallet from "@/assets/mock-wallet.jpg";
 import oventricFull from "@/assets/oventric-full-transparent.png";
-import heroCollageMobile from "@/assets/hero-collage-float.png.asset.json";
+import { InterestBubbles } from "@/components/oventric/onboarding/InterestBubbles";
 import { markCarouselSeen as markCarouselSeenFn } from "@/lib/carousel.functions";
 
 interface Slide {
