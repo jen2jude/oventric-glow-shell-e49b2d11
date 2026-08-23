@@ -1270,7 +1270,7 @@ export function Feed() {
           </button>
         )}
 
-        {isAppShell && searchOpen && (
+        {isAppShell && searchOpen && feedTab !== "following" && (
           <div className="fixed inset-0 z-40 bg-[#0A0A0B] overflow-y-auto pt-16 -mx-4">
             <div className="px-4">
               <FeedSearchBar
