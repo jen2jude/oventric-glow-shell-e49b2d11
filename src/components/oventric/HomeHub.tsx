@@ -215,38 +215,40 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
   }, [loadDiscovery, loadCourses]);
 
   return (
-    <div className="hub-enter mx-auto w-full max-w-5xl px-3 md:px-6 py-4 md:py-8 space-y-7 pb-24 bg-[#0A0A0B] min-h-screen">
-      {/* Top bar — small mark, notifications, profile */}
-      <section className="flex items-center gap-3">
-        <img
-          loading="lazy"
-          decoding="async"
-          src={logoFull}
-          alt="Oventric"
-          className="h-7 w-auto shrink-0"
-        />
+    <div className="hub-enter mx-auto w-full max-w-5xl px-3 md:px-6 pt-0 md:py-8 space-y-7 pb-24 bg-[#0A0A0B] min-h-screen">
+      {/* Sticky top header — small mark, notifications, profile */}
+      <header className="sticky top-0 z-40 -mx-3 px-3 md:-mx-6 md:px-6 py-4 bg-[#0A0A0B]/85 backdrop-blur-xl border-b border-white/[0.04]">
+        <section className="flex items-center gap-3">
+          <img
+            loading="lazy"
+            decoding="async"
+            src={logoFull}
+            alt="Oventric"
+            className="h-7 w-auto shrink-0"
+          />
 
-        <div className="ml-auto flex items-center gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={() => (isAuthenticated ? setNotifOpen(true) : openGate("generic"))}
-            aria-label="Notifications"
-            className="relative h-11 w-11 flex items-center justify-center rounded-full bg-[#141416] border border-white/5 text-white/70 active:scale-95 transition-transform"
-          >
-            <Bell className="w-5 h-5" strokeWidth={2} />
-            <CountBadge count={unreadNotifs} ariaLabel={`${unreadNotifs} new notifications`} />
-          </button>
+          <div className="ml-auto flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => (isAuthenticated ? setNotifOpen(true) : openGate("generic"))}
+              aria-label="Notifications"
+              className="relative h-11 w-11 flex items-center justify-center rounded-full bg-[#141416] border border-white/5 text-white/70 active:scale-95 transition-transform"
+            >
+              <Bell className="w-5 h-5" strokeWidth={2} />
+              <CountBadge count={unreadNotifs} ariaLabel={`${unreadNotifs} new notifications`} />
+            </button>
 
-          <button
-            type="button"
-            onClick={() => (isAuthenticated ? setMegaOpen(true) : openGate("generic"))}
-            aria-label="Your profile menu"
-            className="h-11 w-11 rounded-full overflow-hidden border border-white/10 shrink-0 active:scale-95 transition-transform bg-[#141416]"
-          >
-            <AvatarImage src={avatarUrl} alt={name || "You"} />
-          </button>
-        </div>
-      </section>
+            <button
+              type="button"
+              onClick={() => (isAuthenticated ? setMegaOpen(true) : openGate("generic"))}
+              aria-label="Your profile menu"
+              className="h-11 w-11 rounded-full overflow-hidden border border-white/10 shrink-0 active:scale-95 transition-transform bg-[#141416]"
+            >
+              <AvatarImage src={avatarUrl} alt={name || "You"} />
+            </button>
+          </div>
+        </section>
+      </header>
 
       {/* Greeting + wallet snippet */}
       <section className="flex items-start justify-between gap-3">
