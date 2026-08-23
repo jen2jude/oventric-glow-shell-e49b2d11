@@ -2628,3 +2628,13 @@ body[data-chat-open="1"] [data-testid="mobile-nav"],
 body[data-chat-open="1"] [data-testid="app-tab-bar"] {
   display: none !important;
 }
+
+/* Onboarding interest bubbles — smooth, fluid float */
+@keyframes ov-bubble-float {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(4px, -10px, 0) scale(1.02); }
+  66% { transform: translate3d(-4px, 6px, 0) scale(0.99); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [style*="ov-bubble-float"] { animation: none !important; }
+}
