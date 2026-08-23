@@ -10,6 +10,7 @@ import mockBounties from "@/assets/mock-bounties.jpg";
 import mockWallet from "@/assets/mock-wallet.jpg";
 import oventricFull from "@/assets/oventric-full-transparent.png";
 import { InterestBubbles } from "@/components/oventric/onboarding/InterestBubbles";
+import { JourneyOrbit } from "@/components/oventric/onboarding/JourneyOrbit";
 import { markCarouselSeen as markCarouselSeenFn } from "@/lib/carousel.functions";
 
 interface Slide {
@@ -65,7 +66,6 @@ const SLIDES: Slide[] = [
   },
 ];
 
-const INTRO_HOLD_MS = 5000; // intro stays fully visible
 const INTRO_FADE_MS = 600; // fade-out into first slide
 const CONGRATS_MS = 2400;
 const ENTER = "feature-carousel-enter 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards";
@@ -294,7 +294,7 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
         </div>
       )}
 
-      {(phase === "slides" || introExiting) && (
+      {phase === "slides" && (
         <div
           className={`flex flex-col items-center w-full h-full ${
             introExiting ? "absolute inset-0 z-20" : ""
