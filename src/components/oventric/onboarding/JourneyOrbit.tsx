@@ -4,6 +4,10 @@ import mockMarketplace from "@/assets/mock-marketplace.jpg";
 import mockAcademy from "@/assets/mock-academy.jpg";
 import mockBounties from "@/assets/mock-bounties.jpg";
 import mockWallet from "@/assets/mock-wallet.jpg";
+import face1 from "@/assets/onboarding/face-1.jpg";
+import face2 from "@/assets/onboarding/face-2.jpg";
+import face3 from "@/assets/onboarding/face-3.jpg";
+import face4 from "@/assets/onboarding/face-4.jpg";
 
 type Node = { id: string; x: number; y: number; r: number; image?: string; color?: string; delay: number };
 
@@ -12,18 +16,19 @@ const CENTER = { x: 100, y: 100 };
 
 const NODES: Node[] = [
   // center
-  { id: "c", x: 100, y: 100, r: 15, image: mockMarketplace, delay: 0 },
+  { id: "c", x: 100, y: 100, r: 15, image: face1, delay: 0 },
   // inner ring
-  { id: "i1", x: 100, y: 62, r: 14, image: mockFeed, delay: 0.5 },
+  { id: "i1", x: 100, y: 62, r: 14, image: face2, delay: 0.5 },
   { id: "i2", x: 137, y: 118, r: 13, image: mockAcademy, delay: 1.1 },
-  { id: "i3", x: 63, y: 122, r: 13, image: mockWallet, delay: 0.8 },
+  { id: "i3", x: 63, y: 122, r: 13, image: face3, delay: 0.8 },
   // outer ring
   { id: "o1", x: 152, y: 66, r: 13, image: mockBounties, delay: 1.4 },
-  { id: "o2", x: 46, y: 72, r: 13, image: mockCashback, delay: 0.3 },
+  { id: "o2", x: 46, y: 72, r: 13, image: face4, delay: 0.3 },
   { id: "o3", x: 168, y: 128, r: 12, image: mockFeed, delay: 1.8 },
-  { id: "o4", x: 34, y: 136, r: 12, image: mockAcademy, delay: 0.9 },
+  { id: "o4", x: 34, y: 136, r: 12, image: mockCashback, delay: 0.9 },
   { id: "o5", x: 76, y: 166, r: 13, image: mockMarketplace, delay: 2.1 },
   { id: "o6", x: 130, y: 172, r: 12, image: mockWallet, delay: 1.6 },
+
   // accent dots
   { id: "d1", x: 66, y: 96, r: 6, color: "#22c55e", delay: 0.2 },
   { id: "d2", x: 40, y: 108, r: 4, color: "#f59e0b", delay: 1.5 },
