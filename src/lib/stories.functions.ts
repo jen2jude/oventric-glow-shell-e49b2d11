@@ -81,32 +81,18 @@ export const publishStories = createServerFn({ method: "POST" })
     return { ok: true, count: rows.length };
   });
 
-/** Hard-delete expired stories and their media — no trace, unrecoverable. */
-async function purgeExpired() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data: dead } = await supabaseAdmin
-    .from("stories")
-    .select("id, media_path")
-    .lte("expires_at", new Date().toISOString())
-    .limit(500);
-  if (!dead || dead.length === 0) return;
-  const paths = dead.map((d: any) => d.media_path).filter(Boolean);
-  if (paths.length) await supabaseAdmin.storage.from("story-media").remove(paths);
-  await supabaseAdmin
-    .from("stories")
-    .delete()
-    .in(
-      "id",
-      dead.map((d: any) => d.id),
-    );
-}
+/**
+ * Stories disappear from the 24h circle rail but survive as **reels** — they
+ * keep collecting views in Discover and on the author's profile, so nothing is
+ * purged here anymore.
+ */
 
 /** Live story rail: my stories first, then people I follow / who follow me. */
 export const listStories = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<{ groups: StoryGroup[] }> => {
     const { supabase, userId } = context;
-    await purgeExpired().catch(() => {});
+
 
     const [followingRes, followersRes] = await Promise.all([
       supabase.from("follows").select("followee_id").eq("follower_id", userId),
