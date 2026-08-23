@@ -194,9 +194,11 @@ export function computeDisplayPrice(row: PriceableRow, viewer: Currency): Displa
     return {
       value: safeValue,
       currency: safeViewer,
-      formatted: formatMoney(safeValue, safeViewer),
+      formatted: originalAmount === 0 ? "Free" : formatMoney(safeValue, safeViewer),
       originalFormatted:
-        originalCurrency !== safeViewer ? formatMoney(originalAmount, originalCurrency) : null,
+        originalCurrency !== safeViewer && originalAmount > 0
+          ? formatMoney(originalAmount, originalCurrency)
+          : null,
       originalCurrency,
       originalAmount,
       usd: safeUsd,
