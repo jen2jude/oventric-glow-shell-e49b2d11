@@ -5,7 +5,7 @@ import { Users, UserPlus, AlertTriangle, RefreshCw, Clock, Wifi } from "lucide-r
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { FollowButton } from "@/components/oventric/FollowButton";
 import { listFollowers, listFollowing, type PersonSummary } from "@/lib/follows.functions";
-import { useOnlineUsers } from "@/hooks/use-presence";
+import { usePresence } from "@/hooks/use-presence";
 import { PersonQuickView } from "@/components/oventric/profile/PersonQuickView";
 
 export type RelationshipTab = "followers" | "following";
@@ -27,7 +27,8 @@ interface Props {
 }
 
 export function RelationshipsSection({ userId, name, viewerId, tab, onTabChange, counts }: Props) {
-  const online = useOnlineUsers();
+  const presence = usePresence();
+  const online = presence.online;
   const fetchFollowers = useServerFn(listFollowers);
   const fetchFollowing = useServerFn(listFollowing);
   const tabsRef = useRef<HTMLDivElement | null>(null);
@@ -309,7 +310,12 @@ export function RelationshipsSection({ userId, name, viewerId, tab, onTabChange,
                         aria-haspopup="dialog"
                         className="block truncate text-left text-[11px] text-slate-500 hover:text-emerald-400 md:hover:text-emerald-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 rounded"
                       >
-                        {p.username ? `@${p.username}` : isOnline ? "Online now" : "Offline"} ·
+                        {p.username
+                          ? `@${p.username}`
+                          : isOnline
+                            ? "Online now"
+                            : (presence.lastSeenLabel(p.userId) ?? "Offline")}{" "}
+                        ·
                         Quick view
                       </button>
                     </div>

@@ -20,6 +20,7 @@ import {
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { supabase } from "@/integrations/supabase/client";
+import { useOnlineUsers as useSharedOnlineUsers } from "@/hooks/use-presence";
 import {
   getDiscoveryFeed,
   type DiscoveryAd,
@@ -333,33 +334,13 @@ function ProductRow({ p, priceFmt }: { p: DiscoveryProduct; priceFmt: (usd: numb
 
 /* ---------------- Online users presence ---------------- */
 
-function useOnlineUsers(myId: string | null) {
-  const [ids, setIds] = useState<string[]>([]);
-  useEffect(() => {
-    if (!myId) {
-      setIds([]);
-      return;
-    }
-    for (const c of supabase.getChannels()) {
-      if (c.topic === "realtime:presence:online") supabase.removeChannel(c);
-    }
-    const channel = supabase.channel("presence:online", { config: { presence: { key: myId } } });
-    channel
-      .on("presence", { event: "sync" }, () => {
-        const state = channel.presenceState();
-        const list = Object.keys(state).filter((k) => k !== myId);
-        setIds(list);
-      })
-      .subscribe(async (status) => {
-        if (status === "SUBSCRIBED") {
-          await channel.track({ online_at: new Date().toISOString() });
-        }
-      });
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [myId]);
-  return ids;
+/**
+ * Shared app-wide presence: anyone active in the last 5 minutes counts as
+ * online, so a brief disconnect doesn't flip people to offline instantly.
+ */
+function useOnlineUserIds(myId: string | null) {
+  const online = useSharedOnlineUsers();
+  return useMemo(() => [...online].filter((id) => id !== myId), [online, myId]);
 }
 
 /* ---------------- Panel ---------------- */
@@ -421,7 +402,7 @@ export function DiscoveryPanel() {
   }, [productsAll, shuffleKey]);
 
   // Online users
-  const onlineIds = useOnlineUsers(myId);
+  const onlineIds = useOnlineUserIds(myId);
   const { data: onlineUsers = [] } = useQuery({
     queryKey: ["online-users-lite", onlineIds.join(",")],
     queryFn: () => fetchProfilesLite({ data: { userIds: onlineIds } }),

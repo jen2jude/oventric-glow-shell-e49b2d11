@@ -28,7 +28,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useOnlineUsers } from "@/hooks/use-presence";
+import { usePresence } from "@/hooks/use-presence";
 
 export type ConnectionsTab = "all" | "following" | "followers" | "suggested";
 
@@ -62,7 +62,8 @@ export function ConnectionsDialog({
   initialTab = "followers",
 }: Props) {
   const navigate = useNavigate();
-  const online = useOnlineUsers();
+  const presence = usePresence();
+  const online = presence.online;
   const fetchFollowers = useServerFn(listFollowers);
   const fetchFollowing = useServerFn(listFollowing);
   const fetchSuggested = useServerFn(listSuggestedFollows);
@@ -310,6 +311,15 @@ export function ConnectionsDialog({
                     </span>
                     <span className="block truncate text-xs text-slate-500">
                       {p.username ? `@${p.username}` : (p.bio ?? "Oventric member")}
+                    </span>
+                    <span
+                      className={`block truncate text-[11px] font-semibold ${
+                        online.has(p.userId) ? "text-emerald-400" : "text-slate-600"
+                      }`}
+                    >
+                      {online.has(p.userId)
+                        ? "Online now"
+                        : (presence.lastSeenLabel(p.userId) ?? "Offline")}
                     </span>
                   </Link>
 

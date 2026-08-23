@@ -135,7 +135,7 @@ import {
   type ConnectionsTab,
 } from "@/components/oventric/profile/ConnectionsDialog";
 
-import { useOnlineUsers } from "@/hooks/use-presence";
+import { usePresence } from "@/hooks/use-presence";
 import { FollowButton } from "@/components/oventric/FollowButton";
 import { JoinCirclePickerModal } from "@/components/oventric/JoinCirclePickerModal";
 import { useIsAppShell } from "@/hooks/use-launch-context";
@@ -287,7 +287,8 @@ function ProfilePage() {
   }, [search.tab, id]);
   const [connectionsOpen, setConnectionsOpen] = useState(false);
   const [connectionsTab, setConnectionsTab] = useState<ConnectionsTab>("followers");
-  const onlineUsers = useOnlineUsers();
+  const presence = usePresence();
+  const onlineUsers = presence.online;
   const openRelationships = (which: ConnectionsTab) => {
     setConnectionsTab(which);
     setConnectionsOpen(true);
@@ -1156,6 +1157,12 @@ function ProfilePage() {
                         displayInitials
                       )}
                     </div>
+                    {isViewedUserOnline && (
+                      <span
+                        className="absolute top-1 left-1 h-4 w-4 rounded-full bg-emerald-400 border-[3px] border-[#121214]"
+                        aria-label="Online now"
+                      />
+                    )}
                     <span
                       className="absolute bottom-0.5 right-0.5 grid h-7 w-7 place-items-center rounded-full bg-[#2f6fed] border-[3px] border-[#121214]"
                       aria-label={displayTierLabel}
@@ -1255,6 +1262,24 @@ function ProfilePage() {
                   </p>
                   {realProfile?.username && (realProfile?.skills ?? []).length > 0 && (
                     <p className="text-xs font-semibold text-slate-500">@{realProfile.username}</p>
+                  )}
+                  {realProfile?.userId && (
+                    <span
+                      className={`mt-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold ${
+                        isViewedUserOnline
+                          ? "bg-emerald-500/15 text-emerald-300 md:text-emerald-700"
+                          : "bg-white/5 md:bg-slate-100 text-slate-400 md:text-slate-500"
+                      }`}
+                    >
+                      <span
+                        className={`h-2 w-2 rounded-full ${
+                          isViewedUserOnline ? "bg-emerald-400 animate-pulse" : "bg-slate-500"
+                        }`}
+                      />
+                      {isViewedUserOnline
+                        ? "Online now"
+                        : (presence.lastSeenLabel(realProfile.userId) ?? "Offline")}
+                    </span>
                   )}
                 </div>
 
