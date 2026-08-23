@@ -42,11 +42,13 @@ export function SocialProofRails({
   variant = "light",
   onOpenFeed,
   onOpenMarketplace,
+  hideCommunity = false,
   className = "",
 }: {
   variant?: Variant;
   onOpenFeed?: () => void;
   onOpenMarketplace?: () => void;
+  hideCommunity?: boolean;
   className?: string;
 }) {
   const loadSellers = useServerFn(getTopSellers);
