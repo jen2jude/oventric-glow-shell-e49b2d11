@@ -1368,7 +1368,11 @@ export function Feed() {
                         m.kind === "video" ? (
                           <video
                             key={m.url}
-                            src={m.url}
+                            src={`${m.url}#t=0.1`}
+                            poster={m.poster_url ?? undefined}
+                            // Never pull the clip itself while scrolling — the
+                            // uploaded poster stands in until the user taps.
+                            preload="none"
                             muted
                             playsInline
                             className="w-full max-h-72 object-cover rounded-[10px] bg-black/40"

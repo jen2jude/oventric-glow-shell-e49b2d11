@@ -68,10 +68,10 @@ function Thumb({ reel }: { reel: ReelItem }) {
       />
     ) : (
       <video
-        src={reel.mediaUrl}
+        src={`${reel.mediaUrl}#t=0.1`}
         muted
         playsInline
-        preload="metadata"
+        preload="none"
         className="h-full w-full object-cover"
       />
     )
