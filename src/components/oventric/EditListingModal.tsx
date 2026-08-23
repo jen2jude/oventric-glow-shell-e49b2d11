@@ -77,12 +77,15 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
 
   // Digital fields.
   const [externalUrl, setExternalUrl] = useState(product.externalUrl ?? "");
+  // Optional replacement asset file (digital only).
+  const [assetFile, setAssetFile] = useState<File | null>(null);
 
-  // Existing images (physical). Each item pairs a storage path with its signed
-  // preview URL so we can render + remove without re-uploading.
+  // Existing images. Each item pairs a storage path with its signed preview URL
+  // so we can render + remove without re-uploading.
   const [existing, setExisting] = useState<Array<{ path: string; url: string }>>(
     product.imagePaths.map((p, i) => ({ path: p, url: product.imageUrls[i] ?? "" })),
   );
+
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [newPreviews, setNewPreviews] = useState<string[]>([]);
 
