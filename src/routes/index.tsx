@@ -406,12 +406,8 @@ function Index() {
       <Feed />
     );
 
-  const view =
-    active === "Home" && !isHydratedSection ? (
-      rawView
-    ) : (
-      <Suspense fallback={<SectionFallback />}>{rawView}</Suspense>
-    );
+  const view = <Suspense fallback={<SectionFallback />}>{rawView}</Suspense>;
+
 
 
   const isMessages = active === "Messages";
