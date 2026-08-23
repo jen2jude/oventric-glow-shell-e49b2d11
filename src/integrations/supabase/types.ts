@@ -3958,7 +3958,6 @@ export type Database = {
         }
         Returns: undefined
       }
-      touch_presence: { Args: never; Returns: undefined }
       wallet_credit: {
         Args: { _amount: number; _user_id: string }
         Returns: undefined
