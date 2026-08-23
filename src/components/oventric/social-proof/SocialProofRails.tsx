@@ -147,7 +147,7 @@ export function SocialProofRails({
           </div>
         )}
 
-        {posts.length > 0 && (
+        {!hideCommunity && posts.length > 0 && (
           <div>
             <RailHead
               dark={dark}
