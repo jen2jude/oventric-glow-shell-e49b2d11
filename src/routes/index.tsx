@@ -385,13 +385,13 @@ function Index() {
 
           <main
             id={desktopLanding ? "desktop-home-scroll" : undefined}
-            className={`flex-1 min-w-0 min-h-0 ${isMessages ? "overflow-hidden" : "overflow-y-auto"} ${desktopLanding ? "" : "pb-20 md:pb-0"} ${(!isAppShell || (isDesktop && (active === "Marketplace" || active === "Academy" || active === "Bounties" || active === "Circles" || active === "Feed" || active === "Messages"))) ? "bg-white" : ""}`}
+            className={`flex-1 min-w-0 min-h-0 ${isMessages ? "overflow-hidden" : "overflow-y-auto"} ${desktopLanding || isMessages ? "" : "pb-20 md:pb-0"} ${(!isAppShell || (isDesktop && (active === "Marketplace" || active === "Academy" || active === "Bounties" || active === "Circles" || active === "Feed" || active === "Messages"))) ? "bg-white" : ""}`}
           >
             {view}
             {desktopLanding && active !== "Home" && <SiteFooterAuto />}
           </main>
         </div>
-        {isAppShell && !desktopLanding && (
+        {isAppShell && !desktopLanding && !isMessages && (
           <MobileNav
             onCreate={handleCreate}
             active={active === "Wallet" ? "Wallet" : active === "Marketplace" ? "Market" : active}
