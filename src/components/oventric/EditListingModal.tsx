@@ -56,6 +56,16 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
   // Live listings stay live after an edit unless the deliverable itself changes.
   const isLive = product.status === "active";
 
+  // Digital taxonomy, loaded lazily so digital sellers can recategorise.
+  const loadCats = useServerFn(listMarketplaceCategories);
+  const [digitalCats, setDigitalCats] = useState<CategoryNode[]>([]);
+  useEffect(() => {
+    if (isPhysical) return;
+    loadCats()
+      .then((rows) => setDigitalCats((rows ?? []).filter((r) => r.kind === "digital")))
+      .catch(() => {});
+  }, [isPhysical, loadCats]);
+
 
   // Shared fields, prefilled.
   const [name, setName] = useState(product.name);
