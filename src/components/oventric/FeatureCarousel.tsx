@@ -10,7 +10,6 @@ import mockBounties from "@/assets/mock-bounties.jpg";
 import mockWallet from "@/assets/mock-wallet.jpg";
 import oventricFull from "@/assets/oventric-full-transparent.png";
 import oventricDark from "@/assets/oventric-logo-dark.png";
-import { InterestBubbles } from "@/components/oventric/onboarding/InterestBubbles";
 import { JourneyOrbit } from "@/components/oventric/onboarding/JourneyOrbit";
 import { markCarouselSeen as markCarouselSeenFn } from "@/lib/carousel.functions";
 
@@ -67,7 +66,6 @@ const SLIDES: Slide[] = [
   },
 ];
 
-const INTRO_FADE_MS = 600; // fade-out into first slide
 const CONGRATS_MS = 2400;
 const ENTER = "feature-carousel-enter 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards";
 const EXIT = "feature-carousel-exit 0.6s cubic-bezier(0.4, 0, 1, 1) forwards";
@@ -79,23 +77,12 @@ type Phase = "journey" | "slides" | "congrats";
 
 export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
   const [phase, setPhase] = useState<Phase>("journey");
-  const [introExiting, setIntroExiting] = useState(false);
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchDelta, setTouchDelta] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const markSeenServer = useServerFn(markCarouselSeenFn);
-
-  // Intro is user-driven: tap Next to move into the journey screen.
-  useEffect(() => {
-    if (!introExiting) return;
-    const t = setTimeout(() => {
-      setPhase("journey");
-      setIntroExiting(false);
-    }, INTRO_FADE_MS);
-    return () => clearTimeout(t);
-  }, [introExiting]);
 
   // Congratulation splash, then hand over to the newsfeed.
   useEffect(() => {
@@ -236,11 +223,7 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
       )}
 
       {phase === "slides" && (
-        <div
-          className={`flex flex-col items-center w-full h-full ${
-            introExiting ? "absolute inset-0 z-20" : ""
-          }`}
-        >
+        <div className="flex flex-col items-center w-full h-full">
           {/* Top bar */}
           <div className="absolute top-0 inset-x-0 flex items-center justify-between px-5 pt-5 pb-4 z-10">
             <img loading="lazy" decoding="async"
@@ -264,11 +247,7 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
               key={slide.id}
               className="feature-carousel-slide flex flex-col items-center text-center w-full"
               style={{
-                animation: introExiting
-                  ? SLIDE_ENTER
-                  : direction === 1
-                    ? IN_FROM_RIGHT
-                    : IN_FROM_LEFT,
+                animation: direction === 1 ? IN_FROM_RIGHT : IN_FROM_LEFT,
               }}
             >
               <div
