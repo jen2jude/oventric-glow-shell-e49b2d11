@@ -930,7 +930,10 @@ export function Messages({
               )}
             </div>
 
-            <div className="border-t border-white/10 md:border-slate-200 bg-[#16161B] md:bg-white p-3">
+            <div
+              className="shrink-0 border-t border-white/10 md:border-slate-200 bg-[#16161B] md:bg-white p-3"
+              style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.75rem)" }}
+            >
               {OFF_PLATFORM_RE.test(draft) && (
                 <div className="mb-2 flex items-start gap-2 rounded-[10px] border border-amber-500/40 md:border-amber-300 bg-amber-500/5 md:bg-amber-50 px-3 py-3 text-[11px] text-amber-100 md:text-amber-800">
                   <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
