@@ -951,6 +951,8 @@ export function Messages({
               )}
             </div>
 
+            <OrderChatActionBar ctx={orderCtx} onChanged={() => void refreshOrderCtx()} />
+
             <div
               className="relative z-10 shrink-0 border-t border-white/10 md:border-slate-200 bg-[#16161B] md:bg-white p-3"
               style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.75rem)" }}
@@ -1015,24 +1017,19 @@ function OrderTradeBanner({
   onChanged: () => void;
 }) {
   const deliverFn = useServerFn(markOrderDelivered);
-  const confirmFn = useServerFn(buyerConfirmReceipt);
   const [busy, setBusy] = useState(false);
   if (!ctx) return null;
 
   const disputed = ctx.disputeStatus === "open";
   const sellerCanDeliver =
     ctx.role === "seller" && ctx.requiresManualDelivery && !ctx.deliveredAt && !disputed;
-  const buyerCanConfirm = ctx.role === "buyer" && !disputed;
 
-  const run = async (kind: "deliver" | "confirm") => {
+  const run = async (kind: "deliver") => {
     setBusy(true);
     try {
       if (kind === "deliver") {
         await deliverFn({ data: { orderId: ctx.orderId } });
         toast.success("Marked delivered — the buyer has been notified here.");
-      } else {
-        await confirmFn({ data: { orderId: ctx.orderId } });
-        toast.success("Receipt confirmed. The seller's wallet has been funded.");
       }
       onChanged();
     } catch (e) {
@@ -1074,20 +1071,6 @@ function OrderTradeBanner({
                 <Truck className="w-3.5 h-3.5" />
               )}{" "}
               Mark delivered
-            </button>
-          )}
-          {buyerCanConfirm && (
-            <button
-              onClick={() => void run("confirm")}
-              disabled={busy}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-xs font-bold text-black md:text-white bg-emerald-500 md:bg-emerald-600 hover:bg-emerald-400 md:hover:bg-emerald-700 disabled:opacity-60"
-            >
-              {busy ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <CheckCircle2 className="w-3.5 h-3.5" />
-              )}{" "}
-              Confirm receipt
             </button>
           )}
           <Link
