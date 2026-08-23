@@ -1300,7 +1300,7 @@ export function Feed() {
           />
         )}
 
-        {(debouncedQuery.length >= 1 || isGlobalCategory) && (
+        {(debouncedQuery.length >= 1 || isGlobalCategory) && feedTab !== "following" && (
           <div className="fixed inset-0 z-[41] bg-[#0A0A0B] overflow-y-auto -mx-4">
             <FeedGlobalResults q={debouncedQuery} category={category} />
             <button
