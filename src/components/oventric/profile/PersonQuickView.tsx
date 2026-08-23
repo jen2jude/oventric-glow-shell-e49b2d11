@@ -5,6 +5,7 @@ import { ExternalLink, MessageCircle, X } from "lucide-react";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { FollowButton } from "@/components/oventric/FollowButton";
 import type { PersonSummary } from "@/lib/follows.functions";
+import { usePresence } from "@/hooks/use-presence";
 
 interface Props {
   person: PersonSummary | null;
@@ -20,6 +21,7 @@ interface Props {
  */
 export function PersonQuickView({ person, isOnline, viewerId, onClose, onMessage }: Props) {
   const panelRef = useRef<HTMLDivElement | null>(null);
+  const presence = usePresence();
 
   useEffect(() => {
     if (!person) return;
@@ -101,7 +103,7 @@ export function PersonQuickView({ person, isOnline, viewerId, onClose, onMessage
               <span
                 className={`h-2 w-2 rounded-full ${isOnline ? "bg-emerald-400" : "bg-slate-500"}`}
               />
-              {isOnline ? "Online now" : "Offline"}
+              {isOnline ? "Online now" : (presence.lastSeenLabel(person?.userId) ?? "Offline")}
             </span>
           </div>
           <button
