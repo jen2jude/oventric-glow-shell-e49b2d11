@@ -30,6 +30,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
+import { readCache, writeCache } from "@/lib/swr-cache";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { ReportModal } from "@/components/oventric/ReportModal";
 import { RepostDialog } from "@/components/oventric/feed/RepostDialog";
@@ -525,6 +526,7 @@ export function Feed() {
     try {
       const res = await listPosts();
       setPosts(res.posts);
+      writeCache("feed:posts", res.posts);
       setPostsError(null);
       return res.posts;
     } catch (e) {
