@@ -111,11 +111,6 @@ export function HubPromoCarousel({ onSelect }: { onSelect: (section: string) => 
               className="relative w-full overflow-hidden rounded-[14px] text-left aspect-[16/9] md:aspect-[16/7] border border-white/[0.07] active:scale-[0.995] transition-transform"
               style={{ backgroundImage: s.bg }}
             >
-              {s.id === "main" && (
-                <span className="absolute top-3 right-3 z-30 rounded-full bg-[#E5484D] px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-lg">
-                  TEST
-                </span>
-              )}
 
               {/* Copy block */}
               <div className="relative z-20 flex h-full max-w-[62%] flex-col justify-center px-5 py-5 md:px-7">
