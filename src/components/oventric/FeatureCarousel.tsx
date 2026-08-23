@@ -218,51 +218,50 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
     >
       {(phase === "intro" || introExiting) && (
         <div
-          className="flex flex-col items-center text-center px-8 max-w-md"
+          className="absolute inset-0 flex flex-col w-full overflow-hidden"
           style={{ animation: introExiting ? EXIT : ENTER }}
         >
-          <p className="text-sm font-semibold tracking-[0.3em] uppercase text-slate-400 mb-6">
-            Welcome to
-          </p>
-          <img loading="lazy" decoding="async"
-            src={oventricFull}
-            alt="Oventric"
-            className="h-12 sm:h-14 w-auto select-none mb-6"
-            draggable={false}
+          <div
+            aria-hidden
+            className="absolute -top-24 left-1/2 -translate-x-1/2 h-72 w-72 rounded-full blur-3xl opacity-40 pointer-events-none"
+            style={{ background: "radial-gradient(circle, rgba(124,58,237,0.55), transparent 70%)" }}
           />
-          <div className="relative w-full mb-6">
-            <div
-              aria-hidden
-              className="absolute inset-0 m-auto h-40 w-40 rounded-full blur-3xl opacity-60"
-              style={{
-                background: "radial-gradient(circle, rgba(59,130,246,0.45), transparent 70%)",
-              }}
-            />
+
+          {/* Header */}
+          <div className="relative flex items-center justify-center px-5 pt-6 pb-2 shrink-0">
             <img
-              src={heroCollageMobile.url}
-              alt="Oventric features: social feed, marketplace, academy and rewards"
-              width={860}
-              height={1146}
-              decoding="async"
               loading="eager"
+              decoding="async"
+              src={oventricFull}
+              alt="Oventric"
+              className="h-8 w-auto select-none"
               draggable={false}
-              className="relative block w-full max-w-[300px] mx-auto h-auto select-none"
-              style={{
-                animation: `${ENTER}, hp-float-y 6s ease-in-out 0.6s infinite`,
-                filter: "drop-shadow(0 24px 40px rgba(0,0,0,0.45))",
-              }}
             />
           </div>
-          <p className="text-lg sm:text-xl text-slate-200 leading-relaxed">
-            The first cashback digital platform for Africa's creators &amp; developers.
-          </p>
 
-          <button
-            onClick={() => setIntroExiting(true)}
-            className="mt-10 text-sm font-medium text-slate-400 hover:text-white transition-colors"
-          >
-            Continue
-          </button>
+          <div className="relative px-6 pt-4 pb-3 shrink-0">
+            <h1 className="text-[30px] leading-[1.08] sm:text-4xl font-black tracking-tight text-white">
+              Digital Marketplace
+              <br />
+              &amp; Community
+              <br />
+              for Creators.
+            </h1>
+          </div>
+
+          {/* Fluid interest bubbles */}
+          <div className="relative flex-1 min-h-0 overflow-hidden px-4">
+            <InterestBubbles />
+          </div>
+
+          <div className="relative px-6 pb-8 pt-2 shrink-0">
+            <button
+              onClick={() => setIntroExiting(true)}
+              className="w-full h-12 rounded-full bg-white text-black font-bold text-sm hover:bg-slate-200 transition-colors"
+            >
+              Continue
+            </button>
+          </div>
         </div>
       )}
 
