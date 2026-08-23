@@ -135,19 +135,19 @@ export function BootSplash() {
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background transition-opacity duration-300"
       style={{ opacity: fading ? 0 : 1 }}
     >
-      <div className="flex flex-col items-center gap-6">
+      <div className="flex flex-col items-center gap-4">
         <img loading="lazy" decoding="async"
           src={logoFull}
           alt="Oventric"
           className="h-10 w-auto select-none sm:h-12"
           draggable={false}
         />
-        <div className="flex items-center gap-4 sm:gap-6">
+        <div className="flex items-center gap-2 sm:gap-3">
           {ICONS.map(({ Icon, color }, i) => {
             return (
               <Icon
                 key={i}
-                className="h-6 w-6 transition-none sm:h-7 sm:w-7 splash-icon-sweep"
+                className="h-4 w-4 transition-none sm:h-5 sm:w-5 splash-icon-sweep"
                 strokeWidth={1.8}
                 style={
                   {
@@ -172,13 +172,13 @@ export function BootSplash() {
           @keyframes splash-icon-fade {
             0%, 100% {
               opacity: 0.12;
-              transform: translateX(-10px) translateY(0) scale(0.85);
-              filter: grayscale(0.5) blur(0.5px);
+              transform: translateX(-3px) translateY(0) scale(0.9);
+              filter: grayscale(0.5) blur(0.3px);
             }
             50% {
               opacity: 1;
-              transform: translateX(10px) translateY(-5px) scale(1.12);
-              filter: drop-shadow(0 0 14px var(--ic)) drop-shadow(0 0 7px var(--ic));
+              transform: translateX(3px) translateY(-3px) scale(1.08);
+              filter: drop-shadow(0 0 10px var(--ic)) drop-shadow(0 0 5px var(--ic));
             }
           }
         `,
