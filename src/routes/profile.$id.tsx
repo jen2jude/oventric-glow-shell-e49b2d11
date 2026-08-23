@@ -2253,7 +2253,9 @@ function TabFilters({
 function ProfilePhotosGallery({ slug }: { slug: string }) {
   const fetchPhotos = useServerFn(listUserPhotos);
   const [photos, setPhotos] = useState<UserPhoto[] | null>(null);
-  const [filter, setFilter] = useState<"all" | "avatar" | "cover" | "post">("all");
+  const [filter, setFilter] = useState<"all" | "avatar" | "cover" | "post" | "reels">("all");
+  const reels = useReels(true, slug, 60);
+
   useEffect(() => {
     let cancel = false;
     (async () => {
