@@ -234,6 +234,7 @@ export async function settleOrder(
       : convertViaSnapshot(sellerCutUSD, "USD", sellerCurrency, snap);
   const sellerCutLocal = Number(sellerCutLocalRaw.toFixed(sellerCurrency === "USD" ? 2 : 0));
   const holdEscrow = Boolean(pRow.requires_manual_delivery);
+  const { DELIVER_DEADLINE_HOURS, hoursFromNow } = await import("@/lib/fulfilment.server");
 
   await supabaseAdmin
     .from("orders")
@@ -241,8 +242,11 @@ export async function settleOrder(
       escrow_status: holdEscrow ? "held" : "released",
       seller_share_usd: sellerCutUSD,
       released_at: holdEscrow ? null : new Date().toISOString(),
+      // Seller has a fixed window to deliver, or the buyer is refunded.
+      auto_refund_at: holdEscrow ? hoursFromNow(DELIVER_DEADLINE_HOURS) : null,
     })
     .eq("id", oRow.id as string);
+
 
   if (!holdEscrow) {
     await supabaseAdmin.rpc("wallet_credit_currency", {
