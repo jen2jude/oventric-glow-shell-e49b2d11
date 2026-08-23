@@ -72,6 +72,7 @@ function fmtPrice(
   product: ProductDTO | null,
   originalLocalAmount: number,
 ) {
+  if (usdAmount === 0 || originalLocalAmount === 0) return "Free";
   if (product && viewer === (product.originalCurrency as Currency)) {
     return fmtLocal(originalLocalAmount, viewer);
   }
