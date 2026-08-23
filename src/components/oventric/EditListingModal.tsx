@@ -713,21 +713,23 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
                 </div>
               )}
 
-              <label className="block">
-                <span className="text-xs font-medium text-slate-300">
-                  Response to moderator (optional)
-                </span>
-                <textarea
-                  value={sellerResponse}
-                  onChange={(e) => setSellerResponse(e.target.value)}
-                  rows={3}
-                  placeholder="Explain what you changed or clarify anything about the listing…"
-                  className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60 resize-none"
-                />
-                <span className="text-[10px] text-slate-500 mt-1 block">
-                  This note is sent to the admin team along with your resubmission.
-                </span>
-              </label>
+              {!isLive && (
+                <label className="block">
+                  <span className="text-xs font-medium text-slate-300">
+                    Response to moderator (optional)
+                  </span>
+                  <textarea
+                    value={sellerResponse}
+                    onChange={(e) => setSellerResponse(e.target.value)}
+                    rows={3}
+                    placeholder="Explain what you changed or clarify anything about the listing…"
+                    className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60 resize-none"
+                  />
+                  <span className="text-[10px] text-slate-500 mt-1 block">
+                    This note is sent to the admin team along with your resubmission.
+                  </span>
+                </label>
+              )}
 
               <div className="flex items-center justify-between pt-2 border-t border-white/5">
                 <div className="text-xs text-slate-400 min-h-[1rem]">{progress}</div>
@@ -746,8 +748,15 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
                     className="px-4 py-3 rounded-[10px] bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm flex items-center gap-2 disabled:opacity-60"
                   >
                     {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                    {submitting ? "Resubmitting…" : "Resubmit for review"}
+                    {submitting
+                      ? isLive
+                        ? "Saving…"
+                        : "Resubmitting…"
+                      : isLive
+                        ? "Save changes"
+                        : "Resubmit for review"}
                   </button>
+
                 </div>
               </div>
             </form>
