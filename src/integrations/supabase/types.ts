@@ -3785,6 +3785,10 @@ export type Database = {
         Returns: boolean
       }
       increment_post_view: { Args: { _post_id: string }; Returns: undefined }
+      is_blocked_by_post_author: {
+        Args: { _is_blog?: boolean; _post_id: string }
+        Returns: boolean
+      }
       is_circle_admin: {
         Args: { _circle_id: string; _user_id: string }
         Returns: boolean
