@@ -88,7 +88,7 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
     ] = await Promise.all([
       sb.from("wallets").select("currency, available_balance, escrow_balance").eq("user_id", me),
       sb.from("orders").select("id, status, created_at, escrow_status, buyer_confirmed_at", { count: "exact", head: false }).eq("buyer_id", me),
-      sb.from("product_contacts").select("id", { count: "exact", head: true }).eq("user_id", me),
+      sb.from("product_contacts").select("id", { count: "exact", head: true }).eq("buyer_id", me),
       sb.from("products").select("id, status").eq("seller_id", me),
       sb.from("bounties").select("id, status", { count: "exact", head: false }).eq("poster_id", me),
       sb.from("wallet_transactions").select("amount, currency").eq("user_id", me).eq("type", "Bounty Payout").eq("inflow", true).eq("status", "success"),

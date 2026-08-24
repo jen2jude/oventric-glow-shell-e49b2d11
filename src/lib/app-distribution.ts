@@ -7,9 +7,13 @@
  * assumes it is dropped into `public/downloads/`.
  */
 
-export const ANDROID_APK_URL =
-  (import.meta.env["VITE_ANDROID_APK_URL"] as string | undefined) ??
-  "/downloads/oventric.apk";
+const configuredApkUrl = (import.meta.env["VITE_ANDROID_APK_URL"] as string | undefined)?.trim();
+
+/** True only when a real APK URL has been configured for this deployment. */
+export const ANDROID_APK_AVAILABLE = Boolean(configuredApkUrl);
+
+/** Falls back to the install guide page so the CTA is never a dead download. */
+export const ANDROID_APK_URL = configuredApkUrl || "/get-app";
 
 export const ANDROID_APP_VERSION =
   (import.meta.env["VITE_ANDROID_APK_VERSION"] as string | undefined) ?? "1.0.0";
