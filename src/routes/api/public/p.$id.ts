@@ -18,11 +18,13 @@ export const Route = createFileRoute("/api/public/p/$id")({
 
         try {
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-          const { data: row } = await supabaseAdmin
+          const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+          const base = supabaseAdmin
             .from("products")
-            .select("name, description, vendor, cover_path, image_paths, kind")
-            .eq("id", id)
-            .maybeSingle();
+            .select("slug, name, description, vendor, cover_path, image_paths, kind");
+          const { data: row } = isUuid
+            ? await base.eq("id", id).maybeSingle()
+            : await base.eq("slug", id).maybeSingle();
           if (row) {
             const r = row as Record<string, unknown>;
             const name = typeof r.name === "string" ? r.name : "";
