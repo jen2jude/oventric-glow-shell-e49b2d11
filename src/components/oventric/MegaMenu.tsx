@@ -27,6 +27,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useTheme } from "@/lib/theme/ThemeProvider";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { toast } from "sonner";
 
@@ -75,6 +76,7 @@ export function MegaMenu({ open, onClose }: Props) {
   const { isAuthenticated, openGate } = useAuthGate();
   const { fullName, storeName, baseCurrency } = useOnboarding();
   const { theme, toggle } = useTheme();
+  const isAppShell = useIsAppShell();
   const navigate = useNavigate();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [userSlug, setUserSlug] = useState<string>("me");
@@ -263,12 +265,14 @@ export function MegaMenu({ open, onClose }: Props) {
             </p>
           </div>
           <button
-            onClick={toggle}
-            aria-label="Toggle color theme"
-            className="megamenu-lowgpu-icon-button"
+            onClick={isAppShell ? undefined : toggle}
+            disabled={isAppShell}
+            aria-label={isAppShell ? "Light mode not available in app yet" : "Toggle color theme"}
+            title={isAppShell ? "Light mode is not available in the app yet" : undefined}
+            className={`megamenu-lowgpu-icon-button ${isAppShell ? "opacity-40 cursor-not-allowed" : ""}`}
           >
-            {theme === "dark" ? (
-              <Sun className="w-5 h-5 text-amber-300" />
+            {theme === "dark" || isAppShell ? (
+              <Sun className={`w-5 h-5 ${isAppShell ? "text-slate-500" : "text-amber-300"}`} />
             ) : (
               <Moon className="w-5 h-5 text-slate-300" />
             )}
@@ -427,12 +431,14 @@ export function MegaMenu({ open, onClose }: Props) {
               </p>
             </div>
             <button
-              onClick={toggle}
-              aria-label="Toggle color theme"
-              className="shrink-0 w-11 h-11 grid place-items-center rounded-full bg-[#1E1E24] border border-white/10 hover:border-emerald-400/50"
+              onClick={isAppShell ? undefined : toggle}
+              disabled={isAppShell}
+              aria-label={isAppShell ? "Light mode not available in app yet" : "Toggle color theme"}
+              title={isAppShell ? "Light mode is not available in the app yet" : undefined}
+              className={`shrink-0 w-11 h-11 grid place-items-center rounded-full border ${isAppShell ? "bg-[#1E1E24] border-white/10 opacity-50 cursor-not-allowed" : "bg-[#1E1E24] border-white/10 hover:border-emerald-400/50"}`}
             >
-              {theme === "dark" ? (
-                <Sun className="w-5 h-5 text-amber-300" />
+              {theme === "dark" || isAppShell ? (
+                <Sun className={`w-5 h-5 ${isAppShell ? "text-slate-500" : "text-amber-300"}`} />
               ) : (
                 <Moon className="w-5 h-5 text-slate-300" />
               )}
