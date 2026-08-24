@@ -369,6 +369,21 @@ interface PendingPost {
   error?: string;
 }
 
+/** Reels rail for the browser/marketing feed — mirrors the app Discover shelf. */
+function WebReelsRail({ meId }: { meId: string | null }) {
+  const reels = useReels(true, undefined, 18);
+  if (!reels || reels.length === 0) return null;
+  return (
+    <section className="oventric-web">
+      <div className="mb-2 flex items-baseline justify-between">
+        <h2 className="text-base font-black text-white md:text-slate-900">Reels</h2>
+        <span className="text-[11px] text-slate-500">Short videos from creators</span>
+      </div>
+      <ReelsRail reels={reels} meId={meId} />
+    </section>
+  );
+}
+
 export function Feed() {
   const { require, tier } = useOnboarding();
   const isAppShell = useIsAppShell();
