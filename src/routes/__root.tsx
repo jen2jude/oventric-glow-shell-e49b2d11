@@ -355,7 +355,7 @@ function RootShell({ children }: { children: ReactNode }) {
     appShell=forced==='app'?true:forced==='web'?false:(native||standalone);
   }catch(e){}
   window.__oventricStandalone=!!appShell;
-  if(appShell){document.documentElement.classList.add('standalone-app');root.style.display='flex';}else{root.parentNode&&root.parentNode.removeChild(root);}
+  if(appShell){document.documentElement.classList.add('standalone-app');root.style.display='flex';}else{root.style.display='none';}
 }catch(e){}})();`,
             }}
           />
