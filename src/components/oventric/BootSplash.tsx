@@ -126,8 +126,6 @@ export function BootSplash() {
 
   if (!enabled || !visible) return null;
 
-  const lit = shown * ICONS.length;
-
   return (
     <div
       aria-hidden
