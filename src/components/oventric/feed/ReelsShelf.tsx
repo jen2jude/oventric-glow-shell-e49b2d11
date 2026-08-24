@@ -33,27 +33,56 @@ export function useReels(enabled: boolean, slugOrId?: string, limit?: number) {
   return reels;
 }
 
-/** Each reel becomes its own single-item "group" so the story viewer can play it. */
+const toItem = (r: ReelItem) => ({
+  id: r.id,
+  mediaUrl: r.mediaUrl,
+  mediaType: r.mediaType,
+  posterUrl: r.posterUrl,
+  createdAt: r.createdAt,
+  expiresAt: r.createdAt,
+  viewed: false,
+});
+
+/** All of an author's reels collapse into one group so they play back-to-back. */
 export function reelsToGroups(reels: ReelItem[], meId?: string | null): StoryGroup[] {
-  return reels.map((r) => ({
-    userId: r.userId,
-    slug: r.slug,
-    displayName: r.displayName,
-    avatarUrl: r.avatarUrl,
-    isMe: !!meId && r.userId === meId,
-    allViewed: false,
-    items: [
-      {
-        id: r.id,
-        mediaUrl: r.mediaUrl,
-        mediaType: r.mediaType,
-        posterUrl: r.posterUrl,
-        createdAt: r.createdAt,
-        expiresAt: r.createdAt,
-        viewed: false,
-      },
-    ],
-  }));
+  const byUser = new Map<string, StoryGroup>();
+  for (const r of reels) {
+    const existing = byUser.get(r.userId);
+    if (existing) {
+      existing.items.push(toItem(r));
+      continue;
+    }
+    byUser.set(r.userId, {
+      userId: r.userId,
+      slug: r.slug,
+      displayName: r.displayName,
+      avatarUrl: r.avatarUrl,
+      isMe: !!meId && r.userId === meId,
+      allViewed: false,
+      items: [toItem(r)],
+    });
+  }
+  return [...byUser.values()];
+}
+
+/** One card per author, carrying every reel they posted. */
+type ReelCard = { key: string; cover: ReelItem; views: number; count: number };
+
+function groupCards(reels: ReelItem[]): ReelCard[] {
+  const out: ReelCard[] = [];
+  const index = new Map<string, number>();
+  for (const r of reels) {
+    const at = index.get(r.userId);
+    if (at === undefined) {
+      index.set(r.userId, out.length);
+      out.push({ key: r.userId, cover: r, views: r.viewCount, count: 1 });
+    } else {
+      const c = out[at]!;
+      c.views += r.viewCount;
+      c.count += 1;
+    }
+  }
+  return out;
 }
 
 function Thumb({ reel }: { reel: ReelItem }) {
