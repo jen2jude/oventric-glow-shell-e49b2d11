@@ -102,8 +102,8 @@ export function SocialProofRails({
               dark={dark}
               eyebrow="Live right now"
               heading="Top Sellers"
-              action="See all"
-              onAction={onOpenMarketplace}
+              action="View all"
+              {...(dark ? { onAction: onOpenMarketplace } : { actionTo: "/sellers" as const })}
             />
             <div className="web-rail no-scrollbar mt-4 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
               {sellers.map((s, i) => (
