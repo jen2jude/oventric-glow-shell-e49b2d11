@@ -33,27 +33,56 @@ export function useReels(enabled: boolean, slugOrId?: string, limit?: number) {
   return reels;
 }
 
-/** Each reel becomes its own single-item "group" so the story viewer can play it. */
+const toItem = (r: ReelItem) => ({
+  id: r.id,
+  mediaUrl: r.mediaUrl,
+  mediaType: r.mediaType,
+  posterUrl: r.posterUrl,
+  createdAt: r.createdAt,
+  expiresAt: r.createdAt,
+  viewed: false,
+});
+
+/** All of an author's reels collapse into one group so they play back-to-back. */
 export function reelsToGroups(reels: ReelItem[], meId?: string | null): StoryGroup[] {
-  return reels.map((r) => ({
-    userId: r.userId,
-    slug: r.slug,
-    displayName: r.displayName,
-    avatarUrl: r.avatarUrl,
-    isMe: !!meId && r.userId === meId,
-    allViewed: false,
-    items: [
-      {
-        id: r.id,
-        mediaUrl: r.mediaUrl,
-        mediaType: r.mediaType,
-        posterUrl: r.posterUrl,
-        createdAt: r.createdAt,
-        expiresAt: r.createdAt,
-        viewed: false,
-      },
-    ],
-  }));
+  const byUser = new Map<string, StoryGroup>();
+  for (const r of reels) {
+    const existing = byUser.get(r.userId);
+    if (existing) {
+      existing.items.push(toItem(r));
+      continue;
+    }
+    byUser.set(r.userId, {
+      userId: r.userId,
+      slug: r.slug,
+      displayName: r.displayName,
+      avatarUrl: r.avatarUrl,
+      isMe: !!meId && r.userId === meId,
+      allViewed: false,
+      items: [toItem(r)],
+    });
+  }
+  return [...byUser.values()];
+}
+
+/** One card per author, carrying every reel they posted. */
+type ReelCard = { key: string; cover: ReelItem; views: number; count: number };
+
+function groupCards(reels: ReelItem[]): ReelCard[] {
+  const out: ReelCard[] = [];
+  const index = new Map<string, number>();
+  for (const r of reels) {
+    const at = index.get(r.userId);
+    if (at === undefined) {
+      index.set(r.userId, out.length);
+      out.push({ key: r.userId, cover: r, views: r.viewCount, count: 1 });
+    } else {
+      const c = out[at]!;
+      c.views += r.viewCount;
+      c.count += 1;
+    }
+  }
+  return out;
 }
 
 function Thumb({ reel }: { reel: ReelItem }) {
@@ -95,24 +124,35 @@ function ViewsBadge({ count }: { count: number }) {
   );
 }
 
-/** Horizontal Discover rail of reels with live view counts. */
+function CountBadge({ count }: { count: number }) {
+  if (count < 2) return null;
+  return (
+    <span className="absolute right-2 bottom-2 rounded-full bg-black/60 px-2 py-0.5 text-[10.5px] font-semibold text-white backdrop-blur-sm">
+      {count} clips
+    </span>
+  );
+}
+
+/** Horizontal Discover rail — one card per author, playing all their reels in sequence. */
 export function ReelsRail({ reels, meId }: { reels: ReelItem[]; meId?: string | null }) {
   const [at, setAt] = useState<number | null>(null);
   const groups = useMemo(() => reelsToGroups(reels, meId), [reels, meId]);
+  const cards = useMemo(() => groupCards(reels), [reels]);
   if (reels.length === 0) return null;
   return (
     <>
       <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {reels.map((r, i) => (
+        {cards.map((c, i) => (
           <button
-            key={r.id}
+            key={c.key}
             type="button"
             onClick={() => setAt(i)}
             className="relative h-[210px] w-[132px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-white/[0.06] bg-[#141416] text-left active:scale-[0.98]"
           >
-            <Thumb reel={r} />
-            <ViewsBadge count={r.viewCount} />
-            {r.mediaType === "video" && (
+            <Thumb reel={c.cover} />
+            <ViewsBadge count={c.views} />
+            <CountBadge count={c.count} />
+            {c.cover.mediaType === "video" && (
               <span className="absolute right-2 top-2 rounded-full bg-black/55 p-1 backdrop-blur-sm">
                 <Play className="h-3 w-3 fill-white text-white" />
               </span>
@@ -120,10 +160,10 @@ export function ReelsRail({ reels, meId }: { reels: ReelItem[]; meId?: string | 
             <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent p-2.5">
               <span className="flex items-center gap-1.5">
                 <span className="h-6 w-6 overflow-hidden rounded-full ring-1 ring-[#E5484D]">
-                  <AvatarImage src={r.avatarUrl} alt={r.displayName} />
+                  <AvatarImage src={c.cover.avatarUrl} alt={c.cover.displayName} />
                 </span>
                 <span className="truncate text-[11.5px] font-semibold text-white">
-                  {r.displayName.split(" ")[0]}
+                  {c.cover.displayName.split(" ")[0]}
                 </span>
               </span>
             </span>
@@ -137,7 +177,7 @@ export function ReelsRail({ reels, meId }: { reels: ReelItem[]; meId?: string | 
   );
 }
 
-/** Clean 3-up grid of a member's reels for their profile. */
+/** Clean 3-up grid of a member's reels — tapping one plays the rest after it. */
 export function ReelsGrid({ reels, meId }: { reels: ReelItem[]; meId?: string | null }) {
   const [at, setAt] = useState<number | null>(null);
   const groups = useMemo(() => reelsToGroups(reels, meId), [reels, meId]);
@@ -162,7 +202,12 @@ export function ReelsGrid({ reels, meId }: { reels: ReelItem[]; meId?: string | 
         ))}
       </div>
       {at !== null && (
-        <StoryViewerModal groups={groups} startIndex={at} onClose={() => setAt(null)} />
+        <StoryViewerModal
+          groups={groups}
+          startIndex={0}
+          startItemIndex={at}
+          onClose={() => setAt(null)}
+        />
       )}
     </>
   );
