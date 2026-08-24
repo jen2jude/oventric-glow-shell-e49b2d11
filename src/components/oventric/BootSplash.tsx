@@ -135,12 +135,18 @@ export function BootSplash() {
       style={{ opacity: fading ? 0 : 1 }}
     >
       <div className="flex flex-col items-center gap-4">
-        <img loading="lazy" decoding="async"
-          src={logoFull}
-          alt="Oventric"
-          className="h-10 w-auto select-none sm:h-12"
-          draggable={false}
-        />
+        <div className="relative select-none">
+          <span
+            className="text-[28px] font-semibold tracking-[-0.02em] text-white sm:text-[34px]"
+            style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}
+          >
+            Oventric
+          </span>
+          <span
+            className="absolute -right-2 bottom-1.5 h-2 w-2 rounded-full bg-[#E5484D] sm:-right-2.5 sm:bottom-2 sm:h-2.5 sm:w-2.5"
+            aria-hidden
+          />
+        </div>
         <div className="flex items-center gap-2 sm:gap-3">
           {ICONS.map(({ Icon, color }, i) => {
             return (
