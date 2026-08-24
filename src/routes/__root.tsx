@@ -343,13 +343,26 @@ function RootShell({ children }: { children: ReactNode }) {
   window.__oventricStandalone=!!appShell;
   if(appShell){
     document.documentElement.classList.add('standalone-app');
+    var colors=['#ff4d6d','#ffb020','#22ff88','#00c2ff','#7aa2ff','#a855f7'];
+    var dots='';
+    for(var i=0;i<6;i++){
+      dots+='<span class="ob-dot" style="--obc:'+colors[i]+';animation-delay:'+(i*0.12)+'s"></span>';
+    }
     var o=document.createElement('div');
     o.id='oventric-boot';
     o.setAttribute('aria-hidden','true');
-    o.style.cssText='position:fixed;inset:0;z-index:9998;background:#0A0A0B';
-    var mount=function(){if(document.body&&!document.getElementById('oventric-boot')){document.body.appendChild(o);}};
-    if(document.body){document.body.appendChild(o);}else{document.addEventListener('DOMContentLoaded',mount);}
-    setTimeout(function(){var el=document.getElementById('oventric-boot');if(el&&el.parentNode){el.parentNode.removeChild(el);}},8000);
+    o.innerHTML='<div class="ob-inner"><div class="ob-word">Oventric<span class="ob-dot-accent"></span></div><div class="ob-dots">'+dots+'</div></div>';
+    var style=document.createElement('style');
+    style.textContent='#oventric-boot{position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;background:#0A0A0B;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}'+
+      '#oventric-boot .ob-inner{display:flex;flex-direction:column;align-items:center;gap:18px;}'+
+      '#oventric-boot .ob-word{position:relative;font-size:30px;font-weight:600;letter-spacing:-0.02em;color:#ffffff;}'+
+      '#oventric-boot .ob-dot-accent{position:absolute;right:-10px;bottom:6px;width:8px;height:8px;border-radius:9999px;background:#E5484D;}'+
+      '#oventric-boot .ob-dots{display:flex;align-items:center;gap:10px;}'+
+      '#oventric-boot .ob-dot{width:18px;height:18px;border-radius:9999px;background:var(--obc);opacity:0.12;animation:ob-sweep 2.8s infinite ease-in-out;}'+
+      '@keyframes ob-sweep{0%,100%{opacity:0.12;transform:translateX(-3px) translateY(0) scale(0.9);}50%{opacity:1;transform:translateX(3px) translateY(-3px) scale(1.08);box-shadow:0 0 10px var(--obc),0 0 5px var(--obc);}}';
+    var mount=function(){if(document.body&&!document.getElementById('oventric-boot')){document.head.appendChild(style);document.body.appendChild(o);}};
+    if(document.body){mount();}else{document.addEventListener('DOMContentLoaded',mount);}
+    setTimeout(function(){var el=document.getElementById('oventric-boot');var st=document.getElementById('oventric-boot-style');if(el&&el.parentNode){el.parentNode.removeChild(el);}if(st&&st.parentNode){st.parentNode.removeChild(st);}},8000);
   }
 }catch(e){}})();`,
           }}
