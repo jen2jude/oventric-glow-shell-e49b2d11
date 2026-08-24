@@ -285,19 +285,25 @@ function ShopPage() {
   const verified = (shop?.verificationTier ?? "none") !== "none";
   const isOwner = !!meId && !!shop && meId === shop.userId;
 
+  const handleBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      window.history.back();
+    } else {
+      navigate({
+        to: "/profile/$id",
+        params: { id },
+        search: { tab: "marketplace", pages: 1, y: 0, q: "", sort: "newest" } as never,
+      });
+    }
+  };
+
   return (
     <div className={`min-h-screen bg-[#0A0A0B] text-white ${!isAppShell ? "oventric-web" : ""}`}>
       {/* Top bar */}
       <div className="sticky top-0 z-30 flex items-center gap-3 bg-[#0A0A0B]/90 px-4 py-3 backdrop-blur md:px-8 lg:px-12">
         <button
           type="button"
-          onClick={() =>
-            navigate({
-              to: "/profile/$id",
-              params: { id },
-              search: { tab: "marketplace", pages: 1, y: 0, q: "", sort: "newest" } as never,
-            })
-          }
+          onClick={handleBack}
           aria-label="Back"
           className="grid h-9 w-9 place-items-center rounded-full bg-white/10 hover:bg-white/15"
         >
