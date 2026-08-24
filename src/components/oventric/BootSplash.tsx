@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { ShoppingCart, Banknote, Target, GraduationCap, Wallet, MessageCircle } from "lucide-react";
-import logoFull from "@/assets/oventric-full-transparent.png";
 
 const ICONS = [
   { Icon: ShoppingCart, color: "#ff4d6d" },
