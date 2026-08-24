@@ -10,7 +10,7 @@ export const Route = createFileRoute("/api/public/p/$id")({
       GET: async ({ params, request }) => {
         const id = params.id;
         const origin = new URL(request.url).origin;
-        const destination = `${origin}/product/${encodeURIComponent(id)}`;
+        let destination = `${origin}/product/${encodeURIComponent(id)}`;
 
         let title = "Product · Oventric Marketplace";
         let description = "Buy on Oventric's marketplace.";
@@ -18,13 +18,17 @@ export const Route = createFileRoute("/api/public/p/$id")({
 
         try {
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-          const { data: row } = await supabaseAdmin
+          const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+          const base = supabaseAdmin
             .from("products")
-            .select("name, description, vendor, cover_path, image_paths, kind")
-            .eq("id", id)
-            .maybeSingle();
+            .select("slug, name, description, vendor, cover_path, image_paths, kind");
+          const { data: row } = isUuid
+            ? await base.eq("id", id).maybeSingle()
+            : await base.eq("slug", id).maybeSingle();
           if (row) {
             const r = row as Record<string, unknown>;
+            const rowSlug = typeof r.slug === "string" && r.slug ? r.slug : null;
+            if (rowSlug) destination = `${origin}/product/${encodeURIComponent(rowSlug)}`;
             const name = typeof r.name === "string" ? r.name : "";
             const vendor = typeof r.vendor === "string" ? r.vendor : "";
             const desc = typeof r.description === "string" ? r.description : "";

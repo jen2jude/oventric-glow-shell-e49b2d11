@@ -165,6 +165,7 @@ export const Route = createFileRoute("/product/$id")({
       const p = await getProduct({ data: { id: params.id } });
       return {
         title: p.name as string,
+        slug: (p.slug as string | null) ?? null,
         priceUSD: Number(p.priceUSD ?? 0),
         description:
           ((p.description as string) || "").slice(0, 155) ||
@@ -180,7 +181,8 @@ export const Route = createFileRoute("/product/$id")({
     }
   },
   head: ({ params, loaderData }) => {
-    const url = `https://oventric.com/product/${params.id}`;
+    // Canonical always points at the readable slug path, never the raw id.
+    const url = `https://oventric.com/product/${loaderData?.slug ?? params.id}`;
     const title = loaderData?.title
       ? `${loaderData.title} · Oventric Marketplace`
       : "Product · Oventric Marketplace";
@@ -236,7 +238,15 @@ export const Route = createFileRoute("/product/$id")({
 function ProductPage() {
   const isAppShell = useIsAppShell();
   const { id } = Route.useParams();
+  const routeSlug = Route.useLoaderData()?.slug ?? null;
   const navigate = useNavigate();
+
+  // Keep the visible address clean: swap a raw id in the bar for the product slug.
+  useEffect(() => {
+    if (!routeSlug || routeSlug === id || typeof window === "undefined") return;
+    const next = `/product/${routeSlug}${window.location.search}${window.location.hash}`;
+    window.history.replaceState(window.history.state, "", next);
+  }, [routeSlug, id]);
   const { baseCurrency, require } = useOnboarding();
   const load = useServerFn(getProduct);
   const [product, setProduct] = useState<ProductDTO | null>(null);
@@ -285,7 +295,7 @@ function ProductPage() {
       return;
     }
     let cancelled = false;
-    loadPackages({ data: { productId: id } })
+    loadPackages({ data: { productId: product.id } })
       .then((rows) => {
         if (cancelled) return;
         setPackages(rows);
@@ -295,7 +305,7 @@ function ProductPage() {
     return () => {
       cancelled = true;
     };
-  }, [product?.kind, id, loadPackages]);
+  }, [product?.kind, product?.id, loadPackages]);
 
   const outOfStock = product?.inStock === false;
 
@@ -306,7 +316,7 @@ function ProductPage() {
       () =>
         navigate({
           to: "/checkout/$id",
-          params: { id },
+          params: { id: product?.id ?? id },
           search: { qty, pkg: selectedPkg || undefined },
         }),
       "buyer",
@@ -892,8 +902,8 @@ function ProductPage() {
                   packages.length > 0 && selectedPkg
                     ? ` (${packages.find((p) => p.id === selectedPkg)?.name ?? ""} package)`
                     : ` (from ${productDisplay(product, baseCurrency).formatted})`
-                } on Oventric. Here's what I need:\n\n${typeof window !== "undefined" ? window.location.origin : "https://oventric.com"}/product/${product.id}`
-              : `Hi ${product.vendor}! I'm interested in "${product.name}" (${productDisplay(product, baseCurrency).formatted}) on Oventric. Is it available and can you deliver right away?\n\n${typeof window !== "undefined" ? window.location.origin : "https://oventric.com"}/product/${product.id}`
+                } on Oventric. Here's what I need:\n\n${typeof window !== "undefined" ? window.location.origin : "https://oventric.com"}/product/${product.slug ?? product.id}`
+              : `Hi ${product.vendor}! I'm interested in "${product.name}" (${productDisplay(product, baseCurrency).formatted}) on Oventric. Is it available and can you deliver right away?\n\n${typeof window !== "undefined" ? window.location.origin : "https://oventric.com"}/product/${product.slug ?? product.id}`
           }
         />
       )}

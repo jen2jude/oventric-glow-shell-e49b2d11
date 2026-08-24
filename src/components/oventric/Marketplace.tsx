@@ -115,7 +115,7 @@ function AppMarketplace() {
   const [featuredIndex, setFeaturedIndex] = useState(0);
 
   const openProduct = (p: ProductDTO) =>
-    require(1, () => navigate({ to: "/product/$id", params: { id: p.id }, search: { qty: 1 } }), "buyer");
+    require(1, () => navigate({ to: "/product/$id", params: { id: p.slug ?? p.id }, search: { qty: 1 } }), "buyer");
   const openShop = (slug: string) => navigate({ to: "/shop/$id", params: { id: slug } });
 
   const byMode = useMemo(
