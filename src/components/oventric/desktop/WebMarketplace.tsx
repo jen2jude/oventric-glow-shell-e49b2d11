@@ -719,3 +719,114 @@ function WebProductCard({
     </button>
   );
 }
+
+function WebRail({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  children: React.ReactNode;
+}) {
+  const items = Array.isArray(children) ? children.flat() : [children];
+  if (items.filter(Boolean).length === 0) return null;
+  return (
+    <section>
+      <div className="flex items-end justify-between gap-4">
+        <div className="min-w-0">
+          <h2 className="text-[22px] font-black tracking-tight text-slate-900">{title}</h2>
+          {subtitle && <p className="mt-0.5 text-[13px] text-slate-500">{subtitle}</p>}
+        </div>
+      </div>
+      <div className="-mx-2 mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-2 pb-3 [scrollbar-width:thin]">
+        {children}
+      </div>
+    </section>
+  );
+}
+
+function WebTile({
+  product,
+  price,
+  onClick,
+}: {
+  product: ProductDTO;
+  price: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="group w-[190px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-slate-200 bg-white text-left transition-all hover:-translate-y-0.5 hover:border-crimson/30 hover:shadow-[0_16px_40px_-24px_rgba(15,23,42,0.4)]"
+    >
+      <div className="relative aspect-square w-full overflow-hidden bg-slate-100">
+        {product.coverUrl ? (
+          <img
+            src={product.coverUrl}
+            alt={product.name}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+          />
+        ) : (
+          <div className="h-full w-full bg-gradient-to-br from-slate-100 to-slate-200" />
+        )}
+        {!product.inStock && (
+          <span className="absolute left-2 top-2 rounded-[6px] bg-slate-900/85 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-white">
+            Out of stock
+          </span>
+        )}
+      </div>
+      <div className="p-3">
+        <p className="line-clamp-1 text-[13.5px] font-bold text-slate-900">{product.name}</p>
+        <div className="mt-1.5 flex items-center justify-between gap-2">
+          <span className="truncate text-[14px] font-black text-crimson">{price}</span>
+          <span className="flex shrink-0 items-center gap-0.5 text-[11.5px] font-bold text-slate-500">
+            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+            {product.rating > 0 ? product.rating.toFixed(1) : "5.0"}
+          </span>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+function WebShopTile({ seller, onClick }: { seller: SellerLite; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="group w-[260px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-slate-200 bg-white text-left transition-all hover:-translate-y-0.5 hover:border-crimson/30 hover:shadow-[0_16px_40px_-24px_rgba(15,23,42,0.4)]"
+    >
+      <div className="relative h-[96px] w-full overflow-hidden bg-slate-100">
+        {seller.coverUrl && (
+          <img
+            src={seller.coverUrl}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        )}
+        <span className="absolute -bottom-5 left-3 grid h-12 w-12 place-items-center overflow-hidden rounded-full border-2 border-white bg-slate-100 shadow-md">
+          {seller.avatarUrl ? (
+            <img src={seller.avatarUrl} alt={seller.name} className="h-full w-full object-cover" />
+          ) : (
+            <Store className="h-5 w-5 text-slate-400" />
+          )}
+        </span>
+      </div>
+      <div className="px-3 pb-3 pt-7">
+        <div className="flex items-center gap-1.5">
+          <p className="truncate text-[14px] font-black text-slate-900">{seller.name}</p>
+          {seller.verified && <BadgeCheck className="h-4 w-4 shrink-0 text-crimson" />}
+        </div>
+        <p className="mt-0.5 text-[12px] font-medium text-slate-500">
+          {seller.productsCount} items · {seller.followersCount} followers
+        </p>
+      </div>
+    </button>
+  );
+}
