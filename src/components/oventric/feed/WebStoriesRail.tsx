@@ -39,7 +39,7 @@ export function WebStoriesRail({
     <section className="oventric-web">
       <div className="mb-2 flex items-baseline justify-between">
         <h2 className="text-base font-black text-white md:text-slate-900">Stories</h2>
-        <span className="text-[11px] text-slate-500">Disappears in 24 hours</span>
+        <span className="text-[11px] text-slate-500">Leaves Stories after 24h · stays as a Reel</span>
       </div>
       <div className="flex gap-4 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <input

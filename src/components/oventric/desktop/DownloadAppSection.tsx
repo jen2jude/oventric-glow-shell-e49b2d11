@@ -1,7 +1,7 @@
 import { Bell, Search, Filter, Wallet as WalletIcon, ChevronRight, User } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
-import { ANDROID_APK_URL } from "@/lib/app-distribution";
+import { ANDROID_APK_AVAILABLE, ANDROID_APK_URL } from "@/lib/app-distribution";
 
 import homeIcon from "@/assets/home-3d.png.asset.json";
 import walletIcon from "@/assets/wallet-3d.webp.asset.json";
@@ -285,8 +285,12 @@ function GooglePlayBadge() {
   return (
     <a
       href={ANDROID_APK_URL}
-      download
-      aria-label="Download the Oventric Android app (APK)"
+      {...(ANDROID_APK_AVAILABLE ? { download: true } : {})}
+      aria-label={
+        ANDROID_APK_AVAILABLE
+          ? "Download the Oventric Android app (APK)"
+          : "See Android install options for Oventric"
+      }
       className="app-badge-pop inline-flex h-12 items-center gap-3 rounded-xl bg-[#E5484D] px-4 text-left transition-transform hover:-translate-y-0.5 active:scale-95"
       style={{ animationDelay: "120ms" }}
     >
@@ -294,8 +298,12 @@ function GooglePlayBadge() {
         <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-10.3 18-28.5-1.2-40.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z" />
       </svg>
       <div className="flex flex-col">
-        <span className="text-[10px] leading-none text-white/70">Direct download</span>
-        <span className="text-base font-bold leading-none text-white">Android APK</span>
+        <span className="text-[10px] leading-none text-white/70">
+          {ANDROID_APK_AVAILABLE ? "Direct download" : "Install on"}
+        </span>
+        <span className="text-base font-bold leading-none text-white">
+          {ANDROID_APK_AVAILABLE ? "Android APK" : "Android"}
+        </span>
       </div>
     </a>
   );
