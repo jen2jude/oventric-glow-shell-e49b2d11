@@ -386,9 +386,11 @@ export function WebMarketplace() {
           {featured && (
             <div className="w-full space-y-3 lg:justify-self-end">
               <button
+                key={featured.id}
                 type="button"
                 onClick={() => openProduct(featured)}
-                className="group flex w-full items-center gap-5 overflow-hidden rounded-[10px] border border-slate-200 bg-white p-5 text-left shadow-[0_18px_50px_-24px_rgba(15,23,42,0.35)] transition-shadow hover:shadow-[0_24px_60px_-24px_rgba(229,72,77,0.35)]"
+                className="group flex w-full animate-in fade-in slide-in-from-bottom-1 items-center gap-5 overflow-hidden rounded-[10px] border border-slate-200 bg-white p-5 text-left shadow-[0_18px_50px_-24px_rgba(15,23,42,0.35)] duration-500 transition-shadow hover:shadow-[0_24px_60px_-24px_rgba(229,72,77,0.35)]"
+
               >
                 <div className="min-w-0 flex-1">
                   <span className="text-[10.5px] font-black uppercase tracking-[0.14em] text-crimson">
