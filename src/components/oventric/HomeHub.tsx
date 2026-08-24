@@ -125,7 +125,7 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
       priceUsd: number;
       originalCurrency: string;
       originalAmount: number;
-      fxSnapshot: number | null;
+      fxSnapshot: { base: string; rates: Record<string, number> } | null;
     }>
   >([]);
   const [courses, setCourses] = useState<
