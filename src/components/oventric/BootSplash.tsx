@@ -3,9 +3,8 @@ import { useRouterState } from "@tanstack/react-router";
 import logoFull from "@/assets/oventric-full-transparent.png";
 
 /**
- * Full-screen boot splash: site logo + a row of icons that light up
- * left → right in step with *real* load progress (hydration → route data →
- * document load → fonts/first idle frame) rather than on a fixed loop.
+ * Full-screen boot splash: site logo only.
+ * Fades once hydration, route data, document load and first idle frame finish.
  */
 // Only the very first mount of the session may show the splash — later route
 // changes inside the app must never re-trigger it.
