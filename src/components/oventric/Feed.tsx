@@ -77,6 +77,7 @@ import { PostComposerModal } from "@/components/oventric/PostComposerModal";
 import { FeedAppChrome, type FeedTab } from "@/components/oventric/feed/FeedAppChrome";
 import { listFollowing } from "@/lib/follows.functions";
 import { FeedDiscoverExplore } from "@/components/oventric/feed/FeedDiscoverExplore";
+import { ReelsRail, useReels } from "@/components/oventric/feed/ReelsShelf";
 import {
   FeedCommerceCard,
   useFeedCommerceCards,
