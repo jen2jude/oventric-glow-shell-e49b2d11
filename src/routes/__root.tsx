@@ -341,7 +341,16 @@ function RootShell({ children }: { children: ReactNode }) {
     appShell=forced==='app'?true:forced==='web'?false:(native||standalone);
   }catch(e){}
   window.__oventricStandalone=!!appShell;
-  if(appShell){document.documentElement.classList.add('standalone-app');}
+  if(appShell){
+    document.documentElement.classList.add('standalone-app');
+    var o=document.createElement('div');
+    o.id='oventric-boot';
+    o.setAttribute('aria-hidden','true');
+    o.style.cssText='position:fixed;inset:0;z-index:9998;background:#0A0A0B';
+    var mount=function(){if(document.body&&!document.getElementById('oventric-boot')){document.body.appendChild(o);}};
+    if(document.body){document.body.appendChild(o);}else{document.addEventListener('DOMContentLoaded',mount);}
+    setTimeout(function(){var el=document.getElementById('oventric-boot');if(el&&el.parentNode){el.parentNode.removeChild(el);}},8000);
+  }
 }catch(e){}})();`,
           }}
         />
