@@ -316,7 +316,7 @@ function ProductPage() {
       () =>
         navigate({
           to: "/checkout/$id",
-          params: { id: product.id },
+          params: { id: product?.id ?? id },
           search: { qty, pkg: selectedPkg || undefined },
         }),
       "buyer",
