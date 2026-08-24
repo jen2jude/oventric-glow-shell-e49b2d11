@@ -330,39 +330,16 @@ function RootShell({ children }: { children: ReactNode }) {
       <body style={{ background: "#121214" }}>
         {/* Standalone-launch splash: mirrors the React BootSplash until hydration. */}
         <div id="oventric-boot" aria-hidden>
-          <div className="ob-logo-container">
-            <img
-              src="/oventric-full-transparent.png"
-              className="ob-wordmark"
-              alt="Oventric"
-              draggable={false}
-            />
-            <div className="ob-icons">
-              <div className="ob-icon" style={{ "--c": "#ff4d6d" } as any}></div>
-              <div className="ob-icon" style={{ "--c": "#ffb020" } as any}></div>
-              <div className="ob-icon" style={{ "--c": "#22ff88" } as any}></div>
-              <div className="ob-icon" style={{ "--c": "#00c2ff" } as any}></div>
-              <div className="ob-icon" style={{ "--c": "#7aa2ff" } as any}></div>
-              <div className="ob-icon" style={{ "--c": "#a855f7" } as any}></div>
-            </div>
-          </div>
+          <img
+            src="/oventric-full-transparent.png"
+            className="ob-wordmark"
+            alt="Oventric"
+            draggable={false}
+          />
           <style
             dangerouslySetInnerHTML={{
               __html: `#oventric-boot{position:fixed;inset:0;z-index:99998;display:none;flex-direction:column;align-items:center;justify-content:center;background:#121214;transition:opacity .3s}
-#oventric-boot .ob-logo-container{display:flex;flex-direction:column;align-items:center;gap:16px}
-#oventric-boot .ob-wordmark{height:40px;width:auto;user-select:none}
-#oventric-boot .ob-icons{display:flex;gap:12px}
-#oventric-boot .ob-icon{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);animation:ob-sweep 2.4s infinite ease-in-out}
-#oventric-boot .ob-icon:nth-child(1){animation-delay:0s}
-#oventric-boot .ob-icon:nth-child(2){animation-delay:0.15s}
-#oventric-boot .ob-icon:nth-child(3){animation-delay:0.3s}
-#oventric-boot .ob-icon:nth-child(4){animation-delay:0.45s}
-#oventric-boot .ob-icon:nth-child(5){animation-delay:0.6s}
-#oventric-boot .ob-icon:nth-child(6){animation-delay:0.75s}
-@keyframes ob-sweep{
-  0%,100%{transform:scale(1);opacity:0.2;background:rgba(255,255,255,0.15);box-shadow:none}
-  50%{transform:scale(1.5);opacity:1;background:var(--c);box-shadow:0 0 12px var(--c)}
-}`,
+#oventric-boot .ob-wordmark{height:40px;width:auto;user-select:none}`,
             }}
           />
           <script
