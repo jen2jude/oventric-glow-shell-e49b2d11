@@ -87,19 +87,27 @@ export function StoryViewerModal({
     return IMAGE_MS;
   }, [item]);
 
+  // Keep the advance callback in a ref so re-renders (new `groups` array identity,
+  // reaction bursts, etc.) never restart the progress timer mid-story.
+  const nextRef = useRef(next);
+  nextRef.current = next;
+
   useEffect(() => {
     if (!duration) return;
     const started = Date.now();
+    setElapsed(0);
     const t = setInterval(() => {
       const p = (Date.now() - started) / duration;
       setElapsed(Math.min(1, p));
       if (p >= 1) {
         clearInterval(t);
-        next();
+        nextRef.current();
       }
     }, 50);
     return () => clearInterval(t);
-  }, [duration, next, gi, ii]);
+    // Only a real media change restarts the countdown.
+  }, [duration, gi, ii]);
+
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
