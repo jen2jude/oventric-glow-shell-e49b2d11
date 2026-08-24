@@ -485,6 +485,47 @@ export function WebMarketplace() {
         </section>
       )}
 
+      {/* Discovery rails — parity with the app experience */}
+      {!loading && (
+        <div className="mx-auto w-full max-w-[1440px] space-y-10 px-4 pt-10 sm:px-6 lg:px-11">
+          <WebRail title="What's Moving 🔥" subtitle="Most viewed and reviewed right now">
+            {movingPool.map((p) => (
+              <WebTile key={p.id} product={p} price={priceOf(p).formatted} onClick={() => openProduct(p)} />
+            ))}
+          </WebRail>
+
+          <WebRail title="Trending Products" subtitle="Buyers keep coming back to these">
+            {trending.map((p) => (
+              <WebTile key={p.id} product={p} price={priceOf(p).formatted} onClick={() => openProduct(p)} />
+            ))}
+          </WebRail>
+
+          <WebRail title="New on Oventric" subtitle="Freshly published listings">
+            {newArrivals.map((p) => (
+              <WebTile key={p.id} product={p} price={priceOf(p).formatted} onClick={() => openProduct(p)} />
+            ))}
+          </WebRail>
+
+          {sellers.length > 0 && (
+            <WebRail title="Featured Shops" subtitle="Verified storefronts with the deepest catalogues">
+              {sellers.slice(0, 10).map((s) => (
+                <WebShopTile
+                  key={s.id}
+                  seller={s}
+                  onClick={() => s.slug && navigate({ to: "/shop/$id", params: { id: s.slug } })}
+                />
+              ))}
+            </WebRail>
+          )}
+
+          <WebRail title="Recommended for you" subtitle="Highest rated across the marketplace">
+            {recommended.map((p) => (
+              <WebTile key={p.id} product={p} price={priceOf(p).formatted} onClick={() => openProduct(p)} />
+            ))}
+          </WebRail>
+        </div>
+      )}
+
       {/* Catalogue */}
       <div className="mx-auto w-full max-w-[1440px] px-4 py-8 sm:px-6 lg:px-11">
         <div className="grid gap-8 lg:grid-cols-[248px_minmax(0,1fr)]">
