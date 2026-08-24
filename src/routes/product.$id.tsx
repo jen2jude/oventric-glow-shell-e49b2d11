@@ -165,6 +165,7 @@ export const Route = createFileRoute("/product/$id")({
       const p = await getProduct({ data: { id: params.id } });
       return {
         title: p.name as string,
+        slug: (p.slug as string | null) ?? null,
         priceUSD: Number(p.priceUSD ?? 0),
         description:
           ((p.description as string) || "").slice(0, 155) ||
@@ -180,7 +181,8 @@ export const Route = createFileRoute("/product/$id")({
     }
   },
   head: ({ params, loaderData }) => {
-    const url = `https://oventric.com/product/${params.id}`;
+    // Canonical always points at the readable slug path, never the raw id.
+    const url = `https://oventric.com/product/${loaderData?.slug ?? params.id}`;
     const title = loaderData?.title
       ? `${loaderData.title} · Oventric Marketplace`
       : "Product · Oventric Marketplace";
@@ -236,7 +238,15 @@ export const Route = createFileRoute("/product/$id")({
 function ProductPage() {
   const isAppShell = useIsAppShell();
   const { id } = Route.useParams();
+  const routeSlug = Route.useLoaderData()?.slug ?? null;
   const navigate = useNavigate();
+
+  // Keep the visible address clean: swap a raw id in the bar for the product slug.
+  useEffect(() => {
+    if (!routeSlug || routeSlug === id || typeof window === "undefined") return;
+    const next = `/product/${routeSlug}${window.location.search}${window.location.hash}`;
+    window.history.replaceState(window.history.state, "", next);
+  }, [routeSlug, id]);
   const { baseCurrency, require } = useOnboarding();
   const load = useServerFn(getProduct);
   const [product, setProduct] = useState<ProductDTO | null>(null);

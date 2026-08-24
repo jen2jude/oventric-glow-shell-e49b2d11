@@ -113,7 +113,7 @@ function shuffle<T>(arr: T[]): T[] {
 function ProductCard({ p }: { p: ProductDTO }) {
   return (
     <a
-      href={`/product/${p.id}`}
+      href={`/product/${p.slug ?? p.id}`}
       className="web-card group relative flex w-[220px] shrink-0 flex-col overflow-hidden bg-slate-900 text-left focus:outline-none focus:ring-2 focus:ring-crimson focus:ring-offset-2"
     >
       <div className="relative aspect-square w-full overflow-hidden">

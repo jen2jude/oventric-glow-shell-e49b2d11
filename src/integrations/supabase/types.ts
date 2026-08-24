@@ -2874,6 +2874,7 @@ export type Database = {
           reviews: number
           seller_id: string
           seller_phone: string | null
+          slug: string | null
           social_link: string | null
           status: string
           subcategory: string | null
@@ -2912,6 +2913,7 @@ export type Database = {
           reviews?: number
           seller_id: string
           seller_phone?: string | null
+          slug?: string | null
           social_link?: string | null
           status?: string
           subcategory?: string | null
@@ -2950,6 +2952,7 @@ export type Database = {
           reviews?: number
           seller_id?: string
           seller_phone?: string | null
+          slug?: string | null
           social_link?: string | null
           status?: string
           subcategory?: string | null
@@ -3869,6 +3872,7 @@ export type Database = {
         Returns: number
       }
       notif_topic_for_kind: { Args: { _kind: string }; Returns: string }
+      oventric_slugify: { Args: { _txt: string }; Returns: string }
       pause_campaign: { Args: { _id: string }; Returns: undefined }
       payout_request_create: {
         Args: {

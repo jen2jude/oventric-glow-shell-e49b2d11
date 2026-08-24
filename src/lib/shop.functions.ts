@@ -167,7 +167,7 @@ export const getShopDiscovery = createServerFn({ method: "GET" })
 
     const productQuery = sb
       .from("products")
-      .select("id, name, category, price_usd, cover_path, vendor, seller_id, status, rating")
+      .select("id, slug, name, category, price_usd, cover_path, vendor, seller_id, status, rating")
       .eq("status", "active")
       .neq("seller_id", data.sellerId)
       .limit(18);
@@ -198,7 +198,7 @@ export const getShopDiscovery = createServerFn({ method: "GET" })
     if (data.category && pRows.length < 6) {
       const { data: fallback } = await sb
         .from("products")
-        .select("id, name, category, price_usd, cover_path, vendor, seller_id, status, rating")
+        .select("id, slug, name, category, price_usd, cover_path, vendor, seller_id, status, rating")
         .eq("status", "active")
         .neq("seller_id", data.sellerId)
         .limit(18);
@@ -214,7 +214,7 @@ export const getShopDiscovery = createServerFn({ method: "GET" })
 
     const pCovers = await sign(sb, "product-covers", pAll.map((p) => p['cover_path'] as string));
     const similarProducts: ShopRailItem[] = pAll.map((p, i) => ({
-      id: p['id'] as string,
+      id: ((p['slug'] as string) || (p['id'] as string)),
       title: (p['name'] as string) ?? "Product",
       subtitle: (p['vendor'] as string) ?? null,
       coverUrl: pCovers[i] ?? null,

@@ -28,15 +28,28 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         try {
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-          const { data } = await supabaseAdmin
-            .from("blog_posts")
-            .select("slug, status")
-            .eq("status", "published")
-            .limit(1000);
-          for (const row of data ?? []) {
+          const [posts, products, sellers] = await Promise.all([
+            supabaseAdmin.from("blog_posts").select("slug, status").eq("status", "published").limit(1000),
+            supabaseAdmin.from("products").select("slug, status").eq("status", "active").limit(5000),
+            supabaseAdmin.from("profiles").select("slug, shop_name").not("slug", "is", null).limit(2000),
+          ]);
+          for (const row of posts.data ?? []) {
             const slug = (row as { slug?: unknown }).slug;
             if (typeof slug === "string" && slug) {
               entries.push({ path: `/blog/${slug}`, changefreq: "monthly", priority: "0.7" });
+            }
+          }
+          for (const row of products.data ?? []) {
+            const slug = (row as { slug?: unknown }).slug;
+            if (typeof slug === "string" && slug) {
+              entries.push({ path: `/product/${slug}`, changefreq: "daily", priority: "0.8" });
+            }
+          }
+          for (const row of sellers.data ?? []) {
+            const r = row as { slug?: unknown; shop_name?: unknown };
+            // Profiles are noindex, so only public seller shops are listed.
+            if (typeof r.slug === "string" && r.slug && typeof r.shop_name === "string" && r.shop_name) {
+              entries.push({ path: `/shop/${r.slug}`, changefreq: "weekly", priority: "0.6" });
             }
           }
         } catch {

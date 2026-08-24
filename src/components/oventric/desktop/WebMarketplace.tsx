@@ -184,7 +184,7 @@ export function WebMarketplace() {
   }, [kind, query, selectedCats, minRating, inStockOnly, maxPrice, sort]);
 
   const openProduct = (p: ProductDTO) =>
-    navigate({ to: "/product/$id", params: { id: p.id }, search: { qty: 1 } });
+    navigate({ to: "/product/$id", params: { id: p.slug ?? p.id }, search: { qty: 1 } });
 
   const activeFilters =
     selectedCats.length + (minRating ? 1 : 0) + (inStockOnly ? 1 : 0) + (maxPrice != null ? 1 : 0);
