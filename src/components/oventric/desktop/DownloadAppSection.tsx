@@ -1,7 +1,7 @@
 import { Bell, Search, Filter, Wallet as WalletIcon, ChevronRight, User } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
-import { ANDROID_APK_URL } from "@/lib/app-distribution";
+import { ANDROID_APK_AVAILABLE, ANDROID_APK_URL } from "@/lib/app-distribution";
 
 import homeIcon from "@/assets/home-3d.png.asset.json";
 import walletIcon from "@/assets/wallet-3d.webp.asset.json";
@@ -285,8 +285,12 @@ function GooglePlayBadge() {
   return (
     <a
       href={ANDROID_APK_URL}
-      download
-      aria-label="Download the Oventric Android app (APK)"
+      {...(ANDROID_APK_AVAILABLE ? { download: true } : {})}
+      aria-label={
+        ANDROID_APK_AVAILABLE
+          ? "Download the Oventric Android app (APK)"
+          : "See Android install options for Oventric"
+      }
       className="app-badge-pop inline-flex h-12 items-center gap-3 rounded-xl bg-[#E5484D] px-4 text-left transition-transform hover:-translate-y-0.5 active:scale-95"
       style={{ animationDelay: "120ms" }}
     >
