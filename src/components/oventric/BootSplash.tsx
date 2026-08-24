@@ -135,39 +135,31 @@ export function BootSplash() {
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background transition-opacity duration-300"
       style={{ opacity: fading ? 0 : 1 }}
     >
-      <div className="flex flex-col items-center gap-4">
-        <div className="relative select-none">
-          <span
-            className="text-[28px] font-semibold tracking-[-0.02em] text-white sm:text-[34px]"
-            style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}
-          >
-            Oventric
-          </span>
-          <span
-            className="absolute -right-2 bottom-1.5 h-2 w-2 rounded-full bg-[#E5484D] sm:-right-2.5 sm:bottom-2 sm:h-2.5 sm:w-2.5"
-            aria-hidden
+        <div className="flex flex-col items-center gap-6">
+          <img
+            src={logoFull}
+            alt="Oventric"
+            className="h-10 w-auto select-none sm:h-12"
+            draggable={false}
           />
-        </div>
-        <div className="flex items-center gap-2 sm:gap-3">
-          {ICONS.map(({ Icon, color }, i) => {
-            return (
-              <Icon
-                key={i}
-                className="h-4 w-4 transition-none sm:h-5 sm:w-5 splash-icon-sweep"
-                strokeWidth={1.8}
-                style={
-                  {
+          <div className="flex items-center gap-4 sm:gap-6">
+            {ICONS.map(({ Icon, color }, i) => {
+              return (
+                <Icon
+                  key={i}
+                  className="h-8 w-8 transition-none sm:h-10 sm:w-10 splash-icon-sweep"
+                  strokeWidth={1.8}
+                  style={{
                     color,
                     "--ic": color,
-                    animationDelay: `${i * 0.12}s`,
+                    animationDelay: `${i * 0.15}s`,
                     opacity: 0.15,
-                  } as any
-                }
-              />
-            );
-          })}
+                  } as any}
+                />
+              );
+            })}
+          </div>
         </div>
-      </div>
       <style
         dangerouslySetInnerHTML={{
           __html: `
