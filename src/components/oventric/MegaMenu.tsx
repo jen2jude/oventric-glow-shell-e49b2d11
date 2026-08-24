@@ -431,12 +431,14 @@ export function MegaMenu({ open, onClose }: Props) {
               </p>
             </div>
             <button
-              onClick={toggle}
-              aria-label="Toggle color theme"
-              className="shrink-0 w-11 h-11 grid place-items-center rounded-full bg-[#1E1E24] border border-white/10 hover:border-emerald-400/50"
+              onClick={isAppShell ? undefined : toggle}
+              disabled={isAppShell}
+              aria-label={isAppShell ? "Light mode not available in app yet" : "Toggle color theme"}
+              title={isAppShell ? "Light mode is not available in the app yet" : undefined}
+              className={`shrink-0 w-11 h-11 grid place-items-center rounded-full border ${isAppShell ? "bg-[#1E1E24] border-white/10 opacity-50 cursor-not-allowed" : "bg-[#1E1E24] border-white/10 hover:border-emerald-400/50"}`}
             >
-              {theme === "dark" ? (
-                <Sun className="w-5 h-5 text-amber-300" />
+              {theme === "dark" || isAppShell ? (
+                <Sun className={`w-5 h-5 ${isAppShell ? "text-slate-500" : "text-amber-300"}`} />
               ) : (
                 <Moon className="w-5 h-5 text-slate-300" />
               )}
