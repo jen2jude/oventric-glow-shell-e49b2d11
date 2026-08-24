@@ -196,21 +196,43 @@ export function WebMarketplace() {
     setMaxPrice(null);
   };
 
-  const featuredList = useMemo(() => {
-    const pool = [...(discovery?.featured ?? []), ...(discovery?.trending ?? [])];
+  /** Rotating pool: the big hero picks whatever was in the small slots, and the
+   *  small slots keep pulling fresh items from "What's Moving". */
+  const movingPool = useMemo(() => {
+    const pool = [
+      ...(discovery?.trending ?? []),
+      ...(discovery?.featured ?? []),
+      ...(discovery?.newArrivals ?? []),
+    ];
     const seen = new Set<string>();
     const out: ProductDTO[] = [];
     for (const p of pool) {
       if (seen.has(p.id)) continue;
       seen.add(p.id);
       out.push(p);
-      if (out.length === 3) break;
     }
-    return out;
+    return out.slice(0, 12);
   }, [discovery]);
-  const featured = featuredList[0] ?? null;
-  const featuredRest = featuredList.slice(1);
+
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    if (movingPool.length < 3) return;
+    const t = setInterval(() => setTick((n) => n + 1), 5500);
+    return () => clearInterval(t);
+  }, [movingPool.length]);
+
+  const len = movingPool.length;
+  const featured = len ? movingPool[tick % len] : null;
+  const featuredRest = len >= 3 ? [movingPool[(tick + 1) % len], movingPool[(tick + 2) % len]] : [];
+
+  const trending = discovery?.trending ?? [];
+  const newArrivals = discovery?.newArrivals ?? [];
   const sellers = discovery?.topSellers ?? [];
+  const recommended = useMemo(() => {
+    const list = [...products].filter((p) => p.inStock !== false);
+    return list.sort((a, b) => b.rating - a.rating || b.reviews - a.reviews).slice(0, 12);
+  }, [products]);
+
 
   const filterPanel = (
     <div className="space-y-7">
