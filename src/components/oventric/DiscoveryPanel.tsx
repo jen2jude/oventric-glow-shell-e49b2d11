@@ -17,7 +17,8 @@ import {
   Send,
   Circle,
 } from "lucide-react";
-import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
+import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
+import { computeDisplayPrice } from "@/lib/fx-display";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { useOnlineUsers as useSharedOnlineUsers } from "@/hooks/use-presence";
@@ -46,12 +47,28 @@ export function navigateSection(
   window.dispatchEvent(new CustomEvent("oventric:navigate", { detail: { section } }));
 }
 
+/**
+ * Format a listing exactly like the marketplace does: convert from the seller's
+ * published currency via the locked FX snapshot into the viewer's currency.
+ */
 function useMoney() {
   const { baseCurrency } = useOnboarding();
-  const fx = baseCurrency === "USD" ? 1 : baseCurrency === "NGN" ? 1500 : 14;
-  const sym = baseCurrency === "USD" ? "$" : baseCurrency === "NGN" ? "₦" : "₵";
-  return (usd: number) =>
-    `${sym}${(usd * fx).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+  const viewer = (baseCurrency ?? "USD") as Currency;
+  return (row: {
+    priceUsd: number;
+    originalCurrency?: string;
+    originalAmount?: number;
+    fxSnapshot?: unknown;
+  }) =>
+    computeDisplayPrice(
+      {
+        price_usd: row.priceUsd,
+        original_currency: row.originalCurrency ?? "USD",
+        original_amount: row.originalAmount ?? row.priceUsd,
+        fx_snapshot: row.fxSnapshot ?? null,
+      },
+      viewer,
+    ).formatted;
 }
 
 function SkeletonBar({ className = "" }: { className?: string }) {
@@ -290,7 +307,13 @@ function BirthdayRow({
 
 /* ---------------- Product row ---------------- */
 
-function ProductRow({ p, priceFmt }: { p: DiscoveryProduct; priceFmt: (usd: number) => string }) {
+function ProductRow({
+  p,
+  priceFmt,
+}: {
+  p: DiscoveryProduct;
+  priceFmt: (row: DiscoveryProduct) => string;
+}) {
   return (
     <Link
       to="/product/$id"
@@ -325,7 +348,7 @@ function ProductRow({ p, priceFmt }: { p: DiscoveryProduct; priceFmt: (usd: numb
       </div>
       <div className="shrink-0 text-right">
         <div className="text-sm font-black text-white md:text-slate-900">
-          {priceFmt(p.priceUsd)}
+          {priceFmt(p)}
         </div>
       </div>
     </Link>

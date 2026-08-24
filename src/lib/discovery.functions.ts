@@ -30,7 +30,7 @@ export interface DiscoveryProduct {
   vendor: string;
   originalCurrency: string;
   originalAmount: number;
-  fxSnapshot: number | null;
+  fxSnapshot: { base: string; rates: Record<string, number> } | null;
 }
 
 export interface DiscoveryAd {
@@ -263,7 +263,7 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
       vendor: (p.vendor as string) ?? "",
       originalCurrency: (p.original_currency as string) ?? "USD",
       originalAmount: Number(p.original_amount ?? p.price_usd ?? 0),
-      fxSnapshot: p.fx_snapshot == null ? null : Number(p.fx_snapshot),
+      fxSnapshot: (p.fx_snapshot as DiscoveryProduct["fxSnapshot"]) ?? null,
     }));
     const products = shuffle(productsAll).slice(0, 10);
 
@@ -416,7 +416,7 @@ export const getAcademyRecommendations = createServerFn({ method: "GET" }).handl
       vendor: p.vendor ?? "",
       originalCurrency: p.original_currency ?? "USD",
       originalAmount: Number(p.original_amount ?? p.price_usd ?? 0),
-      fxSnapshot: p.fx_snapshot == null ? null : Number(p.fx_snapshot),
+      fxSnapshot: (p.fx_snapshot as DiscoveryProduct["fxSnapshot"]) ?? null,
     }));
     // Split by kind to keep the mix balanced
     const digital = pRows.map((p: any, i: number) => ({ p: productsAll[i], kind: p.kind }))
