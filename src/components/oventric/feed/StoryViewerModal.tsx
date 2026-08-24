@@ -22,14 +22,16 @@ function timeAgo(iso: string) {
 export function StoryViewerModal({
   groups,
   startIndex,
+  startItemIndex = 0,
   onClose,
 }: {
   groups: StoryGroup[];
   startIndex: number;
+  startItemIndex?: number;
   onClose: () => void;
 }) {
   const [gi, setGi] = useState(startIndex);
-  const [ii, setIi] = useState(0);
+  const [ii, setIi] = useState(startItemIndex);
   const [elapsed, setElapsed] = useState(0);
   const [sent, setSent] = useState<string | null>(null);
   const [floats, setFloats] = useState<{ id: number; emoji: string; x: number }[]>([]);
