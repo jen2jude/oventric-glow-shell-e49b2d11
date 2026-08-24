@@ -17,6 +17,7 @@ import {
 import { QrCode } from "@/components/oventric/QrCode";
 import {
   ANDROID_APK_SIZE,
+  ANDROID_APK_AVAILABLE,
   ANDROID_APK_URL,
   ANDROID_APP_VERSION,
   ANDROID_INSTALL_STEPS,
@@ -154,23 +155,32 @@ function AndroidCard({ highlight }: { highlight: boolean }) {
       </div>
 
       <p className="mt-3 text-[13px] leading-relaxed text-slate-600">
-        The full native app — real push notifications, camera uploads and offline-safe
-        navigation. Installed straight from us, no store account needed.
+        {ANDROID_APK_AVAILABLE
+          ? "The full native app — real push notifications, camera uploads and offline-safe navigation. Installed straight from us, no store account needed."
+          : "The native Android build is getting its final signing pass. Meanwhile you can install Oventric from Chrome in two taps — same wallet, checkout, chat and creator tools."}
       </p>
 
-      <a
-        href={ANDROID_APK_URL}
-        download
-        className="mt-5 inline-flex items-center gap-2 rounded-[10px] bg-[#E5484D] px-5 py-3 text-sm font-bold text-white shadow-[0_10px_30px_-12px_rgba(229,72,77,0.9)] transition-transform active:scale-95"
-      >
-        <Download className="h-4 w-4" /> Download the APK
-      </a>
+      {ANDROID_APK_AVAILABLE ? (
+        <a
+          href={ANDROID_APK_URL}
+          download
+          className="mt-5 inline-flex items-center gap-2 rounded-[10px] bg-[#E5484D] px-5 py-3 text-sm font-bold text-white shadow-[0_10px_30px_-12px_rgba(229,72,77,0.9)] transition-transform active:scale-95"
+        >
+          <Download className="h-4 w-4" /> Download the APK
+        </a>
+      ) : (
+        <span className="mt-5 inline-flex items-center gap-2 rounded-[10px] border border-slate-200 bg-slate-100 px-5 py-3 text-sm font-bold text-slate-500">
+          <Download className="h-4 w-4" /> APK coming soon
+        </span>
+      )}
 
-      <ol className="mt-5 space-y-2">
-        {ANDROID_INSTALL_STEPS.map((s, i) => (
-          <Step key={s} n={i + 1} text={s} />
-        ))}
-      </ol>
+      {ANDROID_APK_AVAILABLE && (
+        <ol className="mt-5 space-y-2">
+          {ANDROID_INSTALL_STEPS.map((s, i) => (
+            <Step key={s} n={i + 1} text={s} />
+          ))}
+        </ol>
+      )}
     </section>
   );
 }

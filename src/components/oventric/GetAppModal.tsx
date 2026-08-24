@@ -11,7 +11,7 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react";
-import { ANDROID_APK_URL } from "@/lib/app-distribution";
+import { ANDROID_APK_AVAILABLE, ANDROID_APK_URL } from "@/lib/app-distribution";
 
 
 type InstallPrompt = Event & { prompt: () => Promise<void> };
