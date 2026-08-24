@@ -27,6 +27,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useTheme } from "@/lib/theme/ThemeProvider";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { toast } from "sonner";
 
