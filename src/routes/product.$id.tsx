@@ -295,7 +295,7 @@ function ProductPage() {
       return;
     }
     let cancelled = false;
-    loadPackages({ data: { productId: id } })
+    loadPackages({ data: { productId: product.id } })
       .then((rows) => {
         if (cancelled) return;
         setPackages(rows);
@@ -305,7 +305,7 @@ function ProductPage() {
     return () => {
       cancelled = true;
     };
-  }, [product?.kind, id, loadPackages]);
+  }, [product?.kind, product?.id, loadPackages]);
 
   const outOfStock = product?.inStock === false;
 
