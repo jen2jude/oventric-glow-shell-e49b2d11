@@ -1319,7 +1319,10 @@ export function Feed() {
           </div>
         )}
 
+        {!isAppShell && <WebReelsRail meId={meId} />}
+
         <AdSlot placement="feed" variant="banner" />
+
 
         {/* Optimistic posts — painted instantly while the server call runs */}
         {showPostList && pendingPosts.length > 0 && (
