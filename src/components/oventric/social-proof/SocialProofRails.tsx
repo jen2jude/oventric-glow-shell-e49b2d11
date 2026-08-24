@@ -102,8 +102,8 @@ export function SocialProofRails({
               dark={dark}
               eyebrow="Live right now"
               heading="Top Sellers"
-              action="See all"
-              onAction={onOpenMarketplace}
+              action="View all"
+              {...(dark ? { onAction: onOpenMarketplace } : { actionTo: "/sellers" as const })}
             />
             <div className="web-rail no-scrollbar mt-4 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
               {sellers.map((s, i) => (
@@ -231,13 +231,16 @@ function RailHead({
   heading,
   action,
   onAction,
+  actionTo,
 }: {
   dark: boolean;
   eyebrow: string;
   heading: string;
   action: string;
   onAction?: () => void;
+  actionTo?: "/sellers";
 }) {
+  const actionClass = `shrink-0 text-[12px] font-bold ${dark ? "text-white/50 hover:text-white" : "text-slate-500 hover:text-crimson"}`;
   return (
     <div className="flex items-end justify-between gap-3">
       <div>
@@ -255,15 +258,15 @@ function RailHead({
           {heading}
         </h2>
       </div>
-      {onAction && (
-        <button
-          type="button"
-          onClick={onAction}
-          className={`shrink-0 text-[12px] font-bold ${dark ? "text-white/50 hover:text-white" : "text-slate-500 hover:text-crimson"}`}
-        >
+      {actionTo ? (
+        <Link to={actionTo} className={actionClass}>
+          {action}
+        </Link>
+      ) : onAction ? (
+        <button type="button" onClick={onAction} className={actionClass}>
           {action}
         </button>
-      )}
+      ) : null}
     </div>
   );
 }

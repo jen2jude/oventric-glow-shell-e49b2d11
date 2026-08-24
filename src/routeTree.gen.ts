@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SellersRouteImport } from './routes/sellers'
 import { Route as ReportProblemRouteImport } from './routes/report-problem'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MessagesRouteImport } from './routes/messages'
@@ -88,6 +89,11 @@ const TermsRoute = TermsRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SellersRoute = SellersRouteImport.update({
+  id: '/sellers',
+  path: '/sellers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReportProblemRoute = ReportProblemRouteImport.update({
@@ -455,6 +461,7 @@ export interface FileRoutesByFullPath {
   '/messages': typeof MessagesRoute
   '/privacy': typeof PrivacyRoute
   '/report-problem': typeof ReportProblemRoute
+  '/sellers': typeof SellersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/.well-known/apple-app-site-association': typeof DotwellKnownAppleAppSiteAssociationRoute
@@ -526,6 +533,7 @@ export interface FileRoutesByTo {
   '/messages': typeof MessagesRoute
   '/privacy': typeof PrivacyRoute
   '/report-problem': typeof ReportProblemRoute
+  '/sellers': typeof SellersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/.well-known/apple-app-site-association': typeof DotwellKnownAppleAppSiteAssociationRoute
@@ -598,6 +606,7 @@ export interface FileRoutesById {
   '/messages': typeof MessagesRoute
   '/privacy': typeof PrivacyRoute
   '/report-problem': typeof ReportProblemRoute
+  '/sellers': typeof SellersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/.well-known/apple-app-site-association': typeof DotwellKnownAppleAppSiteAssociationRoute
@@ -672,6 +681,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/privacy'
     | '/report-problem'
+    | '/sellers'
     | '/sitemap.xml'
     | '/terms'
     | '/.well-known/apple-app-site-association'
@@ -743,6 +753,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/privacy'
     | '/report-problem'
+    | '/sellers'
     | '/sitemap.xml'
     | '/terms'
     | '/.well-known/apple-app-site-association'
@@ -814,6 +825,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/privacy'
     | '/report-problem'
+    | '/sellers'
     | '/sitemap.xml'
     | '/terms'
     | '/.well-known/apple-app-site-association'
@@ -887,6 +899,7 @@ export interface RootRouteChildren {
   MessagesRoute: typeof MessagesRoute
   PrivacyRoute: typeof PrivacyRoute
   ReportProblemRoute: typeof ReportProblemRoute
+  SellersRoute: typeof SellersRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   DotwellKnownAppleAppSiteAssociationRoute: typeof DotwellKnownAppleAppSiteAssociationRoute
@@ -929,6 +942,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sellers': {
+      id: '/sellers'
+      path: '/sellers'
+      fullPath: '/sellers'
+      preLoaderRoute: typeof SellersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/report-problem': {
@@ -1523,6 +1543,7 @@ const rootRouteChildren: RootRouteChildren = {
   MessagesRoute: MessagesRoute,
   PrivacyRoute: PrivacyRoute,
   ReportProblemRoute: ReportProblemRoute,
+  SellersRoute: SellersRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   DotwellKnownAppleAppSiteAssociationRoute:
