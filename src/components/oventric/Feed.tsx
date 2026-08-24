@@ -78,6 +78,7 @@ import { FeedAppChrome, type FeedTab } from "@/components/oventric/feed/FeedAppC
 import { listFollowing } from "@/lib/follows.functions";
 import { FeedDiscoverExplore } from "@/components/oventric/feed/FeedDiscoverExplore";
 import { ReelsRail, useReels } from "@/components/oventric/feed/ReelsShelf";
+import { WebStoriesRail } from "@/components/oventric/feed/WebStoriesRail";
 import {
   FeedCommerceCard,
   useFeedCommerceCards,
@@ -1333,6 +1334,10 @@ export function Feed() {
               <X className="w-6 h-6" />
             </button>
           </div>
+        )}
+
+        {!isAppShell && (
+          <WebStoriesRail meAvatarUrl={meAvatarUrl} meInitials={meInitials} />
         )}
 
         {!isAppShell && <WebReelsRail meId={meId} />}
