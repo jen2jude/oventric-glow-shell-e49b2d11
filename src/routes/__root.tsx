@@ -353,6 +353,7 @@ function RootShell({ children }: { children: ReactNode }) {
     o.setAttribute('aria-hidden','true');
     o.innerHTML='<div class="ob-inner"><div class="ob-word">Oventric<span class="ob-dot-accent"></span></div><div class="ob-dots">'+dots+'</div></div>';
     var style=document.createElement('style');
+    style.id='oventric-boot-style';
     style.textContent='#oventric-boot{position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;background:#0A0A0B;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}'+
       '#oventric-boot .ob-inner{display:flex;flex-direction:column;align-items:center;gap:18px;}'+
       '#oventric-boot .ob-word{position:relative;font-size:30px;font-weight:600;letter-spacing:-0.02em;color:#ffffff;}'+
