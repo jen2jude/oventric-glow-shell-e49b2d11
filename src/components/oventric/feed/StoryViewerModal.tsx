@@ -77,10 +77,12 @@ export function StoryViewerModal({
     };
   }, []);
 
+  const itemId = item?.id;
   useEffect(() => {
-    if (!item) return;
-    markViewed({ data: { storyId: item.id } }).catch(() => {});
-  }, [item, markViewed]);
+    if (!itemId) return;
+    markViewed({ data: { storyId: itemId } }).catch(() => {});
+  }, [itemId, markViewed]);
+
 
   const duration = useMemo(() => {
     if (item?.mediaType === "video") return null; // driven by the <video> element
