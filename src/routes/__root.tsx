@@ -328,46 +328,55 @@ function RootShell({ children }: { children: ReactNode }) {
         />
       </head>
       <body style={{ background: "#121214" }}>
-        {/* Standalone-launch detection for the React BootSplash. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{
-  var appShell=false;
-  try{
-    var params=new URLSearchParams(window.location.search);
-    var forced=params.get('mode');
-    var native=!!(window.Capacitor&&(typeof window.Capacitor.isNativePlatform==='function'?window.Capacitor.isNativePlatform():window.Capacitor.isNative));
-    var standalone=((window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true)&&window.matchMedia('(max-width: 767px)').matches;
-    appShell=forced==='app'?true:forced==='web'?false:(native||standalone);
-  }catch(e){}
-  window.__oventricStandalone=!!appShell;
-  if(appShell){
-    document.documentElement.classList.add('standalone-app');
-    var colors=['#ff4d6d','#ffb020','#22ff88','#00c2ff','#7aa2ff','#a855f7'];
-    var dots='';
-    for(var i=0;i<6;i++){
-      dots+='<span class="ob-dot" style="--obc:'+colors[i]+';animation-delay:'+(i*0.12)+'s"></span>';
-    }
-    var o=document.createElement('div');
-    o.id='oventric-boot';
-    o.setAttribute('aria-hidden','true');
-    o.innerHTML='<div class="ob-inner"><div class="ob-word">Oventric<span class="ob-dot-accent"></span></div><div class="ob-dots">'+dots+'</div></div>';
-    var style=document.createElement('style');
-    style.id='oventric-boot-style';
-    style.textContent='#oventric-boot{position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;background:#0A0A0B;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}'+
-      '#oventric-boot .ob-inner{display:flex;flex-direction:column;align-items:center;gap:18px;}'+
-      '#oventric-boot .ob-word{position:relative;font-size:30px;font-weight:600;letter-spacing:-0.02em;color:#ffffff;}'+
-      '#oventric-boot .ob-dot-accent{position:absolute;right:-10px;bottom:6px;width:8px;height:8px;border-radius:9999px;background:#E5484D;}'+
-      '#oventric-boot .ob-dots{display:flex;align-items:center;gap:10px;}'+
-      '#oventric-boot .ob-dot{width:18px;height:18px;border-radius:9999px;background:var(--obc);opacity:0.12;animation:ob-sweep 2.8s infinite ease-in-out;}'+
-      '@keyframes ob-sweep{0%,100%{opacity:0.12;transform:translateX(-3px) translateY(0) scale(0.9);}50%{opacity:1;transform:translateX(3px) translateY(-3px) scale(1.08);box-shadow:0 0 10px var(--obc),0 0 5px var(--obc);}}';
-    var mount=function(){if(document.body&&!document.getElementById('oventric-boot')){document.head.appendChild(style);document.body.appendChild(o);}};
-    if(document.body){mount();}else{document.addEventListener('DOMContentLoaded',mount);}
-    setTimeout(function(){var el=document.getElementById('oventric-boot');var st=document.getElementById('oventric-boot-style');if(el&&el.parentNode){el.parentNode.removeChild(el);}if(st&&st.parentNode){st.parentNode.removeChild(st);}},8000);
-  }
+        {/* Standalone-launch splash: mirrors the React BootSplash until hydration. */}
+        <div id="oventric-boot" aria-hidden>
+          <div className="ob-logo-container">
+            <img
+              src="/oventric-full-transparent.png"
+              className="ob-wordmark"
+              alt="Oventric"
+              draggable={false}
+            />
+            <div className="ob-icons">
+              <div className="ob-icon" style={{ "--c": "#ff4d6d" } as any}></div>
+              <div className="ob-icon" style={{ "--c": "#ffb020" } as any}></div>
+              <div className="ob-icon" style={{ "--c": "#22ff88" } as any}></div>
+              <div className="ob-icon" style={{ "--c": "#00c2ff" } as any}></div>
+              <div className="ob-icon" style={{ "--c": "#7aa2ff" } as any}></div>
+              <div className="ob-icon" style={{ "--c": "#a855f7" } as any}></div>
+            </div>
+          </div>
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `#oventric-boot{position:fixed;inset:0;z-index:99998;display:none;flex-direction:column;align-items:center;justify-content:center;background:#121214;transition:opacity .3s}
+#oventric-boot .ob-logo-container{display:flex;flex-direction:column;align-items:center;gap:16px}
+#oventric-boot .ob-wordmark{height:40px;width:auto;user-select:none}
+#oventric-boot .ob-icons{display:flex;gap:12px}
+#oventric-boot .ob-icon{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);animation:ob-sweep 2.4s infinite ease-in-out}
+#oventric-boot .ob-icon:nth-child(1){animation-delay:0s}
+#oventric-boot .ob-icon:nth-child(2){animation-delay:0.15s}
+#oventric-boot .ob-icon:nth-child(3){animation-delay:0.3s}
+#oventric-boot .ob-icon:nth-child(4){animation-delay:0.45s}
+#oventric-boot .ob-icon:nth-child(5){animation-delay:0.6s}
+#oventric-boot .ob-icon:nth-child(6){animation-delay:0.75s}
+@keyframes ob-sweep{
+  0%,100%{transform:scale(1);opacity:0.2;background:rgba(255,255,255,0.15);box-shadow:none}
+  50%{transform:scale(1.5);opacity:1;background:var(--c);box-shadow:0 0 12px var(--c)}
+}`,
+            }}
+          />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `(function(){try{
+  var root=document.getElementById('oventric-boot');if(!root)return;
+  var standalone=false;
+  try{standalone=((window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true)&&window.matchMedia('(max-width: 767px)').matches;}catch(e){}
+  window.__oventricStandalone=!!standalone;
+  if(standalone){root.style.display='flex';}else{root.parentNode&&root.parentNode.removeChild(root);}
 }catch(e){}})();`,
-          }}
-        />
+            }}
+          />
+        </div>
         {children}
         <Scripts />
       </body>
