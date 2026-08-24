@@ -133,25 +133,25 @@ export function BootSplash() {
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background transition-opacity duration-300"
       style={{ opacity: fading ? 0 : 1 }}
     >
-        <div className="flex flex-col items-center gap-6">
+        <div className="flex flex-col items-center gap-4">
           <img
             src={logoFull}
             alt="Oventric"
             className="h-10 w-auto select-none sm:h-12"
             draggable={false}
           />
-          <div className="flex items-center gap-4 sm:gap-6">
+          <div className="flex items-center gap-2">
             {ICONS.map(({ Icon, color }, i) => {
               return (
                 <Icon
                   key={i}
-                  className="h-8 w-8 transition-none sm:h-10 sm:w-10 splash-icon-sweep"
-                  strokeWidth={1.8}
+                  className="h-4 w-4 transition-none sm:h-5 sm:w-5 splash-icon-sweep"
+                  strokeWidth={2}
                   style={{
                     color,
                     "--ic": color,
                     animationDelay: `${i * 0.15}s`,
-                    opacity: 0.15,
+                    opacity: 0.2,
                   } as any}
                 />
               );
@@ -166,14 +166,14 @@ export function BootSplash() {
           }
           @keyframes splash-icon-ping-pong {
             0%, 20%, 80%, 100% {
-              opacity: 0.15;
+              opacity: 0.2;
               transform: translateY(0) scale(0.92);
-              filter: grayscale(0.4) blur(0.5px);
+              filter: grayscale(0.4) blur(0.25px);
             }
             50% {
               opacity: 1;
-              transform: translateY(-8px) scale(1.2);
-              filter: drop-shadow(0 0 16px var(--ic)) drop-shadow(0 0 8px var(--ic));
+              transform: translateY(-4px) scale(1.1);
+              filter: drop-shadow(0 0 8px var(--ic)) drop-shadow(0 0 4px var(--ic));
             }
           }
         `
