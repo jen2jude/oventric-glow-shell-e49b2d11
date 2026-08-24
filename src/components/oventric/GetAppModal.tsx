@@ -146,13 +146,24 @@ export function GetAppModal({
           </div>
 
           <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center">
-            <a
-              href={ANDROID_APK_URL}
-              download
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-[10px] bg-[#E5484D] px-5 py-3 text-sm font-bold text-white shadow-[0_16px_40px_-16px_rgba(229,72,77,0.95)] transition-transform active:scale-95"
-            >
-              <Download className="h-4 w-4" /> Download for Android
-            </a>
+            {ANDROID_APK_AVAILABLE ? (
+              <a
+                href={ANDROID_APK_URL}
+                download
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-[10px] bg-[#E5484D] px-5 py-3 text-sm font-bold text-white shadow-[0_16px_40px_-16px_rgba(229,72,77,0.95)] transition-transform active:scale-95"
+              >
+                <Download className="h-4 w-4" /> Download for Android
+              </a>
+            ) : (
+              <Link
+                to="/get-app"
+                search={{ from }}
+                onClick={onClose}
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-[10px] bg-[#E5484D] px-5 py-3 text-sm font-bold text-white shadow-[0_16px_40px_-16px_rgba(229,72,77,0.95)] transition-transform active:scale-95"
+              >
+                <Download className="h-4 w-4" /> Install on Android
+              </Link>
+            )}
             <button
               type="button"
               onClick={async () => {
