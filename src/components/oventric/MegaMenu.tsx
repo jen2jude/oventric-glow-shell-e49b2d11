@@ -76,6 +76,7 @@ export function MegaMenu({ open, onClose }: Props) {
   const { isAuthenticated, openGate } = useAuthGate();
   const { fullName, storeName, baseCurrency } = useOnboarding();
   const { theme, toggle } = useTheme();
+  const isAppShell = useIsAppShell();
   const navigate = useNavigate();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [userSlug, setUserSlug] = useState<string>("me");
