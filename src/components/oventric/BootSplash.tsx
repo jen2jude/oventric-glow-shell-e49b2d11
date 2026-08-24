@@ -1,10 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
+import { ShoppingCart, Banknote, Target, GraduationCap, Wallet, MessageCircle } from "lucide-react";
 import logoFull from "@/assets/oventric-full-transparent.png";
 
+const ICONS = [
+  { Icon: ShoppingCart, color: "#ff4d6d" },
+  { Icon: Banknote, color: "#ffb020" },
+  { Icon: Target, color: "#22ff88" },
+  { Icon: GraduationCap, color: "#00c2ff" },
+  { Icon: Wallet, color: "#7aa2ff" },
+  { Icon: MessageCircle, color: "#a855f7" },
+];
+
 /**
- * Full-screen boot splash: site logo only.
- * Fades once hydration, route data, document load and first idle frame finish.
+ * Full-screen boot splash: site logo + a row of icons that light up
+ * left → right in step with *real* load progress (hydration → route data →
+ * document load → fonts/first idle frame) rather than on a fixed loop.
  */
 // Only the very first mount of the session may show the splash — later route
 // changes inside the app must never re-trigger it.
@@ -122,12 +133,51 @@ export function BootSplash() {
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background transition-opacity duration-300"
       style={{ opacity: fading ? 0 : 1 }}
     >
-      <img
-        src={logoFull}
-        alt="Oventric"
-        className="h-10 w-auto select-none sm:h-12"
-        draggable={false}
-      />
+        <div className="flex flex-col items-center gap-6">
+          <img
+            src={logoFull}
+            alt="Oventric"
+            className="h-10 w-auto select-none sm:h-12"
+            draggable={false}
+          />
+          <div className="flex items-center gap-4 sm:gap-6">
+            {ICONS.map(({ Icon, color }, i) => {
+              return (
+                <Icon
+                  key={i}
+                  className="h-8 w-8 transition-none sm:h-10 sm:w-10 splash-icon-sweep"
+                  strokeWidth={1.8}
+                  style={{
+                    color,
+                    "--ic": color,
+                    animationDelay: `${i * 0.15}s`,
+                    opacity: 0.15,
+                  } as any}
+                />
+              );
+            })}
+          </div>
+        </div>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          .splash-icon-sweep {
+            animation: splash-icon-ping-pong 3.2s infinite ease-in-out;
+            will-change: transform, opacity, filter;
+          }
+          @keyframes splash-icon-ping-pong {
+            0%, 20%, 80%, 100% {
+              opacity: 0.15;
+              transform: translateY(0) scale(0.92);
+              filter: grayscale(0.4) blur(0.5px);
+            }
+            50% {
+              opacity: 1;
+              transform: translateY(-8px) scale(1.2);
+              filter: drop-shadow(0 0 16px var(--ic)) drop-shadow(0 0 8px var(--ic));
+            }
+          }
+        `
+      }} />
     </div>
   );
 }
