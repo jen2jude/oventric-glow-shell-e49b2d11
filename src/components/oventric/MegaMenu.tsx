@@ -265,12 +265,14 @@ export function MegaMenu({ open, onClose }: Props) {
             </p>
           </div>
           <button
-            onClick={toggle}
-            aria-label="Toggle color theme"
-            className="megamenu-lowgpu-icon-button"
+            onClick={isAppShell ? undefined : toggle}
+            disabled={isAppShell}
+            aria-label={isAppShell ? "Light mode not available in app yet" : "Toggle color theme"}
+            title={isAppShell ? "Light mode is not available in the app yet" : undefined}
+            className={`megamenu-lowgpu-icon-button ${isAppShell ? "opacity-40 cursor-not-allowed" : ""}`}
           >
-            {theme === "dark" ? (
-              <Sun className="w-5 h-5 text-amber-300" />
+            {theme === "dark" || isAppShell ? (
+              <Sun className={`w-5 h-5 ${isAppShell ? "text-slate-500" : "text-amber-300"}`} />
             ) : (
               <Moon className="w-5 h-5 text-slate-300" />
             )}
