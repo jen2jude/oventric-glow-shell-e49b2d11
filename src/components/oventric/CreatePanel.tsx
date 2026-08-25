@@ -81,20 +81,21 @@ export function CreatePanel({
     };
   }, [open]);
 
+  // NOTE: the parent often unmounts <CreatePanel /> as soon as onClose() runs,
+  // which would destroy the sub-modal state below. So for sell/course/bounty we
+  // keep this component mounted and only hide the chooser, calling onClose()
+  // once the sub-modal itself closes.
   const handleChoice = (c: Choice) => {
     require(c.tier, () => {
       if (c.key === "sell") {
-        onClose();
         setSellOpen(true);
         return;
       }
       if (c.key === "course") {
-        onClose();
         setCourseOpen(true);
         return;
       }
       if (c.key === "bounty") {
-        onClose();
         setBountyOpen(true);
         return;
       }
@@ -106,6 +107,8 @@ export function CreatePanel({
       }, 80);
     });
   };
+
+  const subOpen = sellOpen || courseOpen || bountyOpen;
 
   useEffect(() => {
     if (!open || !initialChoice) return;
