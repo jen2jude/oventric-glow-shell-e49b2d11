@@ -202,12 +202,22 @@ export function CreatePanel({
         </div>
 
       )}
-      <SellSwitcherModal open={sellOpen} onClose={() => setSellOpen(false)} />
+      <SellSwitcherModal
+        open={sellOpen}
+        onClose={() => {
+          setSellOpen(false);
+          onClose();
+        }}
+      />
       <CoursePublishWizard
         open={courseOpen}
-        onClose={() => setCourseOpen(false)}
+        onClose={() => {
+          setCourseOpen(false);
+          onClose();
+        }}
         onSaved={() => {
           setCourseOpen(false);
+          onClose();
           window.dispatchEvent(
             new CustomEvent("oventric:navigate", { detail: { section: "Academy" } }),
           );
@@ -215,8 +225,13 @@ export function CreatePanel({
       />
       <BountyEditorModal
         open={bountyOpen}
-        onClose={() => setBountyOpen(false)}
+        onClose={() => {
+          setBountyOpen(false);
+          onClose();
+        }}
         onPublished={() => {
+          setBountyOpen(false);
+          onClose();
           window.dispatchEvent(
             new CustomEvent("oventric:navigate", { detail: { section: "Bounties" } }),
           );
