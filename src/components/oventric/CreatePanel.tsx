@@ -81,20 +81,21 @@ export function CreatePanel({
     };
   }, [open]);
 
+  // NOTE: the parent often unmounts <CreatePanel /> as soon as onClose() runs,
+  // which would destroy the sub-modal state below. So for sell/course/bounty we
+  // keep this component mounted and only hide the chooser, calling onClose()
+  // once the sub-modal itself closes.
   const handleChoice = (c: Choice) => {
     require(c.tier, () => {
       if (c.key === "sell") {
-        onClose();
         setSellOpen(true);
         return;
       }
       if (c.key === "course") {
-        onClose();
         setCourseOpen(true);
         return;
       }
       if (c.key === "bounty") {
-        onClose();
         setBountyOpen(true);
         return;
       }
@@ -107,6 +108,8 @@ export function CreatePanel({
     });
   };
 
+  const subOpen = sellOpen || courseOpen || bountyOpen;
+
   useEffect(() => {
     if (!open || !initialChoice) return;
     const choice = choices.find((item) => item.key === initialChoice);
@@ -118,7 +121,7 @@ export function CreatePanel({
 
   return (
     <>
-      {open && (
+      {open && !subOpen && (
         <div className="modal-light fixed inset-0 z-50 flex items-end justify-center sm:items-center">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
           <div
@@ -199,12 +202,22 @@ export function CreatePanel({
         </div>
 
       )}
-      <SellSwitcherModal open={sellOpen} onClose={() => setSellOpen(false)} />
+      <SellSwitcherModal
+        open={sellOpen}
+        onClose={() => {
+          setSellOpen(false);
+          onClose();
+        }}
+      />
       <CoursePublishWizard
         open={courseOpen}
-        onClose={() => setCourseOpen(false)}
+        onClose={() => {
+          setCourseOpen(false);
+          onClose();
+        }}
         onSaved={() => {
           setCourseOpen(false);
+          onClose();
           window.dispatchEvent(
             new CustomEvent("oventric:navigate", { detail: { section: "Academy" } }),
           );
@@ -212,8 +225,13 @@ export function CreatePanel({
       />
       <BountyEditorModal
         open={bountyOpen}
-        onClose={() => setBountyOpen(false)}
+        onClose={() => {
+          setBountyOpen(false);
+          onClose();
+        }}
         onPublished={() => {
+          setBountyOpen(false);
+          onClose();
           window.dispatchEvent(
             new CustomEvent("oventric:navigate", { detail: { section: "Bounties" } }),
           );
