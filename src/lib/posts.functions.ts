@@ -328,6 +328,9 @@ async function buildFeedPosts(
           id: p.id,
           name: p.name,
           priceUsd: Number(p.price_usd ?? 0),
+          originalCurrency: p.original_currency ?? null,
+          originalAmount: p.original_amount != null ? Number(p.original_amount) : null,
+          fxSnapshot: (p.fx_snapshot ?? null) as ProductAttachment["fxSnapshot"],
           coverUrl: p.cover_path
             ? String(p.cover_path).startsWith("http")
               ? p.cover_path
