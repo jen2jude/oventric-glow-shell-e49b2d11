@@ -12,6 +12,7 @@ import {
   useUnreadNotificationsCount,
 } from "@/components/oventric/NotificationsDrawer";
 import { MessagesDrawer } from "@/components/oventric/MessagesDrawer";
+import { useChromeHidden } from "@/hooks/use-chrome-hide";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
 import { getTopUsers, type TopUser } from "@/lib/top-users.functions";
 import { MAX_STORY_FILES, useStoryRail } from "@/components/oventric/feed/useStories";
@@ -59,6 +60,7 @@ export function FeedAppChrome({
   meInitials,
   meSlug,
 }: Props) {
+  const chromeHidden = useChromeHidden();
   const [notifOpen, setNotifOpen] = useState(false);
   const [msgOpen, setMsgOpen] = useState(false);
   const [people, setPeople] = useState<TopUser[]>([]);
@@ -99,7 +101,13 @@ export function FeedAppChrome({
   }, [loadTopUsers]);
 
   return (
-    <div className="-mx-4 sticky top-0 z-30 bg-[#0A0A0B]">
+    <div
+      className={`-mx-4 sticky top-0 z-30 bg-[#0A0A0B] transition-all duration-300 ease-out ${
+        chromeHidden
+          ? "pointer-events-none -translate-y-full opacity-0"
+          : "translate-y-0 opacity-100"
+      }`}
+    >
       {/* Brand header — stays pinned; only fades slightly on scroll down */}
       <div>
         <div className="min-h-0">

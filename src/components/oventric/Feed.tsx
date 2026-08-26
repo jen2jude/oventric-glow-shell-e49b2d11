@@ -26,6 +26,7 @@ import {
   Globe,
   Eye,
   ShoppingBag,
+  ArrowUp,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
@@ -75,6 +76,7 @@ import { listBlogPosts, type BlogListItem } from "@/lib/blog.functions";
 import { ShareSheet } from "@/components/oventric/ShareSheet";
 import { PostComposerModal } from "@/components/oventric/PostComposerModal";
 import { FeedAppChrome, type FeedTab } from "@/components/oventric/feed/FeedAppChrome";
+import { useScrollHideChrome, useChromeHidden } from "@/hooks/use-chrome-hide";
 import { listFollowing } from "@/lib/follows.functions";
 import { FeedDiscoverExplore } from "@/components/oventric/feed/FeedDiscoverExplore";
 import { ReelsRail, useReels } from "@/components/oventric/feed/ReelsShelf";
@@ -1202,16 +1204,42 @@ export function Feed() {
 
   const isFiltering = debouncedQuery.length > 0 || category !== "all";
 
+  // App-shell chrome (feed header + bottom nav) collapses while scrolling down.
+  const feedRootRef = useRef<HTMLDivElement>(null);
+  useScrollHideChrome(isAppShell, feedRootRef);
+  const chromeHidden = useChromeHidden();
+  const scrollFeedToTop = () => {
+    const root = feedRootRef.current?.closest("main") ?? window;
+    if (root instanceof Window) window.scrollTo({ top: 0, behavior: "smooth" });
+    else root.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleBuy = () => require(2, () => alert("Proceeding to checkout (mock)"), "buyer");
   const handleBounty = () => require(2, () => alert("Applying to bounty (mock)"), "solver");
   const isLoggedIn = tier >= 1;
 
   return (
     <div
+      ref={feedRootRef}
       className={`w-full max-w-7xl mx-auto md:bg-white md:min-h-screen lg:flex lg:flex-row lg:gap-6 lg:items-start lg:[scrollbar-gutter:stable] ${
         isAppShell ? "px-4 pt-3 pb-6 bg-[#0A0A0B]" : "oventric-web px-4 py-6"
       }`}
     >
+      {isAppShell && (
+        <button
+          type="button"
+          onClick={scrollFeedToTop}
+          aria-label="Back to top"
+          className={`fixed left-1/2 z-40 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full bg-[#E5484D] px-4 py-2.5 text-[12px] font-bold text-white shadow-[0_10px_30px_-8px_rgba(229,72,77,0.7)] transition-all duration-300 md:hidden ${
+            chromeHidden
+              ? "bottom-6 opacity-100 translate-y-0 pointer-events-auto"
+              : "bottom-0 opacity-0 translate-y-6 pointer-events-none"
+          }`}
+        >
+          <ArrowUp className="h-4 w-4" strokeWidth={2.5} />
+          Back to top
+        </button>
+      )}
       <div
         className={`w-full lg:flex-1 lg:min-w-0 flex flex-col ${isAppShell ? "space-y-3" : "space-y-4"}`}
       >
@@ -1652,7 +1680,7 @@ export function Feed() {
                   id={`post-${post.id}`}
                   className={`md:bg-white md:shadow-sm border scroll-mt-24 md:scroll-mt-28 [transition:border-color_400ms_ease,box-shadow_400ms_ease,opacity_300ms_ease] ${
                     isAppShell
-                      ? "bg-[#141416] rounded-2xl p-0 overflow-hidden md:p-5 md:rounded-xl"
+                      ? "bg-[#141416] rounded-none -mx-4 p-0 overflow-hidden border-x-0 md:mx-0 md:p-5 md:rounded-xl md:border-x"
                       : "bg-[#1E1E24] rounded-xl p-5"
                   } ${isReported ? "opacity-70" : ""} ${
                     isNew
@@ -1831,7 +1859,7 @@ export function Feed() {
                               : layout.wrapperClass
                           } overflow-hidden md:rounded-[10px] md:border md:border-slate-200 ${
                             isAppShell
-                              ? "mx-4 mb-4 rounded-xl border border-white/[0.06] md:mx-0 md:mb-0"
+                              ? "mb-4 rounded-none border-y border-white/[0.06] md:mx-0 md:mb-0 md:rounded-[10px]"
                               : "rounded-[10px] border border-white/10"
                           }`}
                         >
@@ -1886,14 +1914,14 @@ export function Feed() {
                     })()}
                   {post.media_url && post.media_type === "video" && (
                     <div
-                      className={`relative mt-3 ${isAppShell ? "px-4 pb-4 md:px-0 md:pb-0" : ""}`}
+                      className={`relative mt-3 ${isAppShell ? "pb-4 md:px-0 md:pb-0" : ""}`}
                     >
                       <button
                         type="button"
                         onClick={() => setVideoStartId(post.id)}
                         className={`relative block w-full aspect-video overflow-hidden group bg-black md:rounded-[10px] md:border md:border-slate-200 ${
                           isAppShell
-                            ? "rounded-xl border border-white/[0.06]"
+                            ? "rounded-none border-y border-white/[0.06]"
                             : "rounded-[10px] border border-white/10"
                         }`}
                         aria-label="Play video"
