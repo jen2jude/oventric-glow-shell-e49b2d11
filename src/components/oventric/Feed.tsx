@@ -1652,7 +1652,7 @@ export function Feed() {
                   id={`post-${post.id}`}
                   className={`md:bg-white md:shadow-sm border scroll-mt-24 md:scroll-mt-28 [transition:border-color_400ms_ease,box-shadow_400ms_ease,opacity_300ms_ease] ${
                     isAppShell
-                      ? "bg-[#141416] rounded-2xl p-0 overflow-hidden md:p-5 md:rounded-xl"
+                      ? "bg-[#141416] rounded-none -mx-4 p-0 overflow-hidden border-x-0 md:mx-0 md:p-5 md:rounded-xl md:border-x"
                       : "bg-[#1E1E24] rounded-xl p-5"
                   } ${isReported ? "opacity-70" : ""} ${
                     isNew
@@ -1831,7 +1831,7 @@ export function Feed() {
                               : layout.wrapperClass
                           } overflow-hidden md:rounded-[10px] md:border md:border-slate-200 ${
                             isAppShell
-                              ? "mx-4 mb-4 rounded-xl border border-white/[0.06] md:mx-0 md:mb-0"
+                              ? "mb-4 rounded-none border-y border-white/[0.06] md:mx-0 md:mb-0 md:rounded-[10px]"
                               : "rounded-[10px] border border-white/10"
                           }`}
                         >
@@ -1886,14 +1886,14 @@ export function Feed() {
                     })()}
                   {post.media_url && post.media_type === "video" && (
                     <div
-                      className={`relative mt-3 ${isAppShell ? "px-4 pb-4 md:px-0 md:pb-0" : ""}`}
+                      className={`relative mt-3 ${isAppShell ? "pb-4 md:px-0 md:pb-0" : ""}`}
                     >
                       <button
                         type="button"
                         onClick={() => setVideoStartId(post.id)}
                         className={`relative block w-full aspect-video overflow-hidden group bg-black md:rounded-[10px] md:border md:border-slate-200 ${
                           isAppShell
-                            ? "rounded-xl border border-white/[0.06]"
+                            ? "rounded-none border-y border-white/[0.06]"
                             : "rounded-[10px] border border-white/10"
                         }`}
                         aria-label="Play video"
