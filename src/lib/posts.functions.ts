@@ -278,7 +278,9 @@ async function buildFeedPosts(
     if (productIds.length) {
       const { data: prodRows } = await sb
         .from("products")
-        .select("id, seller_id, name, price_usd, cover_path, description")
+        .select(
+          "id, seller_id, name, price_usd, original_currency, original_amount, fx_snapshot, cover_path, description",
+        )
         .in("id", productIds);
       const products = (prodRows ?? []) as any[];
 
