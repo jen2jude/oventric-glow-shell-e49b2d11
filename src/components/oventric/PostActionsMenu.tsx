@@ -8,6 +8,8 @@ import {
   Share2,
   Flag,
   Link2,
+  X,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 
