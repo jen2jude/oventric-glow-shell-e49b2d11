@@ -12,8 +12,15 @@ export function ProductAttachmentCard({
   isAppShell?: boolean 
 }) {
   const { baseCurrency } = useOnboarding();
+  // Use the product's publish-time currency + FX snapshot so the feed price is
+  // identical to the marketplace and product page.
   const priceLabel = computeDisplayPrice(
-    { price_usd: product.priceUsd, original_currency: "USD", original_amount: product.priceUsd, fx_snapshot: null },
+    {
+      price_usd: product.priceUsd,
+      original_currency: (product.originalCurrency ?? "USD") as any,
+      original_amount: product.originalAmount ?? product.priceUsd,
+      fx_snapshot: product.fxSnapshot ?? null,
+    },
     baseCurrency,
   ).formatted;
   return (
