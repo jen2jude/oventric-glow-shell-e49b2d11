@@ -26,6 +26,7 @@ import {
   Globe,
   Eye,
   ShoppingBag,
+  ArrowUp,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
@@ -75,6 +76,7 @@ import { listBlogPosts, type BlogListItem } from "@/lib/blog.functions";
 import { ShareSheet } from "@/components/oventric/ShareSheet";
 import { PostComposerModal } from "@/components/oventric/PostComposerModal";
 import { FeedAppChrome, type FeedTab } from "@/components/oventric/feed/FeedAppChrome";
+import { useScrollHideChrome, useChromeHidden } from "@/hooks/use-chrome-hide";
 import { listFollowing } from "@/lib/follows.functions";
 import { FeedDiscoverExplore } from "@/components/oventric/feed/FeedDiscoverExplore";
 import { ReelsRail, useReels } from "@/components/oventric/feed/ReelsShelf";
@@ -1202,16 +1204,42 @@ export function Feed() {
 
   const isFiltering = debouncedQuery.length > 0 || category !== "all";
 
+  // App-shell chrome (feed header + bottom nav) collapses while scrolling down.
+  const feedRootRef = useRef<HTMLDivElement>(null);
+  useScrollHideChrome(isAppShell, feedRootRef);
+  const chromeHidden = useChromeHidden();
+  const scrollFeedToTop = () => {
+    const root = feedRootRef.current?.closest("main") ?? window;
+    if (root instanceof Window) window.scrollTo({ top: 0, behavior: "smooth" });
+    else root.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleBuy = () => require(2, () => alert("Proceeding to checkout (mock)"), "buyer");
   const handleBounty = () => require(2, () => alert("Applying to bounty (mock)"), "solver");
   const isLoggedIn = tier >= 1;
 
   return (
     <div
+      ref={feedRootRef}
       className={`w-full max-w-7xl mx-auto md:bg-white md:min-h-screen lg:flex lg:flex-row lg:gap-6 lg:items-start lg:[scrollbar-gutter:stable] ${
         isAppShell ? "px-4 pt-3 pb-6 bg-[#0A0A0B]" : "oventric-web px-4 py-6"
       }`}
     >
+      {isAppShell && (
+        <button
+          type="button"
+          onClick={scrollFeedToTop}
+          aria-label="Back to top"
+          className={`fixed left-1/2 z-40 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full bg-[#E5484D] px-4 py-2.5 text-[12px] font-bold text-white shadow-[0_10px_30px_-8px_rgba(229,72,77,0.7)] transition-all duration-300 md:hidden ${
+            chromeHidden
+              ? "bottom-6 opacity-100 translate-y-0 pointer-events-auto"
+              : "bottom-0 opacity-0 translate-y-6 pointer-events-none"
+          }`}
+        >
+          <ArrowUp className="h-4 w-4" strokeWidth={2.5} />
+          Back to top
+        </button>
+      )}
       <div
         className={`w-full lg:flex-1 lg:min-w-0 flex flex-col ${isAppShell ? "space-y-3" : "space-y-4"}`}
       >
