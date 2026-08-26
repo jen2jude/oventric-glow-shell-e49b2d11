@@ -3710,6 +3710,14 @@ export type Database = {
         Args: { _currency: string; _user_id: string; _which: string }
         Returns: undefined
       }
+      assert_public_column_privacy: {
+        Args: never
+        Returns: {
+          column_name: string
+          grantee: string
+          table_name: string
+        }[]
+      }
       assert_recent_liveness: { Args: never; Returns: undefined }
       bounty_auto_release_due: { Args: never; Returns: number }
       bounty_publish_lock: {
