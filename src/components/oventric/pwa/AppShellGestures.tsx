@@ -38,14 +38,30 @@ export function AppShellGestures() {
     if (typeof window === "undefined") return;
     if (!window.matchMedia("(pointer: coarse)").matches) return;
 
-    const THRESHOLD = 72;
+    const THRESHOLD = 140;
+
+    // True only when every scrollable ancestor of the touch target is already
+    // pinned at the very top — otherwise an ordinary upward scroll inside a
+    // nested container would spawn the refresh ring.
+    const atTop = (target: EventTarget | null) => {
+      if (window.scrollY > 0) return false;
+      let el = target instanceof Element ? target : null;
+      while (el) {
+        const style = window.getComputedStyle(el);
+        const scrollable =
+          /(auto|scroll|overlay)/.test(style.overflowY) && el.scrollHeight > el.clientHeight + 1;
+        if (scrollable && el.scrollTop > 0) return false;
+        el = el.parentElement;
+      }
+      return true;
+    };
 
     const onStart = (e: TouchEvent) => {
       if (e.touches.length !== 1) return;
       const t = e.touches[0];
       state.current.startY = t.clientY;
       state.current.startX = t.clientX;
-      state.current.tracking = window.scrollY <= 0;
+      state.current.tracking = atTop(e.target);
       state.current.edge = t.clientX <= 24;
     };
 
@@ -55,8 +71,9 @@ export function AppShellGestures() {
       const dy = t.clientY - state.current.startY;
       const dx = t.clientX - state.current.startX;
 
-      if (state.current.tracking && dy > 0 && Math.abs(dx) < 40 && window.scrollY <= 0) {
-        setPull(Math.min(dy * 0.45, 96));
+      // Require a deliberate long drag before any indicator appears.
+      if (state.current.tracking && dy > 60 && Math.abs(dx) < 40 && atTop(e.target)) {
+        setPull(Math.min((dy - 60) * 0.45, 96));
       }
     };
 

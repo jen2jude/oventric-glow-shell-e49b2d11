@@ -8,6 +8,8 @@ import {
   Share2,
   Flag,
   Link2,
+  X,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -140,6 +142,30 @@ export function PostActionsMenu({
     );
   };
 
+  const sheetItem = (
+    icon: React.ElementType,
+    label: string,
+    action: Action,
+    sub?: string,
+    danger?: boolean,
+  ) => {
+    const Icon = icon;
+    return (
+      <button
+        onClick={() => run(action)}
+        className="w-full flex items-start gap-4 px-5 py-3.5 text-left active:bg-white/5"
+      >
+        <Icon className={`w-5 h-5 mt-0.5 shrink-0 ${danger ? "text-[#E5484D]" : "text-white/70"}`} />
+        <span className="min-w-0">
+          <span className={`block text-[15px] ${danger ? "text-[#E5484D]" : "text-white/90"}`}>
+            {label}
+          </span>
+          {sub ? <span className="block text-[12px] text-white/40 mt-0.5">{sub}</span> : null}
+        </span>
+      </button>
+    );
+  };
+
   return (
     <div ref={ref} className="relative">
       <button
@@ -149,8 +175,10 @@ export function PostActionsMenu({
       >
         <MoreHorizontal className="w-4 h-4" />
       </button>
+
+      {/* Desktop dropdown */}
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-40 w-56 rounded-xl bg-[#1a1a20] md:bg-white md:shadow-lg border border-white/10 md:border-slate-200 shadow-2xl p-1">
+        <div className="hidden md:block absolute right-0 top-full mt-1 z-40 w-56 rounded-xl bg-[#1a1a20] md:bg-white md:shadow-lg border border-white/10 md:border-slate-200 shadow-2xl p-1">
           {item(ThumbsUp, "Interested", "interested")}
           {item(ThumbsDown, "Not interested", "not_interested")}
           {item(EyeOff, "Hide post", "hide")}
@@ -170,6 +198,50 @@ export function PostActionsMenu({
               <Flag className="w-4 h-4" /> Delete
             </button>
           )}
+        </div>
+      )}
+
+      {/* Mobile bottom sheet */}
+      {open && (
+        <div className="md:hidden fixed inset-0 z-[80]">
+          <div
+            className="absolute inset-0 bg-black/60"
+            onClick={() => setOpen(false)}
+            aria-hidden
+          />
+          <div className="absolute inset-x-0 bottom-0 rounded-t-[20px] bg-[#141416] border-t border-white/10 pb-[env(safe-area-inset-bottom)] animate-in slide-in-from-bottom duration-200">
+            <div className="flex items-center justify-between px-5 pt-5 pb-3">
+              <h3 className="text-[17px] font-semibold text-white">More options</h3>
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="Close"
+                className="p-1.5 -mr-1.5 text-white/60 active:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="h-px bg-white/10 mx-5" />
+            <div className="py-2 max-h-[70vh] overflow-y-auto">
+              {sheetItem(Bookmark, "Save", "save")}
+              {sheetItem(ThumbsDown, "See less content like this", "not_interested")}
+              {sheetItem(EyeOff, "Hide post", "hide")}
+              {sheetItem(ThumbsUp, "Interested", "interested")}
+              {sheetItem(Share2, "Share", "share")}
+              {sheetItem(Link2, "Copy link", "copy_link")}
+              {sheetItem(Flag, "Report this", "report", undefined, true)}
+              {isOwn && onDelete && (
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    onDelete();
+                  }}
+                  className="w-full flex items-center gap-4 px-5 py-3.5 text-left text-[15px] text-[#E5484D] active:bg-white/5"
+                >
+                  <Trash2 className="w-5 h-5" /> Delete post
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
