@@ -44,7 +44,7 @@ export interface ProductAttachment {
   /** Publish-time currency + amount so the feed price matches the marketplace exactly. */
   originalCurrency?: string | null;
   originalAmount?: number | null;
-  fxSnapshot?: unknown;
+  fxSnapshot?: Record<string, number> | null;
   coverUrl: string | null;
   vendor: string;
   vendorId: string;
