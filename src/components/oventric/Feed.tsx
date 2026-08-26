@@ -2003,7 +2003,7 @@ export function Feed() {
 
                   {/* Action bar */}
                   <div
-                    className={`relative flex items-center gap-1 mt-2 pt-1.5 md:border-slate-200 md:text-slate-600 text-xs ${
+                    className={`relative flex items-center justify-between gap-1 mt-2 pt-1.5 md:border-slate-200 md:text-slate-600 text-xs ${
                       isAppShell
                         ? "border-t border-white/[0.06] px-3 pb-2 text-white/55 md:px-0 md:pb-0"
                         : "border-t border-white/5 text-slate-400"
@@ -2074,7 +2074,7 @@ export function Feed() {
                     <button
                       type="button"
                       onClick={() => shareUrl(shareHref, `${post.author_name} on Oventric`)}
-                      className="ml-auto flex items-center gap-1.5 px-2.5 py-3 rounded-[10px] hover:bg-white/5 md:hover:bg-slate-100 hover:text-white md:hover:text-slate-900 transition-colors font-semibold"
+                      className="flex items-center gap-1.5 px-2.5 py-3 rounded-[10px] hover:bg-white/5 md:hover:bg-slate-100 hover:text-white md:hover:text-slate-900 transition-colors font-semibold"
                       aria-label="Share"
                     >
                       <Share2 className="w-[18px] h-[18px]" />

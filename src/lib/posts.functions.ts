@@ -41,6 +41,15 @@ export interface ProductAttachment {
   id: string;
   name: string;
   priceUsd: number;
+  /** Publish-time currency + amount so the feed price matches the marketplace exactly. */
+  originalCurrency?: string | null;
+  originalAmount?: number | null;
+  fxSnapshot?: {
+    base?: string;
+    rates?: Record<string, number>;
+    source?: string;
+    fetched_at?: string;
+  } | null;
   coverUrl: string | null;
   vendor: string;
   vendorId: string;
@@ -269,7 +278,9 @@ async function buildFeedPosts(
     if (productIds.length) {
       const { data: prodRows } = await sb
         .from("products")
-        .select("id, seller_id, name, price_usd, cover_path, description")
+        .select(
+          "id, seller_id, name, price_usd, original_currency, original_amount, fx_snapshot, cover_path, description",
+        )
         .in("id", productIds);
       const products = (prodRows ?? []) as any[];
 
@@ -317,6 +328,9 @@ async function buildFeedPosts(
           id: p.id,
           name: p.name,
           priceUsd: Number(p.price_usd ?? 0),
+          originalCurrency: p.original_currency ?? null,
+          originalAmount: p.original_amount != null ? Number(p.original_amount) : null,
+          fxSnapshot: (p.fx_snapshot ?? null) as ProductAttachment["fxSnapshot"],
           coverUrl: p.cover_path
             ? String(p.cover_path).startsWith("http")
               ? p.cover_path
