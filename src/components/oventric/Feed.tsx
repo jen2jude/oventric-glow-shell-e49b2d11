@@ -2003,7 +2003,7 @@ export function Feed() {
 
                   {/* Action bar */}
                   <div
-                    className={`relative flex items-center gap-1 mt-2 pt-1.5 md:border-slate-200 md:text-slate-600 text-xs ${
+                    className={`relative flex items-center justify-between gap-1 mt-2 pt-1.5 md:border-slate-200 md:text-slate-600 text-xs ${
                       isAppShell
                         ? "border-t border-white/[0.06] px-3 pb-2 text-white/55 md:px-0 md:pb-0"
                         : "border-t border-white/5 text-slate-400"
