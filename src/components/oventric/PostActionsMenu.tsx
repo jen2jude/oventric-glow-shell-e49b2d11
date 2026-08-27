@@ -91,6 +91,10 @@ export function PostActionsMenu({
   onReport,
   isOwn = false,
   onDelete,
+  authorId,
+  authorName,
+  isFollowing = false,
+  onFollowChange,
 }: {
   postId: string;
   shareTitle: string;
@@ -98,8 +102,13 @@ export function PostActionsMenu({
   onReport: () => void;
   isOwn?: boolean;
   onDelete?: () => void;
+  authorId?: string;
+  authorName?: string;
+  isFollowing?: boolean;
+  onFollowChange?: (following: boolean) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [saved, setSavedState] = useState(() => getSavedPosts().has(postId));
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -111,11 +120,28 @@ export function PostActionsMenu({
     return () => document.removeEventListener("mousedown", onDoc);
   }, [open]);
 
+  // Lock background scroll while the mobile sheet is open.
+  useEffect(() => {
+    if (!open || typeof document === "undefined") return;
+    if (!window.matchMedia("(max-width: 767px)").matches) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
+  const authFail = (e: unknown, fallback: string) => {
+    const msg = String((e as Error)?.message ?? "");
+    toast.error(/unauthor|401|sign/i.test(msg) ? "Sign in to continue" : fallback);
+  };
+
   const run = (a: Action) => {
     setOpen(false);
     switch (a) {
       case "interested":
         togglePostSet("interested", postId, true);
+        togglePostSet("hidden", postId, false);
         toast.success("Got it — we'll show more like this.");
         break;
       case "not_interested":
@@ -127,21 +153,63 @@ export function PostActionsMenu({
         togglePostSet("hidden", postId, true);
         toast.success("Post hidden from your feed.");
         break;
-      case "save":
-        togglePostSet("saved", postId, true);
-        toast.success("Saved to your bookmarks.");
+      case "save": {
+        const next = !saved;
+        setSavedState(next);
+        togglePostSet("saved", postId, next);
+        setPostSaved({ data: { postId, saved: next } })
+          .then(() => toast.success(next ? "Saved to your bookmarks." : "Removed from saved."))
+          .catch((e) => {
+            setSavedState(!next);
+            togglePostSet("saved", postId, !next);
+            authFail(e, "Couldn't update your saved posts");
+          });
         break;
+      }
       case "share":
-        void shareUrl(shareHref, shareTitle);
+        void shareUrl(shareHref, shareTitle).then(() => {
+          logPostShare({ data: { postId, channel: "menu" } }).catch(() => {});
+        });
         break;
       case "copy_link":
-        navigator.clipboard.writeText(shareHref).then(() => toast.success("Link copied"));
+        navigator.clipboard.writeText(shareHref).then(() => {
+          toast.success("Link copied");
+          logPostShare({ data: { postId, channel: "copy_link" } }).catch(() => {});
+        });
         break;
+      case "follow": {
+        if (!authorId) return;
+        const req = isFollowing
+          ? unfollow({ data: { targetId: authorId } })
+          : sendFollowRequest({ data: { targetId: authorId } });
+        req
+          .then(() => {
+            onFollowChange?.(!isFollowing);
+            toast.success(
+              isFollowing
+                ? `Unfollowed ${authorName ?? "this member"}`
+                : `Follow request sent to ${authorName ?? "this member"}`,
+            );
+          })
+          .catch((e) => authFail(e, "Couldn't update follow"));
+        break;
+      }
+      case "block": {
+        if (!authorId) return;
+        blockUser({ data: { targetId: authorId } })
+          .then(() => {
+            togglePostSet("hidden", postId, true);
+            toast.success(`You won't see content from ${authorName ?? "this member"}`);
+          })
+          .catch((e) => authFail(e, "Couldn't block this member"));
+        break;
+      }
       case "report":
         onReport();
         break;
     }
   };
+
 
   const item = (icon: React.ElementType, label: string, action: Action, danger?: boolean) => {
     const Icon = icon;
