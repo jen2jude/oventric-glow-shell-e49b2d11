@@ -94,11 +94,10 @@ function usePrefetchSections() {
     }
     const t = window.setTimeout(warm, 2000);
     return () => window.clearTimeout(t);
+  }, []);
+}
 
 export function AppSurface({ initialSection = "Home" }: { initialSection?: string }) {
-});
-
-function Index() {
   const [createOpen, setCreateOpen] = useState(false);
   const [createChoice, setCreateChoice] = useState<ChoiceKey | null>(null);
   const [messagesOpen, setMessagesOpen] = useState(false);
