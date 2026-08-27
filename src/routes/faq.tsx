@@ -47,7 +47,7 @@ const items = [
   },
   {
     q: "What is cashback?",
-    a: "When you pay from your wallet on Oventric, 2%–5% comes back to your wallet in your base currency.",
+    a: "You earn 2% of the order value on every purchase, paid back to your wallet in your base currency. Cashback is not earned when a coupon is used.",
   },
   {
     q: "How do bounties work?",

@@ -50,6 +50,7 @@ export function SiteFooter({ onSelect, currency, flag }: SiteFooterProps) {
         <FooterCol title="Legal">
           <FooterLink to="/terms" label="Terms" />
           <FooterLink to="/privacy" label="Privacy" />
+          <FooterLink to="/refunds" label="Refunds" />
         </FooterCol>
       </div>
 
