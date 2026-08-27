@@ -10,10 +10,26 @@ import {
   Link2,
   X,
   Trash2,
+  UserPlus,
+  UserMinus,
+  Ban,
 } from "lucide-react";
 import { toast } from "sonner";
+import { setPostSaved, logPostShare } from "@/lib/posts.functions";
+import { sendFollowRequest, unfollow } from "@/lib/follows.functions";
+import { blockUser } from "@/lib/blocks.functions";
 
-type Action = "interested" | "not_interested" | "hide" | "save" | "share" | "report" | "copy_link";
+type Action =
+  | "interested"
+  | "not_interested"
+  | "hide"
+  | "save"
+  | "share"
+  | "report"
+  | "copy_link"
+  | "follow"
+  | "block";
+
 
 export function shareUrl(url: string, title = "Oventric") {
   return (async () => {
@@ -75,6 +91,10 @@ export function PostActionsMenu({
   onReport,
   isOwn = false,
   onDelete,
+  authorId,
+  authorName,
+  isFollowing = false,
+  onFollowChange,
 }: {
   postId: string;
   shareTitle: string;
@@ -82,8 +102,13 @@ export function PostActionsMenu({
   onReport: () => void;
   isOwn?: boolean;
   onDelete?: () => void;
+  authorId?: string;
+  authorName?: string;
+  isFollowing?: boolean;
+  onFollowChange?: (following: boolean) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [saved, setSavedState] = useState(() => getSavedPosts().has(postId));
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -95,11 +120,28 @@ export function PostActionsMenu({
     return () => document.removeEventListener("mousedown", onDoc);
   }, [open]);
 
+  // Lock background scroll while the mobile sheet is open.
+  useEffect(() => {
+    if (!open || typeof document === "undefined") return;
+    if (!window.matchMedia("(max-width: 767px)").matches) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
+  const authFail = (e: unknown, fallback: string) => {
+    const msg = String((e as Error)?.message ?? "");
+    toast.error(/unauthor|401|sign/i.test(msg) ? "Sign in to continue" : fallback);
+  };
+
   const run = (a: Action) => {
     setOpen(false);
     switch (a) {
       case "interested":
         togglePostSet("interested", postId, true);
+        togglePostSet("hidden", postId, false);
         toast.success("Got it — we'll show more like this.");
         break;
       case "not_interested":
@@ -111,21 +153,63 @@ export function PostActionsMenu({
         togglePostSet("hidden", postId, true);
         toast.success("Post hidden from your feed.");
         break;
-      case "save":
-        togglePostSet("saved", postId, true);
-        toast.success("Saved to your bookmarks.");
+      case "save": {
+        const next = !saved;
+        setSavedState(next);
+        togglePostSet("saved", postId, next);
+        setPostSaved({ data: { postId, saved: next } })
+          .then(() => toast.success(next ? "Saved to your bookmarks." : "Removed from saved."))
+          .catch((e) => {
+            setSavedState(!next);
+            togglePostSet("saved", postId, !next);
+            authFail(e, "Couldn't update your saved posts");
+          });
         break;
+      }
       case "share":
-        void shareUrl(shareHref, shareTitle);
+        void shareUrl(shareHref, shareTitle).then(() => {
+          logPostShare({ data: { postId, channel: "menu" } }).catch(() => {});
+        });
         break;
       case "copy_link":
-        navigator.clipboard.writeText(shareHref).then(() => toast.success("Link copied"));
+        navigator.clipboard.writeText(shareHref).then(() => {
+          toast.success("Link copied");
+          logPostShare({ data: { postId, channel: "copy_link" } }).catch(() => {});
+        });
         break;
+      case "follow": {
+        if (!authorId) return;
+        const req = isFollowing
+          ? unfollow({ data: { targetId: authorId } })
+          : sendFollowRequest({ data: { targetId: authorId } });
+        req
+          .then(() => {
+            onFollowChange?.(!isFollowing);
+            toast.success(
+              isFollowing
+                ? `Unfollowed ${authorName ?? "this member"}`
+                : `Follow request sent to ${authorName ?? "this member"}`,
+            );
+          })
+          .catch((e) => authFail(e, "Couldn't update follow"));
+        break;
+      }
+      case "block": {
+        if (!authorId) return;
+        blockUser({ data: { targetId: authorId } })
+          .then(() => {
+            togglePostSet("hidden", postId, true);
+            toast.success(`You won't see content from ${authorName ?? "this member"}`);
+          })
+          .catch((e) => authFail(e, "Couldn't block this member"));
+        break;
+      }
       case "report":
         onReport();
         break;
     }
   };
+
 
   const item = (icon: React.ElementType, label: string, action: Action, danger?: boolean) => {
     const Icon = icon;
@@ -182,9 +266,19 @@ export function PostActionsMenu({
           {item(ThumbsUp, "Interested", "interested")}
           {item(ThumbsDown, "Not interested", "not_interested")}
           {item(EyeOff, "Hide post", "hide")}
-          {item(Bookmark, "Save post", "save")}
+          {item(Bookmark, saved ? "Unsave post" : "Save post", "save")}
           {item(Share2, "Share", "share")}
           {item(Link2, "Copy link", "copy_link")}
+          {!isOwn && authorId && (
+            <>
+              {item(
+                isFollowing ? UserMinus : UserPlus,
+                `${isFollowing ? "Unfollow" : "Follow"} ${authorName ?? "author"}`,
+                "follow",
+              )}
+              {item(Ban, `Don't show content from ${authorName ?? "author"}`, "block")}
+            </>
+          )}
           <div className="h-px bg-white/5 md:bg-slate-100 my-1" />
           {item(Flag, "Report", "report", true)}
           {isOwn && onDelete && (
@@ -209,8 +303,8 @@ export function PostActionsMenu({
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="absolute inset-x-0 bottom-0 rounded-t-[20px] bg-[#141416] border-t border-white/10 pb-[env(safe-area-inset-bottom)] animate-in slide-in-from-bottom duration-200">
-            <div className="flex items-center justify-between px-5 pt-5 pb-3">
+          <div className="absolute inset-x-0 bottom-0 flex max-h-[85dvh] flex-col rounded-t-[20px] bg-[#141416] border-t border-white/10 animate-in slide-in-from-bottom duration-200">
+            <div className="flex items-center justify-between px-5 pt-5 pb-3 shrink-0">
               <h3 className="text-[17px] font-semibold text-white">More options</h3>
               <button
                 onClick={() => setOpen(false)}
@@ -220,15 +314,26 @@ export function PostActionsMenu({
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="h-px bg-white/10 mx-5" />
-            <div className="py-2 max-h-[70vh] overflow-y-auto">
-              {sheetItem(Bookmark, "Save", "save")}
+            <div className="h-px bg-white/10 mx-5 shrink-0" />
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain py-2 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+              {sheetItem(Bookmark, saved ? "Unsave" : "Save", "save", "Add this to your saved items")}
               {sheetItem(ThumbsDown, "See less content like this", "not_interested")}
               {sheetItem(EyeOff, "Hide post", "hide")}
               {sheetItem(ThumbsUp, "Interested", "interested")}
+              {!isOwn && authorId
+                ? sheetItem(
+                    isFollowing ? UserMinus : UserPlus,
+                    `${isFollowing ? "Unfollow" : "Follow"} ${authorName ?? "author"}`,
+                    "follow",
+                  )
+                : null}
+              {!isOwn && authorId
+                ? sheetItem(Ban, `Don't show content from ${authorName ?? "this member"}`, "block")
+                : null}
               {sheetItem(Share2, "Share", "share")}
               {sheetItem(Link2, "Copy link", "copy_link")}
               {sheetItem(Flag, "Report this", "report", undefined, true)}
+
               {isOwn && onDelete && (
                 <button
                   onClick={() => {

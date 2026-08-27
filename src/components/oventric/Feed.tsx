@@ -1795,7 +1795,19 @@ export function Feed() {
                           onReport={() => openReport(post.id)}
                           isOwn={meId === post.author_id}
                           onDelete={() => handleDeletePost(post.id)}
+                          authorId={post.author_id}
+                          authorName={post.author_name}
+                          isFollowing={!!followingIds?.has(post.author_id)}
+                          onFollowChange={(f) =>
+                            setFollowingIds((prev) => {
+                              const next = new Set(prev ?? []);
+                              if (f) next.add(post.author_id);
+                              else next.delete(post.author_id);
+                              return next;
+                            })
+                          }
                         />
+
                       </div>
                     )}
                   </header>
