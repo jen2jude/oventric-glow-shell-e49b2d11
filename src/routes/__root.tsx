@@ -329,7 +329,7 @@ function RootShell({ children }: { children: ReactNode }) {
       </head>
       <body style={{ background: "#121214" }}>
         {/* Standalone-launch splash: mirrors the React BootSplash until hydration. */}
-        <div id="oventric-boot" aria-hidden>
+        <div id="oventric-boot" aria-hidden suppressHydrationWarning>
           <img
             src="/oventric-full-transparent.png"
             className="ob-wordmark"
