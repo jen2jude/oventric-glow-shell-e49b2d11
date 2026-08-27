@@ -272,6 +272,15 @@ function ProductPage() {
   }, []);
 
 
+  // Landing on a product from a scrolled list must start at the top —
+  // otherwise the page looks frozen and pull-to-refresh can't arm.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.scrollTo(0, 0);
+    const raf = requestAnimationFrame(() => window.scrollTo(0, 0));
+    return () => cancelAnimationFrame(raf);
+  }, [id]);
+
   useEffect(() => {
     let cancelled = false;
     setError(null);
