@@ -10,10 +10,26 @@ import {
   Link2,
   X,
   Trash2,
+  UserPlus,
+  UserMinus,
+  Ban,
 } from "lucide-react";
 import { toast } from "sonner";
+import { setPostSaved, logPostShare } from "@/lib/posts.functions";
+import { sendFollowRequest, unfollow } from "@/lib/follows.functions";
+import { blockUser } from "@/lib/blocks.functions";
 
-type Action = "interested" | "not_interested" | "hide" | "save" | "share" | "report" | "copy_link";
+type Action =
+  | "interested"
+  | "not_interested"
+  | "hide"
+  | "save"
+  | "share"
+  | "report"
+  | "copy_link"
+  | "follow"
+  | "block";
+
 
 export function shareUrl(url: string, title = "Oventric") {
   return (async () => {
