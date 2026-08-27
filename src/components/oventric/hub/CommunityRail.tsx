@@ -94,7 +94,10 @@ export function CommunityRail({ onOpenFeed }: { onOpenFeed: () => void }) {
                     shareTitle={`${post.author_name} on Oventric`}
                     shareHref={`${origin}/#post-${post.id}`}
                     onReport={() => setReportOpen(post.id)}
+                    authorId={post.author_id}
+                    authorName={post.author_name}
                     isOwn={!!meId && meId === post.author_id}
+
                     onDelete={() => {
                       if (typeof window !== "undefined" && !window.confirm("Delete this post?")) return;
                       deletePost({ data: { id: post.id } })
