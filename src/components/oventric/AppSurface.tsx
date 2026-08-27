@@ -97,6 +97,17 @@ function usePrefetchSections() {
   }, []);
 }
 
+/** Canonical URL for each app section so tabs stay shareable. */
+const SECTION_PATHS: Record<string, string> = {
+  Home: "/",
+  Feed: "/feed",
+  Marketplace: "/marketplace",
+  Academy: "/academy",
+  Bounties: "/bounties",
+  Wallet: "/wallet",
+  Circles: "/circles",
+};
+
 export function AppSurface({ initialSection = "Home" }: { initialSection?: string }) {
   const [createOpen, setCreateOpen] = useState(false);
   const [createChoice, setCreateChoice] = useState<ChoiceKey | null>(null);
@@ -145,6 +156,19 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
       setReturnedToHub(false);
     }
     prevActiveRef.current = active;
+  }, [active]);
+
+  // Keep the address bar in sync with the active section so every tab is
+  // shareable, bookmarkable and back-button friendly.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const path = SECTION_PATHS[active];
+    if (!path || window.location.pathname === path) return;
+    window.history.replaceState(
+      {},
+      "",
+      `${path}${window.location.search}${window.location.hash}`,
+    );
   }, [active]);
 
   const renderNavSearch = () => (
