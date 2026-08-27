@@ -14,6 +14,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SellersRouteImport } from './routes/sellers'
 import { Route as ReportProblemRouteImport } from './routes/report-problem'
+import { Route as RefundsRouteImport } from './routes/refunds'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
@@ -110,6 +111,11 @@ const SellersRoute = SellersRouteImport.update({
 const ReportProblemRoute = ReportProblemRouteImport.update({
   id: '/report-problem',
   path: '/report-problem',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RefundsRoute = RefundsRouteImport.update({
+  id: '/refunds',
+  path: '/refunds',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -501,6 +507,7 @@ export interface FileRoutesByFullPath {
   '/marketplace': typeof MarketplaceRoute
   '/messages': typeof MessagesRoute
   '/privacy': typeof PrivacyRoute
+  '/refunds': typeof RefundsRoute
   '/report-problem': typeof ReportProblemRoute
   '/sellers': typeof SellersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -579,6 +586,7 @@ export interface FileRoutesByTo {
   '/marketplace': typeof MarketplaceRoute
   '/messages': typeof MessagesRoute
   '/privacy': typeof PrivacyRoute
+  '/refunds': typeof RefundsRoute
   '/report-problem': typeof ReportProblemRoute
   '/sellers': typeof SellersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -658,6 +666,7 @@ export interface FileRoutesById {
   '/marketplace': typeof MarketplaceRoute
   '/messages': typeof MessagesRoute
   '/privacy': typeof PrivacyRoute
+  '/refunds': typeof RefundsRoute
   '/report-problem': typeof ReportProblemRoute
   '/sellers': typeof SellersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -739,6 +748,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/messages'
     | '/privacy'
+    | '/refunds'
     | '/report-problem'
     | '/sellers'
     | '/sitemap.xml'
@@ -817,6 +827,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/messages'
     | '/privacy'
+    | '/refunds'
     | '/report-problem'
     | '/sellers'
     | '/sitemap.xml'
@@ -895,6 +906,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/messages'
     | '/privacy'
+    | '/refunds'
     | '/report-problem'
     | '/sellers'
     | '/sitemap.xml'
@@ -975,6 +987,7 @@ export interface RootRouteChildren {
   MarketplaceRoute: typeof MarketplaceRoute
   MessagesRoute: typeof MessagesRoute
   PrivacyRoute: typeof PrivacyRoute
+  RefundsRoute: typeof RefundsRoute
   ReportProblemRoute: typeof ReportProblemRoute
   SellersRoute: typeof SellersRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -1039,6 +1052,13 @@ declare module '@tanstack/react-router' {
       path: '/report-problem'
       fullPath: '/report-problem'
       preLoaderRoute: typeof ReportProblemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/refunds': {
+      id: '/refunds'
+      path: '/refunds'
+      fullPath: '/refunds'
+      preLoaderRoute: typeof RefundsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -1678,6 +1698,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceRoute: MarketplaceRoute,
   MessagesRoute: MessagesRoute,
   PrivacyRoute: PrivacyRoute,
+  RefundsRoute: RefundsRoute,
   ReportProblemRoute: ReportProblemRoute,
   SellersRoute: SellersRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
