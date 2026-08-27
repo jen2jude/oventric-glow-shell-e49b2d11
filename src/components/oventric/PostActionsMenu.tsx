@@ -297,13 +297,13 @@ export function PostActionsMenu({
 
       {/* Mobile bottom sheet */}
       {open && (
-        <div className="md:hidden fixed inset-0 z-[80]">
+        <div className="md:hidden fixed inset-0 z-[100]">
           <div
-            className="absolute inset-0 bg-black/60"
+            className="absolute inset-0 bg-black/55 backdrop-blur-sm"
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="absolute inset-x-0 bottom-0 flex max-h-[85dvh] flex-col rounded-t-[20px] bg-[#141416] border-t border-white/10 animate-in slide-in-from-bottom duration-200">
+          <div className="absolute inset-x-0 bottom-[calc(64px+env(safe-area-inset-bottom)+8px)] mx-3 flex max-h-[75dvh] flex-col rounded-[20px] bg-[#141416] border border-white/10 shadow-[0_20px_60px_-10px_rgba(0,0,0,0.7)] animate-in slide-in-from-bottom duration-200">
             <div className="flex items-center justify-between px-5 pt-5 pb-3 shrink-0">
               <h3 className="text-[17px] font-semibold text-white">More options</h3>
               <button
