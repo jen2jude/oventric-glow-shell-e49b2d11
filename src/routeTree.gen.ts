@@ -9,21 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SellersRouteImport } from './routes/sellers'
 import { Route as ReportProblemRouteImport } from './routes/report-problem'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MessagesRouteImport } from './routes/messages'
+import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as HelpBoardRouteImport } from './routes/help-board'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as GetAppRouteImport } from './routes/get-app'
+import { Route as FeedRouteImport } from './routes/feed'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CirclesRouteImport } from './routes/circles'
+import { Route as BountiesRouteImport } from './routes/bounties'
 import { Route as AffiliateRouteImport } from './routes/affiliate'
 import { Route as AdvertiseRouteImport } from './routes/advertise'
 import { Route as AdsManagerRouteImport } from './routes/ads-manager'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AcademyRouteImport } from './routes/academy'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
@@ -81,6 +87,11 @@ import { Route as ApiPublicHooksPurgeDeletedAccountsRouteImport } from './routes
 import { Route as ApiPublicHooksAutoReleaseOrdersRouteImport } from './routes/api/public/hooks/auto-release-orders'
 import { Route as ProfileIdItemKindItemIdRouteImport } from './routes/profile.$id.item.$kind.$itemId'
 
+const WalletRoute = WalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -111,6 +122,11 @@ const MessagesRoute = MessagesRouteImport.update({
   path: '/messages',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketplaceRoute = MarketplaceRouteImport.update({
+  id: '/marketplace',
+  path: '/marketplace',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HelpBoardRoute = HelpBoardRouteImport.update({
   id: '/help-board',
   path: '/help-board',
@@ -126,6 +142,11 @@ const GetAppRoute = GetAppRouteImport.update({
   path: '/get-app',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FeedRoute = FeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
@@ -134,6 +155,16 @@ const FaqRoute = FaqRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CirclesRoute = CirclesRouteImport.update({
+  id: '/circles',
+  path: '/circles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BountiesRoute = BountiesRouteImport.update({
+  id: '/bounties',
+  path: '/bounties',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AffiliateRoute = AffiliateRouteImport.update({
@@ -154,6 +185,11 @@ const AdsManagerRoute = AdsManagerRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcademyRoute = AcademyRouteImport.update({
+  id: '/academy',
+  path: '/academy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -177,14 +213,14 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   getParentRoute: () => AdminRoute,
 } as any)
 const WalletLedgerRoute = WalletLedgerRouteImport.update({
-  id: '/wallet/ledger',
-  path: '/wallet/ledger',
-  getParentRoute: () => rootRouteImport,
+  id: '/ledger',
+  path: '/ledger',
+  getParentRoute: () => WalletRoute,
 } as any)
 const WalletHistoryRoute = WalletHistoryRouteImport.update({
-  id: '/wallet/history',
-  path: '/wallet/history',
-  getParentRoute: () => rootRouteImport,
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => WalletRoute,
 } as any)
 const ShopIdRoute = ShopIdRouteImport.update({
   id: '/shop/$id',
@@ -449,21 +485,27 @@ const ProfileIdItemKindItemIdRoute = ProfileIdItemKindItemIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/academy': typeof AcademyRoute
   '/admin': typeof AdminRouteWithChildren
   '/ads-manager': typeof AdsManagerRouteWithChildren
   '/advertise': typeof AdvertiseRoute
   '/affiliate': typeof AffiliateRoute
+  '/bounties': typeof BountiesRoute
+  '/circles': typeof CirclesRoute
   '/dashboard': typeof DashboardRoute
   '/faq': typeof FaqRoute
+  '/feed': typeof FeedRoute
   '/get-app': typeof GetAppRoute
   '/help': typeof HelpRoute
   '/help-board': typeof HelpBoardRoute
+  '/marketplace': typeof MarketplaceRoute
   '/messages': typeof MessagesRoute
   '/privacy': typeof PrivacyRoute
   '/report-problem': typeof ReportProblemRoute
   '/sellers': typeof SellersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/wallet': typeof WalletRouteWithChildren
   '/.well-known/apple-app-site-association': typeof DotwellKnownAppleAppSiteAssociationRoute
   '/.well-known/assetlinks.json': typeof DotwellKnownAssetlinksDotjsonRoute
   '/admin/ad-inquiries': typeof AdminAdInquiriesRoute
@@ -522,20 +564,26 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/academy': typeof AcademyRoute
   '/ads-manager': typeof AdsManagerRouteWithChildren
   '/advertise': typeof AdvertiseRoute
   '/affiliate': typeof AffiliateRoute
+  '/bounties': typeof BountiesRoute
+  '/circles': typeof CirclesRoute
   '/dashboard': typeof DashboardRoute
   '/faq': typeof FaqRoute
+  '/feed': typeof FeedRoute
   '/get-app': typeof GetAppRoute
   '/help': typeof HelpRoute
   '/help-board': typeof HelpBoardRoute
+  '/marketplace': typeof MarketplaceRoute
   '/messages': typeof MessagesRoute
   '/privacy': typeof PrivacyRoute
   '/report-problem': typeof ReportProblemRoute
   '/sellers': typeof SellersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/wallet': typeof WalletRouteWithChildren
   '/.well-known/apple-app-site-association': typeof DotwellKnownAppleAppSiteAssociationRoute
   '/.well-known/assetlinks.json': typeof DotwellKnownAssetlinksDotjsonRoute
   '/admin/ad-inquiries': typeof AdminAdInquiriesRoute
@@ -594,21 +642,27 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/academy': typeof AcademyRoute
   '/admin': typeof AdminRouteWithChildren
   '/ads-manager': typeof AdsManagerRouteWithChildren
   '/advertise': typeof AdvertiseRoute
   '/affiliate': typeof AffiliateRoute
+  '/bounties': typeof BountiesRoute
+  '/circles': typeof CirclesRoute
   '/dashboard': typeof DashboardRoute
   '/faq': typeof FaqRoute
+  '/feed': typeof FeedRoute
   '/get-app': typeof GetAppRoute
   '/help': typeof HelpRoute
   '/help-board': typeof HelpBoardRoute
+  '/marketplace': typeof MarketplaceRoute
   '/messages': typeof MessagesRoute
   '/privacy': typeof PrivacyRoute
   '/report-problem': typeof ReportProblemRoute
   '/sellers': typeof SellersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/wallet': typeof WalletRouteWithChildren
   '/.well-known/apple-app-site-association': typeof DotwellKnownAppleAppSiteAssociationRoute
   '/.well-known/assetlinks.json': typeof DotwellKnownAssetlinksDotjsonRoute
   '/admin/ad-inquiries': typeof AdminAdInquiriesRoute
@@ -669,21 +723,27 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/academy'
     | '/admin'
     | '/ads-manager'
     | '/advertise'
     | '/affiliate'
+    | '/bounties'
+    | '/circles'
     | '/dashboard'
     | '/faq'
+    | '/feed'
     | '/get-app'
     | '/help'
     | '/help-board'
+    | '/marketplace'
     | '/messages'
     | '/privacy'
     | '/report-problem'
     | '/sellers'
     | '/sitemap.xml'
     | '/terms'
+    | '/wallet'
     | '/.well-known/apple-app-site-association'
     | '/.well-known/assetlinks.json'
     | '/admin/ad-inquiries'
@@ -742,20 +802,26 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/academy'
     | '/ads-manager'
     | '/advertise'
     | '/affiliate'
+    | '/bounties'
+    | '/circles'
     | '/dashboard'
     | '/faq'
+    | '/feed'
     | '/get-app'
     | '/help'
     | '/help-board'
+    | '/marketplace'
     | '/messages'
     | '/privacy'
     | '/report-problem'
     | '/sellers'
     | '/sitemap.xml'
     | '/terms'
+    | '/wallet'
     | '/.well-known/apple-app-site-association'
     | '/.well-known/assetlinks.json'
     | '/admin/ad-inquiries'
@@ -813,21 +879,27 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/academy'
     | '/admin'
     | '/ads-manager'
     | '/advertise'
     | '/affiliate'
+    | '/bounties'
+    | '/circles'
     | '/dashboard'
     | '/faq'
+    | '/feed'
     | '/get-app'
     | '/help'
     | '/help-board'
+    | '/marketplace'
     | '/messages'
     | '/privacy'
     | '/report-problem'
     | '/sellers'
     | '/sitemap.xml'
     | '/terms'
+    | '/wallet'
     | '/.well-known/apple-app-site-association'
     | '/.well-known/assetlinks.json'
     | '/admin/ad-inquiries'
@@ -887,21 +959,27 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AcademyRoute: typeof AcademyRoute
   AdminRoute: typeof AdminRouteWithChildren
   AdsManagerRoute: typeof AdsManagerRouteWithChildren
   AdvertiseRoute: typeof AdvertiseRoute
   AffiliateRoute: typeof AffiliateRoute
+  BountiesRoute: typeof BountiesRoute
+  CirclesRoute: typeof CirclesRoute
   DashboardRoute: typeof DashboardRoute
   FaqRoute: typeof FaqRoute
+  FeedRoute: typeof FeedRoute
   GetAppRoute: typeof GetAppRoute
   HelpRoute: typeof HelpRoute
   HelpBoardRoute: typeof HelpBoardRoute
+  MarketplaceRoute: typeof MarketplaceRoute
   MessagesRoute: typeof MessagesRoute
   PrivacyRoute: typeof PrivacyRoute
   ReportProblemRoute: typeof ReportProblemRoute
   SellersRoute: typeof SellersRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  WalletRoute: typeof WalletRouteWithChildren
   DotwellKnownAppleAppSiteAssociationRoute: typeof DotwellKnownAppleAppSiteAssociationRoute
   DotwellKnownAssetlinksDotjsonRoute: typeof DotwellKnownAssetlinksDotjsonRoute
   BlogSlugRoute: typeof BlogSlugRoute
@@ -912,8 +990,6 @@ export interface RootRouteChildren {
   ProductIdRoute: typeof ProductIdRoute
   ProfileIdRoute: typeof ProfileIdRouteWithChildren
   ShopIdRoute: typeof ShopIdRoute
-  WalletHistoryRoute: typeof WalletHistoryRoute
-  WalletLedgerRoute: typeof WalletLedgerRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ApiPublicFlutterwaveWebhookRoute: typeof ApiPublicFlutterwaveWebhookRoute
   ApiPublicPaymentReturnRoute: typeof ApiPublicPaymentReturnRoute
@@ -930,6 +1006,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wallet': {
+      id: '/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof WalletRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -972,6 +1055,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MessagesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/marketplace': {
+      id: '/marketplace'
+      path: '/marketplace'
+      fullPath: '/marketplace'
+      preLoaderRoute: typeof MarketplaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/help-board': {
       id: '/help-board'
       path: '/help-board'
@@ -993,6 +1083,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GetAppRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/feed': {
+      id: '/feed'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof FeedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/faq': {
       id: '/faq'
       path: '/faq'
@@ -1005,6 +1102,20 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/circles': {
+      id: '/circles'
+      path: '/circles'
+      fullPath: '/circles'
+      preLoaderRoute: typeof CirclesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bounties': {
+      id: '/bounties'
+      path: '/bounties'
+      fullPath: '/bounties'
+      preLoaderRoute: typeof BountiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/affiliate': {
@@ -1033,6 +1144,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/academy': {
+      id: '/academy'
+      path: '/academy'
+      fullPath: '/academy'
+      preLoaderRoute: typeof AcademyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -1065,17 +1183,17 @@ declare module '@tanstack/react-router' {
     }
     '/wallet/ledger': {
       id: '/wallet/ledger'
-      path: '/wallet/ledger'
+      path: '/ledger'
       fullPath: '/wallet/ledger'
       preLoaderRoute: typeof WalletLedgerRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof WalletRoute
     }
     '/wallet/history': {
       id: '/wallet/history'
-      path: '/wallet/history'
+      path: '/history'
       fullPath: '/wallet/history'
       preLoaderRoute: typeof WalletHistoryRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof WalletRoute
     }
     '/shop/$id': {
       id: '/shop/$id'
@@ -1516,6 +1634,19 @@ const AdsManagerRouteWithChildren = AdsManagerRoute._addFileChildren(
   AdsManagerRouteChildren,
 )
 
+interface WalletRouteChildren {
+  WalletHistoryRoute: typeof WalletHistoryRoute
+  WalletLedgerRoute: typeof WalletLedgerRoute
+}
+
+const WalletRouteChildren: WalletRouteChildren = {
+  WalletHistoryRoute: WalletHistoryRoute,
+  WalletLedgerRoute: WalletLedgerRoute,
+}
+
+const WalletRouteWithChildren =
+  WalletRoute._addFileChildren(WalletRouteChildren)
+
 interface ProfileIdRouteChildren {
   ProfileIdItemKindItemIdRoute: typeof ProfileIdItemKindItemIdRoute
 }
@@ -1531,21 +1662,27 @@ const ProfileIdRouteWithChildren = ProfileIdRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AcademyRoute: AcademyRoute,
   AdminRoute: AdminRouteWithChildren,
   AdsManagerRoute: AdsManagerRouteWithChildren,
   AdvertiseRoute: AdvertiseRoute,
   AffiliateRoute: AffiliateRoute,
+  BountiesRoute: BountiesRoute,
+  CirclesRoute: CirclesRoute,
   DashboardRoute: DashboardRoute,
   FaqRoute: FaqRoute,
+  FeedRoute: FeedRoute,
   GetAppRoute: GetAppRoute,
   HelpRoute: HelpRoute,
   HelpBoardRoute: HelpBoardRoute,
+  MarketplaceRoute: MarketplaceRoute,
   MessagesRoute: MessagesRoute,
   PrivacyRoute: PrivacyRoute,
   ReportProblemRoute: ReportProblemRoute,
   SellersRoute: SellersRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  WalletRoute: WalletRouteWithChildren,
   DotwellKnownAppleAppSiteAssociationRoute:
     DotwellKnownAppleAppSiteAssociationRoute,
   DotwellKnownAssetlinksDotjsonRoute: DotwellKnownAssetlinksDotjsonRoute,
@@ -1557,8 +1694,6 @@ const rootRouteChildren: RootRouteChildren = {
   ProductIdRoute: ProductIdRoute,
   ProfileIdRoute: ProfileIdRouteWithChildren,
   ShopIdRoute: ShopIdRoute,
-  WalletHistoryRoute: WalletHistoryRoute,
-  WalletLedgerRoute: WalletLedgerRoute,
   BlogIndexRoute: BlogIndexRoute,
   ApiPublicFlutterwaveWebhookRoute: ApiPublicFlutterwaveWebhookRoute,
   ApiPublicPaymentReturnRoute: ApiPublicPaymentReturnRoute,
