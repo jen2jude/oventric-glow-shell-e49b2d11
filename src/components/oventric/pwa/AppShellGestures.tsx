@@ -44,7 +44,8 @@ export function AppShellGestures() {
     // pinned at the very top — otherwise an ordinary upward scroll inside a
     // nested container would spawn the refresh ring.
     const atTop = (target: EventTarget | null) => {
-      if (window.scrollY > 0) return false;
+      const y = Math.max(window.scrollY, document.scrollingElement?.scrollTop ?? 0);
+      if (y > 2) return false;
       let el = target instanceof Element ? target : null;
       while (el) {
         const style = window.getComputedStyle(el);

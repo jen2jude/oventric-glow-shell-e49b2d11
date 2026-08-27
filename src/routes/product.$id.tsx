@@ -272,6 +272,15 @@ function ProductPage() {
   }, []);
 
 
+  // Landing on a product from a scrolled list must start at the top —
+  // otherwise the page looks frozen and pull-to-refresh can't arm.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.scrollTo(0, 0);
+    const raf = requestAnimationFrame(() => window.scrollTo(0, 0));
+    return () => cancelAnimationFrame(raf);
+  }, [id]);
+
   useEffect(() => {
     let cancelled = false;
     setError(null);
@@ -334,7 +343,8 @@ function ProductPage() {
 
   return (
     <div
-      className={`min-h-screen overflow-x-clip ${isAppShell ? "bg-[#0A0A0B] text-slate-300" : "oventric-web bg-[#F7F8FA] text-slate-700"}`}
+      style={{ touchAction: "pan-y", overscrollBehaviorY: "auto" }}
+      className={`min-h-screen ${isAppShell ? "bg-[#0A0A0B] text-slate-300" : "oventric-web bg-[#F7F8FA] text-slate-700"}`}
     >
       {!isAppShell && <Header onOpenMessages={() => {}} forceSiteNavbar={!isAppShell} />}
       <main className={`w-full ${isAppShell ? "max-w-6xl px-0 py-0 gap-0" : "max-w-[1440px] px-4 py-6 sm:px-6 lg:px-11"} mx-auto pb-32`}>
