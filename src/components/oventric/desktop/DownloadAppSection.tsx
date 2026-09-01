@@ -2,6 +2,7 @@ import { Bell, Search, Filter, Wallet as WalletIcon, ChevronRight, User } from "
 import { Link } from "@tanstack/react-router";
 
 import { ANDROID_APK_AVAILABLE, ANDROID_APK_URL } from "@/lib/app-distribution";
+import { useWebAppInstall } from "@/lib/pwa/install";
 
 import homeIcon from "@/assets/home-3d.png.asset.json";
 import walletIcon from "@/assets/wallet-3d.webp.asset.json";
@@ -282,14 +283,24 @@ function AppStoreBadge() {
 }
 
 function GooglePlayBadge() {
+  const { canInstall, install } = useWebAppInstall();
+  const directApk = ANDROID_APK_AVAILABLE && !canInstall;
+
   return (
     <a
-      href={ANDROID_APK_URL}
-      {...(ANDROID_APK_AVAILABLE ? { download: true } : {})}
+      href={directApk ? ANDROID_APK_URL : "/get-app"}
+      {...(directApk ? { download: true } : {})}
+      onClick={(e) => {
+        if (!canInstall) return;
+        e.preventDefault();
+        void install();
+      }}
       aria-label={
-        ANDROID_APK_AVAILABLE
-          ? "Download the Oventric Android app (APK)"
-          : "See Android install options for Oventric"
+        canInstall
+          ? "Install the Oventric web app"
+          : ANDROID_APK_AVAILABLE
+            ? "Download the Oventric Android app (APK)"
+            : "See Android install options for Oventric"
       }
       className="app-badge-pop inline-flex h-12 items-center gap-3 rounded-xl bg-[#E5484D] px-4 text-left transition-transform hover:-translate-y-0.5 active:scale-95"
       style={{ animationDelay: "120ms" }}
@@ -299,10 +310,10 @@ function GooglePlayBadge() {
       </svg>
       <div className="flex flex-col">
         <span className="text-[10px] leading-none text-white/70">
-          {ANDROID_APK_AVAILABLE ? "Direct download" : "Install on"}
+          {canInstall ? "One tap install" : ANDROID_APK_AVAILABLE ? "Direct download" : "Install on"}
         </span>
         <span className="text-base font-bold leading-none text-white">
-          {ANDROID_APK_AVAILABLE ? "Android APK" : "Android"}
+          {canInstall ? "Install app" : ANDROID_APK_AVAILABLE ? "Android APK" : "Android"}
         </span>
       </div>
     </a>

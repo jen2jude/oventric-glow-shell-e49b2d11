@@ -12,9 +12,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { ANDROID_APK_AVAILABLE, ANDROID_APK_URL } from "@/lib/app-distribution";
+import { useWebAppInstall } from "@/lib/pwa/install";
 
-
-type InstallPrompt = Event & { prompt: () => Promise<void> };
 
 const PERKS = [
   { icon: Sparkles, title: "Creator studio", text: "Publish posts, products, bounties and courses." },
@@ -40,19 +39,10 @@ export function GetAppModal({
   title?: string;
   description?: string;
 }) {
-  const [deferred, setDeferred] = useState<InstallPrompt | null>(null);
+  const { canInstall, install } = useWebAppInstall();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
-
-  useEffect(() => {
-    const onPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferred(e as InstallPrompt);
-    };
-    window.addEventListener("beforeinstallprompt", onPrompt);
-    return () => window.removeEventListener("beforeinstallprompt", onPrompt);
-  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -146,7 +136,18 @@ export function GetAppModal({
           </div>
 
           <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center">
-            {ANDROID_APK_AVAILABLE ? (
+            {canInstall ? (
+              <button
+                type="button"
+                onClick={async () => {
+                  await install();
+                  onClose();
+                }}
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-[10px] bg-[#E5484D] px-5 py-3 text-sm font-bold text-white shadow-[0_16px_40px_-16px_rgba(229,72,77,0.95)] transition-transform active:scale-95"
+              >
+                <Download className="h-4 w-4" /> Install the app
+              </button>
+            ) : ANDROID_APK_AVAILABLE ? (
               <a
                 href={ANDROID_APK_URL}
                 download
@@ -167,16 +168,12 @@ export function GetAppModal({
             <button
               type="button"
               onClick={async () => {
-                if (deferred) {
-                  await deferred.prompt();
-                  setDeferred(null);
-                  onClose();
-                }
+                if (await install()) onClose();
               }}
               className="inline-flex flex-1 items-center justify-center gap-2 rounded-[10px] bg-slate-900 px-5 py-3 text-sm font-bold text-white transition-transform active:scale-95"
             >
               <Smartphone className="h-4 w-4" />
-              {deferred ? "Install Oventric" : "Install on iPhone"}
+              {canInstall ? "Install Oventric" : "Install on iPhone"}
             </button>
           </div>
 

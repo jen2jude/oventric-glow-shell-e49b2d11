@@ -26,6 +26,7 @@ import {
   isStandalonePwa,
   type MobilePlatform,
 } from "@/lib/app-distribution";
+import { useWebAppInstall } from "@/lib/pwa/install";
 
 export const Route = createFileRoute("/get-app")({
   head: () => ({
@@ -131,6 +132,7 @@ function GetAppPage() {
 }
 
 function AndroidCard({ highlight }: { highlight: boolean }) {
+  const { canInstall, install } = useWebAppInstall();
   return (
     <section
       className={`relative overflow-hidden rounded-[10px] border p-6 ${
@@ -160,7 +162,15 @@ function AndroidCard({ highlight }: { highlight: boolean }) {
           : "The native Android build is getting its final signing pass. Meanwhile you can install Oventric from Chrome in two taps — same wallet, checkout, chat and creator tools."}
       </p>
 
-      {ANDROID_APK_AVAILABLE ? (
+      {canInstall ? (
+        <button
+          type="button"
+          onClick={() => void install()}
+          className="mt-5 inline-flex items-center gap-2 rounded-[10px] bg-[#E5484D] px-5 py-3 text-sm font-bold text-white shadow-[0_10px_30px_-12px_rgba(229,72,77,0.9)] transition-transform active:scale-95"
+        >
+          <Download className="h-4 w-4" /> Install the app
+        </button>
+      ) : ANDROID_APK_AVAILABLE ? (
         <a
           href={ANDROID_APK_URL}
           download

@@ -32,6 +32,7 @@ import { UpdatePrompt } from "@/components/oventric/pwa/UpdatePrompt";
 
 import { OfflineBanner } from "@/components/oventric/pwa/OfflineBanner";
 import { registerAppServiceWorker } from "@/lib/pwa/register-sw";
+import "@/lib/pwa/install";
 import { initNativeShell } from "@/lib/native/capacitor";
 import { initDeepLinks } from "@/lib/native/deep-links";
 
