@@ -2,6 +2,7 @@ import { Bell, Search, Filter, Wallet as WalletIcon, ChevronRight, User } from "
 import { Link } from "@tanstack/react-router";
 
 import { ANDROID_APK_AVAILABLE, ANDROID_APK_URL } from "@/lib/app-distribution";
+import { useWebAppInstall } from "@/lib/pwa/install";
 
 import homeIcon from "@/assets/home-3d.png.asset.json";
 import walletIcon from "@/assets/wallet-3d.webp.asset.json";
@@ -309,10 +310,10 @@ function GooglePlayBadge() {
       </svg>
       <div className="flex flex-col">
         <span className="text-[10px] leading-none text-white/70">
-          {ANDROID_APK_AVAILABLE ? "Direct download" : "Install on"}
+          {canInstall ? "One tap install" : ANDROID_APK_AVAILABLE ? "Direct download" : "Install on"}
         </span>
         <span className="text-base font-bold leading-none text-white">
-          {ANDROID_APK_AVAILABLE ? "Android APK" : "Android"}
+          {canInstall ? "Install app" : ANDROID_APK_AVAILABLE ? "Android APK" : "Android"}
         </span>
       </div>
     </a>
