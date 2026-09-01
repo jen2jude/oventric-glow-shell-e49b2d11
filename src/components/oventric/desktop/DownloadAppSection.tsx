@@ -282,14 +282,24 @@ function AppStoreBadge() {
 }
 
 function GooglePlayBadge() {
+  const { canInstall, install } = useWebAppInstall();
+  const directApk = ANDROID_APK_AVAILABLE && !canInstall;
+
   return (
     <a
-      href={ANDROID_APK_URL}
-      {...(ANDROID_APK_AVAILABLE ? { download: true } : {})}
+      href={directApk ? ANDROID_APK_URL : "/get-app"}
+      {...(directApk ? { download: true } : {})}
+      onClick={(e) => {
+        if (!canInstall) return;
+        e.preventDefault();
+        void install();
+      }}
       aria-label={
-        ANDROID_APK_AVAILABLE
-          ? "Download the Oventric Android app (APK)"
-          : "See Android install options for Oventric"
+        canInstall
+          ? "Install the Oventric web app"
+          : ANDROID_APK_AVAILABLE
+            ? "Download the Oventric Android app (APK)"
+            : "See Android install options for Oventric"
       }
       className="app-badge-pop inline-flex h-12 items-center gap-3 rounded-xl bg-[#E5484D] px-4 text-left transition-transform hover:-translate-y-0.5 active:scale-95"
       style={{ animationDelay: "120ms" }}
