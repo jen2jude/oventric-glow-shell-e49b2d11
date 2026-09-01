@@ -366,10 +366,10 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
         <div className="relative z-20 mx-auto grid h-full w-full max-w-[1440px] grid-cols-1 items-center px-4 py-8 sm:px-6 sm:py-12 lg:px-11 lg:py-16">
           <div className="max-w-2xl">
             <span className="web-eyebrow">
-              <Sparkles className="h-3.5 w-3.5" /> 2% cashback on every purchase
+              <Sparkles className="h-3.5 w-3.5" /> 10% cashback on every purchase
             </span>
             <h1 className="mt-6 text-[clamp(2.5rem,5.2vw,4.5rem)] font-bold leading-[1.05] tracking-tight text-slate-900">
-              The platform where Africa&apos;s builders
+              The 1st Africa Platform where builders
               <span className="text-crimson"> sell, learn and get paid.</span>
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-slate-600 [text-shadow:0_1px_16px_rgba(255,255,255,0.9)]">
