@@ -6,7 +6,7 @@ const ACCENT = "#E5484D";
 
 function StatCard({ value, label }: { value: string; label: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#141417] px-3 py-4 text-center md:web-card">
+    <div className="rounded-2xl border border-white/10 bg-[#141417] px-3 py-4 text-center md:rounded-[10px] md:border-slate-200 md:bg-slate-50">
       <div className="text-xl font-black text-white md:text-slate-900">{value}</div>
       <div className="mt-1 text-[11px] font-semibold text-slate-400 md:text-slate-500">{label}</div>
     </div>
@@ -109,7 +109,7 @@ export function ProfileShopTab({
                 key={p.id}
                 to="/product/$id"
                 params={{ id: p.id }}
-                className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#141417] p-3 transition-colors hover:bg-[#1A1A1F] md:web-card md:hover:bg-transparent"
+                className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#141417] p-3 transition-colors hover:bg-[#1A1A1F] md:rounded-[10px] md:border-slate-200 md:bg-slate-50 md:hover:border-[#E5484D]/30 md:hover:bg-white"
               >
                 <Cover url={p.coverUrl} className="h-16 w-16 shrink-0" />
                 <div className="min-w-0 flex-1">
@@ -138,13 +138,13 @@ export function ProfileShopTab({
       )}
 
       <SectionHead title="All Products" action={viewShop} />
-      <div className="mt-3 grid grid-cols-3 gap-3">
+      <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {all.map((p) => (
           <Link
             key={p.id}
             to="/product/$id"
             params={{ id: p.id }}
-            className="group overflow-hidden rounded-2xl border border-white/10 bg-[#141417] transition-transform hover:-translate-y-0.5 md:web-card"
+            className="group overflow-hidden rounded-2xl border border-white/10 bg-[#141417] transition-transform hover:-translate-y-0.5 md:rounded-[10px] md:border-slate-200 md:bg-slate-50 md:hover:border-[#E5484D]/30 md:hover:bg-white md:hover:shadow-sm"
           >
             <Cover url={p.coverUrl} className="aspect-square w-full rounded-none" />
             <div className="p-2">

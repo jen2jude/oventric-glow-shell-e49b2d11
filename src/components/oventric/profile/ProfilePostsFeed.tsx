@@ -183,7 +183,7 @@ export function ProfilePostsFeed({ wallUserId, wallOwnerName, viewerId }: Props)
   return (
     <div className="pb-2">
       {/* Composer trigger — avatar, prompt, media shortcut */}
-      <div className="mb-3 flex items-center gap-3 rounded-2xl border border-white/10 bg-[#141418] p-3 md:border-slate-200 md:bg-white md:shadow-sm">
+      <div className="mb-4 flex items-center gap-3 rounded-2xl border border-white/10 bg-[#141418] p-3 md:rounded-[10px] md:border-slate-200 md:bg-slate-50">
         <span className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-neutral-800 md:bg-slate-200">
           <AvatarImage src={meAvatarUrl} alt="Your profile" initials={meInitials} />
         </span>
@@ -221,7 +221,7 @@ export function ProfilePostsFeed({ wallUserId, wallOwnerName, viewerId }: Props)
             return (
               <article
                 key={p.id}
-                className="rounded-2xl border border-white/10 bg-[#141418] md:border-slate-200 md:bg-white md:shadow-sm"
+                className="rounded-2xl border border-white/10 bg-[#141418] md:rounded-[10px] md:border-slate-200 md:bg-white md:shadow-sm"
               >
                 <header className="flex items-center gap-3 px-4 pt-4">
                   <Link
@@ -277,7 +277,7 @@ export function ProfilePostsFeed({ wallUserId, wallOwnerName, viewerId }: Props)
 
                 {p.media.length > 0 && (
                   <div
-                    className={`grid gap-1.5 px-4 pt-3 ${
+                    className={`grid gap-1.5 px-4 pt-3 md:gap-2 ${
                       p.media.length === 1 ? "grid-cols-1" : "grid-cols-2"
                     }`}
                   >

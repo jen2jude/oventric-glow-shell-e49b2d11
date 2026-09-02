@@ -1032,7 +1032,7 @@ function ProfilePage() {
       <div className="flex min-h-screen flex-col md:h-full md:min-h-0">
         <Header forceSiteNavbar={!isAppShellView} />
         <main ref={mainRef} className="flex-1 min-w-0 pb-20 md:overflow-y-auto md:pb-0">
-          <div className="max-w-3xl mx-auto w-full px-4 py-6">
+          <div className="mx-auto w-full max-w-7xl px-4 py-6 md:px-8 md:py-8 lg:px-10">
             {/* Hero — the whole mobile profile surface is intentionally plain:
                  no animated gradients, filters, backdrop blur, blend modes,
                  compositor promotion, or clipped gradient layers. Those effects
@@ -1086,10 +1086,10 @@ function ProfilePage() {
 
             <section
               data-testid="profile-banner"
-              className="profile-card-safe profile-standard-header mb-6"
+              className="profile-card-safe profile-standard-header mb-6 md:overflow-hidden md:rounded-[10px] md:border md:border-slate-200 md:bg-white md:shadow-sm"
             >
               {/* Cover image — full-bleed hero */}
-              <div className="profile-cover-safe relative -mx-4 -mt-6 h-56 overflow-hidden border-b border-white/10 bg-[#18181d] sm:h-72 md:mx-0 md:mt-0 md:rounded-2xl md:border md:border-slate-200 md:bg-slate-100">
+              <div className="profile-cover-safe relative -mx-4 -mt-6 h-56 overflow-hidden border-b border-white/10 bg-[#18181d] sm:h-72 md:mx-0 md:mt-0 md:h-64 md:rounded-none md:border-0 md:border-b md:border-slate-200 md:bg-slate-100 lg:h-72">
                 {realProfile?.coverUrl ? (
                   <ResponsiveImage
                     src={realProfile.coverUrl}
@@ -1144,10 +1144,10 @@ function ProfilePage() {
               </div>
 
               {/* Identity — avatar overlaps the cover from the left, app-style */}
-              <div className="-mt-12 px-1">
+              <div className="-mt-12 px-1 md:-mt-16 md:px-8 md:pb-8">
                 <div className="grid grid-cols-[auto_minmax(0,1fr)] items-end gap-3">
                   <div className="relative shrink-0">
-                    <div className="profile-avatar-safe w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-[#E5484D] ring-[3px] ring-[#E5484D]/70 outline outline-4 outline-[#121214] flex items-center justify-center text-white text-3xl font-black overflow-hidden">
+                    <div className="profile-avatar-safe flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-[#E5484D] text-3xl font-black text-white ring-[3px] ring-[#E5484D]/70 outline outline-4 outline-[#121214] sm:h-28 sm:w-28 md:h-36 md:w-36 md:rounded-[10px] md:ring-0 md:outline-white lg:h-40 lg:w-40">
                       {displayAvatar ? (
                         <ResponsiveImage
                           src={displayAvatar}
@@ -1329,12 +1329,12 @@ function ProfilePage() {
                 )}
 
                 {/* Stat strip */}
-                <div className="mt-4 grid grid-cols-4 divide-x divide-white/8 rounded-2xl border border-white/10 bg-[#141418] md:divide-x-0 md:gap-2 md:rounded-none md:border-none md:bg-transparent">
+                <div className="mt-4 grid grid-cols-4 divide-x divide-white/8 rounded-2xl border border-white/10 bg-[#141418] md:mt-6 md:divide-x md:divide-slate-100 md:rounded-[10px] md:border-slate-200 md:bg-slate-50">
                   <button
                     type="button"
                     onClick={() => openRelationships("followers")}
                     aria-controls="relationships"
-                    className="px-2 py-3 text-center md:web-card-flat md:py-4"
+                    className="px-2 py-3 text-center md:py-4"
                   >
                     <span className="block text-base font-black text-white md:text-slate-900">
                       {compactCount(socialCounts?.followers ?? 0)}
@@ -1347,7 +1347,7 @@ function ProfilePage() {
                     type="button"
                     onClick={() => openRelationships("following")}
                     aria-controls="relationships"
-                    className="px-2 py-3 text-center md:web-card-flat md:py-4"
+                    className="px-2 py-3 text-center md:py-4"
                   >
                     <span className="block text-base font-black text-white md:text-slate-900">
                       {compactCount(socialCounts?.following ?? 0)}
@@ -1356,13 +1356,13 @@ function ProfilePage() {
                       Following
                     </span>
                   </button>
-                  <div className="px-2 py-3 text-center md:web-card-flat md:py-4">
+                  <div className="px-2 py-3 text-center md:py-4">
                     <span className="block text-base font-black text-white md:text-slate-900">
                       {liveRep ? compactCount(liveRep.metrics.productsListed) : "…"}
                     </span>
                     <span className="block text-[11px] font-semibold text-slate-500">Products</span>
                   </div>
-                  <div className="px-2 py-3 text-center md:web-card-flat md:py-4">
+                  <div className="px-2 py-3 text-center md:py-4">
                     <span className="block text-base font-black text-white md:text-slate-900">
                       {compactCount(
                         ecosystemSections.find((s) => s.key === "services")?.count ?? 0,
@@ -1376,7 +1376,7 @@ function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => openRelationships("all")}
-                  className="mt-3 flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-[#141418] px-4 py-3 text-left hover:bg-[#1A1A1F] md:border-slate-200 md:bg-white md:hover:bg-slate-50"
+                  className="mt-3 flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-[#141418] px-4 py-3 text-left hover:bg-[#1A1A1F] md:rounded-[10px] md:border-slate-200 md:bg-white md:hover:bg-slate-50"
                 >
                   <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#E5484D]/15 text-[#E5484D]">
                     <Users className="h-4 w-4" />
@@ -1437,7 +1437,7 @@ function ProfilePage() {
 
                 {/* About card */}
                 {displayBio && (
-                  <div className="mt-4 rounded-2xl border border-white/10 bg-[#141418] p-4 md:border-slate-200 md:bg-white md:shadow-sm">
+                    <div className="mt-4 rounded-2xl border border-white/10 bg-[#141418] p-4 md:rounded-[10px] md:border-slate-200 md:bg-slate-50">
                     <h2 className="text-sm font-black text-white md:text-slate-900">
                       About {displayName.split(" ")[0]}
                     </h2>
@@ -1572,7 +1572,7 @@ function ProfilePage() {
               ref={tabsNavRef}
               data-testid="profile-tabs"
 
-              className="mt-5 flex items-center gap-1 overflow-x-auto no-scrollbar border-b border-white/10 md:sticky md:top-0 md:z-20 md:-mx-4 md:border-b-0 md:px-4 md:web-glass"
+              className="mt-5 flex items-center gap-1 overflow-x-auto no-scrollbar border-b border-white/10 md:sticky md:top-0 md:z-20 md:mt-8 md:rounded-t-[10px] md:border md:border-slate-200 md:bg-white md:px-5 md:shadow-sm"
             >
               <button
                 key="overview"
@@ -1727,7 +1727,7 @@ function ProfilePage() {
             )}
 
             {/* Tab content */}
-            <section data-testid="profile-tab-content" className="mt-5 space-y-3">
+            <section data-testid="profile-tab-content" className="mt-5 space-y-3 md:mt-0 md:min-h-72 md:rounded-b-[10px] md:border md:border-t-0 md:border-slate-200 md:bg-white md:p-6 md:shadow-sm lg:p-8">
               {aboutMode ? (
                 <ProfileAboutTab
                   idOrSlug={id}
