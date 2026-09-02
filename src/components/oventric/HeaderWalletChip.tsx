@@ -32,9 +32,9 @@ export function HeaderWalletChip({
   compact = false,
 }: { align?: "left" | "right"; compact?: boolean } = {}) {
   const { isAuthenticated } = useAuthGate();
-  const { baseCurrency, balancesHidden, toggleBalancesHidden, country } = useOnboarding();
+  const { homeCurrency, balancesHidden, toggleBalancesHidden, country } = useOnboarding();
   const hasCountry = country != null;
-  const displayCurrency: Currency = hasCountry ? baseCurrency : "USD";
+  const displayCurrency: Currency = hasCountry ? homeCurrency : "USD";
   const getBalances = useServerFn(getWalletBalances);
   const [open, setOpen] = useState(false);
   const [main, setMain] = useState(0);
@@ -51,8 +51,8 @@ export function HeaderWalletChip({
       getBalances()
         .then((r) => {
           if (cancelled) return;
-          setMain(r.balances[baseCurrency] ?? 0);
-          setEscrow(r.escrow[baseCurrency] ?? 0);
+          setMain(r.balances[homeCurrency] ?? 0);
+          setEscrow(r.escrow[homeCurrency] ?? 0);
           setCashback(r.cashback ?? 0);
           setBounty(r.bountyBalance ?? 0);
         })
@@ -71,7 +71,7 @@ export function HeaderWalletChip({
         .select("amount")
         .eq("user_id", uid)
         .eq("type", "Marketplace Sale")
-        .eq("currency", dbCurrency(baseCurrency))
+        .eq("currency", dbCurrency(homeCurrency))
         .eq("inflow", true)
         .eq("status", "success");
       if (!cancelled) {
@@ -101,7 +101,7 @@ export function HeaderWalletChip({
       cancelled = true;
       if (ch) supabase.removeChannel(ch);
     };
-  }, [isAuthenticated, baseCurrency, getBalances]);
+  }, [isAuthenticated, homeCurrency, getBalances]);
 
   useEffect(() => {
     if (!open) return;

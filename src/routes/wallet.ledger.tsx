@@ -85,7 +85,7 @@ function txStyle(type: WalletTxType, inflow: boolean) {
 
 function WalletLedgerPage() {
   const router = useRouter();
-  const { baseCurrency } = useOnboarding();
+  const { homeCurrency } = useOnboarding();
   const [userId, setUserId] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>("All");
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -133,7 +133,7 @@ function WalletLedgerPage() {
 
   const exportAll = (kind: "csv" | "pdf") => {
     if (kind === "csv") downloadWalletCsv(items);
-    else printWalletPdf(items, baseCurrency);
+    else printWalletPdf(items, homeCurrency);
   };
 
   return (

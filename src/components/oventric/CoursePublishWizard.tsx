@@ -81,7 +81,7 @@ export function CoursePublishWizard({
   const save = useServerFn(saveCourseWizard);
   const getUpload = useServerFn(getCourseCoverUploadUrl);
   const snapshotFx = useServerFn(snapshotFxRates);
-  const { baseCurrency } = useOnboarding();
+  const { homeCurrency } = useOnboarding();
   const isAppShell = useIsAppShell();
 
   const [step, setStep] = useState<Step>(0);
@@ -159,9 +159,9 @@ export function CoursePublishWizard({
     let fxSnapshot: Awaited<ReturnType<typeof snapshotFx>> | null = null;
     if (!isFree) {
       fxSnapshot = await snapshotFx();
-      const rate = fxSnapshot.rates[baseCurrency] ?? usdRate(baseCurrency);
+      const rate = fxSnapshot.rates[homeCurrency] ?? usdRate(homeCurrency);
       priceUSD =
-        baseCurrency === "USD" ? priceLocal : Number((priceLocal / (rate || 1)).toFixed(2));
+        homeCurrency === "USD" ? priceLocal : Number((priceLocal / (rate || 1)).toFixed(2));
       originalAmount = priceLocal;
     }
     return {
@@ -183,7 +183,7 @@ export function CoursePublishWizard({
       })),
       isFree,
       priceUSD,
-      originalCurrency: baseCurrency,
+      originalCurrency: homeCurrency,
       originalAmount,
       fxSnapshot,
       requireLinear,
@@ -343,7 +343,7 @@ export function CoursePublishWizard({
               setIsFree={setIsFree}
               priceLocal={priceLocal}
               setPriceLocal={setPriceLocal}
-              baseCurrency={baseCurrency}
+              homeCurrency={homeCurrency}
               requireLinear={requireLinear}
               setRequireLinear={setRequireLinear}
               issueCertificate={issueCertificate}
@@ -361,7 +361,7 @@ export function CoursePublishWizard({
               quizzes={quizzes}
               isFree={isFree}
               priceLocal={priceLocal}
-              baseCurrency={baseCurrency}
+              homeCurrency={homeCurrency}
               requireLinear={requireLinear}
               issueCertificate={issueCertificate}
               certificateTemplate={certificateTemplate}
@@ -1154,7 +1154,7 @@ function SettingsStep(props: {
   setIsFree: (v: boolean) => void;
   priceLocal: number;
   setPriceLocal: (v: number) => void;
-  baseCurrency: Currency;
+  homeCurrency: Currency;
   requireLinear: boolean;
   setRequireLinear: (v: boolean) => void;
   issueCertificate: boolean;
@@ -1168,7 +1168,7 @@ function SettingsStep(props: {
     setIsFree,
     priceLocal,
     setPriceLocal,
-    baseCurrency,
+    homeCurrency,
     requireLinear,
     setRequireLinear,
     issueCertificate,
@@ -1205,7 +1205,7 @@ function SettingsStep(props: {
         {!isFree && (
           <div>
             <Label>
-              Price ({currencySymbol(baseCurrency)} {baseCurrency}) · locked at publish
+              Price ({currencySymbol(homeCurrency)} {homeCurrency}) · locked at publish
             </Label>
             <input
               type="number"
@@ -1282,7 +1282,7 @@ function ReviewStep(props: {
   quizzes: Quiz[];
   isFree: boolean;
   priceLocal: number;
-  baseCurrency: Currency;
+  homeCurrency: Currency;
   requireLinear: boolean;
   issueCertificate: boolean;
   certificateTemplate: string;
@@ -1296,7 +1296,7 @@ function ReviewStep(props: {
     quizzes,
     isFree,
     priceLocal,
-    baseCurrency,
+    homeCurrency,
     requireLinear,
     issueCertificate,
     certificateTemplate,
@@ -1321,7 +1321,7 @@ function ReviewStep(props: {
           <Stat label="Quizzes" value={quizzes.length} />
           <Stat
             label="Price"
-            value={isFree ? "Free" : `${currencySymbol(baseCurrency)}${priceLocal}`}
+            value={isFree ? "Free" : `${currencySymbol(homeCurrency)}${priceLocal}`}
           />
         </div>
         <div className="mt-6 p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">

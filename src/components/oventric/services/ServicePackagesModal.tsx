@@ -59,7 +59,7 @@ export function ServicePackagesModal({
   const load = useServerFn(getServicePackages);
   const persist = useServerFn(saveServicePackages);
   const snapshotFx = useServerFn(snapshotFxRates);
-  const { baseCurrency } = useOnboarding();
+  const { homeCurrency } = useOnboarding();
 
   const [drafts, setDrafts] = useState<Record<ServiceTier, Draft>>({
     basic: emptyDraft("Basic"),
@@ -85,7 +85,7 @@ export function ServicePackagesModal({
               summary: r.summary,
               features: r.features.join("\n"),
               price: String(
-                r.originalCurrency === baseCurrency ? r.originalAmount : r.priceUsd,
+                r.originalCurrency === homeCurrency ? r.originalAmount : r.priceUsd,
               ),
               days: r.deliveryDays == null ? "" : String(r.deliveryDays),
               revisions: r.revisions == null ? "" : String(r.revisions),
@@ -101,7 +101,7 @@ export function ServicePackagesModal({
     return () => {
       cancelled = true;
     };
-  }, [open, productId, load, baseCurrency]);
+  }, [open, productId, load, homeCurrency]);
 
   const patch = useCallback((tier: ServiceTier, part: Partial<Draft>) => {
     setDrafts((prev) => ({ ...prev, [tier]: { ...prev[tier], ...part } }));
@@ -120,7 +120,7 @@ export function ServicePackagesModal({
       setSaving(true);
       try {
         const snapshot = await snapshotFx();
-        const rate = Number(snapshot.rates[baseCurrency] ?? 1);
+        const rate = Number(snapshot.rates[homeCurrency] ?? 1);
         await persist({
           data: {
             productId,
@@ -136,9 +136,9 @@ export function ServicePackagesModal({
                   .map((f) => f.trim())
                   .filter(Boolean),
                 priceLocal: local,
-                currency: baseCurrency,
+                currency: homeCurrency,
                 priceUsd:
-                  baseCurrency === "USD" ? local : Number((local / (rate || 1)).toFixed(2)),
+                  homeCurrency === "USD" ? local : Number((local / (rate || 1)).toFixed(2)),
                 deliveryDays: d.days ? Number(d.days) : null,
                 revisions: d.revisions ? Number(d.revisions) : null,
               };
@@ -154,7 +154,7 @@ export function ServicePackagesModal({
         setSaving(false);
       }
     },
-    [drafts, baseCurrency, snapshotFx, persist, productId, onSaved, onClose],
+    [drafts, homeCurrency, snapshotFx, persist, productId, onSaved, onClose],
   );
 
   if (!open) return null;
@@ -244,7 +244,7 @@ export function ServicePackagesModal({
                         value={d.price}
                         onChange={(e) => patch(t.tier, { price: e.target.value })}
                         inputMode="decimal"
-                        placeholder={`Price (${baseCurrency})`}
+                        placeholder={`Price (${homeCurrency})`}
                         className={field}
                       />
                       <input

@@ -47,7 +47,7 @@ function TetherIcon({ className }: { className?: string }) {
 }
 
 export function AddCapitalModal({ onClose }: { onClose: () => void }) {
-  const { baseCurrency } = useOnboarding();
+  const { homeCurrency } = useOnboarding();
   const [method, setMethod] = useState<string>("bank");
   const [amountDisplay, setAmountDisplay] = useState<string>("5,000");
   const [loading, setLoading] = useState(false);
@@ -55,11 +55,11 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
 
   const amount = parseAmount(amountDisplay);
   const symbol = useMemo(() => {
-    if (baseCurrency === "NGN") return "₦";
-    if (baseCurrency === "GHS") return "₵";
-    if (baseCurrency === "USD") return "$";
+    if (homeCurrency === "NGN") return "₦";
+    if (homeCurrency === "GHS") return "₵";
+    if (homeCurrency === "USD") return "$";
     return "₦";
-  }, [baseCurrency]);
+  }, [homeCurrency]);
 
   const methods = [
     {
@@ -118,7 +118,7 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
         data: {
           purpose: "wallet_topup",
           amount,
-          currency: baseCurrency,
+          currency: homeCurrency,
           channel: method === "bank" ? "bank_transfer" : "card",
           returnTo: "/wallet",
         },

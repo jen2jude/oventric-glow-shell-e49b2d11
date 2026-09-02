@@ -52,12 +52,12 @@ function kindOf(r: PayoutRecipientDTO): MethodKind {
 }
 
 export function PayoutModal({ onClose }: { onClose: () => void }) {
-  const { balances, baseCurrency } = useOnboarding();
+  const { balances, homeCurrency } = useOnboarding();
   const qc = useQueryClient();
 
-  const currency: TransferCurrency = baseCurrency === "GHS" ? "GHS" : "NGN";
+  const currency: TransferCurrency = homeCurrency === "GHS" ? "GHS" : "NGN";
   const sym = currencySymbol(currency);
-  const available = Number(balances[currency] ?? balances[baseCurrency] ?? 0);
+  const available = Number(balances[currency] ?? balances[homeCurrency] ?? 0);
 
   const recipientsFn = useServerFn(listMyRecipients);
   const feeFn = useServerFn(estimatePayoutFee);
