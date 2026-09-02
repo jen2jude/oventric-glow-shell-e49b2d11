@@ -78,13 +78,15 @@ export function WebBounties({
   loading,
   error,
   currency,
-  onGated,
+  onPost,
+  onOpen,
 }: {
   bounties: WebBountyItem[];
   loading: boolean;
   error: string | null;
   currency: Currency;
-  onGated: () => void;
+  onPost: () => void;
+  onOpen: (id: string) => void;
 }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>("all");
@@ -210,10 +212,10 @@ export function WebBounties({
             )}
             <button
               type="button"
-              onClick={onGated}
+              onClick={onPost}
               className="mt-5 inline-flex h-11 w-full items-center justify-center gap-2 rounded-[10px] bg-crimson text-sm font-black text-white transition-colors hover:bg-crimson/90"
             >
-              <Smartphone className="h-4 w-4" /> Get the app to post or solve
+              <Smartphone className="h-4 w-4" /> Post a bounty
             </button>
           </aside>
         </div>
@@ -280,11 +282,11 @@ export function WebBounties({
           <div className="mt-8 rounded-[10px] border border-slate-200 bg-slate-50 p-4">
             <p className="text-sm font-black text-slate-900">Want to take one on?</p>
             <p className="mt-1 text-xs leading-relaxed text-slate-600">
-              Applications and escrow contracts run in the Oventric app.
+              Apply, chat and get paid through escrow right here.
             </p>
             <button
               type="button"
-              onClick={onGated}
+              onClick={onPost}
               className="mt-3 inline-flex items-center gap-1.5 text-sm font-black text-crimson hover:underline"
             >
               Open in app <ArrowRight className="h-4 w-4" />
@@ -360,10 +362,10 @@ export function WebBounties({
 
                   <button
                     type="button"
-                    onClick={onGated}
+                    onClick={() => onOpen(b.id)}
                     className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-[10px] border border-slate-200 bg-slate-50 text-sm font-black text-slate-700 transition-colors group-hover:border-crimson group-hover:bg-crimson group-hover:text-white"
                   >
-                    <Lock className="h-4 w-4" /> Apply in the app
+                    <Lock className="h-4 w-4" /> View & apply
                   </button>
                 </article>
               ))}
