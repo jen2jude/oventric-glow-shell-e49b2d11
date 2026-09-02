@@ -2622,6 +2622,115 @@ section + section {
   color: #334155;
 }
 
+/* ---- Light-skin contrast pass -------------------------------------
+   The previous mapping left white cards floating on an almost-white
+   canvas with very light ink. Deepen the canvas, give every surface a
+   real hairline + shadow, and darken the muted text tiers. */
+.oventric-web {
+  background: #f1f3f7;
+  color: #0b1220;
+}
+.oventric-web .bg-\[\#0A0A0B\],
+.oventric-web .bg-\[\#0a0a0b\],
+.oventric-web .bg-\[\#0F0F10\],
+.oventric-web .bg-\[\#0f1012\],
+.oventric-web .bg-black {
+  background-color: #f1f3f7;
+}
+.oventric-web .bg-\[\#121214\],
+.oventric-web .bg-\[\#131316\],
+.oventric-web .bg-\[\#141416\],
+.oventric-web .bg-\[\#141417\],
+.oventric-web .bg-\[\#141418\],
+.oventric-web .bg-\[\#16161A\],
+.oventric-web .bg-\[\#17171B\],
+.oventric-web .bg-\[\#18181d\],
+.oventric-web .bg-\[\#1A1A1C\],
+.oventric-web .bg-\[\#1A1A1F\],
+.oventric-web .bg-\[\#1C1C1F\],
+.oventric-web .bg-\[\#1C1C21\],
+.oventric-web .bg-\[\#1E1E24\],
+.oventric-web .bg-\[\#1F1F21\],
+.oventric-web .bg-\[\#22222a\],
+.oventric-web .bg-\[\#232329\] {
+  background-color: #ffffff;
+  box-shadow:
+    0 1px 2px rgb(15 23 42 / 6%),
+    0 10px 24px -20px rgb(15 23 42 / 45%);
+}
+
+/* Hairlines: faint enough to stay quiet, strong enough to define cards */
+.oventric-web [class*="border-white/"],
+.oventric-web [class*="divide-white/"],
+.oventric-web .border-\[\#0A0A0B\],
+.oventric-web .border-\[\#121214\],
+.oventric-web .border-\[\#141417\] {
+  border-color: rgb(15 23 42 / 12%);
+}
+.oventric-web .border-slate-200 {
+  border-color: #dbe1ea;
+}
+
+/* Ink tiers */
+.oventric-web [class*="text-white"] {
+  color: #0b1220;
+}
+.oventric-web .text-white\/80,
+.oventric-web .text-white\/75,
+.oventric-web .text-white\/70,
+.oventric-web .text-white\/65 {
+  color: #3d4759;
+}
+.oventric-web .text-white\/60,
+.oventric-web .text-white\/55,
+.oventric-web .text-white\/50,
+.oventric-web .text-white\/45 {
+  color: #566073;
+}
+.oventric-web .text-white\/40,
+.oventric-web .text-white\/35,
+.oventric-web .text-white\/30,
+.oventric-web .text-white\/25,
+.oventric-web .text-white\/20 {
+  color: #6b7688;
+}
+.oventric-web .text-slate-400 {
+  color: #64748b;
+}
+.oventric-web .text-slate-500 {
+  color: #55627a;
+}
+.oventric-web [class*="placeholder:text-"]::placeholder,
+.oventric-web input::placeholder,
+.oventric-web textarea::placeholder {
+  color: #8b95a5;
+}
+
+/* Ink on crimson / dark bands must stay white */
+.oventric-web [class*="bg-[#E5484D]"],
+.oventric-web [class*="bg-[#E5484D]"] *,
+.oventric-web [class*="bg-[#C43D42]"],
+.oventric-web [class*="bg-[#C43D42]"] *,
+.oventric-web .web-dark-band,
+.oventric-web .web-dark-band * {
+  color: #ffffff;
+}
+
+/* Subtle washes / skeletons need to be visible on white */
+.oventric-web [class*="bg-white/"] {
+  background-color: rgb(15 23 42 / 6%);
+}
+.oventric-web .animate-pulse [class*="bg-white/"],
+.oventric-web .animate-pulse.bg-slate-100 {
+  background-color: rgb(15 23 42 / 8%);
+}
+
+/* Icon buttons and chips sitting on white */
+.oventric-web .bg-slate-100 {
+  background-color: #eef1f6;
+}
+
+
 /* Chat drawer open — hide the mobile bottom navigation so the reply
    composer is fully reachable on small screens. */
 body[data-chat-open="1"] [data-testid="mobile-nav"],
