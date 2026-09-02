@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
+import { MegaMenu } from "@/components/oventric/MegaMenu";
 import { getProfileByIdOrSlug } from "@/lib/profiles.functions";
 import { getCircleCatalog, type CircleSummary } from "@/lib/circles-groups.functions";
 
