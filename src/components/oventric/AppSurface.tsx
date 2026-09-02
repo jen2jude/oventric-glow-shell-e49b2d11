@@ -44,10 +44,7 @@ import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 
 import { useIsDesktop } from "@/hooks/use-desktop";
 import { useIsAppShell, useLaunchContext } from "@/hooks/use-launch-context";
-import { AppOnlyScreen } from "@/lib/app-gate";
-const GetAppModal = lazy(() =>
-  import("@/components/oventric/GetAppModal").then((m) => ({ default: m.GetAppModal })),
-);
+
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useSectionLiveCounter } from "@/lib/useSectionLiveCounter";
 import { getMyFullProfile } from "@/lib/profiles.functions";
@@ -118,7 +115,6 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   const [name, setName] = useState<string>("");
   const [q, setQ] = useState("");
   const [returnedToHub, setReturnedToHub] = useState(false);
-  const [getAppOpen, setGetAppOpen] = useState(false);
   const prevActiveRef = useRef<string | null>(null);
 
   usePrefetchSections();
@@ -199,11 +195,6 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
 
   // Create flow: auth-gate for anonymous visitors, then open the create panel.
   const handleCreate = (choice?: ChoiceKey) => {
-    // Publishing (products, bounties, courses, posts) is an app-shell flow.
-    if (typeof window !== "undefined" && launchCtx === "browser") {
-      setGetAppOpen(true);
-      return;
-    }
     return require(
       1,
       () => {
@@ -366,15 +357,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         />
       )
     ) : active === "Wallet" ? (
-      launchCtx === "browser" ? (
-        <AppOnlyScreen
-          title="Your wallet lives in the app"
-          description="Balances, top-ups, cashback and payouts are handled inside the Oventric app so your funds stay protected."
-          from="wallet"
-        />
-      ) : (
-        <Wallet />
-      )
+      <Wallet />
     ) : active === "Marketplace" ? (
       <Marketplace />
     ) : active === "Academy" ? (
@@ -383,15 +366,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
 
       <Bounties />
     ) : active === "Messages" ? (
-      launchCtx === "browser" ? (
-        <AppOnlyScreen
-          title="Chat lives in the app"
-          description="Message sellers, negotiate and track orders in real time inside the Oventric app."
-          from="messages"
-        />
-      ) : (
-        <Messages variant="page" />
-      )
+      <Messages variant="page" />
     ) : active === "Circles" ? (
       <CirclesHub />
     ) : desktopLanding ? (
@@ -483,9 +458,6 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
               setCreateChoice(null);
             }}
           />
-        )}
-        {getAppOpen && (
-          <GetAppModal open={getAppOpen} onClose={() => setGetAppOpen(false)} from="create" />
         )}
         {messagesOpen && (
           <MessagesDrawer
