@@ -213,9 +213,8 @@ export const listProducts = createServerFn({ method: "GET" })
       .order("promoted", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(400);
-    if (data.kind !== "all") {
-      q = q.eq("kind", data.kind);
-    }
+    // Oventric is digital-only: physical listings are never surfaced.
+    q = q.neq("kind", "physical");
     const { data: rows, error } = await q;
     if (error) throw new Error(error.message);
     const items = rows ?? [];
@@ -263,6 +262,7 @@ export const listMarketplaceCategories = createServerFn({ method: "GET" }).handl
     .from("marketplace_categories")
     .select("id, slug, name, description, kind, parent_id, sort_order, enabled")
     .eq("enabled", true)
+    .neq("kind", "physical")
     .order("sort_order", { ascending: true });
   if (error) throw new Error(error.message);
   const rows = (data ?? []) as Array<Record<string, unknown>>;
@@ -1571,7 +1571,8 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const sb = serverPublicClient();
     const { kind } = data;
-    const withKind = (q: any) => (kind !== "all" ? q.eq("kind", kind) : q);
+    void kind; // digital-only marketplace
+    const withKind = (q: any) => q.neq("kind", "physical");
 
     // 1. Featured Products (promoted or top rated)
     const { data: featuredRows } = await withKind(
@@ -1703,7 +1704,8 @@ export const getTopSellers = createServerFn({ method: "GET" })
     const sb = serverPublicClient();
 
     let productQuery = sb.from("products").select("id, seller_id").eq("status", "active").limit(2000);
-    if (data.kind !== "all") productQuery = productQuery.eq("kind", data.kind);
+    void data.kind;
+    productQuery = productQuery.neq("kind", "physical");
     const { data: productRows } = await productQuery;
 
     const productsBySeller = new Map<string, string[]>();
