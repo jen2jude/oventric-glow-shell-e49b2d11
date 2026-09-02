@@ -593,6 +593,10 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
         userId={userId}
         onSave={persistProfile}
       />
+
+      {trigger === "mega" && (
+        <MegaMenu open={megaOpen} onClose={() => setMegaOpen(false)} />
+      )}
     </div>
   );
 }
