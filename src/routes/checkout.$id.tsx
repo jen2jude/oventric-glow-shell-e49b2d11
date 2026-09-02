@@ -156,8 +156,15 @@ function CheckoutPage() {
   const { id } = Route.useParams();
   const { qty, pkg } = Route.useSearch();
   const navigate = useNavigate();
-  const { homeCurrency, country } = useOnboarding();
+  const { homeCurrency, country, setUsdPreview } = useOnboarding();
   const isAppShell = useIsAppShell();
+
+  // Checkout always settles in the buyer's home currency — leaving the USD
+  // preview on here would be misleading, so we drop it on entry.
+  useEffect(() => {
+    setUsdPreview(false);
+  }, [setUsdPreview]);
+
 
   const loadProduct = useServerFn(getProduct);
   const submitOrder = useServerFn(createOrder);
