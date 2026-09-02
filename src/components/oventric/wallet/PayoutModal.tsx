@@ -15,15 +15,19 @@ import {
   Lock,
   Loader2,
   X,
+  Globe,
+  CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
 import wallet3d from "@/assets/wallet-hero-3d.png.asset.json";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
-import { currencySymbol } from "@/lib/fx-display";
+import { currencySymbol, usdRate } from "@/lib/fx-display";
 import {
   listMyRecipients,
   estimatePayoutFee,
   createLivePayout,
+  createUsdPayoutRequest,
+  type UsdPayoutChannel,
   type PayoutRecipientDTO,
   type TransferCurrency,
 } from "@/lib/payouts.functions";
@@ -77,6 +81,18 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
   const [review, setReview] = useState(false);
   const [pinMode, setPinMode] = useState<"create" | "verify" | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState<string | null>(null);
+
+  /** "local" pays out in the user's home currency; "usd" converts to USD. */
+  const [mode, setMode] = useState<"local" | "usd">("local");
+  const [usdChannel, setUsdChannel] = useState<UsdPayoutChannel>("binance");
+  const [usdIdentifier, setUsdIdentifier] = useState("");
+  const [usdName, setUsdName] = useState("");
+  const [usdNetwork, setUsdNetwork] = useState("TRC20");
+
+  const rate = usdRate(currency);
+  const availableUsd = rate > 0 ? available / rate : 0;
+  const usdPayoutFn = useServerFn(createUsdPayoutRequest);
 
   const amount = Number(amountRaw.replace(/,/g, "")) || 0;
 
@@ -171,6 +187,14 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
   }
 
   function openReview() {
+    if (mode === "usd") {
+      if (amount <= 0) return toast.error("Enter an amount to withdraw");
+      if (amount > availableUsd) return toast.error("Amount exceeds your available balance");
+      if (amount < 5) return toast.error("Minimum USD withdrawal is $5");
+      if (usdIdentifier.trim().length < 4) return toast.error("Enter your account ID or wallet address");
+      setReview(true);
+      return;
+    }
     if (!activeRecipient) {
       setAddKind(selected as MethodKind);
       return;
@@ -189,14 +213,29 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
 
 
   async function submitPayout() {
-    if (!activeRecipient || submitting) return;
+    if (submitting) return;
+    if (mode === "local" && !activeRecipient) return;
     setSubmitting(true);
     try {
-      await payoutFn({ data: { recipientId: activeRecipient.id, amount } });
-      toast.success("Withdrawal request submitted");
+      if (mode === "usd") {
+        const res = await usdPayoutFn({
+          data: {
+            channel: usdChannel,
+            identifier: usdIdentifier.trim(),
+            accountName: usdName.trim(),
+            network: usdChannel === "wallet" ? usdNetwork : "",
+            amountUsd: amount,
+          },
+        });
+        setDone(
+          `$${res.amountUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} will be sent to your ${USD_CHANNELS.find((c) => c.id === usdChannel)?.label}.`,
+        );
+      } else {
+        await payoutFn({ data: { recipientId: activeRecipient!.id, amount } });
+        setDone(`${money(net, sym)} will be sent to ${activeRecipient!.account_name}.`);
+      }
       void qc.invalidateQueries();
       setReview(false);
-      onClose();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Withdrawal failed");
     } finally {
