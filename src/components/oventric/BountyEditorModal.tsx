@@ -418,7 +418,7 @@ export function BountyEditorModal({
 
   return (
     <div
-      className="modal-light fixed inset-x-0 z-50 flex items-start justify-center overflow-hidden p-3 sm:items-center sm:p-4 bg-black/70"
+      className="modal-light fixed inset-x-0 z-50 flex items-start justify-center overflow-hidden p-3 sm:items-center sm:p-4 bg-create-overlay"
       style={{
         top: vv ? vv.offsetTop : 0,
         height: vv ? vv.height : undefined,
@@ -429,10 +429,10 @@ export function BountyEditorModal({
         paddingRight: "max(env(safe-area-inset-right), 0.75rem)",
       }}
     >
-      <div ref={panelRef} className="relative w-full max-w-2xl bg-[#0A0A0B] border border-white/10 rounded-2xl p-5 max-h-full overflow-y-auto overscroll-contain shadow-2xl">
+      <div ref={panelRef} className="relative max-h-full w-full max-w-2xl overflow-y-auto overscroll-contain rounded-[10px] border border-slate-200 bg-white p-5 shadow-xl sm:p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex flex-col">
-            <h2 className="text-white font-black text-xl inline-flex items-center gap-2">
+            <h2 className="text-slate-950 font-black text-xl inline-flex items-center gap-2">
               <Target className="w-5 h-5 text-[#E5484D]" /> Post a bounty
             </h2>
             <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-1">
@@ -441,7 +441,7 @@ export function BountyEditorModal({
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-white/5 text-slate-400 hover:text-white transition-all"
+            className="grid min-h-11 min-w-11 place-items-center rounded-full text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -449,13 +449,13 @@ export function BountyEditorModal({
         </div>
 
         {draftLoaded && (
-          <div className="mb-4 flex items-center justify-between gap-2 p-3 rounded-[10px] border border-[#E5484D]/30 bg-[#E5484D]/5 text-xs text-[#E5484D]">
+          <div className="mb-4 flex items-center justify-between gap-2 p-3 rounded-[10px] border border-red-200 bg-red-50 text-xs text-red-700">
             <span className="inline-flex items-center gap-2">
               <Save className="w-3.5 h-3.5" /> Draft restored — continue editing.
             </span>
             <button
               onClick={() => reset()}
-              className="text-[#E5484D] hover:text-white underline underline-offset-2 font-bold"
+              className="text-red-700 hover:text-red-900 underline underline-offset-2 font-bold"
             >
               Discard draft
             </button>
@@ -464,7 +464,7 @@ export function BountyEditorModal({
 
         <div className="space-y-3">
           <div>
-            <span className="text-xs uppercase tracking-wider text-slate-500 mb-1 block">
+            <span className="text-xs font-semibold uppercase text-slate-600 mb-1 block">
               Images ({form.images.length}/{MAX_IMAGES})
             </span>
             <p className="text-[11px] text-slate-500 -mt-0.5 mb-2">
@@ -485,7 +485,7 @@ export function BountyEditorModal({
               {form.images.map((img, idx) => (
                 <div
                   key={img.path}
-                  className="relative aspect-square rounded-[10px] border border-white/10 overflow-hidden bg-black/30"
+                  className="relative aspect-square rounded-[10px] border border-slate-200 overflow-hidden bg-slate-100"
                 >
                   {img.preview ? (
                     <ResponsiveImage
@@ -509,7 +509,7 @@ export function BountyEditorModal({
                   <button
                     type="button"
                     onClick={() => removeImage(idx)}
-                    className="absolute top-1 right-1 p-1 rounded-[10px] bg-black/70 hover:bg-red-500/70 text-red-200 hover:text-white"
+                    className="absolute top-1 right-1 p-1 rounded-[10px] bg-create-overlay hover:bg-red-500/70 text-red-200 hover:text-white"
                     aria-label="Remove image"
                   >
                     <X className="w-3 h-3" />
@@ -521,7 +521,7 @@ export function BountyEditorModal({
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploadingImage}
-                  className="aspect-square rounded-[10px] border border-dashed border-white/15 hover:border-emerald-500/50 bg-black/20 hover:bg-black/30 disabled:opacity-50 flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-emerald-300 text-xs"
+                  className="aspect-square rounded-[10px] border border-dashed border-slate-300 hover:border-red-400 bg-slate-50 hover:bg-red-50 disabled:opacity-50 flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-red-700 text-xs"
                 >
                   {uploadingImage ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -638,13 +638,13 @@ export function BountyEditorModal({
             <button
               type="button"
               onClick={() => saveDraft()}
-              className="px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 text-sm font-semibold rounded-[10px] inline-flex items-center gap-2"
+              className="px-4 py-3 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-sm font-semibold rounded-[10px] inline-flex items-center gap-2"
             >
               <Save className="w-4 h-4" /> Save draft
             </button>
             <button
               onClick={onClose}
-              className="px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 text-sm font-semibold rounded-[10px]"
+              className="px-4 py-3 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-sm font-semibold rounded-[10px]"
             >
               Cancel
             </button>
@@ -652,23 +652,23 @@ export function BountyEditorModal({
         </div>
 
         {showFundPrompt && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center p-4 bg-black/80 rounded-2xl">
-            <div className="w-full max-w-md bg-[#1a1a20] border border-amber-500/40 rounded-xl p-5 shadow-2xl">
-              <div className="flex items-center gap-2 text-amber-300 font-bold">
+          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[10px] bg-slate-950/45 p-4 backdrop-blur-sm">
+            <div className="w-full max-w-md rounded-[10px] border border-amber-200 bg-white p-5 shadow-xl">
+              <div className="flex items-center gap-2 text-amber-700 font-bold">
                 <AlertTriangle className="w-5 h-5" /> Wallet balance too low
               </div>
-              <p className="text-sm text-slate-300 mt-2 leading-relaxed">
+              <p className="text-sm text-slate-600 mt-2 leading-relaxed">
                 Publishing this bounty escrows{" "}
-                <span className="text-white font-semibold">
+                <span className="text-slate-950 font-semibold">
                   {formatMoney(inputBase, baseCurrency)}
                 </span>
                 . Your current wallet balance is{" "}
-                <span className="text-white font-semibold">
+                <span className="text-slate-950 font-semibold">
                   {formatMoney(walletBase ?? 0, baseCurrency)}
                 </span>
                 .
               </p>
-              <p className="text-xs text-slate-400 mt-2">
+              <p className="text-xs text-slate-600 mt-2">
                 Top up at least{" "}
                 <span className="text-[#E5484D] font-semibold">
                   {formatMoney(shortfallBase, baseCurrency)}
@@ -687,13 +687,13 @@ export function BountyEditorModal({
                     saveDraft();
                     setShowFundPrompt(false);
                   }}
-                  className="px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 text-sm font-semibold rounded-[10px] inline-flex items-center gap-2"
+                  className="px-4 py-3 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-sm font-semibold rounded-[10px] inline-flex items-center gap-2"
                 >
                   <Save className="w-4 h-4" /> Save draft only
                 </button>
                 <button
                   onClick={() => setShowFundPrompt(false)}
-                  className="px-4 py-3 text-slate-400 hover:text-white text-sm font-semibold rounded-[10px]"
+                  className="px-4 py-3 text-slate-600 hover:bg-slate-100 hover:text-slate-950 text-sm font-semibold rounded-[10px]"
                 >
                   Back to editor
                 </button>
@@ -734,23 +734,15 @@ function BountyPublishedSplash({
   }, [onDone]);
   return (
     <div
-      className="modal-light fixed inset-0 z-[110] flex items-center justify-center p-4 overflow-hidden"
-      style={{
-        background:
-          "radial-gradient(circle at 50% 40%, rgba(229, 72, 77, 0.35), rgba(10, 10, 11, 0.92) 55%, rgba(0,0,0,0.96))",
-        animation: "bpFadeIn 220ms ease-out both",
-      }}
+      className="modal-light fixed inset-0 z-[110] flex items-center justify-center overflow-hidden bg-slate-950/45 p-4 backdrop-blur-sm"
+      style={{ animation: "bpFadeIn 220ms ease-out both" }}
       role="dialog"
       aria-live="polite"
       aria-label="Bounty published"
     >
       <div
-        className="relative w-full max-w-sm rounded-3xl p-7 text-center border border-white/15 shadow-sm"
-        style={{
-          background:
-            "linear-gradient(160deg, rgba(229, 72, 77, 0.28), rgba(229, 72, 77, 0.18) 55%, rgba(15, 23, 42, 0.18))",
-          animation: "bpPop 480ms cubic-bezier(.2,1.4,.4,1) both",
-        }}
+        className="relative w-full max-w-sm rounded-[10px] border border-slate-200 bg-white p-7 text-center shadow-xl"
+        style={{ animation: "bpPop 480ms cubic-bezier(.2,1.4,.4,1) both" }}
       >
         <div
           className="mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center"
@@ -764,28 +756,25 @@ function BountyPublishedSplash({
         <div className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-[#E5484D] mb-2">
           <Sparkles className="w-3.5 h-3.5" /> Bounty Published
         </div>
-        <h2 className="text-xl font-black text-white mb-1">Your bounty is in! 🎉</h2>
-        <p className="text-sm text-slate-200/85 mb-4 leading-relaxed">
-          <span className="text-white font-semibold">{title}</span> has been published and is
+        <h2 className="text-xl font-black text-slate-950 mb-1">Your bounty is in! 🎉</h2>
+        <p className="text-sm text-slate-600 mb-4 leading-relaxed">
+          <span className="text-slate-950 font-semibold">{title}</span> has been published and is
           awaiting admin review.
         </p>
         <div
-          className="inline-flex items-center gap-2 rounded-xl px-3 py-3 mb-4 text-white text-sm font-bold"
-          style={{
-            background: "linear-gradient(135deg, rgba(229, 72, 77, 0.35), rgba(229, 72, 77, 0.35))",
-            border: "1px solid rgba(255,255,255,0.25)",
-          }}
+          className="inline-flex items-center gap-2 rounded-[10px] border border-red-200 bg-red-50 px-3 py-3 mb-4 text-red-800 text-sm font-bold"
+
         >
           <Wallet className="w-4 h-4 text-[#E5484D]" />
           <span>{amountLabel} escrowed</span>
         </div>
-        <p className="text-[11px] text-slate-300/70 inline-flex items-center gap-1.5 justify-center">
+        <p className="text-[11px] text-slate-600 inline-flex items-center gap-1.5 justify-center">
           <ShieldCheck className="w-3.5 h-3.5 text-[#E5484D]" />
           It goes live the moment an admin approves it.
         </p>
         <button
           onClick={onDone}
-          className="mt-5 px-4 py-3 rounded-[10px] bg-white/10 hover:bg-white/20 text-white text-xs font-bold"
+          className="mt-5 px-4 py-3 rounded-[10px] bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold"
         >
           Got it
         </button>
@@ -803,12 +792,12 @@ function BountyPublishedSplash({
 }
 
 const inputCls =
-  "w-full bg-black/30 border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white placeholder:text-slate-500 focus:border-[#E5484D]/60 outline-none";
+  "w-full rounded-[10px] border border-slate-300 bg-white px-3 py-3 text-sm text-slate-950 placeholder:text-muted-foreground outline-hidden transition-colors focus:border-red-500 focus:ring-2 focus:ring-red-100";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="text-xs uppercase tracking-wider text-slate-500 mb-1 block">{label}</span>
+      <span className="text-xs font-semibold uppercase text-slate-600 mb-1 block">{label}</span>
       {children}
     </label>
   );
