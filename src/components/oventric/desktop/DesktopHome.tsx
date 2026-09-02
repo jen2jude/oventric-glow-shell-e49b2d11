@@ -364,21 +364,21 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-full bg-gradient-to-r from-white via-white/[0.94] to-transparent lg:block lg:w-[52%] xl:w-[48%]" />
 
         <div className="relative z-20 mx-auto grid h-full w-full max-w-[1440px] grid-cols-1 items-center px-4 py-8 sm:px-6 sm:py-12 lg:px-11 lg:py-16">
-          <div className="max-w-2xl md:text-center">
-            <span className="web-eyebrow md:mx-auto">
+          <div className="max-w-2xl text-center lg:text-left">
+            <span className="web-eyebrow mx-auto lg:mx-0">
               <Sparkles className="h-3.5 w-3.5" /> 2% cashback on every purchase
             </span>
             <h1 className="mt-6 text-[clamp(2.5rem,5.2vw,4.5rem)] font-bold leading-[1.05] tracking-tight text-slate-900">
               The platform where Africa&apos;s builders
               <span className="text-crimson"> sell, learn and get paid.</span>
             </h1>
-            <p className="mt-6 max-w-lg text-lg leading-relaxed text-slate-600 [text-shadow:0_1px_16px_rgba(255,255,255,0.9)] md:mx-auto">
+            <p className="mt-6 max-w-lg text-lg leading-relaxed text-slate-600 [text-shadow:0_1px_16px_rgba(255,255,255,0.9)] mx-auto lg:mx-0">
               Marketplace, academy, bounties and a multi-currency wallet in one place.
               Escrow-protected payments in your own currency, wherever you are on the continent.
             </p>
-            <div className="mt-9 max-w-lg md:mx-auto">{renderSearch("hero")}</div>
+            <div className="mt-9 max-w-lg mx-auto lg:mx-0">{renderSearch("hero")}</div>
 
-            <div className="mt-6 flex flex-wrap items-center gap-3 md:justify-center">
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
               <button
                 type="button"
                 onClick={primary}
@@ -396,7 +396,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
               </button>
             </div>
 
-            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-500 [text-shadow:0_1px_12px_rgba(255,255,255,0.9)] md:justify-center">
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-slate-500 [text-shadow:0_1px_12px_rgba(255,255,255,0.9)] lg:justify-start">
               <span className="inline-flex items-center gap-1.5">
                 <ShieldCheck className="h-4 w-4 text-crimson" /> Escrow on every order
               </span>
@@ -416,7 +416,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
         </div>
 
         {/* Hero visual — aligned to the same 1440 container gutter as the copy */}
-        <div className="pointer-events-none absolute inset-0 z-0 mx-auto hidden w-full max-w-[1440px] px-4 sm:px-6 lg:px-11 md:block">
+        <div className="pointer-events-none absolute inset-0 z-0 mx-auto hidden w-full max-w-[1440px] px-4 sm:px-6 lg:px-11 lg:block">
         <div className="pointer-events-none absolute right-4 top-1/2 w-[50%] max-w-[720px] -translate-y-1/2 sm:right-6 lg:right-11">
           <div
             className="pointer-events-none absolute -inset-10 -z-10 rounded-full blur-3xl"
