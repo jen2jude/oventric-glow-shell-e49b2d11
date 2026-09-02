@@ -432,6 +432,14 @@ export function Bounties() {
         onPost={() => require(2, () => setPostOpen(true), "poster")}
         onOpen={(id) => require(2, () => setSelectedId(id), "solver")}
       />
+      <BountyEditorModal
+        open={postOpen}
+        onClose={() => setPostOpen(false)}
+        onPublished={(id) => {
+          setRefreshTick((t) => t + 1);
+          setHighlightId(id);
+        }}
+      />
     </>
   );
 
