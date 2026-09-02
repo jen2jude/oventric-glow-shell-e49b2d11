@@ -248,6 +248,7 @@ export function CoursePublishWizard({
             <button
               onClick={onClose}
               className="grid min-h-11 min-w-11 place-items-center rounded-full text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950"
+              aria-label="Close course publisher"
             >
               <X className="w-5 h-5" />
             </button>
