@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
+import { MegaMenu } from "@/components/oventric/MegaMenu";
 import { getProfileByIdOrSlug } from "@/lib/profiles.functions";
 import { getCircleCatalog, type CircleSummary } from "@/lib/circles-groups.functions";
 
@@ -123,6 +124,7 @@ export function DesktopAppSidebar({ onSelect }: { onSelect: (section: string) =>
 
   const [moreMine, setMoreMine] = useState(false);
   const [moreRecs, setMoreRecs] = useState(false);
+  const [megaOpen, setMegaOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window === "undefined") return true;
     const saved = window.localStorage.getItem("oventric:desktop-sidebar:collapsed");
@@ -194,11 +196,12 @@ export function DesktopAppSidebar({ onSelect }: { onSelect: (section: string) =>
       </button>
 
       {/* Identity */}
-      <Link
-        to="/profile/$id"
-        params={{ id: me?.slug ?? "me" }}
+      <button
+        type="button"
+        aria-label={me?.name ? `Open menu for ${me.name}` : "Open menu"}
         title={me?.name || "Your profile"}
-        className={`flex items-center gap-3 rounded-xl py-3 transition-colors hover:bg-slate-100 ${
+        onClick={() => setMegaOpen(true)}
+        className={`flex w-full items-center gap-3 rounded-xl py-3 transition-colors hover:bg-slate-100 ${
           collapsed ? "justify-center px-0" : "px-3"
         }`}
       >
@@ -210,7 +213,7 @@ export function DesktopAppSidebar({ onSelect }: { onSelect: (section: string) =>
             {me?.name || "Your profile"}
           </span>
         )}
-      </Link>
+      </button>
 
       <div className="my-3 h-px bg-slate-200" />
 
@@ -315,6 +318,8 @@ export function DesktopAppSidebar({ onSelect }: { onSelect: (section: string) =>
           </div>
         </>
       )}
+
+      <MegaMenu open={megaOpen} onClose={() => setMegaOpen(false)} />
     </aside>
   );
 }

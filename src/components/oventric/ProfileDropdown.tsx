@@ -29,6 +29,7 @@ import {
 } from "@/lib/profiles.functions";
 import { snapshotFxRates } from "@/lib/fx.functions";
 import { useKycGate } from "@/lib/kyc-gate/KycGate";
+import { MegaMenu } from "@/components/oventric/MegaMenu";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { currencySymbol } from "@/lib/fx-display";
 import { currencyDecimals } from "@/lib/currency/africa";
@@ -76,8 +77,9 @@ function loadProfile(fallbackName: string): ProfileState {
   return { displayName: fallbackName, bio: "", avatarDataUrl: null };
 }
 
-export function ProfileDropdown() {
+export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown" | "mega" }) {
   const [open, setOpen] = useState(false);
+  const [megaOpen, setMegaOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [userId, setUserId] = useState<string>("me");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -322,11 +324,11 @@ export function ProfileDropdown() {
       type="button"
       ref={triggerRef}
       id={triggerId}
-      aria-label="Open profile menu"
-      aria-haspopup="menu"
-      aria-expanded={open}
-      aria-controls={open ? menuId : undefined}
-      onClick={() => setOpen((v) => !v)}
+      aria-label={trigger === "mega" ? "Open menu" : "Open profile menu"}
+      aria-haspopup={trigger === "mega" ? undefined : "menu"}
+      aria-expanded={trigger === "mega" ? undefined : open}
+      aria-controls={trigger === "mega" ? undefined : open ? menuId : undefined}
+      onClick={() => (trigger === "mega" ? setMegaOpen(true) : setOpen((v) => !v))}
       className="rgb-static-border relative w-10 h-10 rounded-full flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#121214] overflow-hidden"
     >
       <span className="absolute inset-0 flex items-center justify-center bg-neutral-800">
@@ -591,6 +593,10 @@ export function ProfileDropdown() {
         userId={userId}
         onSave={persistProfile}
       />
+
+      {trigger === "mega" && (
+        <MegaMenu open={megaOpen} onClose={() => setMegaOpen(false)} />
+      )}
     </div>
   );
 }

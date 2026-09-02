@@ -4,6 +4,7 @@ import { Menu, Plus, X, Search, User } from "lucide-react";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { CurrencyPreviewToggle } from "../CurrencyPreviewToggle";
+import { MegaMenu } from "@/components/oventric/MegaMenu";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import logo from "@/assets/oventric-logo-dark.png";
 
@@ -25,6 +26,7 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
   const { isAuthenticated, openGate } = useAuthGate();
   const [solid, setSolid] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [megaOpen, setMegaOpen] = useState(false);
 
   useEffect(() => {
     const el = document.getElementById("desktop-home-scroll");
@@ -106,9 +108,10 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
 
             {/* User Profile Link */}
             <div className="flex items-center gap-4 ml-auto">
-              <Link 
-                to="/profile/$id"
-                params={{ id: isAuthenticated ? (avatarUrl?.split('/')[avatarUrl?.split('/').length - 2] || "me") : "me" }}
+              <button
+                type="button"
+                aria-label={isAuthenticated ? "Open menu" : "Connect account"}
+                onClick={() => (isAuthenticated ? setMegaOpen(true) : openGate("generic"))}
                 className="flex items-center gap-2 cursor-pointer group p-1 rounded-full hover:bg-slate-100 transition-colors"
               >
                 <div className="h-11 w-11 rounded-full overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center transition-colors group-hover:border-crimson/40">
@@ -118,7 +121,7 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
                     <User className="w-5 h-5 text-slate-400" />
                   )}
                 </div>
-              </Link>
+              </button>
             </div>
 
             {/* Mobile Menu Toggle */}
@@ -164,6 +167,8 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
           </nav>
         </div>
       )}
+
+      <MegaMenu open={megaOpen} onClose={() => setMegaOpen(false)} />
     </div>
   );
 }
