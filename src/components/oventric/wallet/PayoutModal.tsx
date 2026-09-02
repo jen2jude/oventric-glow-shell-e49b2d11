@@ -457,11 +457,15 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
         <div className="space-y-3">
           <h2 className="text-base font-black text-white">Amount to Withdraw</h2>
           <div className="flex items-center gap-2 rounded-[10px] border border-[#E5484D]/50 bg-white/[0.03] px-4 py-3.5">
-            <span className="text-xl font-black text-white">{sym}</span>
+            <span className="text-xl font-black text-white">{mode === "usd" ? "$" : sym}</span>
             <input
               inputMode="numeric"
               value={amountRaw}
               onChange={(e) => {
+                if (mode === "usd") {
+                  setAmountRaw(e.target.value.replace(/[^\d.]/g, "").slice(0, 12));
+                  return;
+                }
                 const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
                 setAmountRaw(digits ? Number(digits).toLocaleString("en-US") : "");
               }}
@@ -476,7 +480,7 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div className="grid grid-cols-4 gap-2">
-            {presets.map((p) => (
+            {(mode === "usd" ? [10, 50, 100] : presets).map((p) => (
               <button
                 key={p}
                 onClick={() => setAmountRaw(p.toLocaleString("en-US"))}
@@ -486,12 +490,18 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
                     : "border-white/10 text-white bg-white/[0.03]"
                 }`}
               >
-                {sym}
+                {mode === "usd" ? "$" : sym}
                 {p >= 1000 ? `${p / 1000}K` : p}
               </button>
             ))}
             <button
-              onClick={() => setAmountRaw(Math.floor(available).toLocaleString("en-US"))}
+              onClick={() =>
+                setAmountRaw(
+                  mode === "usd"
+                    ? (Math.floor(availableUsd * 100) / 100).toFixed(2)
+                    : Math.floor(available).toLocaleString("en-US"),
+                )
+              }
               className="py-2.5 rounded-[10px] border border-white/10 text-white bg-white/[0.03] text-xs font-black"
             >
               Max
@@ -503,16 +513,28 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
             <div>
               <div className="text-xs font-black text-white">Important</div>
               <p className="text-[11px] text-slate-400">
-                Withdrawals are processed within 5 – 30 minutes during working hours.
+                {mode === "usd"
+                  ? `USD withdrawals are reviewed manually and can take up to 3 working days. We debit ${money(amount * rate, sym)} from your ${currency} wallet at today's rate.`
+                  : "Withdrawals are processed within 5 – 30 minutes during working hours."}
               </p>
             </div>
           </div>
 
           <div className="rounded-[10px] border border-white/8 bg-white/[0.03] p-4 space-y-2.5">
             <div className="text-sm font-black text-white">Summary</div>
-            <Row label="Amount" value={money(amount, sym)} />
-            <Row label="Withdrawal Fee" value={money(fee, sym)} />
-            <Row label="You will receive" value={money(net, sym)} strong />
+            {mode === "usd" ? (
+              <>
+                <Row label="Amount" value={money(amount, "$")} />
+                <Row label={`Debited from ${currency} wallet`} value={money(amount * rate, sym)} />
+                <Row label="You will receive" value={money(amount, "$")} strong />
+              </>
+            ) : (
+              <>
+                <Row label="Amount" value={money(amount, sym)} />
+                <Row label="Withdrawal Fee" value={money(fee, sym)} />
+                <Row label="You will receive" value={money(net, sym)} strong />
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -544,7 +566,23 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
         />
       )}
 
-      {review && activeRecipient && (
+      {review && mode === "usd" && (
+        <UsdReviewSheet
+          amount={amount}
+          localAmount={amount * rate}
+          sym={sym}
+          currency={currency}
+          channelLabel={USD_CHANNELS.find((c) => c.id === usdChannel)?.label ?? ""}
+          identifier={usdIdentifier}
+          accountName={usdName}
+          network={usdChannel === "wallet" ? usdNetwork : ""}
+          submitting={submitting}
+          onClose={() => setReview(false)}
+          onConfirm={() => setPinMode(pinQ.data?.hasPin ? "verify" : "create")}
+        />
+      )}
+
+      {review && mode === "local" && activeRecipient && (
         <ReviewSheet
           sym={sym}
           amount={amount}
@@ -556,6 +594,8 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
           onConfirm={() => setPinMode(pinQ.data?.hasPin ? "verify" : "create")}
         />
       )}
+
+      {done && <SuccessSplash detail={done} onClose={onClose} />}
 
       {pinMode && (
         <PinSheet
@@ -660,6 +700,103 @@ function ReviewSheet({
         <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 mt-2">
           <Lock className="w-3 h-3" /> Secured by Oventric
         </div>
+      </div>
+    </div>
+  );
+}
+
+function SuccessSplash({ detail, onClose }: { detail: string; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[80] bg-[#0A0A0B] flex flex-col items-center justify-center px-6 text-center">
+      <span className="w-20 h-20 rounded-full bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center">
+        <CheckCircle2 className="w-10 h-10 text-emerald-400" />
+      </span>
+      <h2 className="mt-5 text-xl font-black text-white">Withdrawal Submitted</h2>
+      <p className="mt-2 text-sm text-slate-400 max-w-xs">{detail}</p>
+      <p className="mt-3 text-[12px] text-slate-500 max-w-xs">
+        Your request is being processed and can take up to 3 working days. We&apos;ll notify you as soon
+        as it&apos;s paid out.
+      </p>
+      <button
+        onClick={onClose}
+        className="mt-7 w-full max-w-xs bg-[#E5484D] text-white font-black py-3.5 rounded-[10px]"
+      >
+        Done
+      </button>
+    </div>
+  );
+}
+
+function UsdReviewSheet({
+  amount,
+  localAmount,
+  sym,
+  currency,
+  channelLabel,
+  identifier,
+  accountName,
+  network,
+  submitting,
+  onClose,
+  onConfirm,
+}: {
+  amount: number;
+  localAmount: number;
+  sym: string;
+  currency: string;
+  channelLabel: string;
+  identifier: string;
+  accountName: string;
+  network: string;
+  submitting: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-[70] bg-[#0A0A0B] overflow-y-auto">
+      <div className="flex items-center justify-between px-4 py-4 border-b border-white/5">
+        <button onClick={onClose} className="p-2 -ml-2 text-white" aria-label="Back">
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <h1 className="text-base font-black text-white">Review USD Withdrawal</h1>
+        <span className="w-9" />
+      </div>
+
+      <div className="p-4 space-y-4 pb-28">
+        <div className="rounded-[10px] border border-white/8 bg-white/[0.03] p-4 space-y-3">
+          <div className="flex items-start justify-between gap-4">
+            <span className="text-xs text-slate-400">Withdraw To</span>
+            <span className="text-right">
+              <span className="block text-sm font-black text-white">{channelLabel}</span>
+              <span className="block text-[11px] text-slate-500 break-all">{identifier}</span>
+              {accountName && <span className="block text-[11px] text-slate-500">{accountName}</span>}
+              {network && <span className="block text-[11px] text-slate-500">{network}</span>}
+            </span>
+          </div>
+          <div className="h-px bg-white/8" />
+          <Row label="You will receive" value={money(amount, "$")} strong />
+          <Row label={`Debited from ${currency} wallet`} value={money(localAmount, sym)} />
+          <Row label="Processing Time" value="Up to 3 working days" />
+        </div>
+
+        <div className="flex gap-2 rounded-[10px] border border-amber-500/20 bg-amber-500/[0.07] p-3">
+          <Info className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+          <p className="text-[11px] text-slate-400">
+            Double-check your account ID or wallet address. Payouts sent to a wrong destination cannot
+            be reversed.
+          </p>
+        </div>
+      </div>
+
+      <div className="fixed bottom-0 inset-x-0 bg-[#0A0A0B]/95 backdrop-blur border-t border-white/5 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))]">
+        <button
+          onClick={onConfirm}
+          disabled={submitting}
+          className="w-full bg-[#E5484D] text-white font-black py-3.5 rounded-[10px] disabled:opacity-50 flex items-center justify-center gap-2"
+        >
+          {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
+          <span>Confirm Withdrawal</span>
+        </button>
       </div>
     </div>
   );
