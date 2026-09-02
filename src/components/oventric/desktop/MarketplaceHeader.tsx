@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Search, User, Smartphone, Truck, RefreshCcw, Menu, X } from "lucide-react";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
+import { CurrencyPreviewToggle } from "@/components/oventric/CurrencyPreviewToggle";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { COUNTRY_META } from "@/lib/currency/africa";
 import logo from "@/assets/oventric-logo-dark.png";
@@ -98,6 +99,7 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
 
           {/* Right Actions */}
           <div className="flex items-center gap-4 lg:gap-6 ml-auto">
+            <CurrencyPreviewToggle variant="light" className="hidden md:flex" />
             {/* User Profile Link */}
             <div className="hidden lg:flex items-center gap-4">
               <Link 
