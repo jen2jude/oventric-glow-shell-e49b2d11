@@ -318,6 +318,8 @@ export function DesktopAppSidebar({ onSelect }: { onSelect: (section: string) =>
           </div>
         </>
       )}
+
+      <MegaMenu open={megaOpen} onClose={() => setMegaOpen(false)} />
     </aside>
   );
 }
