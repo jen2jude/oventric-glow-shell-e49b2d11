@@ -1,4 +1,3 @@
-import { GetAppButton } from "@/lib/app-gate";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 import { CreatorChip, EcosystemLinks } from "@/components/oventric/ecosystem/CreatorChip";
 
@@ -816,9 +815,29 @@ function ProductPage() {
                       </button>
                     ) : (
                       <>
-                        <GetAppButton label="Get the app to buy" from="product" className="w-full" />
+                        <button
+                          onClick={product.kind === "physical" ? openContact : startCheckout}
+                          className="w-full inline-flex items-center justify-center gap-2 py-3 text-sm rounded-[10px] font-black bg-crimson hover:bg-crimson/90 text-white transition-colors"
+                        >
+                          <ShoppingCart className="w-4 h-4" /> Buy Now
+                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={openSellerChat}
+                            className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-[13px] rounded-[10px] font-bold border border-slate-200 bg-white text-slate-700 hover:border-crimson hover:text-crimson transition-colors"
+                          >
+                            <MessageCircle className="w-4 h-4" /> Chat
+                          </button>
+                          <Link
+                            to="/shop/$id"
+                            params={{ id: product.sellerSlug ?? product.sellerId }}
+                            className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-[13px] rounded-[10px] font-bold border border-slate-200 bg-white text-slate-700 hover:border-crimson hover:text-crimson transition-colors"
+                          >
+                            <ShoppingBag className="w-4 h-4" /> Shop
+                          </Link>
+                        </div>
                         <p className="text-center text-[11.5px] text-slate-500">
-                          Escrow checkout, chat and delivery tracking live in the Oventric app.
+                          Escrow-protected checkout with chat and delivery tracking.
                         </p>
                       </>
                     )}

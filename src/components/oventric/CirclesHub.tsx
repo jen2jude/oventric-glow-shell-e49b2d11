@@ -53,7 +53,6 @@ import {
 } from "@/components/oventric/feed/Reactions";
 import { setReaction as setReactionFn, type ReactionType } from "@/lib/posts.functions";
 import { useIsAppShell } from "@/hooks/use-launch-context";
-import { GetAppModal } from "@/components/oventric/GetAppModal";
 import { WebCircles } from "@/components/oventric/desktop/WebCircles";
 
 const DEFAULT_CATEGORIES = [
@@ -85,7 +84,6 @@ function fmtPeers(n: number) {
 
 export function CirclesHub() {
   const isAppShell = useIsAppShell();
-  const [getAppOpen, setGetAppOpen] = useState(false);
   const { isAuthenticated, openGate } = useAuthGate();
 
   const catalogFn = useServerFn(getCircleCatalog);
@@ -136,19 +134,8 @@ export function CirclesHub() {
     });
   }, [catalog, activeCategory, query]);
 
-  if (!isAppShell) {
-    return (
-      <>
-        <WebCircles onGated={() => setGetAppOpen(true)} />
-        <GetAppModal
-          open={getAppOpen}
-          onClose={() => setGetAppOpen(false)}
-          from="circles"
-          title="Circles & Guilds live in the app"
-          description="Browsing guilds is open on the web. Joining, the code-of-conduct pledge, guild chat, shared resources and circle bounties all happen inside the Oventric app."
-        />
-      </>
-    );
+  if (!isAppShell && !openSlug) {
+    return <WebCircles onOpen={(slug) => setOpenSlug(slug)} />;
   }
 
   if (openSlug) {

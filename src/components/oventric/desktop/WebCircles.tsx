@@ -42,7 +42,7 @@ function fmt(n: number) {
   return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : `${n}`;
 }
 
-function CircleCard({ c, onGated }: { c: PublicCircle; onGated: () => void }) {
+function CircleCard({ c, onOpen }: { c: PublicCircle; onOpen: (slug: string) => void }) {
   return (
     <article className="group overflow-hidden rounded-[12px] border border-slate-200 bg-white transition-shadow hover:shadow-[0_18px_40px_-24px_rgba(15,23,42,0.4)]">
       <div
@@ -83,10 +83,10 @@ function CircleCard({ c, onGated }: { c: PublicCircle; onGated: () => void }) {
         </div>
         <button
           type="button"
-          onClick={onGated}
+          onClick={() => onOpen(c.slug)}
           className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-[10px] bg-slate-900 text-sm font-black text-white transition-colors hover:bg-slate-800"
         >
-          <Lock className="h-3.5 w-3.5" /> Join in the app
+          <Lock className="h-3.5 w-3.5" /> Open circle
         </button>
       </div>
     </article>
@@ -97,7 +97,7 @@ function CircleCard({ c, onGated }: { c: PublicCircle; onGated: () => void }) {
  * Read-only web storefront for Circles & Guilds. Browser visitors can
  * discover every public circle; joining or posting hands off to the app.
  */
-export function WebCircles({ onGated }: { onGated: () => void }) {
+export function WebCircles({ onOpen }: { onOpen: (slug: string) => void }) {
   const loadFn = useServerFn(getPublicCircleDirectory);
   const q = useQuery({ queryKey: ["public-circle-directory"], queryFn: () => loadFn() });
   const circles = useMemo(() => q.data ?? [], [q.data]);
@@ -204,7 +204,7 @@ export function WebCircles({ onGated }: { onGated: () => void }) {
 
           <aside className="w-full self-center rounded-[14px] border border-white/10 bg-white/[0.05] p-6 backdrop-blur lg:justify-self-end">
             <div className="inline-flex items-center gap-2 rounded-full bg-crimson/15 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-crimson">
-              <Lock className="h-3 w-3" /> Browse only on web
+              <Lock className="h-3 w-3" /> Escrow protected
             </div>
             <h2 className="mt-4 text-xl font-black leading-snug">
               Membership lives inside the app
@@ -228,10 +228,10 @@ export function WebCircles({ onGated }: { onGated: () => void }) {
             )}
             <button
               type="button"
-              onClick={onGated}
+              onClick={() => spotlight && onOpen(spotlight.slug)}
               className="mt-5 inline-flex h-11 w-full items-center justify-center gap-2 rounded-[10px] bg-crimson text-sm font-black text-white transition-colors hover:bg-crimson/90"
             >
-              <Smartphone className="h-4 w-4" /> Get the app to join a circle
+              <Smartphone className="h-4 w-4" /> Open this circle
             </button>
           </aside>
         </div>
@@ -294,11 +294,11 @@ export function WebCircles({ onGated }: { onGated: () => void }) {
           <div className="mt-8 rounded-[10px] border border-slate-200 bg-slate-50 p-4">
             <p className="text-sm font-black text-slate-900">Want to forge your own?</p>
             <p className="mt-1 text-xs leading-relaxed text-slate-600">
-              Creating a circle, setting its code of conduct and approving members happen in the app.
+              Browse a circle, then use its workspace to post, share resources and run bounties.
             </p>
             <button
               type="button"
-              onClick={onGated}
+              onClick={() => spotlight && onOpen(spotlight.slug)}
               className="mt-3 inline-flex items-center gap-1.5 text-sm font-black text-crimson hover:underline"
             >
               Open in app <ArrowRight className="h-4 w-4" />
@@ -339,7 +339,7 @@ export function WebCircles({ onGated }: { onGated: () => void }) {
             <>
               <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
                 {pageItems.map((c) => (
-                  <CircleCard key={c.id} c={c} onGated={onGated} />
+                  <CircleCard key={c.id} c={c} onOpen={onOpen} />
                 ))}
               </div>
 

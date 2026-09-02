@@ -31,7 +31,6 @@ import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 import { AppStickyHeader } from "@/components/oventric/AppStickyHeader";
 import { WebBounties } from "@/components/oventric/desktop/WebBounties";
-import { GetAppModal } from "@/components/oventric/GetAppModal";
 
 type Category = "all" | "frontend" | "database" | "api" | "uiux";
 
@@ -122,7 +121,6 @@ export function Bounties() {
   const [bountyAds, setBountyAds] = useState<BountyAd[]>([]);
   const [adsLoading, setAdsLoading] = useState(true);
   const [postOpen, setPostOpen] = useState(false);
-  const [getAppOpen, setGetAppOpen] = useState(false);
   const [refreshTick, setRefreshTick] = useState(0);
   const [highlightId, setHighlightId] = useState<string | null>(null);
   const [appliedIds, setAppliedIds] = useState<Set<string>>(new Set());
@@ -431,14 +429,16 @@ export function Bounties() {
         loading={bountiesLoading}
         error={bountiesError}
         currency={baseCurrency}
-        onGated={() => setGetAppOpen(true)}
+        onPost={() => require(2, () => setPostOpen(true), "issuer")}
+        onOpen={(id) => require(2, () => setSelectedId(id), "solver")}
       />
-      <GetAppModal
-        open={getAppOpen}
-        onClose={() => setGetAppOpen(false)}
-        from="bounties"
-        title="Bounties & escrow live in the app"
-        description="Browsing the board is open on the web. Funding a bounty, applying, chatting with the other side and releasing escrow all happen inside the Oventric app."
+      <BountyEditorModal
+        open={postOpen}
+        onClose={() => setPostOpen(false)}
+        onPublished={(id) => {
+          setRefreshTick((t) => t + 1);
+          setHighlightId(id);
+        }}
       />
     </>
   );
