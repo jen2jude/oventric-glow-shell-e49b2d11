@@ -4,6 +4,7 @@ import { Search, User, Smartphone, Truck, RefreshCcw, Menu, X } from "lucide-rea
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { CurrencyPreviewToggle } from "@/components/oventric/CurrencyPreviewToggle";
+import { MegaMenu } from "@/components/oventric/MegaMenu";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { COUNTRY_META } from "@/lib/currency/africa";
 import logo from "@/assets/oventric-logo-dark.png";
@@ -22,6 +23,7 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
   const { country, baseCurrency } = useOnboarding();
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [megaOpen, setMegaOpen] = useState(false);
 
   const flag = country ? (COUNTRY_META[country]?.flag ?? "") : "";
 
@@ -102,9 +104,10 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
             <CurrencyPreviewToggle variant="light" className="hidden md:flex" />
             {/* User Profile Link */}
             <div className="hidden lg:flex items-center gap-4">
-              <Link 
-                to="/profile/$id"
-                params={{ id: isAuthenticated ? (avatarUrl?.split('/')[avatarUrl?.split('/').length - 2] || "me") : "me" }}
+              <button
+                type="button"
+                aria-label={isAuthenticated ? "Open menu" : "Connect account"}
+                onClick={() => (isAuthenticated ? setMegaOpen(true) : openGate("generic"))}
                 className="flex items-center gap-3 cursor-pointer group"
               >
                 <div className="h-11 w-11 rounded-full overflow-hidden border border-slate-200 ring-2 ring-white ring-offset-2 ring-offset-slate-50 group-hover:ring-emerald-400 transition-all">
@@ -116,14 +119,15 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
                     </div>
                   )}
                 </div>
-              </Link>
+              </button>
             </div>
 
             {/* Mobile Profile Link */}
             <div className="lg:hidden flex items-center gap-3">
-              <Link 
-                to="/profile/$id"
-                params={{ id: isAuthenticated ? (avatarUrl?.split('/')[avatarUrl?.split('/').length - 2] || "me") : "me" }}
+              <button
+                type="button"
+                aria-label={isAuthenticated ? "Open menu" : "Connect account"}
+                onClick={() => (isAuthenticated ? setMegaOpen(true) : openGate("generic"))}
                 className="h-11 w-11 rounded-full overflow-hidden border border-slate-200 active:scale-95 transition-transform"
               >
                 {isAuthenticated ? (
@@ -133,7 +137,7 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
                     <User className="w-4 h-4 text-slate-400" />
                   </div>
                 )}
-              </Link>
+              </button>
             </div>
 
             {/* Mobile Menu Toggle */}
