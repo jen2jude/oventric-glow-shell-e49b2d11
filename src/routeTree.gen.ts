@@ -33,6 +33,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AcademyRouteImport } from './routes/academy'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WalletIndexRouteImport } from './routes/wallet.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as WalletLedgerRouteImport } from './routes/wallet.ledger'
@@ -207,6 +208,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const WalletIndexRoute = WalletIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => WalletRoute,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/blog/',
@@ -553,6 +559,7 @@ export interface FileRoutesByFullPath {
   '/wallet/ledger': typeof WalletLedgerRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/wallet/': typeof WalletIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/api/public/flutterwave-webhook': typeof ApiPublicFlutterwaveWebhookRoute
   '/api/public/payment-return': typeof ApiPublicPaymentReturnRoute
@@ -591,7 +598,6 @@ export interface FileRoutesByTo {
   '/sellers': typeof SellersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/wallet': typeof WalletRouteWithChildren
   '/.well-known/apple-app-site-association': typeof DotwellKnownAppleAppSiteAssociationRoute
   '/.well-known/assetlinks.json': typeof DotwellKnownAssetlinksDotjsonRoute
   '/admin/ad-inquiries': typeof AdminAdInquiriesRoute
@@ -631,6 +637,7 @@ export interface FileRoutesByTo {
   '/wallet/ledger': typeof WalletLedgerRoute
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
+  '/wallet': typeof WalletIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/api/public/flutterwave-webhook': typeof ApiPublicFlutterwaveWebhookRoute
   '/api/public/payment-return': typeof ApiPublicPaymentReturnRoute
@@ -712,6 +719,7 @@ export interface FileRoutesById {
   '/wallet/ledger': typeof WalletLedgerRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/wallet/': typeof WalletIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/api/public/flutterwave-webhook': typeof ApiPublicFlutterwaveWebhookRoute
   '/api/public/payment-return': typeof ApiPublicPaymentReturnRoute
@@ -794,6 +802,7 @@ export interface FileRouteTypes {
     | '/wallet/ledger'
     | '/admin/'
     | '/blog/'
+    | '/wallet/'
     | '/admin/blog/$id'
     | '/api/public/flutterwave-webhook'
     | '/api/public/payment-return'
@@ -832,7 +841,6 @@ export interface FileRouteTypes {
     | '/sellers'
     | '/sitemap.xml'
     | '/terms'
-    | '/wallet'
     | '/.well-known/apple-app-site-association'
     | '/.well-known/assetlinks.json'
     | '/admin/ad-inquiries'
@@ -872,6 +880,7 @@ export interface FileRouteTypes {
     | '/wallet/ledger'
     | '/admin'
     | '/blog'
+    | '/wallet'
     | '/admin/blog/$id'
     | '/api/public/flutterwave-webhook'
     | '/api/public/payment-return'
@@ -952,6 +961,7 @@ export interface FileRouteTypes {
     | '/wallet/ledger'
     | '/admin/'
     | '/blog/'
+    | '/wallet/'
     | '/admin/blog/$id'
     | '/api/public/flutterwave-webhook'
     | '/api/public/payment-return'
@@ -1186,6 +1196,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/wallet/': {
+      id: '/wallet/'
+      path: '/'
+      fullPath: '/wallet/'
+      preLoaderRoute: typeof WalletIndexRouteImport
+      parentRoute: typeof WalletRoute
     }
     '/blog/': {
       id: '/blog/'
@@ -1657,11 +1674,13 @@ const AdsManagerRouteWithChildren = AdsManagerRoute._addFileChildren(
 interface WalletRouteChildren {
   WalletHistoryRoute: typeof WalletHistoryRoute
   WalletLedgerRoute: typeof WalletLedgerRoute
+  WalletIndexRoute: typeof WalletIndexRoute
 }
 
 const WalletRouteChildren: WalletRouteChildren = {
   WalletHistoryRoute: WalletHistoryRoute,
   WalletLedgerRoute: WalletLedgerRoute,
+  WalletIndexRoute: WalletIndexRoute,
 }
 
 const WalletRouteWithChildren =
