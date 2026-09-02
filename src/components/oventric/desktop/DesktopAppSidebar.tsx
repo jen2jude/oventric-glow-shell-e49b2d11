@@ -124,6 +124,7 @@ export function DesktopAppSidebar({ onSelect }: { onSelect: (section: string) =>
 
   const [moreMine, setMoreMine] = useState(false);
   const [moreRecs, setMoreRecs] = useState(false);
+  const [megaOpen, setMegaOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window === "undefined") return true;
     const saved = window.localStorage.getItem("oventric:desktop-sidebar:collapsed");
