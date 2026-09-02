@@ -18,6 +18,7 @@ import { getTopUsers, type TopUser } from "@/lib/top-users.functions";
 import { MAX_STORY_FILES, useStoryRail } from "@/components/oventric/feed/useStories";
 import { StoryViewerModal } from "@/components/oventric/feed/StoryViewerModal";
 import { StoryTrimmerModal } from "@/components/oventric/feed/StoryTrimmerModal";
+import logoDark from "@/assets/oventric-logo-dark.png";
 
 
 
@@ -102,7 +103,7 @@ export function FeedAppChrome({
 
   return (
     <div
-      className={`-mx-4 sticky top-0 z-30 bg-[#0A0A0B] transition-all duration-300 ease-out ${
+      className={`-mx-4 sticky top-0 z-30 bg-[#0A0A0B] transition-all duration-300 ease-out md:mx-0 md:rounded-[10px] md:border md:border-slate-200 md:bg-white md:shadow-sm md:overflow-hidden ${
         chromeHidden
           ? "pointer-events-none -translate-y-full opacity-0"
           : "translate-y-0 opacity-100"
@@ -111,15 +112,16 @@ export function FeedAppChrome({
       {/* Brand header — stays pinned; only fades slightly on scroll down */}
       <div>
         <div className="min-h-0">
-        <div className="flex items-center gap-2 px-4 pt-1 pb-2">
-        <img loading="lazy" decoding="async" src={logoFull} alt="Oventric" className="h-7 w-auto shrink-0" />
+        <div className="flex items-center gap-2 px-4 pt-1 pb-2 md:px-6 md:py-4 md:border-b md:border-slate-100">
+        <img loading="lazy" decoding="async" src={logoFull} alt="Oventric" className="h-7 w-auto shrink-0 md:hidden" />
+        <img loading="lazy" decoding="async" src={logoDark} alt="Oventric" className="hidden h-7 w-auto shrink-0 md:block" />
         <div className="ml-auto flex items-center gap-1.5">
           <button
             type="button"
             onClick={onToggleSearch}
             aria-label="Search"
             className={`grid h-11 w-11 place-items-center rounded-full transition-colors active:scale-95 ${
-              searchOpen ? "bg-[#E5484D]/15 text-[#E5484D]" : "text-white/80 hover:text-white"
+               searchOpen ? "bg-[#E5484D]/15 text-[#E5484D]" : "text-white/80 hover:text-white md:text-slate-500 md:hover:bg-slate-100 md:hover:text-slate-900"
             }`}
           >
             <Search className="h-[22px] w-[22px]" strokeWidth={1.8} />
@@ -128,7 +130,7 @@ export function FeedAppChrome({
             type="button"
             onClick={() => setNotifOpen(true)}
             aria-label="Notifications"
-            className="relative grid h-11 w-11 place-items-center rounded-full text-white/80 transition-colors hover:text-white active:scale-95"
+            className="relative grid h-11 w-11 place-items-center rounded-full text-white/80 transition-colors hover:text-white active:scale-95 md:text-slate-500 md:hover:bg-slate-100 md:hover:text-slate-900"
           >
             <Bell className="h-[22px] w-[22px]" strokeWidth={1.8} />
             <CountBadge count={unreadNotifs} ariaLabel={`${unreadNotifs} new notifications`} />
@@ -137,7 +139,7 @@ export function FeedAppChrome({
             type="button"
             onClick={() => setMsgOpen(true)}
             aria-label="Messages"
-            className="relative grid h-11 w-11 place-items-center rounded-full text-white/80 transition-colors hover:text-white active:scale-95"
+            className="relative grid h-11 w-11 place-items-center rounded-full text-white/80 transition-colors hover:text-white active:scale-95 md:text-slate-500 md:hover:bg-slate-100 md:hover:text-slate-900"
           >
             <MessageSquare className="h-[22px] w-[22px]" strokeWidth={1.8} />
             <CountBadge count={messages ?? 0} ariaLabel={`${messages ?? 0} unread messages`} />
@@ -155,7 +157,7 @@ export function FeedAppChrome({
 
 
       {/* Tabs */}
-      <div className="flex justify-center border-b border-white/[0.06] overflow-x-auto no-scrollbar scroll-smooth bg-[#0A0A0B]">
+      <div className="flex justify-center border-b border-white/[0.06] overflow-x-auto no-scrollbar scroll-smooth bg-[#0A0A0B] md:border-slate-100 md:bg-white">
         {TABS.map((t) => {
           const active = t.key === tab;
           return (
@@ -164,7 +166,7 @@ export function FeedAppChrome({
               onClick={() => onTabChange(t.key)}
               className="relative shrink-0 px-6 py-3 text-[14px] font-bold transition-colors"
             >
-              <span className={active ? "text-white" : "text-white/40"}>
+              <span className={active ? "text-white md:text-slate-900" : "text-white/40 md:text-slate-400 md:hover:text-slate-700"}>
                 {t.label}
               </span>
               {active && (
@@ -177,7 +179,7 @@ export function FeedAppChrome({
 
 
       {/* Stories rail */}
-      <div className="flex gap-4 overflow-x-auto px-4 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex gap-4 overflow-x-auto px-4 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-6 md:px-6 md:py-5">
         <input
           ref={fileRef}
           type="file"
@@ -207,19 +209,19 @@ export function FeedAppChrome({
               />
             )}
             <span
-              className={`absolute inset-0 overflow-hidden rounded-full bg-[#1A1A1F] ring-1 ring-white/10 ${
-                uploading ? "m-[3px] border-2 border-[#0A0A0B]" : ""
+              className={`absolute inset-0 overflow-hidden rounded-full bg-[#1A1A1F] ring-1 ring-white/10 md:bg-slate-100 md:ring-slate-200 ${
+                uploading ? "m-[3px] border-2 border-[#0A0A0B] md:border-white" : ""
               }`}
             >
               <AvatarImage src={meAvatarUrl} alt="Add story" initials={meInitials} />
             </span>
             {!uploading && (
-              <span className="absolute -bottom-0.5 -right-0.5 z-10 grid h-[22px] w-[22px] place-items-center rounded-full border-2 border-[#0A0A0B] bg-[#E5484D]">
+              <span className="absolute -bottom-0.5 -right-0.5 z-10 grid h-[22px] w-[22px] place-items-center rounded-full border-2 border-[#0A0A0B] bg-[#E5484D] md:border-white">
                 <Plus className="h-3 w-3 text-white" strokeWidth={3} />
               </span>
             )}
           </span>
-          <span className="w-full truncate text-center text-[11px] font-medium text-white/70">
+          <span className="w-full truncate text-center text-[11px] font-medium text-white/70 md:font-semibold md:text-slate-700">
             {uploading ? "Uploading…" : "Add Story"}
           </span>
         </button>
@@ -233,14 +235,14 @@ export function FeedAppChrome({
           >
             <span
               className={`grid h-[58px] w-[58px] place-items-center rounded-full p-[2px] ${
-                myGroup.allViewed ? "bg-white/15" : `bg-gradient-to-tr ${RINGS[0]}`
+                myGroup.allViewed ? "bg-white/15 md:bg-slate-200" : `bg-gradient-to-tr ${RINGS[0]}`
               }`}
             >
-              <span className="block h-full w-full overflow-hidden rounded-full border-2 border-[#0A0A0B] bg-[#1A1A1F]">
+              <span className="block h-full w-full overflow-hidden rounded-full border-2 border-[#0A0A0B] bg-[#1A1A1F] md:border-white md:bg-slate-100">
                 <AvatarImage src={myGroup.avatarUrl} alt={myGroup.displayName} />
               </span>
             </span>
-            <span className="w-full truncate text-center text-[11px] font-medium text-white/70">
+            <span className="w-full truncate text-center text-[11px] font-medium text-white/70 md:font-semibold md:text-slate-700">
               Your story
             </span>
           </button>
@@ -258,15 +260,15 @@ export function FeedAppChrome({
               <span
                 className={`grid h-[58px] w-[58px] place-items-center rounded-full p-[2px] ${
                   g.allViewed
-                    ? "bg-white/15"
+                    ? "bg-white/15 md:bg-slate-200"
                     : `bg-gradient-to-tr ${RINGS[(i + 1) % RINGS.length]}`
                 }`}
               >
-                <span className="block h-full w-full overflow-hidden rounded-full border-2 border-[#0A0A0B] bg-[#1A1A1F]">
+                <span className="block h-full w-full overflow-hidden rounded-full border-2 border-[#0A0A0B] bg-[#1A1A1F] md:border-white md:bg-slate-100">
                   <AvatarImage src={g.avatarUrl} alt={g.displayName} />
                 </span>
               </span>
-              <span className="w-full truncate text-center text-[11px] font-medium text-white/70">
+              <span className="w-full truncate text-center text-[11px] font-medium text-white/70 md:font-semibold md:text-slate-700">
                 {g.displayName.split(" ")[0]}
               </span>
             </button>
@@ -287,11 +289,11 @@ export function FeedAppChrome({
                   RINGS[i % RINGS.length]
                 }`}
               >
-                <span className="block h-full w-full overflow-hidden rounded-full border-2 border-[#0A0A0B] bg-[#1A1A1F]">
+                <span className="block h-full w-full overflow-hidden rounded-full border-2 border-[#0A0A0B] bg-[#1A1A1F] md:border-white md:bg-slate-100">
                   <AvatarImage src={u.avatarUrl} alt={u.displayName} />
                 </span>
               </span>
-              <span className="w-full truncate text-center text-[11px] font-medium text-white/70">
+              <span className="w-full truncate text-center text-[11px] font-medium text-white/70 md:font-semibold md:text-slate-700">
                 {u.displayName.split(" ")[0]}
               </span>
             </Link>
@@ -319,7 +321,7 @@ export function FeedAppChrome({
       )}
 
 
-      <div className="h-px w-full bg-white/[0.07]" />
+      <div className="h-px w-full bg-white/[0.07] md:bg-slate-100" />
 
       <NotificationsDrawer open={notifOpen} onClose={() => setNotifOpen(false)} />
       <MessagesDrawer open={msgOpen} onClose={() => setMsgOpen(false)} />
