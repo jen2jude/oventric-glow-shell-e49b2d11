@@ -24,6 +24,7 @@ export function RichTextEditor({
   uploadFn,
   signFn,
   bucket = "course-media",
+  appearance = "dark",
 }: {
   value: string;
   onChange: (html: string) => void;
@@ -32,6 +33,7 @@ export function RichTextEditor({
   uploadFn?: UploadFn;
   signFn?: SignFn;
   bucket?: string;
+  appearance?: "light" | "dark";
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const savedRange = useRef<Range | null>(null);
@@ -142,15 +144,31 @@ export function RichTextEditor({
       onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
       title={title}
-      className="p-1.5 rounded hover:bg-white/10 text-slate-300 hover:text-white"
+      className={`rounded p-1.5 ${
+        appearance === "light"
+          ? "text-slate-600 hover:bg-slate-200 hover:text-slate-950"
+          : "text-slate-300 hover:bg-white/10 hover:text-white"
+      }`}
     >
       {children}
     </button>
   );
 
   return (
-    <div className="rounded-lg border border-white/10 bg-[#121214] overflow-hidden">
-      <div className="flex items-center gap-1 px-2 py-1.5 border-b border-white/10 bg-black/30">
+    <div
+      className={`overflow-hidden rounded-[10px] border ${
+        appearance === "light"
+          ? "border-slate-200 bg-white shadow-sm"
+          : "border-white/10 bg-[#121214]"
+      }`}
+    >
+      <div
+        className={`flex items-center gap-1 border-b px-2 py-1.5 ${
+          appearance === "light"
+            ? "border-slate-200 bg-slate-50"
+            : "border-white/10 bg-black/30"
+        }`}
+      >
         <Btn onClick={() => exec("bold")} title="Bold">
           <Bold className="w-3.5 h-3.5" />
         </Btn>
@@ -167,7 +185,11 @@ export function RichTextEditor({
           <Link2 className="w-3.5 h-3.5" />
         </Btn>
         <label
-          className="p-1.5 rounded hover:bg-white/10 text-slate-300 hover:text-white cursor-pointer"
+          className={`cursor-pointer rounded p-1.5 ${
+            appearance === "light"
+              ? "text-slate-600 hover:bg-slate-200 hover:text-slate-950"
+              : "text-slate-300 hover:bg-white/10 hover:text-white"
+          }`}
           title="Insert image"
           onMouseDown={(e) => {
             e.preventDefault();
@@ -191,7 +213,7 @@ export function RichTextEditor({
             }}
           />
         </label>
-        <span className="ml-auto text-[10px] text-slate-500">Rich text · images supported</span>
+        <span className="ml-auto text-[10px] text-muted-foreground">Rich text · images supported</span>
       </div>
       <div
         ref={ref}
@@ -206,11 +228,15 @@ export function RichTextEditor({
         onMouseUp={saveSelection}
         onTouchEnd={saveSelection}
         data-placeholder={placeholder}
-        className="rte-body px-3 py-2 text-sm text-white outline-none focus:bg-black/20 whitespace-pre-wrap break-words"
+        className={`rte-body whitespace-pre-wrap break-words px-3 py-2 text-sm outline-hidden ${
+          appearance === "light"
+            ? "text-slate-950 focus:bg-slate-50"
+            : "text-white focus:bg-black/20"
+        }`}
         style={{ minHeight }}
       />
       <style>{`
-        .rte-body:empty:before{content:attr(data-placeholder);color:#64748b;pointer-events:none}
+        .rte-body:empty:before{content:attr(data-placeholder);color:var(--muted-foreground);pointer-events:none}
         .rte-body img{max-width:100%;border-radius:0.5rem;margin:0.5rem 0}
         .rte-body h2{font-size:1.05rem;font-weight:700;margin:0.5rem 0}
         .rte-body a{color:#60a5fa;text-decoration:underline}
