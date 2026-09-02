@@ -99,6 +99,7 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
 
           {/* Right Actions */}
           <div className="flex items-center gap-4 lg:gap-6 ml-auto">
+            <CurrencyPreviewToggle variant="light" className="hidden md:flex" />
             {/* User Profile Link */}
             <div className="hidden lg:flex items-center gap-4">
               <Link 
