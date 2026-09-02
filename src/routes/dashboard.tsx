@@ -104,7 +104,6 @@ const TAB_VALUES = [
   "social",
   "digital",
   "sales",
-  "physical",
   "listings",
   "creator",
 ] as const;
@@ -273,7 +272,6 @@ function DashboardPage() {
     if (tab === "overview" && overview === null) void loadOverview();
     if (tab === "digital" && purchases === null) void loadPurchases();
     if (tab === "sales" && sales === null) void loadSales();
-    if (tab === "physical" && contacts === null) void loadContacts();
     if (tab === "listings" && listings === null) void loadListings();
     if (tab === "bounties" && bounties === null) void loadBounties();
     if (tab === "courses" && courses === null) void loadCourses();
@@ -505,9 +503,6 @@ function DashboardPage() {
               </span>
             )}
           </TabButton>
-          <TabButton active={tab === "physical"} onClick={() => setTab("physical")}>
-            <ShoppingBag className="w-5 h-5 shrink-0" /> <span className="truncate">Contacted</span>
-          </TabButton>
           <TabButton active={tab === "listings"} onClick={() => setTab("listings")}>
             <Store className="w-5 h-5 shrink-0" /> <span className="truncate">Listings</span>
             {stats.listingsRejected > 0 && (
@@ -563,7 +558,6 @@ function DashboardPage() {
             }}
           />
         )}
-        {tab === "physical" && <PhysicalList rows={contacts} onRelog={relogContact} />}
         {tab === "listings" && (
           <ListingsList
             rows={listings}
@@ -1107,7 +1101,7 @@ function ListingsList({
         <EmptyState
           icon={Store}
           title="You haven't published any listings yet"
-          hint="Start selling digital assets or physical products, or browse the marketplace to see what's live."
+          hint="Start selling digital assets, or browse the marketplace to see what's live."
           cta={
             <div className="flex flex-wrap items-center justify-center gap-2">
               <button
@@ -1164,11 +1158,9 @@ function ListingsList({
     },
   ];
   const digitalCount = rows.filter((r) => r.kind === "digital").length;
-  const physicalCount = rows.filter((r) => r.kind === "physical").length;
   const kindChips: { key: typeof kind; label: string; count: number }[] = [
     { key: "all", label: "All types", count: rows.length },
     { key: "digital", label: "Digital", count: digitalCount },
-    { key: "physical", label: "Physical", count: physicalCount },
   ];
 
   return (
@@ -1281,7 +1273,7 @@ function ListingsList({
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 md:text-slate-500 truncate">
-                      {p.kind === "physical" ? "Physical" : "Digital"} · {p.category}
+                      Digital · {p.category}
                     </div>
                     <Link
                       to="/product/$id"
