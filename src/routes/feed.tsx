@@ -3,6 +3,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppSurface } from "@/components/oventric/AppSurface";
 
 export const Route = createFileRoute("/feed")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    post: typeof search.post === "string" ? search.post : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Feed — What African creators are building | Oventric" },
