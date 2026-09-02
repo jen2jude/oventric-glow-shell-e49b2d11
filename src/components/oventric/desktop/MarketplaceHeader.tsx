@@ -176,6 +176,8 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
           </nav>
         </div>
       )}
+
+      <MegaMenu open={megaOpen} onClose={() => setMegaOpen(false)} />
     </div>
   );
 }
