@@ -38,13 +38,10 @@ import { Calendar } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   listMyPurchases,
-  listMyContactedSellers,
   listMyProducts,
   getOrderWithDownload,
-  logProductContact,
   confirmOrderReceived,
   type PurchaseDTO,
-  type ContactedSellerDTO,
   type ProductDTO,
 } from "@/lib/marketplace.functions";
 import {
@@ -76,7 +73,6 @@ import {
   SocialSkeleton,
   ListingsSkeleton,
   DigitalSkeleton,
-  PhysicalSkeleton,
   PhotoGridSkeleton,
 } from "@/components/oventric/skeletons";
 import { formatMoney } from "@/lib/fx-display";
@@ -104,7 +100,6 @@ const TAB_VALUES = [
   "social",
   "digital",
   "sales",
-  "physical",
   "listings",
   "creator",
 ] as const;
@@ -135,10 +130,8 @@ function DashboardPage() {
   const navigate = useNavigate();
   const { tab: tabParam } = Route.useSearch();
   const purchasesFn = useServerFn(listMyPurchases);
-  const contactsFn = useServerFn(listMyContactedSellers);
   const listingsFn = useServerFn(listMyProducts);
   const orderFn = useServerFn(getOrderWithDownload);
-  const logFn = useServerFn(logProductContact);
   const confirmFn = useServerFn(confirmOrderReceived);
   const overviewFn = useServerFn(getDashboardOverview);
   const bountiesFn = useServerFn(listMyBounties);
@@ -154,7 +147,6 @@ function DashboardPage() {
 
   const [overview, setOverview] = useState<DashboardOverview | null>(null);
   const [purchases, setPurchases] = useState<PurchaseDTO[] | null>(null);
-  const [contacts, setContacts] = useState<ContactedSellerDTO[] | null>(null);
   const [listings, setListings] = useState<ProductDTO[] | null>(null);
   const [bounties, setBounties] = useState<{
     posted: DashboardBountyPosted[];
@@ -204,15 +196,6 @@ function DashboardPage() {
       setSales([]);
     }
   }, [salesFn]);
-
-  const loadContacts = useCallback(async () => {
-    try {
-      setContacts(await contactsFn());
-    } catch (e) {
-      toast.error((e as Error).message);
-      setContacts([]);
-    }
-  }, [contactsFn]);
 
   const loadListings = useCallback(async () => {
     try {
@@ -273,7 +256,6 @@ function DashboardPage() {
     if (tab === "overview" && overview === null) void loadOverview();
     if (tab === "digital" && purchases === null) void loadPurchases();
     if (tab === "sales" && sales === null) void loadSales();
-    if (tab === "physical" && contacts === null) void loadContacts();
     if (tab === "listings" && listings === null) void loadListings();
     if (tab === "bounties" && bounties === null) void loadBounties();
     if (tab === "courses" && courses === null) void loadCourses();
@@ -285,7 +267,6 @@ function DashboardPage() {
     overview,
     purchases,
     sales,
-    contacts,
     listings,
     bounties,
     courses,
@@ -294,7 +275,6 @@ function DashboardPage() {
     loadOverview,
     loadPurchases,
     loadSales,
-    loadContacts,
     loadListings,
     loadBounties,
     loadCourses,
@@ -302,18 +282,11 @@ function DashboardPage() {
     loadSocial,
   ]);
 
-  // Realtime: refresh contacts when a new contact log lands for this user
+  // Realtime: keep orders, listings and wallet in sync
   useEffect(() => {
     if (!authChecked) return;
     const ch = supabase
       .channel("dashboard-contacts")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "product_contacts" },
-        () => {
-          void loadContacts();
-        },
-      )
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "orders" }, () => {
         void loadPurchases();
         void loadSales();
@@ -339,7 +312,6 @@ function DashboardPage() {
     };
   }, [
     authChecked,
-    loadContacts,
     loadPurchases,
     loadSales,
     loadListings,
@@ -397,25 +369,16 @@ function DashboardPage() {
     }
   };
 
-  const relogContact = async (productId: string, method: "call" | "whatsapp") => {
-    try {
-      await logFn({ data: { productId, method } });
-    } catch {
-      /* silent */
-    }
-  };
-
   const stats = useMemo(
     () => ({
       digital: purchases?.filter((p) => p.status === "paid").length ?? 0,
       pending: purchases?.filter((p) => p.status === "pending").length ?? 0,
-      contacts: contacts?.length ?? 0,
       listings: listings?.length ?? 0,
       listingsPending: listings?.filter((l) => l.status === "pending").length ?? 0,
       listingsActive: listings?.filter((l) => l.status === "active").length ?? 0,
       listingsRejected: listings?.filter((l) => l.status === "rejected").length ?? 0,
     }),
-    [purchases, contacts, listings],
+    [purchases, listings],
   );
 
   if (!authChecked) {
@@ -505,9 +468,6 @@ function DashboardPage() {
               </span>
             )}
           </TabButton>
-          <TabButton active={tab === "physical"} onClick={() => setTab("physical")}>
-            <ShoppingBag className="w-5 h-5 shrink-0" /> <span className="truncate">Contacted</span>
-          </TabButton>
           <TabButton active={tab === "listings"} onClick={() => setTab("listings")}>
             <Store className="w-5 h-5 shrink-0" /> <span className="truncate">Listings</span>
             {stats.listingsRejected > 0 && (
@@ -563,7 +523,6 @@ function DashboardPage() {
             }}
           />
         )}
-        {tab === "physical" && <PhysicalList rows={contacts} onRelog={relogContact} />}
         {tab === "listings" && (
           <ListingsList
             rows={listings}
@@ -936,141 +895,6 @@ function SalesList({ rows, onChanged }: { rows: SaleDTO[] | null; onChanged: () 
   return <SalesFulfilmentList rows={rows} onChanged={onChanged} />;
 }
 
-function PhysicalList({
-  rows,
-  onRelog,
-}: {
-  rows: ContactedSellerDTO[] | null;
-  onRelog: (productId: string, method: "call" | "whatsapp") => void;
-}) {
-  if (rows === null) {
-    return <PhysicalSkeleton />;
-  }
-  if (rows.length === 0) {
-    return (
-      <EmptyState
-        icon={ShoppingBag}
-        title="You haven't contacted any sellers yet"
-        hint="When you tap Call or Chat on a physical listing, it'll show up here so you can reach the seller again."
-        cta={
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] bg-white text-black text-sm font-bold"
-          >
-            Browse physical goods
-          </Link>
-        }
-      />
-    );
-  }
-  return (
-    <div className="space-y-3">
-      {rows.map((r) => {
-        const phone = (r.sellerPhone ?? "").replace(/\D/g, "");
-        const wa = (r.whatsappNumber ?? phone).replace(/\D/g, "");
-        const productUrl =
-          typeof window !== "undefined" ? `${window.location.origin}/product/${r.productId}` : "";
-        const message = `Hi! I'm still interested in your product "${r.productName}" on Oventric.\n\n${productUrl}`;
-        const waUrl = wa ? `https://wa.me/${wa}?text=${encodeURIComponent(message)}` : "";
-        return (
-          <div
-            key={r.id}
-            className="rounded-xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-3 flex gap-3"
-          >
-            <Link
-              to="/product/$id"
-              params={{ id: r.productId }}
-              className="shrink-0 w-20 h-20 rounded-[10px] overflow-hidden bg-white/5 md:bg-slate-50 flex items-center justify-center"
-            >
-              {r.coverUrl ? (
-                <img
-                  src={r.coverUrl}
-                  alt={r.productName}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <ShoppingBag className="w-6 h-6 text-white/30" />
-              )}
-            </Link>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 md:text-slate-500 truncate">
-                    {r.category}
-                  </div>
-                  <Link
-                    to="/product/$id"
-                    params={{ id: r.productId }}
-                    className="text-sm font-bold text-white md:text-slate-900 hover:text-white md:hover:text-slate-900 truncate block"
-                  >
-                    {r.productName}
-                  </Link>
-                  <div className="text-xs text-slate-400 md:text-slate-500 truncate">
-                    by {r.vendor}
-                  </div>
-                </div>
-                <span className="text-[10px] text-slate-500 whitespace-nowrap">
-                  {new Date(r.createdAt).toLocaleDateString()}
-                </span>
-              </div>
-              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400 md:text-slate-500">
-                <span>
-                  {r.originalCurrency}{" "}
-                  {r.originalAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                </span>
-                {r.location ? (
-                  <span className="inline-flex items-center gap-1">
-                    <MapPin className="w-3 h-3" /> {r.location}
-                  </span>
-                ) : null}
-                <span className="inline-flex items-center gap-1">
-                  {r.method === "call" ? (
-                    <Phone className="w-3 h-3" />
-                  ) : (
-                    <MessageCircle className="w-3 h-3" />
-                  )}
-                  Last via {r.method === "call" ? "Call" : "WhatsApp"}
-                </span>
-              </div>
-              <div className="mt-2 flex flex-wrap items-center gap-2">
-                {phone.length >= 6 && (
-                  <a
-                    href={`tel:+${phone}`}
-                    onClick={() => onRelog(r.productId, "call")}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] bg-white/10 hover:bg-white/15 md:bg-slate-100 text-white md:text-slate-900 text-xs font-semibold"
-                  >
-                    <Phone className="w-3.5 h-3.5" /> Call
-                  </a>
-                )}
-                {wa && (
-                  <a
-                    href={waUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => onRelog(r.productId, "whatsapp")}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] bg-white text-black hover:bg-white/90 text-xs font-bold"
-                  >
-                    <MessageCircle className="w-3.5 h-3.5" /> WhatsApp
-                  </a>
-                )}
-                <Link
-                  to="/product/$id"
-                  params={{ id: r.productId }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] bg-white/5 md:bg-slate-50 hover:bg-white/10 md:bg-slate-100 md:hover:bg-slate-100 border border-white/10 md:border-slate-200 text-slate-200 md:text-slate-700 text-xs font-semibold"
-                >
-                  View listing
-                </Link>
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 function ListingStatusBadge({ status }: { status: ProductDTO["status"] }) {
   const meta = {
     pending: { label: "Pending review", icon: Clock },
@@ -1107,7 +931,7 @@ function ListingsList({
         <EmptyState
           icon={Store}
           title="You haven't published any listings yet"
-          hint="Start selling digital assets or physical products, or browse the marketplace to see what's live."
+          hint="Start selling digital assets, or browse the marketplace to see what's live."
           cta={
             <div className="flex flex-wrap items-center justify-center gap-2">
               <button
@@ -1164,11 +988,9 @@ function ListingsList({
     },
   ];
   const digitalCount = rows.filter((r) => r.kind === "digital").length;
-  const physicalCount = rows.filter((r) => r.kind === "physical").length;
   const kindChips: { key: typeof kind; label: string; count: number }[] = [
     { key: "all", label: "All types", count: rows.length },
     { key: "digital", label: "Digital", count: digitalCount },
-    { key: "physical", label: "Physical", count: physicalCount },
   ];
 
   return (
@@ -1281,7 +1103,7 @@ function ListingsList({
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 md:text-slate-500 truncate">
-                      {p.kind === "physical" ? "Physical" : "Digital"} · {p.category}
+                      Digital · {p.category}
                     </div>
                     <Link
                       to="/product/$id"
@@ -1612,12 +1434,6 @@ function OverviewPane({
             accent="text-white md:text-slate-900"
           />
           <StatCard
-            icon={MessageCircle}
-            label="Contacted"
-            value={overview.contacts}
-            accent="text-white md:text-slate-900"
-          />
-          <StatCard
             icon={Store}
             label="Listings"
             value={overview.listings.total}
@@ -1702,12 +1518,6 @@ function OverviewPane({
           icon={Clock}
           label="Pending orders"
           value={overview.purchases.pending}
-          accent="text-white md:text-slate-900"
-        />
-        <StatCard
-          icon={MessageCircle}
-          label="Sellers contacted"
-          value={overview.contacts}
           accent="text-white md:text-slate-900"
         />
         <StatCard

@@ -456,7 +456,7 @@ export function AcademyRecommendations({ onOpenCourse }: { onOpenCourse: (id: st
           <SectionHeader
             icon={ShoppingBag}
             title="Recommended products"
-            hint="Digital + physical"
+            hint="Digital products"
             isAppShell={isAppShell}
           />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">

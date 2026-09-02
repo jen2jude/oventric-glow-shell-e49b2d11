@@ -40,7 +40,7 @@ const SLIDES: Slide[] = [
     id: "marketplace",
     image: mockMarketplace,
     title: "Marketplace",
-    description: "Buy and sell digital & physical products and earn real money.",
+    description: "Buy and sell digital products and earn real money.",
     accent: "#ff4d6d",
   },
   {

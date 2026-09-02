@@ -36,7 +36,7 @@ const sections = [
   {
     icon: ShoppingBag,
     title: "Marketplace",
-    body: "Digital assets are protected by 80/20 escrow with buyer confirmation. Physical goods are direct-contact — buyers WhatsApp or call sellers.",
+    body: "Digital assets are protected by 80/20 escrow with buyer confirmation. Oventric is a digital-only marketplace.",
   },
   {
     icon: Target,

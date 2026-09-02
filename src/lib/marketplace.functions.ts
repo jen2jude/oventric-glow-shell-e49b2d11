@@ -213,9 +213,8 @@ export const listProducts = createServerFn({ method: "GET" })
       .order("promoted", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(400);
-    if (data.kind !== "all") {
-      q = q.eq("kind", data.kind);
-    }
+    // Oventric is digital-only: physical listings are never surfaced.
+    q = q.neq("kind", "physical");
     const { data: rows, error } = await q;
     if (error) throw new Error(error.message);
     const items = rows ?? [];
@@ -263,6 +262,7 @@ export const listMarketplaceCategories = createServerFn({ method: "GET" }).handl
     .from("marketplace_categories")
     .select("id, slug, name, description, kind, parent_id, sort_order, enabled")
     .eq("enabled", true)
+    .neq("kind", "physical")
     .order("sort_order", { ascending: true });
   if (error) throw new Error(error.message);
   const rows = (data ?? []) as Array<Record<string, unknown>>;
@@ -411,112 +411,6 @@ export const createProduct = createServerFn({ method: "POST" })
   });
 
 
-/** Authenticated seller creates a physical product listing. Enters as 'pending' for admin approval. */
-export const createPhysicalProduct = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input: {
-    name: string;
-    category: string;
-    subcategory?: string | null;
-    description: string;
-    priceUSD: number;
-    vendor: string;
-    hue?: string;
-    imagePaths: string[];
-    condition: string;
-    brand?: string | null;
-    location?: string | null;
-    negotiable: string;
-    delivery: string;
-    sellerPhone: string;
-    whatsappNumber?: string | null;
-    socialLink?: string | null;
-    inStock?: boolean;
-    basicInfo?: string | null;
-    activationGuide?: string | null;
-    originalCurrency?: OrderCurrency;
-    originalAmount?: number;
-    fxSnapshot?: { base: string; rates: Record<string, number>; source?: string; fetched_at?: string } | null;
-  }) => ({
-    name: String(input.name ?? "").trim(),
-    category: String(input.category ?? "").trim() || "other",
-    subcategory: input.subcategory ? String(input.subcategory).trim() : null,
-    description: String(input.description ?? "").trim(),
-    priceUSD: Number(input.priceUSD),
-    vendor: String(input.vendor ?? "").trim(),
-    hue: input.hue ?? "from-emerald-500 to-teal-700",
-    imagePaths: (input.imagePaths ?? []).filter(Boolean),
-    condition: String(input.condition ?? "new"),
-    brand: input.brand ? String(input.brand).trim() : null,
-    location: input.location ? String(input.location).trim() : null,
-    negotiable: String(input.negotiable ?? "maybe"),
-    delivery: String(input.delivery ?? "maybe"),
-    sellerPhone: String(input.sellerPhone ?? "").replace(/\D/g, ""),
-    whatsappNumber: input.whatsappNumber
-      ? String(input.whatsappNumber).replace(/\D/g, "")
-      : String(input.sellerPhone ?? "").replace(/\D/g, ""),
-    socialLink: input.socialLink ? String(input.socialLink).trim() : null,
-    inStock: input.inStock !== false,
-    basicInfo: input.basicInfo ? String(input.basicInfo).trim() : null,
-    activationGuide: input.activationGuide ? String(input.activationGuide).trim() : null,
-    originalCurrency: (input.originalCurrency ?? "USD") as OrderCurrency,
-    originalAmount: Number(input.originalAmount ?? input.priceUSD),
-    fxSnapshot: input.fxSnapshot ?? null,
-  }))
-  .handler(async ({ data, context }) => {
-    if (!data.name) throw new Error("Product title required");
-    if (!(data.priceUSD > 0)) throw new Error("Price must be greater than 0");
-    if (data.imagePaths.length < 3) throw new Error("Please upload at least 3 product images");
-    if (!data.sellerPhone || data.sellerPhone.length < 6) throw new Error("A valid phone number is required");
-
-    // Admins publish physical listings directly; regular sellers queue for review.
-    const { data: isAdmin } = await context.supabase.rpc("has_role", {
-      _user_id: context.userId,
-      _role: "admin",
-    });
-    const initialStatus = isAdmin ? "active" : "pending";
-
-    const { data: row, error } = await context.supabase
-
-      .from("products")
-      .insert({
-        seller_id: context.userId,
-        name: data.name,
-        category: data.category,
-        subcategory: data.subcategory,
-        description: data.description,
-        price_usd: data.priceUSD,
-        original_currency: data.originalCurrency,
-        original_amount: data.originalAmount,
-        fx_snapshot: data.fxSnapshot ? JSON.parse(JSON.stringify(data.fxSnapshot)) : null,
-        vendor: data.vendor,
-        hue: data.hue,
-        cover_path: data.imagePaths[0] ?? null,
-        image_paths: data.imagePaths,
-        kind: "physical",
-        status: initialStatus,
-
-        condition: data.condition,
-        brand: data.brand,
-        location: data.location,
-        negotiable: data.negotiable,
-        delivery: data.delivery,
-        seller_phone: data.sellerPhone,
-        whatsapp_number: data.whatsappNumber,
-        social_link: data.socialLink,
-        in_stock: data.inStock,
-        basic_info: data.basicInfo,
-        activation_guide: data.activationGuide,
-        promoted: false,
-      })
-      .select("id")
-      .single();
-
-    if (error) throw new Error(error.message);
-    return { id: row.id as string };
-  });
-
-/** Signed-in seller lists their own products regardless of status. */
 export const listMyProducts = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -1571,7 +1465,8 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const sb = serverPublicClient();
     const { kind } = data;
-    const withKind = (q: any) => (kind !== "all" ? q.eq("kind", kind) : q);
+    void kind; // digital-only marketplace
+    const withKind = (q: any) => q.neq("kind", "physical");
 
     // 1. Featured Products (promoted or top rated)
     const { data: featuredRows } = await withKind(
@@ -1703,7 +1598,8 @@ export const getTopSellers = createServerFn({ method: "GET" })
     const sb = serverPublicClient();
 
     let productQuery = sb.from("products").select("id, seller_id").eq("status", "active").limit(2000);
-    if (data.kind !== "all") productQuery = productQuery.eq("kind", data.kind);
+    void data.kind;
+    productQuery = productQuery.neq("kind", "physical");
     const { data: productRows } = await productQuery;
 
     const productsBySeller = new Map<string, string[]>();

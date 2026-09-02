@@ -23,7 +23,7 @@ import {
 } from "@/lib/marketplace.functions";
 import type { SellerLite } from "@/components/oventric/marketplace-discovery/cards";
 
-type Kind = "all" | "digital" | "physical";
+type Kind = "all" | "digital";
 type SortKey = "popular" | "newest" | "price_asc" | "price_desc" | "top_rated";
 
 const SORTS: { key: SortKey; label: string }[] = [
@@ -250,8 +250,8 @@ export function WebMarketplace() {
             </button>
           )}
         </div>
-        <div className="grid grid-cols-3 gap-1 rounded-[10px] bg-slate-100 p-1">
-          {(["all", "digital", "physical"] as Kind[]).map((k) => (
+        <div className="grid grid-cols-2 gap-1 rounded-[10px] bg-slate-100 p-1">
+          {(["all", "digital"] as Kind[]).map((k) => (
             <button
               key={k}
               onClick={() => setKind(k)}
@@ -367,7 +367,7 @@ export function WebMarketplace() {
               <br className="hidden lg:block" /> sellers, with escrow on every order.
             </h1>
             <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-slate-600">
-              Digital products, software, services and physical goods — priced in your local
+              Digital products, software and services — priced in your local
               currency, delivered with buyer protection.
             </p>
             <div className="mt-6 flex flex-wrap gap-5 text-[12.5px] font-bold text-slate-600">

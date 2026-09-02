@@ -23,7 +23,7 @@ import { AppStickyHeader } from "@/components/oventric/AppStickyHeader";
 import { WebMarketplace } from "@/components/oventric/desktop/WebMarketplace";
 
 
-type Mode = "all" | "digital" | "physical";
+type Mode = "all" | "digital";
 type SortKey = "popular" | "newest" | "best_selling" | "top_rated";
 
 const SORTS: { key: SortKey; label: string }[] = [
@@ -225,7 +225,6 @@ function AppMarketplace() {
             <div className="no-scrollbar mt-4 flex gap-2.5 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar px-4 pb-1">
               <Pill active={mode === "all"} onClick={() => setMode("all")} label="All" />
               <Pill active={mode === "digital"} onClick={() => setMode("digital")} label="Digital" />
-              <Pill active={mode === "physical"} onClick={() => setMode("physical")} label="Physical" />
               <Pill
                 active={false}
                 onClick={() => setShowCategories(true)}
@@ -590,7 +589,7 @@ function FeaturedHeroCard({ item, onClick }: { item: ProductDTO; onClick: () => 
       <div className="absolute inset-0 flex">
         <div className="z-10 flex flex-1 flex-col justify-center p-6 text-white md:p-8">
           <span className="mb-2 w-fit rounded-full bg-white/25 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
-            {item.kind === "digital" ? "Digital Asset" : "Physical Product"}
+            Digital Asset
           </span>
           <h2 className="mb-3 line-clamp-2 text-lg font-black leading-tight tracking-tighter drop-shadow-sm md:text-xl">
             {item.name}

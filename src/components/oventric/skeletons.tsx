@@ -242,10 +242,6 @@ export function DigitalSkeleton() {
   );
 }
 
-export function PhysicalSkeleton() {
-  return <DigitalSkeleton />;
-}
-
 export function PhotoGridSkeleton({ count = 12 }: { count?: number }) {
   return (
     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-1.5">

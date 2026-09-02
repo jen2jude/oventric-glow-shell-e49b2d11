@@ -49,8 +49,7 @@ function TermsPage() {
           <h2 className="text-lg font-bold text-white md:text-slate-900">4. Marketplace</h2>
           <p>
             Digital sales run through 80/20 escrow — sellers receive their share after the buyer
-            confirms delivery. Physical listings are direct-contact between buyer and seller;
-            Oventric is not a party to physical transactions.
+            confirms delivery. Oventric lists digital products only.
           </p>
 
           <h2 className="text-lg font-bold text-white md:text-slate-900">5. Wallet and payouts</h2>
