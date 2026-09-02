@@ -142,6 +142,7 @@ import { FollowButton } from "@/components/oventric/FollowButton";
 import { JoinCirclePickerModal } from "@/components/oventric/JoinCirclePickerModal";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
+import { Button } from "@/components/ui/button";
 import { useScrollRestoration } from "@/hooks/useScrollRestoration";
 
 const profileSearchSchema = z.object({
@@ -1089,7 +1090,7 @@ function ProfilePage() {
               className="profile-card-safe profile-standard-header mb-6 md:overflow-hidden md:rounded-[10px] md:border md:border-slate-200 md:bg-white md:shadow-sm"
             >
               {/* Cover image — full-bleed hero */}
-              <div className="profile-cover-safe relative -mx-4 -mt-6 h-56 overflow-hidden border-b border-white/10 bg-[#18181d] sm:h-72 md:mx-0 md:mt-0 md:h-64 md:rounded-none md:border-0 md:border-b md:border-slate-200 md:bg-slate-100 lg:h-72">
+              <div className="profile-cover-safe relative -mx-4 -mt-6 h-56 overflow-hidden border-b border-white/10 bg-[#18181d] sm:h-64 md:mx-0 md:mt-0 md:h-60 md:rounded-none md:border-0 md:border-b md:border-slate-200 md:bg-slate-100 lg:h-64">
                 {realProfile?.coverUrl ? (
                   <ResponsiveImage
                     src={realProfile.coverUrl}
@@ -1106,7 +1107,9 @@ function ProfilePage() {
                   style={{ maskImage: "linear-gradient(to top, black, transparent)", WebkitMaskImage: "linear-gradient(to top, black, transparent)", opacity: 0.85 }}
                 />
 
-                <button
+                 <Button
+                   variant="ghost"
+                   size="icon"
                   type="button"
                   onClick={() => {
                     if (typeof window !== "undefined" && window.history.length > 1)
@@ -1114,18 +1117,19 @@ function ProfilePage() {
                     else navigate({ to: "/" });
                   }}
                   aria-label="Go back"
-                  className="absolute left-3 top-3 grid h-10 w-10 place-items-center rounded-full bg-black/45 text-white hover:bg-black/65"
+                   className="absolute left-3 top-3 h-10 w-10 rounded-[10px] border border-white/15 bg-black/45 text-white shadow-sm hover:bg-black/65 hover:text-white"
                 >
                   <ArrowLeft className="h-5 w-5" />
-                </button>
+                 </Button>
 
                 {isOwnProfile && (
-                  <button
+                   <Button
+                     variant="ghost"
                     type="button"
                     onClick={() => coverInputRef.current?.click()}
                     disabled={uploading === "cover"}
                     aria-label="Change cover image"
-                    className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-black/45 px-3 py-2 text-xs font-semibold text-white hover:bg-black/65"
+                     className="absolute right-3 top-3 h-10 rounded-[10px] border border-white/15 bg-black/45 px-3 text-xs font-bold text-white shadow-sm hover:bg-black/65 hover:text-white"
                   >
                     {uploading === "cover" ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -1139,15 +1143,15 @@ function ProfilePage() {
                           ? "Change cover"
                           : "Add cover"}
                     </span>
-                  </button>
+                   </Button>
                 )}
               </div>
 
               {/* Identity — avatar overlaps the cover from the left, app-style */}
-              <div className="-mt-12 px-1 md:-mt-16 md:px-8 md:pb-8">
+               <div className="-mt-12 px-1 md:-mt-14 md:px-8 md:pb-7">
                 <div className="grid grid-cols-[auto_minmax(0,1fr)] items-end gap-3">
                   <div className="relative shrink-0">
-                    <div className="profile-avatar-safe flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-[#E5484D] text-3xl font-black text-white ring-[3px] ring-[#E5484D]/70 outline outline-4 outline-[#121214] sm:h-28 sm:w-28 md:h-36 md:w-36 md:rounded-[10px] md:ring-0 md:outline-white lg:h-40 lg:w-40">
+                     <div className="profile-avatar-safe flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-[#E5484D] text-3xl font-black text-white ring-[3px] ring-[#E5484D]/70 outline outline-4 outline-[#121214] sm:h-28 sm:w-28 md:h-32 md:w-32 md:rounded-[10px] md:ring-0 md:outline-white lg:h-36 lg:w-36">
                       {displayAvatar ? (
                         <ResponsiveImage
                           src={displayAvatar}
@@ -1172,48 +1176,56 @@ function ProfilePage() {
                       <Check className="h-3.5 w-3.5 text-white" strokeWidth={3.5} />
                     </span>
                     {isOwnProfile && (
-                      <button
+                       <Button
+                         variant="ghost"
+                         size="icon"
                         type="button"
                         onClick={() => avatarInputRef.current?.click()}
                         disabled={uploading === "avatar"}
                         aria-label="Change profile picture"
-                        className="absolute -top-1 -right-1 w-8 h-8 rounded-full bg-black/70 hover:bg-black text-white border border-white/20 flex items-center justify-center"
+                         className="absolute -right-1 -top-1 h-8 w-8 rounded-[10px] border border-white/20 bg-black/70 text-white hover:bg-black hover:text-white"
                       >
                         {uploading === "avatar" ? (
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
                         ) : (
                           <Camera className="w-3.5 h-3.5" strokeWidth={2.4} />
                         )}
-                      </button>
+                       </Button>
                     )}
                   </div>
 
                   {/* Quick actions, bottom-aligned against the cover edge */}
-                  <div className="flex items-center justify-end gap-2 pb-1">
+                   <div className="flex items-center justify-end gap-2 pb-1">
                     {!isOwnProfile && realProfile?.userId && (
-                      <button
+                       <Button
+                         variant="outline"
+                         size="icon"
                         onClick={handleChat}
                         aria-label={`Message ${displayName}`}
-                        className="grid h-10 w-10 place-items-center rounded-full border border-white/12 bg-[#1A1A1F] md:bg-white md:border-slate-200 text-slate-200 md:text-slate-700 hover:bg-[#232329]"
+                         className="h-10 w-10 rounded-[10px] border-white/12 bg-[#1A1A1F] text-slate-200 hover:bg-[#232329] hover:text-white md:border-slate-200 md:bg-white md:text-slate-700 md:hover:bg-slate-100 md:hover:text-slate-900"
                       >
                         <MessageCircle className="h-4 w-4" />
-                      </button>
+                       </Button>
                     )}
-                    <button
+                     <Button
+                       variant="outline"
+                       size="icon"
                       onClick={shareProfile}
                       aria-label="Share profile"
-                      className="grid h-10 w-10 place-items-center rounded-full border border-white/12 bg-[#1A1A1F] md:bg-white md:border-slate-200 text-slate-200 md:text-slate-700 hover:bg-[#232329]"
+                       className="h-10 w-10 rounded-[10px] border-white/12 bg-[#1A1A1F] text-slate-200 hover:bg-[#232329] hover:text-white md:border-slate-200 md:bg-white md:text-slate-700 md:hover:bg-slate-100 md:hover:text-slate-900"
                     >
                       <Share2 className="h-4 w-4" />
-                    </button>
+                     </Button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <button
+                         <Button
+                           variant="outline"
+                           size="icon"
                           aria-label="More profile options"
-                          className="grid h-10 w-10 place-items-center rounded-full border border-white/12 bg-[#1A1A1F] text-slate-200 hover:bg-[#232329] md:border-slate-200 md:bg-white md:text-slate-700"
+                           className="h-10 w-10 rounded-[10px] border-white/12 bg-[#1A1A1F] text-slate-200 hover:bg-[#232329] hover:text-white md:border-slate-200 md:bg-white md:text-slate-700 md:hover:bg-slate-100 md:hover:text-slate-900"
                         >
                           <MoreHorizontal className="h-4 w-4" />
-                        </button>
+                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-56">
                         <DropdownMenuItem onClick={handleCopyLink}>
@@ -1397,41 +1409,45 @@ function ProfilePage() {
 
                 {/* Primary actions */}
                 {!isOwnProfile && !identityMissing && realProfile?.userId && (
-                  <div className="mt-3 flex items-center gap-2">
+                  <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto_auto] items-start gap-2 md:flex md:justify-end">
                     <FollowButton
                       targetId={realProfile.userId}
-                      className="w-full justify-center rounded-xl py-3 text-sm font-black bg-[#E5484D]! hover:bg-[#C43D42]! text-white! border-transparent!"
+                      className="h-11 w-full justify-center rounded-[10px] border-transparent! bg-[#E5484D]! px-5 py-0 text-sm font-black text-white! hover:bg-[#C43D42]! md:w-44"
                     />
-                    <button
+                    <Button
+                      variant="outline"
                       onClick={handleChat}
                       aria-label={`Message ${displayName}`}
-                      className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border border-white/12 bg-[#1A1A1F] px-4 py-3 text-sm font-bold text-white hover:bg-[#232329] md:border-slate-300 md:bg-white md:text-slate-900 md:hover:bg-slate-100"
+                      className="h-11 rounded-[10px] border-white/12 bg-[#1A1A1F] px-4 text-sm font-bold text-white hover:bg-[#232329] hover:text-white md:w-36 md:border-slate-300 md:bg-white md:text-slate-900 md:hover:bg-slate-100"
                     >
                       <MessageCircle className="h-4 w-4" /> Message
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
                       onClick={() => setJoinCircleOpen(true)}
                       aria-label="Request to join one of this user's circles"
-                      className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-white/12 bg-[#1A1A1F] text-slate-300 hover:bg-[#232329] md:border-slate-300 md:bg-white md:text-slate-600"
+                      className="h-11 w-11 shrink-0 rounded-[10px] border-white/12 bg-[#1A1A1F] text-slate-300 hover:bg-[#232329] hover:text-white md:border-slate-300 md:bg-white md:text-slate-600 md:hover:bg-slate-100 md:hover:text-slate-900"
                     >
                       <Users className="h-4 w-4" />
-                    </button>
+                    </Button>
                   </div>
                 )}
                 {isOwnProfile && (
-                  <div className="mt-3 flex items-center gap-2">
-                    <button
+                  <div className="mt-3 grid grid-cols-2 items-center gap-2 md:flex md:justify-end">
+                    <Button
                       onClick={() => setEditProfileOpen(true)}
-                      className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[#E5484D] px-4 py-3 text-sm font-black text-white hover:bg-[#C43D42]"
+                      className="h-11 rounded-[10px] bg-[#E5484D] px-5 text-sm font-black text-white hover:bg-[#C43D42] md:w-44"
                     >
                       <Pencil className="h-4 w-4" strokeWidth={2.5} /> Edit profile
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="outline"
                       onClick={() => navigate({ to: "/" })}
-                      className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border border-white/12 bg-[#1A1A1F] px-4 py-3 text-sm font-bold text-white hover:bg-[#232329] md:border-slate-300 md:bg-white md:text-slate-900 md:hover:bg-slate-100"
+                      className="h-11 rounded-[10px] border-white/12 bg-[#1A1A1F] px-5 text-sm font-bold text-white hover:bg-[#232329] hover:text-white md:w-36 md:border-slate-300 md:bg-white md:text-slate-900 md:hover:bg-slate-100"
                     >
                       Back to feed
-                    </button>
+                    </Button>
                   </div>
                 )}
 
