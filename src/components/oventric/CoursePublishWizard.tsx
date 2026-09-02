@@ -373,7 +373,7 @@ export function CoursePublishWizard({
         <div
           className={`flex items-center justify-between gap-2 border-t border-slate-200 shrink-0 ${
             isAppShell
-              ? "fixed bottom-0 left-0 right-0 p-4 bg-[#0A0A0B]/90 backdrop-blur-xl z-20 rounded-t-[10px] border-t border-white/5"
+              ? "fixed bottom-0 left-0 right-0 z-20 rounded-t-[10px] border-t border-slate-200 bg-white/95 p-4 backdrop-blur-xl"
               : "bg-white/95 p-4 backdrop-blur-sm"
           }`}
         >
@@ -741,7 +741,7 @@ function LessonRow({
   const [open, setOpen] = useState(false);
   const Icon = lesson.type === "text" ? FileText : lesson.type === "pdf" ? FileType2 : Video;
   return (
-    <div className="rounded-[12px] bg-white border border-slate-200 overflow-hidden transition-all hover:border-white/10 shadow-sm">
+    <div className="overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-sm transition-colors hover:border-slate-300">
       <div className="flex items-center gap-3 p-3">
         <div className="p-2 rounded-lg bg-red-50">
           <Icon className="w-4 h-4 text-[#E5484D] shrink-0" />
@@ -1114,7 +1114,7 @@ function QuestionCard({
                   ),
                 )
               }
-              className="flex-1 bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#E5484D]/30 transition-all"
+              className="flex-1 rounded-[10px] border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-hidden transition-colors focus:border-red-500 focus:ring-2 focus:ring-red-100"
             />
             {question.type === "multiple" && question.options.length > 2 && (
               <button
@@ -1228,7 +1228,7 @@ function SettingsStep(props: {
             type="checkbox"
             checked={requireLinear}
             onChange={(e) => setRequireLinear(e.target.checked)}
-            className="w-5 h-5 rounded-[6px] border-white/10 bg-[#0A0A0B] checked:bg-[#E5484D] accent-[#E5484D] transition-all"
+            className="h-5 w-5 rounded-[6px] border-slate-300 bg-white accent-red-600"
           />
           <span className="text-sm font-bold text-slate-700 group-hover:text-slate-950 transition-colors">
             Require linear progression{" "}
@@ -1248,7 +1248,7 @@ function SettingsStep(props: {
             type="checkbox"
             checked={issueCertificate}
             onChange={(e) => setIssueCertificate(e.target.checked)}
-            className="w-5 h-5 rounded-[6px] border-white/10 bg-[#0A0A0B] checked:bg-[#E5484D] accent-[#E5484D] transition-all"
+            className="h-5 w-5 rounded-[6px] border-slate-300 bg-white accent-red-600"
           />
           <span className="text-sm font-bold text-slate-700 group-hover:text-slate-950 transition-colors">Issue certificate on completion</span>
         </label>

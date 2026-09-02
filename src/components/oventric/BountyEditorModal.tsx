@@ -433,7 +433,7 @@ export function BountyEditorModal({
         <div className="flex items-center justify-between mb-6">
           <div className="flex flex-col">
             <h2 className="text-slate-950 font-black text-xl inline-flex items-center gap-2">
-              <Target className="w-5 h-5 text-[#E5484D]" /> Post a bounty
+              <Target className="h-5 w-5 text-red-600" /> Post a bounty
             </h2>
             <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-1">
               Escrow-protected tasks and gigs
@@ -502,14 +502,14 @@ export function BountyEditorModal({
                     </div>
                   )}
                   {idx === 0 && (
-                    <span className="absolute top-1 left-1 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#E5484D] text-white">
+                    <span className="absolute left-1 top-1 rounded bg-red-600 px-1.5 py-0.5 text-[9px] font-bold uppercase text-white">
                       Cover
                     </span>
                   )}
                   <button
                     type="button"
                     onClick={() => removeImage(idx)}
-                    className="absolute top-1 right-1 p-1 rounded-[10px] bg-create-overlay hover:bg-red-500/70 text-red-200 hover:text-white"
+                    className="absolute right-1 top-1 rounded-[10px] bg-slate-950/75 p-1 text-white transition-colors hover:bg-red-600"
                     aria-label="Remove image"
                   >
                     <X className="w-3 h-3" />
@@ -604,7 +604,7 @@ export function BountyEditorModal({
                   type="datetime-local"
                   value={form.start_at}
                   onChange={(e) => setForm({ ...form, start_at: e.target.value })}
-                  className={inputCls + " focus:border-[#E5484D]/60"}
+                  className={inputCls}
                 />
               </Field>
               <Field label="Ends (listing)">
@@ -612,7 +612,7 @@ export function BountyEditorModal({
                   type="datetime-local"
                   value={form.end_at}
                   onChange={(e) => setForm({ ...form, end_at: e.target.value })}
-                  className={inputCls + " focus:border-[#E5484D]/60"}
+                  className={inputCls}
                 />
               </Field>
               <Field label="Deadline (delivery)">
@@ -620,7 +620,7 @@ export function BountyEditorModal({
                   type="datetime-local"
                   value={form.deadline_at}
                   onChange={(e) => setForm({ ...form, deadline_at: e.target.value })}
-                  className={inputCls + " focus:border-[#E5484D]/60"}
+                  className={inputCls}
                 />
               </Field>
             </div>
@@ -630,7 +630,7 @@ export function BountyEditorModal({
             <button
               disabled={saving}
               onClick={save}
-              className="px-6 py-3 bg-[#E5484D] hover:bg-[#E5484D]/90 disabled:opacity-50 text-white text-sm font-black rounded-[10px] flex items-center gap-2 shadow-lg shadow-[#E5484D]/20 transition-all active:scale-95"
+              className="flex min-h-11 items-center gap-2 rounded-[10px] bg-red-600 px-6 py-3 text-sm font-black text-white shadow-lg transition-colors hover:bg-red-700 disabled:opacity-50"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
               Publish bounty
@@ -670,7 +670,7 @@ export function BountyEditorModal({
               </p>
               <p className="text-xs text-slate-600 mt-2">
                 Top up at least{" "}
-                <span className="text-[#E5484D] font-semibold">
+                <span className="font-semibold text-red-600">
                   {formatMoney(shortfallBase, baseCurrency)}
                 </span>{" "}
                 to publish.
@@ -678,7 +678,7 @@ export function BountyEditorModal({
               <div className="flex flex-wrap gap-2 mt-4">
                 <button
                   onClick={goToWallet}
-                  className="px-4 py-3 bg-[#E5484D] hover:bg-[#E5484D]/90 text-white text-sm font-bold rounded-[10px] inline-flex items-center gap-2 transition-all active:scale-95"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-[10px] bg-red-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-red-700"
                 >
                   <Wallet className="w-4 h-4" /> Save draft & top up
                 </button>
@@ -744,16 +744,10 @@ function BountyPublishedSplash({
         className="relative w-full max-w-sm rounded-[10px] border border-slate-200 bg-white p-7 text-center shadow-xl"
         style={{ animation: "bpPop 480ms cubic-bezier(.2,1.4,.4,1) both" }}
       >
-        <div
-          className="mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center"
-          style={{
-            background: "linear-gradient(135deg, #E5484D, #9e2a2d)",
-            boxShadow: "0 10px 40px -6px rgba(229, 72, 77, 0.7)",
-          }}
-        >
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-600 shadow-lg">
           <CheckCircle2 className="w-9 h-9 text-white" strokeWidth={2.5} />
         </div>
-        <div className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-[#E5484D] mb-2">
+        <div className="mb-2 inline-flex items-center gap-1.5 text-[11px] font-black uppercase text-red-600">
           <Sparkles className="w-3.5 h-3.5" /> Bounty Published
         </div>
         <h2 className="text-xl font-black text-slate-950 mb-1">Your bounty is in! 🎉</h2>
@@ -765,11 +759,11 @@ function BountyPublishedSplash({
           className="inline-flex items-center gap-2 rounded-[10px] border border-red-200 bg-red-50 px-3 py-3 mb-4 text-red-800 text-sm font-bold"
 
         >
-          <Wallet className="w-4 h-4 text-[#E5484D]" />
+          <Wallet className="h-4 w-4 text-red-600" />
           <span>{amountLabel} escrowed</span>
         </div>
         <p className="text-[11px] text-slate-600 inline-flex items-center gap-1.5 justify-center">
-          <ShieldCheck className="w-3.5 h-3.5 text-[#E5484D]" />
+          <ShieldCheck className="h-3.5 w-3.5 text-red-600" />
           It goes live the moment an admin approves it.
         </p>
         <button
