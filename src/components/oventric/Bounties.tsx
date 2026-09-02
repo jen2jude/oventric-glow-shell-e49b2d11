@@ -429,7 +429,7 @@ export function Bounties() {
         loading={bountiesLoading}
         error={bountiesError}
         currency={baseCurrency}
-        onPost={() => require(2, () => setPostOpen(true), "poster")}
+        onPost={() => require(2, () => setPostOpen(true), "issuer")}
         onOpen={(id) => require(2, () => setSelectedId(id), "solver")}
       />
       <BountyEditorModal
