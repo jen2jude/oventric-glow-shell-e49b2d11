@@ -145,7 +145,7 @@ export function FeedAppChrome({
             <CountBadge count={messages ?? 0} ariaLabel={`${messages ?? 0} unread messages`} />
           </button>
           <div className="ml-1">
-            <ProfileDropdown />
+            <ProfileDropdown trigger="mega" />
           </div>
 
         </div>

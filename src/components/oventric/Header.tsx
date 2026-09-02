@@ -428,7 +428,7 @@ export function Header({
           {/* Profile */}
           {isAuthenticated ? (
             <div className="shrink-0 flex items-center gap-2.5 md:gap-3">
-              <ProfileDropdown />
+              <ProfileDropdown trigger="mega" />
 
               {/* Desktop candy-box menu (MegaMenu) */}
               <button
