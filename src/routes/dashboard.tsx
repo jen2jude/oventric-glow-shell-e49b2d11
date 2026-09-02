@@ -1434,12 +1434,6 @@ function OverviewPane({
             accent="text-white md:text-slate-900"
           />
           <StatCard
-            icon={MessageCircle}
-            label="Contacted"
-            value={overview.contacts}
-            accent="text-white md:text-slate-900"
-          />
-          <StatCard
             icon={Store}
             label="Listings"
             value={overview.listings.total}
@@ -1524,12 +1518,6 @@ function OverviewPane({
           icon={Clock}
           label="Pending orders"
           value={overview.purchases.pending}
-          accent="text-white md:text-slate-900"
-        />
-        <StatCard
-          icon={MessageCircle}
-          label="Sellers contacted"
-          value={overview.contacts}
           accent="text-white md:text-slate-900"
         />
         <StatCard
