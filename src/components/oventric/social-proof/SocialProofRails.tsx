@@ -168,8 +168,8 @@ export function SocialProofRails({
                 return (
                   <Link
                     key={post.id}
-                    to="/post/$id"
-                    params={{ id: post.id }}
+                    to="/feed"
+                    search={{ post: post.id }}
                     className={`w-[260px] shrink-0 snap-start overflow-hidden rounded-[10px] transition-transform active:scale-[0.99] ${card}`}
                   >
                     {thumb && (

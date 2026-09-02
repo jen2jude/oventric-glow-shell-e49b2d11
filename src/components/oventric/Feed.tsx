@@ -904,6 +904,30 @@ export function Feed() {
   const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null);
   const [videoStartId, setVideoStartId] = useState<string | null>(null);
   const [commentsSheetPostId, setCommentsSheetPostId] = useState<string | null>(null);
+  // Deep link: /feed?post=<id> (e.g. from the "From our Community" rail) —
+  // once that post lands in the feed, scroll it into view and open its
+  // comments sheet, then strip the param from the address bar.
+  const deepLinkHandledRef = useRef(false);
+  useEffect(() => {
+    if (deepLinkHandledRef.current || posts.length === 0) return;
+    if (typeof window === "undefined") return;
+    const target = new URLSearchParams(window.location.search).get("post");
+    if (!target) {
+      deepLinkHandledRef.current = true;
+      return;
+    }
+    if (!posts.some((p) => p.id === target)) return;
+    deepLinkHandledRef.current = true;
+    const url = new URL(window.location.href);
+    url.searchParams.delete("post");
+    window.history.replaceState(null, "", url.toString());
+    requestAnimationFrame(() => {
+      document
+        .getElementById(`post-${target}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      setCommentsSheetPostId(target);
+    });
+  }, [posts]);
   const [hiddenPosts, setHiddenPosts] = useState<Set<string>>(() => getHiddenPosts());
   const [blogPosts, setBlogPosts] = useState<BlogListItem[]>([]);
   const [blogShare, setBlogShare] = useState<BlogListItem | null>(null);
