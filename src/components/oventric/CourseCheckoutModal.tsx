@@ -70,7 +70,7 @@ export function CourseCheckoutModal({
   onClose: () => void;
   onEnrolled: () => void;
 }) {
-  const { homeCurrency } = useOnboarding();
+  const { homeCurrency, setUsdPreview } = useOnboarding();
   const runEnroll = useServerFn(enrollPaid);
   const runBalances = useServerFn(getWalletBalances);
   const runCoupon = useServerFn(validateCoupon);
@@ -88,6 +88,8 @@ export function CourseCheckoutModal({
 
   useEffect(() => {
     if (!open) return;
+    // Enrolment settles in the learner's home currency.
+    setUsdPreview(false);
     setMethod("card");
     setCouponInput("");
     setCouponPct(0);
@@ -103,7 +105,7 @@ export function CourseCheckoutModal({
       .catch(() => {
         setCashbackUSD(0);
       });
-  }, [open, runBalances, homeCurrency]);
+  }, [open, runBalances, homeCurrency, setUsdPreview]);
 
   // Snapshot-aware display for the course price. Falls back safely inside
   // computeDisplayPrice when fxSnapshot is missing/invalid.
