@@ -183,13 +183,12 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
     setReview(true);
   }
 
-  /** PIN verified → liveness check → publish the request. */
+  /** PIN verified → publish the request. */
   function afterPin() {
     setPinMode(null);
-    verifyLiveness(async () => {
-      await submitPayout();
-    });
+    void submitPayout();
   }
+
 
   async function submitPayout() {
     if (!activeRecipient || submitting) return;
