@@ -204,7 +204,7 @@ export function WebCircles({ onOpen }: { onOpen: (slug: string) => void }) {
 
           <aside className="w-full self-center rounded-[14px] border border-white/10 bg-white/[0.05] p-6 backdrop-blur lg:justify-self-end">
             <div className="inline-flex items-center gap-2 rounded-full bg-crimson/15 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-crimson">
-              <Lock className="h-3 w-3" /> Browse only on web
+              <Lock className="h-3 w-3" /> Escrow protected
             </div>
             <h2 className="mt-4 text-xl font-black leading-snug">
               Membership lives inside the app

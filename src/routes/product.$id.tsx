@@ -1,4 +1,3 @@
-import { GetAppButton } from "@/lib/app-gate";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 import { CreatorChip, EcosystemLinks } from "@/components/oventric/ecosystem/CreatorChip";
 
