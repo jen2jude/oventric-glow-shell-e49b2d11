@@ -269,30 +269,17 @@ export function KycGateProvider({ children }: { children: ReactNode }) {
       });
   }, [session?.user?.id, checked, getStatus]);
 
-  const ensureKyc = useCallback(
-    (onSuccess: () => void | Promise<void>) => {
-      if (kycCompleted) {
-        void onSuccess();
-        return;
-      }
-      pendingRef.current = onSuccess;
-      setMode("enroll");
-    },
-    [kycCompleted],
-  );
+  // Liveness / KYC camera gating is disabled platform-wide. Withdrawals are
+  // now protected by the 4-digit withdrawal PIN instead, so both helpers simply
+  // run the gated action.
+  const ensureKyc = useCallback((onSuccess: () => void | Promise<void>) => {
+    void onSuccess();
+  }, []);
 
-  const verifyLiveness = useCallback(
-    (onSuccess: () => void | Promise<void>) => {
-      if (!kycCompleted) {
-        pendingRef.current = onSuccess;
-        setMode("enroll");
-        return;
-      }
-      pendingRef.current = onSuccess;
-      setMode("match");
-    },
-    [kycCompleted],
-  );
+  const verifyLiveness = useCallback((onSuccess: () => void | Promise<void>) => {
+    void onSuccess();
+  }, []);
+
 
   const handleComplete = useCallback((paths?: { selfie: string; id: string }) => {
     setMode(null);
