@@ -39,6 +39,20 @@ type MethodId = MethodKind | "usdt" | "trust" | "paypal";
 
 const COMING_SOON: MethodId[] = ["usdt", "trust", "paypal"];
 
+/** USD payout rails. Funds leave the home-currency wallet and settle in USD. */
+const USD_CHANNELS: Array<{
+  id: UsdPayoutChannel;
+  label: string;
+  hint: string;
+  field: string;
+  placeholder: string;
+}> = [
+  { id: "binance", label: "Binance (USDT)", hint: "Pay-ID / Binance ID", field: "Binance ID", placeholder: "e.g. 384920117" },
+  { id: "bybit", label: "Bybit (USDT)", hint: "Bybit UID", field: "Bybit UID", placeholder: "e.g. 10293845" },
+  { id: "minipay", label: "MiniPay", hint: "MiniPay account number", field: "MiniPay Account Number", placeholder: "e.g. 0801234567" },
+  { id: "wallet", label: "Crypto Wallet", hint: "Self-custody wallet address", field: "Wallet Address", placeholder: "0x… or T…" },
+];
+
 function money(v: number, sym: string) {
   return `${sym}${(Number(v) || 0).toLocaleString(undefined, {
     minimumFractionDigits: 2,
@@ -284,19 +298,118 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
           </div>
         </div>
 
+        {/* Payout currency */}
+        <div className="grid grid-cols-2 gap-2 rounded-[10px] border border-white/8 bg-white/[0.03] p-1">
+          {([
+            { id: "local" as const, label: `Local ${currency}`, sub: money(available, sym) },
+            { id: "usd" as const, label: "USD", sub: `$${availableUsd.toFixed(2)}` },
+          ]).map((t) => (
+            <button
+              key={t.id}
+              onClick={() => {
+                setMode(t.id);
+                setAmountRaw("");
+              }}
+              className={`rounded-[10px] py-2.5 text-center transition ${
+                mode === t.id ? "bg-[#E5484D] text-white" : "text-slate-400"
+              }`}
+            >
+              <span className="block text-xs font-black">{t.label}</span>
+              <span className="block text-[10px] font-bold opacity-80">{t.sub}</span>
+            </button>
+          ))}
+        </div>
+
         {/* Withdraw To */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-black text-white">Withdraw To</h2>
-            <button
-              onClick={() => setAddKind(COMING_SOON.includes(selected) ? "bank" : (selected as MethodKind))}
-              className="text-xs font-bold text-[#E5484D] flex items-center gap-1"
-            >
-              <Plus className="w-3.5 h-3.5" /> Add New Method
-            </button>
+            {mode === "local" ? (
+              <button
+                onClick={() => setAddKind(COMING_SOON.includes(selected) ? "bank" : (selected as MethodKind))}
+                className="text-xs font-bold text-[#E5484D] flex items-center gap-1"
+              >
+                <Plus className="w-3.5 h-3.5" /> Add New Method
+              </button>
+            ) : (
+              <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1">
+                <Globe className="w-3.5 h-3.5" /> Paid in USD
+              </span>
+            )}
           </div>
 
-          {methods.map((m) => {
+          {mode === "usd" && (
+            <div className="space-y-3">
+              {USD_CHANNELS.map((c) => (
+                <button
+                  key={c.id}
+                  onClick={() => setUsdChannel(c.id)}
+                  className={`w-full flex items-center gap-3 rounded-[10px] border p-3 text-left transition ${
+                    usdChannel === c.id
+                      ? "border-[#E5484D]/60 bg-[#E5484D]/[0.07]"
+                      : "border-white/8 bg-white/[0.03]"
+                  }`}
+                >
+                  <span className="w-11 h-11 rounded-[10px] border border-teal-400/25 bg-teal-500/15 text-teal-300 flex items-center justify-center">
+                    <WalletIcon className="w-5 h-5" />
+                  </span>
+                  <span className="flex-1 min-w-0">
+                    <span className="block text-sm font-black text-white">{c.label}</span>
+                    <span className="block text-[11px] text-slate-500 truncate">{c.hint}</span>
+                  </span>
+                  {usdChannel === c.id ? (
+                    <span className="w-6 h-6 rounded-full bg-[#E5484D] flex items-center justify-center">
+                      <Check className="w-3.5 h-3.5 text-white" />
+                    </span>
+                  ) : (
+                    <span className="w-6 h-6 rounded-full border border-white/20" />
+                  )}
+                </button>
+              ))}
+
+              <div className="space-y-3 rounded-[10px] border border-white/8 bg-white/[0.03] p-3">
+                <label className="block space-y-1.5">
+                  <span className="text-[11px] uppercase tracking-widest font-bold text-slate-500">
+                    {USD_CHANNELS.find((c) => c.id === usdChannel)?.field}
+                  </span>
+                  <input
+                    value={usdIdentifier}
+                    onChange={(e) => setUsdIdentifier(e.target.value)}
+                    placeholder={USD_CHANNELS.find((c) => c.id === usdChannel)?.placeholder}
+                    className="w-full bg-white/5 border border-white/10 rounded-[10px] py-3 px-3 text-white text-sm outline-none focus:border-[#E5484D]/60"
+                  />
+                </label>
+                <label className="block space-y-1.5">
+                  <span className="text-[11px] uppercase tracking-widest font-bold text-slate-500">
+                    Account Name (optional)
+                  </span>
+                  <input
+                    value={usdName}
+                    onChange={(e) => setUsdName(e.target.value)}
+                    placeholder="Name on the account"
+                    className="w-full bg-white/5 border border-white/10 rounded-[10px] py-3 px-3 text-white text-sm outline-none focus:border-[#E5484D]/60"
+                  />
+                </label>
+                {usdChannel === "wallet" && (
+                  <label className="block space-y-1.5">
+                    <span className="text-[11px] uppercase tracking-widest font-bold text-slate-500">Network</span>
+                    <select
+                      value={usdNetwork}
+                      onChange={(e) => setUsdNetwork(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-[10px] py-3 px-3 text-white text-sm outline-none focus:border-[#E5484D]/60"
+                    >
+                      <option value="TRC20">USDT · TRC20</option>
+                      <option value="BEP20">USDT · BEP20</option>
+                      <option value="ERC20">USDT · ERC20</option>
+                      <option value="CELO">cUSD · Celo</option>
+                    </select>
+                  </label>
+                )}
+              </div>
+            </div>
+          )}
+
+          {mode === "local" && methods.map((m) => {
             const soon = COMING_SOON.includes(m.id);
             const active = selected === m.id && !soon;
             return (
