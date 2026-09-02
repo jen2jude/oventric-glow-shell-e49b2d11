@@ -55,6 +55,29 @@
   --color-promo-gold: var(--promo-gold);
   --color-promo-text: var(--promo-text);
   --color-promo-text-soft: var(--promo-text-soft);
+  --color-create-surface: var(--create-surface);
+  --color-create-card: var(--create-card);
+  --color-create-muted: var(--create-muted);
+  --color-create-hover: var(--create-hover);
+  --color-create-title: var(--create-title);
+  --color-create-copy: var(--create-copy);
+  --color-create-arrow: var(--create-arrow);
+  --color-create-border: var(--create-border);
+  --color-create-border-strong: var(--create-border-strong);
+  --color-create-handle: var(--create-handle);
+  --color-create-overlay: var(--create-overlay);
+  --color-create-brand: var(--create-brand);
+  --color-create-brand-soft: var(--create-brand-soft);
+  --color-create-post: var(--create-post);
+  --color-create-post-soft: var(--create-post-soft);
+  --color-create-bounty: var(--create-bounty);
+  --color-create-bounty-soft: var(--create-bounty-soft);
+  --color-create-sell: var(--create-sell);
+  --color-create-sell-soft: var(--create-sell-soft);
+  --color-create-course: var(--create-course);
+  --color-create-course-soft: var(--create-course-soft);
+  --shadow-create-panel: var(--create-panel-shadow);
+  --shadow-create-card: var(--create-card-shadow);
   --animate-rgb-neon-chase: rgb-neon-chase 6s linear infinite;
   --animate-rgb-pulse: rgb-pulse 3s ease-in-out infinite;
   --animate-promo-float: promo-float 3.2s ease-in-out infinite;
@@ -126,6 +149,31 @@ body {
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 12%);
   --ring: oklch(0.85 0 0);
+
+  /* Create chooser: deliberately light so it matches the browser experience. */
+  --create-surface: oklch(1 0 0);
+  --create-card: oklch(0.995 0.002 250);
+  --create-muted: oklch(0.97 0.004 250);
+  --create-hover: oklch(0.975 0.008 250);
+  --create-title: oklch(0.19 0.018 255);
+  --create-copy: oklch(0.47 0.018 255);
+  --create-arrow: oklch(0.58 0.018 255);
+  --create-border: oklch(0.9 0.008 250);
+  --create-border-strong: oklch(0.8 0.014 250);
+  --create-handle: oklch(0.82 0.008 250);
+  --create-overlay: oklch(0.16 0.01 250 / 52%);
+  --create-brand: oklch(0.59 0.2 24);
+  --create-brand-soft: oklch(0.96 0.025 24);
+  --create-post: oklch(0.55 0.18 300);
+  --create-post-soft: oklch(0.96 0.03 300);
+  --create-bounty: oklch(0.55 0.15 240);
+  --create-bounty-soft: oklch(0.96 0.025 240);
+  --create-sell: oklch(0.53 0.14 155);
+  --create-sell-soft: oklch(0.96 0.025 155);
+  --create-course: oklch(0.64 0.16 75);
+  --create-course-soft: oklch(0.97 0.03 75);
+  --create-panel-shadow: 0 24px 70px oklch(0.16 0.01 250 / 24%);
+  --create-card-shadow: 0 8px 24px oklch(0.25 0.02 250 / 8%);
 
   /* Warm, celebratory promo modal tokens */
   --promo-surface: oklch(0.96 0.03 75);

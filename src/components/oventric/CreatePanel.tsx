@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { X, PenSquare, Target, ShoppingBag, GraduationCap, ArrowRight, Sparkles } from "lucide-react";
+import { X, PenSquare, Target, ShoppingBag, GraduationCap, ArrowUpRight } from "lucide-react";
 import { useOnboarding, type Tier } from "@/lib/onboarding/OnboardingContext";
+import { Button } from "@/components/ui/button";
 import { SellSwitcherModal } from "./SellSwitcherModal";
 import { CoursePublishWizard } from "./CoursePublishWizard";
 import { BountyEditorModal } from "./BountyEditorModal";
@@ -12,8 +13,8 @@ type Choice = {
   title: string;
   desc: string;
   tier: Tier;
-  accent: string;
-  tint: string;
+  iconClass: string;
+  iconSurfaceClass: string;
   badge?: string;
 };
 
@@ -24,8 +25,8 @@ const choices: Choice[] = [
     title: "Drop a Post",
     desc: "Share updates, ideas, or moments with the community.",
     tier: 1,
-    accent: "#A78BFA",
-    tint: "rgba(167,139,250,0.10)",
+    iconClass: "text-create-post",
+    iconSurfaceClass: "bg-create-post-soft",
     badge: "NEW",
   },
   {
@@ -34,8 +35,8 @@ const choices: Choice[] = [
     title: "Post a Bounty ($)",
     desc: "Get expert help from the community and pay on delivery.",
     tier: 2,
-    accent: "#4CC2FF",
-    tint: "rgba(76,194,255,0.09)",
+    iconClass: "text-create-bounty",
+    iconSurfaceClass: "bg-create-bounty-soft",
   },
   {
     key: "sell",
@@ -43,8 +44,8 @@ const choices: Choice[] = [
     title: "Sell",
     desc: "List digital assets, templates and downloads.",
     tier: 2,
-    accent: "#2BD07A",
-    tint: "rgba(43,208,122,0.09)",
+    iconClass: "text-create-sell",
+    iconSurfaceClass: "bg-create-sell-soft",
   },
   {
     key: "course",
@@ -52,8 +53,8 @@ const choices: Choice[] = [
     title: "Publish a Course",
     desc: "Teach with video modules, free or paid.",
     tier: 2,
-    accent: "#F7A50A",
-    tint: "rgba(247,165,10,0.09)",
+    iconClass: "text-create-course",
+    iconSurfaceClass: "bg-create-course-soft",
   },
 ];
 
@@ -122,83 +123,73 @@ export function CreatePanel({
   return (
     <>
       {open && !subOpen && (
-        <div className="modal-light fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
-          <div
-            className="slide-up relative w-full max-w-2xl border border-white/10 rounded-t-[22px] sm:rounded-[22px] px-5 pt-3 pb-7 shadow-2xl"
-            style={{
-              background:
-                "linear-gradient(180deg, #17171C 0%, #121216 55%, #0E0E12 100%)",
-            }}
+        <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center sm:p-6">
+          <button
+            type="button"
+            className="absolute inset-0 cursor-default bg-create-overlay backdrop-blur-[2px]"
+            onClick={onClose}
+            aria-label="Close create menu"
+          />
+          <section
+            aria-labelledby="create-panel-title"
+            className="slide-up relative w-full max-w-[620px] overflow-hidden rounded-t-[20px] border border-create-border bg-create-surface px-4 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-3 shadow-create-panel sm:rounded-[10px] sm:p-6"
           >
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20 sm:hidden" />
-            <div className="flex items-start justify-between gap-3 mb-5">
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-create-handle sm:hidden" />
+            <div className="mb-5 flex items-start justify-between gap-4 sm:mb-6">
               <div>
-                <h2 className="flex items-center gap-1.5 text-[26px] font-bold leading-tight text-white">
-                  Create Something
-                  <Sparkles className="h-4 w-4 text-[#A78BFA]" />
+                <span className="mb-1 block text-[11px] font-bold uppercase tracking-[0.16em] text-create-brand">
+                  Create on Oventric
+                </span>
+                <h2 id="create-panel-title" className="text-[24px] font-extrabold leading-tight text-create-title sm:text-[28px]">
+                  Create something
                 </h2>
-                <p className="mt-1 text-[13px] text-slate-400">
+                <p className="mt-1.5 text-[13px] leading-relaxed text-create-copy sm:text-sm">
                   Share, earn and grow with the community.
                 </p>
               </div>
-              <button
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
                 onClick={onClose}
-                className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-slate-300 hover:text-white transition-colors"
+                className="h-10 w-10 shrink-0 rounded-full border border-create-border bg-create-muted text-create-copy shadow-none hover:bg-create-hover hover:text-create-title"
                 aria-label="Close"
               >
-                <X className="w-4.5 h-4.5" />
-              </button>
+                <X className="h-4 w-4" />
+              </Button>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3">
               {choices.map((c) => (
-                <button
+                <Button
                   key={c.key}
+                  type="button"
+                  variant="ghost"
                   onClick={() => handleChoice(c)}
-                  className="group relative overflow-hidden text-left rounded-[16px] border p-4 pb-14 transition-all active:scale-[0.98]"
-                  style={{
-                    borderColor: `color-mix(in oklab, ${c.accent} 40%, transparent)`,
-                    background: `linear-gradient(160deg, ${c.tint}, rgba(255,255,255,0.015))`,
-                  }}
+                  className="group relative h-auto min-h-[92px] w-full justify-start whitespace-normal rounded-[10px] border border-create-border bg-create-card px-3.5 py-3 text-left shadow-none transition-[border-color,background-color,transform,box-shadow] hover:border-create-border-strong hover:bg-create-hover hover:text-create-title hover:shadow-create-card active:scale-[0.99] sm:min-h-[132px] sm:flex-col sm:items-start sm:p-4"
                 >
-                  {c.badge && (
-                    <span
-                      className="absolute -right-8 top-2 rotate-45 px-8 py-[3px] text-[9px] font-bold tracking-wider text-white"
-                      style={{ backgroundColor: c.accent }}
-                    >
-                      {c.badge}
+                  <span
+                    className={`grid h-11 w-11 shrink-0 place-items-center rounded-[10px] ${c.iconSurfaceClass} ${c.iconClass}`}
+                  >
+                    <c.icon className="h-5 w-5" strokeWidth={2} />
+                  </span>
+                  <span className="min-w-0 flex-1 sm:mt-1">
+                    <span className="flex items-center gap-2 text-[15px] font-bold leading-tight text-create-title">
+                      {c.title}
+                      {c.badge && (
+                        <span className="rounded-full bg-create-brand-soft px-2 py-0.5 text-[9px] font-extrabold uppercase text-create-brand">
+                          {c.badge}
+                        </span>
+                      )}
                     </span>
-                  )}
-                  <c.icon
-                    className="pointer-events-none absolute -bottom-2 right-1 h-20 w-20 opacity-[0.06]"
-                    style={{ color: c.accent }}
-                    strokeWidth={1.5}
-                  />
-                  <span
-                    className="mb-3 grid h-11 w-11 place-items-center rounded-[13px] border"
-                    style={{
-                      borderColor: `color-mix(in oklab, ${c.accent} 55%, transparent)`,
-                      backgroundColor: `color-mix(in oklab, ${c.accent} 14%, transparent)`,
-                      boxShadow: `0 0 18px -6px ${c.accent}`,
-                    }}
-                  >
-                    <c.icon className="h-5 w-5" style={{ color: c.accent }} strokeWidth={1.9} />
+                    <span className="mt-1 block text-[11.5px] font-normal leading-snug text-create-copy sm:text-xs">
+                      {c.desc}
+                    </span>
                   </span>
-                  <div className="text-[15px] font-bold text-white leading-tight">{c.title}</div>
-                  <div className="mt-1 text-[11.5px] leading-snug text-slate-400">{c.desc}</div>
-                  <span
-                    className="absolute bottom-3 left-1/2 grid h-8 w-8 -translate-x-1/2 place-items-center rounded-full border transition-transform group-hover:translate-y-[-2px]"
-                    style={{
-                      borderColor: `color-mix(in oklab, ${c.accent} 55%, transparent)`,
-                      backgroundColor: `color-mix(in oklab, ${c.accent} 12%, transparent)`,
-                    }}
-                  >
-                    <ArrowRight className="h-4 w-4" style={{ color: c.accent }} />
-                  </span>
-                </button>
+                  <ArrowUpRight className="ml-auto h-4 w-4 shrink-0 text-create-arrow transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 sm:absolute sm:right-4 sm:top-4" />
+                </Button>
               ))}
             </div>
-          </div>
+          </section>
         </div>
 
       )}
