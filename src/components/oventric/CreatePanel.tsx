@@ -124,20 +124,23 @@ export function CreatePanel({
     <>
       {open && !subOpen && (
         <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center sm:p-6">
-          <button
+          <Button
             type="button"
+            variant="ghost"
             className="absolute inset-0 cursor-default bg-create-overlay backdrop-blur-[2px]"
             onClick={onClose}
             aria-label="Close create menu"
           />
           <section
+            role="dialog"
+            aria-modal="true"
             aria-labelledby="create-panel-title"
-            className="slide-up relative w-full max-w-[620px] overflow-hidden rounded-t-[20px] border border-create-border bg-create-surface px-4 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-3 shadow-create-panel sm:rounded-[10px] sm:p-6"
+            className="slide-up relative w-full max-w-[620px] overflow-hidden rounded-t-[10px] border border-create-border bg-create-surface px-4 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-3 shadow-create-panel sm:rounded-[10px] sm:p-6"
           >
             <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-create-handle sm:hidden" />
             <div className="mb-5 flex items-start justify-between gap-4 sm:mb-6">
               <div>
-                <span className="mb-1 block text-[11px] font-bold uppercase tracking-[0.16em] text-create-brand">
+                <span className="mb-1 block text-[11px] font-bold uppercase text-create-brand">
                   Create on Oventric
                 </span>
                 <h2 id="create-panel-title" className="text-[24px] font-extrabold leading-tight text-create-title sm:text-[28px]">
