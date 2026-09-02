@@ -411,7 +411,6 @@ export const createProduct = createServerFn({ method: "POST" })
   });
 
 
-/** Authenticated seller creates a physical product listing. Enters as 'pending' for admin approval. */
 export const createPhysicalProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: {
