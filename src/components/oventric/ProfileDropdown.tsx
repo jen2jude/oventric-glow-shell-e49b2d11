@@ -1452,18 +1452,7 @@ function ProfileSettingsModal({
                   </span>
                 </div>
                 <ul className="text-[11px] text-slate-400 space-y-1 mb-3">
-                  <li className="flex items-center justify-between">
-                    <span>Selfie liveness</span>
-                    <span
-                      className={
-                        full?.kycSelfieUploaded
-                          ? "text-emerald-300 font-semibold"
-                          : "text-slate-500"
-                      }
-                    >
-                      {full?.kycSelfieUploaded ? "Captured" : "Missing"}
-                    </span>
-                  </li>
+
                   <li className="flex items-center justify-between">
                     <span>Government ID</span>
                     <span
