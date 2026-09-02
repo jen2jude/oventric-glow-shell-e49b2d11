@@ -189,6 +189,11 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const value = useMemo<OnboardingContextValue>(
     () => ({
       ...state,
+      // Display currency: the user's home currency, or USD while previewing.
+      baseCurrency: usdPreview && state.baseCurrency !== "USD" ? "USD" : state.baseCurrency,
+      homeCurrency: state.baseCurrency,
+      usdPreview,
+      setUsdPreview,
       openStage,
       setOpenStage: (s) => {
         if (s === null) setPending(null);
@@ -204,6 +209,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     }),
     [
       state,
+      usdPreview,
       openStage,
       require,
       advanceTo,
@@ -213,6 +219,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       setBalancesHidden,
       toggleBalancesHidden,
     ],
+
   );
 
   return <OnboardingContext.Provider value={value}>{children}</OnboardingContext.Provider>;
