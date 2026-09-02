@@ -18,7 +18,6 @@ interface Props {
 }
 
 export function CategoryDiscoverySheet({ open, onClose, categories, counts, onSelectCategory }: Props) {
-  const [kind, setKind] = useState<"physical" | "digital">("physical");
   const [parent, setParent] = useState<CategoryNode | null>(null);
   const [query, setQuery] = useState("");
   const [searching, setSearching] = useState(false);
@@ -36,7 +35,7 @@ export function CategoryDiscoverySheet({ open, onClose, categories, counts, onSe
   const countFor = (c: CategoryNode): number =>
     (counts[c.slug] ?? 0) + c.children.reduce((n, k) => n + (counts[k.slug] ?? 0), 0);
 
-  const roots = categories.filter((c) => c.kind === kind);
+  const roots = categories.filter((c) => c.kind === "digital");
   const level = parent ? parent.children : roots;
   const list = query.trim()
     ? level.filter((c) => c.name.toLowerCase().includes(query.trim().toLowerCase()))
@@ -78,22 +77,6 @@ export function CategoryDiscoverySheet({ open, onClose, categories, counts, onSe
             />
           )}
 
-          {!parent && (
-            <div className="mt-3 flex gap-2 rounded-[10px] bg-[#141416] p-1.5">
-              {(["physical", "digital"] as const).map((k) => (
-                <button
-                  key={k}
-                  type="button"
-                  onClick={() => setKind(k)}
-                  className={`flex-1 rounded-[10px] py-2.5 text-[13px] font-bold capitalize transition-colors ${
-                    kind === k ? "bg-[#E5484D] text-white" : "text-white/50"
-                  }`}
-                >
-                  {k}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* List */}

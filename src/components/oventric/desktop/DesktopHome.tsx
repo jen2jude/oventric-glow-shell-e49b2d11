@@ -150,7 +150,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
   const [bounties, setBounties] = useState<Card[]>([]);
   const [counts, setCounts] = useState({ products: 0, courses: 0, bounties: 0 });
   const [cats, setCats] = useState<CategoryNode[]>([]);
-  const [catTab, setCatTab] = useState<"digital" | "physical">("digital");
+  const catTab = "digital" as const;
   const [q, setQ] = useState("");
   const [searchOpen, setSearchOpen] = useState<"nav" | "hero" | null>(null);
   const searchRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -538,22 +538,6 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
             <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-4xl">
               Explore categories
             </h2>
-            <div className="flex items-center gap-1 rounded-2xl border border-slate-200 bg-white p-1">
-              {(["digital", "physical"] as const).map((k) => (
-                <button
-                  key={k}
-                  type="button"
-                  onClick={() => setCatTab(k)}
-                  className={`h-9 rounded-xl px-4 text-sm font-semibold capitalize transition-colors ${
-                    catTab === k
-                      ? "bg-crimson text-white"
-                      : "text-slate-500 hover:text-slate-900"
-                  }`}
-                >
-                  {k}
-                </button>
-              ))}
-            </div>
           </div>
           <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
             {catList.slice(0, 6).map((c, i) => (
