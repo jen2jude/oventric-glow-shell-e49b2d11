@@ -1452,18 +1452,7 @@ function ProfileSettingsModal({
                   </span>
                 </div>
                 <ul className="text-[11px] text-slate-400 space-y-1 mb-3">
-                  <li className="flex items-center justify-between">
-                    <span>Selfie liveness</span>
-                    <span
-                      className={
-                        full?.kycSelfieUploaded
-                          ? "text-emerald-300 font-semibold"
-                          : "text-slate-500"
-                      }
-                    >
-                      {full?.kycSelfieUploaded ? "Captured" : "Missing"}
-                    </span>
-                  </li>
+
                   <li className="flex items-center justify-between">
                     <span>Government ID</span>
                     <span
@@ -1493,20 +1482,11 @@ function ProfileSettingsModal({
                     </span>
                   </li>
                 </ul>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onClose();
-                    ensureKyc(() => {
-                      toast.success("Verification updated");
-                    });
-                  }}
-                  className="w-full text-xs font-bold py-3 rounded-[10px] bg-[#1E1E24] border border-white/10 text-slate-300 hover:border-emerald-500/40 hover:text-emerald-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70"
-                >
-                  {full?.kycCompletedAt
-                    ? "Re-run liveness check →"
-                    : "Start identity verification →"}
-                </button>
+                <p className="text-[11px] leading-relaxed text-slate-500">
+                  Withdrawals are secured with your 4-digit withdrawal PIN. You'll create it on
+                  your first payout and enter it every time you withdraw.
+                </p>
+
               </div>
 
               {/* Danger zone */}
