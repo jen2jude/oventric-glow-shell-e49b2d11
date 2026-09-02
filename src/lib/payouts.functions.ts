@@ -776,3 +776,84 @@ export const adminGetPendingPayoutCount = createServerFn({ method: "GET" })
     if (error) return { count: 0 };
     return { count: count ?? 0 };
   });
+
+/* ------------------------------------------------------------------ *
+ * USD withdrawals
+ *
+ * Wallets are always held in the user's home currency. A USD withdrawal
+ * converts the requested USD amount back into the home currency at live
+ * FX, debits that wallet and files a USD payout request for finance to
+ * settle off-platform (Binance / Bybit / MiniPay / wallet address).
+ * ------------------------------------------------------------------ */
+
+export type UsdPayoutChannel = "binance" | "bybit" | "minipay" | "wallet";
+
+export interface CreateUsdPayoutInput {
+  channel: UsdPayoutChannel;
+  /** Binance ID, Bybit UID, MiniPay account number or wallet address. */
+  identifier: string;
+  accountName?: string;
+  /** Optional network label for raw wallet payouts, e.g. TRC20. */
+  network?: string;
+  /** Amount in USD the user wants to receive. */
+  amountUsd: number;
+}
+
+export const createUsdPayoutRequest = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: CreateUsdPayoutInput) => {
+    const channel = input?.channel;
+    if (!["binance", "bybit", "minipay", "wallet"].includes(channel)) {
+      throw new Error("Choose a USD payout destination");
+    }
+    const identifier = String(input?.identifier ?? "").trim().slice(0, 200);
+    if (identifier.length < 4) throw new Error("Enter a valid account ID or wallet address");
+    const amountUsd = Math.round(Number(input?.amountUsd ?? 0) * 100) / 100;
+    if (!Number.isFinite(amountUsd) || amountUsd <= 0) throw new Error("Amount must be positive");
+    if (amountUsd < 5) throw new Error("Minimum USD withdrawal is $5");
+    return {
+      channel: channel as UsdPayoutChannel,
+      identifier,
+      accountName: String(input?.accountName ?? "").trim().slice(0, 200),
+      network: String(input?.network ?? "").trim().slice(0, 40),
+      amountUsd,
+    };
+  })
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { currencyForCountry } = await import("@/lib/currency/africa");
+    const { resolveFxRates } = await import("./fx.server");
+
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("country")
+      .eq("user_id", userId)
+      .maybeSingle();
+    const homeCurrency = currencyForCountry((prof?.country as string) ?? null);
+
+    const fx = await resolveFxRates();
+    const rate = homeCurrency === "USD" ? 1 : Number(fx.rates?.[homeCurrency] ?? 0);
+    if (!(rate > 0)) throw new Error("Exchange rate unavailable, please try again shortly");
+    const sourceAmount = Math.round(data.amountUsd * rate * 100) / 100;
+
+    const { data: newId, error } = await supabase.rpc("payout_request_create_usd", {
+      _usd_amount: data.amountUsd,
+      _source_currency: homeCurrency,
+      _source_amount: sourceAmount,
+      _channel: data.channel,
+      _destination: {
+        identifier: data.identifier,
+        account_name: data.accountName || null,
+        network: data.network || null,
+        rate_used: rate,
+      } as never,
+    });
+    if (error) throw new Error(error.message);
+    return {
+      id: newId as unknown as string,
+      amountUsd: data.amountUsd,
+      sourceCurrency: homeCurrency,
+      sourceAmount,
+      rate,
+    };
+  });

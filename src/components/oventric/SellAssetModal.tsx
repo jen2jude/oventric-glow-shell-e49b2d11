@@ -77,7 +77,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
   const snapshotFx = useServerFn(snapshotFxRates);
   const loadCats = useServerFn(listMarketplaceCategories);
   const [categories, setCategories] = useState<CategoryNode[]>(FALLBACK_CATEGORIES);
-  const { baseCurrency } = useOnboarding();
+  const { homeCurrency } = useOnboarding();
 
   const [name, setName] = useState("");
   const [category, setCategory] = useState<ProductCategory>("themes");
@@ -242,17 +242,17 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
 
       setProgress("Locking market rate…");
       const snapshot = await snapshotFx();
-      const rate = Number(snapshot.rates[baseCurrency] ?? 1);
+      const rate = Number(snapshot.rates[homeCurrency] ?? 1);
       const priceUSD = isFree
         ? 0
-        : baseCurrency === "USD"
+        : homeCurrency === "USD"
           ? priceLocal
           : Number((priceLocal / rate).toFixed(2));
 
       const fmtLocal = (n: number) =>
         new Intl.NumberFormat(undefined, {
           style: "currency",
-          currency: baseCurrency,
+          currency: homeCurrency,
           maximumFractionDigits: 2,
         }).format(n);
       const noteLines: string[] = [];
@@ -272,7 +272,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
 
           description: fullDescription,
           priceUSD,
-          originalCurrency: baseCurrency,
+          originalCurrency: homeCurrency,
           originalAmount: priceLocal,
           fxSnapshot: snapshot,
           vendor: vendorName,
@@ -443,7 +443,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                   <div className="mt-2">
                     <label className="block">
                       <span className="text-xs font-medium text-slate-300 sm:text-slate-700">
-                        Price ({baseCurrency})
+                        Price ({homeCurrency})
                       </span>
                       <input
                         value={priceInput}
@@ -458,7 +458,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                 {!isFree &&
                   Number(priceInput) > 0 &&
                   (() => {
-                    const cur = baseCurrency as OrderCurrency;
+                    const cur = homeCurrency as OrderCurrency;
                     const fx = FX_FROM_USD[cur] || 1;
                     const priceLocal = Number(priceInput);
                     const sellerLocal = priceLocal * 0.8;

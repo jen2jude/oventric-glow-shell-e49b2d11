@@ -3919,6 +3919,16 @@ export type Database = {
             }
             Returns: string
           }
+      payout_request_create_usd: {
+        Args: {
+          _channel: string
+          _destination: Json
+          _source_amount: number
+          _source_currency: string
+          _usd_amount: number
+        }
+        Returns: string
+      }
       payout_request_mark_paid: {
         Args: { _id: string; _note: string }
         Returns: undefined

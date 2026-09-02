@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
+import { CurrencyPreviewToggle } from "./CurrencyPreviewToggle";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useTheme } from "@/lib/theme/ThemeProvider";
 import { useIsAppShell } from "@/hooks/use-launch-context";
@@ -263,6 +264,7 @@ export function MegaMenu({ open, onClose }: Props) {
             <p className="truncate text-xs font-semibold text-slate-400">
               {isAuthenticated ? "View your profile" : "Sign in to unlock"}
             </p>
+            {isAuthenticated ? <CurrencyPreviewToggle className="mt-2" /> : null}
           </div>
           <button
             onClick={isAppShell ? undefined : toggle}

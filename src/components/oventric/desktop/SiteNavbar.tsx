@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Menu, Plus, X, Search, User } from "lucide-react";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
+import { CurrencyPreviewToggle } from "../CurrencyPreviewToggle";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import logo from "@/assets/oventric-logo-dark.png";
 
@@ -89,6 +90,9 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
 
           {/* Right Actions */}
           <div className="flex items-center gap-3 lg:gap-4 ml-auto">
+            {/* Display currency preview (home ⇄ USD) */}
+            <CurrencyPreviewToggle variant="light" className="hidden sm:inline-flex" />
+
             {/* Create Button (Desktop) */}
             {onCreate && (
               <button

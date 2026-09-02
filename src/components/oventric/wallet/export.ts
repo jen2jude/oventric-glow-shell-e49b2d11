@@ -29,7 +29,7 @@ export function downloadWalletCsv(items: WalletTxDTO[], filename = "wallet-activ
   URL.revokeObjectURL(url);
 }
 
-export function printWalletPdf(items: WalletTxDTO[], baseCurrency: string) {
+export function printWalletPdf(items: WalletTxDTO[], homeCurrency: string) {
   const win = window.open("", "_blank", "width=800,height=1000");
   if (!win) return;
   const rows = items
@@ -46,7 +46,7 @@ export function printWalletPdf(items: WalletTxDTO[], baseCurrency: string) {
   win.document.write(`
     <html>
       <head>
-        <title>Wallet Activity — ${baseCurrency}</title>
+        <title>Wallet Activity — ${homeCurrency}</title>
         <style>
           body { font-family: -apple-system, sans-serif; padding: 24px; color: #111; }
           h1 { font-size: 18px; margin-bottom: 4px; }

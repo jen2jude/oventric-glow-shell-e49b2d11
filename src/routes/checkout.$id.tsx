@@ -156,8 +156,15 @@ function CheckoutPage() {
   const { id } = Route.useParams();
   const { qty, pkg } = Route.useSearch();
   const navigate = useNavigate();
-  const { baseCurrency, country } = useOnboarding();
+  const { homeCurrency, country, setUsdPreview } = useOnboarding();
   const isAppShell = useIsAppShell();
+
+  // Checkout always settles in the buyer's home currency — leaving the USD
+  // preview on here would be misleading, so we drop it on entry.
+  useEffect(() => {
+    setUsdPreview(false);
+  }, [setUsdPreview]);
+
 
   const loadProduct = useServerFn(getProduct);
   const submitOrder = useServerFn(createOrder);
@@ -198,7 +205,7 @@ function CheckoutPage() {
 
   useEffect(() => {
     let cancelled = false;
-    loadOptions({ data: { currency: baseCurrency, purpose: "order" } })
+    loadOptions({ data: { currency: homeCurrency, purpose: "order" } })
       .then((o) => {
         if (cancelled) return;
         setMinipay({ available: true });
@@ -210,7 +217,7 @@ function CheckoutPage() {
     return () => {
       cancelled = true;
     };
-  }, [loadOptions, baseCurrency]);
+  }, [loadOptions, homeCurrency]);
 
   useEffect(() => {
     if (!pkg) {
@@ -286,7 +293,7 @@ function CheckoutPage() {
         .from("wallets")
         .select("available_balance")
         .eq("user_id", uid)
-        .eq("currency", baseCurrency)
+        .eq("currency", homeCurrency)
         .maybeSingle();
       // Cashback pot is USD-canonical.
       const { data: cbRow } = await supabase
@@ -304,7 +311,7 @@ function CheckoutPage() {
     return () => {
       cancelled = true;
     };
-  }, [shortfallUSD, topUpBusy, baseCurrency]);
+  }, [shortfallUSD, topUpBusy, homeCurrency]);
 
   // Prefill delivery email from the current auth user.
   useEffect(() => {
@@ -329,9 +336,9 @@ function CheckoutPage() {
   // same currency so what the user sees on the button matches what the wallet
   // will be debited.
   const totalLocal =
-    product && baseCurrency === (product.originalCurrency as Currency)
+    product && homeCurrency === (product.originalCurrency as Currency)
       ? totalLocalExact
-      : Number((totalUSD * rateFor(baseCurrency)).toFixed(2));
+      : Number((totalUSD * rateFor(homeCurrency)).toFixed(2));
 
   const insufficient = method === "wallet" && balanceUSD !== null && balanceUSD < totalLocal;
 
@@ -372,7 +379,7 @@ function CheckoutPage() {
             purpose: "order",
             productId: product.id,
             quantity: qty,
-            displayCurrency: baseCurrency,
+            displayCurrency: homeCurrency,
             couponCode: coupon?.code ?? null,
             deliveryEmail: needsDelivery ? deliveryEmail.trim() : null,
             deliveryWhatsapp: null,
@@ -391,7 +398,7 @@ function CheckoutPage() {
         data: {
           productId: product.id,
           quantity: qty,
-          displayCurrency: baseCurrency,
+          displayCurrency: homeCurrency,
           paymentMethod: method,
           couponCode: coupon?.code ?? null,
           deliveryEmail: needsDelivery ? deliveryEmail.trim() : null,
@@ -406,18 +413,18 @@ function CheckoutPage() {
         const shortLocal =
           shortDisplay != null
             ? shortDisplay
-            : Number(((shortUSD ?? 0) * rateFor(baseCurrency)).toFixed(2));
-        setShortfallUSD(shortUSD ?? Number((shortLocal / rateFor(baseCurrency)).toFixed(2)));
+            : Number(((shortUSD ?? 0) * rateFor(homeCurrency)).toFixed(2));
+        setShortfallUSD(shortUSD ?? Number((shortLocal / rateFor(homeCurrency)).toFixed(2)));
         setTopUpOpen(true);
         setTopUpAmount(String(Math.ceil(shortLocal)));
         toast.error("Wallet balance too low", {
-          description: `Top up ${fmtLocal(shortLocal, baseCurrency)} to continue.`,
+          description: `Top up ${fmtLocal(shortLocal, homeCurrency)} to continue.`,
         });
         return;
       }
       if (res.cashbackUSD && res.cashbackUSD > 0) {
         toast.success("Payment successful", {
-          description: `${fmt(res.cashbackUSD, baseCurrency)} cashback credited to your wallet.`,
+          description: `${fmt(res.cashbackUSD, homeCurrency)} cashback credited to your wallet.`,
         });
       } else {
         toast.success("Payment successful");
@@ -450,7 +457,7 @@ function CheckoutPage() {
         data: {
           purpose: "wallet_topup",
           amount: amt,
-          currency: baseCurrency,
+          currency: homeCurrency,
           channel,
           returnTo: `/checkout/${id}?qty=${qty}`,
         },
@@ -621,7 +628,7 @@ function CheckoutPage() {
                       </span>
                       {walletTag && (
                         <span className={`text-[11px] font-mono ${isAppShell ? "text-slate-400" : "text-slate-600"}`}>
-                          {fmtLocal(balanceUSD ?? 0, baseCurrency)}
+                          {fmtLocal(balanceUSD ?? 0, homeCurrency)}
                         </span>
                       )}
                       {hasGateways && !m.disabled && (
@@ -695,13 +702,13 @@ function CheckoutPage() {
                   <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <div>
-                      Wallet has {fmtLocal(balanceUSD ?? 0, baseCurrency)} — you need{" "}
-                      {fmtLocal(totalLocal, baseCurrency)}.
+                      Wallet has {fmtLocal(balanceUSD ?? 0, homeCurrency)} — you need{" "}
+                      {fmtLocal(totalLocal, homeCurrency)}.
                     </div>
                     <button
                       onClick={() => {
                         const shortLocal = Math.max(0, totalLocal - (balanceUSD ?? 0));
-                        setShortfallUSD(Number((shortLocal / rateFor(baseCurrency)).toFixed(2)));
+                        setShortfallUSD(Number((shortLocal / rateFor(homeCurrency)).toFixed(2)));
                         setTopUpAmount(String(Math.ceil(shortLocal)));
                         setTopUpOpen(true);
                       }}
@@ -758,7 +765,7 @@ function CheckoutPage() {
                         <span
                           className={`shrink-0 text-sm font-black ${isAppShell ? "text-white" : "text-slate-900"}`}
                         >
-                          {fmtPrice(unitUSD, baseCurrency, product, unitLocal)}
+                          {fmtPrice(unitUSD, homeCurrency, product, unitLocal)}
                         </span>
                       </div>
                     </div>
@@ -960,7 +967,7 @@ function CheckoutPage() {
                     <div
                       className={`text-[11px] ${cashbackUSD > 0 ? (isAppShell ? "text-[#E5484D]" : "text-[#E5484D]") : "text-slate-500"}`}
                     >
-                      Available: {fmt(cashbackUSD, baseCurrency)} · spend-only, not withdrawable
+                      Available: {fmt(cashbackUSD, homeCurrency)} · spend-only, not withdrawable
                     </div>
                     {coupon ? (
                       <div className="text-[11px] mt-0.5 text-slate-500">
@@ -968,7 +975,7 @@ function CheckoutPage() {
                       </div>
                     ) : (
                       <div className={`text-[11px] mt-0.5 ${isAppShell ? "text-slate-400" : "text-slate-600"}`}>
-                        You earn back: + {fmt(cashbackEarnUSD, baseCurrency)} (Oventric Bonus)
+                        You earn back: + {fmt(cashbackEarnUSD, homeCurrency)} (Oventric Bonus)
                       </div>
                     )}
                   </div>
@@ -982,19 +989,19 @@ function CheckoutPage() {
               >
                 <div className={`flex justify-between ${isAppShell ? "text-slate-400" : "text-slate-500"}`}>
                   <span>Subtotal</span>
-                  <span>{fmtPrice(subtotalUSD, baseCurrency, product, subtotalLocal)}</span>
+                  <span>{fmtPrice(subtotalUSD, homeCurrency, product, subtotalLocal)}</span>
                 </div>
                 {discountUSD > 0 && (
                   <div className="flex justify-between text-[#E5484D]">
                     <span>Coupon ({coupon?.code})</span>
-                    <span>− {fmtPrice(discountUSD, baseCurrency, product, discountLocal)}</span>
+                    <span>− {fmtPrice(discountUSD, homeCurrency, product, discountLocal)}</span>
                   </div>
                 )}
                 {cashbackApplyUSD > 0 && (
                   <div className="flex justify-between text-[#E5484D]">
                     <span>Cashback applied</span>
                     <span>
-                      − {fmtPrice(cashbackApplyUSD, baseCurrency, product, cashbackApplyLocal)}
+                      − {fmtPrice(cashbackApplyUSD, homeCurrency, product, cashbackApplyLocal)}
                     </span>
                   </div>
                 )}
@@ -1010,7 +1017,7 @@ function CheckoutPage() {
                   }`}
                 >
                   <span>Total</span>
-                  <span>{fmtPrice(totalUSD, baseCurrency, product, totalLocalExact)}</span>
+                  <span>{fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}</span>
                 </div>
               </div>
 
@@ -1019,7 +1026,7 @@ function CheckoutPage() {
                   <div className="flex justify-between items-center px-1">
                     <span className="text-xs text-slate-400">Total to pay</span>
                     <span className="text-lg font-black text-white">
-                      {fmtPrice(totalUSD, baseCurrency, product, totalLocalExact)}
+                      {fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}
                     </span>
                   </div>
                   <button
@@ -1032,7 +1039,7 @@ function CheckoutPage() {
                         <Loader2 className="w-4 h-4 animate-spin" /> Processing…
                       </>
                     ) : method === "wallet" ? (
-                      `Pay ${fmtPrice(totalUSD, baseCurrency, product, totalLocalExact)}`
+                      `Pay ${fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}`
                     ) : gateway === "minipay" ? (
                       `Pay with MiniPay`
                     ) : (
@@ -1056,12 +1063,12 @@ function CheckoutPage() {
                         <Loader2 className="w-4 h-4 animate-spin" /> Processing…
                       </>
                     ) : method === "wallet" ? (
-                      `Pay ${fmtPrice(totalUSD, baseCurrency, product, totalLocalExact)}`
+                      `Pay ${fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}`
                     ) : gateway === "minipay" ? (
-                      `Pay with MiniPay · ${fmtPrice(totalUSD, baseCurrency, product, totalLocalExact)}`
+                      `Pay with MiniPay · ${fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}`
                     ) : (
                       <span className="inline-flex items-center gap-2">
-                        Pay with {gateway === "paystack" ? "Paystack" : "Flutterwave"} · {fmtPrice(totalUSD, baseCurrency, product, totalLocalExact)}
+                        Pay with {gateway === "paystack" ? "Paystack" : "Flutterwave"} · {fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}
                       </span>
                     )}
                   </button>
@@ -1099,11 +1106,11 @@ function CheckoutPage() {
               Fund your wallet
             </h3>
             <p className="text-xs text-slate-400 md:text-slate-500 mb-4">
-              Add {shortfallUSD ? fmt(shortfallUSD, baseCurrency) : "credit"} or more to complete
+              Add {shortfallUSD ? fmt(shortfallUSD, homeCurrency) : "credit"} or more to complete
               this purchase.
             </p>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 md:text-slate-500 mb-1.5">
-              Amount ({baseCurrency})
+              Amount ({homeCurrency})
             </label>
             <input
               type="number"
@@ -1174,7 +1181,7 @@ function CheckoutPage() {
           purpose="order"
           targetId={product.id}
           quantity={qty}
-          currency={baseCurrency}
+          currency={homeCurrency}
           onClose={() => setMinipayOpen(false)}
         />
       )}

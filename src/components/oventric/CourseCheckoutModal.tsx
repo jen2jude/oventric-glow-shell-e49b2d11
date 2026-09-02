@@ -70,7 +70,7 @@ export function CourseCheckoutModal({
   onClose: () => void;
   onEnrolled: () => void;
 }) {
-  const { baseCurrency } = useOnboarding();
+  const { homeCurrency, setUsdPreview } = useOnboarding();
   const runEnroll = useServerFn(enrollPaid);
   const runBalances = useServerFn(getWalletBalances);
   const runCoupon = useServerFn(validateCoupon);
@@ -88,6 +88,8 @@ export function CourseCheckoutModal({
 
   useEffect(() => {
     if (!open) return;
+    // Enrolment settles in the learner's home currency.
+    setUsdPreview(false);
     setMethod("card");
     setCouponInput("");
     setCouponPct(0);
@@ -103,7 +105,7 @@ export function CourseCheckoutModal({
       .catch(() => {
         setCashbackUSD(0);
       });
-  }, [open, runBalances, baseCurrency]);
+  }, [open, runBalances, homeCurrency, setUsdPreview]);
 
   // Snapshot-aware display for the course price. Falls back safely inside
   // computeDisplayPrice when fxSnapshot is missing/invalid.
@@ -116,9 +118,9 @@ export function CourseCheckoutModal({
         original_amount: course.originalAmount,
         fx_snapshot: course.fxSnapshot,
       },
-      baseCurrency,
+      homeCurrency,
     );
-  }, [course, baseCurrency]);
+  }, [course, homeCurrency]);
 
   const fxValidation = useMemo(() => {
     if (!course) return null;
@@ -129,22 +131,22 @@ export function CourseCheckoutModal({
         original_amount: course.originalAmount,
         fx_snapshot: course.fxSnapshot,
       },
-      baseCurrency,
+      homeCurrency,
     );
-  }, [course, baseCurrency]);
+  }, [course, homeCurrency]);
 
   const grossUSD = course?.priceUSD ?? 0;
   // Display-currency gross — this is the single source of truth for all money
   // math in the modal, so the "Total due" row always aligns with the course
   // price shown above it (no cross-basis rounding).
-  const displayGross = priceDisplay?.value ?? grossUSD * usdRate(baseCurrency);
+  const displayGross = priceDisplay?.value ?? grossUSD * usdRate(homeCurrency);
   // Conversion rate USD → display currency, derived from the same source as
   // the price above so cashback/discount deductions match exactly.
-  const usdToDisplay = grossUSD > 0 ? displayGross / grossUSD : usdRate(baseCurrency);
+  const usdToDisplay = grossUSD > 0 ? displayGross / grossUSD : usdRate(homeCurrency);
 
   const discountDisplay = useMemo(
-    () => Number(((displayGross * couponPct) / 100).toFixed(baseCurrency === "USD" ? 2 : 0)),
-    [displayGross, couponPct, baseCurrency],
+    () => Number(((displayGross * couponPct) / 100).toFixed(homeCurrency === "USD" ? 2 : 0)),
+    [displayGross, couponPct, homeCurrency],
   );
 
   // Cashback balance stored in USD → convert into course display currency
@@ -161,11 +163,11 @@ export function CourseCheckoutModal({
   const totalDisplay = Math.max(0, displayGross - discountDisplay - cashbackApplyDisplay);
   // Cashback earn: 2% of the post-coupon amount, always.
   const cashbackEarnDisplay = Number(
-    (Math.max(0, displayGross - discountDisplay) * 0.02).toFixed(baseCurrency === "USD" ? 2 : 0),
+    (Math.max(0, displayGross - discountDisplay) * 0.02).toFixed(homeCurrency === "USD" ? 2 : 0),
   );
 
   const isFree = grossUSD <= 0;
-  const conversionNeeded = !!course && course.originalCurrency !== baseCurrency;
+  const conversionNeeded = !!course && course.originalCurrency !== homeCurrency;
   const fxInvalid = !isFree && conversionNeeded && fxValidation?.ok === false;
   const fxBlocksCheckout = fxInvalid && fxValidation?.reason !== "missing";
   const fxWarningMessage = !fxInvalid
@@ -178,8 +180,8 @@ export function CourseCheckoutModal({
 
   if (!open || !course) return null;
 
-  const grossFormatted = formatMoney(displayGross, baseCurrency);
-  const totalFormatted = formatMoney(totalDisplay, baseCurrency);
+  const grossFormatted = formatMoney(displayGross, homeCurrency);
+  const totalFormatted = formatMoney(totalDisplay, homeCurrency);
 
   const applyCoupon = async () => {
     const code = couponInput.trim().toUpperCase();
@@ -211,7 +213,7 @@ export function CourseCheckoutModal({
       const res = await runEnroll({
         data: {
           courseId: course.id,
-          displayCurrency: baseCurrency,
+          displayCurrency: homeCurrency,
           paymentMethod: method,
           couponCode,
           applyCashbackUSD: cashbackApplyUSD,
@@ -219,7 +221,7 @@ export function CourseCheckoutModal({
       });
       const earnedUSD = Number(res.cashbackUSD ?? 0);
       const earnedLocal = earnedUSD * usdToDisplay;
-      setEarnedDisplay(earnedLocal > 0 ? formatMoney(earnedLocal, baseCurrency) : "");
+      setEarnedDisplay(earnedLocal > 0 ? formatMoney(earnedLocal, homeCurrency) : "");
       setDone(true);
       setTimeout(
         () => {
@@ -361,11 +363,11 @@ export function CourseCheckoutModal({
                   <div
                     className={`text-[11px] ${cashbackUSD > 0 ? "text-emerald-300" : "text-slate-500"}`}
                   >
-                    Available: {formatMoney(cashbackAvailableDisplay, baseCurrency)} · spend-only,
+                    Available: {formatMoney(cashbackAvailableDisplay, homeCurrency)} · spend-only,
                     not withdrawable
                   </div>
                   <div className="text-[11px] text-slate-400 mt-0.5">
-                    You'll earn back: + {formatMoney(cashbackEarnDisplay, baseCurrency)} (Oventric
+                    You'll earn back: + {formatMoney(cashbackEarnDisplay, homeCurrency)} (Oventric
                     Bonus)
                   </div>
                 </div>
@@ -376,14 +378,14 @@ export function CourseCheckoutModal({
                 {discountDisplay > 0 && (
                   <Row
                     label="Coupon discount"
-                    value={`- ${formatMoney(discountDisplay, baseCurrency)}`}
+                    value={`- ${formatMoney(discountDisplay, homeCurrency)}`}
                     accent="text-emerald-300"
                   />
                 )}
                 {cashbackApplyDisplay > 0 && (
                   <Row
                     label="Cashback applied"
-                    value={`- ${formatMoney(cashbackApplyDisplay, baseCurrency)}`}
+                    value={`- ${formatMoney(cashbackApplyDisplay, homeCurrency)}`}
                     accent="text-emerald-300"
                   />
                 )}

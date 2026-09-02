@@ -32,7 +32,7 @@ export const Route = createFileRoute("/order/$id")({
 function OrderPage() {
   const { id } = Route.useParams();
   const load = useServerFn(getOrderWithDownload);
-  const { baseCurrency } = useOnboarding();
+  const { homeCurrency } = useOnboarding();
   const [order, setOrder] = useState<OrderDTO | null>(null);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -75,7 +75,7 @@ function OrderPage() {
   }, [order, downloadUrl]);
 
   const displayAmount = order
-    ? order.displayTotal * (FX_FROM_USD[baseCurrency] / FX_FROM_USD[order.displayCurrency])
+    ? order.displayTotal * (FX_FROM_USD[homeCurrency] / FX_FROM_USD[order.displayCurrency])
     : 0;
   const href = downloadUrl ?? order?.externalUrl ?? null;
 
@@ -137,7 +137,7 @@ function OrderPage() {
                 </div>
                 <div className="text-right shrink-0">
                   <div className="text-white md:text-slate-900 font-bold">
-                    {fmt(displayAmount, baseCurrency)}
+                    {fmt(displayAmount, homeCurrency)}
                   </div>
                   <div className="text-[10px] text-slate-500 md:text-slate-500 font-mono uppercase">
                     {order.paymentMethod.replace("_", " ")}

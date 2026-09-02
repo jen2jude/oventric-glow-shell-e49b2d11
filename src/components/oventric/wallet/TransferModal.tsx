@@ -15,7 +15,7 @@ import { formatMoney } from "@/lib/fx-display";
 type Step = "recipient" | "amount" | "confirm" | "result";
 
 export function TransferModal({ onClose, onDone }: { onClose: () => void; onDone: () => void }) {
-  const { balances, baseCurrency } = useOnboarding();
+  const { balances, homeCurrency } = useOnboarding();
   const search = useServerFn(searchTransferRecipients);
   const doTransfer = useServerFn(transferToUser);
 
@@ -29,8 +29,8 @@ export function TransferModal({ onClose, onDone }: { onClose: () => void; onDone
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
 
-  const available = balances[baseCurrency] ?? 0;
-  const sym = currencyMeta[baseCurrency].symbol;
+  const available = balances[homeCurrency] ?? 0;
+  const sym = currencyMeta[homeCurrency].symbol;
   const numericAmount = Number(amount);
 
   useEffect(() => {
@@ -55,14 +55,14 @@ export function TransferModal({ onClose, onDone }: { onClose: () => void; onDone
       const res = await doTransfer({
         data: {
           recipientId: recipient.userId,
-          currency: baseCurrency,
+          currency: homeCurrency,
           amount: numericAmount,
           note: note || undefined,
         },
       });
       setResult({
         ok: true,
-        message: `Sent ${formatMoney(numericAmount, baseCurrency)} to ${res.recipient_name}.`,
+        message: `Sent ${formatMoney(numericAmount, homeCurrency)} to ${res.recipient_name}.`,
       });
       setStep("result");
       onDone();
@@ -145,7 +145,7 @@ export function TransferModal({ onClose, onDone }: { onClose: () => void; onDone
   }
 
   if (step === "amount" && recipient) {
-    const step_ = currencyDecimals(baseCurrency) === 2 ? "0.01" : "1";
+    const step_ = currencyDecimals(homeCurrency) === 2 ? "0.01" : "1";
     return (
       <ModalShell title={`Send to @${recipient.username ?? "user"}`} onClose={onClose}>
         <button
@@ -156,7 +156,7 @@ export function TransferModal({ onClose, onDone }: { onClose: () => void; onDone
         </button>
         <div>
           <label className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
-            Amount ({baseCurrency})
+            Amount ({homeCurrency})
           </label>
           <div className="mt-1 grid grid-cols-[auto_minmax(0,1fr)] items-center rounded-xl border border-[#222226] md:border-slate-200 bg-[#0A0A0C] md:bg-white focus-within:border-fuchsia-500/60">
             <span className="px-3 text-slate-400 text-sm">{sym}</span>
@@ -171,7 +171,7 @@ export function TransferModal({ onClose, onDone }: { onClose: () => void; onDone
             />
           </div>
           <div className="mt-1 text-[11px] text-slate-500">
-            Available: {formatMoney(available, baseCurrency)}
+            Available: {formatMoney(available, homeCurrency)}
           </div>
         </div>
         <div>
@@ -210,7 +210,7 @@ export function TransferModal({ onClose, onDone }: { onClose: () => void; onDone
           <div className="flex justify-between">
             <span className="text-slate-500">Amount</span>
             <span className="font-semibold text-white md:text-slate-900">
-              {formatMoney(numericAmount, baseCurrency)}
+              {formatMoney(numericAmount, homeCurrency)}
             </span>
           </div>
           {note && (

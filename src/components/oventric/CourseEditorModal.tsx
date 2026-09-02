@@ -62,7 +62,7 @@ export function CourseEditorModal({
   const fetchCourse = useServerFn(getCourse);
   const getUpload = useServerFn(getCourseCoverUploadUrl);
 
-  const { baseCurrency } = useOnboarding();
+  const { homeCurrency } = useOnboarding();
   const snapshotFx = useServerFn(snapshotFxRates);
 
   const [loading, setLoading] = useState(false);
@@ -81,7 +81,7 @@ export function CourseEditorModal({
     instructorName: "",
     isFree: true,
     priceLocal: 0,
-    priceCurrency: baseCurrency,
+    priceCurrency: homeCurrency,
     isPublished: true,
     promoted: false,
   });
@@ -115,7 +115,7 @@ export function CourseEditorModal({
         instructorName: "",
         isFree: true,
         priceLocal: 0,
-        priceCurrency: baseCurrency,
+        priceCurrency: homeCurrency,
         isPublished: true,
         promoted: false,
       });
@@ -131,7 +131,7 @@ export function CourseEditorModal({
         // If the course was published in a currency, keep editing in that
         // currency so the seller sees the exact amount they set. Otherwise
         // fall back to their current base currency (legacy USD rows).
-        const editCur = c.originalCurrency ?? baseCurrency;
+        const editCur = c.originalCurrency ?? homeCurrency;
         const editAmount = c.originalAmount > 0 ? c.originalAmount : c.priceUSD * usdRate(editCur);
         setForm({
           title: c.title,
@@ -148,7 +148,7 @@ export function CourseEditorModal({
       })
       .catch((e) => toast.error((e as Error).message))
       .finally(() => setLoading(false));
-  }, [open, courseId, fetchCourse, baseCurrency]);
+  }, [open, courseId, fetchCourse, homeCurrency]);
 
   if (!open) return null;
 

@@ -60,6 +60,15 @@ interface OnboardingState {
 }
 
 interface OnboardingContextValue extends OnboardingState {
+  /**
+   * The user's real, transactional currency (derived from their country).
+   * Every money movement — checkout, wallet, publishing, payouts — MUST use
+   * this, never the preview currency.
+   */
+  homeCurrency: Currency;
+  /** True while the user is previewing prices in USD. Display-only. */
+  usdPreview: boolean;
+  setUsdPreview: (on: boolean) => void;
   openStage: Stage | null;
   setOpenStage: (s: Stage | null) => void;
   require: (minTier: Tier, onSuccess?: () => void, authContext?: AuthGateContextKey) => void;
@@ -74,6 +83,7 @@ interface OnboardingContextValue extends OnboardingState {
   setBalancesHidden: (hidden: boolean) => void;
   toggleBalancesHidden: () => void;
 }
+
 
 const OnboardingContext = createContext<OnboardingContextValue | null>(null);
 
@@ -92,7 +102,9 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     balancesHidden: false,
   });
   const [openStage, setOpenStage] = useState<Stage | null>(null);
+  const [usdPreview, setUsdPreview] = useState(false);
   const [pending, setPending] = useState<{ minTier: Tier; cb?: () => void } | null>(null);
+
 
   const { ensureUserAuthenticated } = useAuthGate();
 
@@ -179,6 +191,11 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const value = useMemo<OnboardingContextValue>(
     () => ({
       ...state,
+      // Display currency: the user's home currency, or USD while previewing.
+      baseCurrency: usdPreview && state.baseCurrency !== "USD" ? "USD" : state.baseCurrency,
+      homeCurrency: state.baseCurrency,
+      usdPreview,
+      setUsdPreview,
       openStage,
       setOpenStage: (s) => {
         if (s === null) setPending(null);
@@ -194,6 +211,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     }),
     [
       state,
+      usdPreview,
       openStage,
       require,
       advanceTo,
@@ -203,6 +221,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       setBalancesHidden,
       toggleBalancesHidden,
     ],
+
   );
 
   return <OnboardingContext.Provider value={value}>{children}</OnboardingContext.Provider>;

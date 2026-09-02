@@ -26,7 +26,7 @@ export function ServiceComposerModal({
 }) {
   const persist = useServerFn(createServiceListing);
   const snapshotFx = useServerFn(snapshotFxRates);
-  const { baseCurrency } = useOnboarding();
+  const { homeCurrency } = useOnboarding();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -63,15 +63,15 @@ export function ServiceComposerModal({
         }
 
         const snapshot = await snapshotFx();
-        const rate = Number(snapshot.rates[baseCurrency] ?? 1);
-        const usd = baseCurrency === "USD" ? local : Number((local / rate).toFixed(2));
+        const rate = Number(snapshot.rates[homeCurrency] ?? 1);
+        const usd = homeCurrency === "USD" ? local : Number((local / rate).toFixed(2));
 
         const res = await persist({
           data: {
             title: title.trim(),
             description: description.trim(),
             startingPriceUSD: usd,
-            originalCurrency: baseCurrency,
+            originalCurrency: homeCurrency,
             originalAmount: local,
             fxSnapshot: snapshot,
             coverPath,
@@ -97,7 +97,7 @@ export function ServiceComposerModal({
         setSaving(false);
       }
     },
-    [title, description, amount, days, file, baseCurrency, snapshotFx, persist, onPublished, onClose],
+    [title, description, amount, days, file, homeCurrency, snapshotFx, persist, onPublished, onClose],
   );
 
   if (!open) return null;
@@ -169,7 +169,7 @@ export function ServiceComposerModal({
         <div className="mt-4 grid grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-bold text-slate-400">
-              Starting from ({baseCurrency})
+              Starting from ({homeCurrency})
             </label>
             <input
               value={amount}

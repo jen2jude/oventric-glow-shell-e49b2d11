@@ -61,7 +61,7 @@ function txStyle(type: WalletTxType, inflow: boolean) {
 }
 
 export function Wallet() {
-  const { balances: localBalances, balancesHidden: hide, toggleBalancesHidden, baseCurrency } = useOnboarding();
+  const { balances: localBalances, balancesHidden: hide, toggleBalancesHidden, homeCurrency } = useOnboarding();
   const [transferOpen, setTransferOpen] = useState(false);
   const [addFundsOpen, setAddFundsOpen] = useState(false);
   const [payoutOpen, setPayoutOpen] = useState(false);
@@ -108,7 +108,7 @@ export function Wallet() {
     return Array.from(map.values());
   })();
 
-  const cur = baseCurrency;
+  const cur = homeCurrency;
   const available = data?.balances?.[cur] ?? localBalances[cur] ?? 0;
   const locked = data?.escrow?.[cur] ?? 0;
   const main = available + locked;

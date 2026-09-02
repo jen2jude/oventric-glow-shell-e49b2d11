@@ -50,7 +50,7 @@ interface Props {
 export function EditListingModal({ product, onClose, onResubmitted }: Props) {
   const persist = useServerFn(updateAndResubmitProduct);
   const snapshotFx = useServerFn(snapshotFxRates);
-  const { baseCurrency } = useOnboarding();
+  const { homeCurrency } = useOnboarding();
 
   const isPhysical = product.kind === "physical";
   // Live listings stay live after an edit unless the deliverable itself changes.
@@ -77,7 +77,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
   const [subcategory, setSubcategory] = useState(product.subcategory ?? "");
   // Price is edited in the seller's base currency; on submit we resnap FX.
   const initialLocal =
-    product.originalCurrency === baseCurrency
+    product.originalCurrency === homeCurrency
       ? String(product.originalAmount)
       : String(product.priceUSD);
   const [priceInput, setPriceInput] = useState(initialLocal);
@@ -209,8 +209,8 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
 
       setProgress("Locking market rate...");
       const snapshot = await snapshotFx();
-      const rate = Number(snapshot.rates[baseCurrency] ?? 1);
-      const priceUSD = baseCurrency === "USD" ? priceLocal : Number((priceLocal / rate).toFixed(2));
+      const rate = Number(snapshot.rates[homeCurrency] ?? 1);
+      const priceUSD = homeCurrency === "USD" ? priceLocal : Number((priceLocal / rate).toFixed(2));
 
       setProgress(isLive ? "Saving changes..." : "Resubmitting for review...");
       const res = await persist({
@@ -224,7 +224,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
           category,
           subcategory: subcategory || null,
           priceUSD,
-          originalCurrency: baseCurrency,
+          originalCurrency: homeCurrency,
           originalAmount: priceLocal,
           fxSnapshot: snapshot,
           externalUrl: isPhysical ? null : externalUrl.trim() || null,
@@ -716,7 +716,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <label className="block">
-                  <span className="text-xs font-medium text-slate-300">Price ({baseCurrency})</span>
+                  <span className="text-xs font-medium text-slate-300">Price ({homeCurrency})</span>
                   <input
                     value={priceInput}
                     onChange={(e) => setPriceInput(e.target.value)}

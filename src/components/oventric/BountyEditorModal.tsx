@@ -79,7 +79,7 @@ export function BountyEditorModal({
   onClose: () => void;
   onPublished?: (bountyId: string) => void;
 }) {
-  const { baseCurrency } = useOnboarding();
+  const { homeCurrency } = useOnboarding();
   const snapshotFx = useServerFn(snapshotFxRates);
   const publishFn = useServerFn(publishBounty);
   const listCatsFn = useServerFn(listBountyCategories);
@@ -227,7 +227,7 @@ export function BountyEditorModal({
         .from("wallets")
         .select("available_balance")
         .eq("user_id", _uid)
-        .eq("currency", baseCurrency)
+        .eq("currency", homeCurrency)
         .maybeSingle();
       if (cancelled) return;
       setWalletBase(Number(walletData?.available_balance ?? 0));
@@ -273,13 +273,13 @@ export function BountyEditorModal({
   const goToWallet = () => {
     saveDraft(true);
     const topupLocal =
-      baseCurrency === "USD" ? Math.ceil(shortfallBase * 100) / 100 : Math.ceil(shortfallBase);
+      homeCurrency === "USD" ? Math.ceil(shortfallBase * 100) / 100 : Math.ceil(shortfallBase);
     onClose();
     window.dispatchEvent(new CustomEvent("oventric:navigate", { detail: { section: "Wallet" } }));
     setTimeout(() => {
       window.dispatchEvent(
         new CustomEvent("oventric:wallet:topup", {
-          detail: { amountLocal: topupLocal, currency: baseCurrency, reason: "bounty-escrow" },
+          detail: { amountLocal: topupLocal, currency: homeCurrency, reason: "bounty-escrow" },
         }),
       );
     }, 60);
@@ -363,16 +363,16 @@ export function BountyEditorModal({
               source: "fallback" as const,
               fetched_at: new Date().toISOString(),
             };
-      const rateForBase = Number(snapshot.rates[baseCurrency] ?? 1);
+      const rateForBase = Number(snapshot.rates[homeCurrency] ?? 1);
       const priceUsd =
-        baseCurrency === "USD" ? rewardBase : Number((rewardBase / rateForBase).toFixed(2));
+        homeCurrency === "USD" ? rewardBase : Number((rewardBase / rateForBase).toFixed(2));
 
       if (priceUsd > 0) {
         const { data: walletRow } = await supabase
           .from("wallets")
           .select("available_balance")
           .eq("user_id", _uid)
-          .eq("currency", baseCurrency)
+          .eq("currency", homeCurrency)
           .maybeSingle();
         const balance = Number(walletRow?.available_balance ?? 0);
         setWalletBase(balance);
@@ -391,7 +391,7 @@ export function BountyEditorModal({
           category: form.category,
           price_usd: priceUsd,
           original_amount: rewardBase,
-          original_currency: baseCurrency,
+          original_currency: homeCurrency,
           fx_snapshot: snapshot,
           cover_path: imagePaths[0] ?? null,
           images: imagePaths,
@@ -406,7 +406,7 @@ export function BountyEditorModal({
       reset();
       setPublishedSplash({
         title: titleTxt,
-        amountLabel: formatMoney(rewardBase, baseCurrency),
+        amountLabel: formatMoney(rewardBase, homeCurrency),
         id: result?.id ?? "",
       });
     } catch (e) {
@@ -558,10 +558,10 @@ export function BountyEditorModal({
           </Field>
 
           <div className="grid grid-cols-2 gap-3">
-            <Field label={`Reward (${baseCurrency})`}>
+            <Field label={`Reward (${homeCurrency})`}>
               <input
                 type="number"
-                step={baseCurrency === "USD" ? "0.01" : "1"}
+                step={homeCurrency === "USD" ? "0.01" : "1"}
                 min="0"
                 value={form.price_usd}
                 onChange={(e) => setForm({ ...form, price_usd: e.target.value })}
@@ -660,18 +660,18 @@ export function BountyEditorModal({
               <p className="text-sm text-slate-600 mt-2 leading-relaxed">
                 Publishing this bounty escrows{" "}
                 <span className="text-slate-950 font-semibold">
-                  {formatMoney(inputBase, baseCurrency)}
+                  {formatMoney(inputBase, homeCurrency)}
                 </span>
                 . Your current wallet balance is{" "}
                 <span className="text-slate-950 font-semibold">
-                  {formatMoney(walletBase ?? 0, baseCurrency)}
+                  {formatMoney(walletBase ?? 0, homeCurrency)}
                 </span>
                 .
               </p>
               <p className="text-xs text-slate-600 mt-2">
                 Top up at least{" "}
                 <span className="font-semibold text-red-600">
-                  {formatMoney(shortfallBase, baseCurrency)}
+                  {formatMoney(shortfallBase, homeCurrency)}
                 </span>{" "}
                 to publish.
               </p>
