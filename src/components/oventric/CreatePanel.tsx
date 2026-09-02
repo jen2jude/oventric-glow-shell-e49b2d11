@@ -41,7 +41,7 @@ const choices: Choice[] = [
     key: "sell",
     icon: ShoppingBag,
     title: "Sell",
-    desc: "List digital assets or physical products.",
+    desc: "List digital assets, templates and downloads.",
     tier: 2,
     accent: "#2BD07A",
     tint: "rgba(43,208,122,0.09)",

@@ -31,7 +31,7 @@ function AboutPage() {
         </h1>
         <p className="mt-4 text-slate-300 leading-relaxed md:text-slate-600">
           Oventric is a builder-first tech platform that unifies what has always been scattered: a
-          social feed for creators, a marketplace for digital and physical products, an academy for
+          social feed for creators, a marketplace for digital products, an academy for
           teaching and learning, a bounty board for open work, and a sovereign multi-currency wallet
           for value that stays with you.
         </p>
@@ -41,7 +41,7 @@ function AboutPage() {
             <b>Feed</b> — post, react, mention, and share with your circles and followers.
           </li>
           <li>
-            <b>Marketplace</b> — sell digital assets (with escrow) or list physical products; buyers
+            <b>Marketplace</b> — sell digital assets with escrow protection; buyers
             reach out directly.
           </li>
           <li>
