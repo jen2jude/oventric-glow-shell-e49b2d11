@@ -62,7 +62,7 @@ const FEATURES = [
     section: "Marketplace",
     icon: Store,
     img: marketIcon.url,
-    title: "Sell digital and physical products, safely",
+    title: "Sell digital products, safely",
     body: "List once and reach buyers across Africa. Escrow holds every payment until delivery is confirmed, and buyers earn 2% cashback on each order.",
     tint: "from-emerald-500/10",
   },
