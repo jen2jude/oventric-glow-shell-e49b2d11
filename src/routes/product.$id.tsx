@@ -814,6 +814,7 @@ function ProductPage() {
                       >
                         <ShoppingCart className="w-4 h-4" /> Out of Stock
                       </button>
+                    ) : (
                       <>
                         <button
                           onClick={product.kind === "physical" ? openContact : startCheckout}
