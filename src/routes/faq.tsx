@@ -38,8 +38,8 @@ const items = [
     a: "For digital assets, 80% of the sale price is held for the seller until the buyer confirms delivery. Once confirmed, funds unlock for withdrawal. Admins can also verify delivery if needed.",
   },
   {
-    q: "How are physical goods handled?",
-    a: "Physical listings show a Contact Seller page. Buyers reach sellers directly on WhatsApp or by phone — no escrow, no platform-mediated payment.",
+    q: "Does Oventric sell physical goods?",
+    a: "No. Oventric is a purely digital marketplace — templates, software, courses, accounts and other downloadable or licensed assets only.",
   },
   {
     q: "How do I get paid out?",
