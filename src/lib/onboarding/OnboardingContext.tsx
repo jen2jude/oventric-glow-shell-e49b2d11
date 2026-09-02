@@ -102,7 +102,9 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     balancesHidden: false,
   });
   const [openStage, setOpenStage] = useState<Stage | null>(null);
+  const [usdPreview, setUsdPreview] = useState(false);
   const [pending, setPending] = useState<{ minTier: Tier; cb?: () => void } | null>(null);
+
 
   const { ensureUserAuthenticated } = useAuthGate();
 
