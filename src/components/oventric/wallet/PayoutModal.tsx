@@ -19,7 +19,6 @@ import {
 import { toast } from "sonner";
 import wallet3d from "@/assets/wallet-hero-3d.png.asset.json";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
-import { useKycGate } from "@/lib/kyc-gate/KycGate";
 import { currencySymbol } from "@/lib/fx-display";
 import {
   listMyRecipients,
@@ -54,7 +53,6 @@ function kindOf(r: PayoutRecipientDTO): MethodKind {
 
 export function PayoutModal({ onClose }: { onClose: () => void }) {
   const { balances, baseCurrency } = useOnboarding();
-  const { verifyLiveness } = useKycGate();
   const qc = useQueryClient();
 
   const currency: TransferCurrency = baseCurrency === "GHS" ? "GHS" : "NGN";
