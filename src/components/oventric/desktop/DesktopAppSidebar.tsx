@@ -196,11 +196,12 @@ export function DesktopAppSidebar({ onSelect }: { onSelect: (section: string) =>
       </button>
 
       {/* Identity */}
-      <Link
-        to="/profile/$id"
-        params={{ id: me?.slug ?? "me" }}
+      <button
+        type="button"
+        aria-label={me?.name ? `Open menu for ${me.name}` : "Open menu"}
         title={me?.name || "Your profile"}
-        className={`flex items-center gap-3 rounded-xl py-3 transition-colors hover:bg-slate-100 ${
+        onClick={() => setMegaOpen(true)}
+        className={`flex w-full items-center gap-3 rounded-xl py-3 transition-colors hover:bg-slate-100 ${
           collapsed ? "justify-center px-0" : "px-3"
         }`}
       >
@@ -212,7 +213,7 @@ export function DesktopAppSidebar({ onSelect }: { onSelect: (section: string) =>
             {me?.name || "Your profile"}
           </span>
         )}
-      </Link>
+      </button>
 
       <div className="my-3 h-px bg-slate-200" />
 
