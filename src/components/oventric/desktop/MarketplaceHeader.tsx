@@ -31,10 +31,10 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
         <div className="mx-auto max-w-[1440px] flex items-center justify-between text-[11px] font-bold">
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-1.5 text-emerald-400">
-              <Truck className="w-3.5 h-3.5" /> Free shipping on all orders
+              <Truck className="w-3.5 h-3.5" /> Instant digital delivery
             </span>
             <span className="flex items-center gap-1.5">
-              <RefreshCcw className="w-3.5 h-3.5" /> Return within 90d
+              <RefreshCcw className="w-3.5 h-3.5" /> Escrow-backed refunds
             </span>
           </div>
           <div className="flex items-center gap-4">
