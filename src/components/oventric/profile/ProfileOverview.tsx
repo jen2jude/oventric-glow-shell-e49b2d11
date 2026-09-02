@@ -43,7 +43,7 @@ function Module({
   children: React.ReactNode;
 }) {
   return (
-    <section className="mt-5">
+    <section className="mt-5 md:mt-0 md:rounded-[10px] md:border md:border-slate-200 md:bg-white md:p-5">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <h2 className="truncate text-[11px] font-black uppercase tracking-[0.14em] text-slate-400 md:text-slate-500">
           {title}
@@ -66,7 +66,7 @@ function Module({
 /** Horizontal, snap-scrolling rail — the mobile-native way to preview a set. */
 function Rail({ children }: { children: React.ReactNode }) {
   return (
-    <div className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-1 no-scrollbar">
+    <div className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-1 no-scrollbar md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 lg:grid-cols-3">
       {children}
     </div>
   );
@@ -151,7 +151,7 @@ export function ProfileOverview({
       to="/profile/$id/item/$kind/$itemId"
       params={{ id: profileId, kind, itemId: l.id }}
       search={itemSearch as never}
-      className="group w-[46%] min-w-[150px] max-w-[200px] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141418] md:web-card"
+      className="group w-[46%] min-w-[150px] max-w-[200px] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141418] md:w-auto md:min-w-0 md:max-w-none md:rounded-[10px] md:border-slate-200 md:bg-slate-50"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-neutral-900 md:bg-slate-100">
         {l.coverUrl ? (
@@ -188,7 +188,7 @@ export function ProfileOverview({
   const interests = realProfile?.interests ?? [];
 
   return (
-    <div data-testid="profile-overview" className="space-y-6 pb-2">
+    <div data-testid="profile-overview" className="space-y-6 pb-2 md:grid md:grid-cols-2 md:items-start md:gap-5 md:space-y-0 lg:grid-cols-2">
       {interests.length > 0 && (
         <Module title="What I'm into">
           <div className="-mx-1 flex flex-wrap gap-2 px-1">
@@ -234,7 +234,7 @@ export function ProfileOverview({
                 key={a.id}
                 to="/blog/$slug"
                 params={{ slug: a.slug }}
-                className="w-[70%] min-w-[220px] max-w-[280px] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141418] md:web-card"
+                className="w-[70%] min-w-[220px] max-w-[280px] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141418] md:w-auto md:min-w-0 md:max-w-none md:rounded-[10px] md:border-slate-200 md:bg-slate-50"
               >
                 <div className="relative aspect-[16/9] overflow-hidden bg-neutral-900 md:bg-slate-100">
                   {a.coverUrl ? (
@@ -270,7 +270,7 @@ export function ProfileOverview({
                 to="/profile/$id/item/$kind/$itemId"
                 params={{ id: profileId, kind: "post", itemId: p.id }}
                 search={itemSearch as never}
-                className="flex items-start gap-3 rounded-2xl border border-white/10 bg-[#141418] p-3 md:web-card"
+                className="flex items-start gap-3 rounded-2xl border border-white/10 bg-[#141418] p-3 md:rounded-[10px] md:border-slate-200 md:bg-slate-50"
               >
                 <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-white/[0.06] md:bg-slate-100">
                   <MessageCircle className="h-4 w-4 text-[#E5484D]" />
@@ -298,7 +298,7 @@ export function ProfileOverview({
                 to="/profile/$id/item/$kind/$itemId"
                 params={{ id: profileId, kind: "group", itemId: g.id }}
                 search={itemSearch as never}
-                className="w-[60%] min-w-[180px] max-w-[240px] shrink-0 snap-start rounded-2xl border border-white/10 bg-[#141418] p-3 md:web-card"
+                className="w-[60%] min-w-[180px] max-w-[240px] shrink-0 snap-start rounded-2xl border border-white/10 bg-[#141418] p-3 md:w-auto md:min-w-0 md:max-w-none md:rounded-[10px] md:border-slate-200 md:bg-slate-50"
               >
                 <span className="grid h-11 w-11 place-items-center rounded-[10px] bg-white/[0.06] md:bg-slate-100">
                   <Users className="h-4 w-4 text-[#E5484D]" />
