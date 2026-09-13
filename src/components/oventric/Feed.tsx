@@ -76,6 +76,7 @@ import { listBlogPosts, type BlogListItem } from "@/lib/blog.functions";
 import { ShareSheet } from "@/components/oventric/ShareSheet";
 import { PostComposerModal } from "@/components/oventric/PostComposerModal";
 import { FeedAppChrome, type FeedTab } from "@/components/oventric/feed/FeedAppChrome";
+import { FeedSocialBar } from "@/components/oventric/feed/FeedSocialBar";
 import { useScrollHideChrome, useChromeHidden } from "@/hooks/use-chrome-hide";
 import { listFollowing } from "@/lib/follows.functions";
 import { FeedDiscoverExplore } from "@/components/oventric/feed/FeedDiscoverExplore";

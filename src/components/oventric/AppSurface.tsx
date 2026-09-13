@@ -4,10 +4,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { Sidebar } from "@/components/oventric/Sidebar";
 import { MobileNav } from "@/components/oventric/MobileNav";
 const Feed = lazy(() => import("@/components/oventric/Feed").then((m) => ({ default: m.Feed })));
-const FeedSocialBar = lazy(() =>
-  import("@/components/oventric/feed/FeedSocialBar").then((m) => ({ default: m.FeedSocialBar })),
-);
-
 const Wallet = lazy(() =>
   import("@/components/oventric/Wallet").then((m) => ({ default: m.Wallet })),
 );
@@ -274,11 +270,20 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         setMessagesOpen(true);
       }
     };
+    const onOpenMessages = () => {
+      if (appOnly) {
+        setGetAppOpen(true);
+        return;
+      }
+      setMessagesOpen(true);
+    };
     window.addEventListener("oventric:navigate", onNav);
     window.addEventListener("oventric:open-dm", onOpenDM);
+    window.addEventListener("oventric:open-messages", onOpenMessages);
     return () => {
       window.removeEventListener("oventric:navigate", onNav);
       window.removeEventListener("oventric:open-dm", onOpenDM);
+      window.removeEventListener("oventric:open-messages", onOpenMessages);
     };
   }, [appOnly]);
 
