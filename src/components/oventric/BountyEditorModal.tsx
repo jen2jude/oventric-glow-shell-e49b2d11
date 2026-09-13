@@ -429,10 +429,10 @@ export function BountyEditorModal({
         paddingRight: "max(env(safe-area-inset-right), 0.75rem)",
       }}
     >
-      <div ref={panelRef} className="relative max-h-full w-full max-w-2xl overflow-y-auto overscroll-contain rounded-[10px] border border-slate-200 bg-white p-5 shadow-xl sm:p-6">
+      <div ref={panelRef} className="relative max-h-full w-full max-w-2xl overflow-y-auto overscroll-contain rounded-[10px] border border-white/10 bg-[#141416] p-5 shadow-xl sm:p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex flex-col">
-            <h2 className="text-slate-950 font-black text-xl inline-flex items-center gap-2">
+            <h2 className="text-white font-black text-xl inline-flex items-center gap-2">
               <Target className="h-5 w-5 text-red-600" /> Post a bounty
             </h2>
             <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-1">
@@ -441,7 +441,7 @@ export function BountyEditorModal({
           </div>
           <button
             onClick={onClose}
-            className="grid min-h-11 min-w-11 place-items-center rounded-full text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950"
+            className="grid min-h-11 min-w-11 place-items-center rounded-full text-slate-500 transition-colors hover:bg-white/10 hover:text-white"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -464,7 +464,7 @@ export function BountyEditorModal({
 
         <div className="space-y-3">
           <div>
-            <span className="text-xs font-semibold uppercase text-slate-600 mb-1 block">
+            <span className="text-xs font-semibold uppercase text-slate-400 mb-1 block">
               Images ({form.images.length}/{MAX_IMAGES})
             </span>
             <p className="text-[11px] text-slate-500 -mt-0.5 mb-2">
@@ -485,7 +485,7 @@ export function BountyEditorModal({
               {form.images.map((img, idx) => (
                 <div
                   key={img.path}
-                  className="relative aspect-square rounded-[10px] border border-slate-200 overflow-hidden bg-slate-100"
+                  className="relative aspect-square rounded-[10px] border border-white/10 overflow-hidden bg-white/10"
                 >
                   {img.preview ? (
                     <ResponsiveImage
@@ -497,7 +497,7 @@ export function BountyEditorModal({
                       decoding="async"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-600 text-xs">
+                    <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
                       …
                     </div>
                   )}
@@ -521,7 +521,7 @@ export function BountyEditorModal({
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploadingImage}
-                  className="aspect-square rounded-[10px] border border-dashed border-slate-300 hover:border-red-400 bg-slate-50 hover:bg-red-50 disabled:opacity-50 flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-red-700 text-xs"
+                  className="aspect-square rounded-[10px] border border-dashed border-white/15 hover:border-red-400 bg-white/5 hover:bg-red-500/10 disabled:opacity-50 flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-red-700 text-xs"
                 >
                   {uploadingImage ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -638,13 +638,13 @@ export function BountyEditorModal({
             <button
               type="button"
               onClick={() => saveDraft()}
-              className="px-4 py-3 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-sm font-semibold rounded-[10px] inline-flex items-center gap-2"
+              className="px-4 py-3 bg-[#141416] hover:bg-white/5 border border-white/15 text-slate-300 text-sm font-semibold rounded-[10px] inline-flex items-center gap-2"
             >
               <Save className="w-4 h-4" /> Save draft
             </button>
             <button
               onClick={onClose}
-              className="px-4 py-3 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-sm font-semibold rounded-[10px]"
+              className="px-4 py-3 bg-[#141416] hover:bg-white/5 border border-white/15 text-slate-300 text-sm font-semibold rounded-[10px]"
             >
               Cancel
             </button>
@@ -653,22 +653,22 @@ export function BountyEditorModal({
 
         {showFundPrompt && (
           <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[10px] bg-slate-950/45 p-4 backdrop-blur-sm">
-            <div className="w-full max-w-md rounded-[10px] border border-amber-200 bg-white p-5 shadow-xl">
+            <div className="w-full max-w-md rounded-[10px] border border-amber-500/30 bg-[#141416] p-5 shadow-xl">
               <div className="flex items-center gap-2 text-amber-700 font-bold">
                 <AlertTriangle className="w-5 h-5" /> Wallet balance too low
               </div>
-              <p className="text-sm text-slate-600 mt-2 leading-relaxed">
+              <p className="text-sm text-slate-400 mt-2 leading-relaxed">
                 Publishing this bounty escrows{" "}
-                <span className="text-slate-950 font-semibold">
+                <span className="text-white font-semibold">
                   {formatMoney(inputBase, homeCurrency)}
                 </span>
                 . Your current wallet balance is{" "}
-                <span className="text-slate-950 font-semibold">
+                <span className="text-white font-semibold">
                   {formatMoney(walletBase ?? 0, homeCurrency)}
                 </span>
                 .
               </p>
-              <p className="text-xs text-slate-600 mt-2">
+              <p className="text-xs text-slate-400 mt-2">
                 Top up at least{" "}
                 <span className="font-semibold text-red-600">
                   {formatMoney(shortfallBase, homeCurrency)}
@@ -687,13 +687,13 @@ export function BountyEditorModal({
                     saveDraft();
                     setShowFundPrompt(false);
                   }}
-                  className="px-4 py-3 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-sm font-semibold rounded-[10px] inline-flex items-center gap-2"
+                  className="px-4 py-3 bg-[#141416] hover:bg-white/5 border border-white/15 text-slate-300 text-sm font-semibold rounded-[10px] inline-flex items-center gap-2"
                 >
                   <Save className="w-4 h-4" /> Save draft only
                 </button>
                 <button
                   onClick={() => setShowFundPrompt(false)}
-                  className="px-4 py-3 text-slate-600 hover:bg-slate-100 hover:text-slate-950 text-sm font-semibold rounded-[10px]"
+                  className="px-4 py-3 text-slate-400 hover:bg-white/10 hover:text-white text-sm font-semibold rounded-[10px]"
                 >
                   Back to editor
                 </button>
@@ -741,7 +741,7 @@ function BountyPublishedSplash({
       aria-label="Bounty published"
     >
       <div
-        className="relative w-full max-w-sm rounded-[10px] border border-slate-200 bg-white p-7 text-center shadow-xl"
+        className="relative w-full max-w-sm rounded-[10px] border border-white/10 bg-[#141416] p-7 text-center shadow-xl"
         style={{ animation: "bpPop 480ms cubic-bezier(.2,1.4,.4,1) both" }}
       >
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-600 shadow-lg">
@@ -750,9 +750,9 @@ function BountyPublishedSplash({
         <div className="mb-2 inline-flex items-center gap-1.5 text-[11px] font-black uppercase text-red-600">
           <Sparkles className="w-3.5 h-3.5" /> Bounty Published
         </div>
-        <h2 className="text-xl font-black text-slate-950 mb-1">Your bounty is in! 🎉</h2>
-        <p className="text-sm text-slate-600 mb-4 leading-relaxed">
-          <span className="text-slate-950 font-semibold">{title}</span> has been published and is
+        <h2 className="text-xl font-black text-white mb-1">Your bounty is in! 🎉</h2>
+        <p className="text-sm text-slate-400 mb-4 leading-relaxed">
+          <span className="text-white font-semibold">{title}</span> has been published and is
           awaiting admin review.
         </p>
         <div
@@ -762,7 +762,7 @@ function BountyPublishedSplash({
           <Wallet className="h-4 w-4 text-red-600" />
           <span>{amountLabel} escrowed</span>
         </div>
-        <p className="text-[11px] text-slate-600 inline-flex items-center gap-1.5 justify-center">
+        <p className="text-[11px] text-slate-400 inline-flex items-center gap-1.5 justify-center">
           <ShieldCheck className="h-3.5 w-3.5 text-red-600" />
           It goes live the moment an admin approves it.
         </p>
@@ -786,12 +786,12 @@ function BountyPublishedSplash({
 }
 
 const inputCls =
-  "w-full rounded-[10px] border border-slate-300 bg-white px-3 py-3 text-sm text-slate-950 placeholder:text-muted-foreground outline-hidden transition-colors focus:border-red-500 focus:ring-2 focus:ring-red-100";
+  "w-full rounded-[10px] border border-white/15 bg-[#141416] px-3 py-3 text-sm text-white placeholder:text-muted-foreground outline-hidden transition-colors focus:border-red-500 focus:ring-2 focus:ring-red-500/30";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="text-xs font-semibold uppercase text-slate-600 mb-1 block">{label}</span>
+      <span className="text-xs font-semibold uppercase text-slate-400 mb-1 block">{label}</span>
       {children}
     </label>
   );
