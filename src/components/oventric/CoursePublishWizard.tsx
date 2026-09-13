@@ -300,7 +300,7 @@ export function CoursePublishWizard({
                   </button>
 
                   {!isLast && (
-                    <div className="flex-1 h-[2px] mx-1 sm:mx-2 rounded-full bg-slate-200 overflow-hidden">
+                    <div className="flex-1 h-[2px] mx-1 sm:mx-2 rounded-full bg-white/10 overflow-hidden">
                       <div
                         className="h-full bg-[#E5484D] transition-[width] duration-500 ease-out"
                         style={{ width: done ? "100%" : "0%" }}
@@ -810,7 +810,7 @@ function LessonRow({
             <div>
               <Label>Lesson Body (rich text)</Label>
               <RichTextEditor
-                appearance="light"
+                appearance="dark"
                 value={String(lesson.content?.html ?? "")}
                 onChange={(html) => onChange({ content: { ...lesson.content, html } })}
                 placeholder="Write full lesson notes. Insert images and screenshots inline."
@@ -910,7 +910,7 @@ function VideoLessonEditor({
       <div>
         <Label>Module Body (rich text)</Label>
         <RichTextEditor
-          appearance="light"
+          appearance="dark"
           value={body}
           onChange={(html) => onChange({ content: { ...lesson.content, body: html } })}
           placeholder="Add full written notes, screenshots, or images to accompany the video."
