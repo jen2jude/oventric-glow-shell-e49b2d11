@@ -508,6 +508,8 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         )}
       </Suspense>
 
+      <GetAppModal open={getAppOpen} onClose={() => setGetAppOpen(false)} />
+
     </div>
   );
 }

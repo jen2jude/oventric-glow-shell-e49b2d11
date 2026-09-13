@@ -319,6 +319,10 @@ function ProductPage() {
 
   const startCheckout = () => {
     if (product?.inStock === false) return;
+    if (!isAppShell) {
+      navigate({ to: "/get-app", search: { from: "product" } });
+      return;
+    }
     require(
       2,
       () =>
@@ -333,10 +337,18 @@ function ProductPage() {
 
   const openContact = () => {
     if (product?.inStock === false) return;
+    if (!isAppShell) {
+      navigate({ to: "/get-app", search: { from: "product" } });
+      return;
+    }
     require(1, () => setContactOpen(true), "buyer");
   };
 
   const openSellerChat = () => {
+    if (!isAppShell) {
+      navigate({ to: "/get-app", search: { from: "product" } });
+      return;
+    }
     require(1, () => setChatOpen(true), "buyer");
   };
 
