@@ -37,19 +37,19 @@ export function DownloadAppSection() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
             </span>
-            Native apps coming soon
+            Free instant install
           </span>
 
           <h2 className="mt-5 text-3xl font-bold sm:text-4xl tracking-tight text-slate-900 lg:text-5xl">
-            Buy, Sell, Earn &amp; Connect <span className="text-emerald-600">right here</span>
+            Get the Oventric <span className="text-emerald-600">app</span>
           </h2>
           <p className="mt-4 text-lg leading-relaxed text-slate-500">
-            The full Oventric experience — wallet, marketplace, bounties, courses and circles — runs
-            in your browser today, priced in your home currency. Native apps are on the way.
+            Your wallet, escrow checkout, chat, bounties and creator tools live in the app —
+            install it free in seconds, priced in your home currency.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-4">
-            <AppStoreBadge />
+            <InstallBadge />
             <GooglePlayBadge />
           </div>
 
