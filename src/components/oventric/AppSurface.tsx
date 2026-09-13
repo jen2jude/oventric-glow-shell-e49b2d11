@@ -4,10 +4,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { Sidebar } from "@/components/oventric/Sidebar";
 import { MobileNav } from "@/components/oventric/MobileNav";
 const Feed = lazy(() => import("@/components/oventric/Feed").then((m) => ({ default: m.Feed })));
-const FeedSocialBar = lazy(() =>
-  import("@/components/oventric/feed/FeedSocialBar").then((m) => ({ default: m.FeedSocialBar })),
-);
-
 const Wallet = lazy(() =>
   import("@/components/oventric/Wallet").then((m) => ({ default: m.Wallet })),
 );
@@ -274,11 +270,20 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         setMessagesOpen(true);
       }
     };
+    const onOpenMessages = () => {
+      if (appOnly) {
+        setGetAppOpen(true);
+        return;
+      }
+      setMessagesOpen(true);
+    };
     window.addEventListener("oventric:navigate", onNav);
     window.addEventListener("oventric:open-dm", onOpenDM);
+    window.addEventListener("oventric:open-messages", onOpenMessages);
     return () => {
       window.removeEventListener("oventric:navigate", onNav);
       window.removeEventListener("oventric:open-dm", onOpenDM);
+      window.removeEventListener("oventric:open-messages", onOpenMessages);
     };
   }, [appOnly]);
 
@@ -342,8 +347,8 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   const isDesktop = useIsDesktop();
   const isAppShell = useIsAppShell();
   
-  // Browser sections keep their full-width page layouts. Home now resolves to
-  // the social feed rather than the retired Hub/marketing landing surface.
+  // Browser visitors retain the full Hub experience. Installed/native app
+  // launches use the social feed as their Home screen.
   const desktopLanding =
     (active === "Home" || active === "Marketplace" || active === "Academy" || active === "Bounties" || active === "Circles" || active === "Feed") &&
     (isDesktop || !isAppShell);
@@ -351,7 +356,25 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
 
   const rawView =
     active === "Home" ? (
-      <Feed />
+      isAppShell ? (
+        <Feed />
+      ) : isDesktop ? (
+        <DesktopHome onSelect={setActive} onCreate={() => handleCreate()} />
+      ) : (
+        <HomeHub
+          onSelect={setActive}
+          onCreate={handleCreate}
+          onOpenMessages={() => setMessagesOpen(true)}
+          counts={{
+            Feed: feedCount.count,
+            Marketplace: marketCount.count,
+            Academy: academyCount.count,
+            Bounties: bountiesCount.count,
+            Wallet: walletCount.count,
+          }}
+          returnedToHub={returnedToHub}
+        />
+      )
     ) : active === "Wallet" ? (
       <AppOnlyGate
         title="Your wallet lives in the app"
@@ -402,7 +425,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   const isMessages = active === "Messages";
 
   return (
-    <div className={`relative h-screen h-[100dvh] overflow-hidden ${active === "Home" || active === "Feed" || isAppShell ? "bg-[#070A08]" : "bg-white"} text-slate-200`}>
+    <div className={`relative h-screen h-[100dvh] overflow-hidden ${isAppShell ? "bg-[#070A08]" : "bg-white"} text-slate-200`}>
       <div className="pointer-events-none fixed top-0 inset-x-0 h-[2px] z-50  hidden md:block" />
       <div className="pointer-events-none fixed bottom-0 inset-x-0 h-[2px] z-50  hidden md:block" />
 
@@ -443,10 +466,10 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
 
           <main
             id={desktopLanding ? "desktop-home-scroll" : undefined}
-            className={`flex-1 min-w-0 min-h-0 ${isMessages ? "overflow-hidden" : "overflow-y-auto"} ${desktopLanding || isMessages ? "" : "pb-20 md:pb-0"} ${active === "Home" || active === "Feed" ? "bg-[#070A08]" : (!isAppShell || (isDesktop && (active === "Marketplace" || active === "Academy" || active === "Bounties" || active === "Circles" || active === "Messages"))) ? "bg-white" : ""}`}
+            className={`flex-1 min-w-0 min-h-0 ${isMessages ? "overflow-hidden" : "overflow-y-auto"} ${desktopLanding || isMessages ? "" : "pb-20 md:pb-0"} ${isAppShell ? "bg-[#070A08]" : "bg-white"}`}
           >
             {view}
-            {desktopLanding && active !== "Home" && active !== "Feed" && <SiteFooterAuto />}
+            {desktopLanding && active !== "Feed" && !isAppShell && <SiteFooterAuto />}
           </main>
         </div>
         {isAppShell && !desktopLanding && !isMessages && (
