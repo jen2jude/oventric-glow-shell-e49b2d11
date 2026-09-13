@@ -239,7 +239,7 @@ export function PostActionsMenu({
         onClick={() => run(action)}
         className="w-full flex items-start gap-4 px-5 py-3.5 text-left active:bg-white/5"
       >
-        <Icon className={`w-5 h-5 mt-0.5 shrink-0 ${danger ? "text-[#E5484D]" : "text-white/70"}`} />
+        <Icon className={`w-5 h-5 mt-0.5 shrink-0 ${danger ? "text-red-400" : "text-white/70"}`} />
         <span className="min-w-0">
           <span className={`block text-[15px] ${danger ? "text-[#E5484D]" : "text-white/90"}`}>
             {label}
@@ -303,7 +303,7 @@ export function PostActionsMenu({
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="absolute inset-x-0 bottom-[calc(64px+env(safe-area-inset-bottom)+8px)] mx-3 flex max-h-[75dvh] flex-col rounded-[20px] bg-[#141416] border border-white/10 shadow-[0_20px_60px_-10px_rgba(0,0,0,0.7)] animate-in slide-in-from-bottom duration-200">
+          <div className="absolute inset-x-0 bottom-[calc(64px+env(safe-area-inset-bottom)+8px)] mx-3 flex max-h-[75dvh] flex-col rounded-[20px] bg-[#1B1D1F] border border-white/10 shadow-[0_20px_60px_-10px_rgba(0,0,0,0.7)] animate-in slide-in-from-bottom duration-200">
             <div className="flex items-center justify-between px-5 pt-5 pb-3 shrink-0">
               <h3 className="text-[17px] font-semibold text-white">More options</h3>
               <button

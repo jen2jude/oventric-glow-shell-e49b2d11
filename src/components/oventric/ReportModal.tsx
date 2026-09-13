@@ -156,7 +156,7 @@ export function ReportModal({
       <div className="w-full sm:max-w-md bg-[#1E1E24] border border-white/10 rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl">
         <header className="flex items-center justify-between px-5 py-4 border-b border-white/10">
           <div className="flex items-center gap-2">
-            <Flag className="w-4 h-4 text-emerald-400" />
+            <Flag className="w-4 h-4 text-[#FF3EB5]" />
             <span className="text-white font-semibold text-sm">Report {target ?? "content"}</span>
           </div>
           <button onClick={onClose} className="p-1 rounded-[10px] hover:bg-white/5 text-slate-400">
@@ -186,7 +186,7 @@ export function ReportModal({
                   onClick={() => setReason(r.id)}
                   className={`text-left p-3 rounded-[10px] border transition-colors ${
                     reason === r.id
-                      ? "border-emerald-500/60 bg-emerald-500/10"
+                      ? "border-[#FF3EB5]/60 bg-[#FF3EB5]/10"
                       : "border-white/10 bg-black/20 hover:border-white/20"
                   }`}
                 >
@@ -194,7 +194,7 @@ export function ReportModal({
                     <span className="text-sm font-semibold text-white">{r.label}</span>
                     <span
                       className={`w-3.5 h-3.5 rounded-full border ${
-                        reason === r.id ? "bg-emerald-400 border-emerald-400" : "border-white/30"
+                         reason === r.id ? "bg-[#A7FF16] border-[#A7FF16]" : "border-white/30"
                       }`}
                     />
                   </div>
@@ -212,7 +212,7 @@ export function ReportModal({
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Tell us anything else that helps us review this…"
-                className="w-full bg-black/30 border border-white/10 rounded-[10px] px-3 py-3 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/60"
+                 className="w-full bg-black/30 border border-white/10 rounded-[10px] px-3 py-3 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-[#FF3EB5]/60"
               />
               <div className="text-[10px] text-slate-500 text-right mt-1">{note.length}/280</div>
             </div>
@@ -266,7 +266,7 @@ export function ReportModal({
               <button
                 onClick={handleSubmit}
                 disabled={!reason || submitting || !targetId}
-                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-[10px] bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed text-black font-semibold text-sm"
+                 className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-[10px] bg-[#FF3EB5] hover:bg-[#FF7ACD] disabled:opacity-40 disabled:cursor-not-allowed text-[#070A08] font-semibold text-sm"
               >
                 {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 {submitting ? "Submitting…" : error ? "Try again" : "Submit report"}

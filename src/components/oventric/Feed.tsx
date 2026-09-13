@@ -1257,7 +1257,7 @@ export function Feed() {
           type="button"
           onClick={scrollFeedToTop}
           aria-label="Back to top"
-          className={`fixed left-1/2 z-40 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full bg-[#E5484D] px-4 py-2.5 text-[12px] font-bold text-white shadow-[0_10px_30px_-8px_rgba(229,72,77,0.7)] transition-all duration-300 md:hidden ${
+          className={`app-feed-accent-bg fixed left-1/2 z-40 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[12px] font-bold shadow-[0_10px_30px_-8px_rgba(255,62,181,0.65)] transition-all duration-300 md:hidden ${
             chromeHidden
               ? "bottom-6 opacity-100 translate-y-0 pointer-events-auto"
               : "bottom-0 opacity-0 translate-y-6 pointer-events-none"
@@ -1675,7 +1675,9 @@ export function Feed() {
                       : "bg-[#1E1E24] rounded-xl p-5"
                   } ${isReported ? "opacity-70" : ""} ${
                     isNew
-                      ? "border-[#E5484D]/70 post-highlight"
+                      ? isAppShell
+                        ? "border-[#FF3EB5]/70 post-highlight"
+                        : "border-[#E5484D]/70 post-highlight"
                       : isAppShell
                         ? "border-white/[0.06] md:border-slate-200"
                         : "border-white/10 md:border-slate-200"
@@ -1692,7 +1694,7 @@ export function Feed() {
                     <Link
                       to="/profile/$id"
                       params={{ id: profileSlug }}
-                      className="w-10 h-10 rounded-full overflow-hidden bg-neutral-800 md:bg-slate-200 flex items-center justify-center shrink-0 hover:ring-2 hover:ring-[#E5484D]/60 transition"
+                      className={`w-10 h-10 rounded-full overflow-hidden flex items-center justify-center shrink-0 hover:ring-2 transition ${isAppShell ? "bg-[#1B1D1F] ring-1 ring-white/10 hover:ring-[#FF3EB5]/60" : "bg-neutral-800 md:bg-slate-200 hover:ring-[#E5484D]/60"}`}
                     >
                       <AvatarImage
                         src={post.author_avatar_url}
@@ -1705,7 +1707,7 @@ export function Feed() {
                         <Link
                           to="/profile/$id"
                           params={{ id: profileSlug }}
-                          className="font-semibold text-white md:text-slate-900 text-sm hover:text-[#E5484D] md:hover:text-[#E5484D] transition-colors"
+                          className={`font-semibold text-sm transition-colors ${isAppShell ? "text-white hover:text-[#FF3EB5]" : "text-white md:text-slate-900 hover:text-[#E5484D]"}`}
                         >
                           {post.author_name}
                         </Link>
@@ -2094,7 +2096,7 @@ export function Feed() {
                       type="button"
                       onClick={() => setRepostTarget(post)}
                       className="flex items-center gap-1.5 px-2.5 py-3 rounded-[10px] hover:bg-white/5 md:hover:bg-slate-100 hover:text-white md:hover:text-slate-900 transition-colors font-semibold"
-                      style={{ color: post.viewer_reposted ? "#E5484D" : undefined }}
+                      style={{ color: post.viewer_reposted ? (isAppShell ? "#FF3EB5" : "#E5484D") : undefined }}
                       aria-label="Repost"
                     >
                       <Repeat2 className="w-[19px] h-[19px]" />
@@ -2150,7 +2152,7 @@ export function Feed() {
                         <button
                           type="button"
                           onClick={() => setCommentsSheetPostId(post.id)}
-                          className="text-[11px] font-medium text-[#E5484D] md:text-[#E5484D] hover:text-emerald-300 md:hover:text-emerald-700 ml-9"
+                          className={`text-[11px] font-medium ml-9 ${isAppShell ? "text-[#FF3EB5] hover:text-[#A7FF16]" : "text-[#E5484D] hover:text-emerald-300 md:hover:text-emerald-700"}`}
                         >
                           {post.comments_count > 1
                             ? `View all ${post.comments_count} comments`
