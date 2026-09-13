@@ -119,6 +119,14 @@
 @utility social-feed-shell {
   font-family: "Figtree", ui-sans-serif, system-ui, sans-serif;
   color: oklch(0.98 0 0);
+  --feed-canvas: oklch(0.12 0.01 145);
+  --feed-surface: oklch(0.19 0.01 260);
+  --feed-surface-raised: oklch(0.22 0.012 260);
+  --feed-copy: oklch(0.98 0 0);
+  --feed-copy-muted: oklch(0.72 0.01 260);
+  --feed-pink: oklch(0.72 0.25 340);
+  --feed-lime: oklch(0.92 0.24 125);
+  --feed-line: oklch(1 0 0 / 10%);
 
   h1, h2, h3 {
     font-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
@@ -126,15 +134,95 @@
   }
 
   article {
-    background-color: #1b1d1f;
-    border-color: oklch(1 0 0 / 9%);
+    background-color: var(--feed-surface) !important;
+    border-color: var(--feed-line) !important;
     box-shadow: none;
   }
 
   article header a,
   article h3 {
-    color: oklch(0.98 0 0);
+    color: var(--feed-copy);
   }
+}
+
+/* The new social-commerce treatment belongs only to the installed/native app.
+   These rules also prevent legacy `md:` light styles leaking into tablet shells. */
+html.oventric-app .social-feed-shell {
+  background: var(--feed-canvas);
+  color: var(--feed-copy);
+}
+
+html.oventric-app .social-feed-shell :is(h1, h2, h3, [role="dialog"] h2, [role="dialog"] h3) {
+  font-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0;
+}
+
+html.oventric-app .social-feed-shell .modal-light,
+html.oventric-app .social-feed-shell [role="dialog"] {
+  color-scheme: dark;
+}
+
+html.oventric-app .social-feed-shell .modal-light > :not(.absolute),
+html.oventric-app .social-feed-shell [role="dialog"] {
+  background-color: var(--feed-surface) !important;
+  border-color: var(--feed-line) !important;
+}
+
+html.oventric-app .social-feed-shell .modal-light :is(input, textarea) {
+  color: var(--feed-copy) !important;
+  caret-color: var(--feed-pink);
+}
+
+html.oventric-app .social-feed-shell .modal-light :is(input, textarea)::placeholder {
+  color: oklch(0.72 0.01 260 / 55%) !important;
+}
+
+html.oventric-app .social-feed-shell .modal-light :is(input, textarea):focus {
+  border-color: var(--feed-pink) !important;
+}
+
+html.oventric-app .social-feed-shell .modal-light .text-slate-900,
+html.oventric-app .social-feed-shell .modal-light .text-slate-800,
+html.oventric-app .social-feed-shell .modal-light .text-slate-700,
+html.oventric-app .social-feed-shell article .text-slate-900,
+html.oventric-app .social-feed-shell article .text-slate-800,
+html.oventric-app .social-feed-shell article .text-slate-700 {
+  color: var(--feed-copy) !important;
+}
+
+html.oventric-app .social-feed-shell .modal-light .text-slate-600,
+html.oventric-app .social-feed-shell .modal-light .text-slate-500,
+html.oventric-app .social-feed-shell .modal-light .text-slate-400,
+html.oventric-app .social-feed-shell article .text-slate-600,
+html.oventric-app .social-feed-shell article .text-slate-500,
+html.oventric-app .social-feed-shell article .text-slate-400 {
+  color: var(--feed-copy-muted) !important;
+}
+
+html.oventric-app .social-feed-shell .modal-light .bg-white,
+html.oventric-app .social-feed-shell .modal-light .bg-slate-50,
+html.oventric-app .social-feed-shell .modal-light .bg-slate-100,
+html.oventric-app .social-feed-shell article.bg-white,
+html.oventric-app .social-feed-shell article .bg-slate-50,
+html.oventric-app .social-feed-shell article .bg-slate-100 {
+  background-color: var(--feed-surface-raised) !important;
+}
+
+html.oventric-app .social-feed-shell .modal-light .border-slate-200,
+html.oventric-app .social-feed-shell .modal-light .border-slate-300,
+html.oventric-app .social-feed-shell article.border-slate-200,
+html.oventric-app .social-feed-shell article .border-slate-200,
+html.oventric-app .social-feed-shell article .border-slate-300 {
+  border-color: var(--feed-line) !important;
+}
+
+html.oventric-app .social-feed-shell .app-feed-accent {
+  color: var(--feed-pink) !important;
+}
+
+html.oventric-app .social-feed-shell .app-feed-accent-bg {
+  background-color: var(--feed-pink) !important;
+  color: var(--feed-canvas) !important;
 }
 
 /* Off-screen drawers/sheets must never create a horizontal scroll surface,

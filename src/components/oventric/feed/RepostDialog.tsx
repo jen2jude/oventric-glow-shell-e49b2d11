@@ -56,13 +56,13 @@ export function RepostDialog({ open, onClose, post, onDone }: Props) {
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-t-3xl border border-white/10 bg-[#141418] p-5 shadow-2xl sm:rounded-3xl"
+        className="w-full max-w-md rounded-t-[22px] border border-white/10 bg-[#1B1D1F] p-5 shadow-2xl sm:rounded-[22px]"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-label="Repost"
       >
         <div className="mb-4 flex items-center gap-2">
-          <Repeat2 className="h-5 w-5 text-[#E5484D]" />
+          <Repeat2 className="h-5 w-5 text-[#FF3EB5]" />
           <h2 className="text-base font-black text-white">Repost to your wall</h2>
           <button
             type="button"
@@ -80,7 +80,7 @@ export function RepostDialog({ open, onClose, post, onDone }: Props) {
           maxLength={1000}
           rows={3}
           placeholder="Add a comment (optional)"
-          className="w-full resize-none rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-sm text-white placeholder:text-white/35 focus:border-[#E5484D]/60 focus:outline-none"
+          className="w-full resize-none rounded-[10px] border border-white/10 bg-white/[0.04] p-3 text-sm text-white placeholder:text-white/35 focus:border-[#FF3EB5]/60 focus:outline-none"
         />
 
         <div className="mt-3 flex gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3">
@@ -101,7 +101,7 @@ export function RepostDialog({ open, onClose, post, onDone }: Props) {
           type="button"
           onClick={submit}
           disabled={busy}
-          className="mt-4 w-full rounded-full bg-[#E5484D] py-3 text-sm font-black text-white transition-transform active:scale-[0.98] disabled:opacity-60"
+          className="mt-4 w-full rounded-full bg-[#FF3EB5] py-3 text-sm font-black text-[#070A08] transition-transform active:scale-[0.98] disabled:opacity-60"
         >
           {busy ? "Reposting…" : "Repost"}
         </button>

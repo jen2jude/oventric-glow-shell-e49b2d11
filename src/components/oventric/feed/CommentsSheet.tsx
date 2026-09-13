@@ -114,8 +114,8 @@ function CommentRow({
             aria-label={liked ? "Remove reaction" : "React"}
           >
             <Heart
-              className={`w-4 h-4 ${liked ? "text-[#E5484D]" : ""}`}
-              fill={liked ? "#E5484D" : "none"}
+              className={`w-4 h-4 ${liked ? "app-feed-accent" : ""}`}
+              fill={liked ? "currentColor" : "none"}
               strokeWidth={1.8}
             />
             {total > 0 && <span>{total}</span>}
@@ -328,7 +328,7 @@ export function CommentsSheet({
                       }}
                       className={`w-full text-left px-3 py-3 text-[13px] hover:bg-white/5 md:hover:bg-slate-50 ${
                         sort === s.key
-                          ? "text-[#E5484D] font-semibold"
+                          ? "app-feed-accent font-semibold"
                           : "text-slate-200 md:text-slate-700"
                       }`}
                     >
@@ -393,7 +393,7 @@ export function CommentsSheet({
               type="button"
               onClick={handleSubmit}
               disabled={!text.trim() || addMut.isPending}
-              className="p-2 rounded-full text-[#E5484D] disabled:opacity-40 hover:bg-white/5 md:hover:bg-slate-200"
+              className="app-feed-accent p-2 rounded-full disabled:opacity-40 hover:bg-white/5 md:hover:bg-slate-200"
               aria-label="Send"
             >
               <Send className="w-4.5 h-4.5 w-[18px] h-[18px]" />
