@@ -400,7 +400,7 @@ export function Feed() {
   const [feedTab, setFeedTab] = useState<FeedTab>("foryou");
   const [searchOpen, setSearchOpen] = useState(false);
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
-  const commerceCards = useFeedCommerceCards(isAppShell && feedTab === "foryou");
+  const commerceCards = useFeedCommerceCards(feedTab === "foryou");
 
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   // Seed from the session cache so returning to the feed paints instantly.
@@ -1245,9 +1245,7 @@ export function Feed() {
   return (
     <div
       ref={feedRootRef}
-      className={`w-full max-w-7xl mx-auto md:bg-white md:min-h-screen lg:flex lg:flex-row lg:gap-6 lg:items-start lg:[scrollbar-gutter:stable] ${
-        isAppShell ? "px-4 pt-3 pb-6 bg-[#0A0A0B]" : "oventric-web px-4 py-6"
-      }`}
+      className="social-feed-shell min-h-screen w-full bg-[#070A08] px-4 pb-24 pt-3 md:px-6 md:pb-10"
     >
       {isAppShell && (
         <button
@@ -1264,10 +1262,8 @@ export function Feed() {
           Back to top
         </button>
       )}
-      <div
-        className={`w-full lg:flex-1 lg:min-w-0 flex flex-col ${isAppShell ? "space-y-3" : "space-y-4"}`}
-      >
-        {isAppShell && (
+      <div className="mx-auto flex w-full max-w-[760px] min-w-0 flex-col gap-3">
+        {(
           <FeedAppChrome
             tab={feedTab}
             onTabChange={setFeedTab}
@@ -1279,71 +1275,38 @@ export function Feed() {
           />
         )}
         {/* Composer — hidden in Discover / Following because those tabs are view-only */}
-        {!(isAppShell && (feedTab === "discover" || feedTab === "following")) && (
+        {!(feedTab === "discover" || feedTab === "following") && (
           <button
             id="oventric-composer"
             type="button"
             onClick={() => require(1, () => setComposerOpen(true), "seller")}
-            className={`group w-full text-left flex items-center gap-3 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E5484D]/60 md:focus-visible:ring-[#E5484D]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141418] md:focus-visible:ring-offset-white ${
-              isAppShell
-                ? "bg-[#141416] border border-white/[0.06] rounded-2xl px-3 py-3 active:bg-white/[0.03]"
-                : "bg-[#1E1E24] md:bg-white md:shadow-sm border border-white/10 md:border-slate-200 rounded-xl p-4 md:p-3.5 hover:bg-[#22222a] md:hover:bg-white md:hover:border-slate-300 md:hover:shadow-md"
-            }`}
+            className="group flex w-full items-center gap-3 rounded-[22px] border border-white/10 bg-[#1B1D1F] p-4 text-left transition-colors hover:border-[#FF3EB5]/45 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF3EB5]/60"
           >
             <span
-              className={`w-9 h-9 rounded-full overflow-hidden shrink-0 bg-neutral-800 md:bg-slate-200 md:ring-1 md:ring-slate-200 flex items-center justify-center ${
-                isAppShell ? "border border-white/[0.06]" : ""
-              }`}
+              className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-neutral-800"
             >
               <AvatarImage src={meAvatarUrl} alt="Your profile" initials={meInitials} />
             </span>
             <span
-              className={`flex-1 min-w-0 md:rounded-full md:bg-slate-100 md:group-hover:bg-slate-100/80 md:px-4 md:py-2.5 md:transition-colors ${
-                isAppShell ? "px-1" : ""
-              }`}
+              className="min-w-0 flex-1 px-1"
             >
               <span
-                className={`block text-sm truncate md:text-slate-500 md:font-normal ${
-                  isAppShell ? "text-white/40 font-light" : "text-slate-400"
-                }`}
+                className="block truncate text-sm font-medium text-white/45"
               >
                 {placeholderIdx === 0
                   ? `Hey${meLastName ? ` ${meLastName}` : ""}! What are you creating today?`
                   : "What's on your mind today, update us!"}
               </span>
             </span>
-            {isAppShell ? (
-              <span className="text-[#E5484D] p-1 shrink-0" aria-hidden>
+            {(
+              <span className="shrink-0 rounded-full bg-[#FF3EB5]/12 p-2 text-[#FF3EB5]" aria-hidden>
                 <ImageIcon className="w-6 h-6" strokeWidth={1.5} />
               </span>
-            ) : (
-              <span className="hidden sm:flex md:hidden text-[11px] text-slate-500">
-                Photo · Video · @Mention
-              </span>
             )}
-            <span className="hidden md:flex items-center gap-1 shrink-0">
-              {[
-                {
-                  Icon: ImageIcon,
-                  label: "Photo",
-                  tone: "text-[#E5484D] group-hover:bg-emerald-50",
-                },
-                { Icon: VideoIcon, label: "Video", tone: "text-rose-600 group-hover:bg-rose-50" },
-                { Icon: AtSign, label: "Mention", tone: "text-sky-600 group-hover:bg-sky-50" },
-              ].map(({ Icon, label, tone }) => (
-                <span
-                  key={label}
-                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[12px] font-medium text-slate-600 transition-colors ${tone}`}
-                >
-                  <Icon className={`w-4 h-4 ${tone.split(" ")[0]}`} strokeWidth={2.2} />
-                  <span className="hidden lg:inline">{label}</span>
-                </span>
-              ))}
-            </span>
           </button>
         )}
 
-        {isAppShell && searchOpen && (
+        {searchOpen && (
           <div className="fixed inset-0 z-40 bg-[#0A0A0B] overflow-y-auto pt-16 -mx-4">
             <div className="px-4">
               <FeedSearchBar
@@ -1361,18 +1324,6 @@ export function Feed() {
         )}
 
 
-        {!isAppShell && (
-          <FeedSearchBar
-            q={query}
-            onQueryChange={setQuery}
-            category={category}
-            onCategoryChange={setCategory}
-            resultCount={
-              showPostList && (debouncedQuery || category !== "all") ? filteredPosts.length : null
-            }
-          />
-        )}
-
         {(debouncedQuery.length >= 1 || isGlobalCategory) && (
           <div className="fixed inset-0 z-[41] bg-[#0A0A0B] overflow-y-auto -mx-4">
             <FeedGlobalResults q={debouncedQuery} category={category} />
@@ -1386,10 +1337,6 @@ export function Feed() {
               <X className="w-6 h-6" />
             </button>
           </div>
-        )}
-
-        {!isAppShell && (
-          <WebStoriesRail meAvatarUrl={meAvatarUrl} meInitials={meInitials} />
         )}
 
         {!isAppShell && <WebReelsRail meId={meId} />}

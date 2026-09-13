@@ -7,7 +7,6 @@ import { useChromeHidden } from "@/hooks/use-chrome-hide";
 
 const left = [
   { icon: Home, label: "Home" },
-  { icon: Newspaper, label: "Feed" },
   { icon: ShoppingBag, label: "Market" },
 ];
 const right = [
@@ -45,7 +44,7 @@ export function MobileNav({
           onSelect(it.label);
         }}
         className={`nav-tap relative flex flex-col items-center justify-center gap-0.5 flex-1 py-1 min-w-0 ${
-          isActive ? "text-[#E5484D]" : "text-white"
+           isActive ? "text-[#FF3EB5]" : "text-white/45"
         }`}
       >
         <span className="relative">
@@ -66,7 +65,7 @@ export function MobileNav({
 
     <nav
       data-testid="mobile-nav"
-      className={`md:hidden fixed bottom-0 inset-x-0 z-30 max-w-full bg-[#141418] border-t border-white/15 shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.45)] rounded-t-2xl flex items-center px-2 transition-all duration-300 ease-out ${
+      className={`md:hidden fixed bottom-0 inset-x-0 z-30 max-w-full bg-[#070A08]/95 border-t border-white/10 shadow-[0_-14px_40px_-20px_rgba(0,0,0,0.9)] flex items-center px-2 backdrop-blur-xl transition-all duration-300 ease-out ${
         chromeHidden ? "translate-y-full opacity-0 pointer-events-none" : "translate-y-0 opacity-100"
       }`}
       style={{
@@ -80,11 +79,11 @@ export function MobileNav({
           haptic("medium");
           onCreate();
         }}
-        className="nav-tap relative -mt-8 mx-1 w-12 h-12 rounded-full rgb-static-border shrink-0 flex items-center justify-center p-[2px]"
+        className="nav-tap relative -mt-8 mx-1 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#FF3EB5] shadow-[0_8px_24px_rgba(255,62,181,0.35)]"
         aria-label="Create"
       >
-        <span className="w-full h-full rounded-full bg-[#1E1E24] flex items-center justify-center">
-          <Plus className="w-6 h-6 text-white" strokeWidth={2.5} />
+        <span className="flex h-full w-full items-center justify-center rounded-full">
+          <Plus className="h-6 w-6 text-[#070A08]" strokeWidth={2.8} />
         </span>
       </button>
       {right.map(Item)}

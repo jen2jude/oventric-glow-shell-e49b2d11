@@ -342,9 +342,8 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   const isDesktop = useIsDesktop();
   const isAppShell = useIsAppShell();
   
-  // The marketing site is the home surface for every browser visitor (any
-  // width). Native builds and installed PWAs keep the app-style Home Hub.
-  // We now extend desktopLanding to Marketplace for browser visitors to use the specialized header.
+  // Browser sections keep their full-width page layouts. Home now resolves to
+  // the social feed rather than the retired Hub/marketing landing surface.
   const desktopLanding =
     (active === "Home" || active === "Marketplace" || active === "Academy" || active === "Bounties" || active === "Circles" || active === "Feed") &&
     (isDesktop || !isAppShell);
@@ -352,23 +351,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
 
   const rawView =
     active === "Home" ? (
-      desktopLanding ? (
-        <DesktopHome onSelect={setActive} onCreate={handleCreate} />
-      ) : (
-        <HomeHub
-          onSelect={setActive}
-          onCreate={handleCreate}
-          onOpenMessages={() => setMessagesOpen(true)}
-          returnedToHub={returnedToHub}
-          counts={{
-            Feed: feedCount.count,
-            Market: marketCount.count,
-            Academy: academyCount.count,
-            Bounties: bountiesCount.count,
-            Wallet: walletCount.count,
-          }}
-        />
-      )
+      <Feed />
     ) : active === "Wallet" ? (
       <AppOnlyGate
         title="Your wallet lives in the app"
@@ -407,10 +390,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         <CirclesHub />
       </AppOnlyGate>
     ) : desktopLanding ? (
-      <>
-        <FeedSocialBar onOpenMessages={() => (appOnly ? setGetAppOpen(true) : setMessagesOpen(true))} />
-        <Feed />
-      </>
+      <Feed />
     ) : (
       <Feed />
     );
@@ -422,7 +402,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   const isMessages = active === "Messages";
 
   return (
-    <div className={`relative h-screen h-[100dvh] overflow-hidden ${!isAppShell ? "bg-white" : "bg-[#0A0A0B]"} text-slate-200`}>
+    <div className={`relative h-screen h-[100dvh] overflow-hidden ${active === "Home" || active === "Feed" || isAppShell ? "bg-[#070A08]" : "bg-white"} text-slate-200`}>
       <div className="pointer-events-none fixed top-0 inset-x-0 h-[2px] z-50  hidden md:block" />
       <div className="pointer-events-none fixed bottom-0 inset-x-0 h-[2px] z-50  hidden md:block" />
 
@@ -431,7 +411,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
 
       <div className="flex h-full flex-col">
         {/* Managed Header (Desktop Landing/Browser Context only) */}
-        {desktopLanding ? (
+        {desktopLanding && active !== "Home" && active !== "Feed" ? (
           active === "Marketplace" || active === "Academy" ? (
             <MarketplaceHeader
               onSelect={setActive}
@@ -463,10 +443,10 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
 
           <main
             id={desktopLanding ? "desktop-home-scroll" : undefined}
-            className={`flex-1 min-w-0 min-h-0 ${isMessages ? "overflow-hidden" : "overflow-y-auto"} ${desktopLanding || isMessages ? "" : "pb-20 md:pb-0"} ${(!isAppShell || (isDesktop && (active === "Marketplace" || active === "Academy" || active === "Bounties" || active === "Circles" || active === "Feed" || active === "Messages"))) ? "bg-white" : ""}`}
+            className={`flex-1 min-w-0 min-h-0 ${isMessages ? "overflow-hidden" : "overflow-y-auto"} ${desktopLanding || isMessages ? "" : "pb-20 md:pb-0"} ${active === "Home" || active === "Feed" ? "bg-[#070A08]" : (!isAppShell || (isDesktop && (active === "Marketplace" || active === "Academy" || active === "Bounties" || active === "Circles" || active === "Messages"))) ? "bg-white" : ""}`}
           >
             {view}
-            {desktopLanding && active !== "Home" && <SiteFooterAuto />}
+            {desktopLanding && active !== "Home" && active !== "Feed" && <SiteFooterAuto />}
           </main>
         </div>
         {isAppShell && !desktopLanding && !isMessages && (
