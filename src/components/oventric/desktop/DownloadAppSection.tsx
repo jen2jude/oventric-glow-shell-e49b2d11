@@ -262,7 +262,7 @@ export function DownloadAppSection() {
   );
 }
 
-function AppStoreBadge() {
+function InstallBadge() {
   return <ComingSoonBadge platform="iPhone" tone="dark" />;
 }
 
