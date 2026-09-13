@@ -41,6 +41,8 @@ import { SiteFooterAuto } from "@/components/oventric/desktop/SiteFooterAuto";
 import { SiteNavbar } from "@/components/oventric/desktop/SiteNavbar";
 import { MarketplaceHeader } from "@/components/oventric/desktop/MarketplaceHeader";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
+import { AppOnlyGate, useAppOnly } from "@/lib/app-gate";
+import { GetAppModal } from "@/components/oventric/GetAppModal";
 
 import { useIsDesktop } from "@/hooks/use-desktop";
 import { useIsAppShell, useLaunchContext } from "@/hooks/use-launch-context";
@@ -109,6 +111,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   const [createOpen, setCreateOpen] = useState(false);
   const [createChoice, setCreateChoice] = useState<ChoiceKey | null>(null);
   const [messagesOpen, setMessagesOpen] = useState(false);
+  const [getAppOpen, setGetAppOpen] = useState(false);
   const [messagesPeer, setMessagesPeer] = useState<string | undefined>(undefined);
   const [active, setActive] = useState<string>(initialSection);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
