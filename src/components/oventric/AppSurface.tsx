@@ -280,7 +280,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
       window.removeEventListener("oventric:navigate", onNav);
       window.removeEventListener("oventric:open-dm", onOpenDM);
     };
-  }, []);
+  }, [appOnly]);
 
   // Resume the bounty publish flow after a successful wallet top-up.
   useEffect(() => {
@@ -370,21 +370,45 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         />
       )
     ) : active === "Wallet" ? (
-      <Wallet />
+      <AppOnlyGate
+        title="Your wallet lives in the app"
+        description="Install the Oventric app to top up, withdraw, track earnings and manage cashback."
+        from="wallet"
+      >
+        <Wallet />
+      </AppOnlyGate>
     ) : active === "Marketplace" ? (
       <Marketplace />
     ) : active === "Academy" ? (
       <Academy hubMode={active === "Academy"} />
     ) : active === "Bounties" ? (
 
-      <Bounties />
+      <AppOnlyGate
+        title="Bounties live in the app"
+        description="Install the Oventric app to post bounties, apply with escrow protection and get paid."
+        from="bounties"
+      >
+        <Bounties />
+      </AppOnlyGate>
     ) : active === "Messages" ? (
-      <Messages variant="page" />
+      <AppOnlyGate
+        title="Messages live in the app"
+        description="Install the Oventric app to chat with buyers and sellers in real time."
+        from="messages"
+      >
+        <Messages variant="page" />
+      </AppOnlyGate>
     ) : active === "Circles" ? (
-      <CirclesHub />
+      <AppOnlyGate
+        title="Circles live in the app"
+        description="Install the Oventric app to join circles, follow conversations and grow with the community."
+        from="circles"
+      >
+        <CirclesHub />
+      </AppOnlyGate>
     ) : desktopLanding ? (
       <>
-        <FeedSocialBar onOpenMessages={() => setMessagesOpen(true)} />
+        <FeedSocialBar onOpenMessages={() => (appOnly ? setGetAppOpen(true) : setMessagesOpen(true))} />
         <Feed />
       </>
     ) : (
