@@ -51,7 +51,7 @@ export function useLaunchContext(): LaunchContext | null {
 
     if (typeof window.matchMedia !== "function") return;
     const mql = window.matchMedia("(display-mode: standalone)");
-    const onChange = () => setCtx(read());
+    const onChange = () => apply(read());
     mql.addEventListener("change", onChange);
     return () => mql.removeEventListener("change", onChange);
   }, []);
