@@ -196,8 +196,14 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
     </div>
   );
 
-  // Create flow: auth-gate for anonymous visitors, then open the create panel.
+  // Create flow: on the browser this is an app-only feature → GetApp modal;
+  // inside the app shell we auth-gate, then open the create panel.
+  const appOnly = useAppOnly();
   const handleCreate = (choice?: ChoiceKey) => {
+    if (appOnly) {
+      setGetAppOpen(true);
+      return;
+    }
     return require(
       1,
       () => {
@@ -258,6 +264,10 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
       if (detail?.section) setActive(detail.section);
     };
     const onOpenDM = (e: Event) => {
+      if (appOnly) {
+        setGetAppOpen(true);
+        return;
+      }
       const detail = (e as CustomEvent<{ peerId?: string }>).detail;
       if (detail?.peerId) {
         setMessagesPeer(detail.peerId);
