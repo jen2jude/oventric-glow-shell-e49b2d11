@@ -15,10 +15,9 @@ import { useLaunchContext } from "@/hooks/use-launch-context";
  *  - false   → app shell, render the real feature
  */
 export function useAppOnly(): boolean | null {
-  // The URL version now ships the full feature set while the native app is
-  // being built elsewhere, so nothing is gated behind "get the app".
-  useLaunchContext();
-  return false;
+  const ctx = useLaunchContext();
+  if (ctx === null) return null;
+  return ctx === "browser";
 }
 
 export function GetAppButton({
