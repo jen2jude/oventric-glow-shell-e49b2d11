@@ -400,7 +400,7 @@ export function Feed() {
   const [feedTab, setFeedTab] = useState<FeedTab>("foryou");
   const [searchOpen, setSearchOpen] = useState(false);
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
-  const commerceCards = useFeedCommerceCards(feedTab === "foryou");
+  const commerceCards = useFeedCommerceCards(isAppShell && feedTab === "foryou");
 
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   // Seed from the session cache so returning to the feed paints instantly.
@@ -1245,7 +1245,11 @@ export function Feed() {
   return (
     <div
       ref={feedRootRef}
-      className="social-feed-shell min-h-screen w-full bg-[#070A08] px-4 pb-24 pt-3 md:px-6 md:pb-10"
+      className={
+        isAppShell
+          ? "social-feed-shell min-h-screen w-full bg-[#070A08] px-4 pb-24 pt-3 md:px-6 md:pb-10"
+          : "oventric-web min-h-screen w-full bg-white px-4 py-6 md:px-6"
+      }
     >
       {isAppShell && (
         <button
@@ -1263,7 +1267,7 @@ export function Feed() {
         </button>
       )}
       <div className="mx-auto flex w-full max-w-[760px] min-w-0 flex-col gap-3">
-        {(
+        {isAppShell ? (
           <FeedAppChrome
             tab={feedTab}
             onTabChange={setFeedTab}
@@ -1273,6 +1277,8 @@ export function Feed() {
             meInitials={meInitials}
             meSlug={meSlug}
           />
+        ) : (
+          <FeedSocialBar onOpenMessages={() => window.dispatchEvent(new CustomEvent("oventric:open-messages"))} />
         )}
         {/* Composer — hidden in Discover / Following because those tabs are view-only */}
         {!(feedTab === "discover" || feedTab === "following") && (
@@ -1280,10 +1286,16 @@ export function Feed() {
             id="oventric-composer"
             type="button"
             onClick={() => require(1, () => setComposerOpen(true), "seller")}
-            className="group flex w-full items-center gap-3 rounded-[22px] border border-white/10 bg-[#1B1D1F] p-4 text-left transition-colors hover:border-[#FF3EB5]/45 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF3EB5]/60"
+            className={isAppShell
+              ? "group flex w-full items-center gap-3 rounded-[22px] border border-white/10 bg-[#1B1D1F] p-4 text-left transition-colors hover:border-[#FF3EB5]/45 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF3EB5]/60"
+              : "group flex w-full items-center gap-3 rounded-[10px] border border-slate-200 bg-white p-4 text-left shadow-sm transition-colors hover:border-slate-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+            }
           >
             <span
-              className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-neutral-800"
+              className={isAppShell
+                ? "flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-neutral-800"
+                : "flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-100"
+              }
             >
               <AvatarImage src={meAvatarUrl} alt="Your profile" initials={meInitials} />
             </span>
@@ -1291,22 +1303,29 @@ export function Feed() {
               className="min-w-0 flex-1 px-1"
             >
               <span
-                className="block truncate text-sm font-medium text-white/45"
+                className={isAppShell
+                  ? "block truncate text-sm font-medium text-white/45"
+                  : "block truncate text-sm font-medium text-slate-500"
+                }
               >
                 {placeholderIdx === 0
                   ? `Hey${meLastName ? ` ${meLastName}` : ""}! What are you creating today?`
                   : "What's on your mind today, update us!"}
               </span>
             </span>
-            {(
+            {isAppShell ? (
               <span className="shrink-0 rounded-full bg-[#FF3EB5]/12 p-2 text-[#FF3EB5]" aria-hidden>
                 <ImageIcon className="w-6 h-6" strokeWidth={1.5} />
+              </span>
+            ) : (
+              <span className="shrink-0 rounded-full bg-slate-100 p-2 text-slate-600" aria-hidden>
+                <ImageIcon className="h-5 w-5" strokeWidth={1.7} />
               </span>
             )}
           </button>
         )}
 
-        {searchOpen && (
+        {isAppShell && searchOpen && (
           <div className="fixed inset-0 z-40 bg-[#0A0A0B] overflow-y-auto pt-16 -mx-4">
             <div className="px-4">
               <FeedSearchBar

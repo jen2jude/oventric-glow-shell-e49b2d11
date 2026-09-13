@@ -87,8 +87,6 @@
 /* Brand accent remap: green/emerald utilities resolve to the sharp hero blue. */
 
 @theme {
-  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
   --color-emerald-50: #eff6ff;
   --color-emerald-100: #dbeafe;
   --color-emerald-200: #bfdbfe;
@@ -119,11 +117,11 @@
 }
 
 @utility social-feed-shell {
-  font-family: var(--font-sans);
+  font-family: "Figtree", ui-sans-serif, system-ui, sans-serif;
   color: oklch(0.98 0 0);
 
   h1, h2, h3 {
-    font-family: var(--font-display);
+    font-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
     letter-spacing: 0;
   }
 
