@@ -1937,6 +1937,8 @@ html.light input::placeholder, html.light textarea::placeholder {
    palette to white on >=768px; mobile sheets stay dark.
    ------------------------------------------------------------------------- */
 @media (min-width: 768px) {
+  /* App shells (installed PWA / native) stay dark at every width. */
+  html:not(.oventric-app) {
   .modal-light {
     color-scheme: light;
     --background: oklch(1 0 0);
@@ -2026,7 +2028,9 @@ html.light input::placeholder, html.light textarea::placeholder {
   .modal-light .rounded-2xl,
   .modal-light .rounded-3xl,
   .modal-light .rounded-xl { box-shadow: 0 18px 50px -20px rgba(15, 23, 42, 0.35); }
+  }
 }
+
 
 /* New-post highlight: pure box-shadow glow (no layout impact) that fades out. */
 @keyframes post-highlight-glow {

@@ -39,7 +39,15 @@ export function useLaunchContext(): LaunchContext | null {
       return standalone ? "standalone" : "browser";
 
     };
-    setCtx(read());
+    const apply = (c: LaunchContext) => {
+      setCtx(c);
+      // Marker class so global CSS can keep app shells fully dark.
+      document.documentElement.classList.toggle(
+        "oventric-app",
+        c === "native" || c === "standalone",
+      );
+    };
+    apply(read());
 
     if (typeof window.matchMedia !== "function") return;
     const mql = window.matchMedia("(display-mode: standalone)");
