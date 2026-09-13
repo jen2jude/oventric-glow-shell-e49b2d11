@@ -1280,7 +1280,7 @@ export function Feed() {
             id="oventric-composer"
             type="button"
             onClick={() => require(1, () => setComposerOpen(true), "seller")}
-            className="group w-full rounded-[22px] border border-white/10 bg-[#1B1D1F] p-4 text-left transition-colors hover:border-[#FF3EB5]/45 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF3EB5]/60"
+            className="group flex w-full items-center gap-3 rounded-[22px] border border-white/10 bg-[#1B1D1F] p-4 text-left transition-colors hover:border-[#FF3EB5]/45 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF3EB5]/60"
           >
             <span
               className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-neutral-800"
@@ -1306,7 +1306,7 @@ export function Feed() {
           </button>
         )}
 
-        {isAppShell && searchOpen && (
+        {searchOpen && (
           <div className="fixed inset-0 z-40 bg-[#0A0A0B] overflow-y-auto pt-16 -mx-4">
             <div className="px-4">
               <FeedSearchBar

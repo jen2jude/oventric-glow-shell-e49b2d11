@@ -446,7 +446,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
             className={`flex-1 min-w-0 min-h-0 ${isMessages ? "overflow-hidden" : "overflow-y-auto"} ${desktopLanding || isMessages ? "" : "pb-20 md:pb-0"} ${active === "Home" || active === "Feed" ? "bg-[#070A08]" : (!isAppShell || (isDesktop && (active === "Marketplace" || active === "Academy" || active === "Bounties" || active === "Circles" || active === "Messages"))) ? "bg-white" : ""}`}
           >
             {view}
-            {desktopLanding && active !== "Home" && <SiteFooterAuto />}
+            {desktopLanding && active !== "Home" && active !== "Feed" && <SiteFooterAuto />}
           </main>
         </div>
         {isAppShell && !desktopLanding && !isMessages && (
