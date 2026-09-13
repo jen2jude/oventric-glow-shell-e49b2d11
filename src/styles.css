@@ -87,6 +87,8 @@
 /* Brand accent remap: green/emerald utilities resolve to the sharp hero blue. */
 
 @theme {
+  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
   --color-emerald-50: #eff6ff;
   --color-emerald-100: #dbeafe;
   --color-emerald-200: #bfdbfe;
@@ -114,6 +116,27 @@
   --color-teal-600: #2563eb;
   --color-lime-400: #60a5fa;
   --color-lime-500: #3b82f6;
+}
+
+@utility social-feed-shell {
+  font-family: var(--font-sans);
+  color: oklch(0.98 0 0);
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    letter-spacing: 0;
+  }
+
+  article {
+    background-color: #1b1d1f;
+    border-color: oklch(1 0 0 / 9%);
+    box-shadow: none;
+  }
+
+  article header a,
+  article h3 {
+    color: oklch(0.98 0 0);
+  }
 }
 
 /* Off-screen drawers/sheets must never create a horizontal scroll surface,
