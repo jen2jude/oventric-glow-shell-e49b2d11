@@ -2855,3 +2855,6 @@ body[data-chat-open="1"] [data-testid="app-tab-bar"] {
 @media (prefers-reduced-motion: reduce) {
   .ov-orbit-lines, .ov-orbit g { animation: none !important; }
 }
+
+/* App shell: product attachment accents follow the pink feed palette. */
+html.oventric-app .attach-accent { color: #FF3EB5; }

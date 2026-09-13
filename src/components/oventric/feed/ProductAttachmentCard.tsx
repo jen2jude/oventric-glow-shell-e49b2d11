@@ -50,7 +50,7 @@ export function ProductAttachmentCard({
           <div>
             <div className="flex items-start justify-between gap-2">
               <h4 className="text-sm font-bold text-white line-clamp-1">{product.name}</h4>
-              <div className="text-sm font-black text-[#E5484D] shrink-0">
+              <div className="attach-accent text-sm font-black text-[#E5484D] shrink-0">
                 {priceLabel}
               </div>
             </div>
@@ -81,7 +81,7 @@ export function ProductAttachmentCard({
               ))}
               <span className="text-[9px] text-white/40 ml-1">(12)</span>
             </div>
-            <div className="text-[10px] font-bold text-[#E5484D] uppercase tracking-wider group-hover:translate-x-1 transition-transform">
+            <div className="attach-accent text-[10px] font-bold text-[#E5484D] uppercase tracking-wider group-hover:translate-x-1 transition-transform">
               View Product →
             </div>
           </div>
