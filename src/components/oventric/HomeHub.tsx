@@ -76,6 +76,18 @@ function greeting(): string {
   return "Good evening";
 }
 
+/**
+ * Time-of-day greeting. Rendered after hydration only: the server and the
+ * visitor's browser can sit in different time zones, which would otherwise
+ * cause a hydration mismatch.
+ */
+function Greeting() {
+  const [text, setText] = useState("Welcome");
+  useEffect(() => setText(greeting()), []);
+  return <>{text}</>;
+}
+
+
 function fromUSD(usd: number, target: Currency): number {
   return target === "USD" ? usd : usd * usdRate(target);
 }
