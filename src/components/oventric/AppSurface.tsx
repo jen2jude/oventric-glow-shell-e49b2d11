@@ -37,7 +37,7 @@ import { SiteFooterAuto } from "@/components/oventric/desktop/SiteFooterAuto";
 import { SiteNavbar } from "@/components/oventric/desktop/SiteNavbar";
 import { MarketplaceHeader } from "@/components/oventric/desktop/MarketplaceHeader";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
-import { AppOnlyGate, useAppOnly } from "@/lib/app-gate";
+import { AppOnlyGate } from "@/lib/app-gate";
 
 import { useIsDesktop } from "@/hooks/use-desktop";
 import { useIsAppShell, useLaunchContext } from "@/hooks/use-launch-context";
@@ -190,14 +190,8 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
     </div>
   );
 
-  // Create flow: on the browser this is an app-only feature → GetApp modal;
-  // inside the app shell we auth-gate, then open the create panel.
-  const appOnly = useAppOnly();
+  // Create flow: auth-gate, then open the create panel.
   const handleCreate = (choice?: ChoiceKey) => {
-    if (appOnly) {
-      setGetAppOpen(true);
-      return;
-    }
     return require(
       1,
       () => {
@@ -258,10 +252,6 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
       if (detail?.section) setActive(detail.section);
     };
     const onOpenDM = (e: Event) => {
-      if (appOnly) {
-        setGetAppOpen(true);
-        return;
-      }
       const detail = (e as CustomEvent<{ peerId?: string }>).detail;
       if (detail?.peerId) {
         setMessagesPeer(detail.peerId);
@@ -269,10 +259,6 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
       }
     };
     const onOpenMessages = () => {
-      if (appOnly) {
-        setGetAppOpen(true);
-        return;
-      }
       setMessagesOpen(true);
     };
     window.addEventListener("oventric:navigate", onNav);
@@ -283,7 +269,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
       window.removeEventListener("oventric:open-dm", onOpenDM);
       window.removeEventListener("oventric:open-messages", onOpenMessages);
     };
-  }, [appOnly]);
+  }, []);
 
   // Resume the bounty publish flow after a successful wallet top-up.
   useEffect(() => {
