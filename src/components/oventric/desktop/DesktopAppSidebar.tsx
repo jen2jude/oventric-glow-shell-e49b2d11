@@ -3,10 +3,12 @@ import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import {
   LayoutDashboard,
+  Compass,
   Target,
   Wallet as WalletIcon,
   Store,
   ChevronLeft,
+  User,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
@@ -17,6 +19,7 @@ type DashItem = { label: string; section: string; icon: typeof Target };
 
 const DASH_ITEMS: DashItem[] = [
   { label: "Home", section: "Home", icon: LayoutDashboard },
+  { label: "Explore", section: "Explore", icon: Compass },
   { label: "Marketplace", section: "Marketplace", icon: Store },
   { label: "Wallet", section: "Wallet", icon: WalletIcon },
 ];
