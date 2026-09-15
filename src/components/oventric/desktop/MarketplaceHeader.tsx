@@ -70,16 +70,16 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
               Marketplace
             </button>
             <button
-              onClick={() => onSelect("Academy")}
-              className={`hover:text-crimson transition-colors pb-1 border-b-2 ${activeSection === "Academy" ? "text-crimson border-crimson" : "border-transparent text-slate-900"}`}
+              onClick={() => onSelect("Explore")}
+              className={`hover:text-crimson transition-colors pb-1 border-b-2 ${activeSection === "Explore" ? "text-crimson border-crimson" : "border-transparent text-slate-900"}`}
             >
-              Academy
+              Explore
             </button>
             <button
-              onClick={() => onSelect("Bounties")}
-              className={`hover:text-crimson transition-colors pb-1 border-b-2 ${activeSection === "Bounties" ? "text-crimson border-crimson" : "border-transparent text-slate-900"}`}
+              onClick={() => onSelect("Wallet")}
+              className={`hover:text-crimson transition-colors pb-1 border-b-2 ${activeSection === "Wallet" ? "text-crimson border-crimson" : "border-transparent text-slate-900"}`}
             >
-              Bounties
+              Wallet
             </button>
           </nav>
 
@@ -163,7 +163,7 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
           <nav className="p-6 space-y-6">
             <div className="space-y-4">
               <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Main Menu</h3>
-              {["Home", "Marketplace", "Academy", "Bounties", "Circles"].map(item => (
+              {["Home", "Explore", "Marketplace", "Wallet"].map(item => (
                 <button
                   key={item}
                   onClick={() => { onSelect(item); setMenuOpen(false); }}

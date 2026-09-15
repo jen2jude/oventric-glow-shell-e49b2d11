@@ -30,6 +30,9 @@ const MessagesDrawer = lazy(() =>
 const CirclesHub = lazy(() =>
   import("@/components/oventric/CirclesHub").then((m) => ({ default: m.CirclesHub })),
 );
+const DiscoveryPanel = lazy(() =>
+  import("@/components/oventric/DiscoveryPanel").then((m) => ({ default: m.DiscoveryPanel })),
+);
 import { HomeHub } from "@/components/oventric/HomeHub";
 import { DesktopHome } from "@/components/oventric/desktop/DesktopHome";
 import { DesktopAppSidebar } from "@/components/oventric/desktop/DesktopAppSidebar";
@@ -94,6 +97,7 @@ function usePrefetchSections() {
 /** Canonical URL for each app section so tabs stay shareable. */
 const SECTION_PATHS: Record<string, string> = {
   Home: "/",
+  Explore: "/explore",
   Feed: "/feed",
   Marketplace: "/marketplace",
   Academy: "/academy",
@@ -298,6 +302,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
     const dmPeer = params.get("dm");
     const allowed = [
       "Home",
+      "Explore",
       "Feed",
       "Marketplace",
       "Academy",
@@ -334,7 +339,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   // Browser visitors retain the full Hub experience. Installed/native app
   // launches use the social feed as their Home screen.
   const desktopLanding =
-    (active === "Home" || active === "Marketplace" || active === "Academy" || active === "Bounties" || active === "Circles" || active === "Feed") &&
+    (active === "Home" || active === "Explore" || active === "Marketplace" || active === "Academy" || active === "Bounties" || active === "Circles" || active === "Feed") &&
     (isDesktop || !isAppShell);
   const isMarketplace = active === "Marketplace";
 
@@ -359,6 +364,10 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
           returnedToHub={returnedToHub}
         />
       )
+    ) : active === "Explore" ? (
+      <div className="mx-auto w-full max-w-[1200px] px-3 py-4 md:px-6 md:py-8">
+        <DiscoveryPanel />
+      </div>
     ) : active === "Wallet" ? (
       <AppOnlyGate
         title="Your wallet lives in the app"
