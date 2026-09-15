@@ -1,5 +1,6 @@
 import {
   Home,
+  Compass,
   Target,
   Wallet,
   Plus,
@@ -14,6 +15,7 @@ import { useState } from "react";
 
 const items = [
   { icon: Home, label: "Home" },
+  { icon: Compass, label: "Explore" },
   { icon: Newspaper, label: "Feed" },
   { icon: MessageSquare, label: "Messages" },
   { icon: ShoppingBag, label: "Marketplace" },
