@@ -364,6 +364,10 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
           returnedToHub={returnedToHub}
         />
       )
+    ) : active === "Explore" ? (
+      <div className="mx-auto w-full max-w-[1200px] px-3 py-4 md:px-6 md:py-8">
+        <DiscoveryPanel />
+      </div>
     ) : active === "Wallet" ? (
       <AppOnlyGate
         title="Your wallet lives in the app"
