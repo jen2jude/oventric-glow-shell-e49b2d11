@@ -20,7 +20,6 @@ import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as HelpBoardRouteImport } from './routes/help-board'
 import { Route as HelpRouteImport } from './routes/help'
-import { Route as GetAppRouteImport } from './routes/get-app'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -142,11 +141,6 @@ const HelpBoardRoute = HelpBoardRouteImport.update({
 const HelpRoute = HelpRouteImport.update({
   id: '/help',
   path: '/help',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GetAppRoute = GetAppRouteImport.update({
-  id: '/get-app',
-  path: '/get-app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FeedRoute = FeedRouteImport.update({
@@ -507,7 +501,6 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/faq': typeof FaqRoute
   '/feed': typeof FeedRoute
-  '/get-app': typeof GetAppRoute
   '/help': typeof HelpRoute
   '/help-board': typeof HelpBoardRoute
   '/marketplace': typeof MarketplaceRoute
@@ -587,7 +580,6 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/faq': typeof FaqRoute
   '/feed': typeof FeedRoute
-  '/get-app': typeof GetAppRoute
   '/help': typeof HelpRoute
   '/help-board': typeof HelpBoardRoute
   '/marketplace': typeof MarketplaceRoute
@@ -667,7 +659,6 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/faq': typeof FaqRoute
   '/feed': typeof FeedRoute
-  '/get-app': typeof GetAppRoute
   '/help': typeof HelpRoute
   '/help-board': typeof HelpBoardRoute
   '/marketplace': typeof MarketplaceRoute
@@ -750,7 +741,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/faq'
     | '/feed'
-    | '/get-app'
     | '/help'
     | '/help-board'
     | '/marketplace'
@@ -830,7 +820,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/faq'
     | '/feed'
-    | '/get-app'
     | '/help'
     | '/help-board'
     | '/marketplace'
@@ -909,7 +898,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/faq'
     | '/feed'
-    | '/get-app'
     | '/help'
     | '/help-board'
     | '/marketplace'
@@ -991,7 +979,6 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   FaqRoute: typeof FaqRoute
   FeedRoute: typeof FeedRoute
-  GetAppRoute: typeof GetAppRoute
   HelpRoute: typeof HelpRoute
   HelpBoardRoute: typeof HelpBoardRoute
   MarketplaceRoute: typeof MarketplaceRoute
@@ -1104,13 +1091,6 @@ declare module '@tanstack/react-router' {
       path: '/help'
       fullPath: '/help'
       preLoaderRoute: typeof HelpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/get-app': {
-      id: '/get-app'
-      path: '/get-app'
-      fullPath: '/get-app'
-      preLoaderRoute: typeof GetAppRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/feed': {
@@ -1711,7 +1691,6 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   FaqRoute: FaqRoute,
   FeedRoute: FeedRoute,
-  GetAppRoute: GetAppRoute,
   HelpRoute: HelpRoute,
   HelpBoardRoute: HelpBoardRoute,
   MarketplaceRoute: MarketplaceRoute,

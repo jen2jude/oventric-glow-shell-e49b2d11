@@ -26,15 +26,8 @@ import { ProfileSettingsLauncher } from "@/components/oventric/ProfileDropdown";
 import { LiveNotificationToasts } from "@/components/oventric/LiveNotificationToasts";
 import { PushOptInPrompt } from "@/components/oventric/PushOptInPrompt";
 import { BootSplash } from "@/components/oventric/BootSplash";
-import { AppShellGestures } from "@/components/oventric/pwa/AppShellGestures";
-import { InstallPrompt } from "@/components/oventric/pwa/InstallPrompt";
-import { UpdatePrompt } from "@/components/oventric/pwa/UpdatePrompt";
 
 import { OfflineBanner } from "@/components/oventric/pwa/OfflineBanner";
-import { registerAppServiceWorker } from "@/lib/pwa/register-sw";
-import "@/lib/pwa/install";
-import { initNativeShell } from "@/lib/native/capacitor";
-import { initDeepLinks } from "@/lib/native/deep-links";
 
 import { useLiveFx } from "@/lib/useLiveFx";
 import { FeatureCarousel } from "@/components/oventric/FeatureCarousel";
@@ -113,8 +106,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { name: "theme-color", content: "#121214" },
       { name: "color-scheme", content: "dark" },
-      { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { title: "Oventric — Marketplace, Academy, Bounties, and Wallet" },
       {
         name: "description",
@@ -151,7 +142,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
-      { rel: "manifest", href: "/manifest.webmanifest" },
       // Warm the media/storage origin so the first image/video byte arrives sooner.
       ...(STORAGE_ORIGIN
         ? [
@@ -382,7 +372,7 @@ function RootComponent() {
   // Welcome slides belong to the app shell (native build / installed PWA);
   // plain browser visitors get the marketing site instead.
   const launchCtx = useLaunchContext();
-  const isAppShell = launchCtx === "native" || launchCtx === "standalone";
+  const isAppShell = false;
   // Welcome slides are a mobile-first onboarding experience; skip them on PC.
   const [isPc, setIsPc] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth >= 1024 : false,
@@ -411,11 +401,6 @@ function RootComponent() {
     };
   }, []);
 
-  // Offline app shell (production, non-preview contexts only).
-  useEffect(() => {
-    registerAppServiceWorker();
-  }, []);
-
   // Mode switcher for preview environment
   const isPreview = typeof window !== "undefined" && (window.location.hostname.includes("lovable.app") || window.location.hostname.includes("lovableproject.com") || window.location.hostname === "localhost");
   const toggleMode = () => {
@@ -427,18 +412,6 @@ function RootComponent() {
     }
     window.location.href = url.toString();
   };
-
-  // Native iOS / Android shell + deep links (no-op in the browser).
-  useEffect(() => {
-    void initNativeShell();
-    let dispose: (() => void) | undefined;
-    void initDeepLinks((path) => {
-      void appRouter.navigate({ href: path });
-    }).then((off) => {
-      dispose = off;
-    });
-    return () => dispose?.();
-  }, [appRouter]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -459,9 +432,6 @@ function RootComponent() {
               <LiveNotificationToasts />
               <PushOptInPrompt />
               <OfflineBanner />
-              <AppShellGestures />
-              <InstallPrompt />
-              <UpdatePrompt />
 
               <BootSplash />
                {show && hydrated && !isPc && isAppShell && <FeatureCarousel onComplete={markSeen} />}

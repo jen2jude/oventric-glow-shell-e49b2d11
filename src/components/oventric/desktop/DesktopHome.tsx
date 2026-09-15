@@ -32,7 +32,6 @@ import { COUNTRY_META } from "@/lib/currency/africa";
 import { SiteNavbar } from "@/components/oventric/desktop/SiteNavbar";
 import { Reveal } from "@/components/oventric/desktop/Reveal";
 import { SiteFooter } from "@/components/oventric/desktop/SiteFooter";
-import { DownloadAppSection } from "@/components/oventric/desktop/DownloadAppSection";
 import { DesktopPromo } from "@/components/oventric/desktop/DesktopPromo";
 import { SocialProofRails } from "@/components/oventric/social-proof/SocialProofRails";
 
@@ -682,7 +681,6 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
         </div>
       </section>
 
-      <DownloadAppSection />
 
       <SecuredPayments />
 

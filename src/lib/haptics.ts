@@ -1,10 +1,7 @@
 /**
- * Tiny haptics helper. Uses the native Capacitor engine inside the iOS /
- * Android shell, the Vibration API in browsers that support it, and silently
- * no-ops elsewhere (iOS Safari) so callers never need feature checks.
+ * Tiny haptics helper. Uses the browser Vibration API where supported and
+ * silently no-ops elsewhere (iOS Safari) so callers never need feature checks.
  */
-import { nativeHaptic } from "@/lib/native/capacitor";
-
 
 type HapticKind = "light" | "medium" | "heavy" | "success" | "warning" | "error" | "select";
 
@@ -26,14 +23,10 @@ export function setHapticsEnabled(value: boolean) {
 
 export function haptic(kind: HapticKind = "light") {
   if (!enabled) return;
-  // Native shell: use the real iOS / Android haptic engine.
-  void nativeHaptic(kind).then((handled) => {
-    if (handled) return;
-    if (typeof navigator === "undefined" || typeof navigator.vibrate !== "function") return;
-    try {
-      navigator.vibrate(PATTERNS[kind]);
-    } catch {
-      /* ignore */
-    }
-  });
+  if (typeof navigator === "undefined" || typeof navigator.vibrate !== "function") return;
+  try {
+    navigator.vibrate(PATTERNS[kind]);
+  } catch {
+    /* ignore */
+  }
 }
