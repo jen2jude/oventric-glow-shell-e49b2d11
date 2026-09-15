@@ -4,19 +4,14 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   LayoutDashboard,
   Target,
-  GraduationCap,
   Wallet as WalletIcon,
   Store,
-  ChevronDown,
   ChevronLeft,
-  Plus,
-  Compass,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { MegaMenu } from "@/components/oventric/MegaMenu";
 import { getProfileByIdOrSlug } from "@/lib/profiles.functions";
-import { getCircleCatalog, type CircleSummary } from "@/lib/circles-groups.functions";
 
 type DashItem = { label: string; section: string; icon: typeof Target };
 
@@ -60,68 +55,13 @@ function Row({
   );
 }
 
-function MoreToggle({
-  open,
-  onToggle,
-  label,
-}: {
-  open: boolean;
-  onToggle: () => void;
-  label: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onToggle}
-      className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
-    >
-      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100">
-        <ChevronDown
-          className={`h-4 w-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
-        />
-      </span>
-      {open ? "Show less" : label}
-    </button>
-  );
-}
-
-function CircleRow({
-  c,
-  onOpen,
-  collapsed,
-}: {
-  c: CircleSummary;
-  onOpen: (slug: string) => void;
-  collapsed?: boolean;
-}) {
-  return (
-    <Row onClick={() => onOpen(c.slug)} title={c.name} collapsed={collapsed}>
-      <span className="h-7 w-7 shrink-0 overflow-hidden rounded-[10px]">
-        {c.avatarUrl ? (
-          <AvatarImage src={c.avatarUrl} alt={c.name} className="rounded-[10px]" />
-        ) : (
-          <span className="flex h-full w-full items-center justify-center rounded-[10px] bg-slate-100 text-sm">
-            {c.emoji || "◎"}
-          </span>
-        )}
-      </span>
-      {!collapsed && <span className="truncate">{c.name}</span>}
-    </Row>
-  );
-}
 
 export function DesktopAppSidebar({ onSelect }: { onSelect: (section: string) => void }) {
   const profileFn = useServerFn(getProfileByIdOrSlug);
-  const catalogFn = useServerFn(getCircleCatalog);
 
   const [me, setMe] = useState<{ name: string; slug: string; avatarUrl: string | null } | null>(
     null,
   );
-  const [mine, setMine] = useState<CircleSummary[]>([]);
-  const [recs, setRecs] = useState<CircleSummary[]>([]);
-
-  const [moreMine, setMoreMine] = useState(false);
-  const [moreRecs, setMoreRecs] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window === "undefined") return true;
@@ -153,29 +93,11 @@ export function DesktopAppSidebar({ onSelect }: { onSelect: (section: string) =>
       } catch (e) {
         console.error("[DesktopAppSidebar] profile load failed", e);
       }
-      try {
-        const cat = await catalogFn();
-        if (!alive) return;
-        setMine(cat.mine ?? []);
-        setRecs((cat.trending ?? []).filter((c) => c.myRole === null).slice(0, 8));
-      } catch (e) {
-        console.error("[DesktopAppSidebar] circles load failed", e);
-      }
     })();
     return () => {
       alive = false;
     };
-  }, [profileFn, catalogFn]);
-
-  const mineVisible = moreMine ? mine : mine.slice(0, 3);
-  const recsVisible = moreRecs ? recs : recs.slice(0, 3);
-
-  const openCircle = (slug: string) => {
-    onSelect("Circles");
-    setTimeout(() => {
-      window.dispatchEvent(new CustomEvent("oventric:circle:open-slug", { detail: { slug } }));
-    }, 120);
-  };
+  }, [profileFn]);
 
   return (
     <aside
@@ -237,65 +159,6 @@ export function DesktopAppSidebar({ onSelect }: { onSelect: (section: string) =>
         ))}
       </nav>
 
-      <div className="my-3 h-px bg-slate-200" />
-
-      {/* My circles */}
-      {!collapsed && (
-        <p className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-          Your circles
-        </p>
-      )}
-      <nav className="flex flex-col">
-        {mineVisible.map((c) => (
-          <CircleRow key={c.id} c={c} onOpen={openCircle} collapsed={collapsed} />
-        ))}
-        {mine.length === 0 && !collapsed && (
-          <p className="px-3 py-3 text-xs text-slate-500">You haven't joined a circle yet.</p>
-        )}
-        {mine.length > 3 && !collapsed && (
-          <MoreToggle
-            open={moreMine}
-            onToggle={() => setMoreMine((v) => !v)}
-            label={`See all ${mine.length}`}
-          />
-        )}
-        <Row onClick={() => onSelect("Circles")} title="Browse circles" collapsed={collapsed}>
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-700">
-            <Plus className="h-4 w-4" strokeWidth={2.5} />
-          </span>
-          {!collapsed && "Browse circles"}
-        </Row>
-      </nav>
-
-      <div className="my-3 h-px bg-slate-200" />
-
-      {/* Recommended circles */}
-      {!collapsed && (
-        <p className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-          Discover circles
-        </p>
-      )}
-      <nav className="flex flex-col">
-        {recsVisible.map((c) => (
-          <CircleRow key={c.id} c={c} onOpen={openCircle} collapsed={collapsed} />
-        ))}
-        {recs.length === 0 && !collapsed && (
-          <p className="px-3 py-3 text-xs text-slate-500">No recommendations right now.</p>
-        )}
-        {recs.length > 3 && !collapsed && (
-          <MoreToggle
-            open={moreRecs}
-            onToggle={() => setMoreRecs((v) => !v)}
-            label={`See all ${recs.length}`}
-          />
-        )}
-        <Row onClick={() => onSelect("Circles")} title="Explore all circles" collapsed={collapsed}>
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-700">
-            <Compass className="h-4 w-4" strokeWidth={2.5} />
-          </span>
-          {!collapsed && "Explore all"}
-        </Row>
-      </nav>
 
       {!collapsed && (
         <>
