@@ -30,31 +30,13 @@ const choices: Choice[] = [
     badge: "NEW",
   },
   {
-    key: "bounty",
-    icon: Target,
-    title: "Post a Bounty ($)",
-    desc: "Get expert help from the community and pay on delivery.",
-    tier: 2,
-    iconClass: "text-create-bounty",
-    iconSurfaceClass: "bg-create-bounty-soft",
-  },
-  {
     key: "sell",
     icon: ShoppingBag,
-    title: "Sell",
+    title: "Sell a digital product",
     desc: "List digital assets, templates and downloads.",
     tier: 2,
     iconClass: "text-create-sell",
     iconSurfaceClass: "bg-create-sell-soft",
-  },
-  {
-    key: "course",
-    icon: GraduationCap,
-    title: "Publish a Course",
-    desc: "Teach with video modules, free or paid.",
-    tier: 2,
-    iconClass: "text-create-course",
-    iconSurfaceClass: "bg-create-course-soft",
   },
 ];
 
