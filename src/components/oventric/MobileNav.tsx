@@ -7,15 +7,15 @@ import { useChromeHidden } from "@/hooks/use-chrome-hide";
 
 const left = [
   { icon: Home, label: "Home" },
-  { icon: ShoppingBag, label: "Market" },
+  { icon: Compass, label: "Explore" },
 ];
 const right = [
-  { icon: Compass, label: "Feed" },
+  { icon: ShoppingBag, label: "Market" },
   { icon: Wallet, label: "Wallet" },
 ];
 
 export type MobileNavCounts = Partial<
-  Record<"Home" | "Feed" | "Market" | "Academy" | "Bounties" | "Wallet", number>
+  Record<"Home" | "Feed" | "Explore" | "Market" | "Academy" | "Bounties" | "Wallet", number>
 >;
 
 export function MobileNav({
