@@ -30,6 +30,9 @@ const MessagesDrawer = lazy(() =>
 const CirclesHub = lazy(() =>
   import("@/components/oventric/CirclesHub").then((m) => ({ default: m.CirclesHub })),
 );
+const DiscoveryPanel = lazy(() =>
+  import("@/components/oventric/DiscoveryPanel").then((m) => ({ default: m.DiscoveryPanel })),
+);
 import { HomeHub } from "@/components/oventric/HomeHub";
 import { DesktopHome } from "@/components/oventric/desktop/DesktopHome";
 import { DesktopAppSidebar } from "@/components/oventric/desktop/DesktopAppSidebar";
@@ -94,6 +97,7 @@ function usePrefetchSections() {
 /** Canonical URL for each app section so tabs stay shareable. */
 const SECTION_PATHS: Record<string, string> = {
   Home: "/",
+  Explore: "/explore",
   Feed: "/feed",
   Marketplace: "/marketplace",
   Academy: "/academy",

@@ -270,7 +270,7 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
       <section className="flex items-start justify-between gap-3">
         <div className="min-w-0 space-y-1.5">
           <p className="text-[13px] font-medium text-white/45">
-            {greeting()}, <span className="text-white/80 font-semibold">{name || "there"}</span> 👋
+            <Greeting />, <span className="text-white/80 font-semibold">{name || "there"}</span> 👋
           </p>
           <h1 className="text-[26px] font-black leading-none text-white tracking-tight">Discover more.</h1>
           <p className="text-[13px] font-medium text-white/40">Shop. Connect. Grow.</p>
