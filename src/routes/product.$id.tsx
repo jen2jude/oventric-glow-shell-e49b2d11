@@ -320,7 +320,7 @@ function ProductPage() {
   const startCheckout = () => {
     if (product?.inStock === false) return;
     if (!isAppShell) {
-      navigate({ to: "/get-app", search: { from: "product" } });
+      navigate({ to: "/" });
       return;
     }
     require(
@@ -338,7 +338,7 @@ function ProductPage() {
   const openContact = () => {
     if (product?.inStock === false) return;
     if (!isAppShell) {
-      navigate({ to: "/get-app", search: { from: "product" } });
+      navigate({ to: "/" });
       return;
     }
     require(1, () => setContactOpen(true), "buyer");
@@ -346,7 +346,7 @@ function ProductPage() {
 
   const openSellerChat = () => {
     if (!isAppShell) {
-      navigate({ to: "/get-app", search: { from: "product" } });
+      navigate({ to: "/" });
       return;
     }
     require(1, () => setChatOpen(true), "buyer");

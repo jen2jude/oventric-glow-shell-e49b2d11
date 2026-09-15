@@ -10,6 +10,13 @@ export function useAppOnly(): boolean {
   return false;
 }
 
-export function AppOnlyGate({ children }: { children: ReactNode }) {
+export function AppOnlyGate({
+  children,
+}: {
+  children: ReactNode;
+  title?: string;
+  description?: string;
+  from?: string;
+}) {
   return <>{children}</>;
 }

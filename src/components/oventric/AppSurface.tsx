@@ -38,7 +38,6 @@ import { SiteNavbar } from "@/components/oventric/desktop/SiteNavbar";
 import { MarketplaceHeader } from "@/components/oventric/desktop/MarketplaceHeader";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { AppOnlyGate, useAppOnly } from "@/lib/app-gate";
-import { GetAppModal } from "@/components/oventric/GetAppModal";
 
 import { useIsDesktop } from "@/hooks/use-desktop";
 import { useIsAppShell, useLaunchContext } from "@/hooks/use-launch-context";
@@ -511,7 +510,6 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         )}
       </Suspense>
 
-      <GetAppModal open={getAppOpen} onClose={() => setGetAppOpen(false)} />
 
     </div>
   );

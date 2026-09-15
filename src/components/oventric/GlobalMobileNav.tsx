@@ -3,7 +3,6 @@ import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { MobileNav } from "@/components/oventric/MobileNav";
 import { CreatePanel } from "@/components/oventric/CreatePanel";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
-import { useLaunchContext } from "@/hooks/use-launch-context";
 
 /**
  * App-wide mobile footer nav. Rendered once at the root so every route
@@ -16,9 +15,6 @@ export function GlobalMobileNav() {
   const { require } = useOnboarding();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [createOpen, setCreateOpen] = useState(false);
-
-  const launchCtx = useLaunchContext();
-  const isAppShell = launchCtx === "native" || launchCtx === "standalone";
 
   // Hide on admin routes, on "/", (index renders its own nav), and on product pages.
   // We keep it on checkout for app users because it's universal there now.
