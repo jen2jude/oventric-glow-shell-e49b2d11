@@ -23,8 +23,6 @@ type DashItem = { label: string; section: string; icon: typeof Target };
 const DASH_ITEMS: DashItem[] = [
   { label: "Home", section: "Home", icon: LayoutDashboard },
   { label: "Marketplace", section: "Marketplace", icon: Store },
-  { label: "Bounties", section: "Bounties", icon: Target },
-  { label: "Academy", section: "Academy", icon: GraduationCap },
   { label: "Wallet", section: "Wallet", icon: WalletIcon },
 ];
 

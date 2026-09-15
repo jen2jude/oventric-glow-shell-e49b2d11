@@ -1,4 +1,4 @@
-import { Home, Target, Wallet, Plus, ShoppingBag, GraduationCap } from "lucide-react";
+import { Home, Compass, Wallet, Plus, ShoppingBag } from "lucide-react";
 import { CountBadge } from "@/components/oventric/CountBadge";
 import { haptic } from "@/lib/haptics";
 import { useChatOpen } from "@/hooks/use-chat-open";
@@ -10,8 +10,7 @@ const left = [
   { icon: ShoppingBag, label: "Market" },
 ];
 const right = [
-  { icon: GraduationCap, label: "Academy" },
-  { icon: Target, label: "Bounties" },
+  { icon: Compass, label: "Feed" },
   { icon: Wallet, label: "Wallet" },
 ];
 

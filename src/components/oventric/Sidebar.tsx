@@ -16,10 +16,7 @@ const items = [
   { icon: Home, label: "Home" },
   { icon: Newspaper, label: "Feed" },
   { icon: MessageSquare, label: "Messages" },
-  { icon: Users, label: "Circles" },
   { icon: ShoppingBag, label: "Marketplace" },
-  { icon: GraduationCap, label: "Academy" },
-  { icon: Target, label: "Bounties" },
   { icon: Wallet, label: "Wallet" },
 ] as Array<{ icon: typeof Home; label: string }>;
 
