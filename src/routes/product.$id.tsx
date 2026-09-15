@@ -319,10 +319,6 @@ function ProductPage() {
 
   const startCheckout = () => {
     if (product?.inStock === false) return;
-    if (!isAppShell) {
-      navigate({ to: "/" });
-      return;
-    }
     require(
       2,
       () =>
@@ -337,18 +333,10 @@ function ProductPage() {
 
   const openContact = () => {
     if (product?.inStock === false) return;
-    if (!isAppShell) {
-      navigate({ to: "/" });
-      return;
-    }
     require(1, () => setContactOpen(true), "buyer");
   };
 
   const openSellerChat = () => {
-    if (!isAppShell) {
-      navigate({ to: "/" });
-      return;
-    }
     require(1, () => setChatOpen(true), "buyer");
   };
 

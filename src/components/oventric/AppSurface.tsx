@@ -106,7 +106,6 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   const [createOpen, setCreateOpen] = useState(false);
   const [createChoice, setCreateChoice] = useState<ChoiceKey | null>(null);
   const [messagesOpen, setMessagesOpen] = useState(false);
-  const [getAppOpen, setGetAppOpen] = useState(false);
   const [messagesPeer, setMessagesPeer] = useState<string | undefined>(undefined);
   const [active, setActive] = useState<string>(initialSection);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
