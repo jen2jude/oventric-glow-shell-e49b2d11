@@ -6,8 +6,9 @@ import {
   Sun,
   Moon,
   MessageCircle,
-  Shield,
   Users,
+  ShoppingBag,
+  Wallet as WalletIcon,
   ChevronDown,
   Settings,
   HelpCircle,
@@ -19,9 +20,6 @@ import {
   Trash2,
   Gift,
   LogOut,
-  Megaphone,
-  Newspaper,
-  Link2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
@@ -180,11 +178,9 @@ export function MegaMenu({ open, onClose }: Props) {
 
   const grid = [
     { icon: MessageCircle, label: "Messages", onClick: openMessages },
-    { icon: Shield, label: "Circles & Guilds", onClick: () => go("/", "Circles") },
     { icon: Users, label: "Followers", onClick: goFollowers },
-    { icon: Megaphone, label: "Advert", onClick: () => go("/advertise") },
-    { icon: Link2, label: "Affiliate", onClick: () => go("/affiliate") },
-    { icon: Newspaper, label: "Blog", onClick: () => go("/blog") },
+    { icon: ShoppingBag, label: "Marketplace", onClick: () => go("/", "Marketplace") },
+    { icon: WalletIcon, label: "Wallet", onClick: () => go("/wallet") },
   ];
 
   const inviteLink =
