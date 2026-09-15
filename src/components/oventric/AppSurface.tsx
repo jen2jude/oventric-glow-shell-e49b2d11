@@ -302,6 +302,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
     const dmPeer = params.get("dm");
     const allowed = [
       "Home",
+      "Explore",
       "Feed",
       "Marketplace",
       "Academy",
@@ -338,7 +339,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   // Browser visitors retain the full Hub experience. Installed/native app
   // launches use the social feed as their Home screen.
   const desktopLanding =
-    (active === "Home" || active === "Marketplace" || active === "Academy" || active === "Bounties" || active === "Circles" || active === "Feed") &&
+    (active === "Home" || active === "Explore" || active === "Marketplace" || active === "Academy" || active === "Bounties" || active === "Circles" || active === "Feed") &&
     (isDesktop || !isAppShell);
   const isMarketplace = active === "Marketplace";
 
