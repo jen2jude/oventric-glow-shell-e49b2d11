@@ -22,6 +22,7 @@ import { Route as HelpBoardRouteImport } from './routes/help-board'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CirclesRouteImport } from './routes/circles'
 import { Route as BountiesRouteImport } from './routes/bounties'
@@ -151,6 +152,11 @@ const FeedRoute = FeedRouteImport.update({
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExploreRoute = ExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -499,6 +505,7 @@ export interface FileRoutesByFullPath {
   '/bounties': typeof BountiesRoute
   '/circles': typeof CirclesRoute
   '/dashboard': typeof DashboardRoute
+  '/explore': typeof ExploreRoute
   '/faq': typeof FaqRoute
   '/feed': typeof FeedRoute
   '/help': typeof HelpRoute
@@ -578,6 +585,7 @@ export interface FileRoutesByTo {
   '/bounties': typeof BountiesRoute
   '/circles': typeof CirclesRoute
   '/dashboard': typeof DashboardRoute
+  '/explore': typeof ExploreRoute
   '/faq': typeof FaqRoute
   '/feed': typeof FeedRoute
   '/help': typeof HelpRoute
@@ -657,6 +665,7 @@ export interface FileRoutesById {
   '/bounties': typeof BountiesRoute
   '/circles': typeof CirclesRoute
   '/dashboard': typeof DashboardRoute
+  '/explore': typeof ExploreRoute
   '/faq': typeof FaqRoute
   '/feed': typeof FeedRoute
   '/help': typeof HelpRoute
@@ -739,6 +748,7 @@ export interface FileRouteTypes {
     | '/bounties'
     | '/circles'
     | '/dashboard'
+    | '/explore'
     | '/faq'
     | '/feed'
     | '/help'
@@ -818,6 +828,7 @@ export interface FileRouteTypes {
     | '/bounties'
     | '/circles'
     | '/dashboard'
+    | '/explore'
     | '/faq'
     | '/feed'
     | '/help'
@@ -896,6 +907,7 @@ export interface FileRouteTypes {
     | '/bounties'
     | '/circles'
     | '/dashboard'
+    | '/explore'
     | '/faq'
     | '/feed'
     | '/help'
@@ -977,6 +989,7 @@ export interface RootRouteChildren {
   BountiesRoute: typeof BountiesRoute
   CirclesRoute: typeof CirclesRoute
   DashboardRoute: typeof DashboardRoute
+  ExploreRoute: typeof ExploreRoute
   FaqRoute: typeof FaqRoute
   FeedRoute: typeof FeedRoute
   HelpRoute: typeof HelpRoute
@@ -1105,6 +1118,13 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explore': {
+      id: '/explore'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof ExploreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -1689,6 +1709,7 @@ const rootRouteChildren: RootRouteChildren = {
   BountiesRoute: BountiesRoute,
   CirclesRoute: CirclesRoute,
   DashboardRoute: DashboardRoute,
+  ExploreRoute: ExploreRoute,
   FaqRoute: FaqRoute,
   FeedRoute: FeedRoute,
   HelpRoute: HelpRoute,
