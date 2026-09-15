@@ -73,7 +73,7 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
 
           {/* Universal Navigation Links (Desktop) */}
           <nav className="hidden lg:flex items-center gap-6 text-sm font-bold text-slate-600">
-            {["Academy", "Bounties", "Circles"].map(item => (
+            {["Home", "Explore", "Wallet"].map(item => (
               <button
                 key={item}
                 onClick={() => onSelect(item)}
@@ -146,7 +146,7 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
           <nav className="p-6 space-y-6">
             <div className="space-y-4">
               <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Navigation</h3>
-              {["Home", "Marketplace", "Academy", "Bounties", "Circles", "Wallet"].map(item => (
+              {["Home", "Explore", "Marketplace", "Wallet"].map(item => (
                 <button
                   key={item}
                   onClick={() => { onSelect(item); setMenuOpen(false); }}
