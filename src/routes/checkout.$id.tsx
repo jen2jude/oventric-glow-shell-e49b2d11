@@ -25,7 +25,6 @@ import {
   getProduct,
   createOrder,
   validateCoupon,
-  WALLET_CASHBACK_PCT,
   type ProductDTO,
   type PaymentMethod,
 } from "@/lib/marketplace.functions";
@@ -979,11 +978,11 @@ function CheckoutPage() {
                       <div className="text-[11px] mt-0.5 text-slate-500">
                         Unavailable while a coupon is applied
                       </div>
-                    ) : (
+                    ) : cashbackEarnUSD > 0 ? (
                       <div className={`text-[11px] mt-0.5 ${isAppShell ? "text-slate-400" : "text-slate-600"}`}>
-                        You earn back: + {fmt(cashbackEarnUSD, homeCurrency)} (Oventric Bonus)
+                        You earn back: + {fmt(cashbackEarnUSD, homeCurrency)} ({cashbackRatePct}% seller cashback)
                       </div>
-                    )}
+                    ) : null}
                   </div>
                 </label>
               </div>
