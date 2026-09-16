@@ -479,6 +479,52 @@ function DashboardPage() {
   );
 }
 
+function TabButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-current={active ? "page" : undefined}
+      onClick={onClick}
+      className={`inline-flex min-h-11 items-center gap-2 px-1 text-sm font-semibold transition ${
+        active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function EmptyState({
+  icon: Icon,
+  title,
+  hint,
+  cta,
+}: {
+  icon: typeof Package;
+  title: string;
+  hint: string;
+  cta?: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-[10px] border border-dashed border-border bg-card px-6 py-12 text-center">
+      <span className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-muted text-muted-foreground">
+        <Icon className="h-5 w-5" aria-hidden="true" />
+      </span>
+      <h2 className="mt-4 text-base font-bold text-foreground">{title}</h2>
+      <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">{hint}</p>
+      {cta ? <div className="mt-5 flex justify-center">{cta}</div> : null}
+    </div>
+  );
+}
+
 function StatusBadge({ status }: { status: PurchaseDTO["status"] }) {
   const meta = {
     paid: { label: "Paid", icon: CheckCircle2 },

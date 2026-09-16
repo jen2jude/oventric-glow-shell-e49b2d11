@@ -110,7 +110,7 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
     ]);
 
     // Home currency comes from the user's country. Overview always reports
-    // the wallet + bounty earnings in this currency only.
+    // wallet and released seller revenue in this currency only.
     const homeCurrency: HomeCurrency = countryToHomeCurrency(
       (profileRes?.data as { country?: string | null } | null)?.country ?? null,
     );
