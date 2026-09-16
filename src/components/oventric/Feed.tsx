@@ -1608,6 +1608,7 @@ export function Feed() {
                 (i + 1) % 4 === 0 &&
                 commerceCards[commerceIdx]
               ) {
+                const c = commerceCards[commerceIdx++];
                 items.push(<FeedCommerceCard key={`commerce-${c.kind}-${c.id}`} item={c} />);
               }
             });
