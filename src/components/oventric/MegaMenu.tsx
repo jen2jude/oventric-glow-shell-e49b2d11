@@ -20,6 +20,8 @@ import {
   Trash2,
   Gift,
   LogOut,
+  User,
+  ChevronRight,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
@@ -115,13 +117,22 @@ export function MegaMenu({ open, onClose }: Props) {
   }, [open]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || !isAppShell) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev;
     };
-  }, [open]);
+  }, [open, isAppShell]);
+
+  useEffect(() => {
+    if (!open) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [onClose, open]);
 
   const connectionsNode = connectionsOpen ? (
     <ConnectionsDialog
@@ -214,6 +225,175 @@ export function MegaMenu({ open, onClose }: Props) {
   };
 
   const userInitial = (displayName[0] ?? "?").toUpperCase();
+
+  const webContent = (
+    <div
+      className="fixed inset-0 z-[2147483000] bg-foreground/10 backdrop-blur-[2px] sm:bg-transparent sm:backdrop-blur-none"
+      onMouseDown={(event) => {
+        if (event.currentTarget === event.target) onClose();
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu"
+        data-testid="mega-menu"
+        data-variant="web"
+        className="web-account-menu absolute inset-x-3 bottom-3 max-h-[calc(100dvh-1.5rem)] overflow-y-auto rounded-[10px] border border-border bg-background text-foreground shadow-2xl sm:inset-x-auto sm:bottom-auto sm:right-6 sm:top-[76px] sm:w-[390px] sm:max-h-[calc(100dvh-92px)] lg:right-11 lg:top-[88px]"
+      >
+        <div className="sticky top-0 z-10 flex items-center gap-4 border-b border-border bg-background px-5 py-5">
+          <button
+            type="button"
+            onClick={() => {
+              if (userSlug && userSlug !== "me") {
+                onClose();
+                navigate({ to: "/profile/$id", params: { id: userSlug } });
+              }
+            }}
+            className="relative h-14 w-14 shrink-0 overflow-hidden rounded-[10px] border border-border bg-muted"
+            aria-label="Open my profile"
+          >
+            <AvatarImage src={avatarUrl} alt={displayName} initials={userInitial} />
+            <span className="absolute bottom-0.5 right-0.5 h-3 w-3 rounded-full border-2 border-background bg-emerald-500" />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (userSlug && userSlug !== "me") {
+                onClose();
+                navigate({ to: "/profile/$id", params: { id: userSlug } });
+              }
+            }}
+            className="min-w-0 flex-1 text-left"
+          >
+            <span className="block truncate font-wallet-display text-base font-bold text-foreground">
+              {isAuthenticated ? displayName : "Guest"}
+            </span>
+            <span className="block truncate text-xs font-medium text-muted-foreground">
+              {isAuthenticated ? "View your profile" : "Sign in to unlock"}
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close menu"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="px-5 py-4">
+          <div className="flex items-center justify-between rounded-[10px] border border-border bg-muted/60 px-4 py-3">
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase text-muted-foreground">Display currency</p>
+              <p className="mt-1 font-wallet-display text-sm font-bold text-foreground">{baseCurrency}</p>
+            </div>
+            <CurrencyPreviewToggle variant="light" />
+          </div>
+        </div>
+
+        <nav className="px-2 pb-2" aria-label="Account shortcuts">
+          <WebMenuItem icon={User} label="Profile details" onClick={() => go(`/profile/${userSlug}`)} />
+          {grid.map((item) => (
+            <WebMenuItem key={item.label} icon={item.icon} label={item.label} onClick={item.onClick} />
+          ))}
+        </nav>
+
+        <div className="mx-5 border-t border-border py-4">
+          <div className="flex items-center justify-between px-1 pb-4">
+            <span className="text-sm font-semibold text-foreground">Dark mode</span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={theme === "dark"}
+              onClick={toggle}
+              className={`relative h-6 w-11 rounded-full transition-colors ${theme === "dark" ? "bg-primary" : "bg-muted"}`}
+            >
+              <span className={`absolute top-1 h-4 w-4 rounded-full bg-background shadow-sm transition-transform ${theme === "dark" ? "translate-x-5" : "translate-x-1"}`} />
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={doInvite}
+            className="flex w-full items-center gap-3 rounded-[10px] bg-primary/5 px-3 py-3 text-left text-primary transition-colors hover:bg-primary/10"
+          >
+            <Gift className="h-5 w-5 shrink-0" />
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-bold">Invite friends</span>
+              <span className="block truncate text-xs font-medium text-muted-foreground">Earn {invite.label} for every user you invite</span>
+            </span>
+            <ChevronRight className="h-4 w-4 shrink-0" />
+          </button>
+        </div>
+
+        <div className="border-y border-border bg-muted/50 px-5 py-3">
+          <button
+            type="button"
+            onClick={() => setSettingsExpanded((value) => !value)}
+            className="flex w-full items-center justify-between py-1 text-left"
+            aria-expanded={settingsExpanded}
+          >
+            <span className="flex items-center gap-2 text-sm font-bold text-foreground"><Settings className="h-4 w-4 text-muted-foreground" /> Settings &amp; privacy</span>
+            <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${settingsExpanded ? "rotate-180" : ""}`} />
+          </button>
+          {settingsExpanded && (
+            <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1 border-t border-border pt-3">
+              <WebUtilityLink label="Profile & KYC" onClick={() => { onClose(); window.dispatchEvent(new Event("oventric:open-profile-settings")); }} />
+              <WebUtilityLink label="Help" onClick={() => go("/help")} />
+              <WebUtilityLink label="About" onClick={() => go("/about")} />
+              <WebUtilityLink label="Terms" onClick={() => go("/terms")} />
+              <WebUtilityLink label="Privacy" onClick={() => go("/privacy")} />
+              <WebUtilityLink label="Report problem" onClick={() => go("/report-problem")} />
+              <WebUtilityLink label="FAQ" onClick={() => go("/faq")} />
+            </div>
+          )}
+        </div>
+
+        {isAuthenticated && (
+          <div className="space-y-2 p-5">
+            <button
+              type="button"
+              onClick={signOut}
+              className="flex h-11 w-full items-center justify-center gap-2 rounded-[10px] bg-primary text-sm font-bold text-primary-foreground transition-[filter,transform] hover:brightness-95 active:scale-[0.99]"
+            >
+              <LogOut className="h-4 w-4" /> Sign out
+            </button>
+            <button
+              type="button"
+              onClick={() => setDangerExpanded((value) => !value)}
+              className="w-full py-2 text-center text-xs font-semibold text-muted-foreground transition-colors hover:text-destructive"
+              aria-expanded={dangerExpanded}
+            >
+              Danger zone: delete account
+            </button>
+            {dangerExpanded && (
+              <div className="rounded-[10px] border border-destructive/20 bg-destructive/5 p-3 text-xs leading-relaxed text-muted-foreground">
+                <p>Deleting your account starts a 30-day soft-deletion window. Sign in during that period to reactivate. After 30 days, all data is permanently removed.</p>
+                <button
+                  type="button"
+                  onClick={() => setDeleteOpen(true)}
+                  className="mt-3 h-9 w-full rounded-[10px] border border-destructive/30 font-bold text-destructive hover:bg-destructive/10"
+                >
+                  Delete my account
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        <DeleteAccountModal
+          open={deleteOpen}
+          onClose={() => setDeleteOpen(false)}
+          onDeleted={() => {
+            setDeleteOpen(false);
+            onClose();
+            navigate({ to: "/" });
+          }}
+        />
+      </div>
+    </div>
+  );
 
   const safeContent = (
     <div
@@ -569,7 +749,43 @@ export function MegaMenu({ open, onClose }: Props) {
   );
 
   if (typeof document === "undefined") return null;
-  return createPortal(lowGpu ? safeContent : content, document.body);
+  return createPortal(!isAppShell ? webContent : lowGpu ? safeContent : content, document.body);
+}
+
+function WebMenuItem({
+  icon: Icon,
+  label,
+  onClick,
+}: {
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="group flex w-full items-center gap-3 rounded-[10px] px-3 py-2.5 text-left transition-colors hover:bg-muted"
+    >
+      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[8px] bg-primary/8 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+        <Icon className="h-4 w-4" strokeWidth={2} />
+      </span>
+      <span className="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">{label}</span>
+      <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+    </button>
+  );
+}
+
+function WebUtilityLink({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="rounded-[8px] px-2 py-2 text-left text-xs font-semibold text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+    >
+      {label}
+    </button>
+  );
 }
 
 function SubItem({
