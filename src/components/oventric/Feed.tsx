@@ -1685,7 +1685,7 @@ export function Feed() {
                   className={`md:bg-white md:shadow-sm border scroll-mt-24 md:scroll-mt-28 [transition:border-color_400ms_ease,box-shadow_400ms_ease,opacity_300ms_ease] ${
                     isAppShell
                       ? "bg-[#141416] rounded-none -mx-4 p-0 overflow-hidden border-x-0 md:mx-0 md:p-5 md:rounded-xl md:border-x"
-                       : "bg-white rounded-[10px] p-5 shadow-sm"
+                       : "bg-white rounded-[10px] p-5 md:p-6 shadow-sm"
                   } ${isReported ? "opacity-70" : ""} ${
                     isNew
                       ? isAppShell
