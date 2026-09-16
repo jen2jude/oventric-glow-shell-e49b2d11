@@ -457,14 +457,36 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                     </label>
                   </div>
                 )}
+                {!isFree && (
+                  <div className="mt-2">
+                    <label className="block">
+                      <span className="text-xs font-medium text-slate-300 sm:text-slate-700">
+                        Buyer cashback (% of the sale, optional)
+                      </span>
+                      <input
+                        value={cashbackInput}
+                        onChange={(e) => setCashbackInput(e.target.value)}
+                        inputMode="decimal"
+                        placeholder="0"
+                        className="mt-1 w-full bg-[#121214] sm:bg-white border border-white/10 sm:border-slate-300 rounded-[10px] px-3 py-3 text-sm text-white sm:text-slate-900 placeholder-slate-500 sm:placeholder-slate-400 focus:border-emerald-500/60 sm:focus:border-emerald-500 outline-none"
+                      />
+                    </label>
+                    <p className="mt-1 text-[10px] leading-relaxed text-slate-500">
+                      Reward buyers with Oventric credit on this product. It is paid out of your own
+                      80% share (max 50%), and buyers can spend it on future Oventric purchases.
+                    </p>
+                  </div>
+                )}
                 {!isFree &&
                   Number(priceInput) > 0 &&
                   (() => {
                     const cur = homeCurrency as OrderCurrency;
-                    const fx = FX_FROM_USD[cur] || 1;
                     const priceLocal = Number(priceInput);
-                    const sellerLocal = priceLocal * 0.8;
+                    const cbPct = Math.max(0, Math.min(50, Number(cashbackInput) || 0));
                     const platformLocal = priceLocal * 0.2;
+                    const sellerGrossLocal = priceLocal * 0.8;
+                    const cashbackLocal = Math.min(sellerGrossLocal, (priceLocal * cbPct) / 100);
+                    const sellerLocal = sellerGrossLocal - cashbackLocal;
                     const fmt = (n: number) =>
                       new Intl.NumberFormat(undefined, {
                         style: "currency",
@@ -482,9 +504,26 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                             → your main wallet
                           </span>
                           <span className="font-semibold text-emerald-300 sm:text-emerald-700">
-                            {fmt(sellerLocal)}
+                            {fmt(sellerGrossLocal)}
                           </span>
                         </div>
+                        {cashbackLocal > 0 && (
+                          <div className="flex items-center justify-between text-slate-300 sm:text-slate-700">
+                            <span>
+                              Buyer cashback you fund{" "}
+                              <span className="font-bold">{cbPct}%</span>
+                            </span>
+                            <span className="font-medium">− {fmt(cashbackLocal)}</span>
+                          </div>
+                        )}
+                        {cashbackLocal > 0 && (
+                          <div className="flex items-center justify-between text-slate-100 sm:text-slate-900">
+                            <span className="font-semibold">Your final earnings</span>
+                            <span className="font-bold text-emerald-300 sm:text-emerald-700">
+                              {fmt(sellerLocal)}
+                            </span>
+                          </div>
+                        )}
                         <div className="flex items-center justify-between text-slate-400 sm:text-slate-600">
                           <span>
                             Oventric Digital Solutions keeps <span className="font-bold">20%</span>
@@ -492,8 +531,8 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                           <span className="font-medium">{fmt(platformLocal)}</span>
                         </div>
                         <div className="text-[10px] leading-relaxed text-slate-500 sm:text-slate-500 pt-1 border-t border-white/5 sm:border-slate-200">
-                          Buyer pays {fmt(priceLocal)}. Your 80% is credited to your Oventric wallet
-                          and can be withdrawn to your local bank at any time.
+                          Buyer pays {fmt(priceLocal)}. Your earnings are credited to your Oventric
+                          wallet and can be withdrawn to your local bank at any time.
                         </div>
                       </div>
                     );
