@@ -207,10 +207,7 @@ async function signImagePaths(
 
 /** Public catalog. Anyone (including anon) can list. RLS filters to status='active'. */
 export const listProducts = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) =>
-    z.object({ kind: z.enum(["digital", "physical", "all"]).default("all") }).default({}).parse(input),
-  )
-  .handler(async ({ data }) => {
+  .handler(async () => {
     const sb = serverPublicClient();
     let q = sb
       .from("products")
@@ -219,8 +216,6 @@ export const listProducts = createServerFn({ method: "GET" })
       .order("promoted", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(400);
-    // Oventric is digital-only: physical listings are never surfaced.
-    q = q.neq("kind", "physical");
     const { data: rows, error } = await q;
     if (error) throw new Error(error.message);
     const items = rows ?? [];
@@ -255,7 +250,7 @@ export interface CategoryNode {
   slug: string;
   name: string;
   description: string;
-  kind: "digital" | "physical";
+  kind: "digital";
   parentId: string | null;
   sortOrder: number;
   children: CategoryNode[];
@@ -268,7 +263,6 @@ export const listMarketplaceCategories = createServerFn({ method: "GET" }).handl
     .from("marketplace_categories")
     .select("id, slug, name, description, kind, parent_id, sort_order, enabled")
     .eq("enabled", true)
-    .neq("kind", "physical")
     .order("sort_order", { ascending: true });
   if (error) throw new Error(error.message);
   const rows = (data ?? []) as Array<Record<string, unknown>>;
@@ -279,7 +273,7 @@ export const listMarketplaceCategories = createServerFn({ method: "GET" }).handl
       slug: r.slug as string,
       name: r.name as string,
       description: (r.description as string) ?? "",
-      kind: ((r.kind as string) ?? "digital") as "digital" | "physical",
+      kind: "digital" as const,
       parentId: (r.parent_id as string) ?? null,
       sortOrder: Number(r.sort_order ?? 0),
       children: [],
@@ -1415,14 +1409,9 @@ export const searchMyProductsForTagging = createServerFn({ method: "GET" })
 
 /** Discovery data for the new marketplace: Featured, Trending, New, Top Sellers. */
 export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) =>
-    z.object({ kind: z.enum(["digital", "physical", "all"]).default("all") }).default({}).parse(input),
-  )
-  .handler(async ({ data }) => {
+  .handler(async () => {
     const sb = serverPublicClient();
-    const { kind } = data;
-    void kind; // digital-only marketplace
-    const withKind = (q: any) => q.neq("kind", "physical");
+    const withKind = (q: any) => q;
 
     // 1. Featured Products (promoted or top rated)
     const { data: featuredRows } = await withKind(
@@ -1547,16 +1536,14 @@ export interface TopSellerDTO {
 
 /** Live leaderboard of sellers ranked by paid sales, with live ratings and follower counts. */
 export const getTopSellers = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) =>
-    z.object({ kind: z.enum(["digital", "physical", "all"]).default("all") }).default({}).parse(input),
-  )
-  .handler(async ({ data }): Promise<TopSellerDTO[]> => {
+  .handler(async (): Promise<TopSellerDTO[]> => {
     const sb = serverPublicClient();
 
-    let productQuery = sb.from("products").select("id, seller_id").eq("status", "active").limit(2000);
-    void data.kind;
-    productQuery = productQuery.neq("kind", "physical");
-    const { data: productRows } = await productQuery;
+    const { data: productRows } = await sb
+      .from("products")
+      .select("id, seller_id")
+      .eq("status", "active")
+      .limit(2000);
 
     const productsBySeller = new Map<string, string[]>();
     const sellerByProduct = new Map<string, string>();
