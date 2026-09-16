@@ -103,6 +103,13 @@ export const rateProduct = createServerFn({ method: "POST" })
   .inputValidator((d: { productId: string; rating: number; comment?: string }) => d)
   .handler(async ({ data, context }) => {
     const rating = Math.max(1, Math.min(5, Math.round(Number(data.rating) || 0)));
+    // Eligibility is decided by the backend: only a settled purchase of this
+    // exact product earns a review. (Also enforced by row-level security.)
+    const { data: eligible } = await context.supabase.rpc("has_purchased_product", {
+      _user_id: context.userId,
+      _product_id: data.productId,
+    });
+    if (!eligible) throw new Error("You can only review a product you have purchased.");
     const { error } = await context.supabase
       .from("product_reviews")
       .upsert(
