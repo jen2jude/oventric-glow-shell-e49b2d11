@@ -23,6 +23,10 @@ import {
   ShieldAlert,
   UserCog,
   LifeBuoy,
+  CreditCard,
+  Landmark,
+  Undo2,
+  ScanSearch,
 } from "lucide-react";
 
 import { canAccessSection, type ManagementRole } from "@/lib/admin-roles";
@@ -95,10 +99,14 @@ const NAV: NavItem[] = [
     group: "Core",
   },
 
-  { to: "/admin/system-wallets", label: "Wallet / Ledger", icon: Wallet, group: "Money" },
+  { to: "/admin/payments", label: "Payments", icon: CreditCard, group: "Money" },
+  { to: "/admin/ledger", label: "Wallet / Ledger", icon: Wallet, group: "Money" },
+  { to: "/admin/system-wallets", label: "Platform Revenue", icon: Landmark, group: "Money" },
   { to: "/admin/payouts", label: "Payouts", icon: Banknote, group: "Money" },
-  { to: "/admin/disputes", label: "Refunds / Disputes", icon: ShieldAlert, group: "Money" },
+  { to: "/admin/refunds", label: "Refunds", icon: Undo2, group: "Money" },
+  { to: "/admin/disputes", label: "Disputes", icon: ShieldAlert, group: "Money" },
   { to: "/admin/cashback-wallet", label: "Cashback", icon: Gift, group: "Money" },
+  { to: "/admin/reconciliation", label: "Reconciliation", icon: ScanSearch, group: "Money" },
 
   { to: "/admin/reports", label: "Reports", icon: ShieldCheck, group: "Community" },
   { to: "/admin/communications", label: "Communications", icon: Radio, group: "Community" },
