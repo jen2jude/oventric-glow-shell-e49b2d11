@@ -1,151 +1,165 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { 
-  LayoutGrid, 
-  Settings, 
-  Save, 
-  Loader2, 
-  TrendingUp, 
-  ShoppingBag, 
-  Star,
-  RefreshCw
-} from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { updatePromotionalPlacement, listAllProducts } from "@/lib/admin.functions";
+import { LayoutGrid, Loader2, Search, Star, StarOff } from "lucide-react";
+import { listAllProducts, setProductPromoted } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin/marketplace-controls")({
   head: () => ({
-    meta: [{ title: "Marketplace Controls · Admin" }, { name: "robots", content: "noindex, nofollow" }],
+    meta: [
+      { title: "Marketplace Curation · Admin" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
   }),
   component: MarketplaceControlsPage,
 });
 
+type ProductRow = {
+  id: string;
+  name: string;
+  category: string | null;
+  vendor: string | null;
+  price_usd: number | null;
+  status: string | null;
+  promoted: boolean | null;
+  kind: string | null;
+};
+
+/**
+ * Editorial curation only. The single curated concept the marketplace actually
+ * reads is `products.promoted`, so this screen manages exactly that through the
+ * existing audited `setProductPromoted` server function.
+ */
 function MarketplaceControlsPage() {
-  const updatePromoFn = useServerFn(updatePromotionalPlacement);
-  const listProductsFn = useServerFn(listAllProducts);
-  
-  const [busy, setBusy] = useState(false);
-  const [products, setProducts] = useState<any[]>([]);
-  const [featuredIds, setFeaturedIds] = useState<string[]>([]);
-  const [trendingIds, setTrendingIds] = useState<string[]>([]);
+  const listFn = useServerFn(listAllProducts);
+  const promoteFn = useServerFn(setProductPromoted);
+  const qc = useQueryClient();
 
-  useEffect(() => {
-    listProductsFn().then(setProducts).catch(console.error);
-  }, [listProductsFn]);
+  const [q, setQ] = useState("");
+  const [onlyFeatured, setOnlyFeatured] = useState(false);
+  const [busy, setBusy] = useState<string | null>(null);
 
-  const handleSave = async (section: string, ids: string[]) => {
-    setBusy(true);
+  const query = useQuery({
+    queryKey: ["admin-curation-products"],
+    queryFn: () => listFn() as Promise<ProductRow[]>,
+    staleTime: 15_000,
+  });
+
+  const products = useMemo(() => {
+    const all = (query.data ?? []) as ProductRow[];
+    const term = q.trim().toLowerCase();
+    return all.filter((p) => {
+      if (onlyFeatured && !p.promoted) return false;
+      if (p.status !== "active") return false;
+      if (!term) return true;
+      return [p.name, p.category, p.vendor]
+        .filter(Boolean)
+        .some((v) => (v as string).toLowerCase().includes(term));
+    });
+  }, [query.data, q, onlyFeatured]);
+
+  const featuredCount = ((query.data ?? []) as ProductRow[]).filter((p) => p.promoted).length;
+
+  const toggle = async (p: ProductRow) => {
+    setBusy(p.id);
     try {
-      await updatePromoFn({ data: { section, data: { productIds: ids } } });
-      toast.success(`${section} placement updated`);
-    } catch (e: any) {
-      toast.error(e.message);
+      await promoteFn({ data: { id: p.id, promoted: !p.promoted } });
+      toast.success(p.promoted ? "Removed from featured" : "Featured on the marketplace");
+      await qc.invalidateQueries({ queryKey: ["admin-curation-products"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not update");
     } finally {
-      setBusy(false);
-    }
-  };
-
-  const toggleId = (ids: string[], setIds: (v: string[]) => void, id: string) => {
-    if (ids.includes(id)) {
-      setIds(ids.filter(i => i !== id));
-    } else {
-      setIds([...ids, id]);
+      setBusy(null);
     }
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <header className="mb-8">
-        <h1 className="text-white text-2xl font-black">Marketplace Curation</h1>
-        <p className="text-sm text-slate-400">Manually override trending and featured placements.</p>
+    <div className="p-6 max-w-6xl mx-auto">
+      <header className="mb-5 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-white text-2xl font-black flex items-center gap-2">
+            <LayoutGrid className="w-6 h-6 text-sky-300" /> Marketplace Curation
+          </h1>
+          <p className="text-sm text-slate-400 mt-1">
+            Choose which live listings are featured across the marketplace. {featuredCount}{" "}
+            currently featured.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setOnlyFeatured((v) => !v)}
+            className={`px-3 py-2 rounded-[10px] text-xs font-bold uppercase tracking-wider border ${
+              onlyFeatured
+                ? "bg-amber-500/15 border-amber-500/50 text-amber-300"
+                : "bg-[#141418] border-white/10 text-slate-400"
+            }`}
+          >
+            Featured only
+          </button>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search listings…"
+              className="bg-[#141418] border border-white/10 rounded-[10px] pl-9 pr-4 py-2 text-sm text-white w-60"
+            />
+          </div>
+        </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Featured Products Section */}
-        <div className="bg-[#141418] border border-white/10 rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <Star className="w-5 h-5 text-amber-400" />
-              <h2 className="text-white font-bold text-lg">Featured Products</h2>
-            </div>
-            <button
-              onClick={() => handleSave("featured_products", featuredIds)}
-              disabled={busy}
-              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black text-sm font-black rounded-[10px] disabled:opacity-50 flex items-center gap-2"
-            >
-              {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              Save Changes
-            </button>
-          </div>
+      {query.isError && (
+        <div className="mb-4 text-sm text-red-300 bg-red-500/10 border border-red-500/40 rounded-[10px] p-3">
+          {(query.error as Error).message}
+        </div>
+      )}
 
-          <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-            {products.filter(p => p.status === 'active').map(p => (
-              <label 
-                key={p.id} 
-                className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer ${
-                  featuredIds.includes(p.id) 
-                    ? "bg-emerald-500/10 border-emerald-500/40" 
-                    : "bg-black/20 border-white/5 hover:border-white/10"
+      {query.isLoading ? (
+        <div className="flex justify-center py-20">
+          <Loader2 className="w-7 h-7 animate-spin text-sky-400" />
+        </div>
+      ) : products.length === 0 ? (
+        <div className="text-center py-20 bg-[#141418] border border-white/10 rounded-2xl text-slate-500 text-sm">
+          No live listings match this view.
+        </div>
+      ) : (
+        <div className="grid gap-2">
+          {products.map((p) => (
+            <div
+              key={p.id}
+              className="flex items-center gap-3 bg-[#141418] border border-white/10 rounded-xl px-4 py-3"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="text-white text-sm font-bold truncate">{p.name}</div>
+                <div className="text-[11px] text-slate-500 truncate">
+                  {p.category ?? "—"} · {p.vendor ?? "—"} ·{" "}
+                  {p.price_usd == null ? "—" : `$${Number(p.price_usd).toFixed(2)}`}
+                </div>
+              </div>
+              <button
+                onClick={() => toggle(p)}
+                disabled={busy === p.id}
+                className={`px-3 py-1.5 rounded-[10px] text-xs font-bold border inline-flex items-center gap-1.5 disabled:opacity-50 ${
+                  p.promoted
+                    ? "bg-amber-500/15 border-amber-500/50 text-amber-300"
+                    : "bg-white/5 border-white/10 text-slate-300"
                 }`}
               >
-                <input 
-                  type="checkbox" 
-                  checked={featuredIds.includes(p.id)} 
-                  onChange={() => toggleId(featuredIds, setFeaturedIds, p.id)}
-                  className="w-4 h-4 accent-emerald-500"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-bold text-white truncate">{p.name}</div>
-                  <div className="text-[10px] text-slate-500 uppercase">{p.vendor} · ${p.price_usd}</div>
-                </div>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Trending Section */}
-        <div className="bg-[#141418] border border-white/10 rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-fuchsia-400" />
-              <h2 className="text-white font-bold text-lg">Trending Now</h2>
+                {busy === p.id ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : p.promoted ? (
+                  <Star className="w-3.5 h-3.5 fill-amber-300" />
+                ) : (
+                  <StarOff className="w-3.5 h-3.5" />
+                )}
+                {p.promoted ? "Featured" : "Feature"}
+              </button>
             </div>
-            <button
-              onClick={() => handleSave("trending", trendingIds)}
-              disabled={busy}
-              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black text-sm font-black rounded-[10px] disabled:opacity-50 flex items-center gap-2"
-            >
-              {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              Save Changes
-            </button>
-          </div>
-
-          <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-            {products.filter(p => p.status === 'active').map(p => (
-              <label 
-                key={p.id} 
-                className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer ${
-                  trendingIds.includes(p.id) 
-                    ? "bg-fuchsia-500/10 border-fuchsia-500/40" 
-                    : "bg-black/20 border-white/5 hover:border-white/10"
-                }`}
-              >
-                <input 
-                  type="checkbox" 
-                  checked={trendingIds.includes(p.id)} 
-                  onChange={() => toggleId(trendingIds, setTrendingIds, p.id)}
-                  className="w-4 h-4 accent-fuchsia-500"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-bold text-white truncate">{p.name}</div>
-                  <div className="text-[10px] text-slate-500 uppercase">{p.vendor} · ${p.price_usd}</div>
-                </div>
-              </label>
-            ))}
-          </div>
+          ))}
         </div>
-      </div>
+      )}
     </div>
   );
 }

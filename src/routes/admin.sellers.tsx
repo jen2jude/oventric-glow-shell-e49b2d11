@@ -1,29 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import {
-  Loader2,
-  Search,
-  CheckCircle,
-  AlertTriangle,
-  Ban,
-  Star,
-  ExternalLink,
-  MoreVertical,
-  Filter,
-  Check,
-  X,
-  ShieldCheck,
-  Award,
-} from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { 
-  listAdminUsers, 
-  verifySeller, 
-  suspendSeller, 
-  featureSeller 
-} from "@/lib/admin.functions";
-import { ResponsiveImage } from "@/components/ui/responsive-image";
+import { Loader2, Search, ShieldCheck, Store, Ban, X } from "lucide-react";
+import { adminListSellers, type AdminSellerRow } from "@/lib/admin-sellers.functions";
+import { verifySeller, suspendSeller } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin/sellers")({
   head: () => ({
@@ -32,70 +14,66 @@ export const Route = createFileRoute("/admin/sellers")({
   component: SellersPage,
 });
 
-type Row = Record<string, any>;
+const FILTERS = ["all", "verified", "unverified", "suspended", "flagged"] as const;
 
 function SellersPage() {
-  const listFn = useServerFn(listAdminUsers);
+  const listFn = useServerFn(adminListSellers);
   const verifyFn = useServerFn(verifySeller);
   const suspendFn = useServerFn(suspendSeller);
-  const featureFn = useServerFn(featureSeller);
+  const qc = useQueryClient();
 
-  const [rows, setRows] = useState<Row[] | null>(null);
   const [q, setQ] = useState("");
+  const [filter, setFilter] = useState<(typeof FILTERS)[number]>("all");
   const [busy, setBusy] = useState<string | null>(null);
-  const [filter, setFilter] = useState<"all" | "verified" | "pending" | "flagged">("all");
+  const [open, setOpen] = useState<AdminSellerRow | null>(null);
 
-  const refresh = useCallback(async () => {
-    try {
-      const r = await listFn();
-      // Sellers are users with products or specific flags, but for now we list all profiles 
-      // and filter by those who have commercial activity or intent.
-      setRows(r as Row[]);
-    } catch (e) {
-      toast.error("Failed to load sellers");
-    }
-  }, [listFn]);
+  const query = useQuery({
+    queryKey: ["admin-sellers"],
+    queryFn: () => listFn(),
+    staleTime: 15_000,
+  });
 
-  useEffect(() => { refresh(); }, [refresh]);
-
-  const filtered = useMemo(() => {
-    if (!rows) return [];
-    return rows.filter(r => {
-      if (filter === "verified" && !r.kyc_completed_at) return false;
-      if (filter === "pending" && (r.verification_tier !== "TIER_0" || r.kyc_completed_at)) return false;
-      if (filter === "flagged" && !r.flagged) return false;
-      
-      if (!q) return true;
-      const s = q.toLowerCase();
-      return (
-        r.username?.toLowerCase().includes(s) ||
-        r.display_name?.toLowerCase().includes(s) ||
-        r.user_id.toLowerCase().includes(s)
-      );
+  const rows = useMemo(() => {
+    const all = query.data ?? [];
+    const term = q.trim().toLowerCase();
+    return all.filter((s) => {
+      if (filter === "verified" && !s.kycCompletedAt) return false;
+      if (filter === "unverified" && s.kycCompletedAt) return false;
+      if (filter === "suspended" && !s.bannedAt) return false;
+      if (filter === "flagged" && !s.flagged) return false;
+      if (!term) return true;
+      return [s.username, s.displayName, s.shopName, s.userId]
+        .filter(Boolean)
+        .some((v) => (v as string).toLowerCase().includes(term));
     });
-  }, [rows, q, filter]);
+  }, [query.data, q, filter]);
 
-  const handleVerify = async (userId: string, tier: string) => {
+  const refresh = () => qc.invalidateQueries({ queryKey: ["admin-sellers"] });
+
+  const verify = async (userId: string, tier: string) => {
     setBusy(userId);
     try {
       await verifyFn({ data: { userId, tier } });
-      toast.success("Seller verified");
+      toast.success(`Seller verified (${tier})`);
       refresh();
-    } catch (e: any) {
-      toast.error(e.message);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed");
     } finally {
       setBusy(null);
     }
   };
 
-  const handleFeature = async (userId: string, featured: boolean) => {
+  const suspend = async (userId: string) => {
+    const reason = window.prompt("Reason for suspending this seller");
+    if (!reason) return;
     setBusy(userId);
     try {
-      await featureFn({ data: { userId, featured } });
-      toast.success(featured ? "Featured" : "Unfeatured");
+      await suspendFn({ data: { userId, reason } });
+      toast.success("Seller suspended");
+      setOpen(null);
       refresh();
-    } catch (e: any) {
-      toast.error(e.message);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed");
     } finally {
       setBusy(null);
     }
@@ -103,126 +81,195 @@ function SellersPage() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <header className="mb-5 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-white text-2xl font-black">Sellers</h1>
-          <p className="text-sm text-slate-400">Manage marketplace merchants and verification.</p>
+          <h1 className="text-white text-2xl font-black flex items-center gap-2">
+            <Store className="w-6 h-6 text-emerald-300" /> Sellers &amp; shops
+          </h1>
+          <p className="text-sm text-slate-400 mt-1">
+            Everyone with at least one listing, with their shop, catalogue and settled sales.
+            Earnings are shown from settled order records and cannot be edited here.
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Search sellers..."
-              className="bg-[#141418] border border-white/10 rounded-[10px] pl-9 pr-4 py-2 text-sm text-white w-64 focus:outline-none focus:border-emerald-500/50"
-            />
-          </div>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search seller or shop…"
+            className="bg-[#141418] border border-white/10 rounded-[10px] pl-9 pr-4 py-2 text-sm text-white w-64"
+          />
         </div>
       </header>
 
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-        {(["all", "verified", "pending", "flagged"] as const).map((f) => (
+      <div className="flex flex-wrap gap-2 mb-5">
+        {FILTERS.map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-4 py-2 rounded-[10px] text-xs font-bold border transition-colors whitespace-nowrap ${
+            className={`px-3 py-1.5 rounded-[10px] text-xs font-bold uppercase tracking-wider border ${
               filter === f
-                ? "bg-emerald-500 text-black border-emerald-500"
-                : "bg-[#141418] border-white/10 text-slate-400 hover:text-white"
+                ? "bg-emerald-500/15 border-emerald-500/50 text-emerald-300"
+                : "bg-[#141418] border-white/10 text-slate-400"
             }`}
           >
-            {f.toUpperCase()}
+            {f}
           </button>
         ))}
+        <span className="ml-auto text-xs text-slate-500 self-center">{rows.length} sellers</span>
       </div>
 
-      {!rows ? (
-        <div className="flex justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="text-center py-20 bg-[#141418] border border-white/10 rounded-2xl">
-          <p className="text-slate-500">No sellers found matching criteria.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((s) => (
-            <div key={s.user_id} className="bg-[#141418] border border-white/10 rounded-2xl p-5 hover:border-white/20 transition-all group">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 flex items-center justify-center text-xl font-black text-white">
-                    {s.username?.[0]?.toUpperCase() ?? "?"}
-                  </div>
-                  <div>
-                    <h3 className="text-white font-bold leading-tight">
-                      {s.display_name ?? s.username ?? "Unknown"}
-                    </h3>
-                    <p className="text-xs text-slate-500">@{s.username ?? "no-handle"}</p>
-                  </div>
-                </div>
-                <div className="flex gap-1">
-                  {s.kyc_completed_at && (
-                    <div title="Verified" className="p-1.5 rounded-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                      <ShieldCheck className="w-4 h-4" />
-                    </div>
-                  )}
-                  {s.is_featured && (
-                    <div title="Featured" className="p-1.5 rounded-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                      <Award className="w-4 h-4" />
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 mb-5">
-                <div className="bg-black/20 rounded-xl p-3 border border-white/5">
-                  <div className="text-[10px] uppercase text-slate-500 font-bold mb-1">Tier</div>
-                  <div className="text-sm text-white font-black">{s.verification_tier ?? "NONE"}</div>
-                </div>
-                <div className="bg-black/20 rounded-xl p-3 border border-white/5">
-                  <div className="text-[10px] uppercase text-slate-500 font-bold mb-1">Stars</div>
-                  <div className="text-sm text-white font-black flex items-center gap-1">
-                    <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
-                    {s.reputation_stars ?? 0}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {!s.kyc_completed_at ? (
-                  <button
-                    onClick={() => handleVerify(s.user_id, "TIER_1")}
-                    disabled={busy === s.user_id}
-                    className="flex-1 py-2 rounded-[10px] bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-black transition-colors disabled:opacity-50"
-                  >
-                    Verify Tier 1
-                  </button>
-                ) : (
-                   <button
-                    onClick={() => handleFeature(s.user_id, !s.is_featured)}
-                    disabled={busy === s.user_id}
-                    className={`flex-1 py-2 rounded-[10px] text-xs font-black transition-colors disabled:opacity-50 border ${
-                      s.is_featured 
-                        ? "bg-amber-500/10 border-amber-500/40 text-amber-200" 
-                        : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
-                    }`}
-                  >
-                    {s.is_featured ? "Unfeature" : "Feature Seller"}
-                  </button>
-                )}
-                
-                <button
-                  disabled={busy === s.user_id}
-                  className="px-3 py-2 rounded-[10px] bg-white/5 border border-white/10 text-slate-400 hover:text-white transition-colors"
-                >
-                  <MoreVertical className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ))}
+      {query.isError && (
+        <div className="mb-4 text-sm text-red-300 bg-red-500/10 border border-red-500/40 rounded-[10px] p-3">
+          {(query.error as Error).message}
         </div>
       )}
+
+      {query.isLoading ? (
+        <div className="flex justify-center py-20">
+          <Loader2 className="w-7 h-7 animate-spin text-emerald-500" />
+        </div>
+      ) : rows.length === 0 ? (
+        <div className="text-center py-20 bg-[#141418] border border-white/10 rounded-2xl text-slate-500 text-sm">
+          No sellers match this view.
+        </div>
+      ) : (
+        <div className="bg-[#141418] border border-white/10 rounded-xl overflow-x-auto">
+          <div className="min-w-[900px]">
+            <div className="grid grid-cols-[1fr_1fr_110px_110px_110px_120px] gap-3 px-4 py-2.5 text-[10px] uppercase tracking-widest text-slate-500 font-bold border-b border-white/10 bg-black/20">
+              <div>Seller</div>
+              <div>Shop</div>
+              <div>Status</div>
+              <div className="text-right">Listings</div>
+              <div className="text-right">Sales</div>
+              <div className="text-right">Gross (USD)</div>
+            </div>
+            <div className="divide-y divide-white/5">
+              {rows.map((s) => (
+                <button
+                  key={s.userId}
+                  onClick={() => setOpen(s)}
+                  className="w-full text-left grid grid-cols-[1fr_1fr_110px_110px_110px_120px] gap-3 px-4 py-3 text-sm items-center hover:bg-white/5"
+                >
+                  <div className="min-w-0">
+                    <div className="text-white truncate">
+                      {s.displayName ?? s.username ?? "Unknown"}
+                    </div>
+                    <div className="text-[11px] text-slate-500 truncate">
+                      @{s.username ?? "no-handle"}
+                    </div>
+                  </div>
+                  <div className="min-w-0 text-slate-300 truncate">{s.shopName ?? "—"}</div>
+                  <div className="text-[11px]">
+                    {s.bannedAt ? (
+                      <span className="text-red-300 font-bold">suspended</span>
+                    ) : s.kycCompletedAt ? (
+                      <span className="text-emerald-300 font-bold">verified</span>
+                    ) : (
+                      <span className="text-slate-400 font-bold">unverified</span>
+                    )}
+                    {s.flagged && <div className="text-amber-300">flagged</div>}
+                  </div>
+                  <div className="text-right text-slate-300">
+                    {s.activeProductCount}/{s.productCount}
+                  </div>
+                  <div className="text-right text-slate-300">{s.salesCount}</div>
+                  <div className="text-right text-white font-bold">
+                    ${s.grossSalesUsd.toFixed(2)}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {open && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex justify-end" onClick={() => setOpen(null)}>
+          <aside
+            className="w-full max-w-md h-full overflow-y-auto bg-[#141418] border-l border-white/10 p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h2 className="text-white text-lg font-black">
+                  {open.displayName ?? open.username}
+                </h2>
+                <p className="text-xs text-slate-500">@{open.username ?? "no-handle"}</p>
+              </div>
+              <button
+                onClick={() => setOpen(null)}
+                className="p-2 rounded-[10px] bg-white/5 text-slate-300"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <dl className="rounded-xl border border-white/10 bg-black/20 divide-y divide-white/5 text-xs mb-4">
+              <Row k="Shop" v={open.shopName ?? "—"} />
+              <Row k="About" v={open.shopAbout ?? "—"} />
+              <Row k="Country" v={open.country ?? "—"} />
+              <Row k="Joined" v={new Date(open.createdAt).toLocaleDateString()} />
+              <Row k="Verification tier" v={open.verificationTier ?? "NONE"} />
+              <Row
+                k="Verified at"
+                v={open.kycCompletedAt ? new Date(open.kycCompletedAt).toLocaleString() : "—"}
+              />
+              <Row
+                k="Suspended"
+                v={open.bannedAt ? new Date(open.bannedAt).toLocaleString() : "no"}
+              />
+              {open.flagReason && <Row k="Flag reason" v={open.flagReason} />}
+              <Row k="Listings" v={`${open.activeProductCount} active / ${open.productCount}`} />
+              <Row k="Promoted listings" v={String(open.promotedProductCount)} />
+              <Row k="Settled sales" v={String(open.salesCount)} />
+              <Row k="Gross settled" v={`$${open.grossSalesUsd.toFixed(2)}`} />
+            </dl>
+
+            <div className="flex flex-wrap gap-2">
+              {open.shopSlug && (
+                <Link
+                  to="/shop/$id"
+                  params={{ id: open.shopSlug }}
+                  className="px-3 py-2 rounded-[10px] bg-white/5 border border-white/10 text-xs text-slate-200"
+                >
+                  Open shop
+                </Link>
+              )}
+              {!open.kycCompletedAt && (
+                <button
+                  onClick={() => verify(open.userId, "TIER_1")}
+                  disabled={busy === open.userId}
+                  className="px-3 py-2 rounded-[10px] bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-black disabled:opacity-50 inline-flex items-center gap-1.5"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5" /> Verify Tier 1
+                </button>
+              )}
+              {!open.bannedAt && (
+                <button
+                  onClick={() => suspend(open.userId)}
+                  disabled={busy === open.userId}
+                  className="px-3 py-2 rounded-[10px] bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs font-bold disabled:opacity-50 inline-flex items-center gap-1.5"
+                >
+                  <Ban className="w-3.5 h-3.5" /> Suspend seller
+                </button>
+              )}
+            </div>
+            <p className="text-[11px] text-slate-500 mt-4">
+              Seller earnings, payouts and wallet balances are not editable from this screen.
+            </p>
+          </aside>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Row({ k, v }: { k: string; v: string }) {
+  return (
+    <div className="flex items-start justify-between gap-4 px-3 py-2">
+      <span className="text-slate-500">{k}</span>
+      <span className="text-slate-200 text-right break-words">{v}</span>
     </div>
   );
 }
