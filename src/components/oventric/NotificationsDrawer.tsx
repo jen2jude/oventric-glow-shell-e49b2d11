@@ -364,20 +364,22 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
   return (
     <>
       <div
-        className="modal-light fixed inset-0 bg-black/50 z-40 animate-fade-in"
+        className="modal-light fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-40 animate-fade-in"
         onClick={onClose}
         aria-hidden
       />
       <aside
-        className="w-full sm:w-[400px] h-screen bg-[#1E1E24] border-l border-white/5 shadow-2xl z-50 fixed right-0 top-0 animate-in slide-in-from-right duration-300"
+        className="web-notifications w-full sm:w-[420px] h-screen border-l shadow-2xl z-50 fixed right-0 top-0 animate-in slide-in-from-right duration-300"
         role="dialog"
         aria-modal="true"
         aria-label="Notifications"
       >
-        <div className="flex items-center justify-between px-4 h-16 border-b border-white/5">
+        <div className="flex items-center justify-between px-5 h-16 border-b">
           <div>
-            <h2 className="text-white font-bold text-sm">Notifications</h2>
-            <p className="text-[11px] text-slate-500">
+            <h2 className="font-wallet-display text-foreground font-semibold text-base">
+              Notifications
+            </h2>
+            <p className="text-[11px] text-muted-foreground">
               {isAuthenticated
                 ? "Live activity across your workspace"
                 : "Connect your account to receive alerts"}
