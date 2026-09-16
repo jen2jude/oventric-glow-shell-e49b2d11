@@ -50,7 +50,8 @@ const CATEGORIES = ["themes", "plugins", "blocks", "scripts"] as const;
 
 interface FormState {
   id?: string;
-  kind: "digital" | "physical";
+  // Oventric is digital-only; physical listings no longer exist.
+  kind: "digital";
   name: string;
   category: string;
   subcategory: string;
@@ -116,7 +117,7 @@ function ProductsPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "active" | "rejected">(
     "pending",
   );
-  const [kindFilter, setKindFilter] = useState<"all" | "digital" | "physical">("all");
+  
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const [rejectHint, setRejectHint] = useState("");
