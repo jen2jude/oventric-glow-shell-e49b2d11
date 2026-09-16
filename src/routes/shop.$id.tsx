@@ -464,15 +464,14 @@ function ShopPage() {
                 <button
                   type="button"
                   onClick={() => setEditOpen(true)}
-                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold"
-                  style={{ color: ACCENT }}
+                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-primary"
                 >
                   <Pencil className="h-4 w-4" /> Edit about
                 </button>
               )}
             </div>
           ) : tab === "services" ? (
-            <Grid items={services} price={price} emptyLabel="No services listed yet." />
+            <Grid items={services} price={price} emptyLabel="No services listed yet." web={!isAppShell} />
           ) : tab === "collections" ? (
             <div className="mt-5 rounded-2xl border border-white/10 bg-[#141417] p-6 text-center text-sm text-slate-400">
               Collections are coming to this shop soon.
@@ -578,7 +577,7 @@ function ShopPage() {
                   <SectionHead
                     title="New Arrivals"
                     action={
-                      <span className="text-sm font-bold" style={{ color: ACCENT }}>
+                      <span className="text-sm font-bold text-primary">
                         {compact(productTotal)} items
                       </span>
                     }
