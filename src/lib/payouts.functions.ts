@@ -176,39 +176,12 @@ export const cancelMyPayout = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { id: string }) => ({ id: String(input?.id ?? "") }))
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
-    // Refund via RPC-style: call reject as user? We use a direct update + credit wallet.
-    // Only allow the owner to cancel a pending request.
-    const { data: row, error: e1 } = await supabase
-      .from("payout_requests")
-      .select("id,user_id,amount,currency,status")
-      .eq("id", data.id)
-      .maybeSingle();
-    if (e1) throw new Error(e1.message);
-    if (!row || row.user_id !== userId) throw new Error("Not found");
-    if (row.status !== "pending") throw new Error("Only pending requests can be cancelled");
-
-    const { error: e2 } = await supabase
-      .from("payout_requests")
-      .update({ status: "cancelled" })
-      .eq("id", data.id);
-    if (e2) throw new Error(e2.message);
-
-    // Refund escrow → available via RPC (service definer). We reuse the reject helper is admin-only.
-    // Instead, credit back manually with a normal update via RLS: user can't touch wallets directly, so
-    // we perform the refund server-side using an inline SQL through supabase-js. Because wallets
-    // have RLS restricting to owner reads only, updates via user client won't work either.
-    // Use the credit RPC (wallet_credit is SECURITY DEFINER and callable by authenticated).
-    // We must also decrement escrow_balance; call a dedicated function.
-    const { error: e3 } = await supabase.rpc("payout_request_reject", {
-      _id: data.id,
-      _reason: "cancelled by user",
-    });
-    // The reject RPC requires admin. If it fails, we still leave request cancelled, but wallet won't refund.
-    // Fallback: no-op. Admin can reconcile.
-    if (e3) {
-      // swallow; state is cancelled — admin will reconcile the balance
-    }
+    // Ownership, pending-state, escrow refund and ledger update all happen
+    // inside one SECURITY DEFINER transaction — the client only names the id.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sb = context.supabase as any;
+    const { error } = await sb.rpc("payout_request_cancel_own", { _id: data.id });
+    if (error) throw new Error(error.message);
     return { ok: true };
   });
 
