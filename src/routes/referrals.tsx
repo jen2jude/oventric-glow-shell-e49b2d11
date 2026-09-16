@@ -88,13 +88,13 @@ function ReferralsRoute() {
           earn Oventric credit you can spend on the marketplace.
         </p>
 
-        {isLoading && (
+        {(signedIn === null || (signedIn && isLoading)) && (
           <div className="mt-8 flex items-center gap-2 text-sm text-slate-400">
             <Loader2 className="h-4 w-4 animate-spin" /> Loading your invite link…
           </div>
         )}
 
-        {isError && (
+        {(signedIn === false || isError) && (
           <p className="mt-8 text-sm text-slate-400">
             Sign in to see your invite link and rewards.
           </p>
