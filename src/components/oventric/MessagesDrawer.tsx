@@ -49,27 +49,27 @@ export function MessagesDrawer({
       <div
         onClick={onClose}
         aria-hidden="true"
-        className="modal-light fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 z-[70] bg-slate-950/35"
       />
       {/* Drawer */}
       <aside
         role="dialog"
         aria-label="Messages"
         aria-modal="true"
-        className="fixed inset-y-0 right-0 z-[80] h-[100dvh] max-h-[100dvh] w-full max-w-full overflow-hidden bg-[#121214] border-l border-white/10 shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col md:w-[880px]"
+        className="web-chat fixed inset-y-0 right-0 z-[80] h-[100dvh] max-h-[100dvh] w-full max-w-full overflow-hidden border-l border-border bg-background shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col md:w-[min(1120px,92vw)]"
 
       >
-        <div className="flex items-center justify-between h-12 shrink-0 px-4 border-b border-white/10 bg-[#16161B]">
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] uppercase tracking-widest font-black text-emerald-400">
-              Secure Channel
+        <div className="flex items-center justify-between h-14 shrink-0 px-5 border-b border-border bg-background">
+          <div className="flex items-center gap-3">
+            <span className="font-wallet-display text-sm font-semibold text-foreground">Messages</span>
+            <span className="hidden sm:inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-1 text-[10px] font-semibold text-muted-foreground">
+              Secure conversations
             </span>
-            <span className="text-xs text-slate-400">P2P Messaging Hub</span>
           </div>
           <button
             onClick={onClose}
             aria-label="Close messages drawer"
-            className="p-1.5 rounded-[10px] text-slate-400 hover:text-white hover:bg-white/5"
+            className="inline-flex size-9 items-center justify-center rounded-[10px] text-muted-foreground hover:bg-muted hover:text-foreground"
           >
             <X className="w-4 h-4" />
           </button>
