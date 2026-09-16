@@ -163,20 +163,7 @@ function CategoriesPage() {
                   : "New category"}
             </h2>
             <div className="grid gap-3">
-              <div className="grid grid-cols-2 gap-3">
-                <F label="Kind">
-                  <select
-                    value={editing.kind ?? tab}
-                    disabled={!!editing.parent_id}
-                    onChange={(e) =>
-                      setEditing({ ...editing, kind: e.target.value as Kind, parent_id: null })
-                    }
-                    className={inp}
-                  >
-                    <option value="digital">Digital</option>
-                    <option value="physical">Physical</option>
-                  </select>
-                </F>
+              <div className="grid grid-cols-1 gap-3">
                 <F label="Parent (subcategory)">
                   <select
                     value={editing.parent_id ?? ""}
