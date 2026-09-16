@@ -365,6 +365,7 @@ export async function verifyAndSettle(reference: string): Promise<VerifyResult> 
         redirectTo: null,
         cashbackEarnedUSD: 0,
         displayCurrency: tx.currency,
+        payerId: String(meta.user_id ?? "") || null,
       };
     }
     return settleFromMetadata(reference, meta, tx.currency, Number(tx.amount));
@@ -378,5 +379,6 @@ export async function verifyAndSettle(reference: string): Promise<VerifyResult> 
     redirectTo: res.redirectTo,
     cashbackEarnedUSD: res.cashbackEarnedUSD,
     displayCurrency: String(res.displayCurrency ?? "USD"),
+    payerId: res.payerId ?? null,
   };
 }
