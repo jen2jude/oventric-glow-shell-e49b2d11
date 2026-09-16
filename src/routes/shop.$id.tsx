@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { SiteFooterAuto } from "@/components/oventric/desktop/SiteFooterAuto";
+import { Header } from "@/components/oventric/Header";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -9,12 +10,10 @@ import {
   BadgeCheck,
   ChevronLeft,
   ChevronRight,
-  GraduationCap,
   MessageCircle,
   Pencil,
   ShoppingBag,
   Star,
-  Target,
 } from "lucide-react";
 import {
   getLiveProfileTab,
@@ -299,8 +298,26 @@ function ShopPage() {
 
   return (
     <div className={`min-h-screen bg-[#0A0A0B] text-white ${!isAppShell ? "oventric-web" : ""}`}>
-      {/* Top bar */}
-      <div className="sticky top-0 z-30 flex items-center gap-3 bg-[#0A0A0B]/90 px-4 py-3 backdrop-blur md:px-8 lg:px-12">
+      {!isAppShell && (
+        <Header
+          onOpenMessages={() => setDmOpen(true)}
+          forceSiteNavbar
+          siteNavbarOnSelect={(section) => {
+            const paths: Record<string, "/" | "/explore" | "/feed" | "/marketplace" | "/wallet"> = {
+              Home: "/",
+              Explore: "/explore",
+              Feed: "/feed",
+              Marketplace: "/marketplace",
+              Wallet: "/wallet",
+            };
+            const path = paths[section];
+            if (path) void navigate({ to: path });
+          }}
+        />
+      )}
+
+      {/* Compact app-shell top bar */}
+      {isAppShell && <div className="sticky top-0 z-30 flex items-center gap-3 bg-[#0A0A0B]/90 px-4 py-3 backdrop-blur md:px-8 lg:px-12">
         <button
           type="button"
           onClick={handleBack}
@@ -320,7 +337,7 @@ function ShopPage() {
             <Pencil className="h-3.5 w-3.5" /> Edit shop
           </button>
         )}
-      </div>
+      </div>}
 
       <div className="mx-auto w-full max-w-[720px] px-4 pb-20 md:max-w-[900px] md:px-8 lg:max-w-[1000px] lg:px-12">
         {/* Cover */}
@@ -632,96 +649,6 @@ function ShopPage() {
                 </>
               )}
 
-              {/* Blog */}
-              {(discovery?.blog.length ?? 0) > 0 && (
-                <>
-                  <SectionHead
-                    title="From the Oventric blog"
-                    action={
-                      <Link to="/blog" className="text-sm font-bold" style={{ color: ACCENT }}>
-                        View all
-                      </Link>
-                    }
-                  />
-                  <Rail>
-                    {discovery!.blog.map((b) => (
-                      <Link
-                        key={b.id}
-                        to="/blog/$slug"
-                        params={{ slug: b.id }}
-                        className="w-[70%] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141417] sm:w-[42%]"
-                      >
-                        <Cover url={b.coverUrl} className="aspect-[16/9] w-full" />
-                        <div className="p-3">
-                          <div className="line-clamp-2 text-xs font-bold">{b.title}</div>
-                          <div className="mt-1 line-clamp-2 text-[11px] text-slate-400">
-                            {b.subtitle}
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </Rail>
-                </>
-              )}
-
-              {/* Bounties */}
-              {(discovery?.bounties.length ?? 0) > 0 && (
-                <>
-                  <SectionHead
-                    title="Open bounties"
-                    action={
-                      <Link to="/" search={{ section: "Bounties" } as never} className="text-sm font-bold" style={{ color: ACCENT }}>
-                        View all
-                      </Link>
-                    }
-                  />
-                  <Rail>
-                    {discovery!.bounties.map((b) => (
-                      <div
-                        key={b.id}
-                        className="w-[62%] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141417] p-3 sm:w-[36%]"
-                      >
-                        <div className="flex items-center gap-2 text-[11px] font-bold text-slate-400">
-                          <Target className="h-3.5 w-3.5" style={{ color: ACCENT }} />
-                          {b.subtitle ?? "Bounty"}
-                        </div>
-                        <div className="mt-1.5 line-clamp-2 text-xs font-bold">{b.title}</div>
-                        <div className="mt-2 text-sm font-black" style={{ color: ACCENT }}>
-                          {price(b.priceUsd ?? 0)}
-                        </div>
-                      </div>
-                    ))}
-                  </Rail>
-                </>
-              )}
-
-              {/* Courses */}
-              {(discovery?.courses.length ?? 0) > 0 && (
-                <>
-                  <SectionHead title="Academy courses" />
-                  <Rail>
-                    {discovery!.courses.map((c) => (
-                      <div
-                        key={c.id}
-                        className="w-[62%] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141417] sm:w-[36%]"
-                      >
-                        <Cover url={c.coverUrl} className="aspect-[16/9] w-full" />
-                        <div className="p-3">
-                          <div className="line-clamp-2 text-xs font-bold">{c.title}</div>
-                          <div className="mt-1 flex items-center justify-between gap-2 text-[11px] text-slate-400">
-                            <span className="inline-flex items-center gap-1">
-                              <GraduationCap className="h-3.5 w-3.5" /> {c.subtitle ?? "Oventric"}
-                            </span>
-                            <span className="font-black" style={{ color: ACCENT }}>
-                              {(c.priceUsd ?? 0) > 0 ? price(c.priceUsd ?? 0) : "Free"}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </Rail>
-                </>
-              )}
               {/* Seller Content Module */}
               {isOwner === false && (
                 <div className="mt-12 mb-8 rounded-3xl border border-white/10 bg-[#141417] p-8 text-center">

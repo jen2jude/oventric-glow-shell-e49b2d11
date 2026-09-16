@@ -63,6 +63,7 @@ export function Header({
   desktopNav = false,
   browserVisitorHeader = false,
   forceSiteNavbar = false,
+  siteNavbarOnSelect,
 }: {
   onMenuClick?: () => void;
   onOpenMessages?: () => void;
@@ -73,6 +74,7 @@ export function Header({
   desktopNav?: boolean;
   browserVisitorHeader?: boolean;
   forceSiteNavbar?: boolean;
+  siteNavbarOnSelect?: (section: string) => void;
 }) {
   const { fullName } = useOnboarding();
   const { country, baseCurrency } = useOnboarding();
@@ -227,13 +229,13 @@ export function Header({
   if (forceSiteNavbar) {
     return (
       <SiteNavbar
-        onSelect={(section) => {
+        onSelect={siteNavbarOnSelect ?? ((section) => {
           if (section === "Home") {
             window.location.href = "/";
             return;
           }
           window.dispatchEvent(new CustomEvent("oventric:navigate", { detail: { section } }));
-        }}
+        })}
         avatarUrl={null}
         name={fullName || ""}
         country={country ?? undefined}
