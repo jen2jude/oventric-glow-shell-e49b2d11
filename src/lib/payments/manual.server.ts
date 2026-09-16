@@ -168,8 +168,16 @@ export async function listManualPayments(
   opts: { userId?: string; status?: string; admin?: boolean; adminId?: string },
 ): Promise<ManualPaymentRow[]> {
   if (opts.admin) {
-    const { data: allowed } = await supabase.rpc("has_any_management_role", { _user_id: opts.adminId });
-    if (!allowed) throw new Error("Forbidden");
+    // Legacy MiniPay rail stays disabled; admin listing is limited to the same
+    // roles that may review a payment (super admin / finance).
+    const { data: isAdmin } = await supabase.rpc("has_role", {
+      _user_id: opts.adminId,
+      _role: "admin",
+    });
+    const { data: isFinance } = isAdmin
+      ? { data: true }
+      : await supabase.rpc("has_role", { _user_id: opts.adminId, _role: "finance" });
+    if (!isAdmin && !isFinance) throw new Error("Forbidden");
   }
   let q = supabase
     .from("manual_payments")
