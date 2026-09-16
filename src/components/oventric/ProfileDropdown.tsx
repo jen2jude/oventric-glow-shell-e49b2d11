@@ -107,6 +107,7 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
     fullName,
     storeName,
     baseCurrency,
+    homeCurrency,
   } = useOnboarding();
 
   const [profile, setProfile] = useState<ProfileState>(() =>
