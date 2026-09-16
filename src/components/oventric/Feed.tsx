@@ -72,7 +72,6 @@ import { CommentsSheet } from "@/components/oventric/feed/CommentsSheet";
 import { TruncatedText } from "@/components/oventric/feed/TruncatedText";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { PostActionsMenu, shareUrl, getHiddenPosts } from "@/components/oventric/PostActionsMenu";
-import { listBlogPosts, type BlogListItem } from "@/lib/blog.functions";
 import { ShareSheet } from "@/components/oventric/ShareSheet";
 import { PostComposerModal } from "@/components/oventric/PostComposerModal";
 import { FeedAppChrome, type FeedTab } from "@/components/oventric/feed/FeedAppChrome";
@@ -1601,7 +1600,6 @@ export function Feed() {
             }
             const visible = filteredPosts;
             const items: React.ReactNode[] = [];
-            let blogIdx = 0;
             let commerceIdx = 0;
             visible.forEach((post, i) => {
               items.push(renderPost(post));
