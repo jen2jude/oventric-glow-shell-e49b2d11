@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, Plus, X, Search, User } from "lucide-react";
+import { Bell, Menu, Plus, X, Search, User } from "lucide-react";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { CurrencyPreviewToggle } from "../CurrencyPreviewToggle";
 import { MegaMenu } from "@/components/oventric/MegaMenu";
+import {
+  NotificationsDrawer,
+  useUnreadNotificationsCount,
+} from "@/components/oventric/NotificationsDrawer";
+import { CountBadge } from "@/components/oventric/CountBadge";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import logo from "@/assets/oventric-logo-dark.png";
 
@@ -27,6 +32,16 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
   const [solid, setSolid] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const unreadNotifications = useUnreadNotificationsCount();
+
+  const openNotifications = () => {
+    if (!isAuthenticated) {
+      openGate("generic");
+      return;
+    }
+    setNotificationsOpen(true);
+  };
 
   useEffect(() => {
     const el = document.getElementById("desktop-home-scroll");
@@ -73,10 +88,10 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
 
           {/* Universal Navigation Links (Desktop) */}
           <nav className="hidden lg:flex items-center gap-6 text-sm font-bold text-slate-600">
-            {["Home", "Explore", "Wallet"].map(item => (
+            {["Home", "Explore", "Newsfeed", "Wallet"].map(item => (
               <button
                 key={item}
-                onClick={() => onSelect(item)}
+                onClick={() => onSelect(item === "Newsfeed" ? "Feed" : item)}
                 className="hover:text-slate-900 transition-colors"
               >
                 {item}
@@ -109,6 +124,19 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
               </button>
             )}
 
+            <button
+              type="button"
+              onClick={openNotifications}
+              aria-label={isAuthenticated ? "Open notifications" : "Sign in to view notifications"}
+              className="relative grid min-h-11 min-w-11 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-hidden focus-visible:ring-3 focus-visible:ring-crimson/30"
+            >
+              <Bell className="h-5 w-5" />
+              <CountBadge
+                count={unreadNotifications}
+                ariaLabel={`${unreadNotifications} unread notifications`}
+              />
+            </button>
+
             {/* User Profile Link */}
             <div className="flex items-center gap-4 ml-auto">
               <button
@@ -131,6 +159,7 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
             <button
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
+              aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
               className="p-2 text-slate-900 lg:hidden"
             >
               {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -149,10 +178,10 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
           <nav className="p-6 space-y-6">
             <div className="space-y-4">
               <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Navigation</h3>
-              {["Home", "Explore", "Marketplace", "Wallet"].map(item => (
+              {["Home", "Explore", "Newsfeed", "Marketplace", "Wallet"].map(item => (
                 <button
                   key={item}
-                  onClick={() => { onSelect(item); setMenuOpen(false); }}
+                  onClick={() => { onSelect(item === "Newsfeed" ? "Feed" : item); setMenuOpen(false); }}
                   className="block w-full text-left text-lg font-black text-slate-900"
                 >
                   {item}
@@ -165,6 +194,21 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
               >
                 Shop
               </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  openNotifications();
+                }}
+                className="flex min-h-11 w-full items-center gap-3 text-left text-lg font-black text-slate-900"
+              >
+                <Bell className="h-5 w-5" /> Notifications
+                {unreadNotifications > 0 && (
+                  <span className="rounded-full bg-crimson px-2 py-0.5 text-xs text-white">
+                    {unreadNotifications > 99 ? "99+" : unreadNotifications}
+                  </span>
+                )}
+              </button>
             </div>
             {onCreate && (
               <button
@@ -179,6 +223,7 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
       )}
 
       <MegaMenu open={megaOpen} onClose={() => setMegaOpen(false)} />
+      <NotificationsDrawer open={notificationsOpen} onClose={() => setNotificationsOpen(false)} />
     </div>
   );
 }
