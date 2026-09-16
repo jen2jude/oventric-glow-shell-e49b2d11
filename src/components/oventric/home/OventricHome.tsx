@@ -10,11 +10,6 @@ import {
   ShoppingCart,
   ArrowRight,
   BadgeCheck,
-  Twitter,
-  Instagram,
-  Youtube,
-  Linkedin,
-  Facebook,
   Lock,
   Clock,
   Headphones,
@@ -137,18 +132,6 @@ const STEPS = [
 ];
 
 const PAY_METHODS = ["Visa", "Mastercard", "Verve", "Paystack", "Bank transfer"];
-
-const SOCIALS: Array<{
-  href: string;
-  label: string;
-  Icon: React.ComponentType<{ className?: string }>;
-}> = [
-  { href: "https://x.com/oventric", label: "X", Icon: Twitter },
-  { href: "https://instagram.com/oventric", label: "Instagram", Icon: Instagram },
-  { href: "https://youtube.com/@oventric", label: "YouTube", Icon: Youtube },
-  { href: "https://linkedin.com/company/oventric", label: "LinkedIn", Icon: Linkedin },
-  { href: "https://facebook.com/oventric", label: "Facebook", Icon: Facebook },
-];
 
 export type OventricHomeProps = {
   onSelect: (section: string) => void;
@@ -480,30 +463,6 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             ))}
           </ul>
         </section>
-
-        {/* ------------------------------------------------------ follow oventric */}
-        <section className="mt-5 flex flex-col items-center justify-between gap-5 rounded-[20px] border border-slate-200/80 bg-white px-6 py-7 text-center lg:flex-row lg:text-left">
-          <div>
-            <h2 className="font-[Outfit] text-lg font-extrabold text-slate-900">Follow Oventric</h2>
-            <p className="mt-1 text-sm text-slate-500">
-              Get updates, tips and community highlights.
-            </p>
-          </div>
-          <div className="flex items-center gap-2.5">
-            {SOCIALS.map(({ href, label, Icon }) => (
-              <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noreferrer noopener"
-                aria-label={label}
-                className="grid h-11 w-11 place-items-center rounded-full border border-slate-200 text-slate-600 transition-all hover:-translate-y-0.5 hover:border-crimson hover:text-crimson"
-              >
-                <Icon className="h-4.5 w-4.5" />
-              </a>
-            ))}
-          </div>
-        </section>
       </main>
 
       <HomeFooter />
@@ -682,12 +641,6 @@ function HomeFooter() {
     { to: "/privacy", label: "Privacy" },
     { to: "/report-problem", label: "Contact" },
   ];
-  const socials: Array<{ href: string; label: string; Icon: React.ComponentType<{ className?: string }> }> = [
-    { href: "https://x.com/oventric", label: "X", Icon: Twitter },
-    { href: "https://instagram.com/oventric", label: "Instagram", Icon: Instagram },
-    { href: "https://youtube.com/@oventric", label: "YouTube", Icon: Youtube },
-    { href: "https://linkedin.com/company/oventric", label: "LinkedIn", Icon: Linkedin },
-  ];
 
   return (
     <footer className="border-t border-slate-200 bg-white">
@@ -707,21 +660,6 @@ function HomeFooter() {
             </Link>
           ))}
         </nav>
-
-        <div className="flex items-center gap-2">
-          {socials.map(({ href, label, Icon }) => (
-            <a
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noreferrer noopener"
-              aria-label={label}
-              className="grid h-9 w-9 place-items-center rounded-full border border-slate-200 text-slate-500 transition-colors hover:border-slate-900 hover:text-slate-900"
-            >
-              <Icon className="h-4 w-4" />
-            </a>
-          ))}
-        </div>
       </div>
     </footer>
   );
