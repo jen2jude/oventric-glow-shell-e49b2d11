@@ -784,18 +784,16 @@ function ProductPage() {
                         <span>Shop</span>
                       </Link>
                       
-                      {product.kind !== "physical" && (
-                        <button
-                          onClick={openSellerChat}
-                          className="flex-1 inline-flex items-center justify-center gap-2 py-3 text-[13px] bg-[#1C1C1F] border border-white/[0.06] text-white rounded-[10px] font-bold transition-colors"
-                        >
-                          <MessageCircle className="w-4 h-4" />
-                          <span>Chat</span>
-                        </button>
-                      )}
-                      
                       <button
-                        onClick={product.kind === "physical" ? openContact : startCheckout}
+                        onClick={openSellerChat}
+                        className="flex-1 inline-flex items-center justify-center gap-2 py-3 text-[13px] bg-[#1C1C1F] border border-white/[0.06] text-white rounded-[10px] font-bold transition-colors"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        <span>Chat</span>
+                      </button>
+
+                      <button
+                        onClick={startCheckout}
                         disabled={outOfStock}
                         className={`flex-[1.5] inline-flex items-center justify-center gap-2 py-3 text-[13px] rounded-[10px] font-black transition-colors ${outOfStock ? "bg-white/[0.06] text-white/40 cursor-not-allowed" : "bg-[#E5484D] hover:bg-[#d13a3f] text-white"}`}
                       >
@@ -816,7 +814,7 @@ function ProductPage() {
                     ) : (
                       <>
                         <button
-                          onClick={product.kind === "physical" ? openContact : startCheckout}
+                          onClick={startCheckout}
                           className="w-full inline-flex items-center justify-center gap-2 py-3 text-sm rounded-[10px] font-black bg-crimson hover:bg-crimson/90 text-white transition-colors"
                         >
                           <ShoppingCart className="w-4 h-4" /> Buy Now
@@ -881,9 +879,7 @@ function ProductPage() {
                 <Sparkles className={`w-3 h-3 ${isAppShell ? "text-[#E5484D]" : "text-emerald-400"}`} />
                 {product.kind === "service"
                   ? "Service listing — message the provider to agree scope, timeline and price."
-                  : product.kind === "physical"
-                    ? "Deal directly with the seller — Oventric does not mediate."
-                    : "Instant download after payment · Buyer protection covered"}
+                  : "Instant download after payment · Buyer protection covered"}
               </div>
 
 
@@ -910,7 +906,7 @@ function ProductPage() {
         />
       )}
 
-      {product && product.kind !== "physical" && (
+      {product && (
         <ProfileMessageModal
           open={chatOpen}
           onClose={() => setChatOpen(false)}
@@ -935,9 +931,6 @@ function ProductPage() {
               : `Hi ${product.vendor}! I'm interested in "${product.name}" (${productDisplay(product, baseCurrency).formatted}) on Oventric. Is it available and can you deliver right away?\n\n${typeof window !== "undefined" ? window.location.origin : "https://oventric.com"}/product/${product.slug ?? product.id}`
           }
         />
-      )}
-      {contactOpen && product && product.kind === "physical" && (
-        <ContactSellerModal product={product} onClose={() => setContactOpen(false)} isAppShell={isAppShell} />
       )}
       {isAppShell && (
         <div className="fixed bottom-0 left-0 right-0 z-30">
