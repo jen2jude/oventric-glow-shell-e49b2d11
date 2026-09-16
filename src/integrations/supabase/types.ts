@@ -3882,6 +3882,7 @@ export type Database = {
       notif_topic_for_kind: { Args: { _kind: string }; Returns: string }
       oventric_slugify: { Args: { _txt: string }; Returns: string }
       pause_campaign: { Args: { _id: string }; Returns: undefined }
+      payout_request_cancel_own: { Args: { _id: string }; Returns: undefined }
       payout_request_create: {
         Args: {
           _amount: number

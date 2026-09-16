@@ -15,6 +15,13 @@
       "when": 1789541282222,
       "tag": "0001_stage1_lock_privileged_profile_columns",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789542744001,
+      "tag": "0002_stage2_lock_financial_writes",
+      "breakpoints": true
     }
   ]
 }
