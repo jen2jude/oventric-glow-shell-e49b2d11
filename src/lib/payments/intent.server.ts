@@ -74,7 +74,7 @@ export async function buildPaymentIntent(
   // Order — resolve the authoritative price from the database.
   const { data: p, error } = await supabase
     .from("products")
-    .select("id, price_usd, original_currency, original_amount, fx_snapshot")
+    .select("id, seller_id, price_usd, original_currency, original_amount, fx_snapshot")
     .eq("id", data.productId)
     .maybeSingle();
   if (error) throw new Error(error.message);
