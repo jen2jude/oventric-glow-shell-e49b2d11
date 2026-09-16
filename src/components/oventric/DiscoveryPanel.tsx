@@ -368,7 +368,7 @@ function useOnlineUserIds(myId: string | null) {
 
 /* ---------------- Panel ---------------- */
 
-export function DiscoveryPanel() {
+export function DiscoveryPanel({ asPage = false }: { asPage?: boolean } = {}) {
   const price = useMoney();
   const { require } = useOnboarding();
   const { session } = useAuthGate();
