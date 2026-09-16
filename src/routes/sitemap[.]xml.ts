@@ -27,7 +27,6 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/help-board", changefreq: "monthly", priority: "0.5" },
           { path: "/advertise", changefreq: "monthly", priority: "0.6" },
           { path: "/affiliate", changefreq: "monthly", priority: "0.5" },
-          { path: "/blog", changefreq: "weekly", priority: "0.8" },
           { path: "/privacy", changefreq: "yearly", priority: "0.3" },
           { path: "/terms", changefreq: "yearly", priority: "0.3" },
           { path: "/refunds", changefreq: "yearly", priority: "0.3" },
@@ -35,17 +34,10 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         try {
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-          const [posts, products, sellers] = await Promise.all([
-            supabaseAdmin.from("blog_posts").select("slug, status").eq("status", "published").limit(1000),
+          const [products, sellers] = await Promise.all([
             supabaseAdmin.from("products").select("slug, status").eq("status", "active").limit(5000),
             supabaseAdmin.from("profiles").select("slug, shop_name").not("slug", "is", null).limit(2000),
           ]);
-          for (const row of posts.data ?? []) {
-            const slug = (row as { slug?: unknown }).slug;
-            if (typeof slug === "string" && slug) {
-              entries.push({ path: `/blog/${slug}`, changefreq: "monthly", priority: "0.7" });
-            }
-          }
           for (const row of products.data ?? []) {
             const slug = (row as { slug?: unknown }).slug;
             if (typeof slug === "string" && slug) {

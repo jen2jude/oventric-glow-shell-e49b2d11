@@ -15,7 +15,6 @@ import {
   ShoppingBag,
   GraduationCap,
   Target,
-  Newspaper,
   Headphones,
   type LucideIcon,
 } from "lucide-react";

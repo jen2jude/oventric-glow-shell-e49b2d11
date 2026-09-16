@@ -6,7 +6,6 @@ import {
   Home,
   Users,
   MessageSquare,
-  Newspaper,
   ShoppingBag,
   Wallet,
   Target,

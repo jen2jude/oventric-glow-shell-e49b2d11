@@ -12,7 +12,7 @@ import type {
 } from "@/lib/profiles/mockProfiles";
 import type { EcosystemSectionKey } from "@/lib/ecosystem/sections";
 
-type PreviewKey = "marketplace" | "services" | "courses" | "blog" | "posts" | "groups";
+type PreviewKey = "marketplace" | "services" | "courses" | "posts" | "groups";
 
 interface Props {
   /** Slug or user id used for data fetching. */
@@ -181,7 +181,6 @@ export function ProfileOverview({
   const shop = (data.marketplace ?? []) as ProfileListing[];
   const services = (data.services ?? []) as ProfileListing[];
   const courses = (data.courses ?? []) as ProfileListing[];
-  const articles = (data.blog ?? []) as ProfileArticle[];
   const posts = (data.posts ?? []) as ProfilePost[];
   const groups = (data.groups ?? []) as ProfileGroup[];
 
@@ -223,41 +222,6 @@ export function ProfileOverview({
       {courses.length > 0 && (
         <Module title="Courses" action="View courses" onAction={() => onOpenSection("courses")}>
           <Rail>{courses.slice(0, 6).map((l) => listingCard(l, "listing", "Course", true))}</Rail>
-        </Module>
-      )}
-
-      {articles.length > 0 && (
-        <Module title="Collections" action="View all" onAction={() => onOpenSection("blog")}>
-          <Rail>
-            {articles.slice(0, 6).map((a) => (
-              <Link
-                key={a.id}
-                to="/blog/$slug"
-                params={{ slug: a.slug }}
-                className="w-[70%] min-w-[220px] max-w-[280px] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141418] md:w-auto md:min-w-0 md:max-w-none md:rounded-[10px] md:border-slate-200 md:bg-slate-50"
-              >
-                <div className="relative aspect-[16/9] overflow-hidden bg-neutral-900 md:bg-slate-100">
-                  {a.coverUrl ? (
-                    <img loading="lazy" decoding="async"
-                      src={a.coverUrl}
-                      alt={a.title}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <span className="flex h-full w-full items-center justify-center">
-                      <FileText className="h-7 w-7 text-white/25 md:text-slate-400" />
-                    </span>
-                  )}
-                </div>
-                <div className="p-3">
-                  <p className="line-clamp-2 text-sm font-bold text-white md:text-slate-900">
-                    {a.title}
-                  </p>
-                  <p className="mt-1 text-[11px] text-slate-500">{a.timeAgo}</p>
-                </div>
-              </Link>
-            ))}
-          </Rail>
         </Module>
       )}
 
