@@ -499,20 +499,23 @@ function DashboardPage() {
           />
         )}
         {tab === "digital" && (
-          <DigitalList
-            rows={purchases}
-            downloadingId={downloadingId}
-            onDownload={handleDownload}
-            onConfirm={async (orderId) => {
-              try {
-                await confirmFn({ data: { orderId } });
-                toast.success("Thanks! Seller funds released.");
-                await loadPurchases();
-              } catch (e) {
-                toast.error((e as Error).message);
-              }
-            }}
-          />
+          <div className="space-y-4">
+            <PurchaseAssistantPanel />
+            <DigitalList
+              rows={purchases}
+              downloadingId={downloadingId}
+              onDownload={handleDownload}
+              onConfirm={async (orderId) => {
+                try {
+                  await confirmFn({ data: { orderId } });
+                  toast.success("Thanks! Seller funds released.");
+                  await loadPurchases();
+                } catch (e) {
+                  toast.error((e as Error).message);
+                }
+              }}
+            />
+          </div>
         )}
         {tab === "sales" && (
           <SalesList
