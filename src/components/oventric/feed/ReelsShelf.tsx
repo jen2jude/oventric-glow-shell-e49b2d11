@@ -4,6 +4,7 @@ import { Play, Eye } from "lucide-react";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { StoryViewerModal } from "@/components/oventric/feed/StoryViewerModal";
 import { listReels, type ReelItem, type StoryGroup } from "@/lib/stories.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export function formatViews(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(n % 1_000_000 >= 100_000 ? 1 : 0)}M`;
@@ -20,6 +21,12 @@ export function useReels(enabled: boolean, slugOrId?: string, limit?: number) {
     let cancel = false;
     (async () => {
       try {
+        // listReels is auth-gated; signed-out visitors would 401 and blank the page.
+        const { data: sess } = await supabase.auth.getSession();
+        if (!sess.session) {
+          if (!cancel) setReels([]);
+          return;
+        }
         const r = await load({ data: { slugOrId, limit } });
         if (!cancel) setReels(r.reels);
       } catch {
