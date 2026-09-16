@@ -429,7 +429,7 @@ function ProductsPage() {
                       {status}
                     </span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold border ${kind === "physical" ? "bg-sky-500/15 border-sky-500/40 text-sky-300" : "bg-white/5 border-white/10 text-slate-400"}`}
+                      className="text-[10px] px-1.5 py-0.5 rounded uppercase font-bold border bg-white/5 border-white/10 text-slate-400"
                     >
                       {kind}
                     </span>
@@ -973,7 +973,7 @@ function ProductPreviewModal({ product, onClose }: { product: Row; onClose: () =
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-1">
               <span
-                className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold border ${kind === "physical" ? "bg-sky-500/15 border-sky-500/40 text-sky-300" : "bg-emerald-500/15 border-emerald-500/40 text-emerald-300"}`}
+                className="text-[10px] px-1.5 py-0.5 rounded uppercase font-bold border bg-emerald-500/15 border-emerald-500/40 text-emerald-300"
               >
                 {kind}
               </span>
