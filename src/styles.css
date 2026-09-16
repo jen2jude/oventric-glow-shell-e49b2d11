@@ -3068,3 +3068,32 @@ body[data-chat-open="1"] [data-testid="app-tab-bar"] {
 
 /* App shell: product attachment accents follow the pink feed palette. */
 html.oventric-app .attach-accent { color: #FF3EB5; }
+
+/* ---------------------------------------------------------------------------
+   Refined Crimson Minimalist — web newsfeed skin.
+   Light editorial surface for browser visitors (the dark app shell is excluded).
+--------------------------------------------------------------------------- */
+.web-feed {
+  font-family: var(--font-wallet-body);
+}
+.web-feed h1,
+.web-feed h2,
+.web-feed h3,
+.web-feed .font-wallet-display {
+  font-family: var(--font-wallet-display);
+  letter-spacing: -0.01em;
+}
+.web-feed article {
+  transition:
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+.web-feed article:hover {
+  border-color: rgb(229 72 77 / 0.25);
+  box-shadow: 0 8px 24px -16px rgb(15 23 42 / 0.35);
+}
+@media (prefers-reduced-motion: reduce) {
+  .web-feed article {
+    transition: none;
+  }
+}
