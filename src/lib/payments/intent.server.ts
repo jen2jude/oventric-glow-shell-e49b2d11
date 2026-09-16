@@ -104,14 +104,18 @@ export async function buildPaymentIntent(
   const grossUSD = unitUSD * qty;
 
   let discountUSD = 0;
+  let appliedCouponCode: string | null = null;
   if (data.couponCode) {
-    const { data: c } = await supabase
-      .from("coupons")
-      .select("discount_pct")
-      .eq("code", data.couponCode)
-      .eq("active", true)
-      .maybeSingle();
-    if (c) discountUSD = Number(((grossUSD * Number(c.discount_pct)) / 100).toFixed(2));
+    const { validateCouponServer } = await import("@/lib/promotions.server");
+    const check = await validateCouponServer(supabase, data.couponCode, {
+      userId,
+      productId: String(p.id),
+      sellerId: (p.seller_id as string) ?? null,
+      grossUSD,
+    });
+    if (!check.valid) throw new Error(check.reason);
+    discountUSD = check.discountUSD;
+    appliedCouponCode = check.code;
   }
   const totalAfterCouponUSD = Number((grossUSD - discountUSD).toFixed(2));
 
