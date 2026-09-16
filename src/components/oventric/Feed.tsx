@@ -1247,7 +1247,7 @@ export function Feed() {
       className={
         isAppShell
           ? "social-feed-shell min-h-screen w-full bg-[#070A08] px-4 pb-24 pt-3 md:px-6 md:pb-10"
-          : "oventric-web min-h-screen w-full bg-slate-50 px-4 py-6 md:px-6"
+          : "oventric-web web-feed min-h-screen w-full bg-[#F9FAFB] px-4 py-6 md:px-6 md:py-10"
       }
     >
       {isAppShell && (
@@ -1300,7 +1300,10 @@ export function Feed() {
               <AvatarImage src={meAvatarUrl} alt="Your profile" initials={meInitials} />
             </span>
             <span
-              className="min-w-0 flex-1 px-1"
+              className={isAppShell
+                ? "min-w-0 flex-1 px-1"
+                : "min-w-0 flex-1 rounded-[10px] bg-slate-50 px-4 py-3"
+              }
             >
               <span
                 className={isAppShell
@@ -1310,7 +1313,7 @@ export function Feed() {
               >
                 {placeholderIdx === 0
                   ? `Hey${meLastName ? ` ${meLastName}` : ""}! What are you creating today?`
-                  : "What's on your mind today, update us!"}
+                  : "Create on Oventric"}
               </span>
             </span>
             {isAppShell ? (
@@ -1318,9 +1321,14 @@ export function Feed() {
                 <ImageIcon className="w-6 h-6" strokeWidth={1.5} />
               </span>
             ) : (
-              <span className="shrink-0 rounded-full bg-slate-100 p-2 text-slate-600" aria-hidden>
-                <ImageIcon className="h-5 w-5" strokeWidth={1.7} />
-              </span>
+              <>
+                <span className="shrink-0 rounded-full bg-slate-100 p-2 text-slate-600" aria-hidden>
+                  <ImageIcon className="h-5 w-5" strokeWidth={1.7} />
+                </span>
+                <span className="hidden shrink-0 rounded-[10px] bg-[#E5484D] px-5 py-2 text-sm font-semibold text-white transition-colors group-hover:bg-[#D43D42] sm:inline-block">
+                  Post
+                </span>
+              </>
             )}
           </button>
         )}
@@ -1685,7 +1693,7 @@ export function Feed() {
                   className={`md:bg-white md:shadow-sm border scroll-mt-24 md:scroll-mt-28 [transition:border-color_400ms_ease,box-shadow_400ms_ease,opacity_300ms_ease] ${
                     isAppShell
                       ? "bg-[#141416] rounded-none -mx-4 p-0 overflow-hidden border-x-0 md:mx-0 md:p-5 md:rounded-xl md:border-x"
-                       : "bg-white rounded-[10px] p-5 shadow-sm"
+                       : "bg-white rounded-[10px] p-5 md:p-6 shadow-sm"
                   } ${isReported ? "opacity-70" : ""} ${
                     isNew
                       ? isAppShell
@@ -1707,7 +1715,7 @@ export function Feed() {
                     <Link
                       to="/profile/$id"
                       params={{ id: profileSlug }}
-                      className={`w-10 h-10 rounded-full overflow-hidden flex items-center justify-center shrink-0 hover:ring-2 transition ${isAppShell ? "bg-[#1B1D1F] ring-1 ring-white/10 hover:ring-[#FF3EB5]/60" : "bg-slate-200 hover:ring-[#E5484D]/60"}`}
+                      className={`rounded-full overflow-hidden flex items-center justify-center shrink-0 hover:ring-2 transition ${isAppShell ? "w-10 h-10 bg-[#1B1D1F] ring-1 ring-white/10 hover:ring-[#FF3EB5]/60" : "w-11 h-11 md:w-12 md:h-12 bg-slate-200 hover:ring-[#E5484D]/60"}`}
                     >
                       <AvatarImage
                         src={post.author_avatar_url}
@@ -1720,7 +1728,7 @@ export function Feed() {
                         <Link
                           to="/profile/$id"
                           params={{ id: profileSlug }}
-                          className={`font-semibold text-sm transition-colors ${isAppShell ? "text-white hover:text-[#FF3EB5]" : "text-slate-900 hover:text-[#E5484D]"}`}
+                          className={`text-sm transition-colors ${isAppShell ? "font-semibold text-white hover:text-[#FF3EB5]" : "font-wallet-display font-bold text-[15px] text-slate-900 hover:text-[#E5484D]"}`}
                         >
                           {post.author_name}
                         </Link>
@@ -2224,8 +2232,8 @@ export function Feed() {
           onReported={markReported}
         />
       </div>
-      <aside className="hidden min-w-0 lg:block">
-        <h2 className="mb-3 font-[Outfit] text-lg font-extrabold text-slate-900">
+      <aside className="hidden min-w-0 lg:block lg:sticky lg:top-24">
+        <h2 className="mb-4 font-wallet-display text-lg font-bold text-slate-900">
           Community
         </h2>
         <DiscoveryPanel asPage />
