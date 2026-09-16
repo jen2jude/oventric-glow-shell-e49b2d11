@@ -1003,15 +1003,14 @@ export const createOrder = createServerFn({ method: "POST" })
     });
 
 
-    // 2% cashback to buyer when paying from wallet — credited to the SPEND-ONLY
-    // Cashback Wallet (accumulated_cashback). Withdraw functions read from
-    // available_balance only, so this pot can be spent at future checkouts but
-    // never cashed out to bank.
+    // Seller-funded, product-level cashback → buyer's SPEND-ONLY Cashback
+    // Wallet (accumulated_cashback). Withdraw functions read available_balance
+    // only, so this pot can be spent at checkout but never cashed out to bank.
     if (cashbackUSD > 0) {
       await supabaseAdmin.rpc("cashback_credit", { _user_id: userId, _amount: cashbackUSD });
       await supabaseAdmin.from("wallet_transactions").insert({
         user_id: userId,
-        tx_hash: `0x${Math.random().toString(16).slice(2, 6).toUpperCase()}-${Date.now().toString(16).toUpperCase()}`,
+        tx_hash: `${oRow.id}-CB`,
         type: "Cashback Earned",
         amount: Number((cashbackUSD * fx).toFixed(2)),
         currency: dbCurrency(data.displayCurrency),
@@ -1020,6 +1019,23 @@ export const createOrder = createServerFn({ method: "POST" })
         occurred_at: new Date().toISOString(),
       });
     }
+
+    if (appliedCouponCode && discountUSD > 0) {
+      await recordCouponRedemption(supabaseAdmin, {
+        code: appliedCouponCode,
+        userId,
+        orderId: oRow.id as string,
+        reference: `ORDER_${oRow.id}`,
+        discountUSD,
+      });
+    }
+
+    // Referral reward — only on the invitee's first settled purchase.
+    await qualifyReferralOnSettledPurchase(supabaseAdmin, {
+      buyerId: userId,
+      orderId: oRow.id as string,
+      orderTotalUSD: afterCouponUSD,
+    });
 
     // Manual-delivery flow: notify the seller in-platform via DM + inbox so they
     // know a paid order is waiting for them to deliver via URL, file upload, or
