@@ -36,8 +36,6 @@ import { MobileNav } from "@/components/oventric/MobileNav";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import {
   getProduct,
-  logProductContact,
-  getProductContact,
   type ProductDTO,
 } from "@/lib/marketplace.functions";
 import { getProductRating, rateProduct } from "@/lib/product-reviews.functions";
@@ -410,12 +408,7 @@ function ProductPage() {
             <div className={`flex flex-col ${isAppShell ? "gap-0" : "gap-8"}`}>
               <div className={isAppShell ? "px-0 pt-0" : ""}>
                 {(() => {
-                  const gallery =
-                    product.kind === "physical" && product.imageUrls.length > 0
-                      ? product.imageUrls
-                      : product.coverUrl
-                        ? [product.coverUrl]
-                        : [];
+                  const gallery = product.coverUrl ? [product.coverUrl] : [];
                   const cur = gallery[activeImage] ?? gallery[0];
                   return (
                     <>
@@ -545,35 +538,6 @@ function ProductPage() {
                 />
               </div>
 
-              {product.kind === "physical" && (
-                <div className="flex flex-wrap gap-2 text-xs text-slate-300 md:text-slate-600 mb-4">
-                  {product.location && (
-                    <span className={`inline-flex items-center gap-1 ${isAppShell ? "bg-[#16161A] border-white/5 text-slate-400" : "bg-white border-slate-200 text-slate-600 shadow-sm"} md:shadow-sm md:bg-white border md:border-slate-200 rounded px-2 py-0.5`}>
-                      <MapPin className="w-3 h-3" /> {product.location}
-                    </span>
-                  )}
-                  {product.condition && (
-                    <span className={`${isAppShell ? "bg-[#16161A] border-white/5 text-slate-400" : "bg-white border-slate-200 text-slate-600 shadow-sm"} md:shadow-sm md:bg-white border md:border-slate-200 rounded px-2 py-0.5`}>
-                      {product.condition}
-                    </span>
-                  )}
-                  {product.brand && (
-                    <span className={`${isAppShell ? "bg-[#16161A] border-white/5 text-slate-400" : "bg-white border-slate-200 text-slate-600 shadow-sm"} md:shadow-sm md:bg-white border md:border-slate-200 rounded px-2 py-0.5`}>
-                      {product.brand}
-                    </span>
-                  )}
-                  {product.negotiable && (
-                    <span className={`${isAppShell ? "bg-[#16161A] border-white/5 text-slate-400" : "bg-white border-slate-200 text-slate-600 shadow-sm"} md:shadow-sm md:bg-white border md:border-slate-200 rounded px-2 py-0.5`}>
-                      Negotiable: {product.negotiable}
-                    </span>
-                  )}
-                  {product.delivery && (
-                    <span className={`${isAppShell ? "bg-[#16161A] border-white/5 text-slate-400" : "bg-white border-slate-200 text-slate-600 shadow-sm"} md:shadow-sm md:bg-white border md:border-slate-200 rounded px-2 py-0.5`}>
-                      Delivery: {product.delivery}
-                    </span>
-                  )}
-                </div>
-              )}
               <div className="flex flex-wrap items-center gap-2 mb-4">
                 <ProductRating
                   productId={product.id}
@@ -621,13 +585,6 @@ function ProductPage() {
                     </AccordionTrigger>
                     <AccordionContent className={`${isAppShell ? "text-slate-400" : "text-slate-600"} text-sm leading-relaxed`}>
                       {product.basicInfo || "No additional information provided."}
-                      {product.kind === "physical" && (
-                        <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-                          {product.location && <div><span className="opacity-60">Location:</span> {product.location}</div>}
-                          {product.condition && <div><span className="opacity-60">Condition:</span> {product.condition}</div>}
-                          {product.brand && <div><span className="opacity-60">Brand:</span> {product.brand}</div>}
-                        </div>
-                      )}
                     </AccordionContent>
                   </AccordionItem>
 
@@ -640,16 +597,14 @@ function ProductPage() {
                     </AccordionContent>
                   </AccordionItem>
 
-                  {product.kind !== "physical" && (
-                    <AccordionItem value="activation" className={`${isAppShell ? "border-white/5" : "border-slate-200"}`}>
-                      <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold py-3 hover:no-underline`}>
-                        Activation Guide
-                      </AccordionTrigger>
-                      <AccordionContent className={`${isAppShell ? "text-slate-400" : "text-slate-600"} text-sm leading-relaxed whitespace-pre-wrap`}>
-                        {product.activationGuide || "No activation guide provided."}
-                      </AccordionContent>
-                    </AccordionItem>
-                  )}
+                  <AccordionItem value="activation" className={`${isAppShell ? "border-white/5" : "border-slate-200"}`}>
+                    <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold py-3 hover:no-underline`}>
+                      Activation Guide
+                    </AccordionTrigger>
+                    <AccordionContent className={`${isAppShell ? "text-slate-400" : "text-slate-600"} text-sm leading-relaxed whitespace-pre-wrap`}>
+                      {product.activationGuide || "No activation guide provided."}
+                    </AccordionContent>
+                  </AccordionItem>
                 </Accordion>
               </div>
 
