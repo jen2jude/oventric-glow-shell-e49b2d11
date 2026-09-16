@@ -54,6 +54,8 @@ export interface ProductDTO {
   imageUrls: string[];
   requiresManualDelivery: boolean;
   inStock: boolean;
+  /** Seller-funded cashback percentage (0–50), display only. */
+  cashbackPct: number;
   salesCount?: number;
   basicInfo: string | null;
   activationGuide: string | null;
@@ -144,6 +146,9 @@ function mapProduct(
     imageUrls,
     requiresManualDelivery: Boolean(r.requires_manual_delivery),
     inStock: r.in_stock === false ? false : true,
+    // Seller-funded cashback rate (Stage 3). Display only — settlement always
+    // recomputes this from the product row on the server.
+    cashbackPct: Math.max(0, Math.min(50, Number(r.cashback_pct ?? 0))),
     basicInfo: (r.basic_info as string) ?? null,
     activationGuide: (r.activation_guide as string) ?? null,
   };
@@ -185,8 +190,8 @@ async function signBucket(
 // Sensitive contact columns (seller_phone, whatsapp_number, social_link) are excluded here;
 // anon has no column-level grant on them. Owner/admin flows fetch them via dedicated RPCs
 // or the authenticated context.supabase client (see PRODUCT_COLS_OWNER).
-const PRODUCT_COLS = "id, slug, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, created_at, kind, status, reject_reason, condition, brand, location, negotiable, delivery, image_paths, requires_manual_delivery, in_stock, basic_info, activation_guide";
-const PRODUCT_COLS_OWNER = "id, slug, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, created_at, kind, status, reject_reason, condition, brand, location, negotiable, delivery, image_paths, requires_manual_delivery, in_stock, seller_phone, whatsapp_number, social_link, basic_info, activation_guide";
+const PRODUCT_COLS = "id, slug, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, created_at, kind, status, reject_reason, condition, brand, location, negotiable, delivery, image_paths, requires_manual_delivery, in_stock, cashback_pct, basic_info, activation_guide";
+const PRODUCT_COLS_OWNER = "id, slug, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, created_at, kind, status, reject_reason, condition, brand, location, negotiable, delivery, image_paths, requires_manual_delivery, in_stock, cashback_pct, seller_phone, whatsapp_number, social_link, basic_info, activation_guide";
 
 async function signImagePaths(
   sb: ReturnType<typeof serverPublicClient>,
