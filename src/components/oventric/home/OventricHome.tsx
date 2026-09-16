@@ -80,7 +80,6 @@ export type OventricHomeProps = {
 
 export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
   const { baseCurrency } = useOnboarding();
-  const { isAuthenticated, openGate } = useAuthGate();
 
   const loadDiscovery = useServerFn(getMarketplaceDiscovery);
   const loadCategories = useServerFn(listMarketplaceCategories);
