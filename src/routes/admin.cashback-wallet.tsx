@@ -53,8 +53,8 @@ function CashbackWalletPage() {
       <header className="mb-6">
         <h1 className="text-white text-2xl font-black">Cashback Wallet</h1>
         <p className="text-sm text-slate-400">
-          Every user's Cashback Wallet balance and how they earned it (2% of each marketplace /
-          academy sale).
+          Every user's Cashback Wallet balance and how they earned it. Cashback is set per product
+          by the seller (0–50%) and funded entirely from the seller's 80% share.
         </p>
       </header>
 

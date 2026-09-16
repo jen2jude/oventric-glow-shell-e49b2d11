@@ -210,7 +210,7 @@ export const adminListProductTags = createServerFn({ method: "GET" })
 
     const [{ data: posts }, { data: products }] = await Promise.all([
       sb.from("posts").select("id, text, author_id, created_at").in("id", postIds),
-      sb.from("products").select("id, name, status, seller_id, stock").in("id", productIds),
+      sb.from("products").select("id, name, status, seller_id").in("id", productIds),
     ]);
 
     const pMap = new Map<string, any>();
