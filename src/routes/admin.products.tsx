@@ -826,15 +826,6 @@ function ProductsPage() {
                   />
                 </Field>
               </div>
-              {modal.kind === "physical" && (
-                <Field label="Subcategory">
-                  <input
-                    value={modal.subcategory}
-                    onChange={(e) => setModal({ ...modal, subcategory: e.target.value })}
-                    className={inputCls}
-                  />
-                </Field>
-              )}
               <Field label="Vendor">
                 <input
                   value={modal.vendor}
@@ -850,90 +841,8 @@ function ProductsPage() {
                   className={inputCls}
                 />
               </Field>
-              {modal.kind === "physical" ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Field label="Location">
-                    <input
-                      value={modal.location}
-                      onChange={(e) => setModal({ ...modal, location: e.target.value })}
-                      className={inputCls}
-                    />
-                  </Field>
-                  <Field label="Brand">
-                    <input
-                      value={modal.brand}
-                      onChange={(e) => setModal({ ...modal, brand: e.target.value })}
-                      className={inputCls}
-                    />
-                  </Field>
-                  <Field label="Condition">
-                    <select
-                      value={modal.condition}
-                      onChange={(e) => setModal({ ...modal, condition: e.target.value })}
-                      className={inputCls}
-                    >
-                      {(["Brand New", "Used", "Refurbished"] as const).map((v) => (
-                        <option key={v} value={v}>
-                          {v}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                  <Field label="Negotiable">
-                    <select
-                      value={modal.negotiable}
-                      onChange={(e) => setModal({ ...modal, negotiable: e.target.value })}
-                      className={inputCls}
-                    >
-                      {(["Yes", "No", "Maybe"] as const).map((v) => (
-                        <option key={v} value={v}>
-                          {v}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                  <Field label="Delivery">
-                    <select
-                      value={modal.delivery}
-                      onChange={(e) => setModal({ ...modal, delivery: e.target.value })}
-                      className={inputCls}
-                    >
-                      {(["Yes", "No", "Maybe"] as const).map((v) => (
-                        <option key={v} value={v}>
-                          {v}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                  <Field label="Seller phone">
-                    <input
-                      value={modal.seller_phone}
-                      onChange={(e) =>
-                        setModal({ ...modal, seller_phone: e.target.value.replace(/\D/g, "") })
-                      }
-                      className={inputCls}
-                    />
-                  </Field>
-                  <Field label="WhatsApp">
-                    <input
-                      value={modal.whatsapp_number}
-                      onChange={(e) =>
-                        setModal({ ...modal, whatsapp_number: e.target.value.replace(/\D/g, "") })
-                      }
-                      className={inputCls}
-                    />
-                  </Field>
-                  <Field label="Social link">
-                    <input
-                      value={modal.social_link}
-                      onChange={(e) => setModal({ ...modal, social_link: e.target.value })}
-                      placeholder="https://…"
-                      className={inputCls}
-                    />
-                  </Field>
-                </div>
-              ) : (
-                <>
+              <>
+
                   <Field label="External download URL (optional)">
                     <input
                       value={modal.external_url}
