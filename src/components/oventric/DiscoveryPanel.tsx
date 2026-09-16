@@ -122,7 +122,7 @@ function SponsoredCard({ ad }: { ad: DiscoveryAd }) {
         </div>
       )}
       <div className="p-4 text-center">
-        <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-fuchsia-300 border border-fuchsia-400/40 bg-black/40 rounded px-1.5 py-0.5">
+        <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-fuchsia-600 border border-fuchsia-400/40 bg-fuchsia-50 rounded px-1.5 py-0.5">
           <Megaphone className="w-3 h-3" /> Sponsored
         </span>
         <div className="mt-2 text-sm font-bold text-slate-900 leading-snug line-clamp-2">
