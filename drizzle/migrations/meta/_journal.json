@@ -36,6 +36,13 @@
       "when": 1789543794895,
       "tag": "0004_stage3_lock_promo_writes",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789545263526,
+      "tag": "0005_stage5_review_eligibility_and_ledger_uniqueness",
+      "breakpoints": true
     }
   ]
 }
