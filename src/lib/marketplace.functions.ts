@@ -337,6 +337,8 @@ export const createProduct = createServerFn({ method: "POST" })
     originalCurrency?: OrderCurrency;
     originalAmount?: number;
     fxSnapshot?: { base: string; rates: Record<string, number>; source?: string; fetched_at?: string } | null;
+    /** Seller-funded cashback rate (%) for this product — paid out of the seller's 80%. */
+    cashbackPct?: number | null;
   }) => ({
     name: String(input.name ?? "").trim(),
     category: input.category,
@@ -356,6 +358,7 @@ export const createProduct = createServerFn({ method: "POST" })
     originalCurrency: (input.originalCurrency ?? "USD") as OrderCurrency,
     originalAmount: Math.max(0, Number(input.originalAmount ?? input.priceUSD ?? 0)),
     fxSnapshot: input.fxSnapshot ?? null,
+    cashbackPct: Math.max(0, Math.min(50, Number(input.cashbackPct ?? 0))),
   }))
   .handler(async ({ data, context }) => {
     if (!data.name) throw new Error("Name required");
@@ -381,6 +384,7 @@ export const createProduct = createServerFn({ method: "POST" })
         original_currency: data.originalCurrency,
         original_amount: data.originalAmount,
         fx_snapshot: data.fxSnapshot ? JSON.parse(JSON.stringify(data.fxSnapshot)) : null,
+        cashback_pct: data.cashbackPct,
         vendor: data.vendor,
         hue: data.hue,
         external_url: data.externalUrl,
