@@ -381,7 +381,7 @@ function WebReelsRail({ meId }: { meId: string | null }) {
   return (
     <section className="oventric-web">
       <div className="mb-2 flex items-baseline justify-between">
-        <h2 className="text-base font-black text-white md:text-slate-900">Reels</h2>
+        <h2 className="text-base font-black text-slate-900">Reels</h2>
         <span className="text-[11px] text-slate-500">Short videos from creators</span>
       </div>
       <ReelsRail reels={reels} meId={meId} />
@@ -1545,7 +1545,7 @@ export function Feed() {
             ))}
           </div>
         ) : postsError ? (
-          <div className="bg-[#1E1E24] md:bg-white md:shadow-sm border border-red-500/40 rounded-xl p-6 text-center">
+          <div className="bg-white shadow-sm border border-red-500/40 rounded-[10px] p-6 text-center">
             <AlertCircle className="w-6 h-6 text-red-400 md:text-red-600 mx-auto mb-2" />
             <p className="text-sm font-semibold text-red-300 md:text-red-600">
               Couldn’t load the feed
@@ -1554,8 +1554,8 @@ export function Feed() {
           </div>
         ) : filteredPosts.length === 0 && !(isAppShell && (feedTab === "discover" || feedTab === "following")) ? (
           isFiltering ? (
-            <div className="bg-[#1E1E24] md:bg-white md:shadow-sm border border-white/10 md:border-slate-200 rounded-xl p-8 text-center">
-              <p className="text-sm font-semibold text-white md:text-slate-900">
+            <div className="bg-white shadow-sm border border-slate-200 rounded-[10px] p-8 text-center">
+              <p className="text-sm font-semibold text-slate-900">
                 No posts match your filters
               </p>
               <p className="mt-1 text-xs text-slate-400 md:text-slate-600">
@@ -1573,11 +1573,11 @@ export function Feed() {
               </button>
             </div>
           ) : (
-            <div className="bg-[#1E1E24] md:bg-white md:shadow-sm border border-white/10 md:border-slate-200 rounded-xl p-8 text-center">
+            <div className="bg-white shadow-sm border border-slate-200 rounded-[10px] p-8 text-center">
               <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-[#E5484D]/10 border border-[#E5484D]/30 flex items-center justify-center">
                 <MessageSquare className="w-5 h-5 text-[#E5484D] md:text-[#E5484D]" />
               </div>
-              <p className="text-sm font-semibold text-white md:text-slate-900">
+              <p className="text-sm font-semibold text-slate-900">
                 {isAppShell && feedTab === "following"
                   ? "Nothing from the people you follow"
                   : "The feed is quiet right now"}
@@ -1619,7 +1619,7 @@ export function Feed() {
                 items.push(
                   <div
                     key={`blog-${b.id}`}
-                    className="relative bg-gradient-to-br from-[#1E1E24] to-[#191921] border border-[#E5484D]/30 rounded-xl overflow-hidden hover:border-[#E5484D]/60 transition"
+                    className="relative bg-white border border-slate-200 rounded-[10px] overflow-hidden shadow-sm hover:border-[#E5484D]/60 transition"
                   >
                     <Link to="/blog/$slug" params={{ slug: b.slug }} className="block">
                       {b.cover_url && (
@@ -1638,7 +1638,7 @@ export function Feed() {
                             Blog{b.category_name ? ` · ${b.category_name}` : ""}
                           </span>
                         </div>
-                        <h3 className="text-white md:text-slate-900 text-lg font-black leading-tight">
+                        <h3 className="text-slate-900 text-lg font-black leading-tight">
                           {b.title}
                         </h3>
                         <p className="mt-1.5 text-sm text-slate-400 md:text-slate-600 line-clamp-3">
@@ -1974,7 +1974,7 @@ export function Feed() {
                   {/* Quoted original when this post is a repost */}
                   {post.repost_of && (
                     <div className={isAppShell ? "px-4 md:px-0" : ""}>
-                      <div className="mt-3 flex gap-3 rounded-2xl border border-white/10 md:border-slate-200 bg-white/[0.03] md:bg-slate-50 p-3">
+                      <div className="mt-3 flex gap-3 rounded-[10px] border border-slate-200 bg-slate-50 p-3">
                         {(post.repost_of.media_url || post.repost_of.poster_url) && (
                           <img loading="lazy" decoding="async"
                             src={post.repost_of.poster_url ?? post.repost_of.media_url ?? ""}
@@ -1983,10 +1983,10 @@ export function Feed() {
                           />
                         )}
                         <div className="min-w-0">
-                          <p className="text-xs font-bold text-white md:text-slate-900">
+                          <p className="text-xs font-bold text-slate-900">
                             {post.repost_of.author_name}
                           </p>
-                          <p className="mt-0.5 line-clamp-3 text-xs text-white/60 md:text-slate-600">
+                          <p className="mt-0.5 line-clamp-3 text-xs text-slate-600">
                             {post.repost_of.text}
                           </p>
                         </div>
@@ -2355,34 +2355,34 @@ export function Feed() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm bg-[#1E1E24] md:bg-white md:shadow-sm border border-white/10 md:border-slate-200 rounded-2xl overflow-hidden shadow-2xl"
+            className="w-full max-w-sm bg-white border border-slate-200 rounded-[10px] overflow-hidden shadow-2xl"
           >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 md:border-slate-200">
-              <h3 className="text-white md:text-slate-900 font-semibold text-sm">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200">
+              <h3 className="text-slate-900 font-semibold text-sm">
                 Mentioned in this post
               </h3>
               <button
                 type="button"
                 onClick={() => setMentionsSheet(null)}
-                className="text-slate-400 md:text-slate-600 hover:text-white md:hover:text-slate-900 text-sm"
+                  className="text-slate-500 hover:text-slate-900 text-sm"
                 aria-label="Close"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="max-h-[60vh] overflow-y-auto divide-y divide-white/5 md:divide-slate-200">
+            <div className="max-h-[60vh] overflow-y-auto divide-y divide-slate-200">
               {mentionsSheet.map((m) => (
                 <Link
                   key={m.user_id}
                   to="/profile/$id"
                   params={{ id: m.slug ?? m.user_id }}
                   onClick={() => setMentionsSheet(null)}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 md:hover:bg-slate-100 transition-colors"
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-slate-100 transition-colors"
                 >
-                  <span className="w-9 h-9 rounded-full overflow-hidden bg-neutral-800 md:bg-slate-200 flex items-center justify-center text-white/85 md:text-slate-700 shrink-0">
+                  <span className="w-9 h-9 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center text-slate-700 shrink-0">
                     <User className="w-5 h-5" strokeWidth={1.75} />
                   </span>
-                  <span className="text-white md:text-slate-900 text-sm truncate">{m.name}</span>
+                  <span className="text-slate-900 text-sm truncate">{m.name}</span>
                 </Link>
               ))}
             </div>
