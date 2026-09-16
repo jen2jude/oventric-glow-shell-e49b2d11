@@ -21,7 +21,7 @@ import {
   AlertTriangle,
   Play,
   User,
-  Users,
+  
   Globe,
   Eye,
   ShoppingBag,
