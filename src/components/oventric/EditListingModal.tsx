@@ -58,15 +58,6 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
       : String(product.priceUSD);
   const [priceInput, setPriceInput] = useState(initialLocal);
 
-  // Physical fields.
-  const [location, setLocation] = useState(product.location ?? "");
-  const [brand, setBrand] = useState(product.brand ?? "");
-  const [condition, setCondition] = useState(product.condition ?? "Brand New");
-  const [negotiable, setNegotiable] = useState(product.negotiable ?? "Yes");
-  const [delivery, setDelivery] = useState(product.delivery ?? "No");
-  const [phone, setPhone] = useState(product.sellerPhone ?? "");
-  const [socialLink, setSocialLink] = useState(product.socialLink ?? "");
-
   // Digital fields.
   const [externalUrl, setExternalUrl] = useState(product.externalUrl ?? "");
   // Optional replacement asset file (digital only).
@@ -134,8 +125,6 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
     const priceLocal = Number(priceInput);
     if (!Number.isFinite(priceLocal) || priceLocal < 0)
       return toast.error("Enter a valid price (use 0 for free)");
-
-    let sellerPhone: string | null | undefined = undefined;
 
     if (existing.length + newFiles.length < 1) {
       return toast.error("Keep at least 1 product image");
