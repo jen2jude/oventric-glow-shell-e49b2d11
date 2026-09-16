@@ -33,6 +33,9 @@ const CirclesHub = lazy(() =>
 const DiscoveryPanel = lazy(() =>
   import("@/components/oventric/DiscoveryPanel").then((m) => ({ default: m.DiscoveryPanel })),
 );
+const ExplorePage = lazy(() =>
+  import("@/components/oventric/explore/ExplorePage").then((m) => ({ default: m.ExplorePage })),
+);
 import { HomeHub } from "@/components/oventric/HomeHub";
 import { DesktopHome } from "@/components/oventric/desktop/DesktopHome";
 import { OventricHome } from "@/components/oventric/home/OventricHome";
