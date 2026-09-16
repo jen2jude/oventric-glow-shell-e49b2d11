@@ -158,6 +158,13 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
                   {item}
                 </button>
               ))}
+              <Link
+                to="/sellers"
+                onClick={() => setMenuOpen(false)}
+                className="block w-full text-left text-lg font-black text-slate-900"
+              >
+                Shop
+              </Link>
             </div>
             {onCreate && (
               <button
