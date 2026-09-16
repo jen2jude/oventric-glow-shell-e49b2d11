@@ -284,14 +284,6 @@ function ProductsPage() {
             cover_path: modal.cover_path,
             file_path: modal.file_path,
             promoted: modal.promoted,
-            brand: modal.kind === "physical" ? modal.brand || null : undefined,
-            condition: modal.kind === "physical" ? modal.condition || null : undefined,
-            location: modal.kind === "physical" ? modal.location || null : undefined,
-            negotiable: modal.kind === "physical" ? modal.negotiable || null : undefined,
-            delivery: modal.kind === "physical" ? modal.delivery || null : undefined,
-            seller_phone: modal.kind === "physical" ? modal.seller_phone || null : undefined,
-            whatsapp_number: modal.kind === "physical" ? modal.whatsapp_number || null : undefined,
-            social_link: modal.kind === "physical" ? modal.social_link || null : undefined,
           },
         });
         toast.success("Product updated");
@@ -320,13 +312,7 @@ function ProductsPage() {
     }
   };
 
-  const byKind = (rows ?? []).filter((p) =>
-    kindFilter === "all" ? true : ((p.kind as string) ?? "digital") === kindFilter,
-  );
-  const kindCount = (k: "all" | "digital" | "physical") =>
-    k === "all"
-      ? (rows?.length ?? 0)
-      : (rows ?? []).filter((r) => ((r.kind as string) ?? "digital") === k).length;
+  const byKind = rows ?? [];
   const statusCountInKind = (s: "all" | "pending" | "active" | "rejected") =>
     s === "all" ? byKind.length : byKind.filter((r) => (r.status as string) === s).length;
 
@@ -394,25 +380,6 @@ function ProductsPage() {
         </div>
       </header>
 
-      {/* Primary: product type */}
-      <div className="mb-3 inline-flex rounded-xl bg-[#141418] border border-white/10 p-1">
-        {(["all", "digital", "physical"] as const).map((k) => (
-          <button
-            key={k}
-            onClick={() => setKindFilter(k)}
-            className={`px-4 py-2 rounded-[10px] text-sm font-semibold transition ${
-              kindFilter === k ? "bg-emerald-500 text-black" : "text-slate-300 hover:text-white"
-            }`}
-          >
-            {k === "all" ? "All" : k === "digital" ? "Digital Products" : "Physical Products"}
-            <span
-              className={`ml-2 text-[11px] font-bold ${kindFilter === k ? "text-black/70" : "text-slate-500"}`}
-            >
-              {kindCount(k)}
-            </span>
-          </button>
-        ))}
-      </div>
 
       {/* Secondary: status within selected type */}
       <div className="mb-4 flex flex-wrap gap-2">
