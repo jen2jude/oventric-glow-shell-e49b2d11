@@ -592,7 +592,7 @@ function CheckoutPage() {
                       aria-expanded={hasGateways ? expanded : undefined}
                       title={
                         m.disabled
-                          ? "Wallet is reserved for bounties & ads. Pay directly instead."
+                          ? "Unavailable for this purchase."
                           : undefined
                       }
                       className={`w-full text-left rounded-[10px] border p-4 flex items-center gap-4 transition-all ${
@@ -1036,7 +1036,7 @@ function CheckoutPage() {
                   </div>
                   <button
                     onClick={pay}
-                    disabled={submitting || (needsDelivery && !deliveryValid)}
+                    disabled={submitting || insufficient || (needsDelivery && !deliveryValid)}
                     className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-[10px] bg-[#E5484D] hover:bg-[#d13a3f] text-white font-black text-sm transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_8px_30px_rgb(229,72,77,0.2)]"
                   >
                     {submitting ? (
@@ -1060,7 +1060,7 @@ function CheckoutPage() {
                 <>
                   <button
                     onClick={pay}
-                    disabled={submitting || (needsDelivery && !deliveryValid)}
+                    disabled={submitting || insufficient || (needsDelivery && !deliveryValid)}
                     className="w-full mt-4 inline-flex items-center justify-center gap-2 py-3 rounded-[10px] bg-[#E5484D] hover:bg-[#d13a3f] text-white font-black text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {submitting ? (
