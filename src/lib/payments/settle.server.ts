@@ -116,16 +116,20 @@ export async function settleOrder(
     .eq("paystack_ref", reference)
     .maybeSingle();
   if (existing.data?.id) {
-    // Replay path (webhook already settled). Recompute cashback so the return
-    // page can still play the celebratory splash.
-    const gross = Number(existing.data.total_usd ?? 0);
-    const cashbackEarnUSD = Number((gross * WALLET_CASHBACK_PCT).toFixed(2));
+    // Replay path (webhook already settled). Read back the cashback that was
+    // actually awarded — never recompute a fresh award.
+    const { data: cbRow } = await supabaseAdmin
+      .from("wallet_transactions")
+      .select("amount")
+      .eq("tx_hash", `${reference}-CB`)
+      .maybeSingle();
+    const cashbackEarnUSD = Number(cbRow?.amount ?? 0);
     return { alreadySettled: true as const, orderId: existing.data.id as string, cashbackEarnUSD };
   }
 
   const { data: pRow, error: pErr } = await supabaseAdmin
     .from("products")
-    .select("id, name, seller_id, price_usd, original_currency, original_amount, fx_snapshot, requires_manual_delivery")
+    .select("id, name, seller_id, price_usd, original_currency, original_amount, fx_snapshot, requires_manual_delivery, cashback_pct")
     .eq("id", meta.productId)
     .maybeSingle();
   if (pErr) throw new Error(pErr.message);
