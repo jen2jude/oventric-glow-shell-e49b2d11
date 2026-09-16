@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Gift, Users, TrendingUp, ArrowDownRight } from "lucide-react";
 import {
   getCashbackSummary,
@@ -10,6 +11,11 @@ import {
   type CashbackHistoryRow,
   type CashbackSummaryDTO,
 } from "@/lib/cashback-admin.functions";
+import {
+  adminListCashbackConfig,
+  adminSetProductCashbackPct,
+  adminListCashbackAwards,
+} from "@/lib/admin-promotions.functions";
 
 export const Route = createFileRoute("/admin/cashback-wallet")({
   head: () => ({
