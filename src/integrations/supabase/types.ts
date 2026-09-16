@@ -3213,6 +3213,30 @@ export type Database = {
         }
         Relationships: []
       }
+      purchase_assistant_summaries: {
+        Row: {
+          created_at: string
+          id: string
+          order_count: number
+          summary: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_count?: number
+          summary: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_count?: number
+          summary?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       push_subscriptions: {
         Row: {
           auth: string
