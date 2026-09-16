@@ -14,6 +14,14 @@ import {
   Instagram,
   Youtube,
   Linkedin,
+  Facebook,
+  Lock,
+  Clock,
+  Headphones,
+  Gift,
+  Download,
+  Banknote,
+  Users,
 } from "lucide-react";
 
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
@@ -73,6 +81,75 @@ const TRUST = [
 
 const HANDWRITTEN = ["Ideas", "Skills", "Products", "Community", "Opportunities"];
 
+/** Why sell / why buy on Oventric — MVP capabilities only. */
+const REASONS = [
+  {
+    Icon: WalletIcon,
+    tint: "bg-[#E8F8EF] text-[#1F9D62]",
+    title: "Keep 80% of every sale",
+    body: "Oventric takes a flat 20%. No listing fees, no monthly subscription, no hidden cuts.",
+  },
+  {
+    Icon: ShieldCheck,
+    tint: "bg-[#EAF1FF] text-[#2F5FD0]",
+    title: "Escrow on every order",
+    body: "Buyer payments are held until the asset is delivered, then released to the seller.",
+  },
+  {
+    Icon: Download,
+    tint: "bg-[#F3ECFF] text-[#6F42D4]",
+    title: "Instant digital delivery",
+    body: "Files and access links hand over in-app the moment a payment is confirmed.",
+  },
+  {
+    Icon: Banknote,
+    tint: "bg-[#FFF6E2] text-[#C58318]",
+    title: "Withdraw in your currency",
+    body: "Earnings land in your Oventric wallet and cash out to your local bank account.",
+  },
+  {
+    Icon: Clock,
+    tint: "bg-[#FFEDE4] text-[#D4622A]",
+    title: "Fast, automatic release",
+    body: "Completed orders settle automatically — no chasing buyers for confirmation.",
+  },
+  {
+    Icon: Headphones,
+    tint: "bg-[#E3F6F6] text-[#158C8C]",
+    title: "Support & disputes",
+    body: "Raise a dispute on any order and get a mediated resolution from our team.",
+  },
+];
+
+const STEPS = [
+  {
+    title: "Create your account",
+    body: "Pick your country and currency once — every price you see is shown in it.",
+  },
+  {
+    title: "Buy or list a digital asset",
+    body: "Shop the marketplace, or publish your own product, service or tool in minutes.",
+  },
+  {
+    title: "Get paid and withdraw",
+    body: "Escrow releases into your wallet, then cash out to your bank account.",
+  },
+];
+
+const PAY_METHODS = ["Visa", "Mastercard", "Verve", "Paystack", "Bank transfer"];
+
+const SOCIALS: Array<{
+  href: string;
+  label: string;
+  Icon: React.ComponentType<{ className?: string }>;
+}> = [
+  { href: "https://x.com/oventric", label: "X", Icon: Twitter },
+  { href: "https://instagram.com/oventric", label: "Instagram", Icon: Instagram },
+  { href: "https://youtube.com/@oventric", label: "YouTube", Icon: Youtube },
+  { href: "https://linkedin.com/company/oventric", label: "LinkedIn", Icon: Linkedin },
+  { href: "https://facebook.com/oventric", label: "Facebook", Icon: Facebook },
+];
+
 export type OventricHomeProps = {
   onSelect: (section: string) => void;
   onCreate?: () => void;
@@ -89,6 +166,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
   const [featured, setFeatured] = useState<ProductDTO[]>([]);
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [sellers, setSellers] = useState<TopSellerDTO[]>([]);
+  const [fresh, setFresh] = useState<ProductDTO[]>([]);
   const [stats, setStats] = useState<HomeStatsDTO | null>(null);
 
   useEffect(() => {
@@ -111,6 +189,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         setFeatured(
           picks.filter((p) => (seen.has(p.id) ? false : (seen.add(p.id), true))).slice(0, 10),
         );
+        setFresh((discovery?.newArrivals ?? []).slice(0, 5));
         setCategories((cats ?? []).slice(0, 8));
         setSellers((tops ?? []).slice(0, 5));
         setStats(s);
@@ -306,6 +385,125 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             </div>
           </div>
         </section>
+
+        {/* ------------------------------------------------------ fresh listings */}
+        {fresh.length > 0 && (
+          <>
+            <SectionHead
+              title="Fresh in the Market"
+              subtitle="Newest digital assets from our creators"
+              action={{ label: "View all", onClick: () => onSelect("Marketplace") }}
+            />
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-4">
+              {fresh.map((p) => (
+                <ProductCard key={p.id} product={p} currency={baseCurrency} />
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* ------------------------------------------------------------- promos */}
+        <SectionHead title="Ways to Earn More" />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <PromoCard
+            Icon={Gift}
+            gradient="linear-gradient(135deg,#FFD22E 0%,#FF8A3D 100%)"
+            title="Up to 50% cashback"
+            body="Sellers fund their own cashback on digital products — money back into your cashback wallet, automatically."
+            cta="Shop now"
+            onClick={() => onSelect("Marketplace")}
+          />
+          <PromoCard
+            Icon={Users}
+            gradient="linear-gradient(135deg,#7DE2A8 0%,#12B39B 100%)"
+            title="Refer & earn"
+            body="Invite creators and buyers to Oventric and earn a reward when they make their first qualifying purchase."
+            cta="Invite friends"
+            to="/referrals"
+          />
+        </div>
+
+        {/* --------------------------------------------------- why sell / why buy */}
+        <SectionHead
+          title="Why Oventric"
+          subtitle="Everything you need to build an income online"
+        />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
+          {REASONS.map(({ Icon, tint, title, body }) => (
+            <div
+              key={title}
+              className="rounded-[14px] border border-slate-200/80 bg-white p-5 transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
+            >
+              <span className={`grid h-11 w-11 place-items-center rounded-[12px] ${tint}`}>
+                <Icon className="h-5 w-5" />
+              </span>
+              <h3 className="mt-4 text-sm font-bold text-slate-900">{title}</h3>
+              <p className="mt-1.5 text-xs leading-relaxed text-slate-500">{body}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* -------------------------------------------------------- how it works */}
+        <SectionHead title="How It Works" subtitle="Three steps from sign-up to payout" />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:gap-4">
+          {STEPS.map((s, i) => (
+            <div key={s.title} className="rounded-[14px] border border-slate-200/80 bg-white p-6">
+              <span className="grid h-10 w-10 place-items-center rounded-full bg-crimson/10 font-[Outfit] text-sm font-extrabold text-crimson">
+                {i + 1}
+              </span>
+              <h3 className="mt-4 text-base font-bold text-slate-900">{s.title}</h3>
+              <p className="mt-1.5 text-xs leading-relaxed text-slate-500">{s.body}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* ----------------------------------------------------- secure payments */}
+        <section className="mt-10 rounded-[20px] border border-slate-200/80 bg-white px-6 py-10 text-center lg:mt-14">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-crimson">
+            <Lock className="h-3.5 w-3.5" /> Secured payments
+          </span>
+          <h2 className="mt-3 font-[Outfit] text-xl font-extrabold text-slate-900 sm:text-2xl">
+            Pay your way, protected end to end
+          </h2>
+          <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-slate-500">
+            Every checkout is encrypted and held in escrow until delivery is confirmed. Pay by card,
+            bank transfer or from your Oventric wallet.
+          </p>
+          <ul className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
+            {PAY_METHODS.map((m) => (
+              <li
+                key={m}
+                className="rounded-full border border-slate-200 bg-[#F7F8FA] px-4 py-2 text-xs font-bold text-slate-600"
+              >
+                {m}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* ------------------------------------------------------ follow oventric */}
+        <section className="mt-5 flex flex-col items-center justify-between gap-5 rounded-[20px] border border-slate-200/80 bg-white px-6 py-7 text-center lg:flex-row lg:text-left">
+          <div>
+            <h2 className="font-[Outfit] text-lg font-extrabold text-slate-900">Follow Oventric</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Get updates, tips and community highlights.
+            </p>
+          </div>
+          <div className="flex items-center gap-2.5">
+            {SOCIALS.map(({ href, label, Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label={label}
+                className="grid h-11 w-11 place-items-center rounded-full border border-slate-200 text-slate-600 transition-all hover:-translate-y-0.5 hover:border-crimson hover:text-crimson"
+              >
+                <Icon className="h-4.5 w-4.5" />
+              </a>
+            ))}
+          </div>
+        </section>
       </main>
 
       <HomeFooter />
@@ -341,6 +539,56 @@ function SectionHead({
         </button>
       )}
     </div>
+  );
+}
+
+function PromoCard({
+  Icon,
+  gradient,
+  title,
+  body,
+  cta,
+  onClick,
+  to,
+}: {
+  Icon: React.ComponentType<{ className?: string }>;
+  gradient: string;
+  title: string;
+  body: string;
+  cta: string;
+  onClick?: () => void;
+  to?: string;
+}) {
+  const inner = (
+    <>
+      <span
+        className="grid h-12 w-12 place-items-center rounded-[14px] text-white"
+        style={{ backgroundImage: gradient }}
+      >
+        <Icon className="h-5 w-5" />
+      </span>
+      <h3 className="mt-4 font-[Outfit] text-lg font-extrabold text-slate-900">{title}</h3>
+      <p className="mt-1.5 text-xs leading-relaxed text-slate-500">{body}</p>
+      <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-crimson">
+        {cta}
+        <ArrowRight className="h-4 w-4" />
+      </span>
+    </>
+  );
+  const cls =
+    "block rounded-[16px] border border-slate-200/80 bg-white p-6 text-left transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_36px_-24px_rgba(15,23,42,0.6)]";
+
+  if (to) {
+    return (
+      <Link to={to} className={cls}>
+        {inner}
+      </Link>
+    );
+  }
+  return (
+    <button type="button" onClick={onClick} className={`w-full ${cls}`}>
+      {inner}
+    </button>
   );
 }
 
