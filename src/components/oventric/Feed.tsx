@@ -1175,8 +1175,7 @@ export function Feed() {
       if (!term) return true;
       return (
         p.text.toLowerCase().includes(term) ||
-        p.author_name.toLowerCase().includes(term) ||
-        
+        p.author_name.toLowerCase().includes(term)
       );
     });
   }, [
