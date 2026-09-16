@@ -298,7 +298,23 @@ function ShopPage() {
 
   return (
     <div className={`min-h-screen bg-[#0A0A0B] text-white ${!isAppShell ? "oventric-web" : ""}`}>
-      {!isAppShell && <Header onOpenMessages={() => setDmOpen(true)} forceSiteNavbar />}
+      {!isAppShell && (
+        <Header
+          onOpenMessages={() => setDmOpen(true)}
+          forceSiteNavbar
+          siteNavbarOnSelect={(section) => {
+            const paths: Record<string, "/" | "/explore" | "/feed" | "/marketplace" | "/wallet"> = {
+              Home: "/",
+              Explore: "/explore",
+              Feed: "/feed",
+              Marketplace: "/marketplace",
+              Wallet: "/wallet",
+            };
+            const path = paths[section];
+            if (path) void navigate({ to: path });
+          }}
+        />
+      )}
 
       {/* Compact app-shell top bar */}
       {isAppShell && <div className="sticky top-0 z-30 flex items-center gap-3 bg-[#0A0A0B]/90 px-4 py-3 backdrop-blur md:px-8 lg:px-12">
