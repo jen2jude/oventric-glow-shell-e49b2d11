@@ -419,7 +419,7 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
           </div>
         </div>
 
-        <div className="px-4 pt-3 pb-2 flex items-center gap-2 overflow-x-auto no-scrollbar border-b border-white/5">
+        <div className="px-5 pt-3 pb-3 flex items-center gap-2 overflow-x-auto no-scrollbar border-b">
           {CHANNELS.map((c) => {
             const active = channel === c.key;
             const chanCount =
@@ -430,17 +430,17 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
               <button
                 key={c.key}
                 onClick={() => void handleSelectChannel(c.key)}
-                className={`relative shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-colors border inline-flex items-center gap-1 ${
+                className={`relative shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors border inline-flex items-center gap-1.5 ${
                   active
-                    ? "bg-white text-black border-white"
-                    : "bg-[#121214] text-slate-400 border-white/10 hover:text-white hover:border-white/20"
+                    ? "bg-primary text-primary-foreground border-transparent"
+                    : "bg-muted text-muted-foreground border-border hover:text-foreground"
                 }`}
               >
                 <span>{c.label}</span>
                 {chanCount > 0 && (
                   <span
                     className={`min-w-[16px] h-4 px-1 rounded-full text-[9px] font-black inline-flex items-center justify-center ${
-                      active ? "bg-black text-white" : "bg-emerald-500 text-black"
+                      active ? "bg-white/25 text-primary-foreground" : "bg-primary text-primary-foreground"
                     }`}
                     aria-label={`${chanCount} unread`}
                   >
@@ -453,17 +453,17 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
         </div>
 
         <div
-          className="overflow-y-auto px-4 py-3"
-          style={{ maxHeight: "calc(100vh - 8.5rem - 3.25rem)" }}
+          className="overflow-y-auto px-5 py-4"
+          style={{ maxHeight: "calc(100vh - 8.75rem - 3.75rem)" }}
         >
           {!isAuthenticated ? (
-            <div className="text-center text-xs text-slate-500 py-10">
+            <div className="text-center text-xs text-muted-foreground py-12">
               Sign in to view your notifications.
             </div>
           ) : loading && items.length === 0 ? (
-            <div className="text-center text-xs text-slate-500 py-10">Loading…</div>
+            <div className="text-center text-xs text-muted-foreground py-12">Loading…</div>
           ) : filtered.length === 0 ? (
-            <div className="text-center text-xs text-slate-500 py-10">
+            <div className="text-center text-xs text-muted-foreground py-12">
               You're all caught up in this channel.
             </div>
           ) : (
@@ -471,44 +471,37 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
               <button
                 key={n.id}
                 onClick={() => void handleOpenItem(n)}
-                className={`w-full text-left rounded-xl mb-3 transition-all ${
+                className={`w-full text-left rounded-xl mb-2.5 p-3.5 border transition-all hover:shadow-[0_6px_18px_-12px_rgba(15,23,42,0.45)] ${
                   !n.read_at
-                    ? "rgb-static-border p-[2px]"
-                    : "bg-[#121214] border border-white/5 hover:border-white/10 p-3"
+                    ? "bg-primary/[0.04] border-primary/25"
+                    : "bg-card border-border hover:border-foreground/15"
                 }`}
               >
-                <div
-                  className={`bg-[#121214] w-full text-left ${!n.read_at ? "rounded-[10px] p-3" : ""}`}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 shrink-0 rounded-[10px] flex items-center justify-center bg-[#1E1E24] border border-white/10">
-                      {iconForKind(n.kind)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="text-[13px] font-semibold text-white truncate">{n.title}</p>
-                        {!n.read_at && (
-                          <span
-                            className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"
-                            aria-hidden
-                          />
-                        )}
-                      </div>
-                      {n.body && (
-                        <p className="text-[12px] leading-snug text-slate-400 mt-0.5 line-clamp-3">
-                          {plainPreview(n.body)}
-                        </p>
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 shrink-0 rounded-[10px] flex items-center justify-center bg-muted border">
+                    {iconForKind(n.kind)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-[13px] font-semibold text-foreground truncate">{n.title}</p>
+                      {!n.read_at && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" aria-hidden />
                       )}
-                      <div className="mt-1.5 flex items-center justify-between">
-                        <span className="text-[10px] text-slate-500 uppercase tracking-wider">
-                          {timeAgo(n.created_at)}
+                    </div>
+                    {n.body && (
+                      <p className="text-[12px] leading-snug text-muted-foreground mt-1 line-clamp-3">
+                        {plainPreview(n.body)}
+                      </p>
+                    )}
+                    <div className="mt-2 flex items-center justify-between">
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                        {timeAgo(n.created_at)}
+                      </span>
+                      {n.link && (
+                        <span className="text-[11px] font-semibold text-primary inline-flex items-center gap-1">
+                          Open <ArrowRight className="w-3 h-3" />
                         </span>
-                        {n.link && (
-                          <span className="text-[11px] font-semibold text-emerald-400 inline-flex items-center gap-1">
-                            Open <ArrowRight className="w-3 h-3" />
-                          </span>
-                        )}
-                      </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -517,13 +510,13 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
           )}
         </div>
 
-        <div className="absolute bottom-0 inset-x-0 px-4 py-3 border-t border-white/5 bg-[#1E1E24]">
+        <div className="absolute bottom-0 inset-x-0 px-5 py-3 border-t bg-background">
           <button
             onClick={handleMarkAll}
             disabled={!isAuthenticated || items.every((n) => n.read_at)}
-            className="w-full py-3 rounded-[10px] text-xs font-semibold text-slate-300 hover:text-white bg-[#121214] border border-white/10 hover:border-emerald-500/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 rounded-[10px] text-xs font-semibold text-foreground bg-muted border hover:border-primary/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Mark All as Read
+            Mark all as read
           </button>
         </div>
       </aside>
