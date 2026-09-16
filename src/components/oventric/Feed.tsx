@@ -1720,7 +1720,7 @@ export function Feed() {
                         <Link
                           to="/profile/$id"
                           params={{ id: profileSlug }}
-                          className={`font-semibold text-sm transition-colors ${isAppShell ? "text-white hover:text-[#FF3EB5]" : "text-slate-900 hover:text-[#E5484D]"}`}
+                          className={`text-sm transition-colors ${isAppShell ? "font-semibold text-white hover:text-[#FF3EB5]" : "font-wallet-display font-bold text-[15px] text-slate-900 hover:text-[#E5484D]"}`}
                         >
                           {post.author_name}
                         </Link>
