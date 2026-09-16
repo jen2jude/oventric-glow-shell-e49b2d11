@@ -6,6 +6,7 @@ import { ArrowLeft, Check, Copy, Gift, Loader2, Users } from "lucide-react";
 import { toast } from "sonner";
 
 import { getMyReferralOverview } from "@/lib/referrals.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/referrals")({
   head: () => ({
