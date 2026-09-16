@@ -42,57 +42,58 @@ export function FeedSocialBar({ onOpenMessages }: Props) {
     <button
       type="button"
       onClick={onClick}
-      className="relative inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 h-10 text-sm font-bold text-slate-700 hover:border-slate-300 hover:text-slate-900 transition-colors active:scale-95"
+      aria-label={label}
+      title={label}
+      className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900 active:scale-95"
     >
       <span className="relative">
-        <Icon className="w-4 h-4" />
+        <Icon className="h-[18px] w-[18px]" />
         <CountBadge count={count ?? 0} ariaLabel={`${count ?? 0} new ${label}`} />
       </span>
-      <span className="hidden sm:inline">{label}</span>
     </button>
   );
 
   return (
     <>
-      <div className="sticky top-0 z-20 border-b border-slate-100 bg-white/95 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-[1200px] items-center gap-2 overflow-x-auto px-4 py-3 sm:px-6">
-          <Link
-            to="/"
-            aria-label="Back to home"
-            className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 transition-colors hover:border-slate-300 hover:text-slate-900"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">Home</span>
-          </Link>
-          <h1 className="mr-auto shrink-0 text-base font-black text-slate-900 sm:text-lg">
-            Newsfeed
-          </h1>
-          <Item
-            icon={Bell}
-            label="Notifications"
-            count={unreadNotifs}
-            onClick={() => setNotifOpen(true)}
-          />
-          <Item icon={MessageSquare} label="Chats" count={messages} onClick={onOpenMessages} />
-          <Item
-            icon={UserPlus}
-            label="Follow requests"
-            onClick={() => {
-              setReqTab("follow");
-              setReqOpen(true);
-            }}
-          />
-          <Item
-            icon={Users}
-            label="Circle requests"
-            count={circleCount}
-            onClick={() => {
-              setReqTab("circle");
-              setReqOpen(true);
-            }}
-          />
-        </div>
-      </div>
+      <nav className="flex w-fit max-w-full items-center gap-1 overflow-x-auto rounded-full border border-slate-200 bg-white p-1.5 shadow-sm no-scrollbar">
+        <Link
+          to="/"
+          aria-label="Back to home"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-slate-50 px-4 py-1.5 text-sm font-medium text-slate-900 transition-colors hover:bg-slate-100"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Home
+        </Link>
+        <h1 className="shrink-0 rounded-full bg-[#E5484D] px-4 py-1.5 text-sm font-medium text-white">
+          Newsfeed
+        </h1>
+        <span aria-hidden className="mx-1 h-4 w-px shrink-0 bg-slate-200" />
+        <Item
+          icon={Bell}
+          label="Notifications"
+          count={unreadNotifs}
+          onClick={() => setNotifOpen(true)}
+        />
+        <Item icon={MessageSquare} label="Chats" count={messages} onClick={onOpenMessages} />
+        <Item
+          icon={UserPlus}
+          label="Follow requests"
+          onClick={() => {
+            setReqTab("follow");
+            setReqOpen(true);
+          }}
+        />
+        <Item
+          icon={Users}
+          label="Circle requests"
+          count={circleCount}
+          onClick={() => {
+            setReqTab("circle");
+            setReqOpen(true);
+          }}
+        />
+      </nav>
+
 
       <NotificationsDrawer open={notifOpen} onClose={() => setNotifOpen(false)} />
       <RequestsInboxDrawer
