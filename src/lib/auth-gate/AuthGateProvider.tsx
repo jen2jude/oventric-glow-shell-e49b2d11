@@ -649,7 +649,7 @@ function AuthGateModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-foreground/45 p-3 backdrop-blur-[2px] sm:p-6"
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-wallet-copy/45 p-3 backdrop-blur-[2px] sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-label={copy.title}
@@ -658,9 +658,9 @@ function AuthGateModal({
       }}
     >
       <div className="relative w-full max-w-[440px]">
-        <div className="overflow-hidden rounded-[10px] border border-border bg-card shadow-2xl">
+        <div className="overflow-hidden rounded-[10px] border border-wallet-line bg-wallet-panel shadow-2xl">
           {stage === "email" && (
-            <div className="flex border-b border-border" role="tablist" aria-label="Account access">
+            <div className="flex border-b border-wallet-line" role="tablist" aria-label="Account access">
               <button
                 type="button"
                 role="tab"
@@ -670,7 +670,7 @@ function AuthGateModal({
                   setEmailError(null);
                   setUsernameError(null);
                 }}
-                className={`flex-1 border-b-2 px-4 py-4 text-sm font-semibold transition-colors ${mode === "returning" ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+                className={`flex-1 border-b-2 px-4 py-4 text-sm font-semibold transition-colors ${mode === "returning" ? "border-wallet-crimson text-wallet-copy" : "border-transparent text-wallet-copy-muted hover:text-wallet-copy"}`}
               >
                 Sign in
               </button>
@@ -682,38 +682,38 @@ function AuthGateModal({
                   setMode("new");
                   setIdentifierError(null);
                 }}
-                className={`flex-1 border-b-2 px-4 py-4 text-sm font-semibold transition-colors ${mode === "new" ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+                className={`flex-1 border-b-2 px-4 py-4 text-sm font-semibold transition-colors ${mode === "new" ? "border-wallet-crimson text-wallet-copy" : "border-transparent text-wallet-copy-muted hover:text-wallet-copy"}`}
               >
                 Create account
               </button>
             </div>
           )}
-          <div className="relative bg-card p-6 sm:p-10">
+          <div className="relative bg-wallet-panel p-6 sm:p-10">
             <button
               type="button"
               onClick={onClose}
               disabled={verifying || verified}
-              className="absolute right-3 top-3 rounded-[10px] p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-40"
+              className="absolute right-3 top-3 rounded-[10px] p-2 text-wallet-copy-muted transition-colors hover:bg-wallet-muted hover:text-wallet-copy disabled:opacity-40"
               aria-label="Close"
             >
               <X className="w-4 h-4" />
             </button>
             <header className="mb-8 text-center">
-              <div className="mx-auto mb-5 flex h-11 w-11 items-center justify-center rounded-[10px] border border-border bg-muted">
+              <div className="mx-auto mb-5 flex h-11 w-11 items-center justify-center rounded-[10px] border border-wallet-line bg-wallet-muted">
                 {stage === "email" ? (
                   <Mail className="h-5 w-5 text-primary" aria-hidden />
                 ) : (
                   <ShieldCheck className="h-5 w-5 text-primary" aria-hidden />
                 )}
               </div>
-              <h1 className="font-wallet-display text-3xl font-semibold text-foreground">
+              <h1 className="font-wallet-display text-3xl font-semibold text-wallet-copy">
                 {stage === "otp"
                   ? "Verify your email"
                   : mode === "new"
                     ? "Let's get started"
                     : "Welcome back"}
               </h1>
-              <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+              <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-wallet-copy-muted">
                 {stage === "otp"
                   ? `Click the one-time login link sent to ${email || "your email"}.`
                   : mode === "new"
@@ -764,7 +764,7 @@ function AuthGateModal({
                     <div>
                       <label
                         htmlFor="gate-email"
-                        className="mb-2 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
+                        className="mb-2 block text-[11px] font-bold uppercase tracking-widest text-wallet-copy-muted"
                       >
                         Email address
                       </label>
@@ -781,10 +781,10 @@ function AuthGateModal({
                         placeholder="you@builder.io"
                         aria-invalid={!!emailError}
                         tabIndex={mode === "new" ? 0 : -1}
-                        className={`min-h-12 w-full rounded-[10px] border bg-muted px-4 py-3 text-sm text-foreground outline-hidden placeholder:text-muted-foreground/60 focus:bg-card focus:ring-2 focus:ring-primary/15 ${
+                        className={`min-h-12 w-full rounded-[10px] border bg-wallet-muted px-4 py-3 text-sm text-wallet-copy outline-hidden placeholder:text-wallet-copy-faint focus:bg-wallet-panel focus:ring-2 focus:ring-wallet-crimson/15 ${
                           emailError
                             ? "border-red-500/70"
-                            : "border-border focus:border-primary"
+                            : "border-wallet-line focus:border-wallet-crimson"
                         }`}
                       />
                       {emailError && (
@@ -797,10 +797,10 @@ function AuthGateModal({
                     <div>
                       <label
                         htmlFor="gate-username"
-                        className="mb-2 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
+                        className="mb-2 block text-[11px] font-bold uppercase tracking-widest text-wallet-copy-muted"
                       >
                         Username{" "}
-                        <span className="font-normal normal-case text-muted-foreground/70">(optional)</span>
+                        <span className="font-normal normal-case text-wallet-copy-faint">(optional)</span>
                       </label>
                       <input
                         id="gate-username"
@@ -814,10 +814,10 @@ function AuthGateModal({
                         placeholder="sovereign_architect"
                         aria-invalid={!!usernameError}
                         tabIndex={mode === "new" ? 0 : -1}
-                        className={`min-h-12 w-full rounded-[10px] border bg-muted px-4 py-3 text-sm text-foreground outline-hidden placeholder:text-muted-foreground/60 focus:bg-card focus:ring-2 focus:ring-primary/15 ${
+                        className={`min-h-12 w-full rounded-[10px] border bg-wallet-muted px-4 py-3 text-sm text-wallet-copy outline-hidden placeholder:text-wallet-copy-faint focus:bg-wallet-panel focus:ring-2 focus:ring-wallet-crimson/15 ${
                           usernameError
                             ? "border-red-500/70"
-                            : "border-border focus:border-primary"
+                            : "border-wallet-line focus:border-wallet-crimson"
                         }`}
                       />
                       {usernameError && (
@@ -831,7 +831,7 @@ function AuthGateModal({
                       type="submit"
                       disabled={sending}
                       tabIndex={mode === "new" ? 0 : -1}
-                      className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-primary text-sm font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:opacity-60"
+                      className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-wallet-crimson text-sm font-bold text-wallet-on-crimson shadow-sm transition-colors hover:bg-wallet-crimson-strong disabled:opacity-60"
                     >
                       {sending && mode === "new" ? (
                         <>
@@ -844,12 +844,12 @@ function AuthGateModal({
                       )}
                     </button>
 
-                    <p className="text-center text-xs text-muted-foreground">
+                    <p className="text-center text-xs text-wallet-copy-muted">
                       Already have an account?{" "}
                       <button
                         type="button"
                         onClick={() => setMode("returning")}
-                        className="font-bold text-primary hover:text-primary/80"
+                        className="font-bold text-wallet-crimson hover:text-wallet-crimson-strong"
                       >
                         Click here to sign in
                       </button>
@@ -871,7 +871,7 @@ function AuthGateModal({
                     <div
                       role="tablist"
                       aria-label="Sign-in method"
-                      className="flex items-center gap-1 rounded-[10px] border border-border bg-muted p-1"
+                      className="flex items-center gap-1 rounded-[10px] border border-wallet-line bg-wallet-muted p-1"
                     >
                       <button
                         type="button"
@@ -884,8 +884,8 @@ function AuthGateModal({
                         tabIndex={mode === "returning" ? 0 : -1}
                         className={`flex-1 h-8 rounded-md text-[11px] font-bold uppercase tracking-wide transition-colors ${
                           returningMethod === "password"
-                            ? "bg-card text-foreground shadow-xs"
-                            : "text-muted-foreground hover:text-foreground"
+                            ? "bg-wallet-panel text-wallet-copy shadow-xs"
+                            : "text-wallet-copy-muted hover:text-wallet-copy"
                         }`}
                       >
                         Password
@@ -898,8 +898,8 @@ function AuthGateModal({
                         tabIndex={mode === "returning" ? 0 : -1}
                         className={`flex-1 h-8 rounded-md text-[11px] font-bold uppercase tracking-wide transition-colors ${
                           returningMethod === "otp"
-                            ? "bg-card text-foreground shadow-xs"
-                            : "text-muted-foreground hover:text-foreground"
+                            ? "bg-wallet-panel text-wallet-copy shadow-xs"
+                            : "text-wallet-copy-muted hover:text-wallet-copy"
                         }`}
                       >
                         Email code
@@ -909,7 +909,7 @@ function AuthGateModal({
                     <div>
                       <label
                         htmlFor="gate-identifier"
-                        className="mb-2 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
+                        className="mb-2 block text-[11px] font-bold uppercase tracking-widest text-wallet-copy-muted"
                       >
                         Email or username
                       </label>
@@ -925,10 +925,10 @@ function AuthGateModal({
                         placeholder="you@builder.io or sovereign_architect"
                         aria-invalid={!!identifierError}
                         tabIndex={mode === "returning" ? 0 : -1}
-                        className={`min-h-12 w-full rounded-[10px] border bg-muted px-4 py-3 text-sm text-foreground outline-hidden placeholder:text-muted-foreground/60 focus:bg-card focus:ring-2 focus:ring-primary/15 ${
+                        className={`min-h-12 w-full rounded-[10px] border bg-wallet-muted px-4 py-3 text-sm text-wallet-copy outline-hidden placeholder:text-wallet-copy-faint focus:bg-wallet-panel focus:ring-2 focus:ring-wallet-crimson/15 ${
                           identifierError
                             ? "border-red-500/70"
-                            : "border-border focus:border-primary"
+                            : "border-wallet-line focus:border-wallet-crimson"
                         }`}
                       />
                       {identifierError && (
@@ -942,7 +942,7 @@ function AuthGateModal({
                       <div>
                         <label
                           htmlFor="gate-password"
-                          className="mb-2 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
+                          className="mb-2 block text-[11px] font-bold uppercase tracking-widest text-wallet-copy-muted"
                         >
                           Password
                         </label>
@@ -959,10 +959,10 @@ function AuthGateModal({
                             placeholder="••••••••"
                             aria-invalid={!!passwordError}
                             tabIndex={mode === "returning" ? 0 : -1}
-                            className={`min-h-12 w-full rounded-[10px] border bg-muted py-3 pl-4 pr-11 text-sm text-foreground outline-hidden placeholder:text-muted-foreground/60 focus:bg-card focus:ring-2 focus:ring-primary/15 ${
+                            className={`min-h-12 w-full rounded-[10px] border bg-muted py-3 pl-4 pr-11 text-sm text-foreground outline-hidden placeholder:text-wallet-copy-faint focus:bg-wallet-panel focus:ring-2 focus:ring-wallet-crimson/15 ${
                               passwordError
                                 ? "border-red-500/70"
-                                : "border-border focus:border-primary"
+                                : "border-wallet-line focus:border-wallet-crimson"
                             }`}
                           />
                           <button
@@ -971,7 +971,7 @@ function AuthGateModal({
                             tabIndex={mode === "returning" ? 0 : -1}
                             aria-label={showPassword ? "Hide password" : "Show password"}
                             aria-pressed={showPassword}
-                            className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                            className="absolute inset-y-0 right-0 flex items-center px-3 text-wallet-copy-muted hover:text-wallet-copy"
                           >
                             {showPassword ? (
                               <EyeOff className="w-4 h-4" />
@@ -992,7 +992,7 @@ function AuthGateModal({
                       type="submit"
                       disabled={sending}
                       tabIndex={mode === "returning" ? 0 : -1}
-                      className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-primary text-sm font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:opacity-60"
+                      className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-wallet-crimson text-sm font-bold text-wallet-on-crimson shadow-sm transition-colors hover:bg-wallet-crimson-strong disabled:opacity-60"
                     >
                       {sending && mode === "returning" ? (
                         <>
@@ -1010,12 +1010,12 @@ function AuthGateModal({
                       )}
                     </button>
 
-                    <p className="text-center text-xs text-muted-foreground">
+                    <p className="text-center text-xs text-wallet-copy-muted">
                       New to Oventric?{" "}
                       <button
                         type="button"
                         onClick={() => setMode("new")}
-                        className="font-bold text-primary hover:text-primary/80"
+                        className="font-bold text-wallet-crimson hover:text-wallet-crimson-strong"
                       >
                         Create an account
                       </button>
@@ -1025,7 +1025,7 @@ function AuthGateModal({
               </div>
             ) : (
               <div className="space-y-4">
-                  <p className="text-center text-xs text-muted-foreground">
+                  <p className="text-center text-xs text-wallet-copy-muted">
                   Didn&apos;t receive the link? You can enter the 6-digit code from the email
                   instead.
                 </p>
@@ -1051,12 +1051,12 @@ function AuthGateModal({
                       onKeyDown={(e) => onKeyDownDigit(i, e)}
                       onFocus={(e) => e.currentTarget.select()}
                       disabled={verifying || verified}
-                      className={`h-12 w-11 rounded-[10px] border bg-muted text-center text-lg font-bold tabular-nums text-foreground outline-hidden transition-colors focus:ring-2 focus:ring-primary/15 sm:h-14 sm:w-12 sm:text-xl ${
+                      className={`h-12 w-11 rounded-[10px] border bg-wallet-muted text-center text-lg font-bold tabular-nums text-wallet-copy outline-hidden transition-colors focus:ring-2 focus:ring-wallet-crimson/15 sm:h-14 sm:w-12 sm:text-xl ${
                         verified
                           ? "border-emerald-500/70 shadow-[0_0_0_1px_rgba(59, 130, 246,0.4)]"
                           : otpError
                             ? "border-red-500/70"
-                            : "border-border focus:border-primary"
+                            : "border-wallet-line focus:border-wallet-crimson"
                       }`}
                     />
                   ))}
@@ -1088,7 +1088,7 @@ function AuthGateModal({
                   type="button"
                   onClick={() => void verifyCode(otpDigits.join(""))}
                   disabled={verifying || verified || otpDigits.join("").length !== OTP_LENGTH}
-                    className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-primary text-sm font-bold text-primary-foreground disabled:opacity-50"
+                    className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-wallet-crimson text-sm font-bold text-wallet-on-crimson disabled:opacity-50"
                 >
                   {verifying ? (
                     <>
@@ -1114,7 +1114,7 @@ function AuthGateModal({
                       setFlash(null);
                     }}
                     disabled={verifying || verified}
-                    className="inline-flex min-h-11 items-center gap-1 px-1 text-muted-foreground hover:text-foreground disabled:opacity-40"
+                    className="inline-flex min-h-11 items-center gap-1 px-1 text-wallet-copy-muted hover:text-wallet-copy disabled:opacity-40"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" /> Change email
                   </button>
@@ -1125,7 +1125,7 @@ function AuthGateModal({
                         void (mode === "returning" ? sendReturningCode() : sendCode());
                     }}
                     disabled={resendIn > 0 || sending || verifying || verified}
-                    className="inline-flex min-h-11 items-center gap-1 px-1 font-semibold text-primary hover:text-primary/80 disabled:text-muted-foreground"
+                    className="inline-flex min-h-11 items-center gap-1 px-1 font-semibold text-wallet-crimson hover:text-wallet-crimson-strong disabled:text-wallet-copy-muted"
                   >
                     <RotateCw className={`w-3.5 h-3.5 ${sending ? "animate-spin" : ""}`} />
                     {resendIn > 0 ? `Resend in ${resendIn}s` : "Resend link"}
@@ -1135,7 +1135,7 @@ function AuthGateModal({
             )}
 
             {flash && stage === "otp" && !verified && (
-              <p className="mt-4 text-center text-[11px] text-primary">{flash}</p>
+              <p className="mt-4 text-center text-[11px] text-wallet-crimson">{flash}</p>
             )}
           </div>
         </div>
