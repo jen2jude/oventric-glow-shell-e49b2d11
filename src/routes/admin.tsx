@@ -224,7 +224,8 @@ function AdminLayout() {
           </div>
         </div>
         <nav className="flex-1 p-2 flex flex-col gap-0.5 overflow-y-auto">
-          {visibleNav.map((n) => {
+          {visibleNav.map((n, i) => {
+            const showGroup = i === 0 || visibleNav[i - 1]!.group !== n.group;
             const badgeCount =
               n.to === "/admin/payouts"
                 ? pendingPayouts
@@ -239,33 +240,39 @@ function AdminLayout() {
                   ? `${badgeCount} listings awaiting approval`
                   : `${badgeCount} pending`;
             return (
-              <Link
-                key={n.to}
-                to={n.to as unknown as "/admin"}
-                activeOptions={{ exact: n.exact }}
-                activeProps={{
-                  className: alert
-                    ? "bg-red-500/15 text-red-200 border-red-500/50"
-                    : "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
-                }}
-                inactiveProps={{
-                  className: alert
-                    ? "text-red-300 bg-red-500/10 hover:bg-red-500/20 border-red-500/40 animate-pulse"
-                    : "text-slate-400 hover:text-white hover:bg-white/5 border-transparent",
-                }}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-[10px] border text-sm font-medium transition-colors"
-              >
-                <n.icon className="w-4 h-4 shrink-0" />
-                <span className="flex-1">{n.label}</span>
-                {alert && (
-                  <span
-                    aria-label={badgeLabel}
-                    className="min-w-[20px] h-[18px] px-1.5 rounded-full text-[10px] font-black bg-red-500 text-white flex items-center justify-center"
-                  >
-                    {badgeCount > 99 ? "99+" : badgeCount}
-                  </span>
+              <div key={n.to}>
+                {showGroup && (
+                  <div className="px-3 pt-3 pb-1 text-[10px] uppercase tracking-widest text-slate-600 font-bold">
+                    {n.group}
+                  </div>
                 )}
-              </Link>
+                <Link
+                  to={n.to as unknown as "/admin"}
+                  activeOptions={{ exact: n.exact }}
+                  activeProps={{
+                    className: alert
+                      ? "bg-red-500/15 text-red-200 border-red-500/50"
+                      : "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
+                  }}
+                  inactiveProps={{
+                    className: alert
+                      ? "text-red-300 bg-red-500/10 hover:bg-red-500/20 border-red-500/40 animate-pulse"
+                      : "text-slate-400 hover:text-white hover:bg-white/5 border-transparent",
+                  }}
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-[10px] border text-sm font-medium transition-colors"
+                >
+                  <n.icon className="w-4 h-4 shrink-0" />
+                  <span className="flex-1">{n.label}</span>
+                  {alert && (
+                    <span
+                      aria-label={badgeLabel}
+                      className="min-w-[20px] h-[18px] px-1.5 rounded-full text-[10px] font-black bg-red-500 text-white flex items-center justify-center"
+                    >
+                      {badgeCount > 99 ? "99+" : badgeCount}
+                    </span>
+                  )}
+                </Link>
+              </div>
             );
           })}
         </nav>
