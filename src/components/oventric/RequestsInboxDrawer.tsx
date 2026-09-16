@@ -67,6 +67,16 @@ export function RequestsInboxDrawer({ open, onClose }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
+  // Lock body scroll while open
+  useEffect(() => {
+    if (!open || typeof document === "undefined") return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
   const actFollow = async (
     requesterId: string,
     fn: (input: { data: { requesterId: string } }) => Promise<unknown>,
@@ -93,20 +103,20 @@ export function RequestsInboxDrawer({ open, onClose }: Props) {
       aria-modal="true"
       aria-labelledby="requests-inbox-title"
     >
-      <div className="absolute inset-0 bg-black/70" onClick={onClose} />
-      <div className="relative w-full sm:max-w-sm h-full bg-[#141418] border-l border-white/10 shadow-2xl overflow-y-auto animate-in slide-in-from-right duration-200">
-        <div className="sticky top-0 z-10 bg-[#141418] px-5 py-4 border-b border-white/5 flex items-center justify-between">
+      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full sm:max-w-sm h-full bg-white border-l border-slate-200 shadow-2xl overflow-y-auto animate-in slide-in-from-right duration-200">
+        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur px-5 py-4 border-b border-slate-100 flex items-center justify-between">
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">
+            <div className="text-[10px] font-bold uppercase tracking-widest text-[#E5484D]">
               Follow requests
             </div>
-            <h2 id="requests-inbox-title" className="text-white font-black text-lg mt-0.5">
+            <h2 id="requests-inbox-title" className="text-slate-900 font-bold text-lg mt-0.5">
               Approve who connects with you
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="p-2 -m-2 rounded-[10px] text-slate-500 hover:text-white hover:bg-white/5"
+            className="p-2 -m-2 rounded-full text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-colors"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
@@ -115,7 +125,7 @@ export function RequestsInboxDrawer({ open, onClose }: Props) {
 
         <div className="p-5 space-y-3">
           {err && (
-            <p role="alert" className="text-xs text-red-400 border-l-2 border-red-500 pl-2">
+            <p role="alert" className="text-xs text-[#E5484D] border-l-2 border-[#E5484D] pl-2">
               {err}
             </p>
           )}
@@ -124,7 +134,7 @@ export function RequestsInboxDrawer({ open, onClose }: Props) {
             <LoadingRow />
           ) : followRows.length === 0 ? (
             <EmptyBlock
-              icon={<UserPlus className="w-6 h-6 text-slate-600 mx-auto" />}
+              icon={<UserPlus className="w-6 h-6 text-slate-300 mx-auto" />}
               title="No pending follow requests."
               body="When someone asks to follow you, it will appear here."
             />
@@ -136,7 +146,7 @@ export function RequestsInboxDrawer({ open, onClose }: Props) {
               {followRows.map((r) => (
                 <div
                   key={r.requesterId}
-                  className="flex items-center gap-3 p-3 rounded-[10px] bg-[#1E1E24] border border-white/10"
+                  className="flex items-center gap-3 p-3 rounded-[10px] bg-white border border-slate-200 shadow-sm"
                 >
                   <button
                     onClick={() => {
@@ -155,13 +165,13 @@ export function RequestsInboxDrawer({ open, onClose }: Props) {
                         className="w-10 h-10 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-[#E5484D]/10 text-[#E5484D] flex items-center justify-center">
                         <UserIcon className="w-4 h-4" />
                       </div>
                     )}
                   </button>
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm text-white font-semibold truncate">
+                    <div className="text-sm text-slate-900 font-semibold truncate">
                       {r.requesterName}
                     </div>
                     <div className="text-[11px] text-slate-500">wants to follow you</div>
@@ -170,7 +180,7 @@ export function RequestsInboxDrawer({ open, onClose }: Props) {
                     <button
                       onClick={() => actFollow(r.requesterId, acceptFollow)}
                       disabled={busy === r.requesterId}
-                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-[10px] bg-emerald-500 text-black text-xs font-bold hover:bg-emerald-400 disabled:opacity-60"
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[#E5484D] text-white text-xs font-bold hover:bg-[#d13f44] disabled:opacity-60 transition-colors"
                       aria-label={`Accept ${r.requesterName}`}
                     >
                       {busy === r.requesterId ? (
@@ -183,7 +193,7 @@ export function RequestsInboxDrawer({ open, onClose }: Props) {
                     <button
                       onClick={() => actFollow(r.requesterId, declineFollow)}
                       disabled={busy === r.requesterId}
-                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-[10px] border border-white/10 text-slate-300 text-xs font-bold hover:bg-white/5 disabled:opacity-60"
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 disabled:opacity-60 transition-colors"
                       aria-label={`Decline ${r.requesterName}`}
                     >
                       <Ban className="w-3 h-3" />
@@ -203,7 +213,7 @@ export function RequestsInboxDrawer({ open, onClose }: Props) {
 
 function LoadingRow() {
   return (
-    <div className="py-8 flex items-center justify-center text-slate-500 text-sm gap-2">
+    <div className="py-8 flex items-center justify-center text-slate-400 text-sm gap-2">
       <Loader2 className="w-4 h-4 animate-spin" /> Loading…
     </div>
   );
@@ -213,8 +223,8 @@ function EmptyBlock({ icon, title, body }: { icon: React.ReactNode; title: strin
   return (
     <div className="py-10 text-center">
       {icon}
-      <p className="text-sm text-slate-400 mt-2">{title}</p>
-      <p className="text-xs text-slate-600 mt-1">{body}</p>
+      <p className="text-sm text-slate-600 mt-2 font-medium">{title}</p>
+      <p className="text-xs text-slate-400 mt-1">{body}</p>
     </div>
   );
 }
