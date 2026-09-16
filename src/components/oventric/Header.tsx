@@ -45,6 +45,7 @@ import { COUNTRY_META } from "@/lib/currency/africa";
 
 const HUB_NAV: { label: string; icon: LucideIcon; section?: string; to?: string }[] = [
   { label: "Market", icon: Store, section: "Marketplace" },
+  { label: "Shop", icon: ShoppingBag, to: "/sellers" },
   { label: "Academy", icon: GraduationCap, section: "Academy" },
   { label: "Bounties", icon: Target, section: "Bounties" },
   { label: "Circles", icon: Users, section: "Circles" },
