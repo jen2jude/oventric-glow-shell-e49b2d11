@@ -128,7 +128,7 @@ function AdminOverview() {
       value: stats.transactions,
       icon: Activity,
       tint: "text-violet-300 bg-violet-500/10 border-violet-500/30",
-      to: "/admin/payouts",
+      to: "/admin/ledger",
     },
   ];
 
