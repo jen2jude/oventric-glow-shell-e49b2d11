@@ -33,7 +33,6 @@ import { ShopEditModal } from "@/components/oventric/shop/ShopEditModal";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { supabase } from "@/integrations/supabase/client";
 
-const ACCENT = "#E5484D";
 type ShopTab = "shop" | "collections" | "services" | "about";
 
 import { z } from "zod";
@@ -105,7 +104,7 @@ function SectionHead({
 }
 
 /** Horizontal snap rail with optional desktop arrows. */
-function Rail({ children }: { children: React.ReactNode }) {
+function Rail({ children, web = false }: { children: React.ReactNode; web?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const scrollBy = (dir: number) =>
     ref.current?.scrollBy({ left: dir * (ref.current.clientWidth * 0.8), behavior: "smooth" });
@@ -113,26 +112,26 @@ function Rail({ children }: { children: React.ReactNode }) {
     <div className="relative">
       <div
         ref={ref}
-        className="-mx-1 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className={`-mx-1 mt-3 px-1 pb-2 ${web ? "storefront-product-grid" : "flex snap-x snap-mandatory gap-3 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"}`}
       >
         {children}
       </div>
-      <div className="pointer-events-none absolute inset-y-0 right-0 hidden items-center sm:flex">
+      <div className={`pointer-events-none absolute inset-y-0 right-0 hidden items-center ${web ? "" : "sm:flex"}`}>
         <button
           type="button"
           onClick={() => scrollBy(1)}
           aria-label="Scroll right"
-          className="pointer-events-auto grid h-9 w-9 place-items-center rounded-full bg-black/60 backdrop-blur hover:bg-black/80"
+          className="pointer-events-auto grid h-9 w-9 place-items-center rounded-full bg-foreground/60 text-background backdrop-blur hover:bg-foreground/80"
         >
           <ChevronRight className="h-4 w-4" />
         </button>
       </div>
-      <div className="pointer-events-none absolute inset-y-0 left-0 hidden items-center sm:flex">
+      <div className={`pointer-events-none absolute inset-y-0 left-0 hidden items-center ${web ? "" : "sm:flex"}`}>
         <button
           type="button"
           onClick={() => scrollBy(-1)}
           aria-label="Scroll left"
-          className="pointer-events-auto grid h-9 w-9 place-items-center rounded-full bg-black/60 backdrop-blur hover:bg-black/80"
+          className="pointer-events-auto grid h-9 w-9 place-items-center rounded-full bg-foreground/60 text-background backdrop-blur hover:bg-foreground/80"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
@@ -297,7 +296,7 @@ function ShopPage() {
   };
 
   return (
-    <div className={`min-h-screen bg-[#0A0A0B] text-white ${!isAppShell ? "oventric-web" : ""}`}>
+    <div className={`min-h-screen ${!isAppShell ? "oventric-web web-storefront bg-background text-foreground" : "bg-[#0A0A0B] text-white"}`}>
       {!isAppShell && (
         <Header
           onOpenMessages={() => setDmOpen(true)}
@@ -331,23 +330,22 @@ function ShopPage() {
           <button
             type="button"
             onClick={() => setEditOpen(true)}
-            className="inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-xs font-black"
-            style={{ backgroundColor: ACCENT }}
+            className="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary px-3 text-xs font-black text-primary-foreground"
           >
             <Pencil className="h-3.5 w-3.5" /> Edit shop
           </button>
         )}
       </div>}
 
-      <div className="mx-auto w-full max-w-[720px] px-4 pb-20 md:max-w-[900px] md:px-8 lg:max-w-[1000px] lg:px-12">
+      <div className={`mx-auto w-full px-4 pb-20 md:px-8 lg:px-12 ${isAppShell ? "max-w-[720px] md:max-w-[900px] lg:max-w-[1000px]" : "max-w-[1240px] pt-8 md:pt-12"}`}>
         {/* Cover */}
-        <div className="relative h-48 w-full overflow-hidden sm:h-64">
+        <div className={`relative w-full overflow-hidden ${isAppShell ? "h-48 sm:h-64" : "storefront-cover h-48 rounded-lg sm:h-64 lg:h-72"}`}>
           {shop?.coverUrl ? (
             <img src={shop.coverUrl} alt="" className="h-full w-full object-cover" />
           ) : (
-            <div className="h-full w-full bg-[#1A1A1F]" />
+            <div className={isAppShell ? "h-full w-full bg-[#1A1A1F]" : "h-full w-full bg-muted"} />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0B] via-transparent to-transparent" />
+          {isAppShell && <div className="absolute inset-0 bg-linear-to-t from-[#0A0A0B] via-transparent to-transparent" />}
           <div
             className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-1/2 web-dark-band md:block"
             style={{ maskImage: "linear-gradient(to top, black, transparent)", WebkitMaskImage: "linear-gradient(to top, black, transparent)", opacity: 0.85 }}
@@ -355,79 +353,78 @@ function ShopPage() {
         </div>
 
         {/* Identity */}
-        <div className="-mt-12">
-          <div className="relative h-24 w-24 overflow-hidden rounded-2xl border border-white/10 bg-[#141417]">
+        <div className={isAppShell ? "-mt-12" : "storefront-content relative -mt-10 px-1 sm:-mt-14 sm:px-8"}>
+          <div className={`relative overflow-hidden border bg-card ${isAppShell ? "h-24 w-24 rounded-2xl border-white/10" : "storefront-logo h-24 w-24 rounded-full border-4 border-background shadow-sm sm:h-32 sm:w-32"}`}>
             {shop?.logoUrl ? (
               <img src={shop.logoUrl} alt="" className="h-full w-full object-cover" />
             ) : (
-              <div className="grid h-full w-full place-items-center text-2xl font-black text-white/60">
+              <div className="grid h-full w-full place-items-center text-2xl font-black text-muted-foreground">
                 {name.charAt(0).toUpperCase()}
               </div>
             )}
           </div>
 
-          <div className="mt-4 flex items-center justify-between gap-4">
+          <div className={isAppShell ? "mt-4 flex items-center justify-between gap-4" : "storefront-identity mt-5 flex items-start justify-between gap-6 sm:ml-40 sm:-mt-16 sm:min-h-16"}>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <h1 className="truncate text-2xl font-black">{name}</h1>
-                {verified && <BadgeCheck className="h-6 w-6 shrink-0 text-sky-400" />}
+                <h1 className={`truncate text-2xl font-black ${!isAppShell ? "storefront-title sm:text-4xl" : ""}`}>{name}</h1>
+                {verified && <BadgeCheck className="h-6 w-6 shrink-0 text-primary" />}
               </div>
-              <div className="mt-0.5 flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-widest">
+              <div className="mt-1 flex items-center gap-2 text-xs font-bold uppercase text-muted-foreground">
                 <span>{shop?.country || "Global"}</span>
                 <span>•</span>
                 <span>{shop?.category || "Creator"}</span>
               </div>
             </div>
           </div>
-          <p className="mt-3 text-sm leading-relaxed text-slate-400">
+          <p className={`mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground ${!isAppShell ? "sm:ml-40" : ""}`}>
             {shop?.shopAbout?.trim() || "Branded digital goods and professional services on Oventric."}
           </p>
 
           {/* Stats */}
-          <div className="mt-6 flex items-center justify-between gap-6 overflow-x-auto no-scrollbar py-2 md:grid md:grid-cols-4 md:gap-2">
+          <div className={`mt-7 ${isAppShell ? "flex items-center justify-between gap-6 overflow-x-auto no-scrollbar py-2 md:grid md:grid-cols-4 md:gap-2" : "storefront-stats grid grid-cols-2 gap-y-6 border-y border-border py-6 sm:grid-cols-4 sm:gap-y-0"}`}>
             {[
               { v: compact(followers), l: "Followers" },
               { v: compact(productTotal), l: "Products" },
               { v: compact(sales), l: "Sales" },
               { v: rating, l: "Rating" },
             ].map((s) => (
-              <div key={s.l} className="shrink-0 md:web-card-flat md:px-3 md:py-3 md:text-center">
+              <div key={s.l} className={isAppShell ? "shrink-0 md:web-card-flat md:px-3 md:py-3 md:text-center" : "storefront-stat px-4 text-center sm:px-8"}>
                 <div className="text-lg font-black">{s.v}</div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{s.l}</div>
+                <div className="text-[10px] font-bold uppercase text-muted-foreground">{s.l}</div>
               </div>
             ))}
           </div>
 
           {/* Actions */}
-          <div className="mt-4 grid grid-cols-2 gap-3">
+          <div className={`mt-5 grid grid-cols-2 gap-3 ${!isAppShell ? "sm:ml-auto sm:max-w-md" : ""}`}>
             {isOwner ? (
               <button
                 type="button"
                 onClick={() => setEditOpen(true)}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl text-sm font-black"
-                style={{ backgroundColor: ACCENT }}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary text-sm font-black text-primary-foreground"
               >
                 <Pencil className="h-4 w-4" /> Edit shop details
               </button>
             ) : shop?.userId ? (
               <FollowButton
                 targetId={shop.userId}
-                className="h-11 w-full rounded-xl text-sm font-bold"
+                className="h-11 w-full rounded-lg text-sm font-bold"
               />
             ) : (
-              <div className="h-11 rounded-xl bg-white/5" />
+              <div className="h-11 rounded-lg bg-muted" />
             )}
             <button
               type="button"
               onClick={() => setDmOpen(true)}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/[0.04] text-sm font-bold hover:bg-white/[0.08]"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-background text-sm font-bold hover:bg-muted"
             >
               <MessageCircle className="h-4 w-4" /> Message
             </button>
           </div>
 
           {/* Tabs */}
-          <nav className="mt-5 flex items-center gap-1 overflow-x-auto border-b border-white/10 md:sticky md:top-[57px] md:z-20 md:-mx-8 md:border-b-0 md:px-8 md:web-glass lg:-mx-12 lg:px-12">
+          <nav className={`mt-8 flex items-center overflow-x-auto border-b border-border ${isAppShell ? "gap-1 md:sticky md:top-[57px] md:z-20 md:-mx-8 md:border-b-0 md:px-8 md:web-glass lg:-mx-12 lg:px-12" : "gap-8"}`}>
             {(
               [
                 ["shop", "Shop"],
@@ -440,10 +437,10 @@ function ShopPage() {
                 key={key}
                 type="button"
                 onClick={() => setTab(key)}
-                className={`-mb-px shrink-0 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors ${
+                className={`-mb-px shrink-0 border-b-2 py-4 text-sm font-semibold transition-colors ${isAppShell ? "px-4" : ""} ${
                   tab === key
-                    ? "border-[#E5484D] text-white md:rounded-full md:border-b-0 md:bg-crimson/10 md:text-crimson"
-                    : "border-transparent text-slate-400 hover:text-white md:rounded-full md:border-b-0 md:hover:bg-white/5"
+                    ? isAppShell ? "border-primary text-white md:rounded-full md:border-b-0 md:bg-primary/10 md:text-primary" : "border-primary text-foreground"
+                    : isAppShell ? "border-transparent text-slate-400 hover:text-white md:rounded-full md:border-b-0 md:hover:bg-white/5" : "border-transparent text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {label}
@@ -543,13 +540,13 @@ function ShopPage() {
                       <span className="text-xs font-bold text-slate-400">swipe →</span>
                     }
                   />
-                  <Rail>
+                  <Rail web={!isAppShell}>
                     {featured.map((p) => (
                       <Link
                         key={p.id}
                         to="/product/$id"
                         params={{ id: p.id }}
-                        className="w-[78%] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141417] sm:w-[46%]"
+                        className={isAppShell ? "w-[78%] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141417] sm:w-[46%]" : "storefront-product group overflow-hidden rounded-lg bg-card"}
                       >
                         <Cover url={p.coverUrl} className="aspect-[16/10] w-full" />
                         <div className="p-3">
@@ -558,7 +555,7 @@ function ShopPage() {
                             {p.blurb?.trim() || p.category}
                           </div>
                           <div className="mt-2 flex items-center justify-between gap-2">
-                            <span className="text-sm font-black" style={{ color: ACCENT }}>
+                            <span className="text-sm font-black text-primary">
                               {price(p.priceUsd)}
                             </span>
                             {(p.rating ?? 0) > 0 && (
@@ -586,9 +583,9 @@ function ShopPage() {
                       </span>
                     }
                   />
-                  <Rail>
+                  <Rail web={!isAppShell}>
                     {arrivals.map((p) => (
-                      <ProductCard key={p.id} item={p} price={price} />
+                      <ProductCard key={p.id} item={p} price={price} web={!isAppShell} />
                     ))}
                   </Rail>
                 </>
@@ -598,9 +595,9 @@ function ShopPage() {
               {bestSellers.some((p) => (p.sales ?? 0) > 0) && (
                 <>
                   <SectionHead title="Best Sellers" />
-                  <Rail>
+                  <Rail web={!isAppShell}>
                     {bestSellers.map((p) => (
-                      <ProductCard key={p.id} item={p} price={price} />
+                      <ProductCard key={p.id} item={p} price={price} web={!isAppShell} />
                     ))}
                   </Rail>
                 </>
@@ -610,9 +607,9 @@ function ShopPage() {
               {topRated.some((p) => (p.rating ?? 0) > 0) && (
                 <>
                   <SectionHead title="Top Rated" />
-                  <Rail>
+                  <Rail web={!isAppShell}>
                     {topRated.map((p) => (
-                      <ProductCard key={p.id} item={p} price={price} />
+                      <ProductCard key={p.id} item={p} price={price} web={!isAppShell} />
                     ))}
                   </Rail>
                 </>
@@ -620,26 +617,26 @@ function ShopPage() {
 
               {/* All products grid */}
               <SectionHead title="All Products" />
-              <Grid items={products} price={price} emptyLabel="No products listed yet." />
+              <Grid items={products} price={price} emptyLabel="No products listed yet." web={!isAppShell} />
 
               {/* Similar items from other sellers */}
               {(discovery?.similarProducts.length ?? 0) > 0 && (
                 <>
                   <SectionHead title="Similar items from other sellers" />
-                  <Rail>
+                   <Rail web={!isAppShell}>
                     {discovery!.similarProducts.map((p) => (
                       <Link
                         key={p.id}
                         to="/product/$id"
                         params={{ id: p.id }}
-                        className="w-[38%] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-[#141417] sm:w-[22%]"
+                         className={isAppShell ? "w-[38%] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-[#141417] sm:w-[22%]" : "storefront-product group overflow-hidden rounded-lg bg-card"}
                       >
                         <Cover url={p.coverUrl} className="aspect-square w-full" />
                         <div className="p-2">
                           <div className="line-clamp-2 text-[11px] font-bold leading-snug">
                             {p.title}
                           </div>
-                          <div className="mt-1 text-[11px] font-black" style={{ color: ACCENT }}>
+                           <div className="mt-1 text-[11px] font-black text-primary">
                             {price(p.priceUsd ?? 0)}
                           </div>
                         </div>
@@ -698,21 +695,23 @@ function ShopPage() {
 function ProductCard({
   item,
   price,
+  web = false,
 }: {
   item: ProfileListing;
   price: (usd: number) => string;
+  web?: boolean;
 }) {
   return (
     <Link
       to="/product/$id"
       params={{ id: item.id }}
-      className="w-[46%] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141417] sm:w-[28%] md:web-card"
+      className={web ? "storefront-product group overflow-hidden rounded-lg bg-card" : "w-[46%] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141417] sm:w-[28%] md:web-card"}
     >
       <Cover url={item.coverUrl} className="aspect-square w-full" />
       <div className="p-2.5">
         <div className="line-clamp-2 text-xs font-bold leading-snug">{item.title}</div>
         <div className="mt-1 flex items-center justify-between gap-2">
-          <span className="text-xs font-black" style={{ color: ACCENT }}>
+          <span className="text-xs font-black text-primary">
             {price(item.priceUsd)}
           </span>
           {(item.rating ?? 0) > 0 && (
@@ -731,10 +730,12 @@ function Grid({
   items,
   price,
   emptyLabel,
+  web = false,
 }: {
   items: ProfileListing[];
   price: (usd: number) => string;
   emptyLabel: string;
+  web?: boolean;
 }) {
   if (items.length === 0) {
     return (
@@ -744,19 +745,19 @@ function Grid({
     );
   }
   return (
-    <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3">
+    <div className={`mt-5 grid grid-cols-2 gap-x-4 gap-y-8 ${web ? "sm:grid-cols-3 lg:grid-cols-4 lg:gap-x-7 lg:gap-y-12" : "sm:grid-cols-3"}`}>
       {items.map((p) => (
         <Link
           key={p.id}
           to="/product/$id"
           params={{ id: p.id }}
-          className="overflow-hidden rounded-2xl border border-white/10 bg-[#141417] transition-transform hover:-translate-y-0.5 md:web-card md:hover:translate-y-0"
+          className={web ? "storefront-product group overflow-hidden rounded-lg bg-card" : "overflow-hidden rounded-2xl border border-white/10 bg-[#141417] transition-transform hover:-translate-y-0.5 md:web-card md:hover:translate-y-0"}
         >
           <Cover url={p.coverUrl} className="aspect-square w-full" />
           <div className="p-2.5">
             <div className="line-clamp-2 text-xs font-bold leading-snug">{p.title}</div>
             <div className="mt-1 flex items-center justify-between gap-2">
-              <span className="text-xs font-black" style={{ color: ACCENT }}>
+              <span className="text-xs font-black text-primary">
                 {price(p.priceUsd)}
               </span>
               {(p.rating ?? 0) > 0 && (

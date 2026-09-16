@@ -2576,6 +2576,72 @@ section + section {
   --color-crimson: #E5484D;
   --color-crimson-soft: #FF6B6F;
   --color-crimson-ink: #7F1D1D;
+  --font-storefront: "Playfair Display", serif;
+}
+
+/* Public seller shops use a spacious, desktop-first boutique composition. */
+.web-storefront {
+  background: var(--background);
+}
+
+.web-storefront .storefront-cover {
+  box-shadow: 0 20px 55px -42px color-mix(in oklab, var(--foreground) 38%, transparent);
+}
+
+.web-storefront .storefront-title {
+  font-family: var(--font-storefront);
+  letter-spacing: 0;
+}
+
+.web-storefront .storefront-stat + .storefront-stat {
+  border-left: 1px solid var(--border);
+}
+
+.web-storefront .storefront-product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem 1rem;
+}
+
+.web-storefront .storefront-product {
+  border: 1px solid transparent;
+  box-shadow: none;
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.web-storefront .storefront-product:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in oklab, var(--primary) 24%, var(--border));
+  box-shadow: 0 20px 38px -28px color-mix(in oklab, var(--foreground) 24%, transparent);
+}
+
+.web-storefront .storefront-product img {
+  transition: transform 500ms ease;
+}
+
+.web-storefront .storefront-product:hover img {
+  transform: scale(1.025);
+}
+
+@media (min-width: 640px) {
+  .web-storefront .storefront-product-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2.5rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .web-storefront .storefront-product-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 3rem 1.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .web-storefront .storefront-product,
+  .web-storefront .storefront-product img {
+    transition: none;
+  }
 }
 
 @utility web-card {
