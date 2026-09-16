@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Rss, Store, BookOpen } from "lucide-react";
+import { Rss, Store } from "lucide-react";
 
 const ACTIONS = [
   { to: "/", search: { section: "Feed" }, label: "Posts", icon: Rss, hint: "Jump to your feed" },
@@ -17,20 +17,13 @@ const ACTIONS = [
     icon: Store,
     hint: "Marketplace & listings",
   },
-  {
-    to: "/blog",
-    search: undefined,
-    label: "Blog",
-    icon: BookOpen,
-    hint: "Read & publish articles",
-  },
 ] as const;
 
 
 export function QuickActions() {
   return (
     <div
-      className="grid grid-cols-2 gap-3 rounded-[10px] border border-border bg-card p-3 shadow-sm sm:grid-cols-4"
+      className="grid grid-cols-1 gap-3 rounded-[10px] border border-border bg-card p-3 shadow-sm sm:grid-cols-3"
       aria-label="Quick actions"
     >
       {ACTIONS.map((a) => (
