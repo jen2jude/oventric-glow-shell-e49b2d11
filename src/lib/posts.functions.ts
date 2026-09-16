@@ -349,12 +349,31 @@ async function buildFeedPosts(
               : (avatarByPath.get(avatarPath) ?? null)
             : null,
           shortDescription: p.description ?? null,
+          cashbackPct: p.cashback_pct != null ? Number(p.cashback_pct) : null,
+          // Only active products stay purchasable; anything else renders as unavailable.
+          available: p.status === "active",
         });
       });
 
       ((attachmentRows ?? []) as any[]).forEach((at) => {
-        const item = attachmentByProductId.get(at.product_id);
-        if (!item) return;
+        // A product deleted after tagging leaves no row — keep the post stable
+        // with an explicit unavailable card instead of dropping it silently.
+        const item: ProductAttachment = attachmentByProductId.get(at.product_id) ?? {
+          id: at.product_id,
+          name: "Product no longer available",
+          priceUsd: 0,
+          originalCurrency: null,
+          originalAmount: null,
+          fxSnapshot: null,
+          coverUrl: null,
+          vendor: "",
+          vendorId: "",
+          vendorSlug: null,
+          vendorAvatarUrl: null,
+          shortDescription: null,
+          cashbackPct: null,
+          available: false,
+        };
         const list = attachmentsByPost.get(at.post_id) ?? [];
         list.push(item);
         attachmentsByPost.set(at.post_id, list);
