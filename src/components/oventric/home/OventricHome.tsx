@@ -331,13 +331,13 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           title="Top Sellers"
           action={{ label: "View all", onClick: () => navigate({ to: "/sellers" }) }}
         />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-4">
+        <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5 lg:gap-4">
           {sellers.map((s) => (
             <Link
               key={s.id}
               to="/shop/$id"
               params={{ id: s.slug || s.id }}
-              className="flex flex-col items-center gap-2 rounded-[14px] border border-slate-200/80 bg-white p-5 text-center transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
+              className="flex w-[104px] shrink-0 flex-col items-center gap-2 rounded-[14px] border-slate-200/80 bg-transparent p-0 text-center transition-all sm:w-auto sm:shrink sm:border sm:bg-white sm:p-5 sm:hover:-translate-y-0.5 sm:hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
             >
               <div className="h-16 w-16 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
                 <AvatarImage src={s.avatarUrl} alt={s.name} />
