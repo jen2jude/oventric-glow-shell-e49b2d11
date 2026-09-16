@@ -317,9 +317,11 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           subtitle="Handpicked by our team"
           action={{ label: "View all", onClick: () => onSelect("Marketplace") }}
         />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-4">
+        <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5 lg:gap-4">
           {featured.slice(0, 10).map((p) => (
-            <ProductCard key={p.id} product={p} currency={baseCurrency} />
+            <div key={p.id} className="w-[84%] shrink-0 snap-start sm:w-auto sm:shrink">
+              <ProductCard product={p} currency={baseCurrency} />
+            </div>
           ))}
           {featured.length === 0 && <EmptyNote>No listings published yet.</EmptyNote>}
         </div>
