@@ -268,6 +268,34 @@ async function markTopupFailed(reference: string, meta: Record<string, unknown>)
   }
 }
 
+/**
+ * Guard: what the provider says was paid must match the charge we created.
+ *
+ * References created before `charge_amount` existed carry no expectation and
+ * are settled on the provider's confirmation alone.
+ */
+function assertPaidMatchesCharge(
+  reference: string,
+  meta: Record<string, unknown>,
+  paidCurrency: string,
+  paidAmount: number,
+) {
+  const expected = Number(meta.charge_amount);
+  if (!Number.isFinite(expected) || expected <= 0) return;
+  const expectedCurrency = String(meta.charge_currency ?? paidCurrency).toUpperCase();
+  if (String(paidCurrency).toUpperCase() !== expectedCurrency) {
+    throw new Error(
+      `Payment currency mismatch on ${reference}: paid ${paidCurrency}, expected ${expectedCurrency}.`,
+    );
+  }
+  // One minor unit of tolerance for provider-side rounding.
+  if (paidAmount + 0.01 < expected) {
+    throw new Error(
+      `Payment amount mismatch on ${reference}: paid ${paidAmount}, expected ${expected}.`,
+    );
+  }
+}
+
 /** Settle a confirmed payment from its gateway metadata. */
 export async function settleFromMetadata(
   reference: string,
@@ -277,6 +305,7 @@ export async function settleFromMetadata(
 ): Promise<VerifyResult> {
   const userId = String(meta.user_id ?? "");
   if (!userId) throw new Error("Payment metadata missing user context.");
+  assertPaidMatchesCharge(reference, meta, paidCurrency, paidAmount);
   const purpose = String(meta.purpose ?? "wallet_topup");
 
   if (purpose === "order") {
