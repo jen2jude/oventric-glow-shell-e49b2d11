@@ -69,6 +69,11 @@
   --color-wallet-warning-soft: var(--wallet-warning-soft);
   --color-wallet-info: var(--wallet-info);
   --color-wallet-info-soft: var(--wallet-info-soft);
+  --color-ledger-positive: var(--ledger-positive);
+  --color-ledger-positive-soft: var(--ledger-positive-soft);
+  --color-ledger-info: var(--ledger-info);
+  --color-ledger-info-soft: var(--ledger-info-soft);
+  --shadow-ledger-panel: var(--ledger-panel-shadow);
   --color-promo-surface: var(--promo-surface);
   --color-promo-surface-2: var(--promo-surface-2);
   --color-promo-warm: var(--promo-warm);
@@ -103,6 +108,55 @@
   --animate-rgb-pulse: rgb-pulse 3s ease-in-out infinite;
   --animate-promo-float: promo-float 3.2s ease-in-out infinite;
   --animate-promo-float-slow: promo-float-slow 4.5s ease-in-out infinite;
+}
+
+/* Focused, web-native customer transaction ledger. */
+.web-ledger {
+  color-scheme: light;
+  --background: oklch(0.97 0.006 240);
+  --foreground: oklch(0.22 0.01 250);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.01 250);
+  --primary: oklch(0.57 0.18 22);
+  --primary-foreground: oklch(0.99 0.003 22);
+  --secondary: oklch(0.955 0.008 240);
+  --secondary-foreground: oklch(0.27 0.012 250);
+  --muted: oklch(0.955 0.008 240);
+  --muted-foreground: oklch(0.5 0.018 250);
+  --accent: oklch(0.95 0.018 22);
+  --accent-foreground: oklch(0.5 0.19 22);
+  --border: oklch(0.89 0.015 240);
+  --input: oklch(0.84 0.018 240);
+  --ring: oklch(0.57 0.18 22);
+  --ledger-positive: oklch(0.52 0.14 155);
+  --ledger-positive-soft: oklch(0.96 0.035 155);
+  --ledger-info: oklch(0.53 0.13 245);
+  --ledger-info-soft: oklch(0.96 0.025 245);
+  --ledger-panel-shadow: 0 18px 55px -34px color-mix(in oklab, var(--foreground) 30%, transparent);
+  font-family: var(--font-wallet-body);
+}
+
+.web-ledger :is(h1, h2, h3, .font-wallet-display) {
+  font-family: var(--font-wallet-display);
+  letter-spacing: 0;
+}
+
+.web-ledger .ledger-tab {
+  border-bottom: 2px solid transparent;
+  color: var(--muted-foreground);
+}
+
+.web-ledger .ledger-tab[aria-current="page"] {
+  border-bottom-color: var(--primary);
+  color: var(--foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .web-ledger * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
 
 @theme {
