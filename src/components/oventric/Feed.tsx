@@ -1247,7 +1247,7 @@ export function Feed() {
       className={
         isAppShell
           ? "social-feed-shell min-h-screen w-full bg-[#070A08] px-4 pb-24 pt-3 md:px-6 md:pb-10"
-          : "oventric-web min-h-screen w-full bg-slate-50 px-4 py-6 md:px-6"
+          : "oventric-web web-feed min-h-screen w-full bg-[#F9FAFB] px-4 py-6 md:px-6 md:py-10"
       }
     >
       {isAppShell && (
