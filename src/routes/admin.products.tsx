@@ -50,7 +50,8 @@ const CATEGORIES = ["themes", "plugins", "blocks", "scripts"] as const;
 
 interface FormState {
   id?: string;
-  kind: "digital" | "physical";
+  // Oventric is digital-only; physical listings no longer exist.
+  kind: "digital";
   name: string;
   category: string;
   subcategory: string;
@@ -116,7 +117,7 @@ function ProductsPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "active" | "rejected">(
     "pending",
   );
-  const [kindFilter, setKindFilter] = useState<"all" | "digital" | "physical">("all");
+  
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const [rejectHint, setRejectHint] = useState("");
@@ -148,24 +149,17 @@ function ProductsPage() {
     return () => clearInterval(id);
   }, [autoRefresh, refresh]);
 
-  // If the current status filter is empty for the selected kind, fall back to "all"
-  // so switching to a tab (e.g. Physical) never looks empty when rows actually exist.
+  // If the current status filter is empty, fall back to "all" so a tab never
+  // looks empty when rows actually exist.
   useEffect(() => {
     if (!rows || statusFilter === "all") return;
-    const inKind = rows.filter((r) =>
-      kindFilter === "all" ? true : ((r.kind as string) ?? "digital") === kindFilter,
-    );
-    if (
-      inKind.length > 0 &&
-      inKind.filter((r) => (r.status as string) === statusFilter).length === 0
-    ) {
+    if (rows.length > 0 && rows.filter((r) => (r.status as string) === statusFilter).length === 0) {
       setStatusFilter("all");
     }
-  }, [rows, kindFilter, statusFilter]);
+  }, [rows, statusFilter]);
 
   const filtered = (rows ?? []).filter((p) => {
     if (statusFilter !== "all" && (p.status as string) !== statusFilter) return false;
-    if (kindFilter !== "all" && ((p.kind as string) ?? "digital") !== kindFilter) return false;
     return true;
   });
 
@@ -183,7 +177,7 @@ function ProductsPage() {
     const filePath = (p.file_path as string) ?? null;
     setModal({
       id: p.id as string,
-      kind: (p.kind as string) === "physical" ? "physical" : "digital",
+      kind: "digital",
       name: (p.name as string) ?? "",
       category: (p.category as string) ?? "themes",
       subcategory: (p.subcategory as string) ?? "",
@@ -283,14 +277,6 @@ function ProductsPage() {
             cover_path: modal.cover_path,
             file_path: modal.file_path,
             promoted: modal.promoted,
-            brand: modal.kind === "physical" ? modal.brand || null : undefined,
-            condition: modal.kind === "physical" ? modal.condition || null : undefined,
-            location: modal.kind === "physical" ? modal.location || null : undefined,
-            negotiable: modal.kind === "physical" ? modal.negotiable || null : undefined,
-            delivery: modal.kind === "physical" ? modal.delivery || null : undefined,
-            seller_phone: modal.kind === "physical" ? modal.seller_phone || null : undefined,
-            whatsapp_number: modal.kind === "physical" ? modal.whatsapp_number || null : undefined,
-            social_link: modal.kind === "physical" ? modal.social_link || null : undefined,
           },
         });
         toast.success("Product updated");
@@ -319,13 +305,7 @@ function ProductsPage() {
     }
   };
 
-  const byKind = (rows ?? []).filter((p) =>
-    kindFilter === "all" ? true : ((p.kind as string) ?? "digital") === kindFilter,
-  );
-  const kindCount = (k: "all" | "digital" | "physical") =>
-    k === "all"
-      ? (rows?.length ?? 0)
-      : (rows ?? []).filter((r) => ((r.kind as string) ?? "digital") === k).length;
+  const byKind = rows ?? [];
   const statusCountInKind = (s: "all" | "pending" | "active" | "rejected") =>
     s === "all" ? byKind.length : byKind.filter((r) => (r.status as string) === s).length;
 
@@ -393,25 +373,6 @@ function ProductsPage() {
         </div>
       </header>
 
-      {/* Primary: product type */}
-      <div className="mb-3 inline-flex rounded-xl bg-[#141418] border border-white/10 p-1">
-        {(["all", "digital", "physical"] as const).map((k) => (
-          <button
-            key={k}
-            onClick={() => setKindFilter(k)}
-            className={`px-4 py-2 rounded-[10px] text-sm font-semibold transition ${
-              kindFilter === k ? "bg-emerald-500 text-black" : "text-slate-300 hover:text-white"
-            }`}
-          >
-            {k === "all" ? "All" : k === "digital" ? "Digital Products" : "Physical Products"}
-            <span
-              className={`ml-2 text-[11px] font-bold ${kindFilter === k ? "text-black/70" : "text-slate-500"}`}
-            >
-              {kindCount(k)}
-            </span>
-          </button>
-        ))}
-      </div>
 
       {/* Secondary: status within selected type */}
       <div className="mb-4 flex flex-wrap gap-2">
@@ -468,7 +429,7 @@ function ProductsPage() {
                       {status}
                     </span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold border ${kind === "physical" ? "bg-sky-500/15 border-sky-500/40 text-sky-300" : "bg-white/5 border-white/10 text-slate-400"}`}
+                      className="text-[10px] px-1.5 py-0.5 rounded uppercase font-bold border bg-white/5 border-white/10 text-slate-400"
                     >
                       {kind}
                     </span>
@@ -826,15 +787,6 @@ function ProductsPage() {
                   />
                 </Field>
               </div>
-              {modal.kind === "physical" && (
-                <Field label="Subcategory">
-                  <input
-                    value={modal.subcategory}
-                    onChange={(e) => setModal({ ...modal, subcategory: e.target.value })}
-                    className={inputCls}
-                  />
-                </Field>
-              )}
               <Field label="Vendor">
                 <input
                   value={modal.vendor}
@@ -850,90 +802,8 @@ function ProductsPage() {
                   className={inputCls}
                 />
               </Field>
-              {modal.kind === "physical" ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Field label="Location">
-                    <input
-                      value={modal.location}
-                      onChange={(e) => setModal({ ...modal, location: e.target.value })}
-                      className={inputCls}
-                    />
-                  </Field>
-                  <Field label="Brand">
-                    <input
-                      value={modal.brand}
-                      onChange={(e) => setModal({ ...modal, brand: e.target.value })}
-                      className={inputCls}
-                    />
-                  </Field>
-                  <Field label="Condition">
-                    <select
-                      value={modal.condition}
-                      onChange={(e) => setModal({ ...modal, condition: e.target.value })}
-                      className={inputCls}
-                    >
-                      {(["Brand New", "Used", "Refurbished"] as const).map((v) => (
-                        <option key={v} value={v}>
-                          {v}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                  <Field label="Negotiable">
-                    <select
-                      value={modal.negotiable}
-                      onChange={(e) => setModal({ ...modal, negotiable: e.target.value })}
-                      className={inputCls}
-                    >
-                      {(["Yes", "No", "Maybe"] as const).map((v) => (
-                        <option key={v} value={v}>
-                          {v}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                  <Field label="Delivery">
-                    <select
-                      value={modal.delivery}
-                      onChange={(e) => setModal({ ...modal, delivery: e.target.value })}
-                      className={inputCls}
-                    >
-                      {(["Yes", "No", "Maybe"] as const).map((v) => (
-                        <option key={v} value={v}>
-                          {v}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                  <Field label="Seller phone">
-                    <input
-                      value={modal.seller_phone}
-                      onChange={(e) =>
-                        setModal({ ...modal, seller_phone: e.target.value.replace(/\D/g, "") })
-                      }
-                      className={inputCls}
-                    />
-                  </Field>
-                  <Field label="WhatsApp">
-                    <input
-                      value={modal.whatsapp_number}
-                      onChange={(e) =>
-                        setModal({ ...modal, whatsapp_number: e.target.value.replace(/\D/g, "") })
-                      }
-                      className={inputCls}
-                    />
-                  </Field>
-                  <Field label="Social link">
-                    <input
-                      value={modal.social_link}
-                      onChange={(e) => setModal({ ...modal, social_link: e.target.value })}
-                      placeholder="https://…"
-                      className={inputCls}
-                    />
-                  </Field>
-                </div>
-              ) : (
-                <>
+              <>
+
                   <Field label="External download URL (optional)">
                     <input
                       value={modal.external_url}
@@ -1010,8 +880,7 @@ function ProductsPage() {
                       )}
                     </button>
                   </div>
-                </>
-              )}
+              </>
               <label className="flex items-center gap-2 text-sm text-slate-300">
                 <input
                   type="checkbox"
@@ -1104,7 +973,7 @@ function ProductPreviewModal({ product, onClose }: { product: Row; onClose: () =
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-1">
               <span
-                className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold border ${kind === "physical" ? "bg-sky-500/15 border-sky-500/40 text-sky-300" : "bg-emerald-500/15 border-emerald-500/40 text-emerald-300"}`}
+                className="text-[10px] px-1.5 py-0.5 rounded uppercase font-bold border bg-emerald-500/15 border-emerald-500/40 text-emerald-300"
               >
                 {kind}
               </span>

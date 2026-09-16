@@ -549,7 +549,7 @@ export const upsertCategory = createServerFn({ method: "POST" })
     description?: string;
     sort_order?: number;
     enabled?: boolean;
-    kind?: "digital" | "physical";
+    kind?: "digital";
     parent_id?: string | null;
   }) => i)
   .handler(async ({ data, context }) => {

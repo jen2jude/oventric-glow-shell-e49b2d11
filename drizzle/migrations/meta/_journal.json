@@ -50,6 +50,13 @@
       "when": 1789545965581,
       "tag": "0006_grant_select_product_cashback_pct",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1789551547500,
+      "tag": "0007_digital_only_marketplace",
+      "breakpoints": true
     }
   ]
 }
