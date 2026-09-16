@@ -121,7 +121,6 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
   const loadBalances = useServerFn(getWalletBalances);
   const loadProfile = useServerFn(getMyFullProfile);
   const loadDiscovery = useServerFn(getDiscoveryFeed);
-  const loadCourses = useServerFn(listCourses);
   const loadTopUsers = useServerFn(getTopUsers);
 
   const [main, setMain] = useState(0);
@@ -142,9 +141,6 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
       originalAmount: number;
       fxSnapshot: { base: string; rates: Record<string, number> } | null;
     }>
-  >([]);
-  const [courses, setCourses] = useState<
-    Array<{ id: string; title: string; coverUrl: string | null; priceUsd: number; isFree: boolean }>
   >([]);
   const [bounties, setBounties] = useState<
     Array<{ id: string; title: string; coverUrl: string | null; amountUsd: number }>
@@ -214,24 +210,10 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
         setTopUsers(r.users);
       })
       .catch(() => {});
-    loadCourses()
-      .then((rows) => {
-        if (cancelled) return;
-        setCourses(
-          (rows ?? []).slice(0, 10).map((c) => ({
-            id: c.id,
-            title: c.title,
-            coverUrl: c.coverUrl,
-            priceUsd: c.priceUSD,
-            isFree: c.isFree,
-          })),
-        );
-      })
-      .catch(() => {});
     return () => {
       cancelled = true;
     };
-  }, [loadDiscovery, loadCourses]);
+  }, [loadDiscovery]);
 
   return (
     <div className="hub-enter mx-auto w-full max-w-5xl px-3 md:px-6 pt-0 md:py-8 space-y-7 pb-24 bg-[#0A0A0B] min-h-screen">
@@ -341,10 +323,7 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
             See all <ChevronRight className="w-3.5 h-3.5" />
           </Link>
         </div>
-        <ExploreCategories onSelect={(cat) => {
-          if (cat === "Academy") onSelect("Academy");
-          else onSelect("Marketplace");
-        }} />
+        <ExploreCategories onSelect={() => onSelect("Marketplace")} />
       </section>
 
       {/* Featured This Week - compact 3-up cards, mirrors reference */}
@@ -391,19 +370,6 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
           meta: `${(Math.random() * 2 + 1).toFixed(1)}k sold`,
           icon: "🔥",
           onClick: () => onSelect("Marketplace"),
-        }))}
-      />
-
-      {/* Academy & Bounties in same UI style */}
-      <MiniRail
-        title="Academy Trending"
-        onSeeAll={() => onSelect("Academy")}
-        items={courses.map((c) => ({
-          id: c.id,
-          title: c.title,
-          coverUrl: c.coverUrl,
-          meta: c.isFree ? "Free" : safeFormatDisplayPrice({ price_usd: c.priceUsd }, currency),
-          onClick: () => onSelect("Academy"),
         }))}
       />
 
