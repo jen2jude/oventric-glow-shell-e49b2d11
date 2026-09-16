@@ -76,6 +76,7 @@ import {
   PhotoGridSkeleton,
 } from "@/components/oventric/skeletons";
 import { formatMoney } from "@/lib/fx-display";
+import { PurchaseAssistantPanel } from "@/components/oventric/PurchaseAssistantPanel";
 import { listMySales, type SaleDTO } from "@/lib/fulfilment.functions";
 import { OrderFulfilmentRoadmap } from "@/components/oventric/OrderFulfilmentRoadmap";
 import { QuickActions } from "@/components/oventric/dashboard/QuickActions";
