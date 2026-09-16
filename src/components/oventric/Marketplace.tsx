@@ -256,7 +256,7 @@ function AppMarketplace() {
               </section>
             ) : (
               <div className="space-y-8 pt-6">
-                {/* Catalog — sort tabs + grid (Digital / Physical modes) */}
+                {/* Catalog — sort tabs + grid */}
                 {mode !== "all" && byMode.length > 0 && (
                   <section className="px-4">
                     <div className="no-scrollbar -mx-1 mb-4 flex gap-5 overflow-x-auto px-1">

@@ -403,7 +403,7 @@ export const getAcademyRecommendations = createServerFn({ method: "GET" }).handl
       .sort((a, b) => b.enrollments - a.enrollments || (b.priceUsd > 0 ? 1 : -1))
       .slice(0, 6);
 
-    // ---- Products (mixed digital + physical, top rated / most reviewed) ----
+    // ---- Products (top rated / most reviewed) ----
     const pRows = prodRes.data ?? [];
     const pCovers = await signBucket(sb, "product-covers", pRows.map((p: any) => p.cover_path));
     const productsAll: DiscoveryProduct[] = pRows.map((p: any, i: number) => ({
@@ -418,12 +418,7 @@ export const getAcademyRecommendations = createServerFn({ method: "GET" }).handl
       originalAmount: Number(p.original_amount ?? p.price_usd ?? 0),
       fxSnapshot: (p.fx_snapshot as DiscoveryProduct["fxSnapshot"]) ?? null,
     }));
-    // Split by kind to keep the mix balanced
-    const digital = pRows.map((p: any, i: number) => ({ p: productsAll[i], kind: p.kind }))
-      .filter((x) => x.kind === "digital").slice(0, 4).map((x) => x.p);
-    const physical = pRows.map((p: any, i: number) => ({ p: productsAll[i], kind: p.kind }))
-      .filter((x) => x.kind !== "digital").slice(0, 4).map((x) => x.p);
-    const products = [...digital, ...physical].slice(0, 6);
+    const products = productsAll.slice(0, 6);
 
     // ---- Bounties ----
     const bRows = bntRes.data ?? [];

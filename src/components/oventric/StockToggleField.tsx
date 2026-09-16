@@ -7,7 +7,7 @@ interface Props {
 }
 
 /**
- * Availability switch shared by the digital + physical publish forms and the
+ * Availability switch shared by the digital publish forms and the
  * listing editor. Out-of-stock listings stay visible but cannot be bought.
  */
 export function StockToggleField({ inStock, onChange, disabled }: Props) {
