@@ -1,4 +1,3 @@
-import { AppOnlyGate } from "@/lib/app-gate";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -9,11 +8,12 @@ import {
   Download,
   Printer,
   ShoppingCart,
-  Award,
   ArrowLeftRight,
   ArrowDown,
   ArrowUp,
   Lock,
+  ReceiptText,
+  CalendarDays,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -24,6 +24,7 @@ import {
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { downloadWalletCsv, printWalletPdf } from "@/components/oventric/wallet/export";
 import { formatMoney } from "@/lib/fx-display";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/wallet/ledger")({
   ssr: false,
@@ -44,43 +45,29 @@ export const Route = createFileRoute("/wallet/ledger")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: WalletLedgerPageGated,
+  component: WalletLedgerPage,
 });
 
-function WalletLedgerPageGated() {
-  return (
-    <AppOnlyGate
-      title="Your wallet lives in the app"
-      description="Balances, cashback, escrow releases and payouts are only available in the Oventric app."
-      from="wallet"
-    >
-      <WalletLedgerPage />
-    </AppOnlyGate>
-  );
-}
-
-const TABS = ["All", "Cashback", "Bounty", "Escrow", "Payouts"] as const;
+const TABS = ["All", "Cashback", "Escrow", "Payouts"] as const;
 type Tab = (typeof TABS)[number];
 
 const TAB_TYPES: Record<Exclude<Tab, "All">, WalletTxType[]> = {
   Cashback: ["Cashback Earned", "Affiliate Cashback Payout"],
-  Bounty: ["Gig Bounty Escrowed"],
   Escrow: ["Marketplace Sale", "Marketplace Purchase"],
   Payouts: ["Payout Withdrawal", "Wallet Top-Up", "Wallet Transfer Sent", "Wallet Transfer Received"],
 };
 
 function txStyle(type: WalletTxType, inflow: boolean) {
   if (type === "Marketplace Purchase" || type === "Ad Injection Charge")
-    return { icon: ShoppingCart, tone: "bg-[#3B1030] text-[#F472B6]" };
+    return { icon: ShoppingCart, tone: "bg-accent text-accent-foreground" };
   if (type === "Cashback Earned" || type === "Affiliate Cashback Payout")
-    return { icon: ArrowDown, tone: "bg-[#0F2E23] text-[#34D399]" };
-  if (type === "Gig Bounty Escrowed") return { icon: Award, tone: "bg-[#3A2A12] text-[#FBBF24]" };
-  if (type === "Marketplace Sale") return { icon: Lock, tone: "bg-[#12283A] text-[#60A5FA]" };
+    return { icon: ArrowDown, tone: "bg-ledger-positive-soft text-ledger-positive" };
+  if (type === "Marketplace Sale") return { icon: Lock, tone: "bg-ledger-info-soft text-ledger-info" };
   if (type === "Wallet Transfer Sent" || type === "Wallet Transfer Received")
-    return { icon: ArrowLeftRight, tone: "bg-[#12283A] text-[#60A5FA]" };
+    return { icon: ArrowLeftRight, tone: "bg-ledger-info-soft text-ledger-info" };
   return inflow
-    ? { icon: ArrowDown, tone: "bg-[#0F2E23] text-[#34D399]" }
-    : { icon: ArrowUp, tone: "bg-[#2A1B3D] text-[#C084FC]" };
+    ? { icon: ArrowDown, tone: "bg-ledger-positive-soft text-ledger-positive" }
+    : { icon: ArrowUp, tone: "bg-muted text-muted-foreground" };
 }
 
 function WalletLedgerPage() {
@@ -125,11 +112,28 @@ function WalletLedgerPage() {
       const d = new Date(t.occurredAt);
       const key = `${d.getFullYear()}-${d.getMonth()}`;
       const label = d.toLocaleDateString(undefined, { month: "long", year: "numeric" });
-      if (!map.has(key)) map.set(key, { label, items: [] });
-      map.get(key)!.items.push(t);
+      const group = map.get(key);
+      if (group) group.items.push(t);
+      else map.set(key, { label, items: [t] });
     }
     return Array.from(map.values());
   }, [items]);
+
+  const totals = useMemo(() => {
+    const currencies = new Set(items.map((item) => item.currency));
+    const currency = currencies.size === 1 ? items[0]?.currency : null;
+    const incoming = items.filter((item) => item.inflow);
+    const outgoing = items.filter((item) => !item.inflow);
+    return {
+      currency,
+      incomingCount: incoming.length,
+      outgoingCount: outgoing.length,
+      incomingAmount: incoming.reduce((sum, item) => sum + item.amount, 0),
+      outgoingAmount: outgoing.reduce((sum, item) => sum + item.amount, 0),
+    };
+  }, [items]);
+
+  const activityLabel = groups[0]?.label ?? "All activity";
 
   const exportAll = (kind: "csv" | "pdf") => {
     if (kind === "csv") downloadWalletCsv(items);
@@ -137,119 +141,138 @@ function WalletLedgerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0B] text-white pb-24">
-      <header className="sticky top-0 z-30 bg-[#0A0A0B]/95 backdrop-blur border-b border-white/5">
-        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center gap-3">
-          <button
-            onClick={() => router.history.back()}
-            aria-label="Go back"
-            className="p-1.5 -ml-1.5 rounded-full text-white/80 hover:bg-white/10"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="flex-1 text-center text-[16px] font-semibold">Transaction Ledger</h1>
-          <button
-            onClick={() => setFiltersOpen((v) => !v)}
-            aria-label="Filter transactions"
-            className={`p-1.5 -mr-1.5 rounded-full hover:bg-white/10 ${filtersOpen ? "text-[#E5484D]" : "text-white/80"}`}
-          >
-            <SlidersHorizontal className="w-5 h-5" />
-          </button>
-        </div>
-
-        <div className="max-w-2xl mx-auto px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar">
-          {TABS.map((t) => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`shrink-0 px-4 py-1.5 rounded-full text-[13px] font-semibold transition ${
-                tab === t
-                  ? "bg-[#4C1D95] text-white"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              {t}
-            </button>
-          ))}
+    <div className="web-ledger min-h-screen bg-background text-foreground pb-16">
+      <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
+          <Button variant="ghost" size="sm" onClick={() => router.history.back()} className="gap-2">
+            <ArrowLeft className="size-4" />
+            <span className="hidden sm:inline">Back to wallet</span>
+          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => exportAll("csv")} className="gap-2">
+              <Download className="size-4" /> <span className="hidden sm:inline">Export</span> CSV
+            </Button>
+            <Button variant="outline" size="icon" onClick={() => exportAll("pdf")} aria-label="Print transaction ledger">
+              <Printer className="size-4" />
+            </Button>
+          </div>
         </div>
       </header>
 
-      {filtersOpen && (
-        <div className="max-w-2xl mx-auto px-4 pt-3">
-          <div className="rounded-[10px] border border-white/10 bg-[#111114] p-3 flex flex-wrap items-center gap-2">
-            <input
-              type="date"
-              value={from}
-              onChange={(e) => setFrom(e.target.value)}
-              className="px-2.5 py-1.5 rounded-[10px] border border-white/15 bg-transparent text-xs"
-            />
-            <span className="text-xs text-white/40">to</span>
-            <input
-              type="date"
-              value={to}
-              onChange={(e) => setTo(e.target.value)}
-              className="px-2.5 py-1.5 rounded-[10px] border border-white/15 bg-transparent text-xs"
-            />
-            <div className="flex-1" />
-            <button
-              onClick={() => exportAll("csv")}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] border border-white/15 text-xs"
-            >
-              <Download className="w-3.5 h-3.5" /> CSV
-            </button>
-            <button
-              onClick={() => exportAll("pdf")}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] border border-white/15 text-xs"
-            >
-              <Printer className="w-3.5 h-3.5" /> PDF
-            </button>
+      <main className="mx-auto max-w-5xl px-4 pt-8 sm:px-6 sm:pt-12">
+        <section className="overflow-hidden rounded-[10px] border border-border bg-card shadow-ledger-panel animate-fade-in">
+          <div className="border-b border-border bg-card/80 p-5 sm:p-8">
+            <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+              <div>
+                <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase text-muted-foreground">
+                  <ReceiptText className="size-4 text-primary" /> Transaction ledger
+                </div>
+                <h1 className="font-wallet-display text-3xl font-bold sm:text-4xl">
+                  Activity <span className="text-border">/</span> {activityLabel}
+                </h1>
+                <p className="mt-2 text-sm text-muted-foreground">A complete, read-only record of your wallet activity.</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-[10px] border border-border bg-muted/55 px-4 py-3 sm:min-w-40">
+                  <p className="text-xs font-bold uppercase text-muted-foreground">Money in</p>
+                  <p className="mt-1 font-wallet-display text-sm font-bold text-ledger-positive sm:text-base">
+                    {totals.currency ? `+${formatMoney(totals.incomingAmount, totals.currency)}` : `${totals.incomingCount} entries`}
+                  </p>
+                </div>
+                <div className="rounded-[10px] border border-border bg-muted/55 px-4 py-3 sm:min-w-40">
+                  <p className="text-xs font-bold uppercase text-muted-foreground">Money out</p>
+                  <p className="mt-1 font-wallet-display text-sm font-bold sm:text-base">
+                    {totals.currency ? `−${formatMoney(totals.outgoingAmount, totals.currency)}` : `${totals.outgoingCount} entries`}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      )}
 
-      <main className="max-w-2xl mx-auto px-4 pt-4 space-y-5">
+          <div className="border-b border-border bg-muted/25 px-4 sm:px-8">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 gap-5 overflow-x-auto no-scrollbar sm:gap-7">
+                {TABS.map((t) => (
+                  <Button
+                    key={t}
+                    variant="ghost"
+                    onClick={() => setTab(t)}
+                    aria-current={tab === t ? "page" : undefined}
+                    className="ledger-tab h-14 shrink-0 rounded-none px-0 text-sm"
+                  >
+                    {t === "All" ? "All transactions" : t}
+                  </Button>
+                ))}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setFiltersOpen((value) => !value)}
+                aria-expanded={filtersOpen}
+                className="shrink-0 gap-2"
+              >
+                <SlidersHorizontal className="size-4" />
+                <span className="hidden sm:inline">Date range</span>
+              </Button>
+            </div>
+          </div>
+
+          {filtersOpen && (
+            <div className="flex flex-col gap-3 border-b border-border bg-muted/40 p-4 sm:flex-row sm:items-end sm:px-8">
+              <label className="grid flex-1 gap-1.5 text-xs font-semibold text-muted-foreground">
+                From
+                <span className="relative">
+                  <CalendarDays className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2" />
+                  <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-10 w-full rounded-[8px] border border-input bg-card pl-10 pr-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/15" />
+                </span>
+              </label>
+              <label className="grid flex-1 gap-1.5 text-xs font-semibold text-muted-foreground">
+                To
+                <span className="relative">
+                  <CalendarDays className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2" />
+                  <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-10 w-full rounded-[8px] border border-input bg-card pl-10 pr-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/15" />
+                </span>
+              </label>
+              {(from || to) && <Button variant="ghost" onClick={() => { setFrom(""); setTo(""); }}>Clear</Button>}
+            </div>
+          )}
+
+          <div>
         {!userId ? (
-          <div className="py-16 text-center text-sm text-slate-500">
-            Wallet is Locked, Sign in to view
+          <div className="px-6 py-20 text-center text-sm text-muted-foreground">
+            Sign in to view your wallet activity.
           </div>
         ) : query.isLoading ? (
-          <div className="py-16 text-center text-sm text-slate-500">Loading…</div>
+          <div className="px-6 py-20 text-center text-sm text-muted-foreground">Loading transactions…</div>
         ) : groups.length === 0 ? (
-          <div className="py-16 text-center text-sm text-slate-500">
+          <div className="px-6 py-20 text-center text-sm text-muted-foreground">
             No transactions in this category.
           </div>
         ) : (
           groups.map((g) => (
             <section key={g.label}>
-              <div className="mb-2 text-[13px] font-semibold text-slate-400">{g.label}</div>
-              <div className="rounded-[10px] bg-[#111114] border border-white/5 divide-y divide-white/5 overflow-hidden">
+              <div className="border-y border-border bg-muted/45 px-5 py-3 text-xs font-bold uppercase text-muted-foreground first:border-t-0 sm:px-8">{g.label}</div>
+              <div className="divide-y divide-border">
                 {g.items.map((t) => {
                   const style = txStyle(t.type, t.inflow);
                   return (
-                    <div key={t.id} className="p-3.5 flex items-center gap-3">
-                      <span
-                        className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center ${style.tone}`}
-                      >
-                        <style.icon className="w-5 h-5" />
+                    <div key={t.id} className="group flex items-center gap-3 px-4 py-4 transition-colors hover:bg-muted/35 sm:gap-5 sm:px-8 sm:py-5">
+                      <span className={`flex size-11 shrink-0 items-center justify-center rounded-[10px] border border-current/10 transition-transform group-hover:scale-105 ${style.tone}`}>
+                        <style.icon className="size-5" />
                       </span>
                       <div className="min-w-0 flex-1">
-                        <div className="text-[14px] font-semibold text-white truncate">
-                          {t.type}
-                        </div>
-                        <div className="text-[12px] text-slate-500 truncate font-mono">
-                          {t.txHash}
-                        </div>
+                        <div className="truncate text-sm font-bold text-foreground">{t.type}</div>
+                        <div className="mt-1 truncate font-mono text-xs text-muted-foreground">{t.txHash}</div>
                       </div>
-                      <div className="text-right shrink-0">
-                        <div
-                          className={`text-[14px] font-bold tabular-nums ${
-                            t.inflow ? "text-emerald-400" : "text-white"
-                          }`}
-                        >
-                          {t.inflow ? "+ " : "- "}
-                          {formatMoney(t.amount, t.currency)}
+                      <div className="hidden text-right sm:block">
+                        <div className="text-xs text-muted-foreground">{new Date(t.occurredAt).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}</div>
+                        <div className="mt-1 inline-flex rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">Recorded</div>
+                      </div>
+                      <div className="w-auto shrink-0 text-right sm:w-40">
+                        <div className={`font-wallet-display text-sm font-bold tabular-nums sm:text-base ${t.inflow ? "text-ledger-positive" : "text-foreground"}`}>
+                          {t.inflow ? "+ " : "− "}{formatMoney(t.amount, t.currency)}
                         </div>
-                        <div className="text-[12px] text-slate-500">
+                        <div className="mt-1 text-xs text-muted-foreground">
                           {new Date(t.occurredAt).toLocaleDateString(undefined, {
                             month: "short",
                             day: "numeric",
@@ -264,6 +287,12 @@ function WalletLedgerPage() {
             </section>
           ))
         )}
+          </div>
+          <footer className="flex items-center justify-between border-t border-border bg-muted/20 px-5 py-4 text-xs text-muted-foreground sm:px-8">
+            <span>{items.length} {items.length === 1 ? "transaction" : "transactions"}</span>
+            <span>Read-only wallet record</span>
+          </footer>
+        </section>
       </main>
     </div>
   );
