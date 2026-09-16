@@ -96,13 +96,9 @@ export const seedNewUser = createServerFn({ method: "POST" })
     // 2. Wallets (only for real, non-anonymous users — RLS blocks anon inserts,
     // and anon browse-only sessions don't need wallet rows until they upgrade).
     if (!isAnonymous) {
-      const rows = WALLET_CURRENCIES.map((currency) => ({
-        user_id: userId,
-        currency,
-        available_balance: 0,
-        escrow_balance: 0,
-        accumulated_cashback: 0,
-      }));
+      // Balances are DB-defaulted to 0; the browser role has no INSERT
+      // privilege on balance columns.
+      const rows = WALLET_CURRENCIES.map((currency) => ({ user_id: userId, currency }));
       const { error: walletErr } = await supabase
         .from("wallets")
         .upsert(rows, { onConflict: "user_id,currency", ignoreDuplicates: true });
