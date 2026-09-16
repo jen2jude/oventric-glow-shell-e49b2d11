@@ -243,6 +243,8 @@ export interface VerifyResult {
   redirectTo: string | null;
   cashbackEarnedUSD: number;
   displayCurrency: string;
+  /** Who the provider metadata says paid — used to scope the return screen. */
+  payerId?: string | null;
 }
 
 export function providerForReference(reference: string): "flutterwave" | "paystack" {
@@ -326,6 +328,7 @@ export async function settleFromMetadata(
       redirectTo: `/order/${res.orderId}`,
       cashbackEarnedUSD: "cashbackEarnUSD" in res ? (res.cashbackEarnUSD ?? 0) : 0,
       displayCurrency: String((meta.display_currency as string) ?? paidCurrency),
+      payerId: userId,
     };
   }
 
@@ -337,8 +340,16 @@ export async function settleFromMetadata(
     typeof meta.return_to === "string" && meta.return_to.startsWith("/")
       ? meta.return_to
       : "/?section=Wallet&wallet=funded";
-  return { ok: true, status: "success", redirectTo: returnTo, cashbackEarnedUSD: 0, displayCurrency: creditCurrency };
+  return {
+    ok: true,
+    status: "success",
+    redirectTo: returnTo,
+    cashbackEarnedUSD: 0,
+    displayCurrency: creditCurrency,
+    payerId: userId,
+  };
 }
+
 
 /** Verify a reference with whichever gateway created it, then settle. */
 export async function verifyAndSettle(reference: string): Promise<VerifyResult> {
