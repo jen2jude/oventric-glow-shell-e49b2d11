@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { 
@@ -35,6 +35,76 @@ export function ShopManagement() {
   const [logoPath, setLogoPath] = useState(user?.shop_logo_path || user?.avatar_path || "");
   const [coverPath, setCoverPath] = useState(user?.shop_cover_path || user?.cover_path || "");
   const [saving, setSaving] = useState(false);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState<"logo" | "cover" | null>(null);
+  const logoRef = useRef<HTMLInputElement>(null);
+  const coverRef = useRef<HTMLInputElement>(null);
+
+  // Resolve stored storage paths into viewable URLs for the existing images.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const sign = async (bucket: "avatars" | "profile-covers", path: string) => {
+        const { data } = await supabase.storage.from(bucket).createSignedUrl(path, 60 * 60 * 24);
+        return data?.signedUrl ?? null;
+      };
+      if (logoPath && !logoPath.startsWith("blob:") && !logoPath.startsWith("http")) {
+        const url = await sign("avatars", logoPath);
+        if (!cancelled) setLogoPreview(url);
+      }
+      if (coverPath && !coverPath.startsWith("blob:") && !coverPath.startsWith("http")) {
+        const url = await sign("profile-covers", coverPath);
+        if (!cancelled) setCoverPreview(url);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // Only on first load of the stored paths.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const pickAndUpload = useCallback(
+    async (file: File, kind: "logo" | "cover") => {
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please choose an image file.");
+        return;
+      }
+      if (file.size > 8 * 1024 * 1024) {
+        toast.error("Image must be smaller than 8MB.");
+        return;
+      }
+      setUploading(kind);
+      const localUrl = URL.createObjectURL(file);
+      if (kind === "logo") setLogoPreview(localUrl);
+      else setCoverPreview(localUrl);
+      try {
+        const { data: auth } = await supabase.auth.getUser();
+        const uid = auth.user?.id;
+        if (!uid) throw new Error("Not authenticated");
+        const bucket = kind === "logo" ? "avatars" : "profile-covers";
+        const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+        const path = `${uid}/shop-${kind}-${crypto.randomUUID()}.${ext}`;
+        const { error } = await supabase.storage.from(bucket).upload(path, file, {
+          cacheControl: "3600",
+          upsert: false,
+          contentType: file.type || "image/jpeg",
+        });
+        if (error) throw error;
+        if (kind === "logo") setLogoPath(path);
+        else setCoverPath(path);
+        toast.success(kind === "logo" ? "Shop logo uploaded" : "Cover image uploaded");
+      } catch {
+        toast.error("Could not upload that image. Please try again.");
+        if (kind === "logo") setLogoPreview(null);
+        else setCoverPreview(null);
+      } finally {
+        setUploading(null);
+      }
+    },
+    [],
+  );
 
   const handleSave = async () => {
     setSaving(true);
