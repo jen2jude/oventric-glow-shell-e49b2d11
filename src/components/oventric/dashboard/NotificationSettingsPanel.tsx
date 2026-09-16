@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { BellRing, Loader2, Smartphone, MonitorSmartphone } from "lucide-react";
 import { toast } from "sonner";
 import {
-  NOTIFICATION_TOPICS,
+  MVP_NOTIFICATION_TOPICS,
   TOPIC_META,
   defaultTopicPrefs,
   type NotificationTopic,
@@ -120,7 +120,7 @@ export function NotificationSettingsPanel() {
         </div>
       ) : (
         <ul className="mt-2 divide-y divide-white/10 md:divide-slate-200">
-          {NOTIFICATION_TOPICS.map((topic) => {
+          {MVP_NOTIFICATION_TOPICS.map((topic) => {
             const meta = TOPIC_META[topic];
             const p = prefs[topic];
             return (

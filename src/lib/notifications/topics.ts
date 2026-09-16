@@ -87,3 +87,12 @@ export function defaultTopicPrefs(): TopicPrefs {
 export function isNotificationTopic(value: string): value is NotificationTopic {
   return (NOTIFICATION_TOPICS as readonly string[]).includes(value);
 }
+
+/**
+ * Topics surfaced in the current MVP. Bounties and Academy are preserved in
+ * the taxonomy (backend + history) but are not part of the live product, so
+ * they are not offered as user-facing preferences.
+ */
+export const MVP_NOTIFICATION_TOPICS = NOTIFICATION_TOPICS.filter(
+  (t) => t !== "bounties" && t !== "academy",
+);

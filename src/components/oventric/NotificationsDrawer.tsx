@@ -7,7 +7,7 @@ import {
   Bell,
   Wallet as WalletIcon,
   Users,
-  Timer,
+  
   ShieldAlert,
   Megaphone,
   Mail,
@@ -35,7 +35,7 @@ import {
   markAllNotificationsRead,
 } from "@/lib/communications.functions";
 
-type Channel = "all" | "financials" | "circles" | "bounties" | "system";
+type Channel = "all" | "financials" | "social" | "system";
 
 interface DbNotif {
   id: string;
@@ -51,16 +51,14 @@ interface DbNotif {
 
 const CHANNELS: { key: Channel; label: string }[] = [
   { key: "all", label: "All" },
-  { key: "financials", label: "💳 Financials" },
-  { key: "circles", label: "👥 Circles" },
-  { key: "bounties", label: "🎯 Bounties" },
-  { key: "system", label: "📢 System" },
+  { key: "financials", label: "Payments" },
+  { key: "social", label: "Social" },
+  { key: "system", label: "Announcements" },
 ];
 
 function channelForKind(kind: string): Exclude<Channel, "all"> {
   if (/wallet|payout|escrow|order|payment|cashback/i.test(kind)) return "financials";
-  if (/circle|peer|follow/i.test(kind)) return "circles";
-  if (/bounty/i.test(kind)) return "bounties";
+  if (/peer|follow|post|comment|like|mention|circle/i.test(kind)) return "social";
   // System bucket = admin-originated only: announcements, admin direct
   // messages, alerts, and anything explicitly marked system.
   return "system";
@@ -69,8 +67,7 @@ function channelForKind(kind: string): Exclude<Channel, "all"> {
 function iconForKind(kind: string) {
   const c = channelForKind(kind);
   if (c === "financials") return <WalletIcon className="w-4 h-4 text-emerald-600" />;
-  if (c === "circles") return <Users className="w-4 h-4 text-sky-600" />;
-  if (c === "bounties") return <Timer className="w-4 h-4 text-amber-600" />;
+  if (c === "social") return <Users className="w-4 h-4 text-sky-600" />;
   if (kind === "announcement") return <Megaphone className="w-4 h-4 text-fuchsia-600" />;
   if (kind === "direct_message") return <Mail className="w-4 h-4 text-primary" />;
   if (kind === "alert") return <ShieldAlert className="w-4 h-4 text-destructive" />;
