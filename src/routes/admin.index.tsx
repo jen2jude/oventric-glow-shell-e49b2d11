@@ -100,7 +100,7 @@ function AdminOverview() {
       value: stats.orders,
       icon: ShoppingBag,
       tint: "text-amber-300 bg-amber-500/10 border-amber-500/30",
-      to: "/admin/products",
+      to: "/admin/orders",
     },
     {
       label: "Revenue (USD)",
@@ -181,7 +181,7 @@ function AdminOverview() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Section title="Recent orders" viewAll="/admin/products">
+        <Section title="Recent orders" viewAll="/admin/orders">
           {activity.orders.length === 0 ? (
             <Empty label="No orders yet." />
           ) : (

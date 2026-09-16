@@ -5,12 +5,10 @@ import {
   ShieldCheck,
   LayoutGrid,
   LayoutDashboard,
-
   Users,
   ShoppingBag,
   Package,
-
-  Megaphone,
+  ClipboardList,
   Tags,
   ToggleLeft,
   ScrollText,
@@ -19,15 +17,12 @@ import {
   AlertCircle,
   Loader2,
   Radio,
-  Target,
   Wallet,
-  GraduationCap,
+  Gift,
   Banknote,
   ShieldAlert,
-  BookOpen,
   UserCog,
   LifeBuoy,
-  Wrench,
 } from "lucide-react";
 
 import { canAccessSection, type ManagementRole } from "@/lib/admin-roles";
@@ -71,35 +66,48 @@ function AdminError({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
-type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean };
+type NavItem = {
+  to: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  exact?: boolean;
+  group: string;
+};
+
+/**
+ * Active MVP admin navigation. Non-MVP consoles (bounties, academy/courses,
+ * circles, blog, campaigns/ad inquiries, affiliate waitlist, creator tools,
+ * MiniPay manual payments) still exist as routes for future work but are
+ * deliberately not listed and are locked to super admins via SECTION_ACCESS.
+ */
 const NAV: NavItem[] = [
-  { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
-  { to: "/admin/users", label: "Users", icon: Users },
-  { to: "/admin/sellers", label: "Sellers", icon: ShoppingBag },
-  { to: "/admin/products", label: "Products", icon: Package },
+  { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true, group: "Dashboard" },
 
-  { to: "/admin/campaigns", label: "Campaigns", icon: Megaphone },
-  { to: "/admin/ad-inquiries", label: "Ad Inquiries", icon: Megaphone },
-  { to: "/admin/bounties", label: "Bounties", icon: Target },
-  { to: "/admin/courses", label: "Academy", icon: GraduationCap },
-  { to: "/admin/blog", label: "Blog", icon: BookOpen },
-  { to: "/admin/system-wallets", label: "System Wallets", icon: Wallet },
-  { to: "/admin/payouts", label: "Payouts", icon: Banknote },
-  { to: "/admin/manual-payments", label: "MiniPay", icon: Banknote },
-  { to: "/admin/disputes", label: "Disputes", icon: ShieldAlert },
-  { to: "/admin/affiliates", label: "Affiliates", icon: Users },
-  { to: "/admin/communications", label: "Communications", icon: Radio },
-  { to: "/admin/categories", label: "Categories", icon: Tags },
-  { to: "/admin/marketplace-controls", label: "Marketplace Curation", icon: LayoutGrid },
-  { to: "/admin/circle-categories", label: "Circle Categories", icon: ShieldCheck },
+  { to: "/admin/users", label: "Users", icon: Users, group: "Core" },
+  { to: "/admin/sellers", label: "Sellers", icon: ShoppingBag, group: "Core" },
+  { to: "/admin/products", label: "Products", icon: Package, group: "Core" },
+  { to: "/admin/orders", label: "Orders", icon: ClipboardList, group: "Core" },
+  { to: "/admin/categories", label: "Categories", icon: Tags, group: "Core" },
+  {
+    to: "/admin/marketplace-controls",
+    label: "Marketplace Curation",
+    icon: LayoutGrid,
+    group: "Core",
+  },
 
-  { to: "/admin/tools", label: "Tools Library", icon: Wrench },
-  { to: "/admin/features", label: "Features", icon: ToggleLeft },
-  { to: "/admin/audit", label: "Audit Log", icon: ScrollText },
-  { to: "/admin/settings", label: "Settings", icon: Settings },
-  { to: "/admin/reports", label: "Reports", icon: ShieldCheck },
-  { to: "/admin/management-users", label: "Management Users", icon: UserCog },
-  { to: "/admin/support", label: "Support Desk", icon: LifeBuoy },
+  { to: "/admin/system-wallets", label: "Wallet / Ledger", icon: Wallet, group: "Money" },
+  { to: "/admin/payouts", label: "Payouts", icon: Banknote, group: "Money" },
+  { to: "/admin/disputes", label: "Refunds / Disputes", icon: ShieldAlert, group: "Money" },
+  { to: "/admin/cashback-wallet", label: "Cashback", icon: Gift, group: "Money" },
+
+  { to: "/admin/reports", label: "Reports", icon: ShieldCheck, group: "Community" },
+  { to: "/admin/communications", label: "Communications", icon: Radio, group: "Community" },
+  { to: "/admin/support", label: "Support Desk", icon: LifeBuoy, group: "Community" },
+
+  { to: "/admin/audit", label: "Audit Log", icon: ScrollText, group: "System" },
+  { to: "/admin/management-users", label: "Management Users", icon: UserCog, group: "System" },
+  { to: "/admin/features", label: "Features", icon: ToggleLeft, group: "System" },
+  { to: "/admin/settings", label: "Settings", icon: Settings, group: "System" },
 ];
 
 function AdminLayout() {
@@ -216,7 +224,8 @@ function AdminLayout() {
           </div>
         </div>
         <nav className="flex-1 p-2 flex flex-col gap-0.5 overflow-y-auto">
-          {visibleNav.map((n) => {
+          {visibleNav.map((n, i) => {
+            const showGroup = i === 0 || visibleNav[i - 1]!.group !== n.group;
             const badgeCount =
               n.to === "/admin/payouts"
                 ? pendingPayouts
@@ -231,33 +240,39 @@ function AdminLayout() {
                   ? `${badgeCount} listings awaiting approval`
                   : `${badgeCount} pending`;
             return (
-              <Link
-                key={n.to}
-                to={n.to as unknown as "/admin"}
-                activeOptions={{ exact: n.exact }}
-                activeProps={{
-                  className: alert
-                    ? "bg-red-500/15 text-red-200 border-red-500/50"
-                    : "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
-                }}
-                inactiveProps={{
-                  className: alert
-                    ? "text-red-300 bg-red-500/10 hover:bg-red-500/20 border-red-500/40 animate-pulse"
-                    : "text-slate-400 hover:text-white hover:bg-white/5 border-transparent",
-                }}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-[10px] border text-sm font-medium transition-colors"
-              >
-                <n.icon className="w-4 h-4 shrink-0" />
-                <span className="flex-1">{n.label}</span>
-                {alert && (
-                  <span
-                    aria-label={badgeLabel}
-                    className="min-w-[20px] h-[18px] px-1.5 rounded-full text-[10px] font-black bg-red-500 text-white flex items-center justify-center"
-                  >
-                    {badgeCount > 99 ? "99+" : badgeCount}
-                  </span>
+              <div key={n.to}>
+                {showGroup && (
+                  <div className="px-3 pt-3 pb-1 text-[10px] uppercase tracking-widest text-slate-600 font-bold">
+                    {n.group}
+                  </div>
                 )}
-              </Link>
+                <Link
+                  to={n.to as unknown as "/admin"}
+                  activeOptions={{ exact: n.exact }}
+                  activeProps={{
+                    className: alert
+                      ? "bg-red-500/15 text-red-200 border-red-500/50"
+                      : "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
+                  }}
+                  inactiveProps={{
+                    className: alert
+                      ? "text-red-300 bg-red-500/10 hover:bg-red-500/20 border-red-500/40 animate-pulse"
+                      : "text-slate-400 hover:text-white hover:bg-white/5 border-transparent",
+                  }}
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-[10px] border text-sm font-medium transition-colors"
+                >
+                  <n.icon className="w-4 h-4 shrink-0" />
+                  <span className="flex-1">{n.label}</span>
+                  {alert && (
+                    <span
+                      aria-label={badgeLabel}
+                      className="min-w-[20px] h-[18px] px-1.5 rounded-full text-[10px] font-black bg-red-500 text-white flex items-center justify-center"
+                    >
+                      {badgeCount > 99 ? "99+" : badgeCount}
+                    </span>
+                  )}
+                </Link>
+              </div>
             );
           })}
         </nav>

@@ -26,33 +26,39 @@ export const ROLE_DESCRIPTIONS: Record<ManagementRole, string> = {
   support: "User management & audit log for handling tickets.",
 };
 
-/** Map admin route path → roles that may view it. `admin` always allowed. */
+/**
+ * Map admin route path → roles that may view it. `admin` (super admin) always allowed.
+ * Only MVP admin sections are listed. Non-MVP sections (bounties, academy/courses,
+ * circles, blog, campaigns/ad inquiries, affiliates, creator tools, MiniPay/manual
+ * payments) are intentionally absent: their code and data remain, but no management
+ * role other than super admin can reach them, by navigation or by direct URL.
+ */
 export const SECTION_ACCESS: Record<string, ManagementRole[]> = {
   "/admin": ["admin", "moderator", "finance", "content", "support"],
+
+  // Core
   "/admin/users": ["admin", "support"],
   "/admin/sellers": ["admin", "moderator", "support"],
   "/admin/products": ["admin", "moderator", "content"],
-
-  "/admin/campaigns": ["admin", "content"],
-  "/admin/ad-inquiries": ["admin", "content"],
-  "/admin/bounties": ["admin", "moderator", "finance"],
-  "/admin/courses": ["admin", "content"],
-  "/admin/blog": ["admin", "content"],
-  "/admin/system-wallets": ["admin", "finance"],
-  "/admin/payouts": ["admin", "finance"],
-  "/admin/affiliates": ["admin", "finance"],
-  "/admin/cashback-wallet": ["admin", "finance"],
-  "/admin/disputes": ["admin", "moderator", "finance", "support"],
-  "/admin/communications": ["admin", "content"],
+  "/admin/orders": ["admin", "finance", "support", "moderator"],
   "/admin/categories": ["admin", "content"],
   "/admin/marketplace-controls": ["admin", "moderator", "content"],
-  "/admin/circle-categories": ["admin", "content"],
 
-  "/admin/tools": ["admin", "content"],
+  // Money
+  "/admin/system-wallets": ["admin", "finance"],
+  "/admin/payouts": ["admin", "finance"],
+  "/admin/disputes": ["admin", "moderator", "finance", "support"],
+  "/admin/cashback-wallet": ["admin", "finance"],
+
+  // Community & moderation
+  "/admin/reports": ["admin", "moderator"],
+  "/admin/communications": ["admin", "content"],
+  "/admin/support": ["admin", "support"],
+
+  // System
   "/admin/features": ["admin"],
   "/admin/audit": ["admin", "support"],
   "/admin/settings": ["admin"],
-  "/admin/reports": ["admin", "moderator"],
   "/admin/management-users": ["admin"],
 };
 
