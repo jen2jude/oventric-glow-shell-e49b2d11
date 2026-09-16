@@ -31,9 +31,9 @@ export function AnalyticsWidget() {
   }, [fetchFn]);
 
   return (
-    <div className="rounded-2xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-4">
+    <div className="rounded-[10px] border border-border bg-card p-5 shadow-sm">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-bold text-white md:text-slate-900">Usage analytics</h3>
+        <h3 className="text-sm font-bold text-foreground">Usage analytics</h3>
       </div>
 
       {error ? (
@@ -77,11 +77,11 @@ function Metric({
   value: string | number;
 }) {
   return (
-    <div className="rounded-xl border border-white/10 md:border-slate-200 bg-white/[0.03] md:bg-slate-50 p-3">
-      <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-slate-400 md:text-slate-500 font-bold">
+    <div className="rounded-[10px] border border-border bg-muted p-3">
+      <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-muted-foreground">
         <Icon className="w-3.5 h-3.5" /> {label}
       </div>
-      <div className="mt-1 text-xl font-black text-white md:text-slate-900">{value}</div>
+      <div className="mt-1 text-xl font-black text-foreground">{value}</div>
     </div>
   );
 }
