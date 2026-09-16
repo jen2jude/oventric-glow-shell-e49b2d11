@@ -75,6 +75,12 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
             >
               Explore
             </button>
+            <Link
+              to="/sellers"
+              className="hover:text-crimson transition-colors pb-1 border-b-2 border-transparent text-slate-900"
+            >
+              Shop
+            </Link>
             <button
               onClick={() => onSelect("Wallet")}
               className={`hover:text-crimson transition-colors pb-1 border-b-2 ${activeSection === "Wallet" ? "text-crimson border-crimson" : "border-transparent text-slate-900"}`}
@@ -172,6 +178,13 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
                   {item}
                 </button>
               ))}
+              <Link
+                to="/sellers"
+                onClick={() => setMenuOpen(false)}
+                className="block w-full text-left text-lg font-black text-slate-900"
+              >
+                Shop
+              </Link>
             </div>
           </nav>
         </div>
