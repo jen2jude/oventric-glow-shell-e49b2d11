@@ -257,9 +257,13 @@ function CheckoutPage() {
   const cashbackApplyLocal = Number((cashbackApplyUSD * ratio).toFixed(2));
   const discountLocal = Number((discountUSD * ratio).toFixed(2));
   const totalLocalExact = Number(Math.max(0, subtotalLocal - discountLocal - cashbackApplyLocal).toFixed(2));
-  // Cashback earn is ALWAYS 2% of the full gross sale price — regardless of
-  // whether the buyer applied any cashback on this order.
-  const cashbackEarnUSD = coupon ? 0 : Number((subtotalUSD * WALLET_CASHBACK_PCT).toFixed(2));
+  // Cashback is seller-funded and configured per product (Stage 3). This is a
+  // preview of what settlement will award: the same post-coupon base and the
+  // same rate the server reads back off the product row.
+  const cashbackRatePct = Math.max(0, Math.min(50, Number(product?.cashbackPct ?? 0)));
+  const cashbackEarnUSD = Number(
+    (Math.max(0, subtotalUSD - discountUSD) * (cashbackRatePct / 100)).toFixed(2),
+  );
 
   useEffect(() => {
     let cancelled = false;
