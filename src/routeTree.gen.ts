@@ -55,6 +55,8 @@ import { Route as AdminSupportRouteImport } from './routes/admin.support'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminSellersRouteImport } from './routes/admin.sellers'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminRefundsRouteImport } from './routes/admin.refunds'
+import { Route as AdminReconciliationRouteImport } from './routes/admin.reconciliation'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminPayoutsRouteImport } from './routes/admin.payouts'
 import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
@@ -62,6 +64,7 @@ import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminMarketplaceControlsRouteImport } from './routes/admin.marketplace-controls'
 import { Route as AdminManualPaymentsRouteImport } from './routes/admin.manual-payments'
 import { Route as AdminManagementUsersRouteImport } from './routes/admin.management-users'
+import { Route as AdminLedgerRouteImport } from './routes/admin.ledger'
 import { Route as AdminFeaturesRouteImport } from './routes/admin.features'
 import { Route as AdminDisputesRouteImport } from './routes/admin.disputes'
 import { Route as AdminCoursesRouteImport } from './routes/admin.courses'
@@ -322,6 +325,16 @@ const AdminReportsRoute = AdminReportsRouteImport.update({
   path: '/reports',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminRefundsRoute = AdminRefundsRouteImport.update({
+  id: '/refunds',
+  path: '/refunds',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminReconciliationRoute = AdminReconciliationRouteImport.update({
+  id: '/reconciliation',
+  path: '/reconciliation',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminProductsRoute = AdminProductsRouteImport.update({
   id: '/products',
   path: '/products',
@@ -356,6 +369,11 @@ const AdminManualPaymentsRoute = AdminManualPaymentsRouteImport.update({
 const AdminManagementUsersRoute = AdminManagementUsersRouteImport.update({
   id: '/management-users',
   path: '/management-users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLedgerRoute = AdminLedgerRouteImport.update({
+  id: '/ledger',
+  path: '/ledger',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminFeaturesRoute = AdminFeaturesRouteImport.update({
@@ -553,6 +571,7 @@ export interface FileRoutesByFullPath {
   '/admin/courses': typeof AdminCoursesRoute
   '/admin/disputes': typeof AdminDisputesRoute
   '/admin/features': typeof AdminFeaturesRoute
+  '/admin/ledger': typeof AdminLedgerRoute
   '/admin/management-users': typeof AdminManagementUsersRoute
   '/admin/manual-payments': typeof AdminManualPaymentsRoute
   '/admin/marketplace-controls': typeof AdminMarketplaceControlsRoute
@@ -560,6 +579,8 @@ export interface FileRoutesByFullPath {
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/payouts': typeof AdminPayoutsRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/reconciliation': typeof AdminReconciliationRoute
+  '/admin/refunds': typeof AdminRefundsRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -634,6 +655,7 @@ export interface FileRoutesByTo {
   '/admin/courses': typeof AdminCoursesRoute
   '/admin/disputes': typeof AdminDisputesRoute
   '/admin/features': typeof AdminFeaturesRoute
+  '/admin/ledger': typeof AdminLedgerRoute
   '/admin/management-users': typeof AdminManagementUsersRoute
   '/admin/manual-payments': typeof AdminManualPaymentsRoute
   '/admin/marketplace-controls': typeof AdminMarketplaceControlsRoute
@@ -641,6 +663,8 @@ export interface FileRoutesByTo {
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/payouts': typeof AdminPayoutsRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/reconciliation': typeof AdminReconciliationRoute
+  '/admin/refunds': typeof AdminRefundsRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -719,6 +743,7 @@ export interface FileRoutesById {
   '/admin/courses': typeof AdminCoursesRoute
   '/admin/disputes': typeof AdminDisputesRoute
   '/admin/features': typeof AdminFeaturesRoute
+  '/admin/ledger': typeof AdminLedgerRoute
   '/admin/management-users': typeof AdminManagementUsersRoute
   '/admin/manual-payments': typeof AdminManualPaymentsRoute
   '/admin/marketplace-controls': typeof AdminMarketplaceControlsRoute
@@ -726,6 +751,8 @@ export interface FileRoutesById {
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/payouts': typeof AdminPayoutsRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/reconciliation': typeof AdminReconciliationRoute
+  '/admin/refunds': typeof AdminRefundsRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -805,6 +832,7 @@ export interface FileRouteTypes {
     | '/admin/courses'
     | '/admin/disputes'
     | '/admin/features'
+    | '/admin/ledger'
     | '/admin/management-users'
     | '/admin/manual-payments'
     | '/admin/marketplace-controls'
@@ -812,6 +840,8 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/payouts'
     | '/admin/products'
+    | '/admin/reconciliation'
+    | '/admin/refunds'
     | '/admin/reports'
     | '/admin/sellers'
     | '/admin/settings'
@@ -886,6 +916,7 @@ export interface FileRouteTypes {
     | '/admin/courses'
     | '/admin/disputes'
     | '/admin/features'
+    | '/admin/ledger'
     | '/admin/management-users'
     | '/admin/manual-payments'
     | '/admin/marketplace-controls'
@@ -893,6 +924,8 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/payouts'
     | '/admin/products'
+    | '/admin/reconciliation'
+    | '/admin/refunds'
     | '/admin/reports'
     | '/admin/sellers'
     | '/admin/settings'
@@ -970,6 +1003,7 @@ export interface FileRouteTypes {
     | '/admin/courses'
     | '/admin/disputes'
     | '/admin/features'
+    | '/admin/ledger'
     | '/admin/management-users'
     | '/admin/manual-payments'
     | '/admin/marketplace-controls'
@@ -977,6 +1011,8 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/payouts'
     | '/admin/products'
+    | '/admin/reconciliation'
+    | '/admin/refunds'
     | '/admin/reports'
     | '/admin/sellers'
     | '/admin/settings'
@@ -1388,6 +1424,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminReportsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/refunds': {
+      id: '/admin/refunds'
+      path: '/refunds'
+      fullPath: '/admin/refunds'
+      preLoaderRoute: typeof AdminRefundsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/reconciliation': {
+      id: '/admin/reconciliation'
+      path: '/reconciliation'
+      fullPath: '/admin/reconciliation'
+      preLoaderRoute: typeof AdminReconciliationRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/products': {
       id: '/admin/products'
       path: '/products'
@@ -1435,6 +1485,13 @@ declare module '@tanstack/react-router' {
       path: '/management-users'
       fullPath: '/admin/management-users'
       preLoaderRoute: typeof AdminManagementUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/ledger': {
+      id: '/admin/ledger'
+      path: '/ledger'
+      fullPath: '/admin/ledger'
+      preLoaderRoute: typeof AdminLedgerRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/features': {
@@ -1671,6 +1728,7 @@ interface AdminRouteChildren {
   AdminCoursesRoute: typeof AdminCoursesRoute
   AdminDisputesRoute: typeof AdminDisputesRoute
   AdminFeaturesRoute: typeof AdminFeaturesRoute
+  AdminLedgerRoute: typeof AdminLedgerRoute
   AdminManagementUsersRoute: typeof AdminManagementUsersRoute
   AdminManualPaymentsRoute: typeof AdminManualPaymentsRoute
   AdminMarketplaceControlsRoute: typeof AdminMarketplaceControlsRoute
@@ -1678,6 +1736,8 @@ interface AdminRouteChildren {
   AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminPayoutsRoute: typeof AdminPayoutsRoute
   AdminProductsRoute: typeof AdminProductsRoute
+  AdminReconciliationRoute: typeof AdminReconciliationRoute
+  AdminRefundsRoute: typeof AdminRefundsRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminSellersRoute: typeof AdminSellersRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
@@ -1702,6 +1762,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCoursesRoute: AdminCoursesRoute,
   AdminDisputesRoute: AdminDisputesRoute,
   AdminFeaturesRoute: AdminFeaturesRoute,
+  AdminLedgerRoute: AdminLedgerRoute,
   AdminManagementUsersRoute: AdminManagementUsersRoute,
   AdminManualPaymentsRoute: AdminManualPaymentsRoute,
   AdminMarketplaceControlsRoute: AdminMarketplaceControlsRoute,
@@ -1709,6 +1770,8 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPaymentsRoute: AdminPaymentsRoute,
   AdminPayoutsRoute: AdminPayoutsRoute,
   AdminProductsRoute: AdminProductsRoute,
+  AdminReconciliationRoute: AdminReconciliationRoute,
+  AdminRefundsRoute: AdminRefundsRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminSellersRoute: AdminSellersRoute,
   AdminSettingsRoute: AdminSettingsRoute,
