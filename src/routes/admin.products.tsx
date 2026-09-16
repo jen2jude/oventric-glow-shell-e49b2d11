@@ -149,24 +149,17 @@ function ProductsPage() {
     return () => clearInterval(id);
   }, [autoRefresh, refresh]);
 
-  // If the current status filter is empty for the selected kind, fall back to "all"
-  // so switching to a tab (e.g. Physical) never looks empty when rows actually exist.
+  // If the current status filter is empty, fall back to "all" so a tab never
+  // looks empty when rows actually exist.
   useEffect(() => {
     if (!rows || statusFilter === "all") return;
-    const inKind = rows.filter((r) =>
-      kindFilter === "all" ? true : ((r.kind as string) ?? "digital") === kindFilter,
-    );
-    if (
-      inKind.length > 0 &&
-      inKind.filter((r) => (r.status as string) === statusFilter).length === 0
-    ) {
+    if (rows.length > 0 && rows.filter((r) => (r.status as string) === statusFilter).length === 0) {
       setStatusFilter("all");
     }
-  }, [rows, kindFilter, statusFilter]);
+  }, [rows, statusFilter]);
 
   const filtered = (rows ?? []).filter((p) => {
     if (statusFilter !== "all" && (p.status as string) !== statusFilter) return false;
-    if (kindFilter !== "all" && ((p.kind as string) ?? "digital") !== kindFilter) return false;
     return true;
   });
 
