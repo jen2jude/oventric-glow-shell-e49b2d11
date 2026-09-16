@@ -41,10 +41,8 @@ export function ProductAttachmentCard({
   return (
     <div className={`mt-3 ${isAppShell ? 'mx-4 md:mx-0' : ''}`}>
       <Link
-        to="/shop/$id"
-        params={{ id: product.vendorSlug || product.vendorId }}
-        search={{ productId: product.id }}
-
+        to="/product/$id"
+        params={{ id: product.id }}
         className="flex items-stretch bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] rounded-2xl overflow-hidden transition-colors group"
       >
         <div className="w-28 sm:w-32 shrink-0 bg-neutral-900 overflow-hidden">
