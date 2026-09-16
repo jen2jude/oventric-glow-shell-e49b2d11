@@ -204,48 +204,50 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
     <div className="min-h-screen w-full bg-[#F7F8FA]">
       <main className="mx-auto w-full max-w-[1280px] px-4 pb-16 sm:px-6 lg:px-8">
         {/* ---------------------------------------------------------- hero */}
-        <section className="mt-4 overflow-hidden rounded-[20px] bg-[#16181D] sm:mt-6 sm:rounded-[24px]">
+        <section className="relative mt-4 overflow-hidden rounded-[20px] bg-[#16181D] sm:mt-6 sm:rounded-[24px]">
           <div className="grid items-stretch gap-0 lg:grid-cols-[1.05fr_1fr]">
-            <div className="flex flex-col justify-center gap-6 px-6 py-10 sm:px-10 sm:py-14 lg:py-20">
+            <div className="relative z-10 flex flex-col justify-center gap-6 px-5 py-8 sm:px-10 sm:py-14 lg:py-20">
               <div>
-                <h1 className="font-[Outfit] text-[34px] font-extrabold leading-[1.05] text-white sm:text-[46px] lg:text-[58px]">
+                <h1 className="font-[Outfit] text-[30px] font-extrabold leading-[1.05] text-white sm:text-[46px] lg:text-[58px]">
                   Creative People
                   <span className="block text-crimson">Real Value</span>
                 </h1>
-                <p className="mt-4 max-w-md text-sm leading-relaxed text-white/70 sm:text-base">
+                <p className="mt-3 max-w-[15rem] text-[13px] leading-relaxed text-white/70 sm:mt-4 sm:max-w-md sm:text-base">
                   Buy, sell and discover digital products, services and tools from amazing creators
                   around the world.
                 </p>
               </div>
 
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={() => onSelect("Marketplace")}
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-crimson px-7 text-sm font-bold text-white transition-all hover:brightness-110 active:scale-95"
+                  className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-crimson px-5 text-sm font-bold text-white transition-all hover:brightness-110 active:scale-95 sm:h-12 sm:flex-none sm:px-7"
                 >
-                  Explore Marketplace
-                  <ArrowRight className="h-4 w-4" />
+                  <span className="sm:hidden">Explore</span>
+                  <span className="hidden sm:inline">Explore Marketplace</span>
+                  <ArrowRight className="hidden h-4 w-4 sm:block" />
                 </button>
                 <button
                   type="button"
                   onClick={startSelling}
-                  className="inline-flex h-12 items-center justify-center rounded-full border border-white/25 px-7 text-sm font-bold text-white transition-colors hover:bg-white/10 active:scale-95"
+                  className="inline-flex h-11 flex-1 items-center justify-center rounded-full border border-white/25 bg-white/5 px-5 text-sm font-bold text-white transition-colors hover:bg-white/10 active:scale-95 sm:h-12 sm:flex-none sm:bg-transparent sm:px-7"
                 >
-                  Become a Seller
+                  <span className="sm:hidden">Sell</span>
+                  <span className="hidden sm:inline">Become a Seller</span>
                 </button>
               </div>
             </div>
 
-            <div className="relative min-h-[240px] sm:min-h-[320px] lg:min-h-[420px]">
+            <div className="absolute inset-0 lg:relative lg:min-h-[420px]">
               <img
                 src={heroImage}
                 alt="A creator working on digital products"
                 width={1600}
                 height={912}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover object-[70%_center]"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#16181D] via-[#16181D]/40 to-transparent lg:via-[#16181D]/25" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#16181D] via-[#16181D]/75 to-[#16181D]/20 sm:via-[#16181D]/50 sm:to-transparent lg:via-[#16181D]/25" />
               <ul className="absolute inset-y-0 right-4 hidden flex-col justify-center gap-4 text-right sm:right-8 md:flex">
                 {HANDWRITTEN.map((word, i) => (
                   <li
@@ -286,7 +288,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           title="Shop by Category"
           action={{ label: "View all", onClick: () => onSelect("Marketplace") }}
         />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
+        <div className="grid grid-cols-4 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
           {categories.map((c, i) => {
             const { Icon } = visualForCategory(c.slug, c.name);
             const tint = TILE_TINTS[i % TILE_TINTS.length]!;
@@ -295,12 +297,12 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
                 key={c.id}
                 type="button"
                 onClick={() => onSelect("Marketplace")}
-                className="flex items-center gap-3 rounded-[14px] border border-slate-200/80 bg-white p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)] active:scale-[0.98]"
+                className="flex flex-col items-center gap-2 rounded-[14px] border-slate-200/80 bg-transparent p-0 text-center transition-all active:scale-[0.98] sm:flex-row sm:gap-3 sm:border sm:bg-white sm:p-4 sm:text-left sm:hover:-translate-y-0.5 sm:hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
               >
-                <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-[12px] ${tint}`}>
-                  <Icon className="h-5 w-5" />
+                <span className={`grid h-14 w-14 shrink-0 place-items-center rounded-full ${tint} sm:h-11 sm:w-11 sm:rounded-[12px]`}>
+                  <Icon className="h-6 w-6 sm:h-5 sm:w-5" />
                 </span>
-                <span className="min-w-0 truncate text-sm font-bold capitalize text-slate-900">
+                <span className="min-w-0 max-w-full truncate text-xs font-bold capitalize text-slate-900 sm:text-sm">
                   {c.name.trim()}
                 </span>
               </button>
@@ -315,9 +317,11 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           subtitle="Handpicked by our team"
           action={{ label: "View all", onClick: () => onSelect("Marketplace") }}
         />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-4">
+        <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5 lg:gap-4">
           {featured.slice(0, 10).map((p) => (
-            <ProductCard key={p.id} product={p} currency={baseCurrency} />
+            <div key={p.id} className="w-[84%] shrink-0 snap-start sm:w-auto sm:shrink">
+              <ProductCard product={p} currency={baseCurrency} />
+            </div>
           ))}
           {featured.length === 0 && <EmptyNote>No listings published yet.</EmptyNote>}
         </div>
@@ -327,13 +331,13 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           title="Top Sellers"
           action={{ label: "View all", onClick: () => navigate({ to: "/sellers" }) }}
         />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-4">
+        <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5 lg:gap-4">
           {sellers.map((s) => (
             <Link
               key={s.id}
               to="/shop/$id"
               params={{ id: s.slug || s.id }}
-              className="flex flex-col items-center gap-2 rounded-[14px] border border-slate-200/80 bg-white p-5 text-center transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
+              className="flex w-[104px] shrink-0 flex-col items-center gap-2 rounded-[14px] border-slate-200/80 bg-transparent p-0 text-center transition-all sm:w-auto sm:shrink sm:border sm:bg-white sm:p-5 sm:hover:-translate-y-0.5 sm:hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
             >
               <div className="h-16 w-16 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
                 <AvatarImage src={s.avatarUrl} alt={s.name} />
