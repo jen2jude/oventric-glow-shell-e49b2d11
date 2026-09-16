@@ -35,7 +35,7 @@ import {
   markAllNotificationsRead,
 } from "@/lib/communications.functions";
 
-type Channel = "all" | "financials" | "circles" | "bounties" | "system";
+type Channel = "all" | "financials" | "social" | "system";
 
 interface DbNotif {
   id: string;
