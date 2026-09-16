@@ -1176,7 +1176,7 @@ export function Feed() {
       return (
         p.text.toLowerCase().includes(term) ||
         p.author_name.toLowerCase().includes(term) ||
-        (p.circle?.name ?? "").toLowerCase().includes(term)
+        
       );
     });
   }, [
