@@ -48,7 +48,7 @@ export const getMyReferralOverview = createServerFn({ method: "GET" })
       const { data: profs } = await supabaseAdmin
         .from("profiles")
         .select("user_id, display_name, username, avatar_path")
-        .in("id", inviteeIds);
+        .in("user_id", inviteeIds);
       for (const p of profs ?? []) {
         names.set(String(p.user_id), {
           name: (p.display_name as string) || (p.username as string) || "Oventric member",
@@ -109,11 +109,11 @@ export const attachReferral = createServerFn({ method: "POST" })
 
     const { data: referrer } = await supabaseAdmin
       .from("profiles")
-      .select("id")
+      .select("user_id")
       .eq("referral_code", data.code)
       .maybeSingle();
     if (!referrer) return { attached: false, reason: "unknown-code" as const };
-    if (String(referrer.id) === userId) return { attached: false, reason: "self" as const };
+    if (String(referrer.user_id) === userId) return { attached: false, reason: "self" as const };
 
     // Only before the invitee's first settled purchase.
     const { count: paidCount } = await supabaseAdmin
@@ -125,7 +125,7 @@ export const attachReferral = createServerFn({ method: "POST" })
 
     const { error } = await supabaseAdmin.from("referrals").insert({
       invitee_id: userId,
-      referrer_id: referrer.id,
+      referrer_id: referrer.user_id,
       status: "pending",
     });
     if (error && String(error.code) !== "23505") {
