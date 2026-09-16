@@ -72,7 +72,7 @@ function useMoney() {
 }
 
 function SkeletonBar({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse rounded bg-white/[0.06] md:bg-slate-200 ${className}`} />;
+  return <div className={`animate-pulse rounded bg-slate-200 ${className}`} />;
 }
 
 function EmptyState({
@@ -86,11 +86,11 @@ function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center text-center py-4 px-2">
-      <div className="w-10 h-10 rounded-full bg-white/[0.04] md:bg-slate-100 border border-white/5 md:border-slate-200 flex items-center justify-center mb-2">
-        <Icon className="w-4 h-4 text-slate-400 md:text-slate-600" />
+      <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center mb-2">
+        <Icon className="w-4 h-4 text-slate-600" />
       </div>
-      <p className="text-xs font-semibold text-slate-200 md:text-slate-700">{title}</p>
-      <p className="mt-0.5 text-[11px] text-slate-500 md:text-slate-500 leading-relaxed max-w-[220px]">
+      <p className="text-xs font-semibold text-slate-700">{title}</p>
+      <p className="mt-0.5 text-[11px] text-slate-500 leading-relaxed max-w-[220px]">
         {hint}
       </p>
     </div>
@@ -104,10 +104,10 @@ function SponsoredCard({ ad }: { ad: DiscoveryAd }) {
       href={ad.ctaUrl || "#"}
       target="_blank"
       rel="noopener noreferrer sponsored"
-      className="relative block bg-[#1E1E24] md:bg-white md:shadow-sm border border-fuchsia-500/30 rounded-2xl overflow-hidden hover:border-fuchsia-400/60 transition-colors"
+      className="relative block bg-white shadow-sm border border-fuchsia-500/30 rounded-2xl overflow-hidden hover:border-fuchsia-400/60 transition-colors"
     >
       {hasMedia && (
-        <div className="relative h-28 w-full overflow-hidden bg-white/5 md:bg-slate-100">
+        <div className="relative h-28 w-full overflow-hidden bg-slate-100">
           <ResponsiveImage
             src={ad.coverUrl as string}
             alt={ad.advertiser}
@@ -117,7 +117,7 @@ function SponsoredCard({ ad }: { ad: DiscoveryAd }) {
             decoding="async"
           />
           {ad.tier === "video" && (
-            <PlayCircle className="absolute inset-0 m-auto w-10 h-10 text-white/90 md:text-slate-700 drop-shadow" />
+            <PlayCircle className="absolute inset-0 m-auto w-10 h-10 text-slate-700 drop-shadow" />
           )}
         </div>
       )}
@@ -125,11 +125,11 @@ function SponsoredCard({ ad }: { ad: DiscoveryAd }) {
         <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-fuchsia-300 border border-fuchsia-400/40 bg-black/40 rounded px-1.5 py-0.5">
           <Megaphone className="w-3 h-3" /> Sponsored
         </span>
-        <div className="mt-2 text-sm font-bold text-white md:text-slate-900 leading-snug line-clamp-2">
+        <div className="mt-2 text-sm font-bold text-slate-900 leading-snug line-clamp-2">
           {ad.title}
         </div>
         {ad.body && (
-          <p className="mt-1 text-[11px] text-slate-400 md:text-slate-600 leading-relaxed line-clamp-2">
+          <p className="mt-1 text-[11px] text-slate-600 leading-relaxed line-clamp-2">
             {ad.body}
           </p>
         )}
@@ -138,7 +138,7 @@ function SponsoredCard({ ad }: { ad: DiscoveryAd }) {
             {ad.ctaLabel}
           </span>
         </div>
-        <div className="mt-2 text-[10px] text-slate-500 md:text-slate-500 truncate">
+        <div className="mt-2 text-[10px] text-slate-500 truncate">
           by {ad.advertiser}
         </div>
       </div>
@@ -158,10 +158,10 @@ function BirthdayCard({ people, onOpen }: { people: BirthdayPerson[]; onOpen: ()
   return (
     <button
       onClick={onOpen}
-      className="w-full text-left bg-[#1E1E24] md:bg-white md:shadow-sm border border-white/5 md:border-slate-200 rounded-2xl p-4 hover:border-pink-400/40 transition-colors"
+      className="w-full text-left bg-white shadow-sm border border-slate-200 rounded-2xl p-4 hover:border-pink-400/40 transition-colors"
     >
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-bold text-white md:text-slate-900 flex items-center gap-1.5">
+        <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
           <Cake className="w-4 h-4 text-pink-400" /> Birthdays
         </h3>
         <span className="text-[10px] font-bold uppercase tracking-wider text-pink-300">Today</span>
@@ -171,13 +171,13 @@ function BirthdayCard({ people, onOpen }: { people: BirthdayPerson[]; onOpen: ()
           {people.slice(0, 4).map((p) => (
             <span
               key={p.userId}
-              className="w-9 h-9 rounded-full ring-2 ring-[#1E1E24] md:ring-white overflow-hidden inline-block"
+              className="w-9 h-9 rounded-full ring-2 ring-white overflow-hidden inline-block"
             >
               <AvatarImage src={p.avatarUrl} alt={p.name} />
             </span>
           ))}
         </div>
-        <div className="min-w-0 flex-1 text-xs text-slate-200 md:text-slate-700 leading-snug">
+        <div className="min-w-0 flex-1 text-xs text-slate-700 leading-snug">
           {label}
         </div>
       </div>
@@ -202,22 +202,22 @@ function BirthdayModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-2xl bg-[#16161B] md:bg-white md:shadow-sm border border-white/10 md:border-slate-200 max-h-[80vh] overflow-hidden flex flex-col"
+        className="w-full max-w-md rounded-2xl bg-white shadow-sm border border-slate-200 max-h-[80vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <header className="flex items-center justify-between px-4 py-3 border-b border-white/10 md:border-slate-200">
+        <header className="flex items-center justify-between px-4 py-3 border-b border-slate-200">
           <div className="flex items-center gap-2">
             <Cake className="w-4 h-4 text-pink-400" />
-            <h4 className="text-sm font-bold text-white md:text-slate-900">Birthdays today</h4>
+            <h4 className="text-sm font-bold text-slate-900">Birthdays today</h4>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-[10px] text-slate-400 md:text-slate-600 hover:text-white md:hover:text-slate-900 hover:bg-white/5 md:hover:bg-slate-100"
+            className="p-1.5 rounded-[10px] text-slate-600 hover:text-slate-900 hover:bg-slate-100"
           >
             <X className="w-4 h-4" />
           </button>
         </header>
-        <ul className="flex-1 overflow-y-auto divide-y divide-white/5 md:divide-slate-200">
+        <ul className="flex-1 overflow-y-auto divide-y divide-slate-200">
           {people.map((p) => (
             <BirthdayRow
               key={p.userId}
@@ -268,11 +268,11 @@ function BirthdayRow({
           <Link
             to="/profile/$id"
             params={{ id: person.slug }}
-            className="block truncate text-sm font-semibold text-white md:text-slate-900 hover:text-pink-300"
+            className="block truncate text-sm font-semibold text-slate-900 hover:text-pink-300"
           >
             {person.name}
           </Link>
-          <div className="text-[10px] text-slate-500 md:text-slate-500">
+          <div className="text-[10px] text-slate-500">
             Turning another year today
           </div>
         </div>
@@ -283,12 +283,12 @@ function BirthdayRow({
           onChange={(e) => setBody(e.target.value)}
           disabled={sent}
           placeholder="Write a wish…"
-          className="flex-1 min-w-0 bg-black/40 md:bg-slate-50 border border-white/10 md:border-slate-300 rounded-[10px] px-2.5 py-1.5 text-xs text-white md:text-slate-900 placeholder:text-slate-500 focus:outline-none focus:border-pink-400/50"
+          className="flex-1 min-w-0 bg-slate-50 border border-slate-300 rounded-[10px] px-2.5 py-1.5 text-xs text-slate-900 placeholder:text-slate-500 focus:outline-none focus:border-pink-400/50"
         />
         <button
           onClick={submit}
           disabled={busy || sent}
-          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-[10px] bg-pink-500 hover:bg-pink-400 disabled:bg-white/10 disabled:text-slate-500 text-black text-xs font-bold"
+          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-[10px] bg-pink-500 hover:bg-pink-400 disabled:bg-slate-100 disabled:text-slate-400 text-black text-xs font-bold"
         >
           {sent ? (
             "Sent"
@@ -319,9 +319,9 @@ function ProductRow({
       to="/product/$id"
       params={{ id: p.id }}
       aria-label={`Open ${p.title}`}
-      className="flex items-center gap-3 min-w-0 text-left rounded-[10px] -mx-1 px-1 py-1 hover:bg-white/[0.03] transition-colors"
+      className="flex items-center gap-3 min-w-0 text-left rounded-[10px] -mx-1 px-1 py-1 hover:bg-slate-50 transition-colors"
     >
-      <div className="w-11 h-11 shrink-0 rounded-[10px] overflow-hidden bg-white/5 md:bg-slate-100 flex items-center justify-center">
+      <div className="w-11 h-11 shrink-0 rounded-[10px] overflow-hidden bg-slate-100 flex items-center justify-center">
         {p.coverUrl ? (
           <ResponsiveImage
             sizes="88px"
@@ -332,22 +332,22 @@ function ProductRow({
             decoding="async"
           />
         ) : (
-          <ShoppingBag className="w-4 h-4 text-white/70 md:text-slate-600" />
+          <ShoppingBag className="w-4 h-4 text-slate-600" />
         )}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="truncate text-xs font-semibold text-white md:text-slate-900">{p.title}</div>
+        <div className="truncate text-xs font-semibold text-slate-900">{p.title}</div>
         <div className="mt-1 flex items-center gap-1.5">
-          <span className="inline-flex items-center rounded-full border border-white/10 md:border-slate-200 bg-white/5 md:bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-slate-300 md:text-slate-700">
+          <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-slate-700">
             {p.category}
           </span>
-          <span className="text-[10px] text-slate-500 md:text-slate-500 truncate">
+          <span className="text-[10px] text-slate-500 truncate">
             {p.vendor || "Trending"}
           </span>
         </div>
       </div>
       <div className="shrink-0 text-right">
-        <div className="text-sm font-black text-white md:text-slate-900">
+        <div className="text-sm font-black text-slate-900">
           {priceFmt(p)}
         </div>
       </div>
@@ -474,17 +474,17 @@ export function DiscoveryPanel({ asPage = false }: { asPage?: boolean } = {}) {
 
       {/* 3. Top Peers in Your Circle — top 5 across any star tier */}
       <section
-        className="bg-[#1E1E24] md:bg-white md:shadow-sm border border-white/5 md:border-slate-200 rounded-2xl p-4"
+        className="bg-white shadow-sm border border-slate-200 rounded-2xl p-4"
         aria-busy={isLoading}
       >
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 mb-3 pb-2.5 border-b border-white/5 md:border-slate-100">
-          <h3 className="min-w-0 truncate text-sm font-bold text-white md:text-slate-900 flex items-center gap-1.5">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 mb-3 pb-2.5 border-b border-slate-100">
+          <h3 className="min-w-0 truncate text-sm font-bold text-slate-900 flex items-center gap-1.5">
             <span className="shrink-0">👑</span>{" "}
             <span className="truncate">Top Peers in Your Circle</span>
           </h3>
           <button
             onClick={() => navigateSection("Circles")}
-            className="shrink-0 rounded-[10px] px-2 py-1 text-[11px] font-semibold text-emerald-400 md:text-emerald-600 hover:bg-white/5 md:hover:bg-emerald-50 hover:text-emerald-300 md:hover:text-emerald-700 transition-colors"
+            className="shrink-0 rounded-[10px] px-2 py-1 text-[11px] font-semibold text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
           >
             See all
           </button>
@@ -494,7 +494,7 @@ export function DiscoveryPanel({ asPage = false }: { asPage?: boolean } = {}) {
           <ul className="space-y-1">
             {Array.from({ length: 5 }).map((_, i) => (
               <li key={i} className="flex items-center gap-2.5 py-1.5">
-                <div className="w-9 h-9 shrink-0 rounded-full bg-white/[0.06] md:bg-slate-200 animate-pulse" />
+                <div className="w-9 h-9 shrink-0 rounded-full bg-slate-200 animate-pulse" />
                 <div className="flex-1 space-y-1.5">
                   <SkeletonBar className="h-3 w-3/5" />
                   <SkeletonBar className="h-2 w-1/4" />
@@ -514,7 +514,7 @@ export function DiscoveryPanel({ asPage = false }: { asPage?: boolean } = {}) {
             {topPeers5.map((p: DiscoveryPeer) => (
               <li
                 key={p.id}
-                className="flex items-center gap-2.5 min-w-0 -mx-1.5 px-1.5 py-1.5 rounded-[10px] transition-colors hover:bg-white/[0.03] md:hover:bg-slate-50"
+                className="flex items-center gap-2.5 min-w-0 -mx-1.5 px-1.5 py-1.5 rounded-[10px] transition-colors hover:bg-slate-50"
               >
                 <Link
                   to="/profile/$id"
@@ -528,11 +528,11 @@ export function DiscoveryPanel({ asPage = false }: { asPage?: boolean } = {}) {
                   <Link
                     to="/profile/$id"
                     params={{ id: p.slug }}
-                    className="block truncate text-xs font-semibold text-white md:text-slate-900 hover:text-emerald-400 md:hover:text-emerald-600"
+                    className="block truncate text-xs font-semibold text-slate-900 hover:text-emerald-600"
                   >
                     {p.name}
                   </Link>
-                  <div className="flex items-center gap-1 text-[10px] text-slate-400 md:text-slate-600">
+                  <div className="flex items-center gap-1 text-[10px] text-slate-600">
                     <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                     <span>{p.stars.toFixed(1)}</span>
                   </div>
@@ -540,7 +540,7 @@ export function DiscoveryPanel({ asPage = false }: { asPage?: boolean } = {}) {
                 <button
                   onClick={() => openChat(p.id, p.name)}
                   aria-label={`Chat with ${p.name}`}
-                  className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-[10px] border border-white/10 md:border-slate-200 text-slate-300 md:text-slate-700 hover:bg-white/5 md:hover:bg-slate-100 text-[11px] font-semibold"
+                  className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-[10px] border border-slate-200 text-slate-700 hover:bg-slate-100 text-[11px] font-semibold"
                 >
                   <MessageCircle className="w-3 h-3" /> Chat
                 </button>
@@ -555,17 +555,17 @@ export function DiscoveryPanel({ asPage = false }: { asPage?: boolean } = {}) {
 
       {/* 5. Trending Marketplace items */}
       <section
-        className="bg-[#1E1E24] md:bg-white md:shadow-sm border border-white/5 md:border-slate-200 rounded-2xl p-4"
+        className="bg-white shadow-sm border border-slate-200 rounded-2xl p-4"
         aria-busy={isLoading}
       >
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 mb-3 pb-2.5 border-b border-white/5 md:border-slate-100">
-          <h3 className="min-w-0 truncate text-sm font-bold text-white md:text-slate-900 flex items-center gap-1.5">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 mb-3 pb-2.5 border-b border-slate-100">
+          <h3 className="min-w-0 truncate text-sm font-bold text-slate-900 flex items-center gap-1.5">
             <span className="shrink-0">🛍️</span>{" "}
             <span className="truncate">Trending Marketplace items</span>
           </h3>
           <button
             onClick={() => navigateSection("Marketplace")}
-            className="shrink-0 rounded-[10px] px-2 py-1 text-[11px] font-semibold text-emerald-400 md:text-emerald-600 hover:bg-white/5 md:hover:bg-emerald-50 hover:text-emerald-300 md:hover:text-emerald-700 transition-colors"
+            className="shrink-0 rounded-[10px] px-2 py-1 text-[11px] font-semibold text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
           >
             Browse
           </button>
@@ -574,7 +574,7 @@ export function DiscoveryPanel({ asPage = false }: { asPage?: boolean } = {}) {
           <ul className="space-y-1">
             {Array.from({ length: 4 }).map((_, i) => (
               <li key={i} className="flex items-center gap-3 py-1.5">
-                <div className="w-11 h-11 shrink-0 rounded-[10px] bg-white/[0.06] md:bg-slate-200 animate-pulse" />
+                <div className="w-11 h-11 shrink-0 rounded-[10px] bg-slate-200 animate-pulse" />
                 <div className="flex-1 space-y-1.5">
                   <SkeletonBar className="h-3 w-3/4" />
                   <SkeletonBar className="h-2 w-1/3" />
@@ -594,7 +594,7 @@ export function DiscoveryPanel({ asPage = false }: { asPage?: boolean } = {}) {
             {trending.map((p) => (
               <li
                 key={p.id}
-                className="-mx-1.5 px-1.5 py-1.5 rounded-[10px] transition-colors hover:bg-white/[0.03] md:hover:bg-slate-50"
+                className="-mx-1.5 px-1.5 py-1.5 rounded-[10px] transition-colors hover:bg-slate-50"
               >
                 <ProductRow p={p} priceFmt={price} />
               </li>
@@ -604,13 +604,13 @@ export function DiscoveryPanel({ asPage = false }: { asPage?: boolean } = {}) {
       </section>
 
       {/* 6. Online users — click to open a quick chat popover */}
-      <section className="bg-[#1E1E24] md:bg-white md:shadow-sm border border-white/5 md:border-slate-200 rounded-2xl p-4">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 mb-3 pb-2.5 border-b border-white/5 md:border-slate-100">
-          <h3 className="min-w-0 truncate text-sm font-bold text-white md:text-slate-900 flex items-center gap-1.5">
-            <Circle className="w-2.5 h-2.5 shrink-0 fill-emerald-400 text-emerald-400 md:fill-emerald-500 md:text-emerald-500" />{" "}
+      <section className="bg-white shadow-sm border border-slate-200 rounded-2xl p-4">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 mb-3 pb-2.5 border-b border-slate-100">
+          <h3 className="min-w-0 truncate text-sm font-bold text-slate-900 flex items-center gap-1.5">
+            <Circle className="w-2.5 h-2.5 shrink-0 fill-emerald-500 text-emerald-500" />{" "}
             <span className="truncate">Online now</span>
           </h3>
-          <span className="shrink-0 rounded-full bg-emerald-400/10 md:bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-300 md:text-emerald-700">
+          <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700">
             {onlineUsers.length} online
           </span>
         </div>
@@ -631,7 +631,7 @@ export function DiscoveryPanel({ asPage = false }: { asPage?: boolean } = {}) {
             {onlineUsers.slice(0, 10).map((u) => (
               <li
                 key={u.userId}
-                className="flex items-center gap-2.5 min-w-0 -mx-1.5 px-1.5 py-1.5 rounded-[10px] transition-colors hover:bg-white/[0.03] md:hover:bg-slate-50"
+                className="flex items-center gap-2.5 min-w-0 -mx-1.5 px-1.5 py-1.5 rounded-[10px] transition-colors hover:bg-slate-50"
               >
                 <button
                   onClick={() => openChat(u.userId, u.name)}
@@ -639,23 +639,23 @@ export function DiscoveryPanel({ asPage = false }: { asPage?: boolean } = {}) {
                   aria-label={`Chat with ${u.name}`}
                 >
                   <AvatarImage src={u.avatarUrl} alt={u.name} />
-                  <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-[#1E1E24] md:ring-white" />
+                  <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-white" />
                 </button>
                 <button
                   onClick={() => openChat(u.userId, u.name)}
                   className="min-w-0 flex-1 text-left"
                 >
-                  <div className="truncate text-xs font-semibold text-white md:text-slate-900 hover:text-emerald-400 md:hover:text-emerald-600">
+                  <div className="truncate text-xs font-semibold text-slate-900 hover:text-emerald-600">
                     {u.name}
                   </div>
-                  <div className="flex items-center gap-1 text-[10px] text-slate-400 md:text-slate-600">
+                  <div className="flex items-center gap-1 text-[10px] text-slate-600">
                     <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                     <span>{u.stars.toFixed(1)}</span>
                   </div>
                 </button>
                 <button
                   onClick={() => openChat(u.userId, u.name)}
-                  className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-[10px] border border-white/10 md:border-slate-200 text-slate-300 md:text-slate-700 hover:bg-white/5 md:hover:bg-slate-100 text-[11px] font-semibold"
+                  className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-[10px] border border-slate-200 text-slate-700 hover:bg-slate-100 text-[11px] font-semibold"
                 >
                   <MessageCircle className="w-3 h-3" /> Chat
                 </button>
