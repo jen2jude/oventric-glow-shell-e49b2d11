@@ -96,13 +96,9 @@ export const seedNewUser = createServerFn({ method: "POST" })
     // 2. Wallets (only for real, non-anonymous users — RLS blocks anon inserts,
     // and anon browse-only sessions don't need wallet rows until they upgrade).
     if (!isAnonymous) {
-      const rows = WALLET_CURRENCIES.map((currency) => ({
-        user_id: userId,
-        currency,
-        available_balance: 0,
-        escrow_balance: 0,
-        accumulated_cashback: 0,
-      }));
+      // Balances are DB-defaulted to 0; the browser role has no INSERT
+      // privilege on balance columns.
+      const rows = WALLET_CURRENCIES.map((currency) => ({ user_id: userId, currency }));
       const { error: walletErr } = await supabase
         .from("wallets")
         .upsert(rows, { onConflict: "user_id,currency", ignoreDuplicates: true });
@@ -178,7 +174,11 @@ export const completeProfile = createServerFn({ method: "POST" })
     };
     if (data.address) patch.address = data.address;
     if (data.phone) patch.phone = data.phone;
-    const { error } = await supabase
+    // verification_tier / profile_completed_at are not browser-writable columns;
+    // they are set here only after the authenticated caller has been verified,
+    // and always scoped to that caller's own row.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
       .from("profiles")
       .update(patch)
       .eq("user_id", userId);
@@ -191,7 +191,7 @@ export const completeProfile = createServerFn({ method: "POST" })
     // marketplace and bounty settlement all have a rail to land on.
     const homeCurrency = dbCurrency(currencyForCountry(data.country));
     const { error: wErr } = await supabase.from("wallets").upsert(
-      [{ user_id: userId, currency: homeCurrency, available_balance: 0, escrow_balance: 0, accumulated_cashback: 0 }],
+      [{ user_id: userId, currency: homeCurrency }],
       { onConflict: "user_id,currency", ignoreDuplicates: true },
     );
     if (wErr) console.error("[completeProfile] home wallet upsert failed (non-fatal)", wErr);
@@ -249,8 +249,10 @@ export const saveKyc = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => SaveKycInput.parse(input))
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
-    const { error } = await supabase
+    const { userId } = context;
+    // kyc_completed_at / verification_tier are server-only columns.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
       .from("profiles")
       .update({
         phone: data.phone,
