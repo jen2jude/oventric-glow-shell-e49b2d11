@@ -10,6 +10,30 @@ async function assertAdmin(ctx: { supabase: ReturnType<typeof Object>; userId: s
   if (!data) throw new Error("Forbidden: admin role required");
 }
 
+/**
+ * Least-privilege check for scoped admin mutations. Super admin always passes;
+ * other management roles only pass when explicitly listed. Financial mutations
+ * keep using assertAdmin (super-admin only).
+ */
+async function assertManagementRole(
+  ctx: { supabase: ReturnType<typeof Object>; userId: string },
+  allowed: readonly string[],
+) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sb = ctx.supabase as any;
+  const { data: isSuper, error } = await sb.rpc("has_role", {
+    _user_id: ctx.userId,
+    _role: "admin",
+  });
+  if (error) throw new Error(error.message);
+  if (isSuper) return;
+  for (const role of allowed) {
+    const { data: ok } = await sb.rpc("has_role", { _user_id: ctx.userId, _role: role });
+    if (ok) return;
+  }
+  throw new Error(`Forbidden: requires one of admin, ${allowed.join(", ")}`);
+}
+
 async function writeAudit(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _sb: any,
@@ -156,7 +180,7 @@ export const verifySeller = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: { userId: string; tier: string }) => i)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertManagementRole(context, ["moderator"]);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const sb = supabaseAdmin as any;
     const { error } = await sb.from("profiles")
@@ -175,7 +199,7 @@ export const suspendSeller = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: { userId: string; reason: string }) => i)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertManagementRole(context, ["moderator"]);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const sb = supabaseAdmin as any;
     // Revoke all roles first
@@ -236,7 +260,7 @@ export const approveProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: { id: string }) => i)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertManagementRole(context, ["moderator", "content"]);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = context.supabase as any;
     const { data: row, error } = await sb
@@ -264,7 +288,7 @@ export const rejectProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: { id: string; reason: string; recommendation?: string }) => i)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertManagementRole(context, ["moderator", "content"]);
     const reason = String(data.reason ?? "").trim();
     if (!reason) throw new Error("Rejection reason is required");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -308,7 +332,7 @@ export const setProductPromoted = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: { id: string; promoted: boolean }) => i)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertManagementRole(context, ["moderator", "content"]);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = context.supabase as any;
     const { error } = await sb.from("products").update({ promoted: data.promoted }).eq("id", data.id);
@@ -529,7 +553,7 @@ export const upsertCategory = createServerFn({ method: "POST" })
     parent_id?: string | null;
   }) => i)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertManagementRole(context, ["content"]);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = context.supabase as any;
     const payload = {
@@ -557,7 +581,7 @@ export const deleteCategory = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: { id: string }) => i)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertManagementRole(context, ["content"]);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = context.supabase as any;
     const { error } = await sb.from("marketplace_categories").delete().eq("id", data.id);
