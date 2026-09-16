@@ -78,7 +78,7 @@ function fmtPrice(
   return fmtSnap(usdAmount, viewer, product?.fxSnapshot ?? null);
 }
 
-/** Country-driven payment method availability. Wallet is greyed out on marketplace checkout — buyers pay directly. */
+/** Country-driven payment method availability. Wallet pays straight from the buyer's Oventric balance. */
 function methodsForCountry(
   country: string | null,
 ): Array<{
@@ -92,9 +92,9 @@ function methodsForCountry(
     id: "wallet" as PaymentMethod,
     label: "Pay with Oventric Wallet",
     Icon: WalletIcon,
-    hint: "Direct checkout preferred — fund wallet for bounties & ads only",
-    disabled: true,
+    hint: "Instant — uses your available wallet balance",
   };
+
   if (country === "NG") {
     return [
       { id: "card", label: "Debit/Credit Card", Icon: CreditCard, hint: "Verve, Mastercard, Visa" },
