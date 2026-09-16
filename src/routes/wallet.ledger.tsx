@@ -34,7 +34,7 @@ export const Route = createFileRoute("/wallet/ledger")({
       {
         name: "description",
         content:
-          "Review every Oventric wallet movement: cashback, bounty rewards, escrow releases and payouts, grouped month by month.",
+          "Review every Oventric wallet movement: purchases, sales, cashback, escrow releases and payouts, grouped month by month.",
       },
       { property: "og:title", content: "Transaction Ledger — Oventric Wallet" },
       {
