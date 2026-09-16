@@ -2581,7 +2581,30 @@ section + section {
 
 /* Public seller shops use a spacious, desktop-first boutique composition. */
 .web-storefront {
+  color-scheme: light;
+  --background: oklch(0.975 0.004 260);
+  --foreground: oklch(0.2 0.012 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.012 260);
+  --primary: oklch(0.61 0.2 24);
+  --primary-foreground: oklch(0.99 0.003 24);
+  --muted: oklch(0.94 0.006 260);
+  --muted-foreground: oklch(0.48 0.014 260);
+  --border: oklch(0.2 0.012 260 / 12%);
   background: var(--background);
+}
+
+.web-storefront .bg-card {
+  background-color: var(--card);
+  color: var(--card-foreground);
+}
+
+.web-storefront .bg-primary {
+  background-color: var(--primary);
+}
+
+.web-storefront .text-primary-foreground {
+  color: var(--primary-foreground);
 }
 
 .web-storefront .storefront-cover {
