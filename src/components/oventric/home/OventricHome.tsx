@@ -542,6 +542,56 @@ function SectionHead({
   );
 }
 
+function PromoCard({
+  Icon,
+  gradient,
+  title,
+  body,
+  cta,
+  onClick,
+  to,
+}: {
+  Icon: React.ComponentType<{ className?: string }>;
+  gradient: string;
+  title: string;
+  body: string;
+  cta: string;
+  onClick?: () => void;
+  to?: string;
+}) {
+  const inner = (
+    <>
+      <span
+        className="grid h-12 w-12 place-items-center rounded-[14px] text-white"
+        style={{ backgroundImage: gradient }}
+      >
+        <Icon className="h-5 w-5" />
+      </span>
+      <h3 className="mt-4 font-[Outfit] text-lg font-extrabold text-slate-900">{title}</h3>
+      <p className="mt-1.5 text-xs leading-relaxed text-slate-500">{body}</p>
+      <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-crimson">
+        {cta}
+        <ArrowRight className="h-4 w-4" />
+      </span>
+    </>
+  );
+  const cls =
+    "block rounded-[16px] border border-slate-200/80 bg-white p-6 text-left transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_36px_-24px_rgba(15,23,42,0.6)]";
+
+  if (to) {
+    return (
+      <Link to={to} className={cls}>
+        {inner}
+      </Link>
+    );
+  }
+  return (
+    <button type="button" onClick={onClick} className={`w-full ${cls}`}>
+      {inner}
+    </button>
+  );
+}
+
 function EmptyNote({ children }: { children: React.ReactNode }) {
   return (
     <p className="col-span-full rounded-[14px] border border-dashed border-slate-200 bg-white p-6 text-center text-sm text-slate-400">
