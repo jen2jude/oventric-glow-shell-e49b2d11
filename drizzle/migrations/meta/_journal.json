@@ -29,6 +29,13 @@
       "when": 1789543239656,
       "tag": "0003_stage3_coupons_cashback_referrals",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789543794895,
+      "tag": "0004_stage3_lock_promo_writes",
+      "breakpoints": true
     }
   ]
 }
