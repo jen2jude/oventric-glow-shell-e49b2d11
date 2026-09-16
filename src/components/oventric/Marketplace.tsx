@@ -497,7 +497,6 @@ function AppMarketplace() {
 
       {showTopSellers && (
         <TopSellersPanel
-          kind={mode}
           onClose={() => setShowTopSellers(false)}
           onOpenShop={(slug) => {
             setShowTopSellers(false);

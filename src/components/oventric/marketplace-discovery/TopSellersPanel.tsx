@@ -25,7 +25,6 @@ const compact = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0
 export function TopSellersPanel({
   onClose,
   onOpenShop,
-  kind = "all",
 }: {
   onClose: () => void;
   onOpenShop: (slug: string) => void;
