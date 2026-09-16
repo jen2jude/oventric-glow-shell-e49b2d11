@@ -13,6 +13,7 @@ import {
   Users,
 } from "lucide-react";
 
+import exploreHeroBg from "@/assets/explore-hero-bg.jpg";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { computeDisplayPrice } from "@/lib/fx-display";
 import {
@@ -246,32 +247,42 @@ export function ExplorePage({ onSelect }: { onSelect: (section: "Marketplace") =
     <div className="min-h-screen bg-[#F7F8FA]">
       <div className="mx-auto w-full max-w-[1280px] px-4 pb-16 pt-5 sm:px-6 lg:pt-8">
         {/* ------------------------------------------------------------ hero */}
-        <section className="overflow-hidden rounded-[18px] border border-slate-200/80 bg-gradient-to-br from-[#16181D] via-[#1D2027] to-[#2A1E24] px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-14">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white/80">
-            <Compass className="h-3.5 w-3.5" /> Explore
-          </span>
-          <h1 className="mt-4 max-w-[18ch] font-[Outfit] text-[28px] font-extrabold leading-[1.1] text-white sm:text-4xl lg:text-5xl">
-            Discover creators, shops and digital products
-          </h1>
-          <p className="mt-3 max-w-[60ch] text-sm text-white/70 sm:text-base">
-            Browse what people are buying on Oventric right now — trending downloads, fresh
-            listings, top-rated sellers and the people building alongside you.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={() => onSelect("Marketplace")}
-              className="inline-flex items-center gap-2 rounded-full bg-crimson px-5 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
-            >
-              Browse marketplace <ArrowRight className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate({ to: "/sellers" })}
-              className="inline-flex items-center gap-2 rounded-full border border-white/25 px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-white/10"
-            >
-              See all sellers
-            </button>
+        <section className="relative isolate overflow-hidden rounded-[18px] border border-slate-200/80 px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-20">
+          <img
+            src={exploreHeroBg}
+            alt=""
+            className="absolute inset-0 -z-20 h-full w-full object-cover"
+            width={1536}
+            height={640}
+          />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#0B0C0F]/95 via-[#0B0C0F]/75 to-[#0B0C0F]/40" />
+          <div className="relative">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white/90 backdrop-blur-sm">
+              <Compass className="h-3.5 w-3.5" /> Explore
+            </span>
+            <h1 className="mt-4 max-w-[18ch] font-[Outfit] text-[30px] font-extrabold leading-[1.08] text-white sm:text-4xl lg:text-[52px]">
+              Discover creators, shops and digital products
+            </h1>
+            <p className="mt-3 max-w-[60ch] text-sm leading-relaxed text-white/80 sm:text-base">
+              Browse what people are buying on Oventric right now — trending downloads, fresh
+              listings, top-rated sellers and the people building alongside you.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => onSelect("Marketplace")}
+                className="inline-flex items-center gap-2 rounded-full bg-crimson px-5 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
+              >
+                Browse marketplace <ArrowRight className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate({ to: "/sellers" })}
+                className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/5 px-5 py-2.5 text-sm font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/10"
+              >
+                See all sellers
+              </button>
+            </div>
           </div>
         </section>
 
