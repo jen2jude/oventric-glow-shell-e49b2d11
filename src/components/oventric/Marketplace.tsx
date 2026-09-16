@@ -86,8 +86,8 @@ function AppMarketplace() {
       }
       try {
         const [d, p, c] = await Promise.all([
-          loadDiscovery({ data: { kind: kindParam } }),
-          loadProducts({ data: { kind: kindParam } }),
+          loadDiscovery(),
+          loadProducts(),
           loadCats(),
         ]);
         setDiscovery(d as Discovery);
@@ -256,7 +256,7 @@ function AppMarketplace() {
               </section>
             ) : (
               <div className="space-y-8 pt-6">
-                {/* Catalog — sort tabs + grid (Digital / Physical modes) */}
+                {/* Catalog — sort tabs + grid */}
                 {mode !== "all" && byMode.length > 0 && (
                   <section className="px-4">
                     <div className="no-scrollbar -mx-1 mb-4 flex gap-5 overflow-x-auto px-1">
@@ -497,7 +497,6 @@ function AppMarketplace() {
 
       {showTopSellers && (
         <TopSellersPanel
-          kind={mode}
           onClose={() => setShowTopSellers(false)}
           onOpenShop={(slug) => {
             setShowTopSellers(false);

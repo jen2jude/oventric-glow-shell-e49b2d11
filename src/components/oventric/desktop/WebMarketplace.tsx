@@ -77,8 +77,8 @@ export function WebMarketplace() {
       setLoading(true);
       try {
         const [d, p, c] = await Promise.all([
-          loadDiscovery({ data: { kind: "all" } }),
-          loadProducts({ data: { kind: "all" } }),
+          loadDiscovery(),
+          loadProducts(),
           loadCats(),
         ]);
         setDiscovery(d as Discovery);

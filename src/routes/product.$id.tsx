@@ -36,8 +36,6 @@ import { MobileNav } from "@/components/oventric/MobileNav";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import {
   getProduct,
-  logProductContact,
-  getProductContact,
   type ProductDTO,
 } from "@/lib/marketplace.functions";
 import { getProductRating, rateProduct } from "@/lib/product-reviews.functions";
@@ -410,12 +408,7 @@ function ProductPage() {
             <div className={`flex flex-col ${isAppShell ? "gap-0" : "gap-8"}`}>
               <div className={isAppShell ? "px-0 pt-0" : ""}>
                 {(() => {
-                  const gallery =
-                    product.kind === "physical" && product.imageUrls.length > 0
-                      ? product.imageUrls
-                      : product.coverUrl
-                        ? [product.coverUrl]
-                        : [];
+                  const gallery = product.coverUrl ? [product.coverUrl] : [];
                   const cur = gallery[activeImage] ?? gallery[0];
                   return (
                     <>
@@ -545,35 +538,6 @@ function ProductPage() {
                 />
               </div>
 
-              {product.kind === "physical" && (
-                <div className="flex flex-wrap gap-2 text-xs text-slate-300 md:text-slate-600 mb-4">
-                  {product.location && (
-                    <span className={`inline-flex items-center gap-1 ${isAppShell ? "bg-[#16161A] border-white/5 text-slate-400" : "bg-white border-slate-200 text-slate-600 shadow-sm"} md:shadow-sm md:bg-white border md:border-slate-200 rounded px-2 py-0.5`}>
-                      <MapPin className="w-3 h-3" /> {product.location}
-                    </span>
-                  )}
-                  {product.condition && (
-                    <span className={`${isAppShell ? "bg-[#16161A] border-white/5 text-slate-400" : "bg-white border-slate-200 text-slate-600 shadow-sm"} md:shadow-sm md:bg-white border md:border-slate-200 rounded px-2 py-0.5`}>
-                      {product.condition}
-                    </span>
-                  )}
-                  {product.brand && (
-                    <span className={`${isAppShell ? "bg-[#16161A] border-white/5 text-slate-400" : "bg-white border-slate-200 text-slate-600 shadow-sm"} md:shadow-sm md:bg-white border md:border-slate-200 rounded px-2 py-0.5`}>
-                      {product.brand}
-                    </span>
-                  )}
-                  {product.negotiable && (
-                    <span className={`${isAppShell ? "bg-[#16161A] border-white/5 text-slate-400" : "bg-white border-slate-200 text-slate-600 shadow-sm"} md:shadow-sm md:bg-white border md:border-slate-200 rounded px-2 py-0.5`}>
-                      Negotiable: {product.negotiable}
-                    </span>
-                  )}
-                  {product.delivery && (
-                    <span className={`${isAppShell ? "bg-[#16161A] border-white/5 text-slate-400" : "bg-white border-slate-200 text-slate-600 shadow-sm"} md:shadow-sm md:bg-white border md:border-slate-200 rounded px-2 py-0.5`}>
-                      Delivery: {product.delivery}
-                    </span>
-                  )}
-                </div>
-              )}
               <div className="flex flex-wrap items-center gap-2 mb-4">
                 <ProductRating
                   productId={product.id}
@@ -621,13 +585,6 @@ function ProductPage() {
                     </AccordionTrigger>
                     <AccordionContent className={`${isAppShell ? "text-slate-400" : "text-slate-600"} text-sm leading-relaxed`}>
                       {product.basicInfo || "No additional information provided."}
-                      {product.kind === "physical" && (
-                        <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-                          {product.location && <div><span className="opacity-60">Location:</span> {product.location}</div>}
-                          {product.condition && <div><span className="opacity-60">Condition:</span> {product.condition}</div>}
-                          {product.brand && <div><span className="opacity-60">Brand:</span> {product.brand}</div>}
-                        </div>
-                      )}
                     </AccordionContent>
                   </AccordionItem>
 
@@ -640,16 +597,14 @@ function ProductPage() {
                     </AccordionContent>
                   </AccordionItem>
 
-                  {product.kind !== "physical" && (
-                    <AccordionItem value="activation" className={`${isAppShell ? "border-white/5" : "border-slate-200"}`}>
-                      <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold py-3 hover:no-underline`}>
-                        Activation Guide
-                      </AccordionTrigger>
-                      <AccordionContent className={`${isAppShell ? "text-slate-400" : "text-slate-600"} text-sm leading-relaxed whitespace-pre-wrap`}>
-                        {product.activationGuide || "No activation guide provided."}
-                      </AccordionContent>
-                    </AccordionItem>
-                  )}
+                  <AccordionItem value="activation" className={`${isAppShell ? "border-white/5" : "border-slate-200"}`}>
+                    <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold py-3 hover:no-underline`}>
+                      Activation Guide
+                    </AccordionTrigger>
+                    <AccordionContent className={`${isAppShell ? "text-slate-400" : "text-slate-600"} text-sm leading-relaxed whitespace-pre-wrap`}>
+                      {product.activationGuide || "No activation guide provided."}
+                    </AccordionContent>
+                  </AccordionItem>
                 </Accordion>
               </div>
 
@@ -784,18 +739,16 @@ function ProductPage() {
                         <span>Shop</span>
                       </Link>
                       
-                      {product.kind !== "physical" && (
-                        <button
-                          onClick={openSellerChat}
-                          className="flex-1 inline-flex items-center justify-center gap-2 py-3 text-[13px] bg-[#1C1C1F] border border-white/[0.06] text-white rounded-[10px] font-bold transition-colors"
-                        >
-                          <MessageCircle className="w-4 h-4" />
-                          <span>Chat</span>
-                        </button>
-                      )}
-                      
                       <button
-                        onClick={product.kind === "physical" ? openContact : startCheckout}
+                        onClick={openSellerChat}
+                        className="flex-1 inline-flex items-center justify-center gap-2 py-3 text-[13px] bg-[#1C1C1F] border border-white/[0.06] text-white rounded-[10px] font-bold transition-colors"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        <span>Chat</span>
+                      </button>
+
+                      <button
+                        onClick={startCheckout}
                         disabled={outOfStock}
                         className={`flex-[1.5] inline-flex items-center justify-center gap-2 py-3 text-[13px] rounded-[10px] font-black transition-colors ${outOfStock ? "bg-white/[0.06] text-white/40 cursor-not-allowed" : "bg-[#E5484D] hover:bg-[#d13a3f] text-white"}`}
                       >
@@ -816,7 +769,7 @@ function ProductPage() {
                     ) : (
                       <>
                         <button
-                          onClick={product.kind === "physical" ? openContact : startCheckout}
+                          onClick={startCheckout}
                           className="w-full inline-flex items-center justify-center gap-2 py-3 text-sm rounded-[10px] font-black bg-crimson hover:bg-crimson/90 text-white transition-colors"
                         >
                           <ShoppingCart className="w-4 h-4" /> Buy Now
@@ -881,9 +834,7 @@ function ProductPage() {
                 <Sparkles className={`w-3 h-3 ${isAppShell ? "text-[#E5484D]" : "text-emerald-400"}`} />
                 {product.kind === "service"
                   ? "Service listing — message the provider to agree scope, timeline and price."
-                  : product.kind === "physical"
-                    ? "Deal directly with the seller — Oventric does not mediate."
-                    : "Instant download after payment · Buyer protection covered"}
+                  : "Instant download after payment · Buyer protection covered"}
               </div>
 
 
@@ -910,7 +861,7 @@ function ProductPage() {
         />
       )}
 
-      {product && product.kind !== "physical" && (
+      {product && (
         <ProfileMessageModal
           open={chatOpen}
           onClose={() => setChatOpen(false)}
@@ -936,9 +887,6 @@ function ProductPage() {
           }
         />
       )}
-      {contactOpen && product && product.kind === "physical" && (
-        <ContactSellerModal product={product} onClose={() => setContactOpen(false)} isAppShell={isAppShell} />
-      )}
       {isAppShell && (
         <div className="fixed bottom-0 left-0 right-0 z-30">
           <MobileNav
@@ -959,183 +907,3 @@ function ProductPage() {
   );
 }
 
-function ContactSellerModal({
-  product,
-  onClose,
-  isAppShell,
-}: {
-  product: ProductDTO;
-  onClose: () => void;
-  isAppShell: boolean;
-}) {
-  const { baseCurrency } = useOnboarding();
-  const logContact = useServerFn(logProductContact);
-  const fetchContact = useServerFn(getProductContact);
-  const [contact, setContact] = useState<{
-    sellerPhone: string | null;
-    whatsappNumber: string | null;
-  } | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    fetchContact({ data: { productId: product.id } })
-      .then((c) => {
-        if (!cancelled)
-          setContact({ sellerPhone: c.sellerPhone, whatsappNumber: c.whatsappNumber });
-      })
-      .catch(() => {
-        if (!cancelled)
-          setContact({ sellerPhone: product.sellerPhone, whatsappNumber: product.whatsappNumber });
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [product.id, fetchContact, product.sellerPhone, product.whatsappNumber]);
-  const handleContact = (method: "call" | "whatsapp") => {
-    void logContact({ data: { productId: product.id, method, note: note?.trim() || null } }).catch(
-      () => {},
-    );
-  };
-  const phone = (contact?.sellerPhone ?? product.sellerPhone ?? "").replace(/\D/g, "");
-  const wa = (
-    contact?.whatsappNumber ??
-    contact?.sellerPhone ??
-    product.whatsappNumber ??
-    product.sellerPhone ??
-    ""
-  ).replace(/\D/g, "");
-  const dp = productDisplay(product, baseCurrency);
-  // Always quote in the viewer's own home currency — never the seller's.
-  const priceLine = dp.formatted;
-  // Use the public share endpoint so link previews (WhatsApp, iMessage, etc.)
-  // scrape product-specific OG tags including the product cover image.
-  const productUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/api/public/p/${product.id}`
-      : `https://oventric.com/api/public/p/${product.id}`;
-  const [note, setNote] = useState("");
-  const baseMsg = `Hi! I saw your product "${product.name}" (${priceLine}${product.location ? ` — ${product.location}` : ""}) on Oventric. I would like to purchase it.`;
-  const message = `${baseMsg}${note.trim() ? `\n\n${note.trim()}` : ""}\n\n${productUrl}`;
-  const waUrl = `https://wa.me/${wa}?text=${encodeURIComponent(message)}`;
-  const canCall = phone.length >= 6;
-  const cover = (product.kind === "physical" && product.imageUrls[0]) || product.coverUrl;
-  return (
-    <div
-      className="fixed inset-0 z-[80] flex items-end justify-center sm:items-center"
-      role="dialog"
-      aria-modal="true"
-    >
-      <div className="absolute inset-0 bg-black/70" onClick={onClose} />
-      <div className={`slide-up relative w-full max-w-md ${isAppShell ? "bg-[#1E1E24] border-white/10" : "bg-white border-slate-200 shadow-sm"} md:shadow-sm md:bg-white border rounded-t-2xl sm:rounded-[10px] p-6 shadow-2xl max-h-[92vh] overflow-y-auto`}>
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-amber-400" />
-            <h3 className={`text-lg font-bold ${isAppShell ? "text-white" : "text-slate-900"} md:text-slate-900`}>Contact the seller</h3>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1 rounded hover:bg-white/5 md:hover:bg-slate-100 text-slate-400 md:text-slate-500 hover:text-white md:hover:text-slate-900"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Live preview card — mirrors what the seller will see */}
-        <div className={`mb-4 rounded-[10px] border ${isAppShell ? "border-white/10 bg-[#121214]" : "border-slate-200 bg-slate-50"} md:border-slate-200 md:bg-slate-50 overflow-hidden`}>
-          <div className="flex gap-3 p-3">
-            <div className="shrink-0 w-20 h-20 rounded-[10px] overflow-hidden bg-white/5 md:bg-slate-100 flex items-center justify-center">
-              {cover ? (
-                <img
-                  src={cover}
-                  alt={product.name}
-                  loading="eager"
-                  decoding="async"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <ShoppingCart className="w-6 h-6 text-white/30" />
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 truncate">
-                {product.category}
-                {product.subcategory ? ` · ${product.subcategory}` : ""}
-              </div>
-              <div className="text-sm font-bold text-white md:text-slate-900 truncate">
-                {product.name}
-              </div>
-              <div className="text-xs text-slate-400 md:text-slate-500 truncate">
-                by {product.vendor}
-              </div>
-              <div className="mt-1 flex items-center justify-between gap-2">
-                <div className={`${isAppShell ? "text-emerald-300" : "text-emerald-600"} font-black text-sm`}>{dp.formatted}</div>
-                {product.location && (
-                  <span className="text-[10px] text-slate-400 md:text-slate-500 inline-flex items-center gap-1 truncate">
-                    <MapPin className="w-3 h-3" /> {product.location}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className={`border-t ${isAppShell ? "border-white/10 bg-[#0f1012]" : "border-slate-200 bg-slate-100"} md:border-slate-200 md:bg-slate-100 px-3 py-2`}>
-            <div className="flex items-center justify-between gap-2 mb-1">
-              <div className="text-[10px] uppercase tracking-widest text-slate-500 md:text-slate-500">
-                WhatsApp message preview
-              </div>
-              <button
-                onClick={async () => {
-                  try {
-                    await navigator.clipboard.writeText(message);
-                    toast.success("WhatsApp message copied");
-                  } catch {
-                    toast.error("Could not copy message");
-                  }
-                }}
-                className={`inline-flex items-center gap-1 text-[10px] font-semibold ${isAppShell ? "text-emerald-300 hover:text-emerald-200" : "text-emerald-600 hover:text-emerald-700"}`}
-              >
-                <Copy className="w-3 h-3" /> Copy message
-              </button>
-            </div>
-            <pre className={`text-xs ${isAppShell ? "text-slate-200" : "text-slate-700"} md:text-slate-700 whitespace-pre-wrap font-sans leading-relaxed break-words`}>
-              {message}
-            </pre>
-          </div>
-        </div>
-
-        <label className="block text-[11px] uppercase tracking-widest text-slate-400 md:text-slate-500 mb-1">
-          Add a note (optional)
-        </label>
-        <textarea
-          value={note}
-          onChange={(e) => setNote(e.target.value.slice(0, 240))}
-          rows={2}
-          placeholder="e.g. Is this still available? Can I pick up today?"
-          className={`w-full mb-4 ${isAppShell ? "bg-[#121214] border-white/10 text-white placeholder:text-slate-600" : "bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400"} md:bg-slate-50 border md:border-slate-200 rounded-[10px] px-3 py-2 text-sm focus:outline-none focus:border-emerald-500/50`}
-        />
-
-        <p className="text-xs text-slate-400 md:text-slate-500 leading-relaxed mb-4">
-          You will deal with the seller directly. Take precaution — Oventric does not monitor or
-          mediate physical-goods transactions.
-        </p>
-        <div className="grid grid-cols-2 gap-3">
-          <a
-            href={canCall ? `tel:+${phone}` : undefined}
-            aria-disabled={!canCall}
-            onClick={() => canCall && handleContact("call")}
-            className={`inline-flex items-center justify-center gap-2 py-3 rounded-[10px] font-semibold text-sm ${canCall ? isAppShell ? "bg-white/10 text-white hover:bg-white/15" : "bg-slate-100 text-slate-900 hover:bg-slate-200 shadow-sm" : isAppShell ? "bg-white/5 text-slate-500 pointer-events-none" : "bg-slate-50 text-slate-300 pointer-events-none"} md:bg-slate-100 md:text-slate-900 md:hover:bg-slate-200`}
-          >
-            <Phone className="w-4 h-4" /> Call Seller
-          </a>
-          <a
-            href={wa ? waUrl : undefined}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => wa && handleContact("whatsapp")}
-            className={`inline-flex items-center justify-center gap-2 py-3 rounded-[10px] font-semibold text-sm ${wa ? "bg-emerald-500 text-black hover:bg-emerald-400" : "bg-white/5 text-slate-500 pointer-events-none"}`}
-          >
-            <MessageCircle className="w-4 h-4" /> Chat Seller
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}

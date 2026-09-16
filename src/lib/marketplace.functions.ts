@@ -7,7 +7,8 @@ import { dbCurrency } from "@/lib/currency/africa";
 import { fallbackRateTable } from "@/lib/currency/africa";
 
 export type ProductCategory = string;
-export type ProductKind = "digital" | "physical" | "service";
+/** Oventric is digital-only; physical goods are no longer supported. */
+export type ProductKind = "digital" | "service";
 export type ProductStatus = "pending" | "active" | "rejected";
 /** Any currency in the pan-African registry (see @/lib/currency/africa). */
 export type OrderCurrency = string;
@@ -41,7 +42,7 @@ export interface ProductDTO {
   kind: ProductKind;
   status: ProductStatus;
   rejectReason: string | null;
-  // Physical fields
+  // Legacy listing attributes (retained for historical rows only)
   condition: string | null;
   brand: string | null;
   location: string | null;
@@ -206,10 +207,7 @@ async function signImagePaths(
 
 /** Public catalog. Anyone (including anon) can list. RLS filters to status='active'. */
 export const listProducts = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) =>
-    z.object({ kind: z.enum(["digital", "physical", "all"]).default("all") }).default({}).parse(input),
-  )
-  .handler(async ({ data }) => {
+  .handler(async () => {
     const sb = serverPublicClient();
     let q = sb
       .from("products")
@@ -218,8 +216,6 @@ export const listProducts = createServerFn({ method: "GET" })
       .order("promoted", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(400);
-    // Oventric is digital-only: physical listings are never surfaced.
-    q = q.neq("kind", "physical");
     const { data: rows, error } = await q;
     if (error) throw new Error(error.message);
     const items = rows ?? [];
@@ -254,7 +250,7 @@ export interface CategoryNode {
   slug: string;
   name: string;
   description: string;
-  kind: "digital" | "physical";
+  kind: "digital";
   parentId: string | null;
   sortOrder: number;
   children: CategoryNode[];
@@ -267,7 +263,6 @@ export const listMarketplaceCategories = createServerFn({ method: "GET" }).handl
     .from("marketplace_categories")
     .select("id, slug, name, description, kind, parent_id, sort_order, enabled")
     .eq("enabled", true)
-    .neq("kind", "physical")
     .order("sort_order", { ascending: true });
   if (error) throw new Error(error.message);
   const rows = (data ?? []) as Array<Record<string, unknown>>;
@@ -278,7 +273,7 @@ export const listMarketplaceCategories = createServerFn({ method: "GET" }).handl
       slug: r.slug as string,
       name: r.name as string,
       description: (r.description as string) ?? "",
-      kind: ((r.kind as string) ?? "digital") as "digital" | "physical",
+      kind: "digital" as const,
       parentId: (r.parent_id as string) ?? null,
       sortOrder: Number(r.sort_order ?? 0),
       children: [],
@@ -1369,129 +1364,8 @@ export const listHeldEscrowOrders = createServerFn({ method: "GET" })
     }));
   });
 
-export interface ContactedSellerDTO {
-  id: string;
-  productId: string;
-  productName: string;
-  category: string;
-  vendor: string;
-  hue: string;
-  coverUrl: string | null;
-  location: string | null;
-  priceUSD: number;
-  displayCurrency: OrderCurrency;
-  originalAmount: number;
-  originalCurrency: OrderCurrency;
-  sellerPhone: string | null;
-  whatsappNumber: string | null;
-  method: "call" | "whatsapp";
-  createdAt: string;
-  productStatus: ProductStatus;
-}
 
-/** Fetch a physical seller's contact details (auth-gated via secured RPC). */
-export const getProductContact = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input: { productId: string }) => ({ productId: String(input?.productId ?? "") }))
-  .handler(async ({ data, context }) => {
-    if (!data.productId) throw new Error("Missing product id");
-    const { data: row, error } = await context.supabase
-      .rpc("get_product_contact", { _product_id: data.productId })
-      .maybeSingle();
-    if (error) throw new Error(error.message);
-    return {
-      sellerPhone: ((row as { seller_phone?: string } | null)?.seller_phone ?? null) as string | null,
-      whatsappNumber: ((row as { whatsapp_number?: string } | null)?.whatsapp_number ?? null) as string | null,
-      location: ((row as { location?: string } | null)?.location ?? null) as string | null,
-    };
-  });
 
-/** Log a physical-product seller contact (Call / WhatsApp click). */
-export const logProductContact = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input: { productId: string; method: "call" | "whatsapp"; note?: string | null }) => ({
-    productId: String(input.productId ?? ""),
-    method: input.method === "call" ? "call" as const : "whatsapp" as const,
-    note: input.note ? String(input.note).slice(0, 500) : null,
-  }))
-  .handler(async ({ data, context }) => {
-    if (!data.productId) throw new Error("Missing product id");
-    const { data: p, error: pe } = await context.supabase
-      .from("products")
-      .select("id, seller_id, kind")
-      .eq("id", data.productId)
-      .maybeSingle();
-    if (pe) throw new Error(pe.message);
-    if (!p) throw new Error("Product not found");
-    if ((p.seller_id as string) === context.userId) return { id: null }; // don't log self-contact
-    const { data: ins, error } = await context.supabase
-      .from("product_contacts")
-      .insert({
-        product_id: data.productId,
-        buyer_id: context.userId,
-        seller_id: p.seller_id as string,
-        method: data.method,
-        note: data.note,
-      })
-      .select("id")
-      .single();
-    if (error) throw new Error(error.message);
-    return { id: (ins?.id as string) ?? null };
-  });
-
-/** Sellers the signed-in buyer has contacted (physical goods). Latest per product. */
-export const listMyContactedSellers = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<ContactedSellerDTO[]> => {
-    // Contact columns are column-grant restricted; caller is verified by the
-    // middleware and rows are hard-scoped to their own contact history.
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin
-      .from("product_contacts")
-      .select("id, product_id, method, created_at, products:product_id (name, category, vendor, hue, cover_path, image_paths, location, price_usd, original_currency, original_amount, seller_phone, whatsapp_number, status)")
-      .eq("buyer_id", context.userId)
-      .order("created_at", { ascending: false });
-    if (error) throw new Error(error.message);
-    const rows = (data ?? []) as Record<string, unknown>[];
-    const seen = new Set<string>();
-    const out: ContactedSellerDTO[] = [];
-    for (const r of rows) {
-      const pid = r.product_id as string;
-      if (seen.has(pid)) continue;
-      seen.add(pid);
-      const p = (r.products ?? {}) as Record<string, unknown>;
-      const coverPath = (p.cover_path as string) ?? null;
-      const imgs = Array.isArray(p.image_paths) ? (p.image_paths as string[]) : [];
-      const firstImg = coverPath ?? imgs[0] ?? null;
-      let coverUrl: string | null = null;
-      if (firstImg) {
-        const { data: sig } = await context.supabase.storage
-          .from("product-covers")
-          .createSignedUrl(firstImg, 60 * 60 * 24);
-        coverUrl = sig?.signedUrl ?? null;
-      }
-      out.push({
-        id: r.id as string,
-        productId: pid,
-        productName: (p.name as string) ?? "Listing",
-        category: (p.category as string) ?? "",
-        vendor: (p.vendor as string) ?? "",
-        hue: (p.hue as string) ?? "from-emerald-500 to-teal-700",
-        coverUrl,
-        location: (p.location as string) ?? null,
-        priceUSD: Number(p.price_usd ?? 0),
-        displayCurrency: ((p.original_currency as string) ?? "USD") as OrderCurrency,
-        originalAmount: Number(p.original_amount ?? p.price_usd ?? 0),
-        originalCurrency: ((p.original_currency as string) ?? "USD") as OrderCurrency,
-        sellerPhone: (p.seller_phone as string) ?? null,
-        whatsappNumber: (p.whatsapp_number as string) ?? null,
-        method: (r.method as "call" | "whatsapp") ?? "whatsapp",
-        createdAt: r.created_at as string,
-        productStatus: ((p.status as string) ?? "active") as ProductStatus,
-      });
-    }
-    return out;
-  });
 
 
 /** Search current seller's active products for tagging in a post. */
@@ -1535,14 +1409,9 @@ export const searchMyProductsForTagging = createServerFn({ method: "GET" })
 
 /** Discovery data for the new marketplace: Featured, Trending, New, Top Sellers. */
 export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) =>
-    z.object({ kind: z.enum(["digital", "physical", "all"]).default("all") }).default({}).parse(input),
-  )
-  .handler(async ({ data }) => {
+  .handler(async () => {
     const sb = serverPublicClient();
-    const { kind } = data;
-    void kind; // digital-only marketplace
-    const withKind = (q: any) => q.neq("kind", "physical");
+    const withKind = (q: any) => q;
 
     // 1. Featured Products (promoted or top rated)
     const { data: featuredRows } = await withKind(
@@ -1575,10 +1444,12 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
         .limit(10),
     );
 
-    // 4. Sellers (profiles that actually have active products of the selected kind)
-    let sellerQuery = sb.from("products").select("seller_id").eq("status", "active");
-    if (kind !== "all") sellerQuery = sellerQuery.eq("kind", kind);
-    const { data: sellerIdRows } = await sellerQuery.limit(500);
+    // 4. Sellers (profiles that actually have active products)
+    const { data: sellerIdRows } = await sb
+      .from("products")
+      .select("seller_id")
+      .eq("status", "active")
+      .limit(500);
     const sellerCounts = new Map<string, number>();
     (sellerIdRows ?? []).forEach((r) => {
       const id = r.seller_id as string;
@@ -1667,16 +1538,14 @@ export interface TopSellerDTO {
 
 /** Live leaderboard of sellers ranked by paid sales, with live ratings and follower counts. */
 export const getTopSellers = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) =>
-    z.object({ kind: z.enum(["digital", "physical", "all"]).default("all") }).default({}).parse(input),
-  )
-  .handler(async ({ data }): Promise<TopSellerDTO[]> => {
+  .handler(async (): Promise<TopSellerDTO[]> => {
     const sb = serverPublicClient();
 
-    let productQuery = sb.from("products").select("id, seller_id").eq("status", "active").limit(2000);
-    void data.kind;
-    productQuery = productQuery.neq("kind", "physical");
-    const { data: productRows } = await productQuery;
+    const { data: productRows } = await sb
+      .from("products")
+      .select("id, seller_id")
+      .eq("status", "active")
+      .limit(2000);
 
     const productsBySeller = new Map<string, string[]>();
     const sellerByProduct = new Map<string, string>();

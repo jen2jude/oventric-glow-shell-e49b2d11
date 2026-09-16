@@ -919,7 +919,6 @@ function ListingsList({
   onEdit: (p: ProductDTO) => void;
 }) {
   const [filter, setFilter] = useState<"all" | "pending" | "active" | "rejected">("all");
-  const [kind, setKind] = useState<"all" | "digital" | "physical">("all");
   const [sellOpen, setSellOpen] = useState(false);
 
   if (rows === null) {
@@ -966,7 +965,7 @@ function ListingsList({
     );
   }
 
-  const kindFiltered = kind === "all" ? rows : rows.filter((r) => r.kind === kind);
+  const kindFiltered = rows;
   const filtered =
     filter === "all" ? kindFiltered : kindFiltered.filter((r) => r.status === filter);
   const chips: { key: typeof filter; label: string; count: number }[] = [
@@ -987,39 +986,10 @@ function ListingsList({
       count: kindFiltered.filter((r) => r.status === "rejected").length,
     },
   ];
-  const digitalCount = rows.filter((r) => r.kind === "digital").length;
-  const kindChips: { key: typeof kind; label: string; count: number }[] = [
-    { key: "all", label: "All types", count: rows.length },
-    { key: "digital", label: "Digital", count: digitalCount },
-  ];
 
   return (
     <div>
       <div className="flex flex-wrap items-center gap-2 mb-3">
-        <div className="inline-flex items-center gap-1 rounded-full bg-white/5 md:bg-slate-50 border border-white/10 md:border-slate-200 p-1">
-          {kindChips.map((k) => (
-            <button
-              key={k.key}
-              onClick={() => setKind(k.key)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition ${
-                kind === k.key
-                  ? "bg-white text-black"
-                  : "text-slate-300 md:text-slate-600 hover:text-white md:hover:text-slate-900"
-              }`}
-            >
-              {k.label}
-              <span
-                className={`inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold ${
-                  kind === k.key
-                    ? "bg-black/20 text-black"
-                    : "bg-white/10 md:bg-slate-100 text-slate-200 md:text-slate-700"
-                }`}
-              >
-                {k.count}
-              </span>
-            </button>
-          ))}
-        </div>
         <div className="ml-auto flex items-center gap-2">
           <button
             type="button"

@@ -25,11 +25,9 @@ const compact = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0
 export function TopSellersPanel({
   onClose,
   onOpenShop,
-  kind = "all",
 }: {
   onClose: () => void;
   onOpenShop: (slug: string) => void;
-  kind?: "digital" | "physical" | "all";
 }) {
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("top");
@@ -49,8 +47,8 @@ export function TopSellersPanel({
   }, [onClose]);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["top-sellers", kind],
-    queryFn: () => fetchSellers({ data: { kind } }),
+    queryKey: ["top-sellers"],
+    queryFn: () => fetchSellers(),
   });
 
   const all: TopSellerDTO[] = data ?? [];

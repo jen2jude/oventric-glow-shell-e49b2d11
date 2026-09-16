@@ -14,27 +14,6 @@ import { StockToggleField } from "@/components/oventric/StockToggleField";
 import { snapshotFxRates } from "@/lib/fx.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 
-const PHYS_CATEGORIES = [
-  {
-    value: "electronics",
-    label: "Electronics",
-    subs: ["Phones", "Laptops", "Accessories", "Audio", "Cameras"],
-  },
-  { value: "fashion", label: "Fashion", subs: ["Men", "Women", "Kids", "Shoes", "Watches"] },
-  { value: "home", label: "Home & Living", subs: ["Furniture", "Appliances", "Decor", "Kitchen"] },
-  {
-    value: "beauty",
-    label: "Beauty & Health",
-    subs: ["Skincare", "Makeup", "Wellness", "Fragrance"],
-  },
-  { value: "vehicles", label: "Vehicles", subs: ["Cars", "Bikes", "Parts", "Accessories"] },
-  { value: "sports", label: "Sports & Outdoors", subs: ["Fitness", "Outdoor", "Team Sports"] },
-  { value: "other", label: "Other", subs: [] },
-];
-
-const CONDITIONS = ["Brand New", "Used", "Refurbished"];
-const YN = ["Yes", "No", "Maybe"];
-
 interface Props {
   product: ProductDTO;
   onClose: () => void;
@@ -42,17 +21,15 @@ interface Props {
 }
 
 /**
- * Prefilled edit form for rejected listings. Handles both digital and physical
- * products: fields shown vary by `product.kind`. Existing images are shown and
- * can be removed; new images can be appended (physical only). On submit the
- * product moves back to `pending` and admins are notified.
+ * Prefilled edit form for rejected listings (digital assets only). Existing
+ * images are shown and can be removed; new images can be appended. On submit
+ * the product moves back to `pending` and admins are notified.
  */
 export function EditListingModal({ product, onClose, onResubmitted }: Props) {
   const persist = useServerFn(updateAndResubmitProduct);
   const snapshotFx = useServerFn(snapshotFxRates);
   const { homeCurrency } = useOnboarding();
 
-  const isPhysical = product.kind === "physical";
   // Live listings stay live after an edit unless the deliverable itself changes.
   const isLive = product.status === "active";
 
@@ -60,11 +37,10 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
   const loadCats = useServerFn(listMarketplaceCategories);
   const [digitalCats, setDigitalCats] = useState<CategoryNode[]>([]);
   useEffect(() => {
-    if (isPhysical) return;
     loadCats()
       .then((rows) => setDigitalCats((rows ?? []).filter((r) => r.kind === "digital")))
       .catch(() => {});
-  }, [isPhysical, loadCats]);
+  }, [loadCats]);
 
 
   // Shared fields, prefilled.
@@ -72,7 +48,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
   const [description, setDescription] = useState(product.description);
   const [basicInfo, setBasicInfo] = useState(product.basicInfo ?? "");
   const [inStock, setInStock] = useState(product.inStock !== false);
-  const [activationGuide, setActivationGuide] = useState(isPhysical ? "" : (product.activationGuide ?? ""));
+  const [activationGuide, setActivationGuide] = useState(product.activationGuide ?? "");
   const [category, setCategory] = useState(product.category);
   const [subcategory, setSubcategory] = useState(product.subcategory ?? "");
   // Price is edited in the seller's base currency; on submit we resnap FX.
@@ -81,15 +57,6 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
       ? String(product.originalAmount)
       : String(product.priceUSD);
   const [priceInput, setPriceInput] = useState(initialLocal);
-
-  // Physical fields.
-  const [location, setLocation] = useState(product.location ?? "");
-  const [brand, setBrand] = useState(product.brand ?? "");
-  const [condition, setCondition] = useState(product.condition ?? "Brand New");
-  const [negotiable, setNegotiable] = useState(product.negotiable ?? "Yes");
-  const [delivery, setDelivery] = useState(product.delivery ?? "No");
-  const [phone, setPhone] = useState(product.sellerPhone ?? "");
-  const [socialLink, setSocialLink] = useState(product.socialLink ?? "");
 
   // Digital fields.
   const [externalUrl, setExternalUrl] = useState(product.externalUrl ?? "");
@@ -117,7 +84,6 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
     [newPreviews],
   );
 
-  const chosenCat = PHYS_CATEGORIES.find((c) => c.value === category);
 
   const addImages = (files: FileList | null) => {
     if (!files) return;
@@ -160,15 +126,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
     if (!Number.isFinite(priceLocal) || priceLocal < 0)
       return toast.error("Enter a valid price (use 0 for free)");
 
-    let sellerPhone: string | null | undefined = undefined;
-
-    if (isPhysical) {
-      const digits = phone.replace(/\D/g, "");
-      if (digits.length < 6) return toast.error("Enter a valid phone number");
-      sellerPhone = digits;
-      const totalImages = existing.length + newFiles.length;
-      if (totalImages < 3) return toast.error("Keep at least 3 product images");
-    } else if (existing.length + newFiles.length < 1) {
+    if (existing.length + newFiles.length < 1) {
       return toast.error("Keep at least 1 product image");
     }
 
@@ -196,7 +154,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
 
       // Optional replacement asset file (digital listings only).
       let filePath: string | undefined = undefined;
-      if (!isPhysical && assetFile) {
+      if (assetFile) {
         setProgress("Uploading replacement file...");
         const safe = assetFile.name.replace(/[^\w.\-]+/g, "_");
         const path = `${uid}/${Date.now()}-${safe}`;
@@ -227,17 +185,9 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
           originalCurrency: homeCurrency,
           originalAmount: priceLocal,
           fxSnapshot: snapshot,
-          externalUrl: isPhysical ? null : externalUrl.trim() || null,
+          externalUrl: externalUrl.trim() || null,
           ...(filePath ? { filePath } : {}),
           imagePaths,
-          condition: isPhysical ? condition : null,
-          brand: isPhysical ? brand.trim() || null : null,
-          location: isPhysical ? location.trim() || null : null,
-          negotiable: isPhysical ? negotiable : null,
-          delivery: isPhysical ? delivery : null,
-          sellerPhone: sellerPhone ?? null,
-          whatsappNumber: sellerPhone ?? null,
-          socialLink: isPhysical ? socialLink.trim() || null : null,
           sellerResponse: sellerResponse.trim() || null,
         },
       });
@@ -296,7 +246,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
               <div>
                 <h2 className="text-xl font-bold text-white">Edit Listing</h2>
                 <p className="text-xs text-slate-400 mt-1">
-                  {isPhysical ? "Physical goods listing" : "Digital asset listing"} ·{" "}
+                  Digital asset listing ·{" "}
                   {product.status === "pending"
                     ? "pending review"
                     : product.status === "active"
@@ -341,7 +291,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
                 />
               </label>
 
-              {!isPhysical && digitalCats.length > 0 && (
+              {digitalCats.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <label className="block">
                     <span className="text-xs font-medium text-slate-300">Category</span>
@@ -386,178 +336,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
 
 
 
-              {isPhysical && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <label className="block">
-                    <span className="text-xs font-medium text-slate-300">Category</span>
-                    <select
-                      value={category}
-                      onChange={(e) => {
-                        setCategory(e.target.value);
-                        setSubcategory("");
-                      }}
-                      className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white"
-                    >
-                      {PHYS_CATEGORIES.map((c) => (
-                        <option key={c.value} value={c.value}>
-                          {c.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  {chosenCat && chosenCat.subs.length > 0 && (
-                    <label className="block">
-                      <span className="text-xs font-medium text-slate-300">Subcategory</span>
-                      <select
-                        value={subcategory}
-                        onChange={(e) => setSubcategory(e.target.value)}
-                        className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white"
-                      >
-                        <option value="">Optional</option>
-                        {chosenCat.subs.map((s) => (
-                          <option key={s} value={s}>
-                            {s}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  )}
-                </div>
-              )}
 
-              {isPhysical && (
-                <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <label className="block">
-                      <span className="text-xs font-medium text-slate-300">Location</span>
-                      <input
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60"
-                      />
-                    </label>
-                    <label className="block">
-                      <span className="text-xs font-medium text-slate-300">Brand (optional)</span>
-                      <input
-                        value={brand}
-                        onChange={(e) => setBrand(e.target.value)}
-                        className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60"
-                      />
-                    </label>
-                  </div>
-
-                  <div>
-                    <span className="text-xs font-medium text-slate-300">Condition</span>
-                    <div className="mt-1 flex flex-wrap gap-2">
-                      {CONDITIONS.map((c) => (
-                        <button
-                          type="button"
-                          key={c}
-                          onClick={() => setCondition(c)}
-                          className={`px-3 py-1.5 rounded-full text-xs font-medium border ${
-                            condition === c
-                              ? "bg-emerald-500/15 border-emerald-500/50 text-emerald-300"
-                              : "bg-[#121214] border-white/10 text-slate-300"
-                          }`}
-                        >
-                          {c}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <span className="text-xs font-medium text-slate-300">
-                      Product images (min 3, first is cover)
-                    </span>
-                    {(existing.length > 0 || newPreviews.length > 0) && (
-                      <div className="mt-2 grid grid-cols-4 gap-2">
-                        {existing.map((img, i) => (
-                          <div
-                            key={`e-${img.path}`}
-                            className={`relative aspect-square rounded-[10px] overflow-hidden border ${i === 0 ? "border-emerald-500/60" : "border-white/10"}`}
-                          >
-                            {img.url ? (
-                              <img loading="lazy"
-                                src={img.url}
-                                alt=""
-                                decoding="async"
-                                className="w-full h-full object-cover bg-[#121214]"
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-[#121214]" />
-                            )}
-                            {i === 0 && (
-                              <span className="absolute top-1 left-1 text-[9px] font-bold uppercase bg-emerald-500/90 text-black rounded px-1">
-                                Cover
-                              </span>
-                            )}
-                            <button
-                              type="button"
-                              onClick={() => removeExisting(i)}
-                              className="absolute top-1 right-1 p-1 rounded bg-black/70 text-white hover:bg-red-500/80"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          </div>
-                        ))}
-                        {newPreviews.map((src, i) => (
-                          <div
-                            key={`n-${i}`}
-                            className="relative aspect-square rounded-[10px] overflow-hidden border border-emerald-400/40"
-                          >
-                            <img loading="lazy"
-                              src={src}
-                              alt=""
-                              decoding="async"
-                              className="w-full h-full object-cover bg-[#121214]"
-                            />
-                            <span className="absolute top-1 left-1 text-[9px] font-bold uppercase bg-emerald-500/90 text-black rounded px-1">
-                              New
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => removeNew(i)}
-                              className="absolute top-1 right-1 p-1 rounded bg-black/70 text-white hover:bg-red-500/80"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    <label className="mt-2 flex items-center gap-3 border border-dashed border-white/15 rounded-[10px] p-3 cursor-pointer hover:border-emerald-500/60">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        className="hidden"
-                        onChange={(e) => addImages(e.target.files)}
-                      />
-                      <div className="w-12 h-12 rounded-[10px] bg-[#121214] border border-white/10 flex items-center justify-center text-emerald-400">
-                        <ImagePlus className="w-5 h-5" />
-                      </div>
-                      <div className="text-xs text-slate-400">
-                        Add more images. PNG/JPG up to 5MB each.
-                      </div>
-                    </label>
-                  </div>
-
-                  <label className="block">
-                    <span className="text-xs font-medium text-slate-300">
-                      Facebook / YouTube link (optional)
-                    </span>
-                    <input
-                      value={socialLink}
-                      onChange={(e) => setSocialLink(e.target.value)}
-                      className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60"
-                    />
-                  </label>
-                </>
-              )}
-
-              {!isPhysical && (
-                <>
                   <div>
                     <span className="text-xs font-medium text-slate-300">
                       Product images (first is cover)
@@ -675,8 +454,6 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
                       </p>
                     )}
                   </div>
-                </>
-              )}
 
 
               <label className="block">
@@ -699,17 +476,15 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
                     className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60 resize-none"
                   />
                 </label>
-                {!isPhysical && (
-                  <label className="block">
-                    <span className="text-xs font-medium text-slate-300">Activation Guide</span>
-                    <textarea
-                      value={activationGuide}
-                      onChange={(e) => setActivationGuide(e.target.value)}
-                      rows={3}
-                      className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60 resize-none"
-                    />
-                  </label>
-                )}
+                <label className="block">
+                  <span className="text-xs font-medium text-slate-300">Activation Guide</span>
+                  <textarea
+                    value={activationGuide}
+                    onChange={(e) => setActivationGuide(e.target.value)}
+                    rows={3}
+                    className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60 resize-none"
+                  />
+                </label>
               </div>
 
               <StockToggleField inStock={inStock} onChange={setInStock} disabled={submitting} />
@@ -724,55 +499,8 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
                     className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60"
                   />
                 </label>
-                {isPhysical && (
-                  <label className="block">
-                    <span className="text-xs font-medium text-slate-300">
-                      Phone (digits only, with country code)
-                    </span>
-                    <input
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                      inputMode="numeric"
-                      className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60"
-                    />
-                  </label>
-                )}
               </div>
 
-              {isPhysical && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <span className="text-xs font-medium text-slate-300">Open to negotiation?</span>
-                    <div className="mt-1 flex gap-2">
-                      {YN.map((v) => (
-                        <button
-                          type="button"
-                          key={v}
-                          onClick={() => setNegotiable(v)}
-                          className={`px-3 py-1.5 rounded-full text-xs font-medium border ${negotiable === v ? "bg-emerald-500/15 border-emerald-500/50 text-emerald-300" : "bg-[#121214] border-white/10 text-slate-300"}`}
-                        >
-                          {v}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-xs font-medium text-slate-300">Offer delivery?</span>
-                    <div className="mt-1 flex gap-2">
-                      {YN.map((v) => (
-                        <button
-                          type="button"
-                          key={v}
-                          onClick={() => setDelivery(v)}
-                          className={`px-3 py-1.5 rounded-full text-xs font-medium border ${delivery === v ? "bg-emerald-500/15 border-emerald-500/50 text-emerald-300" : "bg-[#121214] border-white/10 text-slate-300"}`}
-                        >
-                          {v}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {!isLive && (
                 <label className="block">
