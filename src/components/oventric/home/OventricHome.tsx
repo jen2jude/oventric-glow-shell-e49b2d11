@@ -221,11 +221,11 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
               <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => onSelect("Marketplace")}
+                  onClick={() => navigate({ to: "/sellers" })}
                   className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-crimson px-5 text-sm font-bold text-white transition-all hover:brightness-110 active:scale-95 sm:h-12 sm:flex-none sm:px-7"
                 >
-                  <span className="sm:hidden">Explore</span>
-                  <span className="hidden sm:inline">Explore Marketplace</span>
+                  <span className="sm:hidden">Shop</span>
+                  <span className="hidden sm:inline">Shop</span>
                   <ArrowRight className="hidden h-4 w-4 sm:block" />
                 </button>
                 <button
