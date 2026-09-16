@@ -98,6 +98,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
   const [isFree, setIsFree] = useState(false);
   const [priceInput, setPriceInput] = useState("");
   const [discountInput, setDiscountInput] = useState("");
+  const [cashbackInput, setCashbackInput] = useState("");
   const [mode, setMode] = useState<"file" | "url">("file");
   const [file, setFile] = useState<File | null>(null);
   const [externalUrl, setExternalUrl] = useState("");
@@ -272,6 +273,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
 
           description: fullDescription,
           priceUSD,
+          cashbackPct: isFree ? 0 : Math.max(0, Math.min(50, Number(cashbackInput) || 0)),
           originalCurrency: homeCurrency,
           originalAmount: priceLocal,
           fxSnapshot: snapshot,
