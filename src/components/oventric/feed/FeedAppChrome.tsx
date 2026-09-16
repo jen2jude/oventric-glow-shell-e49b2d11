@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Bell, MessageSquare, Search, Plus } from "lucide-react";
+import { ArrowLeft, Bell, MessageSquare, Search, Plus } from "lucide-react";
 import logoFull from "@/assets/oventric-full-transparent.png";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { ProfileDropdown } from "@/components/oventric/ProfileDropdown";
@@ -112,6 +112,13 @@ export function FeedAppChrome({
       <div>
         <div className="min-h-0">
         <div className="flex items-center gap-2 px-4 pb-2 pt-1 md:px-5 md:pt-3">
+        <Link
+          to="/"
+          aria-label="Back to home"
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-white/75 transition-colors hover:bg-white/5 hover:text-white active:scale-95"
+        >
+          <ArrowLeft className="h-[22px] w-[22px]" strokeWidth={1.8} />
+        </Link>
         <img loading="lazy" decoding="async" src={logoFull} alt="Oventric" className="h-7 w-auto shrink-0" />
         <div className="ml-auto flex items-center gap-1.5">
           <button

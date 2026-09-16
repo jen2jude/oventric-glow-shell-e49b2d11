@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Bell, MessageSquare, UserPlus, Users } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { ArrowLeft, Bell, MessageSquare, UserPlus, Users } from "lucide-react";
 import { CountBadge } from "@/components/oventric/CountBadge";
 import {
   NotificationsDrawer,
@@ -55,6 +56,14 @@ export function FeedSocialBar({ onOpenMessages }: Props) {
     <>
       <div className="sticky top-0 z-20 border-b border-slate-100 bg-white/95 backdrop-blur-sm">
         <div className="mx-auto flex max-w-[1200px] items-center gap-2 overflow-x-auto px-4 py-3 sm:px-6">
+          <Link
+            to="/"
+            aria-label="Back to home"
+            className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 transition-colors hover:border-slate-300 hover:text-slate-900"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">Home</span>
+          </Link>
           <h1 className="mr-auto shrink-0 text-base font-black text-slate-900 sm:text-lg">
             Newsfeed
           </h1>

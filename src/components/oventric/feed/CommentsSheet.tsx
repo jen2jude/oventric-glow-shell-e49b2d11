@@ -68,7 +68,7 @@ function CommentRow({
   );
 
   return (
-    <div className={`flex gap-3 py-3 ${depth ? "" : "border-b border-white/[0.06] md:border-slate-200"}`}>
+    <div className={`flex gap-3 py-3 ${depth ? "" : "border-b border-slate-200"}`}>
       {c.author_slug ? (
         <Link to="/profile/$id" params={{ id: c.author_slug }} aria-label={`Open ${c.author_name}'s profile`}>
           {avatar}
@@ -82,12 +82,12 @@ function CommentRow({
             <Link
               to="/profile/$id"
               params={{ id: c.author_slug }}
-              className="text-[13px] font-semibold text-slate-100 md:text-slate-900 truncate hover:underline"
+              className="text-[13px] font-semibold text-slate-900 truncate hover:underline"
             >
               {c.author_name}
             </Link>
           ) : (
-            <span className="text-[13px] font-semibold text-slate-100 md:text-slate-900 truncate">
+            <span className="text-[13px] font-semibold text-slate-900 truncate">
               {c.author_name}
             </span>
           )}
@@ -96,14 +96,14 @@ function CommentRow({
           )}
           <span className="ml-auto text-[11px] text-slate-500 shrink-0">{timeAgo(c.created_at)}</span>
         </div>
-        <div className="mt-0.5 text-[13.5px] leading-snug text-slate-200 md:text-slate-800 whitespace-pre-wrap break-words">
+        <div className="mt-0.5 text-[13.5px] leading-snug text-slate-700 whitespace-pre-wrap break-words">
           {c.text}
         </div>
         <div className="flex items-center mt-1.5">
           <button
             type="button"
             onClick={() => onReply(c)}
-            className="text-[12px] text-slate-400 md:text-slate-600 hover:text-slate-200 md:hover:text-slate-900"
+            className="text-[12px] text-slate-500 hover:text-slate-900"
           >
             Reply
           </button>
@@ -127,7 +127,7 @@ function CommentRow({
             <button
               type="button"
               onClick={() => setOpenReplies((v) => !v)}
-              className="inline-flex items-center gap-1 text-[12px] text-slate-400 md:text-slate-600 hover:text-slate-200"
+              className="inline-flex items-center gap-1 text-[12px] text-slate-500 hover:text-slate-900"
             >
               <ChevronDown
                 className={`w-3.5 h-3.5 transition-transform ${openReplies ? "rotate-180" : ""}`}
@@ -137,7 +137,7 @@ function CommentRow({
                 : `View ${replies.length} ${replies.length === 1 ? "reply" : "replies"}`}
             </button>
             {openReplies && (
-              <div className="mt-1 pl-3 border-l border-white/10 md:border-slate-200">
+              <div className="mt-1 pl-3 border-l border-slate-200">
                 {replies.map((r) => (
                   <CommentRow
                     key={r.id}
@@ -276,15 +276,15 @@ export function CommentsSheet({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full sm:max-w-lg h-[80vh] sm:h-[75vh] bg-[#0F0F11] md:bg-white border border-white/10 md:border-slate-200 rounded-t-3xl sm:rounded-3xl flex flex-col overflow-hidden slide-up"
+        className="w-full sm:max-w-lg h-[80vh] sm:h-[75vh] bg-white border border-slate-200 rounded-t-[20px] sm:rounded-[10px] flex flex-col overflow-hidden shadow-2xl slide-up"
       >
         {/* Grabber */}
         <div className="pt-2.5 pb-1 flex justify-center shrink-0">
-          <span className="w-10 h-1 rounded-full bg-white/25 md:bg-slate-300" />
+          <span className="w-10 h-1 rounded-full bg-slate-300" />
         </div>
 
         <div className="flex items-center justify-between px-4 pb-3 shrink-0 relative">
-          <h2 className="text-[18px] font-semibold text-slate-100 md:text-slate-900">Comments</h2>
+          <h2 className="text-[18px] font-semibold text-slate-900">Comments</h2>
           <div className="flex items-center gap-1">
             <button
               type="button"
@@ -299,7 +299,7 @@ export function CommentsSheet({
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-full hover:bg-white/10 md:hover:bg-slate-100 text-slate-400 md:text-slate-600 sm:inline-flex hidden"
+              className="p-1.5 rounded-full hover:bg-slate-100 text-slate-500 sm:inline-flex hidden"
               aria-label="Close"
             >
               <X className="w-4 h-4" />
@@ -314,7 +314,7 @@ export function CommentsSheet({
               />
               <ul
                 role="listbox"
-                className="absolute right-3 top-9 z-[2] w-44 rounded-xl bg-[#1A1A1D] md:bg-white border border-white/10 md:border-slate-200 shadow-xl overflow-hidden"
+                className="absolute right-3 top-9 z-[2] w-44 rounded-[10px] bg-white border border-slate-200 shadow-xl overflow-hidden"
               >
                 {SORTS.map((s) => (
                   <li key={s.key}>
@@ -326,10 +326,10 @@ export function CommentsSheet({
                         setSort(s.key);
                         setSortOpen(false);
                       }}
-                      className={`w-full text-left px-3 py-3 text-[13px] hover:bg-white/5 md:hover:bg-slate-50 ${
+                      className={`w-full text-left px-3 py-3 text-[13px] hover:bg-slate-50 ${
                         sort === s.key
                           ? "app-feed-accent font-semibold"
-                          : "text-slate-200 md:text-slate-700"
+                          : "text-slate-700"
                       }`}
                     >
                       {s.label}
@@ -362,26 +362,26 @@ export function CommentsSheet({
           )}
         </div>
 
-        <div className="px-4 py-3 shrink-0 bg-[#0F0F11] md:bg-white">
+        <div className="px-4 py-3 shrink-0 bg-white border-t border-slate-100">
           {replyTo && (
             <div className="flex items-center justify-between mb-1.5 text-[11px] text-slate-400 md:text-slate-600">
               <span>Replying to {replyTo.author_name}</span>
               <button
-                className="hover:text-slate-200 md:hover:text-slate-800"
+                className="hover:text-slate-800"
                 onClick={() => setReplyTo(null)}
               >
                 Cancel
               </button>
             </div>
           )}
-          <div className="flex items-center gap-2 rounded-full bg-white/[0.04] md:bg-slate-100 border border-white/10 md:border-slate-200 pl-4 pr-1.5 py-1.5">
+          <div className="flex items-center gap-2 rounded-full bg-slate-100 border border-slate-200 pl-4 pr-1.5 py-1.5">
             <textarea
               ref={inputRef}
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder={replyTo ? "Write a reply…" : "Add a comment..."}
               rows={1}
-              className="flex-1 resize-none bg-transparent text-[13.5px] text-slate-100 md:text-slate-800 placeholder:text-slate-500 outline-none max-h-28 py-1.5"
+              className="flex-1 resize-none bg-transparent text-[13.5px] text-slate-800 placeholder:text-slate-500 outline-none max-h-28 py-1.5"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -393,7 +393,7 @@ export function CommentsSheet({
               type="button"
               onClick={handleSubmit}
               disabled={!text.trim() || addMut.isPending}
-              className="app-feed-accent p-2 rounded-full disabled:opacity-40 hover:bg-white/5 md:hover:bg-slate-200"
+              className="app-feed-accent p-2 rounded-full disabled:opacity-40 hover:bg-slate-200"
               aria-label="Send"
             >
               <Send className="w-4.5 h-4.5 w-[18px] h-[18px]" />
