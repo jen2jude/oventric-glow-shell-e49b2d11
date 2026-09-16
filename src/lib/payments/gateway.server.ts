@@ -58,6 +58,33 @@ function subunit(amount: number) {
   return Math.max(1, Math.round(amount * 100));
 }
 
+/** True for the real, publicly published Oventric site (not preview builds). */
+function isProductionOrigin(origin: string): boolean {
+  try {
+    return /(^|\.)oventric\.com$/i.test(new URL(origin).host);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Production must run on live provider credentials or not take payments at all.
+ * Test keys stay usable on preview/dev hosts.
+ */
+function assertLiveCredentials(provider: "flutterwave" | "paystack", origin: string) {
+  if (!isProductionOrigin(origin)) return;
+  const key =
+    provider === "paystack"
+      ? (process.env.PAYSTACK_SECRET_KEY ?? "")
+      : (process.env.FLUTTERWAVE_SECRET_KEY ?? "");
+  const isTestKey = /^sk_test_/i.test(key) || /TEST/i.test(key.split("-")[0] ?? "");
+  if (isTestKey) {
+    throw new Error(
+      "Payments are unavailable right now. The live payment credentials are not configured.",
+    );
+  }
+}
+
 async function paystackInit(body: Record<string, unknown>) {
   const key = process.env.PAYSTACK_SECRET_KEY;
   if (!key) throw new Error("Paystack is not configured on the server.");
