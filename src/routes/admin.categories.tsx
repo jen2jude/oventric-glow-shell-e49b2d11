@@ -80,7 +80,7 @@ function CategoriesPage() {
         <div>
           <h1 className="text-white text-2xl font-black">Marketplace Categories</h1>
           <p className="text-sm text-slate-400">
-            {filtered.length} {tab} categories · manage both digital & physical
+            {filtered.length} digital categories
           </p>
         </div>
         <button
@@ -93,19 +93,6 @@ function CategoriesPage() {
         </button>
       </header>
 
-      <div className="mb-4 inline-flex rounded-xl bg-[#141418] border border-white/10 p-1">
-        {(["digital", "physical"] as Kind[]).map((k) => (
-          <button
-            key={k}
-            onClick={() => setTab(k)}
-            className={`px-4 py-1.5 text-sm font-semibold rounded-[10px] capitalize ${
-              tab === k ? "bg-emerald-500 text-black" : "text-slate-300 hover:text-white"
-            }`}
-          >
-            {k}
-          </button>
-        ))}
-      </div>
 
       {!rows ? (
         <Loader2 className="w-5 h-5 animate-spin text-slate-500 mx-auto mt-10" />
