@@ -1359,6 +1359,20 @@ export function Feed() {
           </div>
         )}
 
+        {/* Web visitors get a persistent search + category filter; the app shell
+            surfaces the same control behind its search toggle above. */}
+        {!isAppShell && (
+          <FeedSearchBar
+            q={query}
+            onQueryChange={setQuery}
+            category={category}
+            onCategoryChange={setCategory}
+            resultCount={
+              showPostList && (debouncedQuery || category !== "all") ? filteredPosts.length : null
+            }
+          />
+        )}
+
         {!isAppShell && <WebReelsRail meId={meId} />}
 
         <AdSlot placement="feed" variant="banner" />

@@ -96,6 +96,7 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
   const { isAuthenticated, openGate } = useAuthGate();
   const {
     baseCurrency,
+    homeCurrency,
     country,
     fullName,
     storeName,
@@ -111,6 +112,9 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
   const [payoutOpen, setPayoutOpen] = useState(false);
   const unreadNotifs = useUnreadNotificationsCount();
   const currency: Currency = country ? baseCurrency : "USD";
+  // Wallet money is always held and shown in the user's home currency,
+  // never in the USD price-preview currency.
+  const walletCurrency: Currency = country ? homeCurrency : "USD";
 
   const goSection = (section: string) =>
     section === "Messages" ? onOpenMessages() : onSelect(section);
@@ -167,8 +171,8 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
     loadBalances()
       .then((r) => {
         if (cancelled) return;
-        setMain(r.balances[baseCurrency] ?? 0);
-        setEscrow(r.escrow[baseCurrency] ?? 0);
+        setMain(r.balances[walletCurrency] ?? 0);
+        setEscrow(r.escrow[walletCurrency] ?? 0);
         setCashback(r.cashback ?? 0);
         setBounty(r.bountyBalance ?? 0);
       })
@@ -177,7 +181,7 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
     return () => {
       cancelled = true;
     };
-  }, [isAuthenticated, baseCurrency, loadProfile, loadBalances]);
+  }, [isAuthenticated, walletCurrency, loadProfile, loadBalances]);
 
   useEffect(() => {
     let cancelled = false;
@@ -287,7 +291,7 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
                 Oventric Wallet
               </div>
               <div className="text-[15px] font-black text-white tracking-tight truncate">
-                {isAuthenticated ? formatMoney(main, currency) : formatMoney(0, currency)}
+                {isAuthenticated ? formatMoney(main, walletCurrency) : formatMoney(0, walletCurrency)}
               </div>
             </div>
             <div className="relative shrink-0 h-8 w-8 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
@@ -499,10 +503,10 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
       <WalletDetailModal
         open={walletOpen}
         onClose={() => setWalletOpen(false)}
-        balanceLabel={formatMoney(main, currency)}
-        cashbackLabel={formatMoney(fromUSD(cashback, currency), currency)}
-        bountyLabel={formatMoney(fromUSD(bounty, currency), currency)}
-        escrowLabel={formatMoney(escrow, currency)}
+        balanceLabel={formatMoney(main, walletCurrency)}
+        cashbackLabel={formatMoney(fromUSD(cashback, walletCurrency), walletCurrency)}
+        bountyLabel={formatMoney(fromUSD(bounty, walletCurrency), walletCurrency)}
+        escrowLabel={formatMoney(escrow, walletCurrency)}
         onAddFunds={() => {
           setWalletOpen(false);
           setAddFundsOpen(true);
