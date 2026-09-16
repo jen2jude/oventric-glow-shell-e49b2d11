@@ -168,6 +168,80 @@
   --font-wallet-body: "Manrope", ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Web-native identity and KYC editor. */
+.web-identity-kyc {
+  color-scheme: light;
+  --background: oklch(0.965 0.008 235);
+  --foreground: oklch(0.24 0.018 250);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.24 0.018 250);
+  --primary: oklch(0.56 0.19 22);
+  --primary-foreground: oklch(0.99 0.003 22);
+  --muted: oklch(0.965 0.008 235);
+  --muted-foreground: oklch(0.5 0.025 250);
+  --accent: oklch(0.95 0.018 22);
+  --accent-foreground: oklch(0.48 0.18 22);
+  --border: oklch(0.885 0.015 235);
+  --input: oklch(0.885 0.015 235);
+  --ring: oklch(0.56 0.19 22);
+  font-family: var(--font-wallet-body);
+}
+
+.web-identity-kyc :is(h1, h2, h3, .font-wallet-display, .identity-section-title) {
+  font-family: var(--font-wallet-display);
+  letter-spacing: 0;
+}
+
+.web-identity-kyc .identity-section-title {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.625rem;
+  color: var(--muted-foreground);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.web-identity-kyc .identity-form label {
+  letter-spacing: 0;
+}
+
+.web-identity-kyc .identity-form :is(input, textarea, select) {
+  border-color: var(--border) !important;
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+}
+
+.web-identity-kyc .identity-form :is(input, textarea, select):focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 14%, transparent);
+}
+
+.web-identity-kyc .identity-form :is(input, textarea)::placeholder {
+  color: var(--muted-foreground);
+}
+
+.web-identity-kyc .identity-form .text-white,
+.web-identity-kyc .identity-form .text-slate-300 {
+  color: var(--foreground) !important;
+}
+
+.web-identity-kyc .identity-form :is(.text-slate-400, .text-slate-500) {
+  color: var(--muted-foreground) !important;
+}
+
+@media (max-width: 639px) {
+  .web-identity-kyc .identity-form {
+    padding-bottom: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .web-identity-kyc * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* Seller-led light marketplace. */
 .web-marketplace {
   color-scheme: light;

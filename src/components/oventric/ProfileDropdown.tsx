@@ -910,17 +910,17 @@ function ProfileSettingsModal({
   };
   const tier = tierLabel(full?.verificationTier);
   const tierClasses: Record<string, string> = {
-    emerald: "bg-emerald-500/15 border-emerald-500/40 text-emerald-300",
-    sky: "bg-sky-500/15 border-sky-500/40 text-sky-300",
-    amber: "bg-amber-500/15 border-amber-500/40 text-amber-300",
-    slate: "bg-slate-500/15 border-slate-500/40 text-slate-300",
+    emerald: "bg-emerald-50 border-emerald-200 text-emerald-700",
+    sky: "bg-sky-50 border-sky-200 text-sky-700",
+    amber: "bg-amber-50 border-amber-200 text-amber-700",
+    slate: "bg-slate-100 border-slate-200 text-slate-600",
   };
 
   if (typeof document === "undefined") return null;
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/70 overflow-y-auto"
+      className="web-identity-kyc fixed inset-0 z-[110] flex items-start justify-center overflow-y-auto bg-foreground/20 px-3 py-4 backdrop-blur-[2px] sm:px-6 sm:py-8"
       onClick={saving ? undefined : onClose}
     >
       <div
@@ -931,20 +931,20 @@ function ProfileSettingsModal({
         aria-describedby={descId}
         tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-lg bg-[#1A1A1E] border border-emerald-500/30 rounded-2xl shadow-2xl my-auto max-h-[90vh] flex flex-col focus:outline-none"
+        className="relative my-auto flex max-h-[calc(100vh-2rem)] w-full max-w-3xl flex-col overflow-hidden rounded-[10px] border border-border bg-card shadow-2xl focus:outline-none sm:max-h-[calc(100vh-4rem)]"
       >
-        <header className="flex items-start justify-between gap-3 p-5 border-b border-white/5">
+        <header className="flex items-start justify-between gap-5 border-b border-border px-5 py-5 sm:px-8 sm:py-7">
           <div>
             <div
-              className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border mb-1.5 ${tierClasses[tier.tone]}`}
+              className={`mb-2 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase ${tierClasses[tier.tone]}`}
             >
               <ShieldCheck className="w-3 h-3" aria-hidden /> {tier.label}
             </div>
-            <h2 id={titleId} className="text-white font-black text-base">
-              Identity & KYC Edit
+            <h2 id={titleId} className="font-wallet-display text-xl font-bold text-foreground sm:text-2xl">
+              Identity &amp; KYC
             </h2>
-            <p id={descId} className="text-[11px] text-slate-500 mt-0.5">
-              Live workspace identity. Fields sync to your public profile immediately.
+            <p id={descId} className="mt-1 text-xs text-muted-foreground sm:text-sm">
+              Manage your public profile, verification, privacy and account security.
             </p>
           </div>
           <button
@@ -952,7 +952,7 @@ function ProfileSettingsModal({
             type="button"
             onClick={onClose}
             disabled={saving}
-            className="text-slate-400 hover:text-white p-1 disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 rounded"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-[8px] border border-border bg-background text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label="Close profile settings"
           >
             <X className="w-4 h-4" aria-hidden />
@@ -962,7 +962,7 @@ function ProfileSettingsModal({
         <form
           onSubmit={onSubmit}
           noValidate
-          className="flex-1 min-h-0 overflow-y-auto p-6 space-y-5 scrollbar-thin"
+          className="identity-form min-h-0 flex-1 space-y-8 overflow-y-auto px-5 py-6 sm:px-8 sm:py-8"
         >
           {loading && (
             <div
@@ -981,8 +981,10 @@ function ProfileSettingsModal({
           {!loading && (
             <>
               {/* Avatar */}
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-neutral-800 overflow-hidden shrink-0 flex items-center justify-center">
+              <section className="identity-section space-y-4">
+                <div className="identity-section-title">Profile information</div>
+                <div className="flex items-center gap-4 sm:gap-6">
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-muted bg-muted sm:h-24 sm:w-24">
                   {avatar ? (
                     <ResponsiveImage
                       sizes="96px"
@@ -993,14 +995,14 @@ function ProfileSettingsModal({
                       decoding="async"
                     />
                   ) : (
-                    <User className="w-8 h-8 text-white/85" strokeWidth={1.75} aria-hidden />
+                    <User className="h-9 w-9 text-muted-foreground" strokeWidth={1.75} aria-hidden />
                   )}
                 </div>
                 <label className="flex-1 cursor-pointer">
-                  <div className="rounded-[10px] border border-dashed border-white/15 hover:border-emerald-500/50 bg-[#121214] px-3 py-3 text-center transition-colors focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-400/70 focus-within:ring-offset-2 focus-within:ring-offset-[#1A1A1E]">
-                    <Upload className="w-4 h-4 text-slate-400 mx-auto mb-1" aria-hidden />
-                    <div className="text-[11px] font-semibold text-slate-300">Upload avatar</div>
-                    <div className="text-[10px] text-slate-500">PNG · JPG · WebP · max 2MB</div>
+                  <div className="rounded-[10px] border border-dashed border-border bg-muted/60 px-4 py-3 text-center transition-colors hover:border-primary/50 hover:bg-accent focus-within:ring-2 focus-within:ring-ring">
+                    <Upload className="mx-auto mb-1 h-4 w-4 text-muted-foreground" aria-hidden />
+                    <div className="text-xs font-semibold text-foreground">Upload a new photo</div>
+                    <div className="text-[10px] text-muted-foreground">PNG, JPG or WebP · max 2 MB</div>
                   </div>
                   <input
                     type="file"
@@ -1010,6 +1012,7 @@ function ProfileSettingsModal({
                     onChange={(e) => onAvatarPick(e.target.files?.[0] ?? null)}
                   />
                 </label>
+                </div>
               </div>
 
               {/* Display name */}
@@ -1139,7 +1142,9 @@ function ProfileSettingsModal({
               </div>
 
               {/* Contact grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <section className="identity-section space-y-4">
+                <div className="identity-section-title">Contact &amp; region</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label
                     htmlFor={`${titleId}-phone`}
@@ -1314,9 +1319,12 @@ function ProfileSettingsModal({
                     : "Private — only you can see this."}
                 </p>
               </div>
+              </section>
 
               {/* Notification preferences */}
-              <div className="rounded-[10px] border border-white/10 bg-[#121214] p-3 space-y-2">
+              <section className="identity-section space-y-4">
+                <div className="identity-section-title">Notification preferences</div>
+              <div className="rounded-[10px] border border-border bg-muted/50 p-4 space-y-2">
                 <div className="text-xs font-bold text-white uppercase tracking-widest">
                   Notifications
                 </div>
@@ -1365,10 +1373,13 @@ function ProfileSettingsModal({
                   );
                 })}
               </div>
+              </section>
 
               {/* Account & security */}
 
-              <div className="rounded-[10px] border border-white/10 bg-[#121214] p-3 space-y-3">
+              <section className="identity-section space-y-4">
+                <div className="identity-section-title">Account security</div>
+              <div className="rounded-[10px] border border-border bg-muted/50 p-4 space-y-3">
                 <div className="flex items-center justify-between gap-2">
                   <div>
                     <div className="text-xs font-bold text-white">Account email</div>
@@ -1443,9 +1454,12 @@ function ProfileSettingsModal({
                   )}
                 </div>
               </div>
+              </section>
 
               {/* Live KYC status */}
-              <div className="rounded-[10px] border border-white/10 bg-[#121214] p-3">
+              <section className="identity-section space-y-4">
+                <div className="identity-section-title">Identity verification</div>
+              <div className="rounded-[10px] border border-border bg-muted/50 p-4">
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2">
                     <ShieldCheck
@@ -1497,6 +1511,7 @@ function ProfileSettingsModal({
                 </p>
 
               </div>
+              </section>
 
               {/* Danger zone */}
               <div className="rounded-[10px] border border-red-500/30 bg-red-500/5 p-3">
@@ -1555,12 +1570,12 @@ function ProfileSettingsModal({
           )}
         </form>
 
-        <footer className="flex items-center justify-end gap-2 p-4 border-t border-white/5">
+        <footer className="flex items-center justify-end gap-3 border-t border-border bg-card px-5 py-4 sm:px-8">
           <button
             type="button"
             onClick={onClose}
             disabled={saving}
-            className="px-4 py-3 rounded-[10px] bg-[#121214] border border-white/10 text-slate-300 text-xs font-bold disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300/70"
+            className="min-w-24 rounded-[10px] border border-border bg-background px-4 py-3 text-xs font-bold text-foreground transition-colors hover:bg-muted disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             Cancel
           </button>
@@ -1568,7 +1583,7 @@ function ProfileSettingsModal({
             type="button"
             onClick={onSubmit as unknown as () => void}
             disabled={saving || loading}
-            className="px-4 py-3 rounded-[10px] bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-black disabled:opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300"
+            className="min-w-32 rounded-[10px] bg-primary px-5 py-3 text-xs font-black text-primary-foreground transition-[filter,transform] hover:brightness-95 active:scale-[0.99] disabled:opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             {saving ? "Saving…" : "Save Changes"}
           </button>
@@ -1596,10 +1611,10 @@ function VisibilityToggle({
       aria-pressed={on}
       aria-label={on ? `Make ${label} private` : `Make ${label} visible to others`}
       title={on ? `Visible to others — click to hide` : `Private — click to show publicly`}
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-1 text-[10px] font-bold uppercase tracking-widest transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 ${
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-1 text-[10px] font-bold uppercase transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
         on
-          ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300"
-          : "border-white/10 bg-white/5 text-slate-400 hover:text-white"
+          ? "border-primary/30 bg-primary/10 text-primary"
+          : "border-border bg-background text-muted-foreground hover:text-foreground"
       }`}
     >
       {on ? (
