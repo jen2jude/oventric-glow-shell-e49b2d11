@@ -2579,6 +2579,36 @@ section + section {
   --font-storefront: "Playfair Display", serif;
 }
 
+/* Website account menu remains light regardless of the user's page theme. */
+.web-account-menu {
+  color-scheme: light;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.2 0.012 260);
+  --primary: oklch(0.61 0.2 24);
+  --primary-foreground: oklch(0.99 0.003 24);
+  --muted: oklch(0.96 0.005 260);
+  --muted-foreground: oklch(0.48 0.014 260);
+  --border: oklch(0.2 0.012 260 / 12%);
+  --destructive: oklch(0.58 0.22 25);
+  font-family: var(--font-wallet-body);
+  background-color: var(--background);
+  color: var(--foreground);
+  animation: web-account-menu-in 160ms ease-out both;
+}
+
+.web-account-menu .font-wallet-display {
+  font-family: var(--font-wallet-display);
+}
+
+@keyframes web-account-menu-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .web-account-menu { animation: none; }
+}
+
 /* Public seller shops use a spacious, desktop-first boutique composition. */
 .web-storefront {
   color-scheme: light;

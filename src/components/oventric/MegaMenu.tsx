@@ -239,7 +239,7 @@ export function MegaMenu({ open, onClose }: Props) {
         aria-label="Menu"
         data-testid="mega-menu"
         data-variant="web"
-        className="absolute inset-x-3 bottom-3 max-h-[calc(100dvh-1.5rem)] overflow-y-auto rounded-[10px] border border-border bg-background text-foreground shadow-2xl sm:inset-x-auto sm:bottom-auto sm:right-6 sm:top-[76px] sm:w-[390px] sm:max-h-[calc(100dvh-92px)] lg:right-11 lg:top-[88px]"
+        className="web-account-menu absolute inset-x-3 bottom-3 max-h-[calc(100dvh-1.5rem)] overflow-y-auto rounded-[10px] border border-border bg-background text-foreground shadow-2xl sm:inset-x-auto sm:bottom-auto sm:right-6 sm:top-[76px] sm:w-[390px] sm:max-h-[calc(100dvh-92px)] lg:right-11 lg:top-[88px]"
       >
         <div className="sticky top-0 z-10 flex items-center gap-4 border-b border-border bg-background px-5 py-5">
           <button
