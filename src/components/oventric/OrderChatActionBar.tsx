@@ -74,18 +74,18 @@ export function OrderChatActionBar({
 
   return (
     <>
-      <div className="sticky bottom-0 z-20 px-3 pb-2 pt-2 bg-gradient-to-t from-[#121214] via-[#121214]/95 to-transparent md:from-white md:via-white/95">
-        <div className="rounded-[10px] border border-white/10 md:border-slate-200 bg-[#1E1E24] md:bg-white shadow-lg p-2.5">
+      <div className="sticky bottom-0 z-20 px-3 pb-2 pt-2 bg-background">
+        <div className="rounded-[10px] border border-border bg-background shadow-sm p-2.5">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setWarn(true)}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-[10px] text-xs font-bold text-black md:text-white bg-emerald-500 md:bg-emerald-600 hover:bg-emerald-400"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-[10px] text-xs font-bold text-primary-foreground bg-primary hover:bg-primary/90"
             >
               <CheckCircle2 className="w-4 h-4" /> Confirm delivery
             </button>
             <button
               onClick={() => setReport(true)}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-[10px] text-xs font-bold text-red-200 md:text-red-700 bg-red-500/15 md:bg-red-50 border border-red-500/40 md:border-red-200"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-[10px] text-xs font-bold text-destructive bg-destructive/5 border border-destructive/20 hover:bg-destructive/10"
             >
               <ShieldAlert className="w-4 h-4" /> Report issue
             </button>

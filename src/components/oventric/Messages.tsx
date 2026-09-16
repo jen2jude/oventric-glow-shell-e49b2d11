@@ -80,19 +80,19 @@ function EmptyChat({ hasThreads }: { hasThreads: boolean }) {
   return (
     <div className="flex flex-1 items-center justify-center p-8 text-center">
       <div className="max-w-sm">
-        <div className="mx-auto mb-5 relative w-24 h-24">
-          <div className="absolute inset-0 rounded-full  bg-[#1E1E24] md:bg-emerald-50 border border-white/10 md:border-emerald-200" />
+        <div className="mx-auto mb-5 relative w-20 h-20">
+          <div className="absolute inset-0 rounded-full bg-primary/5 border border-primary/15" />
           <div className="absolute inset-0 flex items-center justify-center">
-            <MessageSquare className="w-10 h-10 text-emerald-400" />
+            <MessageSquare className="w-8 h-8 text-primary" />
           </div>
         </div>
-        <div className="text-white md:text-slate-900 font-black text-lg">
+        <div className="font-wallet-display text-foreground font-semibold text-lg">
           {hasThreads ? "Select a conversation" : "No conversations yet"}
         </div>
-        <p className="text-sm text-slate-400 md:text-slate-500 mt-2 leading-relaxed">
+        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
           {hasThreads
-            ? "Pick a peer on the left to open the encrypted stream."
-            : "Message a peer from their profile or a bounty thread to start."}
+            ? "Choose a conversation to continue securely."
+            : "Message a buyer or seller from their profile or order to get started."}
         </p>
       </div>
     </div>
@@ -114,12 +114,12 @@ function ThreadRow({
   return (
     <button
       onClick={onClick}
-      className={`w-full text-left rounded-[10px] transition-colors ${
+      className={`w-full text-left rounded-[10px] border transition-colors ${
         active
-          ? "bg-emerald-500/10 md:bg-emerald-50 border border-emerald-500/40 md:border-emerald-300"
+          ? "bg-primary/5 border-primary/25"
           : unread
-            ? "rgb-static-border p-[2px]"
-            : "bg-[#1E1E24] md:bg-white border border-white/10 md:border-slate-200 md:hover:shadow-sm"
+            ? "bg-background border-primary/20"
+            : "bg-background border-transparent hover:border-border hover:bg-muted/60"
       }`}
     >
       <div
@@ -127,8 +127,8 @@ function ThreadRow({
           active
             ? ""
             : unread
-              ? "bg-[#1E1E24] md:bg-white hover:bg-white/5 md:hover:bg-slate-50"
-              : "hover:bg-white/5 md:hover:bg-slate-50"
+              ? "bg-background hover:bg-muted/60"
+              : "hover:bg-muted/60"
         }`}
       >
         <div className="relative shrink-0">
@@ -141,27 +141,27 @@ function ThreadRow({
           </div>
           {online && (
             <span
-              className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#16161B] md:border-white shadow-sm"
+              className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-background shadow-sm"
               title="Online"
             />
           )}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
-            <span className="text-sm font-semibold text-white md:text-slate-900 truncate">
+            <span className="text-sm font-semibold text-foreground truncate">
               {thread.peerName}
             </span>
-            <span className="ml-auto shrink-0 text-[10px] text-slate-500 md:text-slate-400">
+            <span className="ml-auto shrink-0 text-[10px] text-muted-foreground">
               {formatTime(thread.lastAt)}
             </span>
           </div>
 
           <div className="flex items-center gap-2 mt-0.5">
-            <div className="text-xs text-slate-400 md:text-slate-500 truncate flex-1">
+            <div className="text-xs text-muted-foreground truncate flex-1">
               {thread.preview}
             </div>
             {unread && (
-              <span className="shrink-0 inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-red-600 text-white text-[10px] font-black">
+              <span className="shrink-0 inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold">
                 {thread.unread}
               </span>
             )}
@@ -176,10 +176,10 @@ function MessageBubble({ msg, mine }: { msg: DMRow; mine: boolean }) {
   return (
     <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[80%] rounded-xl px-3.5 py-2.5 text-sm text-white ${mine ? "" : "md:text-slate-800"} ${
+        className={`max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm ${
           mine
-            ? "bg-gradient-to-br from-emerald-500 to-emerald-600 border border-emerald-400/60"
-            : "bg-[#2A2A32] md:bg-slate-100 border border-white/5 md:border-slate-200"
+            ? "rounded-tr-sm bg-primary text-primary-foreground shadow-sm"
+            : "rounded-tl-sm bg-background text-foreground border border-border shadow-sm"
         }`}
       >
         {stripProductLink(msg.body) && (
@@ -192,12 +192,12 @@ function MessageBubble({ msg, mine }: { msg: DMRow; mine: boolean }) {
         )}
         {msg.media_path && <div className="mt-1 text-[11px] italic opacity-80">📎 attachment</div>}
         <div
-          className={`text-[10px] mt-1 flex items-center gap-1 ${mine ? "text-emerald-100/80 justify-end" : "text-slate-500 md:text-slate-400"}`}
+          className={`text-[10px] mt-1 flex items-center gap-1 ${mine ? "text-primary-foreground/75 justify-end" : "text-muted-foreground"}`}
         >
           <span>{formatTime(msg.created_at)}</span>
           {mine && !msg.id.startsWith("tmp-") && (
             <span
-              className={msg.read_at ? "text-sky-200" : "text-emerald-100/60"}
+              className="text-primary-foreground/75"
               title={msg.read_at ? `Read ${formatTime(msg.read_at)}` : "Sent"}
               aria-label={msg.read_at ? "Read" : "Sent"}
             >
@@ -683,26 +683,25 @@ export function Messages({
   };
 
   const wrapperClasses =
-    "flex h-full min-h-0 max-h-full overflow-hidden bg-[#121214] md:bg-white text-slate-200 md:text-slate-700";
+    "flex h-full min-h-0 max-h-full overflow-hidden bg-background text-foreground";
 
   if (!me) {
     return (
       <div className={wrapperClasses}>
         <div className="flex flex-1 items-center justify-center p-8 text-center">
           <div className="max-w-sm">
-            <div className="mx-auto mb-5 w-20 h-20 rounded-full bg-[#1E1E24] md:bg-emerald-50 border border-white/10 md:border-emerald-200 flex items-center justify-center">
-              <MessageSquare className="w-8 h-8 text-emerald-400" />
+            <div className="mx-auto mb-5 w-20 h-20 rounded-full bg-primary/5 border border-primary/15 flex items-center justify-center">
+              <MessageSquare className="w-8 h-8 text-primary" />
             </div>
-            <div className="text-white md:text-slate-900 font-black text-lg">
+            <div className="font-wallet-display text-foreground font-semibold text-lg">
               Sign in to open Messages
             </div>
-            <p className="text-sm text-slate-400 md:text-slate-500 mt-2">
-              Direct messages are encrypted between verified peers. Connect your account to start
-              chatting.
+            <p className="text-sm text-muted-foreground mt-2">
+              Sign in to securely message buyers and sellers.
             </p>
             <button
               onClick={() => openGate("interaction")}
-              className="mt-4 inline-flex items-center gap-2 px-4 py-3 rounded-[10px] bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-sm"
+              className="mt-4 inline-flex items-center gap-2 px-4 py-3 rounded-[10px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm"
             >
               Connect account
             </button>
@@ -718,25 +717,25 @@ export function Messages({
       <aside
         className={`${
           showListOnMobile ? "flex" : "hidden"
-        } md:flex flex-col w-full md:w-[30%] md:min-w-[280px] md:max-w-[380px] border-r border-white/10 md:border-slate-200 bg-[#16161B] md:bg-white`}
+        } md:flex flex-col w-full md:w-[34%] md:min-w-[310px] md:max-w-[380px] border-r border-border bg-background`}
       >
-        <div className="sticky top-0 z-10 bg-[#16161B] md:bg-white border-b border-white/10 md:border-slate-200 px-3 py-3 space-y-2.5">
+        <div className="sticky top-0 z-10 bg-background border-b border-border px-4 py-3 space-y-2.5">
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 md:text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 type="text"
                 placeholder="Search peers…"
-                className="w-full h-9 pl-9 pr-3 bg-[#1E1E24] md:bg-slate-100 border border-white/10 md:border-transparent rounded-[10px] text-sm text-slate-200 md:text-slate-800 placeholder:text-slate-500 md:placeholder:text-slate-400 focus:outline-none focus:border-emerald-500/60 md:focus:bg-white md:focus:border-emerald-500/60"
+                className="w-full h-10 pl-9 pr-3 bg-muted border border-transparent rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:bg-background focus:border-primary/40"
               />
             </div>
             {variant === "compact" && onClose && (
               <button
                 onClick={onClose}
                 aria-label="Close messages"
-                className="p-2 rounded-[10px] text-slate-400 md:text-slate-500 hover:text-white md:hover:text-slate-900 hover:bg-white/5 md:hover:bg-slate-100"
+                className="p-2 rounded-[10px] text-muted-foreground hover:text-foreground hover:bg-muted"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -773,8 +772,8 @@ export function Messages({
           const rail = [...online, ...offline];
           if (rail.length === 0) return null;
           return (
-            <div className="border-b border-white/10 md:border-slate-200 px-3 py-2.5">
-              <div className="text-[10px] uppercase tracking-widest font-black text-emerald-400 md:text-emerald-600 mb-2">
+            <div className="border-b border-border px-4 py-3">
+              <div className="text-[10px] uppercase tracking-wider font-bold text-primary mb-2">
                 {online.length > 0 ? `Online now · ${online.length}` : "Recent peers"}
               </div>
               <div className="flex gap-2.5 overflow-x-auto pb-1 -mx-0.5 px-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -790,18 +789,18 @@ export function Messages({
                         className={`w-11 h-11 rounded-full overflow-hidden ring-2 transition ${
                           p.online
                             ? "ring-emerald-400/70"
-                            : "ring-white/10 md:ring-slate-200 group-hover:ring-emerald-400/40 opacity-80 md:opacity-100"
+                            : "ring-border group-hover:ring-primary/30"
                         }`}
                       >
                         <AvatarImage src={p.avatarUrl} alt={p.name} className="rounded-full" />
                       </div>
                       <span
-                        className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#16161B] md:border-white ${
-                          p.online ? "bg-emerald-400 shadow-sm" : "bg-slate-600 md:bg-slate-300"
+                        className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-background ${
+                          p.online ? "bg-emerald-500 shadow-sm" : "bg-slate-300"
                         }`}
                       />
                     </div>
-                    <span className="text-[10px] text-slate-300 md:text-slate-600 truncate max-w-full">
+                    <span className="text-[10px] text-muted-foreground truncate max-w-full">
                       {p.name.split(/\s+/)[0]}
                     </span>
                   </button>
@@ -810,7 +809,7 @@ export function Messages({
             </div>
           );
         })()}
-        <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
+        <div className="flex-1 overflow-y-auto p-3 space-y-1">
           {loadingThreads && threads.length === 0 ? (
             <div className="text-xs text-slate-500 md:text-slate-400 text-center py-8 flex items-center justify-center gap-2">
               <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading conversations…
@@ -835,16 +834,16 @@ export function Messages({
 
       {/* RIGHT — Active Chat */}
       <section
-        className={`${showListOnMobile ? "hidden" : "flex"} md:flex flex-1 min-w-0 min-h-0 h-full flex-col bg-[#121214] md:bg-slate-50`}
+        className={`${showListOnMobile ? "hidden" : "flex"} md:flex flex-1 min-w-0 min-h-0 h-full flex-col bg-muted/40`}
       >
         {!activeThread ? (
           <EmptyChat hasThreads={threads.length > 0} />
         ) : (
           <>
-            <header className="shrink-0 flex items-center gap-3 px-4 py-3 border-b border-white/10 md:border-slate-200 bg-[#16161B] md:bg-white">
+            <header className="shrink-0 flex items-center gap-3 px-4 sm:px-5 py-3 border-b border-border bg-background">
               <button
                 onClick={() => setShowListOnMobile(true)}
-                className="md:hidden text-slate-400 hover:text-white text-xs font-semibold"
+                className="md:hidden text-primary text-xs font-semibold"
               >
                 ← Back
               </button>
@@ -859,28 +858,28 @@ export function Messages({
                 </div>
                 {isPeerOnline(activeThread.peerId) && (
                   <span
-                    className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#16161B] md:border-white shadow-sm"
+                    className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-background shadow-sm"
                     title="Online"
                   />
                 )}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-white md:text-slate-900 font-semibold text-sm truncate">
+                  <span className="font-wallet-display text-foreground font-semibold text-sm truncate">
                     {activeThread.peerName}
                   </span>
-                  <span className="inline-flex items-center gap-0.5 text-[11px] text-slate-500 md:text-slate-400 ml-1">
+                  <span className="inline-flex items-center gap-0.5 text-[11px] text-muted-foreground ml-1">
                     <Star className="w-3 h-3" />
                     peer
                   </span>
                 </div>
-                <div className="text-[11px] text-slate-500 md:text-slate-400">
+                <div className="text-[11px] text-muted-foreground">
                   {peerTyping ? (
-                    <span className="text-emerald-400 md:text-emerald-600 font-semibold">
+                    <span className="text-emerald-600 font-semibold">
                       typing…
                     </span>
                   ) : isPeerOnline(activeThread.peerId) ? (
-                    <span className="text-emerald-400 md:text-emerald-600 font-semibold">
+                    <span className="text-emerald-600 font-semibold">
                       ● Online now
                     </span>
                   ) : (
@@ -895,7 +894,7 @@ export function Messages({
               <Link
                 to="/profile/$id"
                 params={{ id: activeThread.peerSlug }}
-                className="hidden sm:inline-flex items-center gap-1 text-[11px] text-emerald-400 md:text-emerald-600 hover:text-emerald-300 md:hover:text-emerald-700 border border-emerald-500/30 md:border-emerald-200 md:hover:bg-emerald-50 rounded-[10px] px-2 py-1"
+                className="hidden sm:inline-flex items-center gap-1 text-[11px] text-primary hover:bg-primary/5 border border-primary/20 rounded-[10px] px-2.5 py-1.5"
               >
                 <ExternalLink className="w-3 h-3" /> Profile
               </Link>
@@ -903,7 +902,7 @@ export function Messages({
 
             <OrderTradeBanner ctx={orderCtx} onChanged={() => void refreshOrderCtx()} />
 
-            <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-3">
+            <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-5 space-y-3">
               {loadingMessages ? (
                 <div className="text-xs text-slate-500 md:text-slate-400 text-center py-8 flex items-center justify-center gap-2">
                   <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading messages…
@@ -919,7 +918,7 @@ export function Messages({
                       <button
                         onClick={() => void loadOlder()}
                         disabled={loadingOlder}
-                        className="inline-flex items-center gap-2 text-[11px] font-semibold text-emerald-400 md:text-emerald-600 hover:text-emerald-300 border border-emerald-500/30 md:border-emerald-200 hover:border-emerald-400/60 md:hover:bg-emerald-50 rounded-full px-3 py-1 disabled:opacity-50"
+                        className="inline-flex items-center gap-2 text-[11px] font-semibold text-primary hover:bg-primary/5 border border-primary/20 rounded-full px-3 py-1 disabled:opacity-50"
                       >
                         {loadingOlder ? (
                           <>
@@ -938,14 +937,14 @@ export function Messages({
               )}
               {peerTyping && activeThread && (
                 <div className="flex justify-start">
-                  <div className="inline-flex items-center gap-2 rounded-xl px-3 py-3 bg-[#2A2A32] md:bg-white border border-white/5 md:border-slate-200">
-                    <span className="text-[11px] text-slate-400 md:text-slate-500">
+                   <div className="inline-flex items-center gap-2 rounded-xl px-3 py-3 bg-background border border-border shadow-sm">
+                     <span className="text-[11px] text-muted-foreground">
                       {activeThread.peerName.split(/\s+/)[0]} is typing
                     </span>
                     <span className="flex items-end gap-0.5" aria-hidden="true">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce [animation-delay:-0.3s]" />
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce [animation-delay:-0.15s]" />
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" />
+                       <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]" />
+                       <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]" />
+                       <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" />
                     </span>
                   </div>
                 </div>
@@ -955,11 +954,11 @@ export function Messages({
             <OrderChatActionBar ctx={orderCtx} onChanged={() => void refreshOrderCtx()} />
 
             <div
-              className="relative z-10 shrink-0 border-t border-white/10 md:border-slate-200 bg-[#16161B] md:bg-white p-3"
+              className="relative z-10 shrink-0 border-t border-border bg-background p-3 sm:p-4"
               style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.75rem)" }}
             >
               {OFF_PLATFORM_RE.test(draft) && (
-                <div className="mb-2 flex items-start gap-2 rounded-[10px] border border-amber-500/40 md:border-amber-300 bg-amber-500/5 md:bg-amber-50 px-3 py-3 text-[11px] text-amber-100 md:text-amber-800">
+                <div className="mb-2 flex items-start gap-2 rounded-[10px] border border-amber-200 bg-amber-50 px-3 py-3 text-[11px] text-amber-800">
                   <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
                   <span>
                     Heads up — trades finished off Oventric aren't covered by escrow, refunds or
@@ -984,12 +983,12 @@ export function Messages({
                   }}
                   rows={1}
                   placeholder="Type a message…"
-                  className="flex-1 resize-none max-h-32 min-h-[40px] bg-[#1E1E24] md:bg-slate-100 border border-white/10 md:border-transparent rounded-[10px] px-3 py-3 text-sm text-slate-200 md:text-slate-800 placeholder:text-slate-500 md:placeholder:text-slate-400 focus:outline-none focus:border-emerald-500/60 md:focus:bg-white md:focus:border-emerald-500/60"
+                  className="flex-1 resize-none max-h-32 min-h-[44px] bg-muted border border-border rounded-xl px-3.5 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:bg-background focus:border-primary/40"
                 />
                 <button
                   onClick={() => void send()}
                   disabled={!draft.trim() || sending}
-                  className="shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-[10px] bg-emerald-500 md:bg-emerald-600 hover:bg-emerald-400 md:hover:bg-emerald-700 text-black md:text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="shrink-0 inline-flex items-center justify-center w-11 h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed"
                   aria-label="Send message"
                 >
                   {sending ? (
@@ -1041,20 +1040,20 @@ function OrderTradeBanner({
   };
 
   return (
-    <div className="border-b border-white/10 md:border-slate-200 bg-[#1A1A20] md:bg-emerald-50/60 px-4 py-3">
+    <div className="border-b border-border bg-background px-4 sm:px-5 py-3">
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div className="min-w-0">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 md:text-emerald-700 mb-0.5">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5">
             {disputed
               ? "Disputed trade"
               : ctx.deliveredAt
                 ? "Delivered — awaiting confirmation"
                 : "Active trade in escrow"}
           </div>
-          <div className="text-sm text-white md:text-slate-900 font-semibold truncate">
+          <div className="text-sm text-foreground font-semibold truncate">
             {ctx.productName}
           </div>
-          <div className="text-[11px] text-slate-500 md:text-slate-600">
+          <div className="text-[11px] text-muted-foreground">
             {ctx.displayCurrency} {ctx.displayTotal.toLocaleString()} held in escrow · Order{" "}
             {ctx.orderId.slice(0, 8)}
           </div>
@@ -1064,7 +1063,7 @@ function OrderTradeBanner({
             <button
               onClick={() => void run("deliver")}
               disabled={busy}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-xs font-bold text-black md:text-white bg-emerald-500 md:bg-emerald-600 hover:bg-emerald-400 md:hover:bg-emerald-700 disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-xs font-bold text-primary-foreground bg-primary hover:bg-primary/90 disabled:opacity-60"
             >
               {busy ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1077,14 +1076,14 @@ function OrderTradeBanner({
           <Link
             to="/order/$id"
             params={{ id: ctx.orderId }}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-xs font-semibold text-slate-200 md:text-slate-700 bg-[#2A2A31] md:bg-white border border-white/10 md:border-slate-200 md:hover:bg-slate-50"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-xs font-semibold text-foreground bg-background border border-border hover:bg-muted"
           >
             <ShieldAlert className="w-3.5 h-3.5" />{" "}
             {ctx.role === "buyer" ? "Order & disputes" : "Order details"}
           </Link>
         </div>
       </div>
-      <div className="mt-2 text-[11px] text-emerald-100/80 md:text-emerald-800/80">
+      <div className="mt-2 text-[11px] text-muted-foreground">
         Deliver and confirm here. Escrow, refunds and dispute mediation only cover trades completed
         on Oventric.
       </div>
