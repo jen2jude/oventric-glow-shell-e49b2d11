@@ -61,7 +61,7 @@ export const generateMyPurchaseSummary = createServerFn({ method: "POST" })
       const externalUrl = !!(p.external_url as string);
       const status = (r.status as string) ?? "pending";
       const escrow = (r.escrow_status as string) ?? "released";
-      let action = "No action needed.";
+      let action = "Open this order's page for details.";
       if (status === "paid" && manual && !r.buyer_confirmed_at) {
         action =
           "Seller delivers this in your Oventric chat; tap 'Confirm received' on the order once you have it.";
@@ -69,6 +69,9 @@ export const generateMyPurchaseSummary = createServerFn({ method: "POST" })
         action = "Re-download any time with the Download button on this order.";
       } else if (status === "paid" && externalUrl) {
         action = "Open the seller's delivery link from this order.";
+      } else if (status === "paid") {
+        action =
+          "Delivered — open this order's page or your chat with the seller to get the files again.";
       } else if (status === "pending") {
         action = "Payment is still processing.";
       } else if (status === "refunded") {
@@ -77,7 +80,7 @@ export const generateMyPurchaseSummary = createServerFn({ method: "POST" })
       return {
         orderId: (r.id as string).slice(0, 8),
         product: (p.name as string) ?? (r.product_name_snapshot as string) ?? "Digital product",
-        seller: (p.vendor as string) ?? "Unknown seller",
+        seller: (p.vendor as string) || "the seller",
         amount: `${r.display_currency ?? "USD"} ${Number(r.display_total ?? 0).toLocaleString()}`,
         date: String(r.paid_at ?? r.created_at ?? "").slice(0, 10),
         status,
