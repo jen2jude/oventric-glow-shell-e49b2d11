@@ -2837,9 +2837,35 @@ section + section {
   font-family: var(--font-wallet-display);
 }
 
+/* Followers and connections use the cool professional web directory palette. */
+.web-connections {
+  color-scheme: light;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.22 0.006 250);
+  --primary: oklch(0.57 0.18 22);
+  --primary-foreground: oklch(1 0 0);
+  --muted: oklch(0.97 0.005 240);
+  --muted-foreground: oklch(0.55 0.035 250);
+  --border: oklch(0.91 0.012 240);
+  --destructive: oklch(0.57 0.18 22);
+  --online: oklch(0.72 0.19 149);
+  font-family: var(--font-wallet-body);
+}
+
+.web-connections .font-wallet-display {
+  font-family: var(--font-wallet-display);
+}
+
+.web-connections .bg-online { background-color: var(--online); }
+.web-connections .text-online { color: var(--online); }
+
 @media (prefers-reduced-motion: reduce) {
   .web-chat { animation: none !important; }
   .web-chat .animate-bounce { animation: none !important; }
+  .web-connections *, .web-connections *::before, .web-connections *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Public seller shops use a spacious, desktop-first boutique composition. */
