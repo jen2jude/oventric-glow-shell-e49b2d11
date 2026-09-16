@@ -930,18 +930,11 @@ export function Feed() {
     });
   }, [posts]);
   const [hiddenPosts, setHiddenPosts] = useState<Set<string>>(() => getHiddenPosts());
-  const [blogPosts, setBlogPosts] = useState<BlogListItem[]>([]);
-  const [blogShare, setBlogShare] = useState<BlogListItem | null>(null);
-  const listBlogFn = useServerFn(listBlogPosts);
-
   useEffect(() => {
-    listBlogFn()
-      .then((r) => setBlogPosts(r.posts))
-      .catch(() => {});
     const onUpdate = () => setHiddenPosts(getHiddenPosts());
     window.addEventListener("oventric:posts-updated", onUpdate);
     return () => window.removeEventListener("oventric:posts-updated", onUpdate);
-  }, [listBlogFn]);
+  }, []);
 
   const zeroCounts = (): Record<ReactionType, number> => ({
     love: 0,
