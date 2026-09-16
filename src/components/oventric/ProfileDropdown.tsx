@@ -408,16 +408,18 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
         </button>
       </div>
       {(() => {
-        const baseBal = balances[baseCurrency] ?? 0;
+        // Wallet money is held in the home currency; the USD price preview
+        // must never change which balance we read or how we label it.
+        const baseBal = balances[homeCurrency] ?? 0;
         // Convert base currency amount to USD using live snapshot when available.
         // USD-base rates mean 1 USD = X <currency>, so USD = amount / rate.
         let usdEquivalent = 0;
-        if (baseCurrency === "USD") usdEquivalent = baseBal;
+        if (homeCurrency === "USD") usdEquivalent = baseBal;
         else if (fxRates) {
-          const rate = Number(fxRates[baseCurrency]) || 0;
+          const rate = Number(fxRates[homeCurrency]) || 0;
           usdEquivalent = rate > 0 ? baseBal / rate : 0;
         }
-        const showUsdTile = baseCurrency !== "USD";
+        const showUsdTile = homeCurrency !== "USD";
         return (
           <div
             className={`grid gap-2 ${showUsdTile ? "grid-cols-2" : "grid-cols-1"}`}
@@ -425,17 +427,17 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
           >
             <div
               className="rounded-[10px] px-2 py-3 text-center bg-emerald-500/15 border border-emerald-400/60 shadow-sm"
-              title={`${baseCurrency} is your locked base currency (from your country)`}
+              title={`${homeCurrency} is your locked base currency (from your country)`}
             >
               <div className="text-[9px] font-bold uppercase tracking-widest text-emerald-300">
-                {baseCurrency} · Base
+                {homeCurrency} · Base
               </div>
               <div
                 className={`text-xs font-black tabular-nums mt-0.5 ${balancesHidden ? "text-slate-600" : "text-emerald-100"}`}
               >
                 {balancesHidden
                   ? "••••••"
-                  : `${CURRENCY_SYMBOL[baseCurrency]}${fmtBalance(baseBal, baseCurrency)}`}
+                  : `${CURRENCY_SYMBOL[homeCurrency]}${fmtBalance(baseBal, homeCurrency)}`}
               </div>
             </div>
             {showUsdTile && (

@@ -202,7 +202,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
     loadBalances()
       .then((r) => {
         if (cancelled) return;
-        setMain(r.balances[baseCurrency] ?? 0);
+        setMain(r.balances[walletCurrency] ?? 0);
       })
       .catch(() => {});
     loadProfile()
