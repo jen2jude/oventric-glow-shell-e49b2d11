@@ -6,6 +6,7 @@ import { ArrowLeft, Check, Copy, Gift, Loader2, Users } from "lucide-react";
 import { toast } from "sonner";
 
 import { getMyReferralOverview } from "@/lib/referrals.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/referrals")({
   head: () => ({
@@ -32,15 +33,30 @@ export const Route = createFileRoute("/referrals")({
 
 function ReferralsRoute() {
   const load = useServerFn(getMyReferralOverview);
+  // Public route: only ask the server for the invite link once a session exists,
+  // otherwise the authenticated server fn rejects the call with no bearer token.
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const { data, isLoading, isError } = useQuery({
     queryKey: ["referral-overview"],
     queryFn: () => load(),
+    enabled: signedIn === true,
   });
   const [copied, setCopied] = useState(false);
   const [origin, setOrigin] = useState("https://oventric.com");
 
   useEffect(() => {
     setOrigin(window.location.origin);
+    let alive = true;
+    supabase.auth.getSession().then(({ data: s }) => {
+      if (alive) setSignedIn(Boolean(s.session));
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setSignedIn(Boolean(session));
+    });
+    return () => {
+      alive = false;
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
   const link = data?.code ? `${origin}/?ref=${data.code}` : "";
@@ -72,13 +88,13 @@ function ReferralsRoute() {
           earn Oventric credit you can spend on the marketplace.
         </p>
 
-        {isLoading && (
+        {(signedIn === null || (signedIn && isLoading)) && (
           <div className="mt-8 flex items-center gap-2 text-sm text-slate-400">
             <Loader2 className="h-4 w-4 animate-spin" /> Loading your invite link…
           </div>
         )}
 
-        {isError && (
+        {(signedIn === false || isError) && (
           <p className="mt-8 text-sm text-slate-400">
             Sign in to see your invite link and rewards.
           </p>
