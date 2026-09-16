@@ -73,6 +73,8 @@
   --color-ledger-positive-soft: var(--ledger-positive-soft);
   --color-ledger-info: var(--ledger-info);
   --color-ledger-info-soft: var(--ledger-info-soft);
+  --color-ledger-warning: var(--ledger-warning);
+  --color-ledger-warning-soft: var(--ledger-warning-soft);
   --shadow-ledger-panel: var(--ledger-panel-shadow);
   --color-promo-surface: var(--promo-surface);
   --color-promo-surface-2: var(--promo-surface-2);
@@ -132,6 +134,8 @@
   --ledger-positive-soft: oklch(0.96 0.035 155);
   --ledger-info: oklch(0.53 0.13 245);
   --ledger-info-soft: oklch(0.96 0.025 245);
+  --ledger-warning: oklch(0.58 0.13 75);
+  --ledger-warning-soft: oklch(0.96 0.035 80);
   --ledger-panel-shadow: 0 18px 55px -34px color-mix(in oklab, var(--foreground) 30%, transparent);
   font-family: var(--font-wallet-body);
 }

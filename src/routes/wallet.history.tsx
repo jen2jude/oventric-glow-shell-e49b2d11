@@ -1,39 +1,48 @@
-import { AppOnlyGate } from "@/lib/app-gate";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, CheckCircle2, Clock, XCircle, Copy } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  Clock,
+  XCircle,
+  Copy,
+  Landmark,
+  ReceiptText,
+} from "lucide-react";
 import { toast } from "sonner";
 import { listMyPaystackTopups, type PaystackTopupRow } from "@/lib/paystack.functions";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/wallet/history")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Top-Up History — Oventric" },
+      { title: "Top-Up History — Oventric Wallet" },
       {
         name: "description",
-        content:
-          "Review every wallet top-up you started through Paystack — initialized, paid, and failed transactions.",
+        content: "Review the status, amount, reference and date of every Oventric wallet top-up.",
       },
+      { property: "og:title", content: "Top-Up History — Oventric Wallet" },
+      {
+        property: "og:description",
+        content: "A complete record of your Oventric wallet top-ups.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: TopupHistoryPageGated,
+  component: TopupHistoryPage,
 });
 
-function TopupHistoryPageGated() {
-  return (
-    <AppOnlyGate
-      title="Your wallet lives in the app"
-      description="Top-ups and payment history are only available in the Oventric app."
-      from="wallet"
-    >
-      <TopupHistoryPage />
-    </AppOnlyGate>
-  );
-}
-
 type Filter = "all" | "pending" | "success" | "failed";
+
+const FILTERS: Array<[Filter, string]> = [
+  ["all", "All top-ups"],
+  ["pending", "Initialized"],
+  ["success", "Paid"],
+  ["failed", "Failed"],
+];
 
 function TopupHistoryPage() {
   const fetchTopups = useServerFn(listMyPaystackTopups);
@@ -47,13 +56,13 @@ function TopupHistoryPage() {
       .then((data) => {
         if (alive) setRows(data);
       })
-      .catch((e) => {
+      .catch((cause) => {
         if (!alive) return;
-        const msg = e instanceof Error ? e.message : "Failed to load history";
+        const message = cause instanceof Error ? cause.message : "Failed to load history";
         setError(
-          /unauthor|authorization header|401/i.test(msg)
-            ? "Wallet is Locked, Sign in to view"
-            : msg,
+          /unauthor|authorization header|401/i.test(message)
+            ? "Sign in to view your top-up history."
+            : message,
         );
       });
     return () => {
@@ -61,81 +70,133 @@ function TopupHistoryPage() {
     };
   }, [fetchTopups]);
 
-
   const filtered = useMemo(() => {
     if (!rows) return [];
     if (filter === "all") return rows;
-    return rows.filter((r) => r.status === filter);
+    return rows.filter((row) => row.status === filter);
   }, [rows, filter]);
 
   const counts = useMemo(() => {
-    const c = { all: rows?.length ?? 0, pending: 0, success: 0, failed: 0 };
-    rows?.forEach((r) => {
-      c[r.status] += 1;
+    const result = { all: rows?.length ?? 0, pending: 0, success: 0, failed: 0 };
+    rows?.forEach((row) => {
+      result[row.status] += 1;
     });
-    return c;
+    return result;
   }, [rows]);
 
+  const summary = useMemo(() => {
+    const successful = rows?.filter((row) => row.status === "success") ?? [];
+    const currencies = new Set(successful.map((row) => row.currency));
+    const currency = currencies.size === 1 ? successful[0]?.currency : null;
+    return {
+      currency,
+      paidAmount: successful.reduce((sum, row) => sum + row.amount, 0),
+      paidCount: successful.length,
+      pendingCount: counts.pending,
+    };
+  }, [rows, counts.pending]);
+
   return (
-    <div className="page-light min-h-screen bg-[#0b0b0e] md:bg-slate-50 text-white md:text-slate-900">
-      <div className="max-w-3xl mx-auto px-4 py-6">
-        <div className="flex items-center gap-2 mb-6">
-          <Link
-            to="/dashboard"
-            className="p-2 rounded-[10px] hover:bg-white/10 md:hover:bg-slate-100 text-white/70 md:text-slate-600 hover:text-white md:hover:text-slate-900"
-            aria-label="Back to dashboard"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <h1 className="text-xl font-semibold">Top-Up History</h1>
+    <div className="web-ledger min-h-screen bg-background pb-16 text-foreground">
+      <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-5xl items-center px-4 sm:px-6">
+          <Button variant="ghost" size="sm" asChild className="gap-2">
+            <Link to="/dashboard">
+              <ArrowLeft className="size-4" />
+              <span className="hidden sm:inline">Back to dashboard</span>
+            </Link>
+          </Button>
         </div>
+      </header>
 
-        <div className="flex gap-2 mb-4 overflow-x-auto no-scrollbar">
-          {(
-            [
-              ["all", "All"],
-              ["pending", "Initialized"],
-              ["success", "Paid"],
-              ["failed", "Failed"],
-            ] as [Filter, string][]
-          ).map(([k, label]) => (
-            <button
-              key={k}
-              type="button"
-              onClick={() => setFilter(k)}
-              className={`px-3 py-1.5 rounded-full text-sm whitespace-nowrap border ${
-                filter === k
-                  ? "bg-white text-black border-white md:bg-slate-900 md:text-white md:border-slate-900"
-                  : "border-white/15 md:border-slate-200 md:bg-white text-white/70 md:text-slate-600 hover:text-white md:hover:text-slate-900 hover:border-white/30"
-              }`}
-            >
-              {label} <span className="opacity-60">({counts[k]})</span>
-            </button>
-          ))}
-        </div>
+      <main className="mx-auto max-w-5xl px-4 pt-8 sm:px-6 sm:pt-12">
+        <section className="animate-fade-in overflow-hidden rounded-[10px] border border-border bg-card shadow-ledger-panel">
+          <div className="border-b border-border bg-card/80 p-5 sm:p-8">
+            <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+              <div>
+                <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase text-muted-foreground">
+                  <ReceiptText className="size-4 text-primary" /> Wallet funding
+                </div>
+                <h1 className="font-wallet-display text-3xl font-bold sm:text-4xl">
+                  Top-up <span className="text-border">/</span> History
+                </h1>
+                <p className="mt-2 max-w-xl text-sm text-muted-foreground">
+                  Track every wallet funding attempt and its confirmed payment status.
+                </p>
+              </div>
 
-        {error ? (
-          <div className="rounded-[10px] border border-red-500/40 md:border-red-200 bg-red-500/10 md:bg-red-50 p-4 text-sm text-red-200 md:text-red-700">
-            {error}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-[10px] border border-border bg-muted/55 px-4 py-3 sm:min-w-40">
+                  <p className="text-xs font-bold uppercase text-muted-foreground">Successfully paid</p>
+                  <p className="mt-1 font-wallet-display text-sm font-bold text-ledger-positive sm:text-base">
+                    {summary.currency
+                      ? `${summary.currency} ${summary.paidAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                      : `${summary.paidCount} ${summary.paidCount === 1 ? "top-up" : "top-ups"}`}
+                  </p>
+                </div>
+                <div className="rounded-[10px] border border-border bg-muted/55 px-4 py-3 sm:min-w-40">
+                  <p className="text-xs font-bold uppercase text-muted-foreground">Initialized</p>
+                  <p className="mt-1 font-wallet-display text-sm font-bold sm:text-base">
+                    {summary.pendingCount} {summary.pendingCount === 1 ? "top-up" : "top-ups"}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-        ) : rows === null ? (
-          <div className="space-y-2">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-16 rounded-[10px] bg-white/5 md:bg-slate-200 animate-pulse" />
-            ))}
+
+          <div className="border-b border-border bg-muted/25 px-4 sm:px-8">
+            <div className="flex gap-5 overflow-x-auto no-scrollbar sm:gap-7">
+              {FILTERS.map(([key, label]) => (
+                <Button
+                  key={key}
+                  variant="ghost"
+                  onClick={() => setFilter(key)}
+                  aria-current={filter === key ? "page" : undefined}
+                  className="ledger-tab h-14 shrink-0 rounded-none px-0 text-sm"
+                >
+                  {label}
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                    {counts[key]}
+                  </span>
+                </Button>
+              ))}
+            </div>
           </div>
-        ) : filtered.length === 0 ? (
-          <div className="rounded-[10px] border border-white/10 md:border-slate-200 bg-white/[0.03] md:bg-white p-8 text-center text-sm text-white/60 md:text-slate-500">
-            No transactions yet.
+
+          <div>
+            {error ? (
+              <div className="px-6 py-20 text-center text-sm text-muted-foreground">{error}</div>
+            ) : rows === null ? (
+              <div className="space-y-px bg-border" aria-label="Loading top-up history">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <div key={index} className="h-20 animate-pulse bg-card px-6 py-4">
+                    <div className="h-full rounded-[8px] bg-muted" />
+                  </div>
+                ))}
+              </div>
+            ) : filtered.length === 0 ? (
+              <div className="flex flex-col items-center px-6 py-20 text-center">
+                <span className="mb-3 flex size-11 items-center justify-center rounded-[10px] bg-muted text-muted-foreground">
+                  <Landmark className="size-5" />
+                </span>
+                <p className="text-sm font-bold text-foreground">No top-ups in this category</p>
+                <p className="mt-1 text-sm text-muted-foreground">Your wallet funding activity will appear here.</p>
+              </div>
+            ) : (
+              <ul className="divide-y divide-border">
+                {filtered.map((row) => (
+                  <TopupRow key={row.id} row={row} />
+                ))}
+              </ul>
+            )}
           </div>
-        ) : (
-          <ul className="space-y-2">
-            {filtered.map((r) => (
-              <TopupRow key={r.id} row={r} />
-            ))}
-          </ul>
-        )}
-      </div>
+
+          <footer className="flex items-center justify-between border-t border-border bg-muted/20 px-5 py-4 text-xs text-muted-foreground sm:px-8">
+            <span>{filtered.length} {filtered.length === 1 ? "top-up" : "top-ups"}</span>
+            <span>Verified payment records</span>
+          </footer>
+        </section>
+      </main>
     </div>
   );
 }
@@ -146,54 +207,51 @@ function TopupRow({ row }: { row: PaystackTopupRow }) {
       ? {
           label: "Paid",
           icon: CheckCircle2,
-          cls: "text-emerald-300 border-emerald-500/30 bg-emerald-500/10",
+          tone: "bg-ledger-positive-soft text-ledger-positive",
         }
       : row.status === "failed"
-        ? { label: "Failed", icon: XCircle, cls: "text-red-300 border-red-500/30 bg-red-500/10" }
+        ? { label: "Failed", icon: XCircle, tone: "bg-accent text-accent-foreground" }
         : {
             label: "Initialized",
             icon: Clock,
-            cls: "text-amber-300 border-amber-500/30 bg-amber-500/10",
+            tone: "bg-ledger-warning-soft text-ledger-warning",
           };
   const Icon = badge.icon;
-  const dt = new Date(row.occurredAt || row.createdAt);
+  const date = new Date(row.occurredAt || row.createdAt);
+
   return (
-    <li className="rounded-[10px] border border-white/10 md:border-slate-200 bg-white/[0.03] md:bg-white md:shadow-sm p-3 flex items-center gap-3">
-      <div className={`p-2 rounded-[10px] border ${badge.cls}`}>
-        <Icon className="w-4 h-4" />
-      </div>
+    <li className="group flex items-center gap-3 px-4 py-4 transition-colors hover:bg-muted/35 sm:gap-5 sm:px-8 sm:py-5">
+      <span className={`flex size-11 shrink-0 items-center justify-center rounded-[10px] border border-current/10 transition-transform group-hover:scale-105 ${badge.tone}`}>
+        <Icon className="size-5" />
+      </span>
+
       <div className="min-w-0 flex-1">
-        <div className="flex items-baseline gap-2">
-          <div className="font-medium text-sm">
-            {row.currency}{" "}
-            {row.amount.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </div>
-          <span className={`text-[11px] px-1.5 py-0.5 rounded border ${badge.cls}`}>
-            {badge.label}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="font-wallet-display text-sm font-bold text-foreground sm:text-base">
+            {row.currency} {row.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
+          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${badge.tone}`}>{badge.label}</span>
         </div>
-        <div className="text-xs text-white/50 md:text-slate-500 flex items-center gap-2 mt-0.5">
-          <span className="truncate">{row.reference}</span>
-          <button
+        <div className="mt-1 flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+          <span className="truncate font-mono">{row.reference}</span>
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => {
-              navigator.clipboard
-                .writeText(row.reference)
-                .then(() => toast.success("Reference copied"));
+              navigator.clipboard.writeText(row.reference).then(() => toast.success("Reference copied"));
             }}
-            className="p-1 rounded hover:bg-white/10 md:hover:bg-slate-100"
-            aria-label="Copy reference"
+            className="size-7 shrink-0"
+            aria-label="Copy payment reference"
           >
-            <Copy className="w-3 h-3" />
-          </button>
+            <Copy className="size-3.5" />
+          </Button>
         </div>
       </div>
-      <div className="text-xs text-white/50 md:text-slate-500 whitespace-nowrap">
-        {dt.toLocaleDateString()} ·{" "}
-        {dt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+
+      <div className="shrink-0 text-right text-xs text-muted-foreground">
+        <p>{date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</p>
+        <p className="mt-1 hidden sm:block">{date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
       </div>
     </li>
   );
