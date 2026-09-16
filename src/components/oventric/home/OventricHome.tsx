@@ -204,48 +204,50 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
     <div className="min-h-screen w-full bg-[#F7F8FA]">
       <main className="mx-auto w-full max-w-[1280px] px-4 pb-16 sm:px-6 lg:px-8">
         {/* ---------------------------------------------------------- hero */}
-        <section className="mt-4 overflow-hidden rounded-[20px] bg-[#16181D] sm:mt-6 sm:rounded-[24px]">
+        <section className="relative mt-4 overflow-hidden rounded-[20px] bg-[#16181D] sm:mt-6 sm:rounded-[24px]">
           <div className="grid items-stretch gap-0 lg:grid-cols-[1.05fr_1fr]">
-            <div className="flex flex-col justify-center gap-6 px-6 py-10 sm:px-10 sm:py-14 lg:py-20">
+            <div className="relative z-10 flex flex-col justify-center gap-6 px-5 py-8 sm:px-10 sm:py-14 lg:py-20">
               <div>
-                <h1 className="font-[Outfit] text-[34px] font-extrabold leading-[1.05] text-white sm:text-[46px] lg:text-[58px]">
+                <h1 className="font-[Outfit] text-[30px] font-extrabold leading-[1.05] text-white sm:text-[46px] lg:text-[58px]">
                   Creative People
                   <span className="block text-crimson">Real Value</span>
                 </h1>
-                <p className="mt-4 max-w-md text-sm leading-relaxed text-white/70 sm:text-base">
+                <p className="mt-3 max-w-[15rem] text-[13px] leading-relaxed text-white/70 sm:mt-4 sm:max-w-md sm:text-base">
                   Buy, sell and discover digital products, services and tools from amazing creators
                   around the world.
                 </p>
               </div>
 
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={() => onSelect("Marketplace")}
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-crimson px-7 text-sm font-bold text-white transition-all hover:brightness-110 active:scale-95"
+                  className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-crimson px-5 text-sm font-bold text-white transition-all hover:brightness-110 active:scale-95 sm:h-12 sm:flex-none sm:px-7"
                 >
-                  Explore Marketplace
-                  <ArrowRight className="h-4 w-4" />
+                  <span className="sm:hidden">Explore</span>
+                  <span className="hidden sm:inline">Explore Marketplace</span>
+                  <ArrowRight className="hidden h-4 w-4 sm:block" />
                 </button>
                 <button
                   type="button"
                   onClick={startSelling}
-                  className="inline-flex h-12 items-center justify-center rounded-full border border-white/25 px-7 text-sm font-bold text-white transition-colors hover:bg-white/10 active:scale-95"
+                  className="inline-flex h-11 flex-1 items-center justify-center rounded-full border border-white/25 bg-white/5 px-5 text-sm font-bold text-white transition-colors hover:bg-white/10 active:scale-95 sm:h-12 sm:flex-none sm:bg-transparent sm:px-7"
                 >
-                  Become a Seller
+                  <span className="sm:hidden">Sell</span>
+                  <span className="hidden sm:inline">Become a Seller</span>
                 </button>
               </div>
             </div>
 
-            <div className="relative min-h-[240px] sm:min-h-[320px] lg:min-h-[420px]">
+            <div className="absolute inset-0 lg:relative lg:min-h-[420px]">
               <img
                 src={heroImage}
                 alt="A creator working on digital products"
                 width={1600}
                 height={912}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover object-[70%_center]"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#16181D] via-[#16181D]/40 to-transparent lg:via-[#16181D]/25" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#16181D] via-[#16181D]/75 to-[#16181D]/20 sm:via-[#16181D]/50 sm:to-transparent lg:via-[#16181D]/25" />
               <ul className="absolute inset-y-0 right-4 hidden flex-col justify-center gap-4 text-right sm:right-8 md:flex">
                 {HANDWRITTEN.map((word, i) => (
                   <li
