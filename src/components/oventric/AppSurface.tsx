@@ -35,6 +35,7 @@ const DiscoveryPanel = lazy(() =>
 );
 import { HomeHub } from "@/components/oventric/HomeHub";
 import { DesktopHome } from "@/components/oventric/desktop/DesktopHome";
+import { OventricHome } from "@/components/oventric/home/OventricHome";
 import { DesktopAppSidebar } from "@/components/oventric/desktop/DesktopAppSidebar";
 import { SiteFooterAuto } from "@/components/oventric/desktop/SiteFooterAuto";
 import { SiteNavbar } from "@/components/oventric/desktop/SiteNavbar";
@@ -345,6 +346,8 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
 
   const rawView =
     active === "Home" ? (
+      <OventricHome onSelect={setActive} onCreate={() => handleCreate()} />
+    ) : active === "__legacy_home" ? (
       isAppShell ? (
         <Feed />
       ) : isDesktop ? (
@@ -427,7 +430,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
 
       <div className="flex h-full flex-col">
         {/* Managed Header (Desktop Landing/Browser Context only) */}
-        {desktopLanding && active !== "Home" && active !== "Feed" ? (
+        {desktopLanding && active !== "Feed" ? (
           active === "Marketplace" || active === "Academy" ? (
             <MarketplaceHeader
               onSelect={setActive}
@@ -462,7 +465,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
             className={`flex-1 min-w-0 min-h-0 ${isMessages ? "overflow-hidden" : "overflow-y-auto"} ${desktopLanding || isMessages ? "" : "pb-20 md:pb-0"} ${isAppShell ? "bg-[#070A08]" : "bg-white"}`}
           >
             {view}
-            {desktopLanding && active !== "Feed" && !isAppShell && <SiteFooterAuto />}
+            {desktopLanding && active !== "Feed" && active !== "Home" && !isAppShell && <SiteFooterAuto />}
           </main>
         </div>
         {isAppShell && !desktopLanding && !isMessages && (
