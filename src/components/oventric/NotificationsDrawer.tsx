@@ -122,7 +122,7 @@ function renderLinkified(text: string) {
           href={trimmed}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-emerald-400 underline underline-offset-2 hover:text-emerald-300 break-all"
+          className="text-primary underline underline-offset-2 hover:opacity-80 break-all"
         >
           {trimmed}
         </a>
@@ -135,7 +135,7 @@ function renderLinkified(text: string) {
           {leading}
           <a
             href={trimmed}
-            className="text-emerald-400 underline underline-offset-2 hover:text-emerald-300 break-all"
+            className="text-primary underline underline-offset-2 hover:opacity-80 break-all"
           >
             {trimmed}
           </a>
