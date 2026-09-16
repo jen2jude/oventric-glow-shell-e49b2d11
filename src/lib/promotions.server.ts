@@ -226,3 +226,87 @@ export async function qualifyReferralOnSettledPurchase(
     return { rewarded: false };
   }
 }
+
+/**
+ * Stage 5 — compensating reversal of the promotional credits an order created,
+ * used when that order is refunded.
+ *
+ * Nothing is deleted: the original credit rows stay in the ledger and a
+ * reversal row is posted beside them. Both reversals are idempotent — the
+ * unique tx_hash index means a replayed refund cannot debit twice, and the
+ * referral row only flips back while it is still `qualified` for this order.
+ */
+export async function reverseOrderPromotions(
+  admin: Sb,
+  args: { orderId: string; buyerId: string; reference?: string | null },
+): Promise<void> {
+  // ---- buyer cashback clawback -------------------------------------------
+  try {
+    if (args.reference) {
+      const { data: cb } = await admin
+        .from("wallet_transactions")
+        .select("amount")
+        .eq("tx_hash", `${args.reference}-CB`)
+        .maybeSingle();
+      const amount = Number(cb?.amount ?? 0);
+      if (amount > 0) {
+        const { data: ok } = await admin.rpc("cashback_debit", {
+          _user_id: args.buyerId,
+          _amount: amount,
+        });
+        await admin.from("wallet_transactions").insert({
+          user_id: args.buyerId,
+          tx_hash: `${args.orderId}-CBREV`,
+          type: "Cashback Earned",
+          amount,
+          currency: "USD",
+          inflow: false,
+          status: ok === false ? "failed" : "success",
+          occurred_at: new Date().toISOString(),
+        });
+      }
+    }
+  } catch (e) {
+    console.error("[promotions] cashback reversal failed", e);
+  }
+
+  // ---- referral reward clawback ------------------------------------------
+  try {
+    const { data: before } = await admin
+      .from("referrals")
+      .select("referrer_id, reward_amount_usd")
+      .eq("qualified_order_id", args.orderId)
+      .eq("status", "qualified")
+      .maybeSingle();
+    const { data: rel } = before
+      ? await admin
+          .from("referrals")
+          .update({ status: "pending", qualified_order_id: null, qualified_at: null, reward_amount_usd: 0 })
+          .eq("qualified_order_id", args.orderId)
+          .eq("status", "qualified")
+          .select("referrer_id")
+          .maybeSingle()
+      : { data: null };
+    if (rel) {
+      const amount = Number(before?.reward_amount_usd ?? 0);
+      if (amount > 0) {
+        const { data: ok } = await admin.rpc("cashback_debit", {
+          _user_id: rel.referrer_id,
+          _amount: amount,
+        });
+        await admin.from("wallet_transactions").insert({
+          user_id: rel.referrer_id,
+          tx_hash: `${args.orderId}-REFREV`,
+          type: "Referral Reward",
+          amount,
+          currency: "USD",
+          inflow: false,
+          status: ok === false ? "failed" : "success",
+          occurred_at: new Date().toISOString(),
+        });
+      }
+    }
+  } catch (e) {
+    console.error("[promotions] referral reversal failed", e);
+  }
+}

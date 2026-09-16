@@ -311,6 +311,19 @@ export async function refundBuyer(sb: any, orderId: string, reason: string) {
     }
   }
 
+  // Stage 5 — the promotional credits this order created are reversed with
+  // compensating ledger entries. Historical rows are never deleted.
+  try {
+    const { reverseOrderPromotions } = await import("@/lib/promotions.server");
+    await reverseOrderPromotions(sb, {
+      orderId,
+      buyerId: o.buyer_id,
+      reference: o.paystack_ref ?? null,
+    });
+  } catch (e) {
+    console.error("[refundBuyer] promotion reversal failed", e);
+  }
+
   const now = new Date().toISOString();
   await sb
     .from("orders")
