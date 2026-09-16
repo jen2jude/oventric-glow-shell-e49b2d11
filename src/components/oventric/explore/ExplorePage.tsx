@@ -1,7 +1,17 @@
+import { useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, BadgeCheck, Compass, Sparkles, Star, TrendingUp, Users } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeCheck,
+  Compass,
+  Search,
+  Sparkles,
+  Star,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { computeDisplayPrice } from "@/lib/fx-display";
@@ -15,8 +25,12 @@ import {
 import { getDiscoveryFeed, type DiscoveryPeer } from "@/lib/discovery.functions";
 import { visualForCategory } from "@/components/oventric/marketplace-discovery/utils";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
+import { DiscoveryPanel } from "@/components/oventric/DiscoveryPanel";
 
 type CategoryNode = { id: string; slug: string; name: string };
+
+const TABS = ["All", "Categories", "Products", "Shops", "People"] as const;
+type Tab = (typeof TABS)[number];
 
 const TILE_TINTS = [
   "bg-[#EAF1FF] text-[#2F5FD0]",
