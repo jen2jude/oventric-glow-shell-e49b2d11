@@ -178,6 +178,13 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
                   {item}
                 </button>
               ))}
+              <Link
+                to="/sellers"
+                onClick={() => setMenuOpen(false)}
+                className="block w-full text-left text-lg font-black text-slate-900"
+              >
+                Shop
+              </Link>
             </div>
           </nav>
         </div>
