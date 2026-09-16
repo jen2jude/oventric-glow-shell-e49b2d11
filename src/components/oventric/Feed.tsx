@@ -20,7 +20,6 @@ import {
   Copyright,
   AlertTriangle,
   Play,
-  BookOpen,
   User,
   Users,
   Globe,
