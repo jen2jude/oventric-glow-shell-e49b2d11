@@ -42,7 +42,7 @@ export interface ProductDTO {
   kind: ProductKind;
   status: ProductStatus;
   rejectReason: string | null;
-  // Physical fields
+  // Legacy listing attributes (retained for historical rows only)
   condition: string | null;
   brand: string | null;
   location: string | null;

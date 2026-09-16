@@ -919,7 +919,6 @@ function ListingsList({
   onEdit: (p: ProductDTO) => void;
 }) {
   const [filter, setFilter] = useState<"all" | "pending" | "active" | "rejected">("all");
-  const [kind, setKind] = useState<"all" | "digital" | "physical">("all");
   const [sellOpen, setSellOpen] = useState(false);
 
   if (rows === null) {
@@ -966,7 +965,7 @@ function ListingsList({
     );
   }
 
-  const kindFiltered = kind === "all" ? rows : rows.filter((r) => r.kind === kind);
+  const kindFiltered = rows;
   const filtered =
     filter === "all" ? kindFiltered : kindFiltered.filter((r) => r.status === filter);
   const chips: { key: typeof filter; label: string; count: number }[] = [
