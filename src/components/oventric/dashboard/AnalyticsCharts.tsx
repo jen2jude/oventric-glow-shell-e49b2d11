@@ -31,13 +31,13 @@ function CustomTooltip({
   return (
     <div
       role="tooltip"
-      className="rounded-[10px] border border-white/10 bg-[#1E1E24] px-3 py-3 text-xs shadow-xl"
+      className="rounded-[10px] border border-border bg-popover px-3 py-3 text-xs shadow-xl"
     >
-      <div className="font-bold text-white mb-1">{label}</div>
+      <div className="mb-1 font-bold text-popover-foreground">{label}</div>
       {payload.map((p) => (
-        <div key={p.name} className="flex items-center gap-1.5 text-slate-300">
+        <div key={p.name} className="flex items-center gap-1.5 text-muted-foreground">
           <span className="w-2 h-2 rounded-full" style={{ background: p.color }} aria-hidden />
-          {p.name}: <span className="font-semibold text-white">{p.value}</span>
+          {p.name}: <span className="font-semibold text-popover-foreground">{p.value}</span>
         </div>
       ))}
     </div>
@@ -72,13 +72,13 @@ export function AnalyticsCharts() {
   }));
 
   return (
-    <div className="rounded-2xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-4">
+    <div className="rounded-[10px] border border-border bg-card p-5 shadow-sm">
       <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
-        <h3 className="text-sm font-bold text-white md:text-slate-900 flex items-center gap-1.5">
+        <h3 className="flex items-center gap-1.5 text-sm font-bold text-foreground">
           <BarChart3 className="w-4 h-4" /> Activity trend
         </h3>
         <div
-          className="flex items-center gap-1 rounded-full border border-white/10 md:border-slate-200 bg-white/[0.03] md:bg-slate-50 p-1"
+          className="flex items-center gap-1 rounded-full border border-border bg-muted p-1"
           role="tablist"
           aria-label="Time range"
         >
@@ -90,8 +90,8 @@ export function AnalyticsCharts() {
               onClick={() => setRange(r.days)}
               className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition ${
                 range === r.days
-                  ? "bg-white text-black"
-                  : "text-slate-400 md:text-slate-500 hover:text-white md:hover:text-slate-900"
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {r.label}

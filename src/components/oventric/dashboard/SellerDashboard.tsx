@@ -50,8 +50,8 @@ export function SellerDashboard() {
             className={`
               flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-bold whitespace-nowrap transition-all
               ${activeTab === tab.id 
-                ? "bg-[#E5484D] text-white shadow-lg shadow-[#E5484D]/20" 
-                : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-white/5"}
+                ? "bg-primary text-primary-foreground shadow-sm" 
+                : "border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"}
             `}
           >
             <tab.icon className="w-4 h-4" />
@@ -70,25 +70,25 @@ export function SellerDashboard() {
                 label="Sales" 
                 value={metrics.totalSales} 
                 icon={TrendingUp} 
-                color="text-emerald-400"
+                color="text-primary"
               />
               <MetricCard 
                 label="Revenue" 
                 value={`$${metrics.totalRevenueUSD.toLocaleString()}`} 
                 icon={TrendingUp} 
-                color="text-emerald-400"
+                color="text-primary"
               />
               <MetricCard 
                 label="Followers" 
                 value={metrics.totalFollowers} 
                 icon={Users} 
-                color="text-blue-400"
+                color="text-primary"
               />
               <MetricCard 
                 label="Views" 
                 value={metrics.totalViews} 
                 icon={Eye} 
-                color="text-purple-400"
+                color="text-primary"
               />
             </div>
 
@@ -129,40 +129,40 @@ export function SellerDashboard() {
 
 function MetricCard({ label, value, icon: Icon, color }: { label: string, value: string | number, icon: any, color: string }) {
   return (
-    <div className="bg-[#141418] border border-white/10 rounded-2xl p-4 shadow-sm">
+    <div className="rounded-[10px] border border-border bg-card p-4 shadow-sm">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">{label}</span>
+        <span className="text-[10px] font-bold uppercase text-muted-foreground">{label}</span>
         <Icon className={`w-4 h-4 ${color}`} />
       </div>
-      <div className="text-2xl font-black text-white">{value}</div>
+      <div className="text-2xl font-black text-foreground">{value}</div>
     </div>
   );
 }
 
 function MiniMetric({ label, value }: { label: string, value: string | number }) {
   return (
-    <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 flex items-center justify-between">
-      <span className="text-xs text-slate-400 font-medium">{label}</span>
-      <span className="text-sm font-bold text-white">{value}</span>
+    <div className="flex items-center justify-between rounded-[10px] border border-border bg-muted px-4 py-3">
+      <span className="text-xs font-medium text-muted-foreground">{label}</span>
+      <span className="text-sm font-bold text-foreground">{value}</span>
     </div>
   );
 }
 
 function QuickManagementCard({ title, count, actionLabel, onClick }: { title: string, count: number, actionLabel: string, onClick: () => void }) {
   return (
-    <div className="bg-[#141418] border border-white/10 rounded-2xl p-5">
+    <div className="rounded-[10px] border border-border bg-card p-5 shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-white font-bold">{title}</h3>
-        <span className="px-2 py-0.5 rounded-full bg-white/10 text-white text-[10px] font-bold">
+        <h3 className="font-bold text-foreground">{title}</h3>
+        <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold text-foreground">
           {count} Total
         </span>
       </div>
       <button 
         onClick={onClick}
-        className="w-full group flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
+        className="group flex w-full items-center justify-between rounded-[10px] border border-border bg-muted p-3 transition hover:bg-card"
       >
-        <span className="text-sm text-slate-300 font-medium">{actionLabel}</span>
-        <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-white transition-colors" />
+        <span className="text-sm font-medium text-foreground">{actionLabel}</span>
+        <ChevronRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary" />
       </button>
     </div>
   );

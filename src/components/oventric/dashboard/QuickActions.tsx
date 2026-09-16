@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Rss, Target, Store, BookOpen } from "lucide-react";
+import { Rss, Store } from "lucide-react";
 
 const ACTIONS = [
   { to: "/", search: { section: "Feed" }, label: "Posts", icon: Rss, hint: "Jump to your feed" },
@@ -17,20 +17,13 @@ const ACTIONS = [
     icon: Store,
     hint: "Marketplace & listings",
   },
-  {
-    to: "/blog",
-    search: undefined,
-    label: "Blog",
-    icon: BookOpen,
-    hint: "Read & publish articles",
-  },
 ] as const;
 
 
 export function QuickActions() {
   return (
     <div
-      className="grid grid-cols-2 sm:grid-cols-4 gap-2 rounded-2xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-2.5"
+      className="grid grid-cols-1 gap-3 rounded-[10px] border border-border bg-card p-3 shadow-sm sm:grid-cols-3"
       aria-label="Quick actions"
     >
       {ACTIONS.map((a) => (
@@ -38,16 +31,16 @@ export function QuickActions() {
           key={a.label}
           to={a.to}
           search={a.search as never}
-          className="group flex flex-col items-start gap-2 rounded-xl border border-white/10 md:border-slate-200 bg-white/[0.03] md:bg-slate-50 hover:border-white/20 md:hover:border-slate-300 p-3 transition"
+          className="group flex flex-col items-start gap-3 rounded-[10px] border border-border bg-muted p-4 transition hover:border-primary/30 hover:bg-card"
         >
-          <span className="w-9 h-9 rounded-[10px] bg-white/5 md:bg-white border border-white/10 md:border-slate-200 flex items-center justify-center shrink-0 group-hover:bg-white/10 md:group-hover:bg-slate-100 transition">
-            <a.icon className="w-4 h-4 text-white md:text-slate-900" />
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] border border-border bg-card text-muted-foreground transition group-hover:text-primary">
+            <a.icon className="h-4 w-4" />
           </span>
           <span className="min-w-0">
-            <span className="block text-sm font-bold text-white md:text-slate-900 truncate">
+            <span className="block truncate text-sm font-bold text-foreground">
               {a.label}
             </span>
-            <span className="block text-[11px] text-slate-400 md:text-slate-500 truncate">
+            <span className="block truncate text-[11px] text-muted-foreground">
               {a.hint}
             </span>
           </span>

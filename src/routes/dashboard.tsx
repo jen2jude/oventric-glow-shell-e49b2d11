@@ -20,21 +20,15 @@ import {
   Pencil,
   Eye,
   LayoutDashboard,
-  Target,
-  GraduationCap,
   Wallet as WalletIcon,
   Users,
   ArrowUpRight,
   ArrowDownRight,
-  Trophy,
   Bell,
   Plus,
   TrendingUp,
   Activity as ActivityIcon,
 } from "lucide-react";
-import { CoursePublishWizard } from "@/components/oventric/CoursePublishWizard";
-import { BountyEditorModal } from "@/components/oventric/BountyEditorModal";
-import { Calendar } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   listMyPurchases,
@@ -46,15 +40,9 @@ import {
 } from "@/lib/marketplace.functions";
 import {
   getDashboardOverview,
-  listMyBounties,
-  listMyCourses,
   getMyWalletSummary,
   getMySocial,
   type DashboardOverview,
-  type DashboardBountyPosted,
-  type DashboardBountySolved,
-  type DashboardEnrolledCourse,
-  type DashboardPublishedCourse,
   type DashboardWalletSummary,
   type DashboardSocial,
 } from "@/lib/dashboard.functions";
@@ -95,8 +83,6 @@ function formatHomeCurrency(n: number, c: string): string {
 
 const TAB_VALUES = [
   "overview",
-  "bounties",
-  "courses",
   "wallet",
   "social",
   "digital",
@@ -119,8 +105,15 @@ export const Route = createFileRoute("/dashboard")({
       {
         name: "description",
         content:
-          "Manage your Oventric activity — purchases, listings, bounties, courses, wallet, and social.",
+          "Manage your Oventric purchases, digital listings, sales, wallet, and social activity.",
       },
+      { property: "og:title", content: "My Dashboard — Oventric" },
+      {
+        property: "og:description",
+        content: "Manage your Oventric purchases, digital listings, sales, wallet, and social activity.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: DashboardPage,
@@ -135,8 +128,6 @@ function DashboardPage() {
   const orderFn = useServerFn(getOrderWithDownload);
   const confirmFn = useServerFn(confirmOrderReceived);
   const overviewFn = useServerFn(getDashboardOverview);
-  const bountiesFn = useServerFn(listMyBounties);
-  const coursesFn = useServerFn(listMyCourses);
   const walletFn = useServerFn(getMyWalletSummary);
   const socialFn = useServerFn(getMySocial);
 
@@ -149,14 +140,6 @@ function DashboardPage() {
   const [overview, setOverview] = useState<DashboardOverview | null>(null);
   const [purchases, setPurchases] = useState<PurchaseDTO[] | null>(null);
   const [listings, setListings] = useState<ProductDTO[] | null>(null);
-  const [bounties, setBounties] = useState<{
-    posted: DashboardBountyPosted[];
-    solved: DashboardBountySolved[];
-  } | null>(null);
-  const [courses, setCourses] = useState<{
-    enrolled: DashboardEnrolledCourse[];
-    published: DashboardPublishedCourse[];
-  } | null>(null);
   const [walletSummary, setWalletSummary] = useState<DashboardWalletSummary | null>(null);
   const [walletPage, setWalletPage] = useState(1);
   const [social, setSocial] = useState<DashboardSocial | null>(null);
@@ -215,24 +198,6 @@ function DashboardPage() {
     }
   }, [overviewFn]);
 
-  const loadBounties = useCallback(async () => {
-    try {
-      setBounties(await bountiesFn());
-    } catch (e) {
-      toast.error((e as Error).message);
-      setBounties({ posted: [], solved: [] });
-    }
-  }, [bountiesFn]);
-
-  const loadCourses = useCallback(async () => {
-    try {
-      setCourses(await coursesFn());
-    } catch (e) {
-      toast.error((e as Error).message);
-      setCourses({ enrolled: [], published: [] });
-    }
-  }, [coursesFn]);
-
   const loadWallet = useCallback(
     async (p?: number) => {
       try {
@@ -258,8 +223,6 @@ function DashboardPage() {
     if (tab === "digital" && purchases === null) void loadPurchases();
     if (tab === "sales" && sales === null) void loadSales();
     if (tab === "listings" && listings === null) void loadListings();
-    if (tab === "bounties" && bounties === null) void loadBounties();
-    if (tab === "courses" && courses === null) void loadCourses();
     if (tab === "wallet" && walletSummary === null) void loadWallet();
     if (tab === "social" && social === null) void loadSocial();
   }, [
@@ -269,16 +232,12 @@ function DashboardPage() {
     purchases,
     sales,
     listings,
-    bounties,
-    courses,
     walletSummary,
     social,
     loadOverview,
     loadPurchases,
     loadSales,
     loadListings,
-    loadBounties,
-    loadCourses,
     loadWallet,
     loadSocial,
   ]);
@@ -320,25 +279,6 @@ function DashboardPage() {
     loadWallet,
     walletSummary,
   ]);
-
-  // Refresh triggers from child modals (bounty publish, course publish).
-  useEffect(() => {
-    if (!authChecked) return;
-    const onBounties = () => {
-      void loadBounties();
-      void loadOverview();
-    };
-    const onCourses = () => {
-      void loadCourses();
-      void loadOverview();
-    };
-    window.addEventListener("oventric:bounties-refresh", onBounties);
-    window.addEventListener("oventric:courses-refresh", onCourses);
-    return () => {
-      window.removeEventListener("oventric:bounties-refresh", onBounties);
-      window.removeEventListener("oventric:courses-refresh", onCourses);
-    };
-  }, [authChecked, loadBounties, loadCourses, loadOverview]);
 
   const handleDownload = async (
     orderId: string,
@@ -384,21 +324,21 @@ function DashboardPage() {
 
   if (!authChecked) {
     return (
-      <div className="min-h-screen bg-[#0b0b0d] md:bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-6 h-6 animate-spin text-slate-500" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0b0b0d] md:bg-slate-50 text-slate-200 md:text-slate-700">
+    <div className="web-dashboard min-h-screen bg-background text-foreground">
       <Header 
         onOpenMessages={() => {}} 
         browserVisitorHeader={!isAppShell} 
         forceSiteNavbar={!isAppShell}
       />
       <div
-        className="max-w-5xl mx-auto px-4 py-8"
+        className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12"
         style={{
           paddingLeft: "max(1rem, env(safe-area-inset-left))",
           paddingRight: "max(1rem, env(safe-area-inset-right))",
@@ -406,48 +346,33 @@ function DashboardPage() {
           paddingBottom: "max(2rem, calc(env(safe-area-inset-bottom) + 1rem))",
         }}
       >
-        <button
-          onClick={() => navigate({ to: "/" })}
-          className="inline-flex items-center gap-2 text-sm text-slate-400 md:text-slate-500 hover:text-white md:hover:text-slate-900 mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back home
-        </button>
-
-        <header className="mb-6">
-          <h1 className="text-white md:text-slate-900 text-3xl font-black">My Dashboard</h1>
-          <p className="text-slate-400 md:text-slate-500 mt-1 text-sm">
-            Your full Oventric hub — wallet, bounties, courses, marketplace and social.
-          </p>
+        <header className="mb-8 flex flex-col gap-5 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <button
+              onClick={() => navigate({ to: "/" })}
+              className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4" /> Back home
+            </button>
+            <h1 className="font-wallet-display text-3xl font-bold text-foreground">My Dashboard</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Overview of your digital commerce and social activity.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Link to="/ads-manager" className="inline-flex items-center gap-2 rounded-[10px] border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted">
+              <Bell className="h-4 w-4" /> Ads Manager
+            </Link>
+            <button type="button" onClick={() => setTab("listings")} className="inline-flex items-center gap-2 rounded-[10px] bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition hover:opacity-90">
+              <Plus className="h-4 w-4" /> New listing
+            </button>
+          </div>
         </header>
 
-        <Link
-          to="/ads-manager"
-          className="group mb-5 flex items-center justify-between gap-3 rounded-xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-3 active:bg-white/[0.03]"
-        >
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-[10px] bg-white/5 md:bg-slate-50 border border-white/10 md:border-slate-200 flex items-center justify-center shrink-0">
-              <Bell className="w-4 h-4 text-white md:text-slate-900" />
-            </div>
-            <div className="min-w-0">
-              <div className="text-white md:text-slate-900 text-sm font-semibold">Ads Manager</div>
-              <div className="text-slate-400 md:text-slate-500 text-xs">
-                Manage and track your ad campaigns.
-              </div>
-            </div>
-          </div>
-          <ArrowUpRight className="w-4 h-4 text-slate-400 md:text-slate-500 shrink-0" />
-        </Link>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-2 rounded-2xl bg-[#141418] md:bg-white md:shadow-sm border border-white/10 md:border-slate-200 p-2.5 mb-6">
+        <nav className="dashboard-tabs mb-8 flex items-center gap-6 overflow-x-auto border-b border-border" aria-label="Dashboard sections">
           <TabButton active={tab === "overview"} onClick={() => setTab("overview")}>
             <LayoutDashboard className="w-5 h-5 shrink-0" />{" "}
             <span className="truncate">Overview</span>
-          </TabButton>
-          <TabButton active={tab === "bounties"} onClick={() => setTab("bounties")}>
-            <Target className="w-5 h-5 shrink-0" /> <span className="truncate">Bounties</span>
-          </TabButton>
-          <TabButton active={tab === "courses"} onClick={() => setTab("courses")}>
-            <GraduationCap className="w-5 h-5 shrink-0" /> <span className="truncate">Courses</span>
           </TabButton>
           <TabButton active={tab === "wallet"} onClick={() => setTab("wallet")}>
             <WalletIcon className="w-5 h-5 shrink-0" /> <span className="truncate">Wallet</span>
@@ -483,12 +408,10 @@ function DashboardPage() {
           <TabButton active={tab === "creator"} onClick={() => setTab("creator")}>
             <TrendingUp className="w-5 h-5 shrink-0" /> <span className="truncate">Creator Hub</span>
           </TabButton>
-        </div>
+        </nav>
 
 
         {tab === "overview" && <OverviewPane overview={overview} onGoto={setTab} />}
-        {tab === "bounties" && <BountiesPane data={bounties} />}
-        {tab === "courses" && <CoursesPane data={courses} />}
         {tab === "wallet" && (
           <WalletPane
             data={walletSummary}
@@ -556,132 +479,6 @@ function DashboardPage() {
   );
 }
 
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  accent,
-}: {
-  icon: typeof Package;
-  label: string;
-  value: number;
-  accent: string;
-}) {
-  return (
-    <div className="rounded-xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-3 flex items-center justify-between gap-3 md:block">
-      {/* Mobile: single row — icon + label left, number in white right */}
-      <div className="flex items-center gap-2 min-w-0 md:text-[10px] md:uppercase md:tracking-widest md:text-slate-500 md:font-bold">
-        <Icon className={`w-4 h-4 shrink-0 ${accent} md:w-3.5 md:h-3.5`} />
-        <span className="truncate text-sm text-slate-300 md:text-slate-600 font-medium md:text-[10px] md:uppercase md:tracking-widest md:text-slate-500 md:font-bold">
-          {label}
-        </span>
-      </div>
-      <div className="shrink-0 text-lg font-black text-white md:text-slate-900 md:mt-1 md:text-2xl">
-        {value}
-      </div>
-    </div>
-  );
-}
-
-function SimpleRowCard({
-  icon: Icon,
-  title,
-  subtitle,
-  value,
-  onClick,
-  href,
-}: {
-  icon: typeof Package;
-  title: string;
-  subtitle?: string;
-  value?: string | number;
-  onClick?: () => void;
-  href?: string;
-}) {
-  const inner = (
-    <>
-      <div className="flex items-center gap-3 min-w-0">
-        <div className="w-9 h-9 rounded-[10px] bg-white/5 md:bg-slate-50 border border-white/10 md:border-slate-200 flex items-center justify-center shrink-0">
-          <Icon className="w-4 h-4 text-white md:text-slate-900" />
-        </div>
-        <div className="min-w-0">
-          <div className="text-white md:text-slate-900 text-sm font-semibold truncate">{title}</div>
-          {subtitle ? (
-            <div className="text-slate-400 md:text-slate-500 text-xs truncate">{subtitle}</div>
-          ) : null}
-        </div>
-      </div>
-      <div className="flex items-center gap-2 shrink-0">
-        {value !== undefined ? (
-          <span className="text-sm font-black text-white md:text-slate-900">{value}</span>
-        ) : null}
-        <ArrowUpRight className="w-4 h-4 text-slate-400 md:text-slate-500" />
-      </div>
-    </>
-  );
-  const cls =
-    "group flex items-center justify-between gap-3 rounded-xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-3 active:bg-white/[0.03] w-full text-left";
-  if (href) {
-    return (
-      <Link to={href} className={cls}>
-        {inner}
-      </Link>
-    );
-  }
-  return (
-    <button type="button" onClick={onClick} className={cls}>
-      {inner}
-    </button>
-  );
-}
-
-function PremiumStatCard({
-  icon: Icon,
-  label,
-  value,
-  sub,
-  tone,
-  onClick,
-  hero,
-}: {
-  icon: typeof Package;
-  label: string;
-  value: string | number;
-  sub?: string;
-  tone: "emerald" | "amber" | "fuchsia" | "sky" | "cyan" | "rose" | "violet";
-  onClick: () => void;
-  hero?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`group rounded-2xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-4 text-left transition active:scale-[0.98] ${hero ? "col-span-2" : ""}`}
-    >
-      <div className="flex items-start gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/5 md:bg-slate-50 text-white md:text-slate-900">
-          <Icon className="h-4 w-4" aria-hidden="true" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="text-[10px] uppercase tracking-wider text-slate-400 md:text-slate-500 font-bold leading-tight line-clamp-2 min-h-[1.6em]">
-            {label}
-          </div>
-          <div
-            className={`mt-1 font-black text-white md:text-slate-900 ${hero ? "text-2xl" : "text-xl"} truncate`}
-          >
-            {value}
-          </div>
-          {sub ? (
-            <div className="mt-0.5 text-[11px] text-slate-400 md:text-slate-500 leading-tight line-clamp-2">
-              {sub}
-            </div>
-          ) : null}
-        </div>
-      </div>
-    </button>
-  );
-}
-
 function TabButton({
   active,
   onClick,
@@ -693,11 +490,11 @@ function TabButton({
 }) {
   return (
     <button
+      type="button"
+      aria-current={active ? "page" : undefined}
       onClick={onClick}
-      className={`flex items-center justify-start gap-3 px-3.5 py-3 rounded-xl text-sm sm:text-base font-semibold transition min-w-0 ${
-        active
-          ? "bg-white text-black shadow-sm"
-          : "text-slate-300 md:text-slate-600 hover:text-white md:hover:text-slate-900 hover:bg-white/5 md:bg-slate-50 md:hover:bg-slate-100"
+      className={`inline-flex min-h-11 items-center gap-2 px-1 text-sm font-semibold transition ${
+        active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
       }`}
     >
       {children}
@@ -717,11 +514,13 @@ function EmptyState({
   cta?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-dashed border-white/10 md:border-slate-200 bg-[#111114] md:bg-slate-50 p-10 text-center">
-      <Icon className="w-8 h-8 text-slate-600 mx-auto mb-3" />
-      <div className="text-white md:text-slate-900 font-bold">{title}</div>
-      <div className="text-sm text-slate-500 mt-1">{hint}</div>
-      {cta ? <div className="mt-4">{cta}</div> : null}
+    <div className="rounded-[10px] border border-dashed border-border bg-card px-6 py-12 text-center">
+      <span className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-muted text-muted-foreground">
+        <Icon className="h-5 w-5" aria-hidden="true" />
+      </span>
+      <h2 className="mt-4 text-base font-bold text-foreground">{title}</h2>
+      <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">{hint}</p>
+      {cta ? <div className="mt-5 flex justify-center">{cta}</div> : null}
     </div>
   );
 }
@@ -1160,161 +959,36 @@ function timeAgo(iso: string): string {
   return new Date(iso).toLocaleDateString();
 }
 
-function KeyCard({
+function OverviewMetric({
   icon: Icon,
   label,
   value,
-  sub,
-  empty,
+  detail,
   onClick,
-  href,
 }: {
   icon: typeof Package;
   label: string;
   value: string | number;
-  sub: string;
-  empty?: boolean;
-  onClick?: () => void;
-  href?: string;
+  detail: string;
+  onClick: () => void;
 }) {
-  const inner = (
-    <>
-      <div className="flex items-center gap-2 min-w-0">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] border border-white/10 md:border-slate-200 bg-white/5 md:bg-slate-50">
-          <Icon className="h-4 w-4 text-white md:text-slate-900" aria-hidden="true" />
-        </span>
-        <span className="truncate text-[10px] font-bold uppercase tracking-widest text-slate-500">
-          {label}
-        </span>
-      </div>
-      <div
-        className={`mt-3 text-2xl font-black tabular-nums ${empty ? "text-slate-500" : "text-white md:text-slate-900"}`}
-      >
-        {value}
-      </div>
-      <div className="mt-1 truncate text-xs text-slate-400 md:text-slate-500">{sub}</div>
-    </>
-  );
-  const cls =
-    "block w-full text-left rounded-2xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-4 transition hover:border-white/20 md:hover:border-slate-300 active:scale-[0.99]";
-  if (href)
-    return (
-      <Link to={href} className={cls}>
-        {inner}
-      </Link>
-    );
   return (
-    <button type="button" onClick={onClick} className={cls}>
-      {inner}
+    <button
+      type="button"
+      onClick={onClick}
+      className="dashboard-module group flex min-h-40 flex-col justify-between rounded-[10px] border border-border bg-card p-5 text-left transition hover:border-primary/30 hover:shadow-sm"
+    >
+      <div className="flex items-start justify-between gap-4">
+        <span className="text-xs font-bold uppercase text-muted-foreground">{label}</span>
+        <span className="grid h-9 w-9 place-items-center rounded-full bg-muted text-muted-foreground transition group-hover:text-primary">
+          <Icon className="h-4 w-4" aria-hidden="true" />
+        </span>
+      </div>
+      <div>
+        <div className="font-wallet-display text-2xl font-bold text-foreground">{value}</div>
+        <p className="mt-1 text-xs text-muted-foreground">{detail}</p>
+      </div>
     </button>
-  );
-}
-
-function KeyOverviewCards({
-  overview,
-  onGoto,
-}: {
-  overview: DashboardOverview;
-  onGoto: (t: Tab) => void;
-}) {
-  const cur = overview.homeCurrency;
-  const orders = overview.orders;
-  const revenue = overview.revenue;
-  const unreadMsgs = overview.unread.messages;
-  const activity = overview.activity;
-
-  return (
-    <section className="space-y-3" aria-label="Key dashboard metrics">
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-3">
-        <KeyCard
-          icon={ShoppingBag}
-          label="Orders"
-          value={orders.placed + orders.toFulfil}
-          sub={
-            orders.placed + orders.toFulfil === 0
-              ? "No orders yet"
-              : `${orders.awaitingBuyer} to confirm · ${orders.toFulfil} to fulfil`
-          }
-          empty={orders.placed + orders.toFulfil === 0}
-          onClick={() => onGoto(orders.toFulfil > 0 ? "sales" : "digital")}
-        />
-        <KeyCard
-          icon={MessageCircle}
-          label="Messages"
-          value={unreadMsgs}
-          sub={unreadMsgs === 0 ? "Inbox is all caught up" : "Unread in your inbox"}
-          empty={unreadMsgs === 0}
-          href="/messages"
-        />
-        <KeyCard
-          icon={TrendingUp}
-          label="Revenue"
-          value={formatHomeCurrency(revenue.gross, cur)}
-          sub={
-            revenue.grossUSD === 0
-              ? "No released sales yet"
-              : `${formatHomeCurrency(revenue.last30, cur)} in the last 30 days`
-          }
-          empty={revenue.grossUSD === 0}
-          onClick={() => onGoto("wallet")}
-        />
-        <KeyCard
-          icon={ActivityIcon}
-          label="Activity"
-          value={orders.last30}
-          sub={orders.last30 === 0 ? "Nothing in the last 30 days" : "Order events · last 30 days"}
-          empty={orders.last30 === 0}
-          onClick={() => onGoto("social")}
-        />
-      </div>
-
-      <div className="rounded-2xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-4">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
-            Recent activity
-          </h2>
-          {overview.unread.notifications > 0 ? (
-            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400 md:text-emerald-600">
-              {overview.unread.notifications} new
-            </span>
-          ) : null}
-        </div>
-
-        {activity.length === 0 ? (
-          <div className="py-6 text-center">
-            <Bell className="mx-auto h-5 w-5 text-slate-500" aria-hidden="true" />
-            <p className="mt-2 text-sm font-semibold text-white md:text-slate-900">
-              No activity yet
-            </p>
-            <p className="mt-0.5 text-xs text-slate-400 md:text-slate-500">
-              Orders, messages and payouts will show up here.
-            </p>
-          </div>
-        ) : (
-          <ul className="mt-3 divide-y divide-white/5 md:divide-slate-100">
-            {activity.map((a) => (
-              <li key={a.id} className="flex items-start gap-3 py-2.5 first:pt-0 last:pb-0">
-                <span
-                  className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${a.unread ? "bg-emerald-400" : "bg-slate-600 md:bg-slate-300"}`}
-                  aria-hidden="true"
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-semibold text-white md:text-slate-900">
-                    {a.title}
-                  </div>
-                  {a.body ? (
-                    <div className="truncate text-xs text-slate-400 md:text-slate-500">
-                      {a.body}
-                    </div>
-                  ) : null}
-                </div>
-                <span className="shrink-0 text-[11px] text-slate-500">{timeAgo(a.createdAt)}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </section>
   );
 }
 
@@ -1325,1036 +999,79 @@ function OverviewPane({
   overview: DashboardOverview | null;
   onGoto: (t: Tab) => void;
 }) {
-  // Lazy init so the first paint already picks the safe layout on mobile —
-  // avoids a scrambled frame before useEffect runs. Any touch-primary narrow
-  // viewport gets the safe overview; premium grid stays for pointer:fine (PC).
-  const [useSafeOverview, setUseSafeOverview] = useState(() => {
-    if (typeof window === "undefined") return true;
-    // Simplified path for ALL mobile/tablet viewports. Premium grid is
-    // desktop-only from now on.
-    return window.matchMedia?.("(max-width: 1023px)").matches ?? true;
-  });
-
-  useEffect(() => {
-    const lowGpu = shouldUseSafeDashboardOverview();
-    if (lowGpu) {
-      setUseSafeOverview(true);
-      document.documentElement.classList.remove("high-gpu");
-      document.documentElement.classList.add("low-gpu");
-      document.documentElement.dataset.gpuTier = "low";
-      document.documentElement.dataset.gpuReason ||= "dashboard-fallback";
-    }
-  }, []);
-
   if (!overview) return <OverviewSkeleton />;
-  const w = overview.wallet;
+
+  const wallet = overview.wallet;
   const homeCurrency = overview.homeCurrency;
-  const fmtHome = (n: number) => formatHomeCurrency(n, homeCurrency);
-  const walletAvail = w ? fmtHome(w.available) : "—";
-  const walletEscrow = w ? `Escrow ${fmtHome(w.escrow)}` : "Wallet not initialized";
-  const bountyEarned = fmtHome(overview.bounties.earned);
+  const walletAvailable = wallet ? formatHomeCurrency(wallet.available, homeCurrency) : "—";
+  const walletEscrow = wallet
+    ? `${formatHomeCurrency(wallet.escrow, homeCurrency)} held in escrow`
+    : "Wallet is not initialized";
+  const orderCount = overview.orders.placed + overview.orders.toFulfil;
+
   return (
-    <div className="space-y-5">
-      <QuickActions />
-      <KeyOverviewCards overview={overview} onGoto={onGoto} />
-
-      <div className="grid grid-cols-1 gap-3">
-        <AnalyticsWidget />
-      </div>
-
-
-      <AnalyticsCharts />
-
-      <NotificationsPanel />
-
-      {/* Mobile: simplified flat rows, monochrome icons, no gradients / shadows / glow */}
-
-      <div
-        className="block md:hidden pb-[calc(5rem+env(safe-area-inset-bottom))] space-y-2"
-        aria-label="Dashboard overview"
-      >
-        <SimpleRowCard
-          icon={WalletIcon}
-          title="Wallet balance"
-          subtitle={walletEscrow}
-          value={walletAvail}
+    <div className="space-y-8">
+      <section className="grid grid-cols-1 gap-4 lg:grid-cols-3" aria-label="Account overview">
+        <button
+          type="button"
           onClick={() => onGoto("wallet")}
-        />
-        <SimpleRowCard
-          icon={Trophy}
-          title="Bounties earned"
-          subtitle={`${overview.bounties.solved} solved · ${overview.bounties.posted} posted`}
-          value={bountyEarned}
-          onClick={() => onGoto("bounties")}
-        />
-        <SimpleRowCard
-          icon={Users}
-          title="Network"
-          subtitle={`${overview.social.following} following · ${overview.social.circles} circles`}
-          value={overview.social.followers}
-          onClick={() => onGoto("social")}
-        />
-        <div className="grid grid-cols-2 gap-2">
-          <StatCard
-            icon={Download}
-            label="Downloads"
-            value={overview.purchases.total}
-            accent="text-white md:text-slate-900"
-          />
-          <StatCard
-            icon={Clock}
-            label="Pending"
-            value={overview.purchases.pending}
-            accent="text-white md:text-slate-900"
-          />
-          <StatCard
-            icon={Store}
-            label="Listings"
-            value={overview.listings.total}
-            accent="text-white md:text-slate-900"
-          />
-          <StatCard
-            icon={GraduationCap}
-            label="Enrolled"
-            value={overview.courses.enrolled}
-            accent="text-white md:text-slate-900"
-          />
-          <StatCard
-            icon={CheckCircle2}
-            label="Completed"
-            value={overview.courses.completed}
-            accent="text-white md:text-slate-900"
-          />
-          <StatCard
-            icon={Target}
-            label="Active"
-            value={overview.bounties.active}
-            accent="text-white md:text-slate-900"
-          />
-          <StatCard
-            icon={Bell}
-            label="Alerts"
-            value={overview.unread.notifications}
-            accent="text-white md:text-slate-900"
-          />
-        </div>
-      </div>
-
-      <div className="hidden grid-cols-1 gap-3 md:grid md:grid-cols-3">
-        <button
-          onClick={() => onGoto("wallet")}
-          className="text-left rounded-2xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-5 hover:border-white/20 md:border-slate-300 transition"
+          className="dashboard-module flex min-h-52 flex-col justify-between rounded-[10px] border border-border bg-card p-6 text-left transition hover:border-primary/30 hover:shadow-sm"
         >
-          <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">
-            Wallet balance
+          <div className="flex items-start justify-between">
+            <span className="text-xs font-bold uppercase text-muted-foreground">Available balance</span>
+            <span className="grid h-10 w-10 place-items-center rounded-full bg-muted text-muted-foreground">
+              <WalletIcon className="h-5 w-5" aria-hidden="true" />
+            </span>
           </div>
-          <div className="mt-2 text-3xl font-black text-white md:text-slate-900">{walletAvail}</div>
-          <div className="text-xs text-slate-400 md:text-slate-500 mt-1">{walletEscrow}</div>
-        </button>
-        <button
-          onClick={() => onGoto("bounties")}
-          className="text-left rounded-2xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-5 hover:border-white/20 md:border-slate-300 transition"
-        >
-          <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold flex items-center gap-1">
-            <Trophy className="w-3 h-3 text-white md:text-slate-900" /> Bounties earned
-          </div>
-          <div className="mt-2 text-3xl font-black text-white md:text-slate-900">
-            {bountyEarned}
-          </div>
-          <div className="text-xs text-slate-400 md:text-slate-500 mt-1">
-            {overview.bounties.solved} solved · {overview.bounties.posted} posted
-          </div>
-        </button>
-        <button
-          onClick={() => onGoto("social")}
-          className="text-left rounded-2xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-5 hover:border-white/20 md:border-slate-300 transition"
-        >
-          <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">
-            Network
-          </div>
-          <div className="mt-2 text-3xl font-black text-white md:text-slate-900">
-            {overview.social.followers}
-          </div>
-          <div className="text-xs text-slate-400 md:text-slate-500 mt-1">
-            Followers · {overview.social.following} following · {overview.social.circles} circles
-          </div>
-        </button>
-      </div>
-
-      <div className="hidden grid-cols-1 gap-2 md:grid md:grid-cols-4 md:gap-3">
-        <StatCard
-          icon={Download}
-          label="Downloads"
-          value={overview.purchases.total}
-          accent="text-white md:text-slate-900"
-        />
-        <StatCard
-          icon={Clock}
-          label="Pending orders"
-          value={overview.purchases.pending}
-          accent="text-white md:text-slate-900"
-        />
-        <StatCard
-          icon={Store}
-          label="My listings"
-          value={overview.listings.total}
-          accent="text-white md:text-slate-900"
-        />
-        <StatCard
-          icon={GraduationCap}
-          label="Enrolled courses"
-          value={overview.courses.enrolled}
-          accent="text-white md:text-slate-900"
-        />
-        <StatCard
-          icon={CheckCircle2}
-          label="Completed courses"
-          value={overview.courses.completed}
-          accent="text-white md:text-slate-900"
-        />
-        <StatCard
-          icon={Target}
-          label="Active bounties"
-          value={overview.bounties.active}
-          accent="text-white md:text-slate-900"
-        />
-        <StatCard
-          icon={Bell}
-          label="Unread notifications"
-          value={overview.unread.notifications}
-          accent="text-white md:text-slate-900"
-        />
-      </div>
-    </div>
-  );
-}
-
-function shouldUseSafeDashboardOverview() {
-  if (typeof window === "undefined") return false;
-  const root = document.documentElement;
-  if (root.classList.contains("low-gpu")) return true;
-
-  const ua = navigator.userAgent || "";
-  const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
-  const isAndroid = /Android/i.test(ua);
-  if (!isMobile || !isAndroid) return false;
-  if (/Infinix|X6813|X68\d{2}|Note\s*11i|TECNO|itel|Nokia\s*C|Redmi\s*(9|A)|Realme\s*C/i.test(ua)) {
-    return true;
-  }
-  if (root.classList.contains("high-gpu")) return false;
-
-  const nav = navigator as Navigator & {
-    deviceMemory?: number;
-    connection?: { saveData?: boolean; effectiveType?: string };
-  };
-  const memory = nav.deviceMemory || 0;
-  const cores = nav.hardwareConcurrency || 0;
-  const androidVersion = Number((ua.match(/Android\s+(\d+)/i) || [])[1] || 0);
-  const dpr = window.devicePixelRatio || 1;
-  const longScreen = Math.max(window.screen?.width || 0, window.screen?.height || 0);
-  const physicalWidth = longScreen * dpr;
-  const connection = nav.connection;
-
-  let score = 0;
-  if (!androidVersion || androidVersion <= 11) score -= 2;
-  else if (androidVersion === 12) score -= 1;
-  else if (androidVersion >= 14) score += 1;
-
-  if (!memory) score -= 1;
-  else if (memory <= 4) score -= 3;
-  else if (memory <= 6) score -= 1;
-  else if (memory >= 12) score += 2;
-  else if (memory >= 8) score += 1;
-
-  if (!cores) score -= 1;
-  else if (cores <= 4) score -= 3;
-  else if (cores <= 6) score -= 1;
-  else if (cores >= 8) score += 1;
-
-  if (physicalWidth >= 2400 && dpr >= 3) score += 1;
-  else if (physicalWidth <= 1600 || dpr < 2) score -= 1;
-
-  if (connection?.saveData) score -= 3;
-  if (["slow-2g", "2g", "3g"].includes(connection?.effectiveType || "")) score -= 1;
-
-  return !(score >= 5 && androidVersion >= 13 && memory >= 8 && cores >= 8);
-}
-
-function BountyCoverThumb({
-  url,
-  title,
-  className = "",
-}: {
-  url: string | null;
-  title: string;
-  className?: string;
-}) {
-  return (
-    <div
-      className={`relative overflow-hidden rounded-[10px] bg-white/5 md:bg-slate-50 border border-white/10 md:border-slate-200 ${className}`}
-    >
-      {url ? (
-        <img
-          src={url}
-          alt={title}
-          loading="lazy"
-          decoding="async"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-      ) : (
-        <div className="absolute inset-0 flex items-center justify-center text-slate-600">
-          <Target className="w-8 h-8" />
-        </div>
-      )}
-    </div>
-  );
-}
-
-function bountyStatusBadge(status: string): { label: string; className: string } {
-  const s = status.toLowerCase();
-  if (s === "active")
-    return {
-      label: "Active",
-      className: "bg-emerald-500/15 text-emerald-300 md:text-emerald-700 border-emerald-500/30",
-    };
-  if (s === "pending_review")
-    return {
-      label: "Pending review",
-      className: "bg-amber-500/15 text-amber-300 border-amber-500/30",
-    };
-  if (s === "rejected")
-    return { label: "Rejected", className: "bg-rose-500/15 text-rose-300 border-rose-500/30" };
-  if (s === "paused")
-    return {
-      label: "Paused",
-      className: "bg-slate-500/15 text-slate-300 md:text-slate-600 border-slate-500/30",
-    };
-  if (s === "closed")
-    return {
-      label: "Closed",
-      className: "bg-slate-500/15 text-slate-300 md:text-slate-600 border-slate-500/30",
-    };
-  if (s === "solved" || s === "released")
-    return { label: "Solved", className: "bg-sky-500/15 text-sky-300 border-sky-500/30" };
-  if (s === "disputed")
-    return { label: "Disputed", className: "bg-rose-500/15 text-rose-300 border-rose-500/30" };
-  if (s === "draft")
-    return {
-      label: "Draft",
-      className: "bg-slate-500/15 text-slate-300 md:text-slate-600 border-slate-500/30",
-    };
-  return {
-    label: status,
-    className: "bg-slate-500/15 text-slate-300 md:text-slate-600 border-slate-500/30",
-  };
-}
-
-function isExpiredBounty(b: DashboardBountyPosted): boolean {
-  if (!b.deadlineAt) return false;
-  const s = b.status.toLowerCase();
-  if (["solved", "released", "closed"].includes(s)) return false;
-  return new Date(b.deadlineAt).getTime() < Date.now();
-}
-
-function BountiesPane({
-  data,
-}: {
-  data: { posted: DashboardBountyPosted[]; solved: DashboardBountySolved[] } | null;
-}) {
-  const navigate = useNavigate();
-  const [sub, setSub] = useState<"posted" | "solved">("posted");
-  const [detailsFor, setDetailsFor] = useState<DashboardBountyPosted | null>(null);
-  const [postOpen, setPostOpen] = useState(false);
-
-  const openBountiesFeed = () => navigate({ to: "/", search: { section: "Bounties" } as never });
-
-  if (!data) return <ListSkeleton count={6} />;
-
-  const active = data.posted.filter(
-    (b) => b.status.toLowerCase() === "active" && !isExpiredBounty(b),
-  );
-  const pending = data.posted.filter((b) => b.status.toLowerCase() === "pending_review");
-  const solvedPosted = data.posted.filter((b) =>
-    ["solved", "released"].includes(b.status.toLowerCase()),
-  );
-  const expired = data.posted.filter(isExpiredBounty);
-  const other = data.posted.filter(
-    (b) =>
-      !active.includes(b) &&
-      !pending.includes(b) &&
-      !solvedPosted.includes(b) &&
-      !expired.includes(b),
-  );
-
-  const renderGrid = (rows: DashboardBountyPosted[]) => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-      {rows.map((b) => {
-        const badge = bountyStatusBadge(isExpiredBounty(b) ? "closed" : b.status);
-        const deadline = b.deadlineAt ? new Date(b.deadlineAt) : null;
-        return (
-          <button
-            key={b.id}
-            onClick={() => setDetailsFor(b)}
-            className="text-left rounded-xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm overflow-hidden hover:border-white/20 md:border-slate-300 transition"
-          >
-            <BountyCoverThumb url={b.coverUrl} title={b.title} className="aspect-video w-full" />
-            <div className="p-3">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <div className="text-white md:text-slate-900 font-semibold truncate">
-                    {b.title}
-                  </div>
-                  <div className="text-[11px] text-slate-500 mt-1 truncate">{b.category}</div>
-                </div>
-                <div className="text-right shrink-0">
-                  <div className="text-white md:text-slate-900 font-black text-sm">
-                    ${b.priceUSD.toFixed(2)}
-                  </div>
-                  <div className="text-[10px] text-slate-400 md:text-slate-500 mt-0.5">
-                    {b.applicantsCount} applicant{b.applicantsCount === 1 ? "" : "s"}
-                  </div>
-                </div>
-              </div>
-              <div className="mt-2 flex items-center justify-between gap-2">
-                <span
-                  className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] font-bold ${badge.className}`}
-                >
-                  {isExpiredBounty(b) ? "Expired" : badge.label}
-                </span>
-                {deadline && (
-                  <span className="inline-flex items-center gap-1 text-[10px] text-slate-500">
-                    <Calendar className="w-3 h-3" />
-                    {deadline.toLocaleDateString()}
-                  </span>
-                )}
-              </div>
-            </div>
-          </button>
-        );
-      })}
-    </div>
-  );
-
-  return (
-    <div>
-      <div className="inline-flex rounded-[10px] bg-[#141418] md:bg-white md:shadow-sm border border-white/10 md:border-slate-200 p-1 mb-4 gap-1">
-        <TabButton active={sub === "posted"} onClick={() => setSub("posted")}>
-          Posted by me ({data.posted.length})
-        </TabButton>
-        <TabButton active={sub === "solved"} onClick={() => setSub("solved")}>
-          Solved by me ({data.solved.length})
-        </TabButton>
-      </div>
-
-      {sub === "posted" && (
-        <>
-          <div className="flex items-center justify-between mb-3 gap-3">
-            <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">
-              Your bounties ({data.posted.length})
-            </div>
-            <button
-              onClick={() => setPostOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-[10px] bg-white text-black font-bold text-xs hover:bg-slate-200 shrink-0"
-            >
-              <Plus className="w-4 h-4" /> Post a bounty
-            </button>
-          </div>
-
-          {data.posted.length === 0 ? (
-            <div className="rounded-xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-6 text-center">
-              <Target className="w-8 h-8 mx-auto text-slate-500" />
-              <div className="mt-3 text-white md:text-slate-900 font-semibold">
-                No bounties posted yet
-              </div>
-              <div className="text-sm text-slate-400 md:text-slate-500 mt-1">
-                Post a task and let experts apply to solve it.
-              </div>
-              <div className="mt-4 flex flex-wrap gap-2 justify-center">
-                <button
-                  onClick={() => setPostOpen(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] bg-white text-black font-bold text-sm hover:bg-slate-200"
-                >
-                  <Plus className="w-4 h-4" /> Post your first bounty
-                </button>
-                <button
-                  onClick={openBountiesFeed}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] border border-white/15 md:border-slate-200 text-slate-200 md:text-slate-700 font-semibold text-sm hover:bg-white/5 md:bg-slate-50 md:hover:bg-slate-100"
-                >
-                  Browse bounties <ArrowUpRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {active.length > 0 && (
-                <section>
-                  <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">
-                    Active ({active.length})
-                  </div>
-                  {renderGrid(active)}
-                </section>
-              )}
-              {pending.length > 0 && (
-                <section>
-                  <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> Pending review ({pending.length})
-                  </div>
-                  {renderGrid(pending)}
-                </section>
-              )}
-              {solvedPosted.length > 0 && (
-                <section>
-                  <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3" /> Solved ({solvedPosted.length})
-                  </div>
-                  {renderGrid(solvedPosted)}
-                </section>
-              )}
-              {expired.length > 0 && (
-                <section>
-                  <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 flex items-center gap-1">
-                    <AlertTriangle className="w-3 h-3" /> Expired ({expired.length})
-                  </div>
-                  {renderGrid(expired)}
-                </section>
-              )}
-              {other.length > 0 && (
-                <section>
-                  <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">
-                    Other ({other.length})
-                  </div>
-                  {renderGrid(other)}
-                </section>
-              )}
-            </div>
-          )}
-        </>
-      )}
-
-      {sub === "solved" &&
-        (data.solved.length === 0 ? (
-          <div className="rounded-xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-6 text-center">
-            <Trophy className="w-8 h-8 mx-auto text-slate-500" />
-            <div className="mt-3 text-white md:text-slate-900 font-semibold">
-              No bounties solved yet
-            </div>
-            <div className="text-sm text-slate-400 md:text-slate-500 mt-1">
-              Apply to open bounties and start earning payouts.
-            </div>
-            <button
-              onClick={openBountiesFeed}
-              className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-[10px] bg-white text-black font-bold text-sm hover:bg-slate-200"
-            >
-              Browse bounties <ArrowUpRight className="w-4 h-4" />
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {data.solved.map((s) => (
-              <div
-                key={s.id}
-                className="rounded-xl border border-emerald-500/30 bg-[#141418] md:bg-white md:shadow-sm overflow-hidden"
-              >
-                <BountyCoverThumb
-                  url={s.coverUrl}
-                  title={s.title}
-                  className="aspect-video w-full"
-                />
-                <div className="p-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <div className="text-white md:text-slate-900 font-semibold truncate">
-                        {s.title}
-                      </div>
-                      <div className="text-[11px] text-emerald-300 md:text-emerald-700 mt-1 inline-flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3" /> Paid{" "}
-                        {new Date(s.solvedAt).toLocaleDateString()}
-                      </div>
-                    </div>
-                    <div className="text-white md:text-slate-900 font-black text-sm shrink-0">
-                      +${s.payoutUSD.toFixed(2)}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ))}
-
-      {detailsFor && <BountyDetailsModal bounty={detailsFor} onClose={() => setDetailsFor(null)} />}
-
-      <BountyEditorModal
-        open={postOpen}
-        onClose={() => setPostOpen(false)}
-        onPublished={() => {
-          setPostOpen(false);
-          toast.success("Bounty submitted for review");
-          window.dispatchEvent(new CustomEvent("oventric:bounties-refresh"));
-        }}
-      />
-    </div>
-  );
-}
-
-function BountyDetailsModal({
-  bounty,
-  onClose,
-}: {
-  bounty: DashboardBountyPosted;
-  onClose: () => void;
-}) {
-  const badge = bountyStatusBadge(isExpiredBounty(bounty) ? "closed" : bounty.status);
-  const deadline = bounty.deadlineAt ? new Date(bounty.deadlineAt) : null;
-  return (
-    <div
-      className="fixed inset-0 z-[80] bg-black/70 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      <div
-        className="w-full max-w-lg rounded-2xl bg-[#141418] md:bg-white md:shadow-sm border border-white/10 md:border-slate-200 overflow-hidden max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <BountyCoverThumb
-          url={bounty.coverUrl}
-          title={bounty.title}
-          className="aspect-video w-full rounded-none border-0"
-        />
-        <div className="p-5 space-y-3">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <h3 className="text-white md:text-slate-900 font-black text-lg truncate">
-                {bounty.title}
-              </h3>
-              <div className="text-xs text-slate-400 md:text-slate-500 mt-1 truncate">
-                {bounty.category}
-              </div>
-              <div className="mt-2">
-                <span
-                  className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] font-bold ${badge.className}`}
-                >
-                  {isExpiredBounty(bounty) ? "Expired" : badge.label}
-                </span>
-              </div>
-            </div>
-            <div className="text-right shrink-0">
-              <div className="text-white md:text-slate-900 font-black">
-                ${bounty.priceUSD.toFixed(2)}
-              </div>
-              <div className="text-[10px] text-slate-400 md:text-slate-500 mt-1">
-                {bounty.applicantsCount} / {bounty.applicantLimit ?? "∞"} applicants
-              </div>
-            </div>
-          </div>
-
-          {bounty.description && (
-            <p className="text-sm text-slate-300 md:text-slate-600 leading-relaxed whitespace-pre-wrap line-clamp-8">
-              {bounty.description}
-            </p>
-          )}
-
-          <div className="grid grid-cols-2 gap-2 text-xs text-slate-400 md:text-slate-500 pt-1">
-            <div>
-              <span className="text-slate-500">Posted</span>
-              <div className="text-slate-200 md:text-slate-700">
-                {new Date(bounty.createdAt).toLocaleDateString()}
-              </div>
-            </div>
-            {deadline && (
-              <div>
-                <span className="text-slate-500">Deadline</span>
-                <div className="text-slate-200 md:text-slate-700">
-                  {deadline.toLocaleDateString()}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="pt-2">
-            <button
-              onClick={onClose}
-              className="w-full px-3 py-2 rounded-[10px] border border-white/10 md:border-slate-200 text-slate-200 md:text-slate-700 text-sm hover:bg-white/5 md:bg-slate-50 md:hover:bg-slate-100"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CourseCoverThumb({
-  url,
-  title,
-  className = "",
-}: {
-  url: string | null;
-  title: string;
-  className?: string;
-}) {
-  return (
-    <div
-      className={`relative overflow-hidden rounded-[10px] bg-white/5 md:bg-slate-50 border border-white/10 md:border-slate-200 ${className}`}
-    >
-      {url ? (
-        <img
-          src={url}
-          alt={title}
-          loading="lazy"
-          decoding="async"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-      ) : (
-        <div className="absolute inset-0 flex items-center justify-center text-slate-600">
-          <GraduationCap className="w-8 h-8" />
-        </div>
-      )}
-    </div>
-  );
-}
-
-function CoursesPane({
-  data,
-}: {
-  data: { enrolled: DashboardEnrolledCourse[]; published: DashboardPublishedCourse[] } | null;
-}) {
-  const navigate = useNavigate();
-  const [sub, setSub] = useState<"enrolled" | "published">("enrolled");
-  const [detailsFor, setDetailsFor] = useState<DashboardPublishedCourse | null>(null);
-  const [editBlockedFor, setEditBlockedFor] = useState<DashboardPublishedCourse | null>(null);
-  const [publishOpen, setPublishOpen] = useState(false);
-
-  const openAcademy = () => navigate({ to: "/", search: { section: "Academy" } as never });
-
-  if (!data) return <ListSkeleton count={6} />;
-
-  const inProgress = data.enrolled.filter((c) => !c.completedAt);
-  const completed = data.enrolled.filter((c) => !!c.completedAt);
-
-  const tryEdit = (c: DashboardPublishedCourse) => {
-    if (c.enrollments > 0) {
-      setEditBlockedFor(c);
-      return;
-    }
-    setDetailsFor(null);
-    navigate({ to: "/", search: { section: "Academy", editCourse: c.id } as never });
-  };
-
-  return (
-    <div>
-      <div className="inline-flex rounded-[10px] bg-[#141418] md:bg-white md:shadow-sm border border-white/10 md:border-slate-200 p-1 mb-4 gap-1">
-        <TabButton active={sub === "enrolled"} onClick={() => setSub("enrolled")}>
-          Enrolled ({data.enrolled.length})
-        </TabButton>
-        <TabButton active={sub === "published"} onClick={() => setSub("published")}>
-          Published ({data.published.length})
-        </TabButton>
-      </div>
-
-      {sub === "enrolled" &&
-        (data.enrolled.length === 0 ? (
-          <div className="rounded-xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-6 text-center">
-            <GraduationCap className="w-8 h-8 mx-auto text-slate-500" />
-            <div className="mt-3 text-white md:text-slate-900 font-semibold">No courses yet</div>
-            <div className="text-sm text-slate-400 md:text-slate-500 mt-1">
-              Start learning by browsing our top courses.
-            </div>
-            <button
-              onClick={openAcademy}
-              className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-[10px] bg-white text-black font-bold text-sm hover:bg-slate-200"
-            >
-              Browse top courses <ArrowUpRight className="w-4 h-4" />
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {inProgress.length > 0 && (
-              <section>
-                <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">
-                  In progress ({inProgress.length})
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {inProgress.map((c) => {
-                    const pct =
-                      c.totalModules > 0
-                        ? Math.round((c.completedModules / c.totalModules) * 100)
-                        : 0;
-                    return (
-                      <button
-                        key={c.id}
-                        onClick={openAcademy}
-                        className="text-left rounded-xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm overflow-hidden hover:border-white/20 md:border-slate-300 transition"
-                      >
-                        <CourseCoverThumb
-                          url={c.coverUrl}
-                          title={c.title}
-                          className="aspect-video w-full"
-                        />
-                        <div className="p-3">
-                          <div className="text-white md:text-slate-900 font-semibold truncate">
-                            {c.title}
-                          </div>
-                          <div className="text-[11px] text-slate-500 mt-1">
-                            {c.completedModules}/{c.totalModules} modules · {pct}%
-                          </div>
-                          <div className="mt-2 h-1.5 rounded-full bg-white/5 md:bg-slate-50 overflow-hidden">
-                            <div
-                              className="h-full bg-white transition-all"
-                              style={{ width: `${pct}%` }}
-                            />
-                          </div>
-                          <div className="mt-3 text-xs text-white md:text-slate-900 font-bold inline-flex items-center gap-1">
-                            Continue learning <ArrowUpRight className="w-3 h-3" />
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </section>
-            )}
-
-            {completed.length > 0 && (
-              <section>
-                <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" /> Completed ({completed.length})
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {completed.map((c) => (
-                    <button
-                      key={c.id}
-                      onClick={openAcademy}
-                      className="text-left rounded-xl border border-emerald-500/30 bg-[#141418] md:bg-white md:shadow-sm overflow-hidden hover:border-emerald-500/60 transition"
-                    >
-                      <CourseCoverThumb
-                        url={c.coverUrl}
-                        title={c.title}
-                        className="aspect-video w-full"
-                      />
-                      <div className="p-3">
-                        <div className="text-white md:text-slate-900 font-semibold truncate">
-                          {c.title}
-                        </div>
-                        <div className="text-[11px] text-emerald-300 md:text-emerald-700 mt-1 inline-flex items-center gap-1">
-                          <CheckCircle2 className="w-3 h-3" /> Completed{" "}
-                          {c.completedAt ? new Date(c.completedAt).toLocaleDateString() : ""}
-                        </div>
-                        <div className="mt-3 text-xs text-white md:text-slate-900 font-bold inline-flex items-center gap-1">
-                          Review course <ArrowUpRight className="w-3 h-3" />
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </section>
-            )}
-          </div>
-        ))}
-
-      {sub === "published" && (
-        <>
-          <div className="flex items-center justify-between mb-3 gap-3">
-            <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">
-              Your courses ({data.published.length})
-            </div>
-            <button
-              onClick={() => setPublishOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-[10px] bg-white text-black font-bold text-xs hover:bg-slate-200 shrink-0"
-            >
-              <Plus className="w-4 h-4" /> Publish a course
-            </button>
-          </div>
-          {data.published.length === 0 ? (
-            <div className="rounded-xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-6 text-center">
-              <GraduationCap className="w-8 h-8 mx-auto text-slate-500" />
-              <div className="mt-3 text-white md:text-slate-900 font-semibold">
-                No courses published
-              </div>
-              <div className="text-sm text-slate-400 md:text-slate-500 mt-1">
-                Teach what you know and start earning.
-              </div>
-              <button
-                onClick={() => setPublishOpen(true)}
-                className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-[10px] bg-white text-black font-bold text-sm hover:bg-slate-200"
-              >
-                <Plus className="w-4 h-4" /> Publish your first course
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {data.published.map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => setDetailsFor(c)}
-                  className="text-left rounded-xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm overflow-hidden hover:border-white/20 md:border-slate-300 transition"
-                >
-                  <CourseCoverThumb
-                    url={c.coverUrl}
-                    title={c.title}
-                    className="aspect-video w-full"
-                  />
-                  <div className="p-3">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <div className="text-white md:text-slate-900 font-semibold truncate">
-                          {c.title}
-                        </div>
-                        <div className="text-[11px] text-slate-500 mt-1">
-                          {c.isPublished ? "Published" : "Draft"} · {c.enrollments} enrolled
-                        </div>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <div className="text-white md:text-slate-900 font-black text-sm">
-                          {c.isFree ? "Free" : `$${c.priceUSD.toFixed(2)}`}
-                        </div>
-                        {c.revenueUSD > 0 && (
-                          <div className="text-[10px] text-slate-400 md:text-slate-500 mt-0.5">
-                            ${c.revenueUSD.toFixed(2)}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-        </>
-      )}
-
-      {detailsFor && (
-        <CourseDetailsModal
-          course={detailsFor}
-          onClose={() => setDetailsFor(null)}
-          onEdit={() => tryEdit(detailsFor)}
-        />
-      )}
-
-      {editBlockedFor && (
-        <EditBlockedModal course={editBlockedFor} onClose={() => setEditBlockedFor(null)} />
-      )}
-
-      <CoursePublishWizard
-        open={publishOpen}
-        onClose={() => setPublishOpen(false)}
-        onSaved={() => {
-          setPublishOpen(false);
-          toast.success("Course submitted");
-          window.dispatchEvent(new CustomEvent("oventric:courses-refresh"));
-        }}
-      />
-    </div>
-  );
-}
-
-function CourseDetailsModal({
-  course,
-  onClose,
-  onEdit,
-}: {
-  course: DashboardPublishedCourse;
-  onClose: () => void;
-  onEdit: () => void;
-}) {
-  return (
-    <div
-      className="fixed inset-0 z-[80] bg-black/70 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      <div
-        className="w-full max-w-lg rounded-2xl bg-[#141418] md:bg-white md:shadow-sm border border-white/10 md:border-slate-200 overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <CourseCoverThumb
-          url={course.coverUrl}
-          title={course.title}
-          className="aspect-video w-full rounded-none border-0"
-        />
-        <div className="p-5 space-y-3">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h3 className="text-white md:text-slate-900 font-black text-lg">{course.title}</h3>
-              <div className="text-xs text-slate-400 md:text-slate-500 mt-1">
-                {course.category ?? "—"} · {course.level ?? "—"} ·{" "}
-                {course.isPublished ? "Published" : "Draft"}
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-white md:text-slate-900 font-black">
-                {course.isFree ? "Free" : `$${course.priceUSD.toFixed(2)}`}
-              </div>
-              <div className="text-[10px] text-slate-400 md:text-slate-500 mt-1">
-                {course.enrollments} enrolled
-              </div>
-            </div>
-          </div>
-          {course.description && (
-            <p className="text-sm text-slate-300 md:text-slate-600 leading-relaxed whitespace-pre-wrap line-clamp-6">
-              {course.description}
-            </p>
-          )}
-          <div className="grid grid-cols-2 gap-2 pt-2">
-            <button
-              onClick={onClose}
-              className="px-3 py-2 rounded-[10px] border border-white/10 md:border-slate-200 text-slate-200 md:text-slate-700 text-sm hover:bg-white/5 md:bg-slate-50 md:hover:bg-slate-100"
-            >
-              Close
-            </button>
-            <button
-              onClick={onEdit}
-              className="px-3 py-2 rounded-[10px] bg-white text-black font-bold text-sm inline-flex items-center justify-center gap-1"
-            >
-              <Pencil className="w-4 h-4" /> Edit course
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function EditBlockedModal({
-  course,
-  onClose,
-}: {
-  course: DashboardPublishedCourse;
-  onClose: () => void;
-}) {
-  return (
-    <div
-      className="fixed inset-0 z-[90] bg-black/70 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      <div
-        className="w-full max-w-md rounded-2xl bg-[#141418] md:bg-white md:shadow-sm border border-amber-500/40 p-5"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-start gap-3">
-          <AlertTriangle className="w-6 h-6 text-amber-400 shrink-0" />
           <div>
-            <h3 className="text-white md:text-slate-900 font-black text-lg">Editing locked</h3>
-            <p className="text-sm text-slate-300 md:text-slate-600 mt-2">
-              <span className="text-white md:text-slate-900 font-semibold">
-                {course.enrollments} student{course.enrollments === 1 ? " is" : "s are"}
-              </span>{" "}
-              currently studying <span className="text-white font-semibold">{course.title}</span>.
-              To protect their progress, you can't make changes while enrollments are active.
-            </p>
-            <p className="text-xs text-slate-500 mt-3">
-              Tip: publish an updated edition as a new course, or wait until active students
-              complete their modules.
-            </p>
+            <div className="font-wallet-display text-3xl font-bold text-foreground sm:text-4xl">
+              {walletAvailable}
+            </div>
+            <p className="mt-2 text-sm text-muted-foreground">{walletEscrow}</p>
           </div>
+        </button>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-2">
+          <OverviewMetric
+            icon={ShoppingBag}
+            label="Orders"
+            value={orderCount}
+            detail={`${overview.orders.awaitingBuyer} awaiting confirmation · ${overview.orders.toFulfil} to fulfil`}
+            onClick={() => onGoto(overview.orders.toFulfil > 0 ? "sales" : "digital")}
+          />
+          <OverviewMetric
+            icon={TrendingUp}
+            label="Released revenue"
+            value={formatHomeCurrency(overview.revenue.gross, homeCurrency)}
+            detail={`${formatHomeCurrency(overview.revenue.last30, homeCurrency)} in the last 30 days`}
+            onClick={() => onGoto("wallet")}
+          />
+          <OverviewMetric
+            icon={Store}
+            label="Digital listings"
+            value={overview.listings.total}
+            detail={`${overview.listings.active} live · ${overview.listings.pending} pending`}
+            onClick={() => onGoto("listings")}
+          />
+          <OverviewMetric
+            icon={Users}
+            label="Network"
+            value={overview.social.followers}
+            detail={`${overview.social.following} following · ${overview.unread.messages} unread messages`}
+            onClick={() => onGoto("social")}
+          />
         </div>
-        <div className="mt-4 flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-[10px] bg-white text-black font-bold text-sm"
-          >
-            Got it
-          </button>
+      </section>
+
+      <QuickActions />
+
+      <section className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)]">
+        <div className="space-y-6">
+          <AnalyticsCharts />
+          <AnalyticsWidget />
         </div>
-      </div>
+        <NotificationsPanel />
+      </section>
     </div>
   );
 }

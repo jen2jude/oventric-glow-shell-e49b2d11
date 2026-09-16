@@ -46,8 +46,6 @@ export interface DashboardOverview {
   wallet: { currency: HomeCurrency; available: number; escrow: number } | null;
   purchases: { total: number; pending: number };
   listings: { total: number; pending: number; active: number; rejected: number };
-  bounties: { posted: number; active: number; solved: number; earnedUSD: number; earned: number; earnedCurrency: HomeCurrency };
-  courses: { enrolled: number; completed: number; published: number };
   social: { followers: number; following: number; circles: number };
   unread: { messages: number; notifications: number };
   /** Buyer + seller order pipeline for the key overview cards. */
@@ -70,10 +68,6 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
       wallets,
       ordersRes,
       productsRes,
-      bountiesPostedRes,
-      bountyPayoutsRes,
-      enrolledRes,
-      publishedRes,
       followersRes,
       followingRes,
       circlesRes,
@@ -87,10 +81,6 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
       sb.from("wallets").select("currency, available_balance, escrow_balance").eq("user_id", me),
       sb.from("orders").select("id, status, created_at, escrow_status, buyer_confirmed_at", { count: "exact", head: false }).eq("buyer_id", me),
       sb.from("products").select("id, status").eq("seller_id", me),
-      sb.from("bounties").select("id, status", { count: "exact", head: false }).eq("poster_id", me),
-      sb.from("wallet_transactions").select("amount, currency").eq("user_id", me).eq("type", "Bounty Payout").eq("inflow", true).eq("status", "success"),
-      sb.from("course_enrollments").select("id, completed_at").eq("user_id", me),
-      sb.from("courses").select("id", { count: "exact", head: true }).eq("owner_id", me),
       sb.from("follows").select("follower_id", { count: "exact", head: true }).eq("followee_id", me),
       sb.from("follows").select("followee_id", { count: "exact", head: true }).eq("follower_id", me),
       sb.from("circle_members").select("circle_id", { count: "exact", head: true }).eq("user_id", me),
@@ -120,7 +110,7 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
     ]);
 
     // Home currency comes from the user's country. Overview always reports
-    // the wallet + bounty earnings in this currency only.
+    // wallet and released seller revenue in this currency only.
     const homeCurrency: HomeCurrency = countryToHomeCurrency(
       (profileRes?.data as { country?: string | null } | null)?.country ?? null,
     );
@@ -144,9 +134,6 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
       delivered_at: string | null;
     }>;
     const productRows = (productsRes.data ?? []) as Array<{ status: string }>;
-    const bountyRows = (bountiesPostedRes.data ?? []) as Array<{ status: string }>;
-    const enrollRows = (enrolledRes.data ?? []) as Array<{ completed_at: string | null }>;
-    const payoutRows = (bountyPayoutsRes.data ?? []) as Array<{ amount: number }>;
 
     const since30 = Date.now() - 30 * 24 * 60 * 60 * 1000;
     const isRecent = (iso: string | null) => (iso ? new Date(iso).getTime() >= since30 : false);
@@ -158,9 +145,6 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
       .reduce((sum, o) => sum + Number(o.seller_share_usd || 0), 0);
     const homeRate = rates[homeCurrency] ?? 1;
     const homeDigits = homeCurrency === "USD" ? 2 : 0;
-
-    const earnedUSD = payoutRows.reduce((sum, r) => sum + Number(r.amount || 0), 0);
-    const earnedHome = earnedUSD * (rates[homeCurrency] ?? 1);
 
     return {
       homeCurrency,
@@ -178,19 +162,6 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
         pending: productRows.filter((p) => p.status === "pending").length,
         active: productRows.filter((p) => p.status === "active").length,
         rejected: productRows.filter((p) => p.status === "rejected").length,
-      },
-      bounties: {
-        posted: bountyRows.length,
-        active: bountyRows.filter((b) => b.status === "active").length,
-        solved: payoutRows.length,
-        earnedUSD: Number(earnedUSD.toFixed(2)),
-        earned: Number(earnedHome.toFixed(homeCurrency === "USD" ? 2 : 0)),
-        earnedCurrency: homeCurrency,
-      },
-      courses: {
-        enrolled: enrollRows.length,
-        completed: enrollRows.filter((e) => e.completed_at).length,
-        published: publishedRes.count ?? 0,
       },
       social: {
         followers: followersRes.count ?? 0,

@@ -86,12 +86,12 @@ export function NotificationsPanel() {
   };
 
   return (
-    <div className="rounded-2xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-4">
+    <div className="rounded-[10px] border border-border bg-card p-5 shadow-sm">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-bold text-white md:text-slate-900 flex items-center gap-1.5">
+        <h3 className="flex items-center gap-1.5 text-sm font-bold text-foreground">
           <Bell className="w-4 h-4" /> Notifications
           {unreadCount > 0 && (
-            <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-red-600 text-white text-[10px] font-black">
+            <span className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-black text-primary-foreground">
               {unreadCount}
             </span>
           )}
@@ -99,7 +99,7 @@ export function NotificationsPanel() {
         <button
           onClick={() => void handleMarkAll()}
           disabled={!items || unreadCount === 0}
-          className="text-[11px] font-semibold text-slate-400 md:text-slate-500 hover:text-white md:hover:text-slate-900 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="text-[11px] font-semibold text-muted-foreground hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
         >
           Mark all read
         </button>
@@ -109,7 +109,7 @@ export function NotificationsPanel() {
         <div className="flex flex-col items-center gap-2 text-xs text-red-400 py-8" role="alert">
           <AlertTriangle className="w-5 h-5" />
           {error}
-          <button onClick={() => void load()} className="text-white underline underline-offset-2">
+          <button onClick={() => void load()} className="text-primary underline underline-offset-2">
             Try again
           </button>
         </div>
@@ -118,7 +118,7 @@ export function NotificationsPanel() {
           <Loader2 className="w-5 h-5 animate-spin text-slate-500" />
         </div>
       ) : items.length === 0 ? (
-        <div className="text-center text-xs text-slate-400 md:text-slate-500 py-8">
+        <div className="py-8 text-center text-xs text-muted-foreground">
           You're all caught up — no notifications yet.
         </div>
       ) : (
@@ -128,13 +128,13 @@ export function NotificationsPanel() {
               key={n.id}
               className={`rounded-xl border p-3 ${
                 n.read_at
-                  ? "border-white/5 md:border-slate-100 bg-white/[0.02] md:bg-slate-50/50"
-                  : "border-emerald-500/30 bg-emerald-500/5"
+                  ? "border-border bg-muted/50"
+                  : "border-primary/25 bg-primary/[0.04]"
               }`}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-white md:text-slate-900 truncate">
+                  <p className="truncate text-xs font-bold text-foreground">
                     {n.title}
                   </p>
                   {n.body && (
