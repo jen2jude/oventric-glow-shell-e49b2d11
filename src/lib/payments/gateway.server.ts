@@ -132,6 +132,14 @@ export async function createCharge(opts: {
     metadata.topup_fee_currency = chargeCurrency;
   }
 
+  // Fail closed on a live site that is still holding test credentials — a
+  // production shopper must never be sent to a sandbox checkout.
+  assertLiveCredentials(provider, opts.origin);
+
+  // The authoritative amount we asked the provider to collect. Verification
+  // rejects any settlement whose paid amount/currency does not match this.
+  metadata.charge_amount = chargeAmount;
+
   const stamp = `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`.toUpperCase();
   const reference = provider === "flutterwave" ? `OVF_${stamp}` : `OVP_${stamp}`;
   const redirectUrl = `${opts.origin}/api/public/payment-return`;
