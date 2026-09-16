@@ -129,9 +129,11 @@ const STEPS = [
 
 export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
   const { isAuthenticated, openGate } = useAuthGate();
-  const { baseCurrency, country, balancesHidden, toggleBalancesHidden, fullName, storeName } =
+  const { baseCurrency, homeCurrency, country, balancesHidden, toggleBalancesHidden, fullName, storeName } =
     useOnboarding();
   const currency: Currency = country ? baseCurrency : "USD";
+  // Wallet money always stays in the home currency, not the USD price preview.
+  const walletCurrency: Currency = country ? homeCurrency : "USD";
   const flag = country ? (COUNTRY_META[country]?.flag ?? "") : "";
 
   const loadBalances = useServerFn(getWalletBalances);
