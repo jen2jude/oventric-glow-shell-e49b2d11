@@ -24,7 +24,7 @@ import {
   Users,
   ArrowUpRight,
   ArrowDownRight,
-  Bell,
+  
   Plus,
   TrendingUp,
   Activity as ActivityIcon,
@@ -360,9 +360,6 @@ function DashboardPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link to="/ads-manager" className="inline-flex items-center gap-2 rounded-[10px] border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted">
-              <Bell className="h-4 w-4" /> Ads Manager
-            </Link>
             <button type="button" onClick={() => setTab("listings")} className="inline-flex items-center gap-2 rounded-[10px] bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition hover:opacity-90">
               <Plus className="h-4 w-4" /> New listing
             </button>

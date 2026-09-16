@@ -5,7 +5,7 @@ import { trackPromoEvent, usePromoImpression } from "@/lib/promo-analytics";
 import { Reveal } from "@/components/oventric/desktop/Reveal";
 import promoCashbackArt from "@/assets/promo-cashback.png";
 import promoReferArt from "@/assets/promo-refer.png";
-import promoAdvertiseArt from "@/assets/promo-advertise.png";
+
 
 type Banner = {
   id: string;
@@ -55,7 +55,7 @@ export function DesktopPromo({ onSelect }: { onSelect: (section: string) => void
           <DesktopPromoBanners onSelect={onSelect} />
         </Reveal>
 
-        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:mt-10 lg:grid-cols-3">
+        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:mt-10">
           <Reveal delay={0}>
             <DesktopPromoCard
               id="cashback"
@@ -81,20 +81,8 @@ export function DesktopPromo({ onSelect }: { onSelect: (section: string) => void
               gradient="linear-gradient(135deg,#7DE2A8 0%,#2ED3A0 55%,#12B39B 100%)"
             />
           </Reveal>
-          <Reveal delay={180}>
-            <DesktopPromoCard
-              id="advertise"
-              title="Advertise here"
-              highlight="reach thousands"
-              body="Put your product in front of Africa's builders."
-              cta="Start a campaign"
-              to="/advertise"
-              search={{ start: "image" }}
-              art={promoAdvertiseArt}
-              gradient="linear-gradient(135deg,#7BC5FF 0%,#3D8DFF 55%,#6B5BFF 100%)"
-            />
-          </Reveal>
         </div>
+
       </div>
     </section>
   );
