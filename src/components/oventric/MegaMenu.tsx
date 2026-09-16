@@ -23,6 +23,7 @@ import {
   User,
   ChevronRight,
   Package,
+  Sparkle,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
@@ -199,8 +200,18 @@ export function MegaMenu({ open, onClose }: Props) {
     navigate({ to: "/dashboard", search: { tab: "digital" } });
   };
 
+  const goPurchaseAssistant = () => {
+    if (!isAuthenticated) {
+      onClose();
+      openGate("generic");
+      return;
+    }
+    go("/purchase-assistant");
+  };
+
   const grid = [
     { icon: Package, label: "My purchases", onClick: goPurchases },
+    { icon: Sparkle, label: "Purchase assistant", onClick: goPurchaseAssistant },
     { icon: MessageCircle, label: "Messages", onClick: openMessages },
     { icon: Users, label: "Followers", onClick: goFollowers },
     { icon: ShoppingBag, label: "Marketplace", onClick: () => go("/", "Marketplace") },
