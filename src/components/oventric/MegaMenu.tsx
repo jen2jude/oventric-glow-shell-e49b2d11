@@ -187,7 +187,19 @@ export function MegaMenu({ open, onClose }: Props) {
     window.dispatchEvent(new CustomEvent("oventric:open-messages"));
   };
 
+  const goPurchases = () => {
+    if (!isAuthenticated) {
+      onClose();
+      openGate("generic");
+      return;
+    }
+    markReturn();
+    onClose();
+    navigate({ to: "/dashboard", search: { tab: "digital" } });
+  };
+
   const grid = [
+    { icon: Package, label: "My purchases", onClick: goPurchases },
     { icon: MessageCircle, label: "Messages", onClick: openMessages },
     { icon: Users, label: "Followers", onClick: goFollowers },
     { icon: ShoppingBag, label: "Marketplace", onClick: () => go("/", "Marketplace") },
