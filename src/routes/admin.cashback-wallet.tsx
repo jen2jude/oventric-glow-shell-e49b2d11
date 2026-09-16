@@ -164,7 +164,132 @@ function CashbackWalletPage() {
           </div>
         </div>
       </div>
+
+      <CashbackConfigSection />
+      <CashbackAwardsSection />
     </div>
+  );
+}
+
+/** Seller-funded cashback rates per listing. Capped at 50% in the database. */
+function CashbackConfigSection() {
+  const listFn = useServerFn(adminListCashbackConfig);
+  const setFn = useServerFn(adminSetProductCashbackPct);
+  const qc = useQueryClient();
+  const [error, setError] = useState<string | null>(null);
+  const q = useQuery({
+    queryKey: ["admin-cashback-config"],
+    queryFn: () => listFn(),
+    staleTime: 15_000,
+  });
+  const save = useMutation({
+    mutationFn: (v: { productId: string; pct: number }) => setFn({ data: v }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-cashback-config"] }),
+    onError: (e: unknown) => setError(e instanceof Error ? e.message : "Could not update the rate"),
+  });
+
+  return (
+    <section className="mt-8 bg-[#141418] border border-white/10 rounded-xl overflow-hidden">
+      <div className="p-4 border-b border-white/10">
+        <h2 className="text-white text-sm font-bold">Cashback configuration</h2>
+        <p className="text-[11px] text-slate-500">
+          Rate per listing, 0–50%, funded from the seller's 80% share. Changing a rate only affects
+          future settlements — it never credits anyone.
+        </p>
+      </div>
+      {error && <div className="px-4 py-2 text-xs text-red-300">{error}</div>}
+      <div className="divide-y divide-white/5 max-h-[420px] overflow-y-auto">
+        {q.isLoading ? (
+          <div className="p-6 text-center">
+            <Loader2 className="w-5 h-5 animate-spin text-slate-500 inline" />
+          </div>
+        ) : (q.data ?? []).length === 0 ? (
+          <div className="p-6 text-sm text-slate-500 text-center">
+            No listing currently offers cashback.
+          </div>
+        ) : (
+          (q.data ?? []).map((p) => (
+            <div key={p.productId} className="p-4 flex items-center justify-between gap-3 text-sm">
+              <div className="min-w-0">
+                <div className="text-white font-semibold truncate">{p.productName}</div>
+                <div className="text-[11px] text-slate-500 truncate">
+                  {p.sellerName ?? "Unknown seller"} · {p.status}
+                  {p.priceUsd != null ? ` · $${p.priceUsd.toFixed(2)}` : ""}
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <input
+                  type="number"
+                  min={0}
+                  max={50}
+                  defaultValue={p.cashbackPct}
+                  onBlur={(e) => {
+                    const pct = Number(e.target.value);
+                    if (pct === p.cashbackPct) return;
+                    if (pct < 0 || pct > 50) {
+                      setError("Cashback must be between 0% and 50%.");
+                      e.target.value = String(p.cashbackPct);
+                      return;
+                    }
+                    save.mutate({ productId: p.productId, pct });
+                  }}
+                  className="w-20 px-2 py-1.5 rounded-[10px] bg-white/5 border border-white/10 text-slate-200 text-sm"
+                />
+                <span className="text-slate-500 text-xs">%</span>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </section>
+  );
+}
+
+/** Cashback awards and reversals tied back to the order that produced them. */
+function CashbackAwardsSection() {
+  const listFn = useServerFn(adminListCashbackAwards);
+  const q = useQuery({
+    queryKey: ["admin-cashback-awards"],
+    queryFn: () => listFn(),
+    staleTime: 15_000,
+  });
+  return (
+    <section className="mt-6 bg-[#141418] border border-white/10 rounded-xl overflow-hidden">
+      <div className="p-4 border-b border-white/10">
+        <h2 className="text-white text-sm font-bold">Awards &amp; reversals</h2>
+        <p className="text-[11px] text-slate-500">
+          Each award and, where an order was refunded, its reversal entry. History is never deleted.
+        </p>
+      </div>
+      <div className="divide-y divide-white/5 max-h-[420px] overflow-y-auto">
+        {q.isLoading ? (
+          <div className="p-6 text-center">
+            <Loader2 className="w-5 h-5 animate-spin text-slate-500 inline" />
+          </div>
+        ) : (q.data ?? []).length === 0 ? (
+          <div className="p-6 text-sm text-slate-500 text-center">No cashback events yet.</div>
+        ) : (
+          (q.data ?? []).map((a) => (
+            <div key={a.id} className="p-4 flex items-center justify-between gap-3 text-sm">
+              <div className="min-w-0">
+                <div className="text-white font-semibold truncate">
+                  {a.productName ?? "Order snapshot unavailable"}
+                </div>
+                <div className="text-[11px] text-slate-500 font-mono truncate">
+                  {a.userName} · {a.sellerName ? `seller ${a.sellerName} · ` : ""}
+                  {a.reference ?? a.txHash} · {new Date(a.occurredAt).toLocaleString()} · {a.status}
+                </div>
+              </div>
+              <div
+                className={`font-mono font-bold whitespace-nowrap ${a.inflow ? "text-emerald-300" : "text-rose-300"}`}
+              >
+                {a.inflow ? "+" : "−"} {fmt(a.amountUsd)}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </section>
   );
 }
 
