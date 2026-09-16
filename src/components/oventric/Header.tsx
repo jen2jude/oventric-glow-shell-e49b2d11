@@ -15,7 +15,6 @@ import {
   ShoppingBag,
   GraduationCap,
   Target,
-  Newspaper,
   Headphones,
   type LucideIcon,
 } from "lucide-react";
@@ -49,7 +48,6 @@ const HUB_NAV: { label: string; icon: LucideIcon; section?: string; to?: string 
   { label: "Academy", icon: GraduationCap, section: "Academy" },
   { label: "Bounties", icon: Target, section: "Bounties" },
   { label: "Circles", icon: Users, section: "Circles" },
-  { label: "Blog", icon: Newspaper, to: "/blog" },
   { label: "Help", icon: Headphones, to: "/help-board" },
 ];
 

@@ -28,7 +28,6 @@ const LEGAL = [
   { label: "About", to: "/about" },
   { label: "Help", to: "/help" },
   { label: "FAQ", to: "/faq" },
-  { label: "Blog", to: "/blog" },
   { label: "Privacy", to: "/privacy" },
   { label: "Terms", to: "/terms" },
 ];
