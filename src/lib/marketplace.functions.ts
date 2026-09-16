@@ -488,6 +488,7 @@ export const updateAndResubmitProduct = createServerFn({ method: "POST" })
     basicInfo?: string | null;
     activationGuide?: string | null;
     sellerResponse?: string | null;
+    cashbackPct?: number | null;
   }) => ({
     id: String(input.id ?? ""),
     name: input.name !== undefined ? String(input.name).trim() : undefined,
@@ -518,6 +519,10 @@ export const updateAndResubmitProduct = createServerFn({ method: "POST" })
     basicInfo: input.basicInfo !== undefined ? (input.basicInfo ? String(input.basicInfo).trim() : null) : undefined,
     activationGuide: input.activationGuide !== undefined ? (input.activationGuide ? String(input.activationGuide).trim() : null) : undefined,
     sellerResponse: input.sellerResponse ? String(input.sellerResponse).trim().slice(0, 1000) : null,
+    cashbackPct:
+      input.cashbackPct !== undefined && input.cashbackPct !== null
+        ? Math.max(0, Math.min(50, Number(input.cashbackPct)))
+        : undefined,
   }))
   .handler(async ({ data, context }) => {
     if (!data.id) throw new Error("Product id required");
