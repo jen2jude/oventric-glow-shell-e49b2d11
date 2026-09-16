@@ -726,11 +726,11 @@ function AuthGateModal({
               <div
                 role="alert"
                 aria-live="assertive"
-                className="mb-5 rounded-lg border border-red-500/50 bg-red-500/10 p-3 flex items-start gap-2.5"
+                className="mb-5 flex items-start gap-2.5 rounded-[10px] border border-destructive/30 bg-destructive/5 p-3"
               >
                 <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" aria-hidden />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[12px] font-bold text-red-300 leading-snug">
+                    <p className="text-[12px] font-bold leading-snug text-destructive">
                     Sign-in link failed
                   </p>
                   <p className="text-[11px] text-red-200/80 mt-0.5 leading-relaxed">{linkError}</p>
@@ -1025,7 +1025,7 @@ function AuthGateModal({
               </div>
             ) : (
               <div className="space-y-4">
-                <p className="text-[11px] text-slate-500 text-center">
+                  <p className="text-center text-xs text-muted-foreground">
                   Didn&apos;t receive the link? You can enter the 6-digit code from the email
                   instead.
                 </p>
@@ -1051,12 +1051,12 @@ function AuthGateModal({
                       onKeyDown={(e) => onKeyDownDigit(i, e)}
                       onFocus={(e) => e.currentTarget.select()}
                       disabled={verifying || verified}
-                      className={`w-11 h-12 sm:w-12 sm:h-14 text-center text-lg sm:text-xl font-black tabular-nums text-white bg-[#121214] rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/60 border transition-colors ${
+                      className={`h-12 w-11 rounded-[10px] border bg-muted text-center text-lg font-bold tabular-nums text-foreground outline-hidden transition-colors focus:ring-2 focus:ring-primary/15 sm:h-14 sm:w-12 sm:text-xl ${
                         verified
                           ? "border-emerald-500/70 shadow-[0_0_0_1px_rgba(59, 130, 246,0.4)]"
                           : otpError
                             ? "border-red-500/70"
-                            : "border-white/10 focus:border-emerald-500/60"
+                            : "border-border focus:border-primary"
                       }`}
                     />
                   ))}
@@ -1088,7 +1088,7 @@ function AuthGateModal({
                   type="button"
                   onClick={() => void verifyCode(otpDigits.join(""))}
                   disabled={verifying || verified || otpDigits.join("").length !== OTP_LENGTH}
-                  className=" w-full min-h-11 rounded-lg bg-[#121214] text-white font-black text-sm inline-flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-primary text-sm font-bold text-primary-foreground disabled:opacity-50"
                 >
                   {verifying ? (
                     <>
@@ -1114,7 +1114,7 @@ function AuthGateModal({
                       setFlash(null);
                     }}
                     disabled={verifying || verified}
-                    className="inline-flex items-center gap-1 text-slate-400 hover:text-white min-h-11 px-1 disabled:opacity-40"
+                    className="inline-flex min-h-11 items-center gap-1 px-1 text-muted-foreground hover:text-foreground disabled:opacity-40"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" /> Change email
                   </button>
@@ -1125,7 +1125,7 @@ function AuthGateModal({
                         void (mode === "returning" ? sendReturningCode() : sendCode());
                     }}
                     disabled={resendIn > 0 || sending || verifying || verified}
-                    className="inline-flex items-center gap-1 font-semibold text-emerald-300 hover:text-emerald-200 disabled:text-slate-500 min-h-11 px-1"
+                    className="inline-flex min-h-11 items-center gap-1 px-1 font-semibold text-primary hover:text-primary/80 disabled:text-muted-foreground"
                   >
                     <RotateCw className={`w-3.5 h-3.5 ${sending ? "animate-spin" : ""}`} />
                     {resendIn > 0 ? `Resend in ${resendIn}s` : "Resend link"}
@@ -1135,7 +1135,7 @@ function AuthGateModal({
             )}
 
             {flash && stage === "otp" && !verified && (
-              <p className="mt-4 text-[11px] text-emerald-400 text-center">{flash}</p>
+              <p className="mt-4 text-center text-[11px] text-primary">{flash}</p>
             )}
           </div>
         </div>
