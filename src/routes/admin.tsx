@@ -5,12 +5,10 @@ import {
   ShieldCheck,
   LayoutGrid,
   LayoutDashboard,
-
   Users,
   ShoppingBag,
   Package,
-
-  Megaphone,
+  ClipboardList,
   Tags,
   ToggleLeft,
   ScrollText,
@@ -19,15 +17,12 @@ import {
   AlertCircle,
   Loader2,
   Radio,
-  Target,
   Wallet,
-  GraduationCap,
+  Gift,
   Banknote,
   ShieldAlert,
-  BookOpen,
   UserCog,
   LifeBuoy,
-  Wrench,
 } from "lucide-react";
 
 import { canAccessSection, type ManagementRole } from "@/lib/admin-roles";
