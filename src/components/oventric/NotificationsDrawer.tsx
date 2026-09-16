@@ -68,13 +68,13 @@ function channelForKind(kind: string): Exclude<Channel, "all"> {
 
 function iconForKind(kind: string) {
   const c = channelForKind(kind);
-  if (c === "financials") return <WalletIcon className="w-4 h-4 text-emerald-400" />;
-  if (c === "circles") return <Users className="w-4 h-4 text-sky-400" />;
-  if (c === "bounties") return <Timer className="w-4 h-4 text-amber-300" />;
-  if (kind === "announcement") return <Megaphone className="w-4 h-4 text-fuchsia-400" />;
-  if (kind === "direct_message") return <Mail className="w-4 h-4 text-white" />;
-  if (kind === "alert") return <ShieldAlert className="w-4 h-4 text-red-400" />;
-  return <Bell className="w-4 h-4 text-slate-300" />;
+  if (c === "financials") return <WalletIcon className="w-4 h-4 text-emerald-600" />;
+  if (c === "circles") return <Users className="w-4 h-4 text-sky-600" />;
+  if (c === "bounties") return <Timer className="w-4 h-4 text-amber-600" />;
+  if (kind === "announcement") return <Megaphone className="w-4 h-4 text-fuchsia-600" />;
+  if (kind === "direct_message") return <Mail className="w-4 h-4 text-primary" />;
+  if (kind === "alert") return <ShieldAlert className="w-4 h-4 text-destructive" />;
+  return <Bell className="w-4 h-4 text-muted-foreground" />;
 }
 
 function timeAgo(iso: string): string {
