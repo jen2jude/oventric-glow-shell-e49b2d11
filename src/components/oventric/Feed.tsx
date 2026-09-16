@@ -1265,7 +1265,8 @@ export function Feed() {
           Back to top
         </button>
       )}
-      <div className="mx-auto flex w-full max-w-[760px] min-w-0 flex-col gap-3">
+      <div className="mx-auto grid w-full max-w-[1120px] min-w-0 gap-8 lg:grid-cols-[minmax(0,760px)_320px] lg:items-start">
+      <div className="flex w-full min-w-0 flex-col gap-3">
         {isAppShell ? (
           <FeedAppChrome
             tab={feedTab}
@@ -2223,7 +2224,13 @@ export function Feed() {
           onReported={markReported}
         />
       </div>
-      <DiscoveryPanel />
+      <aside className="hidden min-w-0 lg:block">
+        <h2 className="mb-3 font-[Outfit] text-lg font-extrabold text-slate-900">
+          Community
+        </h2>
+        <DiscoveryPanel asPage />
+      </aside>
+      </div>
 
       {lightbox && (
         <ImageLightbox
