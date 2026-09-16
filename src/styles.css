@@ -110,6 +110,40 @@
   --font-wallet-body: "Manrope", ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Seller-led light marketplace. */
+.web-marketplace {
+  color-scheme: light;
+  --background: oklch(0.975 0.004 245);
+  --foreground: oklch(0.22 0.014 255);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.014 255);
+  --primary: oklch(0.57 0.18 22);
+  --primary-foreground: oklch(0.99 0.003 22);
+  --secondary: oklch(0.965 0.006 245);
+  --secondary-foreground: oklch(0.28 0.014 255);
+  --muted: oklch(0.965 0.006 245);
+  --muted-foreground: oklch(0.51 0.018 255);
+  --accent: oklch(0.95 0.018 22);
+  --accent-foreground: oklch(0.49 0.18 22);
+  --border: oklch(0.89 0.012 245);
+  --input: oklch(0.86 0.014 245);
+  --ring: oklch(0.57 0.18 22);
+  font-family: var(--font-wallet-body);
+}
+
+.web-marketplace :is(h1, h2, h3, .font-wallet-display) {
+  font-family: var(--font-wallet-display);
+  letter-spacing: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .web-marketplace * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
 /* Crisp, modular workspace for the customer dashboard. */
 .web-dashboard {
   color-scheme: light;
