@@ -1707,7 +1707,7 @@ export function Feed() {
                     <Link
                       to="/profile/$id"
                       params={{ id: profileSlug }}
-                      className={`w-10 h-10 rounded-full overflow-hidden flex items-center justify-center shrink-0 hover:ring-2 transition ${isAppShell ? "bg-[#1B1D1F] ring-1 ring-white/10 hover:ring-[#FF3EB5]/60" : "bg-slate-200 hover:ring-[#E5484D]/60"}`}
+                      className={`rounded-full overflow-hidden flex items-center justify-center shrink-0 hover:ring-2 transition ${isAppShell ? "w-10 h-10 bg-[#1B1D1F] ring-1 ring-white/10 hover:ring-[#FF3EB5]/60" : "w-11 h-11 md:w-12 md:h-12 bg-slate-200 hover:ring-[#E5484D]/60"}`}
                     >
                       <AvatarImage
                         src={post.author_avatar_url}
