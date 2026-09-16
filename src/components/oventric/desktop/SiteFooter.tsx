@@ -28,11 +28,9 @@ export function SiteFooter({ onSelect, currency, flag }: SiteFooterProps) {
 
         <FooterCol title="Product">
           <FooterAction label="Marketplace" onClick={() => onSelect("Marketplace")} />
-          <FooterAction label="Academy" onClick={() => onSelect("Academy")} />
-          <FooterAction label="Bounties" onClick={() => onSelect("Bounties")} />
-          <FooterAction label="Circles" onClick={() => onSelect("Circles")} />
           <FooterAction label="Wallet" onClick={() => onSelect("Wallet")} />
         </FooterCol>
+
 
         <FooterCol title="Company">
           <FooterLink to="/about" label="About" />
