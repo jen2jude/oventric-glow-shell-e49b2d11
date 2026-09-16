@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import {
   ShieldCheck,
@@ -139,6 +139,7 @@ export type OventricHomeProps = {
 };
 
 export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
+  const navigate = useNavigate();
   const { baseCurrency } = useOnboarding();
 
   const loadDiscovery = useServerFn(getMarketplaceDiscovery);
@@ -312,7 +313,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         {/* -------------------------------------------------------- top sellers */}
         <SectionHead
           title="Top Sellers"
-          action={{ label: "View all", onClick: () => onSelect("Sellers") }}
+          action={{ label: "View all", onClick: () => navigate({ to: "/sellers" }) }}
         />
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-4">
           {sellers.map((s) => (

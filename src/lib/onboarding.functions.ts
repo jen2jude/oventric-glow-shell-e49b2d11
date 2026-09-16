@@ -99,7 +99,11 @@ export const seedNewUser = createServerFn({ method: "POST" })
       // Balances are DB-defaulted to 0; the browser role has no INSERT
       // privilege on balance columns.
       const rows = WALLET_CURRENCIES.map((currency) => ({ user_id: userId, currency }));
-      const { error: walletErr } = await supabase
+      // Wallet rows are not browser-writable (Stage 2 revoked client INSERT on
+      // public.wallets); seed them with the service client, scoped to the
+      // already-verified caller's own user id.
+      const { supabaseAdmin: walletAdmin } = await import("@/integrations/supabase/client.server");
+      const { error: walletErr } = await walletAdmin
         .from("wallets")
         .upsert(rows, { onConflict: "user_id,currency", ignoreDuplicates: true });
       if (walletErr) {
@@ -190,7 +194,7 @@ export const completeProfile = createServerFn({ method: "POST" })
     // Make sure the user's home-currency wallet exists so funding, payouts,
     // marketplace and bounty settlement all have a rail to land on.
     const homeCurrency = dbCurrency(currencyForCountry(data.country));
-    const { error: wErr } = await supabase.from("wallets").upsert(
+    const { error: wErr } = await supabaseAdmin.from("wallets").upsert(
       [{ user_id: userId, currency: homeCurrency }],
       { onConflict: "user_id,currency", ignoreDuplicates: true },
     );
