@@ -12,6 +12,21 @@ export function ProductAttachmentCard({
   isAppShell?: boolean 
 }) {
   const { baseCurrency } = useOnboarding();
+  if (product.available === false) {
+    return (
+      <div className={`mt-3 ${isAppShell ? "mx-4 md:mx-0" : ""}`}>
+        <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-3">
+          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-white/[0.04]">
+            <ShoppingBag className="h-5 w-5 text-white/20" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-white/70">This product is no longer available</p>
+            <p className="text-[11px] text-white/40">The seller removed or unpublished this listing.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
   // Use the product's publish-time currency + FX snapshot so the feed price is
   // identical to the marketplace and product page.
   const priceLabel = computeDisplayPrice(
@@ -26,10 +41,8 @@ export function ProductAttachmentCard({
   return (
     <div className={`mt-3 ${isAppShell ? 'mx-4 md:mx-0' : ''}`}>
       <Link
-        to="/shop/$id"
-        params={{ id: product.vendorSlug || product.vendorId }}
-        search={{ productId: product.id }}
-
+        to="/product/$id"
+        params={{ id: product.id }}
         className="flex items-stretch bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] rounded-2xl overflow-hidden transition-colors group"
       >
         <div className="w-28 sm:w-32 shrink-0 bg-neutral-900 overflow-hidden">
@@ -59,6 +72,12 @@ export function ProductAttachmentCard({
               <p className="text-[11px] text-white/50 line-clamp-1 mt-0.5">
                 {product.shortDescription}
               </p>
+            )}
+
+            {!!product.cashbackPct && product.cashbackPct > 0 && (
+              <span className="mt-1.5 inline-block rounded-[10px] border border-emerald-400/25 bg-emerald-400/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-300">
+                {product.cashbackPct}% cashback
+              </span>
             )}
 
             <div className="mt-2 flex items-center gap-1.5">

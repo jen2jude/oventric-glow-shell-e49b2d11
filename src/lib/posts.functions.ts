@@ -56,6 +56,10 @@ export interface ProductAttachment {
   vendorSlug: string | null;
   vendorAvatarUrl: string | null;
   shortDescription?: string | null;
+  /** Seller-configured cashback rate (%) on the authoritative product record. */
+  cashbackPct?: number | null;
+  /** False when the product was deleted or is no longer active/purchasable. */
+  available: boolean;
 }
 
 
@@ -279,7 +283,7 @@ async function buildFeedPosts(
       const { data: prodRows } = await sb
         .from("products")
         .select(
-          "id, seller_id, name, price_usd, original_currency, original_amount, fx_snapshot, cover_path, description",
+          "id, seller_id, name, price_usd, original_currency, original_amount, fx_snapshot, cover_path, description, status, cashback_pct",
         )
         .in("id", productIds);
       const products = (prodRows ?? []) as any[];
@@ -345,12 +349,31 @@ async function buildFeedPosts(
               : (avatarByPath.get(avatarPath) ?? null)
             : null,
           shortDescription: p.description ?? null,
+          cashbackPct: p.cashback_pct != null ? Number(p.cashback_pct) : null,
+          // Only active products stay purchasable; anything else renders as unavailable.
+          available: p.status === "active",
         });
       });
 
       ((attachmentRows ?? []) as any[]).forEach((at) => {
-        const item = attachmentByProductId.get(at.product_id);
-        if (!item) return;
+        // A product deleted after tagging leaves no row — keep the post stable
+        // with an explicit unavailable card instead of dropping it silently.
+        const item: ProductAttachment = attachmentByProductId.get(at.product_id) ?? {
+          id: at.product_id,
+          name: "Product no longer available",
+          priceUsd: 0,
+          originalCurrency: null,
+          originalAmount: null,
+          fxSnapshot: null,
+          coverUrl: null,
+          vendor: "",
+          vendorId: "",
+          vendorSlug: null,
+          vendorAvatarUrl: null,
+          shortDescription: null,
+          cashbackPct: null,
+          available: false,
+        };
         const list = attachmentsByPost.get(at.post_id) ?? [];
         list.push(item);
         attachmentsByPost.set(at.post_id, list);
@@ -614,6 +637,25 @@ export const createPost = createServerFn({ method: "POST" })
     const mentioned = Array.from(new Set(data.mentionedUserIds ?? [])).filter(
       (id) => id !== context.userId,
     );
+
+    // Every tagged product must resolve to a real, active Oventric product.
+    // The client only ever supplies an id — price, seller and name are read
+    // from the authoritative product record at render/checkout time.
+    const taggedIds = Array.from(
+      new Set([...(data.productAttachmentIds ?? []), ...(data.productTags ?? []).map((t) => t.productId)]),
+    );
+    if (taggedIds.length > 0) {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: valid } = await supabaseAdmin
+        .from("products")
+        .select("id")
+        .in("id", taggedIds)
+        .eq("status", "active");
+      const validIds = new Set((valid ?? []).map((p: { id: string }) => p.id));
+      if (validIds.size !== taggedIds.length) {
+        throw new Error("One of the tagged products is unavailable");
+      }
+    }
 
     const paths = Array.isArray(data.mediaPaths) ? data.mediaPaths.slice(0, 10) : [];
     const isVideo = data.mediaType === "video" && !!data.mediaPath;

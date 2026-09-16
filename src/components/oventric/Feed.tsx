@@ -1239,8 +1239,6 @@ export function Feed() {
     else root.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleBuy = () => require(2, () => alert("Proceeding to checkout (mock)"), "buyer");
-  const handleBounty = () => require(2, () => alert("Applying to bounty (mock)"), "solver");
   const isLoggedIn = tier >= 1;
 
   return (
