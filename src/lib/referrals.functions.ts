@@ -25,13 +25,13 @@ export const getMyReferralOverview = createServerFn({ method: "GET" })
     const { data: me } = await supabaseAdmin
       .from("profiles")
       .select("referral_code")
-      .eq("id", userId)
+      .eq("user_id", userId)
       .maybeSingle();
 
     let code = (me?.referral_code as string | null) ?? null;
     if (!code) {
       code = `OV${userId.replace(/-/g, "").slice(0, 8).toUpperCase()}`;
-      await supabaseAdmin.from("profiles").update({ referral_code: code }).eq("id", userId);
+      await supabaseAdmin.from("profiles").update({ referral_code: code }).eq("user_id", userId);
     }
 
     const { data: rows } = await supabaseAdmin
@@ -47,12 +47,12 @@ export const getMyReferralOverview = createServerFn({ method: "GET" })
     if (inviteeIds.length > 0) {
       const { data: profs } = await supabaseAdmin
         .from("profiles")
-        .select("id, display_name, username, avatar_url")
+        .select("user_id, display_name, username, avatar_path")
         .in("id", inviteeIds);
       for (const p of profs ?? []) {
-        names.set(String(p.id), {
+        names.set(String(p.user_id), {
           name: (p.display_name as string) || (p.username as string) || "Oventric member",
-          avatar: (p.avatar_url as string | null) ?? null,
+          avatar: (p.avatar_path as string | null) ?? null,
         });
       }
     }
