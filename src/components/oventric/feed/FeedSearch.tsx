@@ -55,15 +55,11 @@ export function FeedSearchBar({
   appShell?: boolean;
 }) {
   return (
-    <div
-      className={
-        appShell
-          ? "px-0 pt-1 pb-0"
-          : "bg-[#1E1E24] md:bg-white md:shadow-sm border border-white/10 md:border-slate-200 rounded-xl p-3 md:p-3.5"
-      }
-    >
+    <div className={appShell ? "px-0 pt-1 pb-0" : "space-y-3"}>
       <div className="relative group">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-white/30 group-focus-within:text-[#E5484D] transition-colors" />
+        <Search
+          className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] transition-colors group-focus-within:text-[#E5484D] ${appShell ? "text-white/30" : "text-slate-400"}`}
+        />
         <input
           type="search"
           role="searchbox"
@@ -73,11 +69,11 @@ export function FeedSearchBar({
           onKeyDown={(e) => {
             if (e.key === "Escape") onQueryChange("");
           }}
-          placeholder={appShell ? "Search Oventric..." : "Search posts, bounties, assets…"}
+          placeholder="Search Oventric..."
           className={`w-full h-[52px] pl-11 pr-9 text-[15px] focus:outline-none transition-all ${
             appShell
               ? "rounded-[10px] bg-[#141416] border border-white/5 text-white placeholder:text-white/20 focus:border-[#E5484D]/40"
-              : "rounded-[10px] bg-[#141418] md:bg-slate-100 border border-white/10 md:border-slate-200 text-slate-200 md:text-slate-900 placeholder:text-slate-500 focus:border-[#E5484D]/60 focus:ring-2 focus:ring-[#E5484D]/20"
+              : "rounded-[10px] bg-white border border-slate-200 text-slate-900 placeholder:text-slate-400 shadow-sm focus:border-[#E5484D] focus:ring-2 focus:ring-[#E5484D]/20"
           }`}
         />
 
@@ -97,9 +93,9 @@ export function FeedSearchBar({
         <div
           role="tablist"
           aria-label="Feed filters"
-          className="mt-3 flex items-center gap-2 overflow-x-auto no-scrollbar -mx-1 px-1"
+          className="flex flex-wrap items-center gap-2 overflow-x-auto no-scrollbar -mx-1 px-1"
         >
-          {FEED_CATEGORIES.map((c) => {
+          {FEED_CATEGORIES.filter((c) => c.id !== "bounties").map((c) => {
             const active = c.id === category;
             return (
               <button
@@ -108,10 +104,10 @@ export function FeedSearchBar({
                 role="tab"
                 aria-selected={active}
                 onClick={() => onCategoryChange(c.id)}
-                className={`shrink-0 rounded-full px-4 py-1.5 text-xs transition-colors ${
+                className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                   active
-                    ? "bg-[#E5484D] text-black font-semibold"
-                    : "bg-white/[0.06] md:bg-slate-100 text-slate-300 md:text-slate-600 font-semibold hover:bg-white/10 md:hover:bg-slate-200"
+                    ? "bg-[#E5484D]/10 text-[#E5484D]"
+                    : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
                 }`}
               >
                 {c.label}
