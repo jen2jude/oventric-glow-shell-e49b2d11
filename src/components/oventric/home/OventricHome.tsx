@@ -385,6 +385,125 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             </div>
           </div>
         </section>
+
+        {/* ------------------------------------------------------ fresh listings */}
+        {fresh.length > 0 && (
+          <>
+            <SectionHead
+              title="Fresh in the Market"
+              subtitle="Newest digital assets from our creators"
+              action={{ label: "View all", onClick: () => onSelect("Marketplace") }}
+            />
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-4">
+              {fresh.map((p) => (
+                <ProductCard key={p.id} product={p} currency={baseCurrency} />
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* ------------------------------------------------------------- promos */}
+        <SectionHead title="Ways to Earn More" />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <PromoCard
+            Icon={Gift}
+            gradient="linear-gradient(135deg,#FFD22E 0%,#FF8A3D 100%)"
+            title="Up to 50% cashback"
+            body="Sellers fund their own cashback on digital products — money back into your cashback wallet, automatically."
+            cta="Shop now"
+            onClick={() => onSelect("Marketplace")}
+          />
+          <PromoCard
+            Icon={Users}
+            gradient="linear-gradient(135deg,#7DE2A8 0%,#12B39B 100%)"
+            title="Refer & earn"
+            body="Invite creators and buyers to Oventric and earn a reward when they make their first qualifying purchase."
+            cta="Invite friends"
+            to="/referrals"
+          />
+        </div>
+
+        {/* --------------------------------------------------- why sell / why buy */}
+        <SectionHead
+          title="Why Oventric"
+          subtitle="Everything you need to build an income online"
+        />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
+          {REASONS.map(({ Icon, tint, title, body }) => (
+            <div
+              key={title}
+              className="rounded-[14px] border border-slate-200/80 bg-white p-5 transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
+            >
+              <span className={`grid h-11 w-11 place-items-center rounded-[12px] ${tint}`}>
+                <Icon className="h-5 w-5" />
+              </span>
+              <h3 className="mt-4 text-sm font-bold text-slate-900">{title}</h3>
+              <p className="mt-1.5 text-xs leading-relaxed text-slate-500">{body}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* -------------------------------------------------------- how it works */}
+        <SectionHead title="How It Works" subtitle="Three steps from sign-up to payout" />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:gap-4">
+          {STEPS.map((s, i) => (
+            <div key={s.title} className="rounded-[14px] border border-slate-200/80 bg-white p-6">
+              <span className="grid h-10 w-10 place-items-center rounded-full bg-crimson/10 font-[Outfit] text-sm font-extrabold text-crimson">
+                {i + 1}
+              </span>
+              <h3 className="mt-4 text-base font-bold text-slate-900">{s.title}</h3>
+              <p className="mt-1.5 text-xs leading-relaxed text-slate-500">{s.body}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* ----------------------------------------------------- secure payments */}
+        <section className="mt-10 rounded-[20px] border border-slate-200/80 bg-white px-6 py-10 text-center lg:mt-14">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-crimson">
+            <Lock className="h-3.5 w-3.5" /> Secured payments
+          </span>
+          <h2 className="mt-3 font-[Outfit] text-xl font-extrabold text-slate-900 sm:text-2xl">
+            Pay your way, protected end to end
+          </h2>
+          <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-slate-500">
+            Every checkout is encrypted and held in escrow until delivery is confirmed. Pay by card,
+            bank transfer or from your Oventric wallet.
+          </p>
+          <ul className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
+            {PAY_METHODS.map((m) => (
+              <li
+                key={m}
+                className="rounded-full border border-slate-200 bg-[#F7F8FA] px-4 py-2 text-xs font-bold text-slate-600"
+              >
+                {m}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* ------------------------------------------------------ follow oventric */}
+        <section className="mt-5 flex flex-col items-center justify-between gap-5 rounded-[20px] border border-slate-200/80 bg-white px-6 py-7 text-center lg:flex-row lg:text-left">
+          <div>
+            <h2 className="font-[Outfit] text-lg font-extrabold text-slate-900">Follow Oventric</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Get updates, tips and community highlights.
+            </p>
+          </div>
+          <div className="flex items-center gap-2.5">
+            {SOCIALS.map(({ href, label, Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label={label}
+                className="grid h-11 w-11 place-items-center rounded-full border border-slate-200 text-slate-600 transition-all hover:-translate-y-0.5 hover:border-crimson hover:text-crimson"
+              >
+                <Icon className="h-4.5 w-4.5" />
+              </a>
+            ))}
+          </div>
+        </section>
       </main>
 
       <HomeFooter />
