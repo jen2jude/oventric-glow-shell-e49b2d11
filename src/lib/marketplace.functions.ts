@@ -944,12 +944,13 @@ export const createOrder = createServerFn({ method: "POST" })
     // with no gateway fee, so seller/platform split the full paid amount.
     const gatewayFeeUSD = estimatePaystackFeeUSD(totalUSD, data.displayCurrency, data.paymentMethod, fx);
     const netAfterGatewayUSD = Number(Math.max(0, totalUSD - gatewayFeeUSD).toFixed(2));
-    const sellerCutUSD = Number((netAfterGatewayUSD * SELLER_SHARE).toFixed(2));
-    let cashbackUSD = 0;
-    if (data.paymentMethod === "wallet" && discountUSD <= 0) {
-      cashbackUSD = Number((netAfterGatewayUSD * WALLET_CASHBACK_PCT).toFixed(2));
-    }
-    const platformCutUSD = Number((netAfterGatewayUSD - sellerCutUSD - cashbackUSD).toFixed(2));
+    const sellerGrossUSD = Number((netAfterGatewayUSD * SELLER_SHARE).toFixed(2));
+    // Platform keeps a flat 20%; product-level cashback is funded out of the
+    // seller's own share only.
+    const platformCutUSD = Number((netAfterGatewayUSD - sellerGrossUSD).toFixed(2));
+    const cashbackUSD = sellerFundedCashbackUSD(productCashbackPct, netAfterGatewayUSD, sellerGrossUSD);
+    const sellerCutUSD = Number(Math.max(0, sellerGrossUSD - cashbackUSD).toFixed(2));
+    const sellerNetRatio = sellerGrossUSD > 0 ? sellerCutUSD / sellerGrossUSD : 1;
 
     // Persist escrow state + seller share on the order.
     await supabaseAdmin
@@ -970,7 +971,7 @@ export const createOrder = createServerFn({ method: "POST" })
     const sellerCurrency: OrderCurrency = sellerCountry === "NG" ? "NGN" : sellerCountry === "GH" ? "GHS" : "USD";
     const sellerCutLocalRaw =
       product.originalAmount > 0 && product.originalCurrency === sellerCurrency
-        ? product.originalAmount * data.quantity * SELLER_SHARE
+        ? product.originalAmount * data.quantity * SELLER_SHARE * sellerNetRatio
         : sellerCutUSD * FX_FROM_USD[sellerCurrency];
     const sellerCutLocal = Number(sellerCutLocalRaw.toFixed(sellerCurrency === "USD" ? 2 : 0));
 
