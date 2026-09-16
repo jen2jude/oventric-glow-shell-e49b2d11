@@ -166,6 +166,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
   const [featured, setFeatured] = useState<ProductDTO[]>([]);
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [sellers, setSellers] = useState<TopSellerDTO[]>([]);
+  const [fresh, setFresh] = useState<ProductDTO[]>([]);
   const [stats, setStats] = useState<HomeStatsDTO | null>(null);
 
   useEffect(() => {
@@ -188,6 +189,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         setFeatured(
           picks.filter((p) => (seen.has(p.id) ? false : (seen.add(p.id), true))).slice(0, 10),
         );
+        setFresh((discovery?.newArrivals ?? []).slice(0, 5));
         setCategories((cats ?? []).slice(0, 8));
         setSellers((tops ?? []).slice(0, 5));
         setStats(s);
