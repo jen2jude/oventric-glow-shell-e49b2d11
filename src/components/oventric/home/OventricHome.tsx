@@ -123,13 +123,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
     };
   }, [loadDiscovery, loadCategories, loadSellers, loadStats]);
 
-  const startSelling = () => {
-    if (!isAuthenticated) {
-      openGate("seller");
-      return;
-    }
-    onCreate?.();
-  };
+  const startSelling = () => onCreate?.();
 
   return (
     <div className="min-h-screen w-full bg-[#F7F8FA]">
