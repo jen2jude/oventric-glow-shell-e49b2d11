@@ -56,6 +56,10 @@ export interface ProductAttachment {
   vendorSlug: string | null;
   vendorAvatarUrl: string | null;
   shortDescription?: string | null;
+  /** Seller-configured cashback rate (%) on the authoritative product record. */
+  cashbackPct?: number | null;
+  /** False when the product was deleted or is no longer active/purchasable. */
+  available: boolean;
 }
 
 
@@ -279,7 +283,7 @@ async function buildFeedPosts(
       const { data: prodRows } = await sb
         .from("products")
         .select(
-          "id, seller_id, name, price_usd, original_currency, original_amount, fx_snapshot, cover_path, description",
+          "id, seller_id, name, price_usd, original_currency, original_amount, fx_snapshot, cover_path, description, status, cashback_pct",
         )
         .in("id", productIds);
       const products = (prodRows ?? []) as any[];
