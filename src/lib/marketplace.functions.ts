@@ -873,8 +873,24 @@ export const createOrder = createServerFn({ method: "POST" })
     }
 
     const totalUSD = Number((afterCouponUSD - cashbackAppliedUSD).toFixed(2));
-    const fx = FX_FROM_USD[data.displayCurrency];
-    const displayTotal = Number((totalUSD * fx).toFixed(2));
+    // Charge exactly what the buyer was shown: use the listing's locked FX
+    // snapshot (and the seller's published amount when the buyer's currency is
+    // the listing currency) instead of the stale fallback rate table.
+    const { convertViaSnapshot } = await import("@/lib/fx-display");
+    const snapRaw = (pRow as Record<string, unknown>).fx_snapshot as
+      | { base?: string; rates?: Record<string, number> }
+      | null;
+    const snap = snapRaw && snapRaw.rates ? { base: "USD" as const, rates: snapRaw.rates } : null;
+    const convertedTotal =
+      product.originalAmount > 0 &&
+      data.displayCurrency === product.originalCurrency &&
+      afterCouponUSD > 0
+        ? product.originalAmount * data.quantity * (totalUSD / afterCouponUSD)
+        : convertViaSnapshot(totalUSD, "USD", data.displayCurrency, snap);
+    const displayTotal = Number(
+      (convertedTotal > 0 ? convertedTotal : totalUSD * FX_FROM_USD[data.displayCurrency]).toFixed(2),
+    );
+    const fx = displayTotal > 0 && totalUSD > 0 ? displayTotal / totalUSD : FX_FROM_USD[data.displayCurrency];
 
     // Wallet debit — debit the buyer's per-currency wallet (matches how
     // Paystack top-ups credit per currency), not USD. This makes the balance
