@@ -294,7 +294,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
               </h2>
               <p className="mt-3 max-w-lg text-sm leading-relaxed text-white/70">
                 Join Oventric and sell your digital products, services and tools to buyers around
-                the world. You keep 80% of every sale.
+                the world and earn real money to your account.
               </p>
               <button
                 type="button"
