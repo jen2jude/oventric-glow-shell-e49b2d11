@@ -62,7 +62,7 @@ const TRUST = [
     Icon: WalletIcon,
     tint: "bg-[#F3ECFF] text-[#6F42D4]",
     title: "Seller Cashback",
-    body: "Set by each seller (0–50%)",
+    body: "Earn up to 50% cashback on digital product purchases",
   },
   {
     Icon: Globe2,
