@@ -74,6 +74,12 @@ export function ProductAttachmentCard({
               </p>
             )}
 
+            {!!product.cashbackPct && product.cashbackPct > 0 && (
+              <span className="mt-1.5 inline-block rounded-[10px] border border-emerald-400/25 bg-emerald-400/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-300">
+                {product.cashbackPct}% cashback
+              </span>
+            )}
+
             <div className="mt-2 flex items-center gap-1.5">
               <div className="w-4 h-4 rounded-full overflow-hidden bg-white/10 shrink-0">
                 {product.vendorAvatarUrl && (
