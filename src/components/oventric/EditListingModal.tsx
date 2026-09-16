@@ -699,17 +699,15 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
                     className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60 resize-none"
                   />
                 </label>
-                {!isPhysical && (
-                  <label className="block">
-                    <span className="text-xs font-medium text-slate-300">Activation Guide</span>
-                    <textarea
-                      value={activationGuide}
-                      onChange={(e) => setActivationGuide(e.target.value)}
-                      rows={3}
-                      className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60 resize-none"
-                    />
-                  </label>
-                )}
+                <label className="block">
+                  <span className="text-xs font-medium text-slate-300">Activation Guide</span>
+                  <textarea
+                    value={activationGuide}
+                    onChange={(e) => setActivationGuide(e.target.value)}
+                    rows={3}
+                    className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60 resize-none"
+                  />
+                </label>
               </div>
 
               <StockToggleField inStock={inStock} onChange={setInStock} disabled={submitting} />
@@ -724,55 +722,8 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
                     className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60"
                   />
                 </label>
-                {isPhysical && (
-                  <label className="block">
-                    <span className="text-xs font-medium text-slate-300">
-                      Phone (digits only, with country code)
-                    </span>
-                    <input
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                      inputMode="numeric"
-                      className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60"
-                    />
-                  </label>
-                )}
               </div>
 
-              {isPhysical && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <span className="text-xs font-medium text-slate-300">Open to negotiation?</span>
-                    <div className="mt-1 flex gap-2">
-                      {YN.map((v) => (
-                        <button
-                          type="button"
-                          key={v}
-                          onClick={() => setNegotiable(v)}
-                          className={`px-3 py-1.5 rounded-full text-xs font-medium border ${negotiable === v ? "bg-emerald-500/15 border-emerald-500/50 text-emerald-300" : "bg-[#121214] border-white/10 text-slate-300"}`}
-                        >
-                          {v}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-xs font-medium text-slate-300">Offer delivery?</span>
-                    <div className="mt-1 flex gap-2">
-                      {YN.map((v) => (
-                        <button
-                          type="button"
-                          key={v}
-                          onClick={() => setDelivery(v)}
-                          className={`px-3 py-1.5 rounded-full text-xs font-medium border ${delivery === v ? "bg-emerald-500/15 border-emerald-500/50 text-emerald-300" : "bg-[#121214] border-white/10 text-slate-300"}`}
-                        >
-                          {v}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {!isLive && (
                 <label className="block">
