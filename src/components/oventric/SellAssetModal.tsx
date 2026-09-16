@@ -310,13 +310,13 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
 
   return (
     <div
-      className="modal-light fixed inset-0 z-[70] grid h-[100dvh] w-screen place-items-center overflow-y-auto p-4"
+      className="modal-light web-sell-asset fixed inset-0 z-[70] grid h-[100dvh] w-screen place-items-center overflow-y-auto p-0 sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-label="Sell an asset"
     >
       <div className="absolute inset-0 bg-black/70" onClick={submitting ? undefined : onClose} />
-      <div className="slide-up relative my-auto w-full max-w-2xl max-h-[92vh] overflow-y-auto bg-[#1E1E24] sm:bg-white border border-white/10 sm:border-slate-200 rounded-2xl p-6 shadow-2xl">
+      <div className="web-sell-panel slide-up relative my-auto h-full w-full max-w-3xl overflow-y-auto border border-border bg-card p-5 text-card-foreground shadow-lg sm:h-auto sm:max-h-[calc(100vh-3rem)] sm:rounded-[10px] sm:p-8">
         {success ? (
           <div className="py-8 text-center">
             <div className="w-16 h-16 mx-auto rounded-full bg-emerald-500/10 sm:bg-emerald-100 border border-emerald-400/40 sm:border-emerald-300 flex items-center justify-center mb-4">
@@ -602,7 +602,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                 </label>
               </div>
 
-              <StockToggleField inStock={inStock} onChange={setInStock} />
+              <StockToggleField inStock={inStock} onChange={setInStock} appearance="light" />
 
               <div>
                 <span className="text-xs font-medium text-slate-300 sm:text-slate-700">
