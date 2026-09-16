@@ -1247,7 +1247,7 @@ export function Feed() {
       className={
         isAppShell
           ? "social-feed-shell min-h-screen w-full bg-[#070A08] px-4 pb-24 pt-3 md:px-6 md:pb-10"
-          : "oventric-web min-h-screen w-full bg-white px-4 py-6 md:px-6"
+          : "oventric-web min-h-screen w-full bg-slate-50 px-4 py-6 md:px-6"
       }
     >
       {isAppShell && (
@@ -1383,17 +1383,17 @@ export function Feed() {
             {pendingPosts.map((p) => (
               <article
                 key={p.tempId}
-                className={`bg-[#1E1E24] md:bg-white md:shadow-sm border rounded-xl p-5 transition-opacity ${
+                className={`bg-white shadow-sm border rounded-[10px] p-5 transition-opacity ${
                   p.error ? "border-red-500/50" : "border-[#E5484D]/40 opacity-80"
                 }`}
                 aria-busy={!p.error}
               >
                 <header className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full overflow-hidden bg-neutral-800 md:bg-slate-200 flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center shrink-0">
                     <AvatarImage src={meAvatarUrl} alt="You" initials={meInitials} />
                   </div>
                   <div className="min-w-0">
-                    <div className="text-sm font-semibold text-white md:text-slate-900">You</div>
+                    <div className="text-sm font-semibold text-slate-900">You</div>
                     <div className="text-[11px] text-slate-400 md:text-slate-500 flex items-center gap-1.5">
                       {p.error ? (
                         <>
@@ -1410,7 +1410,7 @@ export function Feed() {
                   </div>
                 </header>
                 {p.text && (
-                  <p className="text-sm text-slate-200 md:text-slate-800 whitespace-pre-wrap break-words">
+                  <p className="text-sm text-slate-800 whitespace-pre-wrap break-words">
                     {p.text}
                   </p>
                 )}
@@ -1460,7 +1460,7 @@ export function Feed() {
                       }));
                     return (
                       <>
-                        <div className="mt-4 pt-3 border-t border-white/5 md:border-slate-200 flex items-center gap-1 text-sm text-slate-400 md:text-slate-500">
+                         <div className="mt-4 pt-3 border-t border-slate-200 flex items-center gap-1 text-sm text-slate-500">
                           <button
                             type="button"
                             onClick={() => setIntent({ react: liked ? null : "love" })}
@@ -1521,25 +1521,25 @@ export function Feed() {
             {[0, 1, 2].map((i) => (
               <div
                 key={i}
-                className="bg-[#1E1E24] md:bg-white md:shadow-sm border border-white/10 md:border-slate-200 rounded-xl p-5 animate-pulse"
+                 className="bg-white shadow-sm border border-slate-200 rounded-[10px] p-5 animate-pulse"
               >
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-9 h-9 rounded-full bg-white/[0.06] md:bg-slate-200" />
+                   <div className="w-9 h-9 rounded-full bg-slate-200" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-3 w-1/3 bg-white/[0.06] md:bg-slate-200 rounded" />
-                    <div className="h-2 w-1/5 bg-white/[0.05] md:bg-slate-200 rounded" />
+                     <div className="h-3 w-1/3 bg-slate-200 rounded" />
+                     <div className="h-2 w-1/5 bg-slate-200 rounded" />
                   </div>
                 </div>
                 <div className="space-y-2 mb-4">
-                  <div className="h-3 w-11/12 bg-white/[0.06] md:bg-slate-200 rounded" />
-                  <div className="h-3 w-4/5 bg-white/[0.06] md:bg-slate-200 rounded" />
-                  <div className="h-3 w-2/3 bg-white/[0.05] md:bg-slate-200 rounded" />
+                   <div className="h-3 w-11/12 bg-slate-200 rounded" />
+                   <div className="h-3 w-4/5 bg-slate-200 rounded" />
+                   <div className="h-3 w-2/3 bg-slate-200 rounded" />
                 </div>
-                <div className="h-40 w-full bg-white/[0.04] md:bg-slate-100 rounded-[10px] mb-4" />
+                 <div className="h-40 w-full bg-slate-100 rounded-[10px] mb-4" />
                 <div className="flex gap-6">
-                  <div className="h-3 w-10 bg-white/[0.05] md:bg-slate-200 rounded" />
-                  <div className="h-3 w-10 bg-white/[0.05] md:bg-slate-200 rounded" />
-                  <div className="h-3 w-10 bg-white/[0.05] md:bg-slate-200 rounded" />
+                   <div className="h-3 w-10 bg-slate-200 rounded" />
+                   <div className="h-3 w-10 bg-slate-200 rounded" />
+                   <div className="h-3 w-10 bg-slate-200 rounded" />
                 </div>
               </div>
             ))}
@@ -1685,7 +1685,7 @@ export function Feed() {
                   className={`md:bg-white md:shadow-sm border scroll-mt-24 md:scroll-mt-28 [transition:border-color_400ms_ease,box-shadow_400ms_ease,opacity_300ms_ease] ${
                     isAppShell
                       ? "bg-[#141416] rounded-none -mx-4 p-0 overflow-hidden border-x-0 md:mx-0 md:p-5 md:rounded-xl md:border-x"
-                      : "bg-[#1E1E24] rounded-xl p-5"
+                       : "bg-white rounded-[10px] p-5 shadow-sm"
                   } ${isReported ? "opacity-70" : ""} ${
                     isNew
                       ? isAppShell
@@ -1693,7 +1693,7 @@ export function Feed() {
                         : "border-[#E5484D]/70 post-highlight"
                       : isAppShell
                         ? "border-white/[0.06] md:border-slate-200"
-                        : "border-white/10 md:border-slate-200"
+                         : "border-slate-200"
                   }`}
                   style={
                     isNew
@@ -1707,7 +1707,7 @@ export function Feed() {
                     <Link
                       to="/profile/$id"
                       params={{ id: profileSlug }}
-                      className={`w-10 h-10 rounded-full overflow-hidden flex items-center justify-center shrink-0 hover:ring-2 transition ${isAppShell ? "bg-[#1B1D1F] ring-1 ring-white/10 hover:ring-[#FF3EB5]/60" : "bg-neutral-800 md:bg-slate-200 hover:ring-[#E5484D]/60"}`}
+                      className={`w-10 h-10 rounded-full overflow-hidden flex items-center justify-center shrink-0 hover:ring-2 transition ${isAppShell ? "bg-[#1B1D1F] ring-1 ring-white/10 hover:ring-[#FF3EB5]/60" : "bg-slate-200 hover:ring-[#E5484D]/60"}`}
                     >
                       <AvatarImage
                         src={post.author_avatar_url}
@@ -1720,7 +1720,7 @@ export function Feed() {
                         <Link
                           to="/profile/$id"
                           params={{ id: profileSlug }}
-                          className={`font-semibold text-sm transition-colors ${isAppShell ? "text-white hover:text-[#FF3EB5]" : "text-white md:text-slate-900 hover:text-[#E5484D]"}`}
+                          className={`font-semibold text-sm transition-colors ${isAppShell ? "text-white hover:text-[#FF3EB5]" : "text-slate-900 hover:text-[#E5484D]"}`}
                         >
                           {post.author_name}
                         </Link>
@@ -1844,7 +1844,7 @@ export function Feed() {
                         className={`md:text-slate-700 leading-relaxed ${
                           isAppShell
                             ? "px-4 md:px-0 text-[15px] text-white/90 md:text-sm"
-                            : "text-sm text-slate-300"
+                             : "text-sm text-slate-700"
                         }`}
                       />
                     )}
@@ -1878,7 +1878,7 @@ export function Feed() {
                           } overflow-hidden md:rounded-[10px] md:border md:border-slate-200 ${
                             isAppShell
                               ? "mb-4 rounded-none border-y border-white/[0.06] md:mx-0 md:mb-0 md:rounded-[10px]"
-                              : "rounded-[10px] border border-white/10"
+                             : "rounded-[10px] border border-slate-200"
                           }`}
                         >
                           {displayed.map((url, i) => {
@@ -1940,7 +1940,7 @@ export function Feed() {
                         className={`relative block w-full aspect-video overflow-hidden group bg-black md:rounded-[10px] md:border md:border-slate-200 ${
                           isAppShell
                             ? "rounded-none border-y border-white/[0.06]"
-                            : "rounded-[10px] border border-white/10"
+                             : "rounded-[10px] border border-slate-200"
                         }`}
                         aria-label="Play video"
                       >
@@ -2007,7 +2007,7 @@ export function Feed() {
                     return (
                       <div
                         className={`flex items-center gap-2 mt-3 text-[11px] md:text-slate-500 ${
-                          isAppShell ? "px-4 text-white/45 md:px-0" : "text-slate-400"
+                           isAppShell ? "px-4 text-white/45 md:px-0" : "text-slate-500"
                         }`}
                       >
                         {topReactions.length > 0 ? (
@@ -2052,7 +2052,7 @@ export function Feed() {
                     className={`relative flex items-center justify-between gap-1 mt-2 pt-1.5 md:border-slate-200 md:text-slate-600 text-xs ${
                       isAppShell
                         ? "border-t border-white/[0.06] px-3 pb-2 text-white/55 md:px-0 md:pb-0"
-                        : "border-t border-white/5 text-slate-400"
+                         : "border-t border-slate-200 text-slate-600"
                     }`}
                   >
                     <div className="relative">
@@ -2138,7 +2138,7 @@ export function Feed() {
                       <button
                         type="button"
                         onClick={() => setCommentsSheetPostId(post.id)}
-                        className="w-full rounded-[10px] border border-dashed border-white/10 md:border-slate-300 bg-black/20 md:bg-slate-50 px-3 py-3 text-left text-xs text-slate-500 hover:text-slate-300 md:hover:text-slate-700 hover:border-white/20 md:hover:border-slate-400 transition-colors"
+                        className="w-full rounded-[10px] border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-left text-xs text-slate-500 hover:text-slate-700 hover:border-slate-400 transition-colors"
                       >
                         No comments yet — be the first to reply.
                       </button>
@@ -2148,14 +2148,14 @@ export function Feed() {
                           const latest = comments[comments.length - 1];
                           return (
                             <div className="flex items-start gap-2">
-                              <div className="w-7 h-7 shrink-0 rounded-full overflow-hidden bg-neutral-800 md:bg-slate-200 flex items-center justify-center text-white/85 md:text-slate-700">
+                              <div className="w-7 h-7 shrink-0 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center text-slate-700">
                                 <User className="w-4 h-4" strokeWidth={1.75} />
                               </div>
-                              <div className="flex-1 min-w-0 bg-black/30 md:bg-slate-100 border border-white/5 md:border-slate-200 rounded-[10px] px-3 py-2">
-                                <div className="text-xs font-semibold text-white md:text-slate-900 truncate">
+                              <div className="flex-1 min-w-0 bg-slate-50 border border-slate-200 rounded-[10px] px-3 py-2">
+                                <div className="text-xs font-semibold text-slate-900 truncate">
                                   {latest.author}
                                 </div>
-                                <div className="text-xs text-slate-300 md:text-slate-700 mt-0.5 line-clamp-2 whitespace-pre-wrap break-words">
+                                <div className="text-xs text-slate-700 mt-0.5 line-clamp-2 whitespace-pre-wrap break-words">
                                   {latest.text}
                                 </div>
                               </div>

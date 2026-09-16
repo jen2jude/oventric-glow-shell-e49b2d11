@@ -473,24 +473,24 @@ export function PostComposerModal({
 
   return (
     <div className="modal-light fixed inset-0 z-[60] flex items-stretch sm:items-center justify-center">
-      <div className="absolute inset-0 bg-black/80" onClick={onClose} />
+      <div className="absolute inset-0 bg-slate-950/45 backdrop-blur-sm" onClick={onClose} />
       <div
         ref={shellRef}
         role="dialog"
         aria-modal="true"
         aria-label="Create post"
-        className="relative w-full sm:max-w-xl sm:my-8 h-[100dvh] sm:h-auto sm:max-h-[92dvh] bg-[#141418] sm:rounded-2xl border border-white/10 shadow-2xl flex flex-col"
+        className="relative w-full sm:max-w-xl sm:my-8 h-[100dvh] sm:h-auto sm:max-h-[92dvh] bg-white sm:rounded-[10px] border border-slate-200 shadow-2xl flex flex-col overflow-hidden"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 shrink-0">
           <button
             onClick={onClose}
-            className="p-2 -ml-2 rounded-[10px] hover:bg-white/5 text-slate-300"
+            className="p-2 -ml-2 rounded-[10px] hover:bg-slate-100 text-slate-500"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
-          <div className="text-sm font-semibold text-white">Drop a post</div>
+          <div className="text-sm font-semibold text-slate-900">Create on Oventric</div>
           <button
             onClick={doPost}
             disabled={posting}
@@ -502,23 +502,23 @@ export function PostComposerModal({
 
         {/* Identity row & Audience */}
         <div className="px-4 pt-4 flex items-center gap-3 shrink-0">
-          <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 bg-neutral-800">
+          <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 bg-slate-200">
             <AvatarImage src={meAvatarUrl} alt={meName} initials={initialsOf(meName)} />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-white">{meName}</div>
+            <div className="text-sm font-semibold text-slate-900">{meName}</div>
             <div className="relative inline-block mt-0.5">
               <button
                 type="button"
                 onClick={() => setAudienceOpen((v) => !v)}
-                className="flex items-center gap-1.5 rounded-full bg-white/5 border border-white/10 px-2 py-0.5 text-[11px] text-slate-300 hover:bg-white/10"
+                className="flex items-center gap-1.5 rounded-full bg-slate-100 border border-slate-200 px-2 py-0.5 text-[11px] text-slate-600 hover:bg-slate-200"
               >
                 {audience === "public" ? <Globe2 className="w-3 h-3" /> : <Users className="w-3 h-3" />}
                 <span>{audienceLabel}</span>
                 <ChevronDown className="w-3 h-3 opacity-60" />
               </button>
               {audienceOpen && (
-                <div className="absolute left-0 mt-2 w-56 z-20 bg-[#1a1a20] border border-white/10 rounded-xl shadow-xl p-1 max-h-72 overflow-auto">
+                <div className="absolute left-0 mt-2 w-56 z-20 bg-white border border-slate-200 rounded-[10px] shadow-xl p-1 max-h-72 overflow-auto">
                   <AudienceOption
                     icon={<Globe2 className="w-4 h-4" />}
                     title="Public"
@@ -542,7 +542,7 @@ export function PostComposerModal({
                     }}
                   />
                   {circles.length > 0 && (
-                    <div className="pt-1 mt-1 border-t border-white/5">
+                    <div className="pt-1 mt-1 border-t border-slate-100">
                       <div className="px-2 py-1 text-[10px] uppercase tracking-wide text-slate-500">
                         Circle
                       </div>
@@ -555,11 +555,11 @@ export function PostComposerModal({
                             setCircleId(c.id);
                             setAudienceOpen(false);
                           }}
-                          className={`w-full text-left flex items-center justify-between px-2 py-1.5 rounded-[10px] hover:bg-white/5 text-xs ${
-                            audience === "circle" && circleId === c.id ? "bg-white/5" : ""
+                          className={`w-full text-left flex items-center justify-between px-2 py-1.5 rounded-[10px] hover:bg-slate-50 text-xs ${
+                            audience === "circle" && circleId === c.id ? "bg-slate-50" : ""
                           }`}
                         >
-                          <span className="flex items-center gap-2 text-slate-200">
+                          <span className="flex items-center gap-2 text-slate-700">
                             <Users className="w-3.5 h-3.5 text-[#E5484D]" />
                             {c.name}
                           </span>
@@ -590,7 +590,7 @@ export function PostComposerModal({
             aria-invalid={showTextError}
             aria-describedby={showTextError ? "composer-text-error" : undefined}
             placeholder="What's on your mind?"
-            className={`w-full bg-transparent text-slate-100 placeholder:text-slate-500 resize-none focus:outline-none text-base mt-3 min-h-[100px] rounded-[10px] px-0 ${
+            className={`w-full bg-transparent text-slate-800 placeholder:text-slate-400 resize-none focus:outline-none text-base mt-3 min-h-[100px] rounded-[10px] px-0 ${
               showTextError ? "ring-1 ring-red-500/60" : ""
             }`}
           />
@@ -624,7 +624,7 @@ export function PostComposerModal({
               <button
                 type="button"
                 onClick={onPickFile}
-                className="w-24 h-24 shrink-0 rounded-xl border border-dashed border-white/20 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-white hover:border-white/40 bg-white/5"
+                className="w-24 h-24 shrink-0 rounded-[10px] border border-dashed border-slate-300 flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-slate-900 hover:border-slate-400 bg-slate-50"
               >
                 <Plus className="w-5 h-5" />
                 <span className="text-[10px]">Add media</span>
@@ -648,9 +648,9 @@ export function PostComposerModal({
                 {attachedProducts.map((p) => (
                   <div
                     key={p.id}
-                    className="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/10"
+                    className="flex items-center gap-2 p-2 rounded-[10px] bg-slate-50 border border-slate-200"
                   >
-                    <div className="w-10 h-10 rounded-[10px] overflow-hidden bg-neutral-800">
+                    <div className="w-10 h-10 rounded-[10px] overflow-hidden bg-slate-200">
                       {p.coverUrl ? (
                         <img loading="lazy" decoding="async" src={p.coverUrl} alt="" className="w-full h-full object-cover" />
                       ) : (
@@ -658,12 +658,12 @@ export function PostComposerModal({
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs font-bold text-white truncate">{p.name}</div>
+                      <div className="text-xs font-bold text-slate-900 truncate">{p.name}</div>
                       <div className="text-[10px] text-amber-400 font-bold">${p.price}</div>
                     </div>
                     <button
                       onClick={() => removeProductAttachment(p.id)}
-                      className="p-1.5 rounded-full hover:bg-white/10 text-slate-400"
+                      className="p-1.5 rounded-full hover:bg-slate-200 text-slate-500"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -692,7 +692,7 @@ export function PostComposerModal({
           </div>
 
           {/* Toolbar Icons - Moved INSIDE scroll area */}
-          <div className="py-3 border-t border-white/10 flex items-center justify-between">
+          <div className="py-3 border-t border-slate-200 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button onClick={onPickFile} className="text-slate-400 hover:text-[#E5484D] transition-colors"><ImageIcon className="w-5 h-5" /></button>
               <button onClick={onPickFile} className="text-slate-400 hover:text-[#E5484D] transition-colors"><VideoIcon className="w-5 h-5" /></button>
@@ -707,7 +707,7 @@ export function PostComposerModal({
           </div>
 
           {/* Action List - Moved INSIDE scroll area */}
-          <div className="bg-transparent border-t border-white/10 pt-2 pb-6">
+          <div className="bg-transparent border-t border-slate-200 pt-2 pb-6">
             <div className="py-3 text-[10px] text-slate-500 font-semibold tracking-wider uppercase">Add to your post</div>
             <div className="flex flex-col">
               <ActionButton icon={<ImageIcon className="w-5 h-5 text-sky-400" />} label="Photo/Video" onClick={onPickFile} />
@@ -724,22 +724,22 @@ export function PostComposerModal({
       {productPickerOpen && (
         <div className="modal-light fixed inset-0 z-[70] flex items-center justify-center px-4">
           <div
-            className="absolute inset-0 bg-black/80"
+            className="absolute inset-0 bg-slate-950/45 backdrop-blur-sm"
             onClick={() => setProductPickerOpen(false)}
           />
-          <div className="relative w-full max-w-md bg-[#141418] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
-            <div className="flex items-center gap-2 px-3 py-3 border-b border-white/10">
+          <div className="relative w-full max-w-md bg-white border border-slate-200 rounded-[10px] shadow-2xl overflow-hidden">
+            <div className="flex items-center gap-2 px-3 py-3 border-b border-slate-200">
               <ShoppingBag className="w-4 h-4 text-amber-400" />
               <input
                 autoFocus
                 value={productQuery}
                 onChange={(e) => setProductQuery(e.target.value)}
                 placeholder="Search your products..."
-                className="flex-1 bg-transparent text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none"
+                className="flex-1 bg-transparent text-sm text-slate-800 placeholder:text-slate-500 focus:outline-none"
               />
               <button
                 onClick={() => setProductPickerOpen(false)}
-                className="text-slate-400 hover:text-white p-1"
+                className="text-slate-500 hover:text-slate-900 p-1"
                 aria-label="Close product search"
               >
                 <X className="w-4 h-4" />
@@ -760,9 +760,9 @@ export function PostComposerModal({
                 <button
                   key={p.id}
                   onClick={() => addProductTag(p)}
-                  className="w-full flex items-center gap-3 px-3 py-3 hover:bg-white/5 text-left"
+                  className="w-full flex items-center gap-3 px-3 py-3 hover:bg-slate-50 text-left"
                 >
-                  <span className="w-9 h-9 rounded-[10px] overflow-hidden bg-white/10 flex items-center justify-center">
+                  <span className="w-9 h-9 rounded-[10px] overflow-hidden bg-slate-100 flex items-center justify-center">
                     {p.coverUrl ? (
                       <img loading="lazy" decoding="async" src={p.coverUrl} alt="" className="w-full h-full object-cover" />
                     ) : (
@@ -770,7 +770,7 @@ export function PostComposerModal({
                     )}
                   </span>
                   <span className="flex-1 min-w-0">
-                    <span className="block text-sm text-slate-100 truncate">{p.name}</span>
+                    <span className="block text-sm text-slate-900 truncate">{p.name}</span>
                     <span className="block text-[11px] text-slate-500 truncate">
                       {p.vendor} · ${p.priceUsd}
                     </span>
@@ -785,22 +785,22 @@ export function PostComposerModal({
       {mentionPickerOpen && (
         <div className="modal-light fixed inset-0 z-[70] flex items-center justify-center px-4">
           <div
-            className="absolute inset-0 bg-black/80"
+            className="absolute inset-0 bg-slate-950/45 backdrop-blur-sm"
             onClick={() => setMentionPickerOpen(false)}
           />
-          <div className="relative w-full max-w-md bg-[#141418] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
-            <div className="flex items-center gap-2 px-3 py-3 border-b border-white/10">
+          <div className="relative w-full max-w-md bg-white border border-slate-200 rounded-[10px] shadow-2xl overflow-hidden">
+            <div className="flex items-center gap-2 px-3 py-3 border-b border-slate-200">
               <AtSign className="w-4 h-4 text-[#E5484D]" />
               <input
                 autoFocus
                 value={mentionQuery}
                 onChange={(e) => setMentionQuery(e.target.value)}
                 placeholder="Mention someone…"
-                className="flex-1 bg-transparent text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none"
+                className="flex-1 bg-transparent text-sm text-slate-800 placeholder:text-slate-500 focus:outline-none"
               />
               <button
                 onClick={() => setMentionPickerOpen(false)}
-                className="text-slate-400 hover:text-white p-1"
+                className="text-slate-500 hover:text-slate-900 p-1"
                 aria-label="Close mention search"
               >
                 <X className="w-4 h-4" />
@@ -824,9 +824,9 @@ export function PostComposerModal({
                 <button
                   key={u.userId}
                   onClick={() => addMention(u)}
-                  className="w-full flex items-center gap-3 px-3 py-3 hover:bg-white/5 text-left"
+                  className="w-full flex items-center gap-3 px-3 py-3 hover:bg-slate-50 text-left"
                 >
-                  <span className="w-9 h-9 rounded-full overflow-hidden bg-white/10 flex items-center justify-center text-xs font-semibold text-white">
+                  <span className="w-9 h-9 rounded-full overflow-hidden bg-slate-100 flex items-center justify-center text-xs font-semibold text-slate-700">
                     <AvatarImage
                       src={u.avatarUrl}
                       alt={u.name}
@@ -835,7 +835,7 @@ export function PostComposerModal({
                     />
                   </span>
                   <span className="flex-1 min-w-0">
-                    <span className="block text-sm text-slate-100 truncate">{u.name}</span>
+                    <span className="block text-sm text-slate-900 truncate">{u.name}</span>
                     {u.username && (
                       <span className="block text-[11px] text-slate-500 truncate">
                         @{u.username}
@@ -865,10 +865,10 @@ function ActionButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors text-left"
+      className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-left"
     >
       <span className="shrink-0">{icon}</span>
-      <span className="text-sm font-medium text-slate-200">{label}</span>
+      <span className="text-sm font-medium text-slate-700">{label}</span>
     </button>
   );
 }
@@ -890,13 +890,13 @@ function AudienceOption({
     <button
       type="button"
       onClick={onClick}
-      className={`w-full text-left flex items-start gap-2 px-3 py-3 rounded-[10px] hover:bg-white/5 ${
-        active ? "bg-white/5" : ""
+      className={`w-full text-left flex items-start gap-2 px-3 py-3 rounded-[10px] hover:bg-slate-50 ${
+        active ? "bg-slate-50" : ""
       }`}
     >
       <span className="mt-0.5 text-[#E5484D]">{icon}</span>
       <span className="flex-1">
-        <span className="block text-sm text-slate-100">{title}</span>
+        <span className="block text-sm text-slate-900">{title}</span>
         <span className="block text-[11px] text-slate-500">{desc}</span>
       </span>
       {active && <Check className="w-4 h-4 text-[#E5484D] mt-1" />}
