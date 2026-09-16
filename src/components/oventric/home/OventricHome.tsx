@@ -28,7 +28,6 @@ import {
 import { getHomeStats, type HomeStatsDTO } from "@/lib/home-stats.functions";
 import { visualForCategory } from "@/components/oventric/marketplace-discovery/utils";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
-import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import heroImage from "@/assets/home-hero.jpg";
 
 type CategoryNode = { id: string; slug: string; name: string };
@@ -81,7 +80,6 @@ export type OventricHomeProps = {
 
 export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
   const { baseCurrency } = useOnboarding();
-  const { isAuthenticated, openGate } = useAuthGate();
 
   const loadDiscovery = useServerFn(getMarketplaceDiscovery);
   const loadCategories = useServerFn(listMarketplaceCategories);
@@ -125,13 +123,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
     };
   }, [loadDiscovery, loadCategories, loadSellers, loadStats]);
 
-  const startSelling = () => {
-    if (!isAuthenticated) {
-      openGate("seller");
-      return;
-    }
-    onCreate?.();
-  };
+  const startSelling = () => onCreate?.();
 
   return (
     <div className="min-h-screen w-full bg-[#F7F8FA]">

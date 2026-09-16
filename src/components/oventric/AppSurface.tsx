@@ -346,7 +346,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
 
   const rawView =
     active === "Home" ? (
-      <OventricHome onSelect={setActive} onCreate={() => handleCreate()} />
+      <OventricHome onSelect={setActive} onCreate={() => handleCreate("sell")} />
     ) : active === "__legacy_home" ? (
       isAppShell ? (
         <Feed />
