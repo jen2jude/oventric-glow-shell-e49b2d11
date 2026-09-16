@@ -131,7 +131,19 @@ const STEPS = [
   },
 ];
 
-const PAY_METHODS = ["Visa", "Mastercard", "Verve", "Paystack", "Bank transfer"];
+import payVisa from "@/assets/pay/visa.png";
+import payMastercard from "@/assets/pay/mastercard.png";
+import payVerve from "@/assets/pay/verve.png";
+import payPaystack from "@/assets/pay/paystack.png";
+import payBank from "@/assets/pay/bank-transfer.png";
+
+const PAY_METHODS: { name: string; src: string }[] = [
+  { name: "Visa", src: payVisa },
+  { name: "Mastercard", src: payMastercard },
+  { name: "Verve", src: payVerve },
+  { name: "Paystack", src: payPaystack },
+  { name: "Bank transfer", src: payBank },
+];
 
 export type OventricHomeProps = {
   onSelect: (section: string) => void;
@@ -456,10 +468,10 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           <ul className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
             {PAY_METHODS.map((m) => (
               <li
-                key={m}
-                className="rounded-full border border-slate-200 bg-[#F7F8FA] px-4 py-2 text-xs font-bold text-slate-600"
+                key={m.name}
+                className="flex h-14 items-center justify-center rounded-xl border border-slate-200 bg-white px-6 shadow-sm"
               >
-                {m}
+                <img src={m.src} alt={m.name} loading="lazy" className="h-8 w-auto max-w-[110px] object-contain" />
               </li>
             ))}
           </ul>
