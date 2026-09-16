@@ -368,8 +368,8 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         />
       )
     ) : active === "Explore" ? (
-      <div className="mx-auto w-full max-w-[1200px] px-3 py-4 md:px-6 md:py-8">
-        <DiscoveryPanel />
+      <div className="mx-auto w-full max-w-[900px] px-3 py-4 md:px-6 md:py-8">
+        <DiscoveryPanel asPage />
       </div>
     ) : active === "Wallet" ? (
       <AppOnlyGate
