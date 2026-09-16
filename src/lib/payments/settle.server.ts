@@ -225,13 +225,20 @@ export async function settleOrder(
     occurred_at: new Date().toISOString(),
   });
 
-  // Seller 80% + platform 20% always computed on the FULL gross sale price
-  // (post-coupon, pre-cashback). Applying cashback only shifts value from the
-  // buyer's card charge to their Cashback Wallet debit — the sale price the
-  // seller/platform see is unchanged.
+  // Platform keeps a flat 20% of the post-coupon sale price. The seller's 80%
+  // funds any product-level cashback the seller configured — the platform's
+  // share is never touched by cashback, and the seller's net can never go
+  // below zero (the reward is capped at their own share).
   const splitBaseUSD = afterCouponUSD;
-  const sellerCutUSD = Number((splitBaseUSD * SELLER_SHARE).toFixed(2));
-  const platformCutUSD = Number((splitBaseUSD - sellerCutUSD).toFixed(2));
+  const sellerGrossUSD = Number((splitBaseUSD * SELLER_SHARE).toFixed(2));
+  const platformCutUSD = Number((splitBaseUSD - sellerGrossUSD).toFixed(2));
+  const cashbackEarnUSD = sellerFundedCashbackUSD(
+    pRow.cashback_pct as number | null,
+    splitBaseUSD,
+    sellerGrossUSD,
+  );
+  const sellerCutUSD = Number(Math.max(0, sellerGrossUSD - cashbackEarnUSD).toFixed(2));
+  const sellerNetRatio = sellerGrossUSD > 0 ? sellerCutUSD / sellerGrossUSD : 1;
 
   const { data: sellerProfile } = await supabaseAdmin
     .from("profiles")
@@ -244,7 +251,7 @@ export async function settleOrder(
   const saleRatio = grossOriginalUSD > 0 ? afterCouponUSD / grossOriginalUSD : 1;
   const sellerCutLocalRaw =
     originalAmount > 0 && sellerCurrency === originalCurrency
-      ? originalAmount * qty * saleRatio * SELLER_SHARE
+      ? originalAmount * qty * saleRatio * SELLER_SHARE * sellerNetRatio
       : convertViaSnapshot(sellerCutUSD, "USD", sellerCurrency, snap);
   const sellerCutLocal = Number(sellerCutLocalRaw.toFixed(sellerCurrency === "USD" ? 2 : 0));
   const holdEscrow = Boolean(pRow.requires_manual_delivery);
