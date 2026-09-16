@@ -10,6 +10,7 @@ import {
   Store,
   Ban,
   X,
+  UsersRound,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
@@ -29,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { usePresence } from "@/hooks/use-presence";
+import { Button } from "@/components/ui/button";
 
 export type ConnectionsTab = "all" | "following" | "followers" | "suggested";
 
@@ -83,6 +85,20 @@ export function ConnectionsDialog({
   useEffect(() => {
     if (open) setTab(initialTab);
   }, [open, initialTab]);
+
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onOpenChange(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [onOpenChange, open]);
 
   const loadCore = useCallback(async () => {
     setLoading(true);
@@ -194,127 +210,143 @@ export function ConnectionsDialog({
 
   if (!open) return null;
 
+  const onlineCount = rows.filter((person) => online.has(person.userId)).length;
+
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-label={`${name}'s connections`}
-      className="fixed inset-0 z-[80] flex flex-col bg-[#0A0A0B] text-white"
+      className="web-connections fixed inset-0 z-[80] overflow-y-auto bg-muted/95 px-3 py-3 text-foreground sm:px-6 sm:py-8"
     >
-      {/* Header */}
-      <div className="flex items-center gap-2 border-b border-white/10 px-3 py-3">
-        <button
-          type="button"
-          onClick={() => onOpenChange(false)}
-          aria-label="Close connections"
-          className="grid h-11 w-11 place-items-center rounded-full text-slate-300 hover:bg-white/10"
-        >
-          <X className="h-5 w-5" />
-        </button>
-        <h2 className="min-w-0 flex-1 truncate text-center text-base font-black">{name}</h2>
-        <span className="h-11 w-11" />
-      </div>
-
-      {/* Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto px-3 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {TABS.map((t) => {
-          const active = t.key === tab;
-          return (
-            <button
-              key={t.key}
+      <div className="mx-auto flex min-h-[min(760px,calc(100dvh-1.5rem))] w-full max-w-2xl flex-col overflow-hidden rounded-[10px] border border-border bg-background shadow-xl sm:min-h-0 sm:max-h-[calc(100dvh-4rem)]">
+        <header className="border-b border-border px-4 pt-4 sm:px-6 sm:pt-6">
+          <div className="mb-5 flex items-center gap-3">
+            <div className="grid size-10 shrink-0 place-items-center rounded-[10px] bg-primary/10 text-primary">
+              <UsersRound className="size-5" aria-hidden />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h2 className="font-wallet-display truncate text-xl font-bold sm:text-2xl">Connections</h2>
+              <p className="truncate text-xs font-medium text-muted-foreground">{name}&apos;s network</p>
+            </div>
+            <div className="hidden items-center gap-2 text-xs font-bold text-muted-foreground sm:flex">
+              <span className="size-2 rounded-full bg-online" aria-hidden />
+              {onlineCount.toLocaleString()} online
+            </div>
+            <Button
               type="button"
-              onClick={() => setTab(t.key)}
-              aria-pressed={active}
-              className={`shrink-0 rounded-full px-4 py-3 text-sm font-bold transition-colors ${
-                active
-                  ? "bg-[#E5484D] text-white"
-                  : "bg-white/8 text-slate-300 hover:bg-white/12"
-              }`}
+              variant="ghost"
+              size="icon"
+              onClick={() => onOpenChange(false)}
+              aria-label="Close connections"
+              className="size-10 shrink-0 rounded-[10px] text-muted-foreground hover:bg-muted hover:text-foreground"
             >
-              {t.label}
-            </button>
-          );
-        })}
-      </div>
+              <X className="size-5" />
+            </Button>
+          </div>
 
-      {/* Search */}
-      <div className="px-3 pb-2">
-        <div className="flex items-center gap-2 rounded-xl bg-white/8 px-3 py-2.5">
-          <Search className="h-4 w-4 shrink-0 text-slate-400" aria-hidden />
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search"
-            aria-label="Search people"
-            className="w-full bg-transparent text-sm text-white placeholder:text-slate-500 focus:outline-none"
-          />
+          <div role="tablist" aria-label="Connection lists" className="flex gap-6 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {TABS.map((t) => {
+              const active = t.key === tab;
+              return (
+                <button
+                  key={t.key}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setTab(t.key)}
+                  className={`shrink-0 border-b-2 pb-3 text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
+                    active
+                      ? "border-primary text-primary"
+                      : "border-transparent text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {t.label} <span className="ml-1 text-xs opacity-70">{counts[t.key].toLocaleString()}</span>
+                </button>
+              );
+            })}
+          </div>
+        </header>
+
+        <div className="border-b border-border bg-muted/40 p-3 sm:p-4">
+          <label className="flex items-center gap-2 rounded-[10px] border border-border bg-background px-3 py-2.5 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10">
+            <Search className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search people"
+              aria-label="Search people"
+              className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+            />
+          </label>
         </div>
-      </div>
 
-      <p className="px-4 pb-2 text-sm font-black text-white">
-        {tab === "suggested"
-          ? `${counts.suggested} suggested`
-          : `${counts[tab].toLocaleString()} ${tab === "all" ? "connections" : tab}`}
-      </p>
-
-      {/* List */}
-      <div className="flex-1 overflow-y-auto pb-8">
+        <div className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <div className="p-6 text-center text-sm text-slate-400">
+          <div className="p-10 text-center text-sm text-muted-foreground">
             {error}
-            <button
+            <Button
+              variant="link"
               onClick={loadCore}
-              className="ml-2 font-bold text-[#E5484D] hover:underline"
+              className="ml-1 h-auto p-0 font-bold text-primary"
             >
               Try again
-            </button>
+            </Button>
           </div>
         ) : loading && rows.length === 0 ? (
-          <div className="flex items-center justify-center gap-2 p-10 text-sm text-slate-400">
+          <div className="flex items-center justify-center gap-2 p-12 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> Loading people…
           </div>
         ) : rows.length === 0 ? (
-          <p className="p-10 text-center text-sm text-slate-500">
-            {q ? "No one matches that search." : "Nothing to show here yet."}
-          </p>
+          <div className="px-6 py-14 text-center">
+            <div className="mx-auto mb-3 grid size-11 place-items-center rounded-full bg-muted text-muted-foreground">
+              <UsersRound className="size-5" aria-hidden />
+            </div>
+            <p className="font-wallet-display text-sm font-semibold text-foreground">
+              {q ? "No matching people" : "Nothing to show yet"}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {q ? "Try another name or username." : "New connections will appear here."}
+            </p>
+          </div>
         ) : (
-          <ul>
+          <ul className="divide-y divide-border">
             {rows.map((p) => {
               const to = p.slug || p.userId;
               return (
                 <li
                   key={p.userId}
-                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/[0.04]"
+                  className="group flex items-center gap-3 px-4 py-4 transition-colors hover:bg-muted/50 sm:gap-4 sm:px-5"
                 >
                   <Link
                     to="/profile/$id"
                     params={{ id: to }}
                     onClick={() => onOpenChange(false)}
-                    className="relative shrink-0"
+                    className="relative shrink-0 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                     aria-label={`Open ${p.displayName}'s profile`}
                   >
-                    <span className="block h-12 w-12 overflow-hidden rounded-full">
+                    <span className="block size-12 overflow-hidden rounded-full border-2 border-background shadow-sm sm:size-[52px]">
                       <AvatarImage src={p.avatarUrl} alt={p.displayName} />
                     </span>
                     {online.has(p.userId) && (
-                      <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-400 ring-2 ring-[#0A0A0B]" />
+                      <span className="absolute bottom-0 right-0 size-3.5 rounded-full bg-online ring-2 ring-background" />
                     )}
                   </Link>
                   <Link
                     to="/profile/$id"
                     params={{ id: to }}
                     onClick={() => onOpenChange(false)}
-                    className="min-w-0 flex-1"
+                    className="min-w-0 flex-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                   >
-                    <span className="block truncate text-[15px] font-bold text-white">
+                    <span className="font-wallet-display block truncate text-sm font-bold text-foreground transition-colors group-hover:text-primary sm:text-[15px]">
                       {p.displayName}
                     </span>
-                    <span className="block truncate text-xs text-slate-500">
+                    <span className="block truncate text-xs font-medium text-muted-foreground">
                       {p.username ? `@${p.username}` : (p.bio ?? "Oventric member")}
                     </span>
                     <span
                       className={`block truncate text-[11px] font-semibold ${
-                        online.has(p.userId) ? "text-emerald-400" : "text-slate-600"
+                        online.has(p.userId) ? "text-online" : "text-muted-foreground"
                       }`}
                     >
                       {online.has(p.userId)
@@ -324,14 +356,15 @@ export function ConnectionsDialog({
                   </Link>
 
                   {tab === "following" && viewerId === userId ? (
-                    <button
+                    <Button
                       type="button"
+                      variant="outline"
                       disabled={busyId === p.userId}
                       onClick={() => doUnfollow(p)}
-                      className="shrink-0 rounded-[10px] bg-white/10 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/16 disabled:opacity-60"
+                      className="h-9 shrink-0 rounded-[10px] border-border px-3 text-xs font-bold text-foreground hover:bg-muted"
                     >
                       {busyId === p.userId ? "…" : "Unfollow"}
-                    </button>
+                    </Button>
                   ) : tab === "followers" || tab === "suggested" ? (
                     viewerId && viewerId !== p.userId ? (
                       <FollowButton
@@ -346,7 +379,7 @@ export function ConnectionsDialog({
                         <button
                           type="button"
                           aria-label={`More options for ${p.displayName}`}
-                          className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-slate-400 hover:bg-white/10 hover:text-white"
+                          className="grid size-10 shrink-0 place-items-center rounded-[10px] text-muted-foreground hover:bg-muted hover:text-foreground"
                         >
                           <MoreHorizontal className="h-5 w-5" />
                         </button>
@@ -389,7 +422,7 @@ export function ConnectionsDialog({
                           <Store className="mr-2 h-4 w-4" /> View shop
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          className="text-[#E5484D] focus:text-[#E5484D]"
+                          className="text-destructive focus:text-destructive"
                           disabled={!viewerId || viewerId === p.userId}
                           onClick={() => doBlock(p)}
                         >
@@ -405,6 +438,23 @@ export function ConnectionsDialog({
             })}
           </ul>
         )}
+        </div>
+
+        <footer className="flex items-center justify-between gap-3 border-t border-border bg-muted/30 px-4 py-3 sm:px-6 sm:py-4">
+          <p className="text-xs font-semibold text-muted-foreground">
+            {rows.length.toLocaleString()} {tab === "all" ? "connections" : tab}
+          </p>
+          {tab !== "suggested" && (
+            <Button
+              type="button"
+              variant="link"
+              onClick={() => setTab("suggested")}
+              className="h-auto p-0 text-xs font-bold text-primary"
+            >
+              View suggestions
+            </Button>
+          )}
+        </footer>
       </div>
     </div>
   );
