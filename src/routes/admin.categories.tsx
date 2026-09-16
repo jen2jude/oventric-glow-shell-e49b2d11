@@ -29,7 +29,7 @@ function CategoriesPage() {
   const upFn = useServerFn(upsertCategory);
   const delFn = useServerFn(deleteCategory);
   const [rows, setRows] = useState<Row[] | null>(null);
-  const [tab, setTab] = useState<Kind>("digital");
+  const tab: Kind = "digital";
   const [editing, setEditing] = useState<Partial<Row> | null>(null);
 
   const refresh = useCallback(() => {
