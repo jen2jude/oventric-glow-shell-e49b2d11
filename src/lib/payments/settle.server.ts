@@ -151,14 +151,18 @@ export async function settleOrder(
   const priceUSD = pkgRow ? Number(pkgRow.price_usd) : Number(pRow.price_usd);
   const grossUSD = Number((priceUSD * qty).toFixed(2));
   let discountUSD = 0;
+  let appliedCouponCode: string | null = null;
   if (meta.couponCode) {
-    const { data: c } = await supabaseAdmin
-      .from("coupons")
-      .select("discount_pct")
-      .eq("code", meta.couponCode)
-      .eq("active", true)
-      .maybeSingle();
-    if (c) discountUSD = Number(((grossUSD * Number(c.discount_pct)) / 100).toFixed(2));
+    const check = await validateCouponServer(supabaseAdmin, meta.couponCode, {
+      userId: buyerId,
+      productId: pRow.id as string,
+      sellerId: pRow.seller_id as string,
+      grossUSD,
+    });
+    if (check.valid) {
+      discountUSD = check.discountUSD;
+      appliedCouponCode = check.code;
+    }
   }
   const afterCouponUSD = Number((grossUSD - discountUSD).toFixed(2));
   const cashbackAppliedUSD = Math.max(0, Number(meta.cashbackAppliedUSD ?? 0));
