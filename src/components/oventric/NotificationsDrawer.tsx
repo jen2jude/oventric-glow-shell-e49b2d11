@@ -393,8 +393,8 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
                 aria-label={pushOn ? "Turn off background alerts" : "Turn on background alerts"}
                 title={pushOn ? "Background alerts on" : "Background alerts off"}
                 aria-pressed={pushOn}
-                className={`p-2 rounded-[10px] hover:bg-white/5 transition-colors disabled:opacity-50 ${
-                  pushOn ? "text-emerald-400" : "text-slate-400 hover:text-white"
+                className={`p-2 rounded-[10px] hover:bg-muted transition-colors disabled:opacity-50 ${
+                  pushOn ? "text-primary" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {pushOn ? <BellRing className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
@@ -405,14 +405,14 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
               aria-label={muted ? "Unmute notification sound" : "Mute notification sound"}
               title={muted ? "Sound off" : "Sound on"}
               aria-pressed={!muted}
-              className="p-2 rounded-[10px] hover:bg-white/5 text-slate-400 hover:text-white transition-colors"
+              className="p-2 rounded-[10px] hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
             >
               {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
             </button>
             <button
               onClick={onClose}
               aria-label="Close notifications"
-              className="p-2 rounded-[10px] hover:bg-white/5 text-slate-400 hover:text-white transition-colors"
+              className="p-2 rounded-[10px] hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
