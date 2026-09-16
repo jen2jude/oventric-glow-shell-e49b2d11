@@ -55,7 +55,7 @@ export function FeedSocialBar({ onOpenMessages }: Props) {
 
   return (
     <>
-      <nav className="flex w-fit max-w-full items-center gap-1 overflow-x-auto rounded-full border border-slate-200 bg-white p-1.5 shadow-sm no-scrollbar">
+      <nav className="sticky top-0 z-40 flex w-fit max-w-full self-start items-center gap-1 overflow-x-auto rounded-full border border-slate-200 bg-white/95 p-1.5 shadow-sm backdrop-blur-md no-scrollbar">
         <Link
           to="/"
           aria-label="Back to home"
