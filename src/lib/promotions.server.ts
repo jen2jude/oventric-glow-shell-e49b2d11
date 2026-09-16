@@ -272,15 +272,23 @@ export async function reverseOrderPromotions(
 
   // ---- referral reward clawback ------------------------------------------
   try {
-    const { data: rel } = await admin
+    const { data: before } = await admin
       .from("referrals")
-      .update({ status: "pending", qualified_order_id: null, qualified_at: null, reward_amount_usd: 0 })
+      .select("referrer_id, reward_amount_usd")
       .eq("qualified_order_id", args.orderId)
       .eq("status", "qualified")
-      .select("referrer_id, reward_amount_usd")
       .maybeSingle();
+    const { data: rel } = before
+      ? await admin
+          .from("referrals")
+          .update({ status: "pending", qualified_order_id: null, qualified_at: null, reward_amount_usd: 0 })
+          .eq("qualified_order_id", args.orderId)
+          .eq("status", "qualified")
+          .select("referrer_id")
+          .maybeSingle()
+      : { data: null };
     if (rel) {
-      const amount = Number(rel.reward_amount_usd ?? 0);
+      const amount = Number(before?.reward_amount_usd ?? 0);
       if (amount > 0) {
         const { data: ok } = await admin.rpc("cashback_debit", {
           _user_id: rel.referrer_id,
