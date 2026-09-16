@@ -12,7 +12,6 @@ import {
   Target,
   Package,
   LayoutDashboard,
-  Megaphone,
   Gift,
   Store,
   GraduationCap,
@@ -124,14 +123,6 @@ const GROUPS: Group[] = [
         color: "#5B8DEF",
         tint: "rgba(91,141,239,0.12)",
         to: "/dashboard",
-      },
-      {
-        label: "Advertise",
-        desc: "Promote your brand",
-        icon: Megaphone,
-        color: "#E5484D",
-        tint: "rgba(229,72,77,0.12)",
-        to: "/advertise",
       },
       {
         label: "Affiliate",

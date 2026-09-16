@@ -33,15 +33,6 @@ const PROMOS: Promo[] = [
     to: "/affiliate",
     search: { reserve: "1" },
   },
-  {
-    id: "advertise",
-    title: "Advertise here",
-    body: "Put your product in front of Africa's best builders.",
-    cta: "Start a campaign",
-    emoji: "🚀",
-    to: "/advertise",
-    search: { start: "image" },
-  },
 ];
 
 const STORAGE_KEY_INDEX = "oventric:promo:index";

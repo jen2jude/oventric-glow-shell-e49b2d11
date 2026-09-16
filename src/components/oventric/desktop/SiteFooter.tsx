@@ -37,7 +37,7 @@ export function SiteFooter({ onSelect, currency, flag }: SiteFooterProps) {
         <FooterCol title="Company">
           <FooterLink to="/about" label="About" />
           <FooterLink to="/blog" label="Blog" />
-          <FooterLink to="/advertise" label="Advertise" />
+          
           <FooterLink to="/affiliate" label="Affiliate" />
         </FooterCol>
 
