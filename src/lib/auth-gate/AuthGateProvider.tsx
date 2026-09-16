@@ -649,7 +649,7 @@ function AuthGateModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 bg-black/80 z-[200] flex items-center justify-center p-4"
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-foreground/45 p-3 backdrop-blur-[2px] sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-label={copy.title}
@@ -657,34 +657,63 @@ function AuthGateModal({
         if (e.target === e.currentTarget && !verifying && !verified) onClose();
       }}
     >
-      <div className="relative w-full max-w-md">
-        <div className=" rounded-2xl p-[1.5px]">
-          <div className="bg-[#1E1E24] rounded-2xl p-6 sm:p-8 relative">
+      <div className="relative w-full max-w-[440px]">
+        <div className="overflow-hidden rounded-[10px] border border-border bg-card shadow-2xl">
+          {stage === "email" && (
+            <div className="flex border-b border-border" role="tablist" aria-label="Account access">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mode === "returning"}
+                onClick={() => {
+                  setMode("returning");
+                  setEmailError(null);
+                  setUsernameError(null);
+                }}
+                className={`flex-1 border-b-2 px-4 py-4 text-sm font-semibold transition-colors ${mode === "returning" ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+              >
+                Sign in
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mode === "new"}
+                onClick={() => {
+                  setMode("new");
+                  setIdentifierError(null);
+                }}
+                className={`flex-1 border-b-2 px-4 py-4 text-sm font-semibold transition-colors ${mode === "new" ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+              >
+                Create account
+              </button>
+            </div>
+          )}
+          <div className="relative bg-card p-6 sm:p-10">
             <button
               type="button"
               onClick={onClose}
               disabled={verifying || verified}
-              className="absolute top-3 right-3 p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/5 disabled:opacity-40"
+              className="absolute right-3 top-3 rounded-[10px] p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-40"
               aria-label="Close"
             >
               <X className="w-4 h-4" />
             </button>
-            <header className="text-center mb-6">
-              <div className="mx-auto w-12 h-12 rounded-xl bg-[#121214] border border-white/10 flex items-center justify-center mb-3">
+            <header className="mb-8 text-center">
+              <div className="mx-auto mb-5 flex h-11 w-11 items-center justify-center rounded-[10px] border border-border bg-muted">
                 {stage === "email" ? (
-                  <Mail className="w-5 h-5 text-emerald-300" aria-hidden />
+                  <Mail className="h-5 w-5 text-primary" aria-hidden />
                 ) : (
-                  <ShieldCheck className="w-5 h-5 text-emerald-300" aria-hidden />
+                  <ShieldCheck className="h-5 w-5 text-primary" aria-hidden />
                 )}
               </div>
-              <h1 className="text-white font-black text-xl tracking-tight">
+              <h1 className="font-wallet-display text-3xl font-semibold text-foreground">
                 {stage === "otp"
                   ? "Verify your email"
                   : mode === "new"
                     ? "Let's get started"
                     : "Welcome back"}
               </h1>
-              <p className="text-[12px] text-slate-400 mt-1.5 leading-relaxed">
+              <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
                 {stage === "otp"
                   ? `Click the one-time login link sent to ${email || "your email"}.`
                   : mode === "new"
@@ -713,48 +742,6 @@ function AuthGateModal({
                     <RotateCw className="w-3 h-3" /> Dismiss & try again
                   </button>
                 </div>
-              </div>
-            )}
-
-            {stage === "email" && (
-              <div
-                role="tablist"
-                aria-label="Account access"
-                className="flex items-center gap-1 p-1 mb-5 bg-[#121214] rounded-lg border border-white/10"
-              >
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={mode === "new"}
-                  onClick={() => {
-                    setMode("new");
-                    setIdentifierError(null);
-                  }}
-                  className={`flex-1 min-h-9 rounded-md text-[12px] font-bold uppercase tracking-wide transition-colors ${
-                    mode === "new"
-                      ? "bg-[#1E1E24] text-white shadow-[0_0_0_1px_rgba(59, 130, 246,0.35)]"
-                      : "text-slate-500 hover:text-slate-300"
-                  }`}
-                >
-                  New user
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={mode === "returning"}
-                  onClick={() => {
-                    setMode("returning");
-                    setEmailError(null);
-                    setUsernameError(null);
-                  }}
-                  className={`flex-1 min-h-9 rounded-md text-[12px] font-bold uppercase tracking-wide transition-colors ${
-                    mode === "returning"
-                      ? "bg-[#1E1E24] text-white shadow-[0_0_0_1px_rgba(59, 130, 246,0.35)]"
-                      : "text-slate-500 hover:text-slate-300"
-                  }`}
-                >
-                  Returning
-                </button>
               </div>
             )}
 
