@@ -614,7 +614,7 @@ export const resolveOrderDispute = createServerFn({ method: "POST" })
       _role: "admin",
     });
     if (!isAdmin) throw new Error("Forbidden");
-    const { admin, notify, releaseEscrow } = await import("@/lib/fulfilment.server");
+    const { admin, notify, releaseEscrow, refundBuyer } = await import("@/lib/fulfilment.server");
     const sb = await admin();
 
     const { data: d0 } = await sb
@@ -633,15 +633,12 @@ export const resolveOrderDispute = createServerFn({ method: "POST" })
     if (!o) throw new Error("Order not found");
 
     if (data.outcome === "refund_buyer" && o.escrow_status === "held") {
-      const { error: rErr } = await sb.rpc("wallet_credit_currency", {
-        _user_id: o.buyer_id,
-        _amount: Number(o.display_total ?? 0),
-        _currency: o.display_currency,
-      });
-      if (rErr) throw new Error(rErr.message);
+      // Reuse the single refund path: it is idempotent, posts the ledger entry,
+      // reverses cashback/referral credit and notifies both parties.
+      await refundBuyer(sb, o.id, "dispute_resolved_refund");
       await sb
         .from("orders")
-        .update({ escrow_status: "refunded", status: "refunded", released_at: new Date().toISOString(), released_by: context.userId })
+        .update({ released_at: new Date().toISOString(), released_by: context.userId })
         .eq("id", o.id);
     }
 
