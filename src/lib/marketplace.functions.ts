@@ -798,7 +798,7 @@ export const createOrder = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { data: pRow, error: pErr } = await supabase
       .from("products")
-      .select("id, seller_id, name, category, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, created_at, requires_manual_delivery, in_stock")
+      .select("id, seller_id, name, category, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, created_at, requires_manual_delivery, in_stock, cashback_pct")
       .eq("id", data.productId)
       .maybeSingle();
     if (pErr) throw new Error(pErr.message);
@@ -807,6 +807,7 @@ export const createOrder = createServerFn({ method: "POST" })
       throw new Error("This product is currently out of stock");
     }
     const product = mapProduct(pRow as Record<string, unknown>);
+    const productCashbackPct = Number((pRow as Record<string, unknown>).cashback_pct ?? 0);
 
     // Global catalogue: listings are sold across regions. The buyer is charged
     // in their own home currency (displayCurrency), converted from the USD
@@ -816,21 +817,24 @@ export const createOrder = createServerFn({ method: "POST" })
 
     const grossUSD = Number((product.priceUSD * data.quantity).toFixed(2));
 
-    // Coupon applies to every payment method, but a coupon purchase never
-    // earns cashback and cannot be combined with cashback spend.
+    // Coupon — validated server-side against the real cart. An invalid coupon
+    // is refused outright rather than silently ignored.
+    const { validateCouponServer, sellerFundedCashbackUSD, recordCouponRedemption, qualifyReferralOnSettledPurchase } =
+      await import("@/lib/promotions.server");
     let discountUSD = 0;
     let discountPct = 0;
+    let appliedCouponCode: string | null = null;
     if (data.couponCode) {
-      const { data: c } = await supabase
-        .from("coupons")
-        .select("discount_pct")
-        .eq("code", data.couponCode)
-        .eq("active", true)
-        .maybeSingle();
-      if (c) {
-        discountPct = Number(c.discount_pct);
-        discountUSD = Number(((grossUSD * discountPct) / 100).toFixed(2));
-      }
+      const check = await validateCouponServer(supabase, data.couponCode, {
+        userId,
+        productId: product.id,
+        sellerId: product.sellerId,
+        grossUSD,
+      });
+      if (!check.valid) throw new Error(check.reason);
+      discountPct = check.discountPct;
+      discountUSD = check.discountUSD;
+      appliedCouponCode = check.code;
     }
     const afterCouponUSD = Number((grossUSD - discountUSD).toFixed(2));
 
