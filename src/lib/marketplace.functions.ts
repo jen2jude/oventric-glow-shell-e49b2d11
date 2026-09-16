@@ -559,6 +559,7 @@ export const updateAndResubmitProduct = createServerFn({ method: "POST" })
     if (data.subcategory !== undefined) patch.subcategory = data.subcategory;
     if (data.description !== undefined) patch.description = data.description;
     if (data.priceUSD !== undefined) patch.price_usd = data.priceUSD;
+    if (data.cashbackPct !== undefined) patch.cashback_pct = data.cashbackPct;
     if (data.originalCurrency !== undefined) patch.original_currency = data.originalCurrency;
     if (data.originalAmount !== undefined) patch.original_amount = data.originalAmount;
     if (data.fxSnapshot !== undefined) patch.fx_snapshot = data.fxSnapshot ? JSON.parse(JSON.stringify(data.fxSnapshot)) : null;
