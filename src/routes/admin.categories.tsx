@@ -97,7 +97,7 @@ function CategoriesPage() {
       {!rows ? (
         <Loader2 className="w-5 h-5 animate-spin text-slate-500 mx-auto mt-10" />
       ) : parents.length === 0 ? (
-        <p className="text-sm text-slate-500 text-center mt-10">No {tab} categories yet.</p>
+        <p className="text-sm text-slate-500 text-center mt-10">No categories yet.</p>
       ) : (
         <div className="grid gap-3">
           {parents.map((c) => (
