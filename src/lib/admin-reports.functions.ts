@@ -19,6 +19,7 @@ export interface AdminReport {
   target_author: string | null;
 }
 
+/** Super admin or moderator may work the report queue. */
 async function assertAdmin(ctx: { supabase: any; userId: string }) {
   const { data, error } = await ctx.supabase.rpc("has_role", {
     _user_id: ctx.userId,
@@ -28,7 +29,12 @@ async function assertAdmin(ctx: { supabase: any; userId: string }) {
     console.error("[admin-reports] has_role failed", error);
     throw new Error("Failed to verify admin role");
   }
-  if (!data) throw new Error("Forbidden: admin role required");
+  if (data) return;
+  const { data: isMod } = await ctx.supabase.rpc("has_role", {
+    _user_id: ctx.userId,
+    _role: "moderator",
+  });
+  if (!isMod) throw new Error("Forbidden: admin or moderator role required");
 }
 
 async function attachTargetPreviews(sb: any, reports: any[]): Promise<AdminReport[]> {

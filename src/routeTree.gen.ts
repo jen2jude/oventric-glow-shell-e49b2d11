@@ -54,11 +54,13 @@ import { Route as AdminSystemWalletsRouteImport } from './routes/admin.system-wa
 import { Route as AdminSupportRouteImport } from './routes/admin.support'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminSellersRouteImport } from './routes/admin.sellers'
+import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminRefundsRouteImport } from './routes/admin.refunds'
 import { Route as AdminReferralsRouteImport } from './routes/admin.referrals'
 import { Route as AdminReconciliationRouteImport } from './routes/admin.reconciliation'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
+import { Route as AdminProductTagsRouteImport } from './routes/admin.product-tags'
 import { Route as AdminPayoutsRouteImport } from './routes/admin.payouts'
 import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
@@ -322,6 +324,11 @@ const AdminSellersRoute = AdminSellersRouteImport.update({
   path: '/sellers',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminReviewsRoute = AdminReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminReportsRoute = AdminReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
@@ -345,6 +352,11 @@ const AdminReconciliationRoute = AdminReconciliationRouteImport.update({
 const AdminProductsRoute = AdminProductsRouteImport.update({
   id: '/products',
   path: '/products',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProductTagsRoute = AdminProductTagsRouteImport.update({
+  id: '/product-tags',
+  path: '/product-tags',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminPayoutsRoute = AdminPayoutsRouteImport.update({
@@ -591,11 +603,13 @@ export interface FileRoutesByFullPath {
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/payouts': typeof AdminPayoutsRoute
+  '/admin/product-tags': typeof AdminProductTagsRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/reconciliation': typeof AdminReconciliationRoute
   '/admin/referrals': typeof AdminReferralsRoute
   '/admin/refunds': typeof AdminRefundsRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/reviews': typeof AdminReviewsRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/support': typeof AdminSupportRoute
@@ -677,11 +691,13 @@ export interface FileRoutesByTo {
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/payouts': typeof AdminPayoutsRoute
+  '/admin/product-tags': typeof AdminProductTagsRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/reconciliation': typeof AdminReconciliationRoute
   '/admin/referrals': typeof AdminReferralsRoute
   '/admin/refunds': typeof AdminRefundsRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/reviews': typeof AdminReviewsRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/support': typeof AdminSupportRoute
@@ -767,11 +783,13 @@ export interface FileRoutesById {
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/payouts': typeof AdminPayoutsRoute
+  '/admin/product-tags': typeof AdminProductTagsRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/reconciliation': typeof AdminReconciliationRoute
   '/admin/referrals': typeof AdminReferralsRoute
   '/admin/refunds': typeof AdminRefundsRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/reviews': typeof AdminReviewsRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/support': typeof AdminSupportRoute
@@ -858,11 +876,13 @@ export interface FileRouteTypes {
     | '/admin/orders'
     | '/admin/payments'
     | '/admin/payouts'
+    | '/admin/product-tags'
     | '/admin/products'
     | '/admin/reconciliation'
     | '/admin/referrals'
     | '/admin/refunds'
     | '/admin/reports'
+    | '/admin/reviews'
     | '/admin/sellers'
     | '/admin/settings'
     | '/admin/support'
@@ -944,11 +964,13 @@ export interface FileRouteTypes {
     | '/admin/orders'
     | '/admin/payments'
     | '/admin/payouts'
+    | '/admin/product-tags'
     | '/admin/products'
     | '/admin/reconciliation'
     | '/admin/referrals'
     | '/admin/refunds'
     | '/admin/reports'
+    | '/admin/reviews'
     | '/admin/sellers'
     | '/admin/settings'
     | '/admin/support'
@@ -1033,11 +1055,13 @@ export interface FileRouteTypes {
     | '/admin/orders'
     | '/admin/payments'
     | '/admin/payouts'
+    | '/admin/product-tags'
     | '/admin/products'
     | '/admin/reconciliation'
     | '/admin/referrals'
     | '/admin/refunds'
     | '/admin/reports'
+    | '/admin/reviews'
     | '/admin/sellers'
     | '/admin/settings'
     | '/admin/support'
@@ -1441,6 +1465,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSellersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/reviews': {
+      id: '/admin/reviews'
+      path: '/reviews'
+      fullPath: '/admin/reviews'
+      preLoaderRoute: typeof AdminReviewsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/reports': {
       id: '/admin/reports'
       path: '/reports'
@@ -1474,6 +1505,13 @@ declare module '@tanstack/react-router' {
       path: '/products'
       fullPath: '/admin/products'
       preLoaderRoute: typeof AdminProductsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/product-tags': {
+      id: '/admin/product-tags'
+      path: '/product-tags'
+      fullPath: '/admin/product-tags'
+      preLoaderRoute: typeof AdminProductTagsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/payouts': {
@@ -1774,11 +1812,13 @@ interface AdminRouteChildren {
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminPayoutsRoute: typeof AdminPayoutsRoute
+  AdminProductTagsRoute: typeof AdminProductTagsRoute
   AdminProductsRoute: typeof AdminProductsRoute
   AdminReconciliationRoute: typeof AdminReconciliationRoute
   AdminReferralsRoute: typeof AdminReferralsRoute
   AdminRefundsRoute: typeof AdminRefundsRoute
   AdminReportsRoute: typeof AdminReportsRoute
+  AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSellersRoute: typeof AdminSellersRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSupportRoute: typeof AdminSupportRoute
@@ -1810,11 +1850,13 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminOrdersRoute: AdminOrdersRoute,
   AdminPaymentsRoute: AdminPaymentsRoute,
   AdminPayoutsRoute: AdminPayoutsRoute,
+  AdminProductTagsRoute: AdminProductTagsRoute,
   AdminProductsRoute: AdminProductsRoute,
   AdminReconciliationRoute: AdminReconciliationRoute,
   AdminReferralsRoute: AdminReferralsRoute,
   AdminRefundsRoute: AdminRefundsRoute,
   AdminReportsRoute: AdminReportsRoute,
+  AdminReviewsRoute: AdminReviewsRoute,
   AdminSellersRoute: AdminSellersRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSupportRoute: AdminSupportRoute,

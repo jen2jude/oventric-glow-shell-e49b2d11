@@ -455,7 +455,7 @@ export const adminReferralOverview = createServerFn({ method: "GET" })
     async ({
       context,
     }): Promise<{ settings: AdminReferralSettings; referrals: AdminReferralRow[] }> => {
-      await assertRole(context as Ctx, ["finance", "support", "content"]);
+      await assertRole(context as Ctx, ["finance", "support"]);
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const sb = supabaseAdmin as any;
 

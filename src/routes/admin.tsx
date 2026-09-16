@@ -27,6 +27,9 @@ import {
   Landmark,
   Undo2,
   ScanSearch,
+  Ticket,
+  Star,
+  Tag,
 } from "lucide-react";
 
 import { canAccessSection, type ManagementRole } from "@/lib/admin-roles";
@@ -108,7 +111,12 @@ const NAV: NavItem[] = [
   { to: "/admin/cashback-wallet", label: "Cashback", icon: Gift, group: "Money" },
   { to: "/admin/reconciliation", label: "Reconciliation", icon: ScanSearch, group: "Money" },
 
+  { to: "/admin/coupons", label: "Coupons", icon: Ticket, group: "Promotions" },
+  { to: "/admin/referrals", label: "Referrals", icon: Gift, group: "Promotions" },
+
   { to: "/admin/reports", label: "Reports", icon: ShieldCheck, group: "Community" },
+  { to: "/admin/reviews", label: "Reviews", icon: Star, group: "Community" },
+  { to: "/admin/product-tags", label: "Product Tags", icon: Tag, group: "Community" },
   { to: "/admin/communications", label: "Communications", icon: Radio, group: "Community" },
   { to: "/admin/support", label: "Support Desk", icon: LifeBuoy, group: "Community" },
 
