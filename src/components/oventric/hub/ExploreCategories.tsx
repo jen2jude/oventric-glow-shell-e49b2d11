@@ -3,7 +3,6 @@ import {
   Shirt,
   Home,
   Layers,
-  GraduationCap,
   Briefcase,
 } from "lucide-react";
 
@@ -13,7 +12,6 @@ export function ExploreCategories({ onSelect }: { onSelect: (cat: string) => voi
     { name: "Fashion", icon: Shirt, tint: "text-[#A855F7]", glow: "bg-[#A855F7]" },
     { name: "Home & Living", icon: Home, tint: "text-[#22C55E]", glow: "bg-[#22C55E]" },
     { name: "Digital Assets", icon: Layers, tint: "text-[#F59E0B]", glow: "bg-[#F59E0B]" },
-    { name: "Courses", icon: GraduationCap, tint: "text-[#EC4899]", glow: "bg-[#EC4899]" },
     { name: "Jobs", icon: Briefcase, tint: "text-[#2DD4BF]", glow: "bg-[#2DD4BF]" },
   ];
 

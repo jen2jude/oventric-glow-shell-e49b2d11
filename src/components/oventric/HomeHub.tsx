@@ -20,7 +20,6 @@ import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { getMyFullProfile } from "@/lib/profiles.functions";
 import { getDiscoveryFeed } from "@/lib/discovery.functions";
-import { listCourses } from "@/lib/academy.functions";
 import { safeFormatDisplayPrice, formatMoney, usdRate } from "@/lib/fx-display";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { SellSwitcherModal } from "@/components/oventric/SellSwitcherModal";
