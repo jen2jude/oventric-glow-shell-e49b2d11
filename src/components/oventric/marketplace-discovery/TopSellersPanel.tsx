@@ -29,7 +29,6 @@ export function TopSellersPanel({
 }: {
   onClose: () => void;
   onOpenShop: (slug: string) => void;
-  kind?: "digital" | "physical" | "all";
 }) {
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("top");
@@ -50,7 +49,7 @@ export function TopSellersPanel({
 
   const { data, isLoading } = useQuery({
     queryKey: ["top-sellers", kind],
-    queryFn: () => fetchSellers({ data: { kind } }),
+    queryFn: () => fetchSellers(),
   });
 
   const all: TopSellerDTO[] = data ?? [];

@@ -51,7 +51,7 @@ function SellersPage() {
 
   useEffect(() => {
     let cancelled = false;
-    loadSellers({ data: { kind: "all" } })
+    loadSellers()
       .then((rows) => {
         if (cancelled) return;
         setSellers(

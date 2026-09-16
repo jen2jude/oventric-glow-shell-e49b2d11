@@ -86,8 +86,8 @@ function AppMarketplace() {
       }
       try {
         const [d, p, c] = await Promise.all([
-          loadDiscovery({ data: { kind: kindParam } }),
-          loadProducts({ data: { kind: kindParam } }),
+          loadDiscovery(),
+          loadProducts(),
           loadCats(),
         ]);
         setDiscovery(d as Discovery);

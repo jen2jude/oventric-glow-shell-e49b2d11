@@ -1444,10 +1444,12 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
         .limit(10),
     );
 
-    // 4. Sellers (profiles that actually have active products of the selected kind)
-    let sellerQuery = sb.from("products").select("seller_id").eq("status", "active");
-    if (kind !== "all") sellerQuery = sellerQuery.eq("kind", kind);
-    const { data: sellerIdRows } = await sellerQuery.limit(500);
+    // 4. Sellers (profiles that actually have active products)
+    const { data: sellerIdRows } = await sb
+      .from("products")
+      .select("seller_id")
+      .eq("status", "active")
+      .limit(500);
     const sellerCounts = new Map<string, number>();
     (sellerIdRows ?? []).forEach((r) => {
       const id = r.seller_id as string;
