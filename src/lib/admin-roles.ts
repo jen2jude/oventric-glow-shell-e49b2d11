@@ -44,9 +44,14 @@ export const SECTION_ACCESS: Record<string, ManagementRole[]> = {
   "/admin/categories": ["admin", "content"],
   "/admin/marketplace-controls": ["admin", "moderator", "content"],
 
-  // Money
+  // Money — read-only financial visibility for finance; every mutation on
+  // these pages still runs through the existing super-admin-only backend paths.
+  "/admin/payments": ["admin", "finance"],
+  "/admin/ledger": ["admin", "finance"],
   "/admin/system-wallets": ["admin", "finance"],
   "/admin/payouts": ["admin", "finance"],
+  "/admin/refunds": ["admin", "finance"],
+  "/admin/reconciliation": ["admin", "finance"],
   "/admin/disputes": ["admin", "moderator", "finance", "support"],
   "/admin/cashback-wallet": ["admin", "finance"],
 
