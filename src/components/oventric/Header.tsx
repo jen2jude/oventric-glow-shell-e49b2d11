@@ -12,6 +12,7 @@ import {
   MessageSquare,
   Users,
   Store,
+  ShoppingBag,
   GraduationCap,
   Target,
   Newspaper,
