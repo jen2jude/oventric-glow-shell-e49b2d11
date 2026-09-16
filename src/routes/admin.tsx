@@ -23,6 +23,10 @@ import {
   ShieldAlert,
   UserCog,
   LifeBuoy,
+  CreditCard,
+  Landmark,
+  Undo2,
+  ScanSearch,
 } from "lucide-react";
 
 import { canAccessSection, type ManagementRole } from "@/lib/admin-roles";
