@@ -559,7 +559,7 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
                 {viewing.body ? (
                   isHtml(viewing.body) ? (
                     <div
-                      className="rich-comms text-sm text-slate-200 leading-relaxed break-words"
+                      className="rich-comms text-sm text-foreground leading-relaxed break-words"
                       dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(viewing.body, {
                           ALLOWED_TAGS: [
@@ -601,17 +601,17 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
                       }}
                     />
                   ) : (
-                    <p className="text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">
+                    <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
                       {renderLinkified(viewing.body)}
                     </p>
                   )
                 ) : (
-                  <p className="text-sm text-slate-500 italic">No additional content.</p>
+                  <p className="text-sm text-muted-foreground italic">No additional content.</p>
                 )}
               </div>
 
               {viewing.link && (
-                <div className="px-5 py-3 border-t border-white/5 bg-[#121214]">
+                <div className="px-5 py-3 border-t bg-muted">
                   <button
                     onClick={() => {
                       const url = viewing.link!;
@@ -623,7 +623,7 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
                         window.location.href = url;
                       }
                     }}
-                    className="w-full py-2.5 rounded-[10px] bg-emerald-500 hover:bg-emerald-400 text-black text-sm font-bold flex items-center justify-center gap-2"
+                    className="w-full py-2.5 rounded-[10px] bg-primary hover:opacity-90 text-primary-foreground text-sm font-semibold flex items-center justify-center gap-2 transition-opacity"
                   >
                     Open link <ArrowRight className="w-4 h-4" />
                   </button>
