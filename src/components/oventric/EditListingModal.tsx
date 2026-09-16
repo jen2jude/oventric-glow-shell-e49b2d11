@@ -14,27 +14,6 @@ import { StockToggleField } from "@/components/oventric/StockToggleField";
 import { snapshotFxRates } from "@/lib/fx.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 
-const PHYS_CATEGORIES = [
-  {
-    value: "electronics",
-    label: "Electronics",
-    subs: ["Phones", "Laptops", "Accessories", "Audio", "Cameras"],
-  },
-  { value: "fashion", label: "Fashion", subs: ["Men", "Women", "Kids", "Shoes", "Watches"] },
-  { value: "home", label: "Home & Living", subs: ["Furniture", "Appliances", "Decor", "Kitchen"] },
-  {
-    value: "beauty",
-    label: "Beauty & Health",
-    subs: ["Skincare", "Makeup", "Wellness", "Fragrance"],
-  },
-  { value: "vehicles", label: "Vehicles", subs: ["Cars", "Bikes", "Parts", "Accessories"] },
-  { value: "sports", label: "Sports & Outdoors", subs: ["Fitness", "Outdoor", "Team Sports"] },
-  { value: "other", label: "Other", subs: [] },
-];
-
-const CONDITIONS = ["Brand New", "Used", "Refurbished"];
-const YN = ["Yes", "No", "Maybe"];
-
 interface Props {
   product: ProductDTO;
   onClose: () => void;
@@ -42,17 +21,15 @@ interface Props {
 }
 
 /**
- * Prefilled edit form for rejected listings. Handles both digital and physical
- * products: fields shown vary by `product.kind`. Existing images are shown and
- * can be removed; new images can be appended (physical only). On submit the
- * product moves back to `pending` and admins are notified.
+ * Prefilled edit form for rejected listings (digital assets only). Existing
+ * images are shown and can be removed; new images can be appended. On submit
+ * the product moves back to `pending` and admins are notified.
  */
 export function EditListingModal({ product, onClose, onResubmitted }: Props) {
   const persist = useServerFn(updateAndResubmitProduct);
   const snapshotFx = useServerFn(snapshotFxRates);
   const { homeCurrency } = useOnboarding();
 
-  const isPhysical = product.kind === "physical";
   // Live listings stay live after an edit unless the deliverable itself changes.
   const isLive = product.status === "active";
 
@@ -60,11 +37,10 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
   const loadCats = useServerFn(listMarketplaceCategories);
   const [digitalCats, setDigitalCats] = useState<CategoryNode[]>([]);
   useEffect(() => {
-    if (isPhysical) return;
     loadCats()
       .then((rows) => setDigitalCats((rows ?? []).filter((r) => r.kind === "digital")))
       .catch(() => {});
-  }, [isPhysical, loadCats]);
+  }, [loadCats]);
 
 
   // Shared fields, prefilled.
@@ -72,7 +48,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
   const [description, setDescription] = useState(product.description);
   const [basicInfo, setBasicInfo] = useState(product.basicInfo ?? "");
   const [inStock, setInStock] = useState(product.inStock !== false);
-  const [activationGuide, setActivationGuide] = useState(isPhysical ? "" : (product.activationGuide ?? ""));
+  const [activationGuide, setActivationGuide] = useState(product.activationGuide ?? "");
   const [category, setCategory] = useState(product.category);
   const [subcategory, setSubcategory] = useState(product.subcategory ?? "");
   // Price is edited in the seller's base currency; on submit we resnap FX.
@@ -117,7 +93,6 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
     [newPreviews],
   );
 
-  const chosenCat = PHYS_CATEGORIES.find((c) => c.value === category);
 
   const addImages = (files: FileList | null) => {
     if (!files) return;
@@ -162,13 +137,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
 
     let sellerPhone: string | null | undefined = undefined;
 
-    if (isPhysical) {
-      const digits = phone.replace(/\D/g, "");
-      if (digits.length < 6) return toast.error("Enter a valid phone number");
-      sellerPhone = digits;
-      const totalImages = existing.length + newFiles.length;
-      if (totalImages < 3) return toast.error("Keep at least 3 product images");
-    } else if (existing.length + newFiles.length < 1) {
+    if (existing.length + newFiles.length < 1) {
       return toast.error("Keep at least 1 product image");
     }
 
@@ -196,7 +165,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
 
       // Optional replacement asset file (digital listings only).
       let filePath: string | undefined = undefined;
-      if (!isPhysical && assetFile) {
+      if (assetFile) {
         setProgress("Uploading replacement file...");
         const safe = assetFile.name.replace(/[^\w.\-]+/g, "_");
         const path = `${uid}/${Date.now()}-${safe}`;
@@ -227,17 +196,9 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
           originalCurrency: homeCurrency,
           originalAmount: priceLocal,
           fxSnapshot: snapshot,
-          externalUrl: isPhysical ? null : externalUrl.trim() || null,
+          externalUrl: externalUrl.trim() || null,
           ...(filePath ? { filePath } : {}),
           imagePaths,
-          condition: isPhysical ? condition : null,
-          brand: isPhysical ? brand.trim() || null : null,
-          location: isPhysical ? location.trim() || null : null,
-          negotiable: isPhysical ? negotiable : null,
-          delivery: isPhysical ? delivery : null,
-          sellerPhone: sellerPhone ?? null,
-          whatsappNumber: sellerPhone ?? null,
-          socialLink: isPhysical ? socialLink.trim() || null : null,
           sellerResponse: sellerResponse.trim() || null,
         },
       });
@@ -296,7 +257,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
               <div>
                 <h2 className="text-xl font-bold text-white">Edit Listing</h2>
                 <p className="text-xs text-slate-400 mt-1">
-                  {isPhysical ? "Physical goods listing" : "Digital asset listing"} ·{" "}
+                  Digital asset listing ·{" "}
                   {product.status === "pending"
                     ? "pending review"
                     : product.status === "active"
@@ -341,7 +302,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
                 />
               </label>
 
-              {!isPhysical && digitalCats.length > 0 && (
+              {digitalCats.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <label className="block">
                     <span className="text-xs font-medium text-slate-300">Category</span>
