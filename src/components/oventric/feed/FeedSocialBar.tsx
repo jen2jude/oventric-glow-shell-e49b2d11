@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, Bell, MessageSquare, UserPlus, Users } from "lucide-react";
+import { ArrowLeft, Bell, MessageSquare, UserPlus } from "lucide-react";
 import { CountBadge } from "@/components/oventric/CountBadge";
 import {
   NotificationsDrawer,
@@ -16,17 +16,15 @@ type Props = {
 
 /**
  * Social management toolbar shown above the newsfeed for browser visitors.
- * Gives quick access to notifications, chats, follow requests and circle
- * requests without the app-shell header.
+ * Gives quick access to notifications, chats and follow requests without
+ * the app-shell header.
  */
 export function FeedSocialBar({ onOpenMessages }: Props) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [reqOpen, setReqOpen] = useState(false);
-  const [reqTab, setReqTab] = useState<"follow" | "circle">("follow");
 
   const unreadNotifs = useUnreadNotificationsCount();
-  const { messages, sections } = useUnreadCounts();
-  const circleCount = sections?.["Circles"] ?? 0;
+  const { messages } = useUnreadCounts();
 
   const Item = ({
     icon: Icon,
@@ -78,29 +76,13 @@ export function FeedSocialBar({ onOpenMessages }: Props) {
         <Item
           icon={UserPlus}
           label="Follow requests"
-          onClick={() => {
-            setReqTab("follow");
-            setReqOpen(true);
-          }}
-        />
-        <Item
-          icon={Users}
-          label="Circle requests"
-          count={circleCount}
-          onClick={() => {
-            setReqTab("circle");
-            setReqOpen(true);
-          }}
+          onClick={() => setReqOpen(true)}
         />
       </nav>
 
 
       <NotificationsDrawer open={notifOpen} onClose={() => setNotifOpen(false)} />
-      <RequestsInboxDrawer
-        open={reqOpen}
-        onClose={() => setReqOpen(false)}
-        initialTab={reqTab}
-      />
+      <RequestsInboxDrawer open={reqOpen} onClose={() => setReqOpen(false)} />
     </>
   );
 }
