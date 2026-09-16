@@ -525,29 +525,31 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
         typeof document !== "undefined" &&
         createPortal(
           <div
-            className="modal-light fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/70 animate-fade-in p-4"
+            className="modal-light fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-900/50 backdrop-blur-[2px] animate-fade-in p-4"
             onClick={() => setViewing(null)}
             role="dialog"
             aria-modal="true"
             aria-label={viewing.title}
           >
             <div
-              className="w-full max-w-md my-auto bg-[#1E1E24] border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+              className="web-notifications w-full max-w-lg my-auto border rounded-2xl shadow-2xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-start gap-3 px-5 py-4 border-b border-white/5">
-                <div className="w-9 h-9 rounded-[10px] flex items-center justify-center bg-[#121214] border border-white/10 shrink-0">
+              <div className="flex items-start gap-3 px-5 py-4 border-b">
+                <div className="w-9 h-9 rounded-[10px] flex items-center justify-center bg-muted border shrink-0">
                   {iconForKind(viewing.kind)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-white font-bold text-sm">{viewing.title}</p>
-                  <p className="text-[10px] uppercase tracking-wider text-slate-500 mt-0.5">
+                  <p className="font-wallet-display text-foreground font-semibold text-base">
+                    {viewing.title}
+                  </p>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">
                     {viewing.kind.replace(/_/g, " ")} · {timeAgo(viewing.created_at)}
                   </p>
                 </div>
                 <button
                   onClick={() => setViewing(null)}
-                  className="p-1.5 rounded-[10px] hover:bg-white/5 text-slate-400 hover:text-white"
+                  className="p-1.5 rounded-[10px] hover:bg-muted text-muted-foreground hover:text-foreground"
                   aria-label="Close"
                 >
                   <X className="w-4 h-4" />
