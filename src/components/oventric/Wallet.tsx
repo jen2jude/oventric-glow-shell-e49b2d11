@@ -36,7 +36,6 @@ import { AddCapitalModal } from "@/components/oventric/wallet/AddCapitalModal";
 import { PayoutModal } from "@/components/oventric/wallet/PayoutModal";
 import { Button } from "@/components/ui/button";
 import logoFull from "@/assets/oventric-full-transparent.png";
-import wallet3d from "@/assets/wallet-hero-3d.png.asset.json";
 
 function fmt(value: number, currency: Currency) {
   return formatMoney(value, currency);
@@ -133,8 +132,8 @@ export function Wallet() {
   ];
 
   return (
-    <div className="wallet-shell min-h-full bg-wallet-canvas text-wallet-copy">
-      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-wallet-line bg-wallet-canvas px-4 md:hidden">
+    <div className="wallet-shell min-h-full bg-wallet-canvas font-wallet-body text-wallet-copy">
+      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-wallet-line bg-wallet-panel px-4 md:hidden">
         <Button variant="ghost" size="icon" aria-label="Menu" onClick={() => setMenuOpen(true)} className="text-wallet-copy-muted hover:bg-wallet-muted hover:text-wallet-copy">
           <Menu />
         </Button>
@@ -151,14 +150,14 @@ export function Wallet() {
       <MegaMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
       <NotificationsDrawer open={notifOpen} onClose={() => setNotifOpen(false)} />
 
-      <main className="mx-auto w-full max-w-[1280px] px-4 py-6 sm:px-6 md:px-8 md:py-10 xl:px-10">
-        <div className="mb-7 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+      <main className="mx-auto w-full max-w-[1360px] px-4 py-8 sm:px-6 md:px-10 md:py-14 xl:px-14">
+        <div className="mb-10 flex flex-col gap-6 border-b border-wallet-line pb-8 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-wallet-crimson">
               <ShieldCheck className="h-4 w-4" /> Protected wallet
             </div>
-            <h1 className="font-wallet-display text-3xl font-semibold text-wallet-copy sm:text-4xl">Wallet overview</h1>
-            <p className="mt-2 text-sm text-wallet-copy-muted">Balances, earnings and recent activity in {cur}.</p>
+            <h1 className="font-wallet-display text-3xl font-semibold text-wallet-copy sm:text-5xl">Your wallet</h1>
+            <p className="mt-3 text-sm text-wallet-copy-muted sm:text-base">Balances, earnings and recent activity in {cur}.</p>
           </div>
           <div className="grid grid-cols-2 gap-2 sm:flex">
             <Button variant="outline" onClick={() => requireAuth(() => setTransferOpen(true))} className="h-11 border-wallet-line bg-wallet-panel px-5 text-wallet-copy hover:bg-wallet-muted hover:text-wallet-copy"><Send /> Send</Button>
@@ -172,50 +171,47 @@ export function Wallet() {
           </button>
         )}
 
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
-          <section className="relative min-h-[300px] overflow-hidden rounded-[10px] border border-wallet-line bg-wallet-hero p-6 sm:p-8 lg:col-span-8">
-            <img src={wallet3d.url} alt="" aria-hidden width={1024} height={1024} className="pointer-events-none absolute -bottom-7 right-0 w-44 select-none opacity-80 sm:right-7 sm:w-56" />
-            <div className="relative z-10 max-w-[70%]">
+        <section className="relative border-y border-wallet-line bg-wallet-panel px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+            <div className="relative z-10 max-w-4xl">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-wallet-copy-muted">
                 Total balance <span className="rounded-md bg-wallet-muted px-2 py-1 text-[10px] text-wallet-copy">{cur}</span>
               </div>
-              <div className="mt-4 font-wallet-display text-4xl font-semibold tabular-nums text-wallet-copy sm:text-5xl lg:text-6xl">{mask(fmt(main, cur))}</div>
+              <div className="mt-4 font-wallet-display text-4xl font-semibold tabular-nums text-wallet-copy sm:text-6xl lg:text-7xl">{mask(fmt(main, cur))}</div>
               <div className="mt-3 flex items-center gap-1.5 text-sm text-wallet-copy-muted">≈ {mask(`$${usdEquiv.toFixed(2)}`)} USD <Info className="h-3.5 w-3.5" /></div>
             </div>
-            <div className="absolute inset-x-6 bottom-6 z-10 grid max-w-lg grid-cols-2 gap-5 border-t border-wallet-line pt-5 sm:inset-x-8">
+            <div className="relative z-10 mt-10 grid max-w-2xl grid-cols-2 gap-8 border-t border-wallet-line pt-6">
               <div><p className="text-xs text-wallet-copy-muted">Available</p><p className="mt-1 text-lg font-semibold tabular-nums text-wallet-copy">{mask(fmt(available, cur))}</p></div>
               <div><p className="text-xs text-wallet-copy-muted">In escrow</p><p className="mt-1 text-lg font-semibold tabular-nums text-wallet-copy">{mask(fmt(locked, cur))}</p></div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => requireAuth(toggleBalancesHidden)} aria-label={hide ? "Show balances" : "Hide balances"} className="absolute right-4 top-4 z-20 border border-wallet-line bg-wallet-muted text-wallet-copy-muted hover:text-wallet-copy"><Eye className={hide ? "hidden" : "block"} /><EyeOff className={hide ? "block" : "hidden"} /></Button>
-          </section>
+        </section>
 
-          <section className="rounded-[10px] border border-wallet-line bg-wallet-panel p-5 lg:col-span-4">
-            <div className="mb-4"><h2 className="font-wallet-display text-lg font-semibold text-wallet-copy">Quick actions</h2><p className="mt-1 text-xs text-wallet-copy-muted">Manage your money securely.</p></div>
-            <div className="grid grid-cols-2 gap-3">
+          <section className="border-b border-wallet-line py-8">
+            <div className="mb-5"><h2 className="font-wallet-display text-xl font-semibold text-wallet-copy">Move your money</h2><p className="mt-1 text-sm text-wallet-copy-muted">Manage your funds securely.</p></div>
+            <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[10px] border border-wallet-line bg-wallet-line md:grid-cols-4">
               {actions.map((action) => (
-                <Button key={action.label} variant="ghost" onClick={action.onClick} className={`h-auto min-h-24 flex-col items-start gap-2 rounded-[10px] border p-4 text-left ${action.primary ? "border-wallet-crimson-line bg-wallet-crimson-soft text-wallet-copy hover:bg-wallet-crimson-soft" : "border-wallet-line bg-wallet-panel-raised text-wallet-copy hover:bg-wallet-muted hover:text-wallet-copy"}`}>
+                <Button key={action.label} variant="ghost" onClick={action.onClick} className={`h-auto min-h-28 flex-col items-start gap-3 rounded-none border-0 p-5 text-left ${action.primary ? "bg-wallet-crimson-soft text-wallet-copy hover:bg-wallet-crimson-soft" : "bg-wallet-panel text-wallet-copy hover:bg-wallet-panel-raised hover:text-wallet-copy"}`}>
                   <action.icon className={action.primary ? "text-wallet-crimson" : "text-wallet-copy-muted"} />
                   <span><span className="block text-sm font-semibold">{action.label}</span><span className="mt-0.5 block text-[11px] font-normal text-wallet-copy-muted">{action.description}</span></span>
                 </Button>
               ))}
             </div>
           </section>
-        </div>
 
-        <section className="mt-5">
-          <div className="mb-3 flex items-end justify-between"><div><h2 className="font-wallet-display text-lg font-semibold text-wallet-copy">Balance breakdown</h2><p className="mt-1 text-xs text-wallet-copy-muted">How your Oventric funds are distributed.</p></div></div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <section className="py-10">
+          <div className="mb-6 flex items-end justify-between"><div><h2 className="font-wallet-display text-2xl font-semibold text-wallet-copy">Balance breakdown</h2><p className="mt-2 text-sm text-wallet-copy-muted">How your Oventric funds are distributed.</p></div></div>
+          <div className="grid grid-cols-1 border-y border-wallet-line sm:grid-cols-2 xl:grid-cols-4 xl:divide-x xl:divide-wallet-line">
             {subWallets.map((wallet) => {
               const content = <><div className="flex items-start justify-between"><span className={`flex h-9 w-9 items-center justify-center rounded-[10px] ${wallet.tone}`}><wallet.icon className="h-4 w-4" /></span><ChevronRight className="h-4 w-4 text-wallet-copy-faint" /></div><p className="mt-5 text-xs text-wallet-copy-muted">{wallet.label}</p><p className="mt-1 font-wallet-display text-xl font-semibold tabular-nums text-wallet-copy">{mask(wallet.value)}</p><p className="mt-1 text-[11px] text-wallet-copy-faint">{wallet.sub}</p></>;
-              return isAuthenticated ? <Link key={wallet.label} to={wallet.to} className="rounded-[10px] border border-wallet-line bg-wallet-panel p-4 transition-colors hover:border-wallet-line-strong hover:bg-wallet-panel-raised">{content}</Link> : <button key={wallet.label} onClick={() => openGate("funding")} className="rounded-[10px] border border-wallet-line bg-wallet-panel p-4 text-left opacity-75 transition-opacity hover:opacity-100">{content}</button>;
+              return isAuthenticated ? <Link key={wallet.label} to={wallet.to} className="border-b border-wallet-line bg-wallet-panel p-5 transition-colors hover:bg-wallet-panel-raised sm:nth-[3]:border-b-0 sm:nth-[4]:border-b-0 xl:border-b-0 xl:px-7">{content}</Link> : <button key={wallet.label} onClick={() => openGate("funding")} className="border-b border-wallet-line bg-wallet-panel p-5 text-left opacity-75 transition-opacity hover:opacity-100 sm:nth-[3]:border-b-0 sm:nth-[4]:border-b-0 xl:border-b-0 xl:px-7">{content}</button>;
             })}
           </div>
         </section>
 
-        <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-12">
-          <section className="overflow-hidden rounded-[10px] border border-wallet-line bg-wallet-panel xl:col-span-8">
-            <div className="flex items-center justify-between border-b border-wallet-line px-5 py-4">
-              <div><h2 className="font-wallet-display text-lg font-semibold text-wallet-copy">Recent activity</h2><p className="mt-1 text-xs text-wallet-copy-muted">Your latest wallet movements.</p></div>
+        <div className="grid grid-cols-1 gap-10 border-t border-wallet-line pt-10 xl:grid-cols-12">
+          <section className="overflow-hidden xl:col-span-8">
+            <div className="flex items-center justify-between border-b border-wallet-line py-4">
+              <div><h2 className="font-wallet-display text-2xl font-semibold text-wallet-copy">Recent activity</h2><p className="mt-1 text-sm text-wallet-copy-muted">Your latest wallet movements.</p></div>
               {isAuthenticated ? <Link to="/wallet/ledger" className="text-sm font-semibold text-wallet-crimson hover:text-wallet-crimson-strong">View all</Link> : <button onClick={() => openGate("funding")} className="text-sm font-semibold text-wallet-crimson">View all</button>}
             </div>
             <div className="hidden grid-cols-[minmax(0,1.5fr)_0.8fr_1fr] border-b border-wallet-line bg-wallet-panel-raised px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-wallet-copy-faint sm:grid"><span>Transaction</span><span>Date</span><span className="text-right">Amount</span></div>
@@ -223,7 +219,7 @@ export function Wallet() {
             {isAuthenticated && totalTxPages > 1 && <div className="flex items-center justify-end gap-3 border-t border-wallet-line px-5 py-3"><Button variant="ghost" size="icon" disabled={currentPage === 0} onClick={() => setTxPage((page) => Math.max(0, page - 1))} aria-label="Previous page" className="text-wallet-copy-muted hover:bg-wallet-muted hover:text-wallet-copy"><ChevronLeft /></Button><span className="text-xs tabular-nums text-wallet-copy-muted">{currentPage + 1} / {totalTxPages}</span><Button variant="ghost" size="icon" disabled={currentPage >= totalTxPages - 1} onClick={() => setTxPage((page) => Math.min(totalTxPages - 1, page + 1))} aria-label="Next page" className="text-wallet-copy-muted hover:bg-wallet-muted hover:text-wallet-copy"><ChevronRight /></Button></div>}
           </section>
 
-          <section className="rounded-[10px] border border-wallet-line bg-wallet-panel p-5 xl:col-span-4">
+          <section className="self-start border-l-2 border-wallet-crimson bg-wallet-panel-raised p-6 xl:col-span-4 xl:p-8">
             <div className="mb-6"><p className="text-xs font-semibold uppercase tracking-[0.1em] text-wallet-crimson">Cashback planner</p><h2 className="mt-2 font-wallet-display text-lg font-semibold text-wallet-copy">Estimate your earnings</h2><p className="mt-1 text-xs leading-5 text-wallet-copy-muted">See how spending volume may affect estimated annual cashback.</p></div>
             <div className="flex items-end justify-between gap-3"><label htmlFor="wallet-spend" className="text-xs text-wallet-copy-muted">Monthly volume</label><span className="font-wallet-display text-lg font-semibold tabular-nums text-wallet-copy">{fmt(spend, cur)}</span></div>
             <input id="wallet-spend" type="range" min={0} max={Math.round(tierMid * 10)} step={Math.max(1, Math.round(tierMid / 100))} value={spend} onChange={(event) => setSpend(Number(event.target.value))} className="mt-4 h-1.5 w-full cursor-pointer appearance-none rounded-full bg-wallet-muted accent-wallet-crimson" />

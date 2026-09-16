@@ -106,8 +106,8 @@
 }
 
 @theme {
-  --font-wallet-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-wallet-body: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-wallet-display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-wallet-body: "Manrope", ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Brand accent remap: green/emerald utilities resolve to the sharp hero blue. */
@@ -284,27 +284,27 @@ body {
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 12%);
   --ring: oklch(0.85 0 0);
-  --wallet-canvas: oklch(0.13 0.004 285);
-  --wallet-panel: oklch(0.18 0.006 285);
-  --wallet-panel-raised: oklch(0.21 0.007 285);
-  --wallet-hero: oklch(0.17 0.018 285);
-  --wallet-muted: oklch(1 0 0 / 7%);
-  --wallet-line: oklch(1 0 0 / 9%);
-  --wallet-line-strong: oklch(1 0 0 / 18%);
-  --wallet-copy: oklch(0.97 0 0);
-  --wallet-copy-muted: oklch(0.7 0.008 285);
-  --wallet-copy-faint: oklch(0.55 0.008 285);
+  --wallet-canvas: oklch(0.975 0.003 265);
+  --wallet-panel: oklch(1 0 0);
+  --wallet-panel-raised: oklch(0.96 0.004 265);
+  --wallet-hero: oklch(1 0 0);
+  --wallet-muted: oklch(0.94 0.006 265);
+  --wallet-line: oklch(0.89 0.008 265);
+  --wallet-line-strong: oklch(0.8 0.012 265);
+  --wallet-copy: oklch(0.2 0.008 265);
+  --wallet-copy-muted: oklch(0.48 0.01 265);
+  --wallet-copy-faint: oklch(0.62 0.01 265);
   --wallet-crimson: oklch(0.65 0.2 22);
   --wallet-crimson-strong: oklch(0.59 0.22 22);
   --wallet-crimson-soft: oklch(0.65 0.2 22 / 12%);
   --wallet-crimson-line: oklch(0.65 0.2 22 / 34%);
   --wallet-on-crimson: oklch(0.99 0 0);
-  --wallet-positive: oklch(0.78 0.15 155);
-  --wallet-positive-soft: oklch(0.78 0.15 155 / 12%);
-  --wallet-warning: oklch(0.82 0.15 78);
-  --wallet-warning-soft: oklch(0.82 0.15 78 / 12%);
-  --wallet-info: oklch(0.75 0.12 245);
-  --wallet-info-soft: oklch(0.75 0.12 245 / 12%);
+  --wallet-positive: oklch(0.5 0.14 155);
+  --wallet-positive-soft: oklch(0.93 0.05 155);
+  --wallet-warning: oklch(0.58 0.14 78);
+  --wallet-warning-soft: oklch(0.94 0.06 78);
+  --wallet-info: oklch(0.5 0.13 245);
+  --wallet-info-soft: oklch(0.94 0.04 245);
 
   /* Create chooser: premium dark to match the app shell. */
   --create-surface: oklch(0.16 0.008 260);
