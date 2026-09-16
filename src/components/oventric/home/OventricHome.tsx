@@ -288,7 +288,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           title="Shop by Category"
           action={{ label: "View all", onClick: () => onSelect("Marketplace") }}
         />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
+        <div className="grid grid-cols-4 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
           {categories.map((c, i) => {
             const { Icon } = visualForCategory(c.slug, c.name);
             const tint = TILE_TINTS[i % TILE_TINTS.length]!;
@@ -297,12 +297,12 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
                 key={c.id}
                 type="button"
                 onClick={() => onSelect("Marketplace")}
-                className="flex items-center gap-3 rounded-[14px] border border-slate-200/80 bg-white p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)] active:scale-[0.98]"
+                className="flex flex-col items-center gap-2 rounded-[14px] border-slate-200/80 bg-transparent p-0 text-center transition-all active:scale-[0.98] sm:flex-row sm:gap-3 sm:border sm:bg-white sm:p-4 sm:text-left sm:hover:-translate-y-0.5 sm:hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
               >
-                <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-[12px] ${tint}`}>
-                  <Icon className="h-5 w-5" />
+                <span className={`grid h-14 w-14 shrink-0 place-items-center rounded-full ${tint} sm:h-11 sm:w-11 sm:rounded-[12px]`}>
+                  <Icon className="h-6 w-6 sm:h-5 sm:w-5" />
                 </span>
-                <span className="min-w-0 truncate text-sm font-bold capitalize text-slate-900">
+                <span className="min-w-0 max-w-full truncate text-xs font-bold capitalize text-slate-900 sm:text-sm">
                   {c.name.trim()}
                 </span>
               </button>
