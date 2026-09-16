@@ -133,18 +133,6 @@ const STEPS = [
 
 const PAY_METHODS = ["Visa", "Mastercard", "Verve", "Paystack", "Bank transfer"];
 
-const SOCIALS: Array<{
-  href: string;
-  label: string;
-  Icon: React.ComponentType<{ className?: string }>;
-}> = [
-  { href: "https://x.com/oventric", label: "X", Icon: Twitter },
-  { href: "https://instagram.com/oventric", label: "Instagram", Icon: Instagram },
-  { href: "https://youtube.com/@oventric", label: "YouTube", Icon: Youtube },
-  { href: "https://linkedin.com/company/oventric", label: "LinkedIn", Icon: Linkedin },
-  { href: "https://facebook.com/oventric", label: "Facebook", Icon: Facebook },
-];
-
 export type OventricHomeProps = {
   onSelect: (section: string) => void;
   onCreate?: () => void;
