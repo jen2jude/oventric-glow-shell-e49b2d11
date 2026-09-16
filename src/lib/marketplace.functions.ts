@@ -727,20 +727,49 @@ export function estimateSellerNetUSD(
 }
 
 
-/** Public: validate a coupon code. Returns the discount percent or null. */
+/**
+ * Validate a coupon against a real cart context. The server owns every part of
+ * this decision (existence, active window, product/seller eligibility, minimum
+ * spend, total and per-user usage limits) and returns the discount it computed.
+ */
 export const validateCoupon = createServerFn({ method: "POST" })
-  .inputValidator((i: { code: string }) => ({ code: String(i?.code ?? "").trim().toUpperCase() }))
-  .handler(async ({ data }) => {
-    if (!data.code) return { valid: false as const };
-    const sb = serverPublicClient();
-    const { data: row } = await sb
-      .from("coupons")
-      .select("code, discount_pct")
-      .eq("code", data.code)
-      .eq("active", true)
-      .maybeSingle();
-    if (!row) return { valid: false as const };
-    return { valid: true as const, code: row.code as string, discountPct: Number(row.discount_pct) };
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i: { code: string; productId?: string | null; quantity?: number | null }) => ({
+    code: String(i?.code ?? "").trim().toUpperCase(),
+    productId: i?.productId ? String(i.productId) : null,
+    quantity: Math.max(1, Math.min(20, Number(i?.quantity ?? 1))),
+  }))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    if (!data.code) return { valid: false as const, reason: "Enter a coupon code" };
+
+    let grossUSD = 0;
+    let sellerId: string | null = null;
+    if (data.productId) {
+      const { data: p } = await supabase
+        .from("products")
+        .select("id, seller_id, price_usd")
+        .eq("id", data.productId)
+        .maybeSingle();
+      if (!p) return { valid: false as const, reason: "Product not found" };
+      sellerId = (p.seller_id as string) ?? null;
+      grossUSD = Number((Number(p.price_usd) * data.quantity).toFixed(2));
+    }
+
+    const { validateCouponServer } = await import("@/lib/promotions.server");
+    const check = await validateCouponServer(supabase, data.code, {
+      userId,
+      productId: data.productId,
+      sellerId,
+      grossUSD,
+    });
+    if (!check.valid) return { valid: false as const, reason: check.reason };
+    return {
+      valid: true as const,
+      code: check.code,
+      discountPct: check.discountPct,
+      discountUSD: check.discountUSD,
+    };
   });
 
 /** Create + settle an order. Wallet method debits balance atomically. */
