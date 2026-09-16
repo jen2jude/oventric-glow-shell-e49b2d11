@@ -469,11 +469,11 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             Every checkout is encrypted and held in escrow until delivery is confirmed. Pay by card,
             bank transfer or from your Oventric wallet.
           </p>
-          <ul className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
+          <ul className="mt-6 flex items-center gap-2.5 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:justify-center sm:overflow-visible">
             {PAY_METHODS.map((m) => (
               <li
                 key={m.name}
-                className="flex h-14 items-center justify-center rounded-xl border border-slate-200 bg-white px-6 shadow-sm"
+                className="flex h-14 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white px-6 shadow-sm"
               >
                 <img src={m.src} alt={m.name} loading="lazy" className="h-8 w-auto max-w-[110px] object-contain" />
               </li>
