@@ -58,6 +58,33 @@ function subunit(amount: number) {
   return Math.max(1, Math.round(amount * 100));
 }
 
+/** True for the real, publicly published Oventric site (not preview builds). */
+function isProductionOrigin(origin: string): boolean {
+  try {
+    return /(^|\.)oventric\.com$/i.test(new URL(origin).host);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Production must run on live provider credentials or not take payments at all.
+ * Test keys stay usable on preview/dev hosts.
+ */
+function assertLiveCredentials(provider: "flutterwave" | "paystack", origin: string) {
+  if (!isProductionOrigin(origin)) return;
+  const key =
+    provider === "paystack"
+      ? (process.env.PAYSTACK_SECRET_KEY ?? "")
+      : (process.env.FLUTTERWAVE_SECRET_KEY ?? "");
+  const isTestKey = /^sk_test_/i.test(key) || /TEST/i.test(key.split("-")[0] ?? "");
+  if (isTestKey) {
+    throw new Error(
+      "Payments are unavailable right now. The live payment credentials are not configured.",
+    );
+  }
+}
+
 async function paystackInit(body: Record<string, unknown>) {
   const key = process.env.PAYSTACK_SECRET_KEY;
   if (!key) throw new Error("Paystack is not configured on the server.");
@@ -131,6 +158,14 @@ export async function createCharge(opts: {
     metadata.topup_fee = fee;
     metadata.topup_fee_currency = chargeCurrency;
   }
+
+  // Fail closed on a live site that is still holding test credentials — a
+  // production shopper must never be sent to a sandbox checkout.
+  assertLiveCredentials(provider, opts.origin);
+
+  // The authoritative amount we asked the provider to collect. Verification
+  // rejects any settlement whose paid amount/currency does not match this.
+  metadata.charge_amount = chargeAmount;
 
   const stamp = `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`.toUpperCase();
   const reference = provider === "flutterwave" ? `OVF_${stamp}` : `OVP_${stamp}`;
@@ -208,6 +243,8 @@ export interface VerifyResult {
   redirectTo: string | null;
   cashbackEarnedUSD: number;
   displayCurrency: string;
+  /** Who the provider metadata says paid — used to scope the return screen. */
+  payerId?: string | null;
 }
 
 export function providerForReference(reference: string): "flutterwave" | "paystack" {
@@ -233,6 +270,34 @@ async function markTopupFailed(reference: string, meta: Record<string, unknown>)
   }
 }
 
+/**
+ * Guard: what the provider says was paid must match the charge we created.
+ *
+ * References created before `charge_amount` existed carry no expectation and
+ * are settled on the provider's confirmation alone.
+ */
+function assertPaidMatchesCharge(
+  reference: string,
+  meta: Record<string, unknown>,
+  paidCurrency: string,
+  paidAmount: number,
+) {
+  const expected = Number(meta.charge_amount);
+  if (!Number.isFinite(expected) || expected <= 0) return;
+  const expectedCurrency = String(meta.charge_currency ?? paidCurrency).toUpperCase();
+  if (String(paidCurrency).toUpperCase() !== expectedCurrency) {
+    throw new Error(
+      `Payment currency mismatch on ${reference}: paid ${paidCurrency}, expected ${expectedCurrency}.`,
+    );
+  }
+  // One minor unit of tolerance for provider-side rounding.
+  if (paidAmount + 0.01 < expected) {
+    throw new Error(
+      `Payment amount mismatch on ${reference}: paid ${paidAmount}, expected ${expected}.`,
+    );
+  }
+}
+
 /** Settle a confirmed payment from its gateway metadata. */
 export async function settleFromMetadata(
   reference: string,
@@ -242,6 +307,7 @@ export async function settleFromMetadata(
 ): Promise<VerifyResult> {
   const userId = String(meta.user_id ?? "");
   if (!userId) throw new Error("Payment metadata missing user context.");
+  assertPaidMatchesCharge(reference, meta, paidCurrency, paidAmount);
   const purpose = String(meta.purpose ?? "wallet_topup");
 
   if (purpose === "order") {
@@ -262,6 +328,7 @@ export async function settleFromMetadata(
       redirectTo: `/order/${res.orderId}`,
       cashbackEarnedUSD: "cashbackEarnUSD" in res ? (res.cashbackEarnUSD ?? 0) : 0,
       displayCurrency: String((meta.display_currency as string) ?? paidCurrency),
+      payerId: userId,
     };
   }
 
@@ -273,8 +340,16 @@ export async function settleFromMetadata(
     typeof meta.return_to === "string" && meta.return_to.startsWith("/")
       ? meta.return_to
       : "/?section=Wallet&wallet=funded";
-  return { ok: true, status: "success", redirectTo: returnTo, cashbackEarnedUSD: 0, displayCurrency: creditCurrency };
+  return {
+    ok: true,
+    status: "success",
+    redirectTo: returnTo,
+    cashbackEarnedUSD: 0,
+    displayCurrency: creditCurrency,
+    payerId: userId,
+  };
 }
+
 
 /** Verify a reference with whichever gateway created it, then settle. */
 export async function verifyAndSettle(reference: string): Promise<VerifyResult> {
@@ -290,6 +365,7 @@ export async function verifyAndSettle(reference: string): Promise<VerifyResult> 
         redirectTo: null,
         cashbackEarnedUSD: 0,
         displayCurrency: tx.currency,
+        payerId: String(meta.user_id ?? "") || null,
       };
     }
     return settleFromMetadata(reference, meta, tx.currency, Number(tx.amount));
@@ -303,5 +379,6 @@ export async function verifyAndSettle(reference: string): Promise<VerifyResult> 
     redirectTo: res.redirectTo,
     cashbackEarnedUSD: res.cashbackEarnedUSD,
     displayCurrency: String(res.displayCurrency ?? "USD"),
+    payerId: res.payerId ?? null,
   };
 }

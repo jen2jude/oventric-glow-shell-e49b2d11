@@ -49,8 +49,21 @@ export const verifyPayment = createServerFn({ method: "POST" })
   .inputValidator((input: { reference: string }) => ({ reference: String(input?.reference ?? "").trim() }))
   .handler(async ({ data, context }) => {
     if (!data.reference) throw new Error("Missing reference");
-    void context.userId;
-    return verifyAndSettle(data.reference);
+    // Settlement itself is idempotent and provider-authoritative, so a repeat
+    // call never moves money twice. Order/wallet details are only handed back
+    // to the person the provider says paid.
+    const result = await verifyAndSettle(data.reference);
+    if (result.payerId && result.payerId !== context.userId) {
+      return {
+        ok: result.ok,
+        status: result.status,
+        redirectTo: null,
+        cashbackEarnedUSD: 0,
+        displayCurrency: result.displayCurrency,
+      };
+    }
+    const { payerId: _payerId, ...safe } = result;
+    return safe;
   });
 
 export interface PaymentOptionsResult {
