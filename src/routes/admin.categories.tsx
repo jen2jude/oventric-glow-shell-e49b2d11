@@ -11,7 +11,8 @@ export const Route = createFileRoute("/admin/categories")({
   component: CategoriesPage,
 });
 
-type Kind = "digital" | "physical";
+// Oventric is digital-only; physical categories no longer exist.
+type Kind = "digital";
 type Row = {
   id: string;
   slug: string;
