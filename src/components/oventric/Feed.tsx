@@ -1300,7 +1300,10 @@ export function Feed() {
               <AvatarImage src={meAvatarUrl} alt="Your profile" initials={meInitials} />
             </span>
             <span
-              className="min-w-0 flex-1 px-1"
+              className={isAppShell
+                ? "min-w-0 flex-1 px-1"
+                : "min-w-0 flex-1 rounded-[10px] bg-slate-50 px-4 py-3"
+              }
             >
               <span
                 className={isAppShell
@@ -1310,7 +1313,7 @@ export function Feed() {
               >
                 {placeholderIdx === 0
                   ? `Hey${meLastName ? ` ${meLastName}` : ""}! What are you creating today?`
-                  : "What's on your mind today, update us!"}
+                  : "Create on Oventric"}
               </span>
             </span>
             {isAppShell ? (
@@ -1318,9 +1321,14 @@ export function Feed() {
                 <ImageIcon className="w-6 h-6" strokeWidth={1.5} />
               </span>
             ) : (
-              <span className="shrink-0 rounded-full bg-slate-100 p-2 text-slate-600" aria-hidden>
-                <ImageIcon className="h-5 w-5" strokeWidth={1.7} />
-              </span>
+              <>
+                <span className="shrink-0 rounded-full bg-slate-100 p-2 text-slate-600" aria-hidden>
+                  <ImageIcon className="h-5 w-5" strokeWidth={1.7} />
+                </span>
+                <span className="hidden shrink-0 rounded-[10px] bg-[#E5484D] px-5 py-2 text-sm font-semibold text-white transition-colors group-hover:bg-[#D43D42] sm:inline-block">
+                  Post
+                </span>
+              </>
             )}
           </button>
         )}
