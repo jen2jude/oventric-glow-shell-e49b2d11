@@ -2,10 +2,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, FileText, MessageCircle, ShoppingBag, Users, Wrench } from "lucide-react";
+import { ArrowRight, MessageCircle, ShoppingBag, Users, Wrench } from "lucide-react";
 import { getLiveProfileTab, type RealProfileView } from "@/lib/profiles.functions";
 import type {
-  ProfileArticle,
   ProfileGroup,
   ProfileListing,
   ProfilePost,
