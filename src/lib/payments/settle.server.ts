@@ -296,10 +296,8 @@ export async function settleOrder(
     _meta: { order_id: oRow.id, product_id: pRow.id, buyer_id: buyerId, seller_id: pRow.seller_id, paystack_ref: reference, seller_cut_local: sellerCutLocal, seller_cut_currency: sellerCurrency, escrow: holdEscrow },
   });
 
-  // Credit 2% cashback of the FULL gross sale price into the buyer's spend-only
-  // Cashback Wallet — regardless of whether they applied cashback this time.
-  // Coupon purchases do not earn cashback.
-  const cashbackEarnUSD = discountUSD > 0 ? 0 : Number((splitBaseUSD * WALLET_CASHBACK_PCT).toFixed(2));
+  // Seller-funded cashback → buyer's spend-only Cashback Wallet. Funded from
+  // the seller's share above, so this posts no extra platform expense.
   if (cashbackEarnUSD > 0) {
     await supabaseAdmin.rpc("cashback_credit", { _user_id: buyerId, _amount: cashbackEarnUSD });
     await supabaseAdmin.from("wallet_transactions").insert({
@@ -313,6 +311,24 @@ export async function settleOrder(
       occurred_at: new Date().toISOString(),
     });
   }
+
+  // Coupon use is only burned once the payment has actually settled.
+  if (appliedCouponCode && discountUSD > 0) {
+    await recordCouponRedemption(supabaseAdmin, {
+      code: appliedCouponCode,
+      userId: buyerId,
+      orderId: oRow.id as string,
+      reference,
+      discountUSD,
+    });
+  }
+
+  // Referral reward — only on the invitee's first settled purchase.
+  await qualifyReferralOnSettledPurchase(supabaseAdmin, {
+    buyerId,
+    orderId: oRow.id as string,
+    orderTotalUSD: afterCouponUSD,
+  });
 
   // Escrowed (manual-delivery) sale: tell the seller immediately and open the
   // order-tagged chat thread so the whole hand-off happens on Oventric.
