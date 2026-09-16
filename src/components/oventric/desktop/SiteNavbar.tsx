@@ -82,6 +82,9 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
                 {item}
               </button>
             ))}
+            <Link to="/sellers" className="hover:text-slate-900 transition-colors">
+              Shop
+            </Link>
             <button
               onClick={() => onSelect("Marketplace")}
               className="px-4 py-3 bg-slate-900 text-white rounded-full hover:bg-slate-800 transition-colors"
