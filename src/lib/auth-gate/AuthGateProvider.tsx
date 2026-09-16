@@ -764,7 +764,7 @@ function AuthGateModal({
                     <div>
                       <label
                         htmlFor="gate-email"
-                        className="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1.5"
+                        className="mb-2 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
                       >
                         Email address
                       </label>
@@ -781,10 +781,10 @@ function AuthGateModal({
                         placeholder="you@builder.io"
                         aria-invalid={!!emailError}
                         tabIndex={mode === "new" ? 0 : -1}
-                        className={`w-full min-h-11 bg-[#121214] rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/60 border ${
+                        className={`min-h-12 w-full rounded-[10px] border bg-muted px-4 py-3 text-sm text-foreground outline-hidden placeholder:text-muted-foreground/60 focus:bg-card focus:ring-2 focus:ring-primary/15 ${
                           emailError
                             ? "border-red-500/70"
-                            : "border-white/10 focus:border-emerald-500/60"
+                            : "border-border focus:border-primary"
                         }`}
                       />
                       {emailError && (
@@ -797,10 +797,10 @@ function AuthGateModal({
                     <div>
                       <label
                         htmlFor="gate-username"
-                        className="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1.5"
+                        className="mb-2 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
                       >
                         Username{" "}
-                        <span className="text-slate-600 font-normal normal-case">(optional)</span>
+                        <span className="font-normal normal-case text-muted-foreground/70">(optional)</span>
                       </label>
                       <input
                         id="gate-username"
@@ -814,10 +814,10 @@ function AuthGateModal({
                         placeholder="sovereign_architect"
                         aria-invalid={!!usernameError}
                         tabIndex={mode === "new" ? 0 : -1}
-                        className={`w-full min-h-11 bg-[#121214] rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/60 border ${
+                        className={`min-h-12 w-full rounded-[10px] border bg-muted px-4 py-3 text-sm text-foreground outline-hidden placeholder:text-muted-foreground/60 focus:bg-card focus:ring-2 focus:ring-primary/15 ${
                           usernameError
                             ? "border-red-500/70"
-                            : "border-white/10 focus:border-emerald-500/60"
+                            : "border-border focus:border-primary"
                         }`}
                       />
                       {usernameError && (
@@ -831,7 +831,7 @@ function AuthGateModal({
                       type="submit"
                       disabled={sending}
                       tabIndex={mode === "new" ? 0 : -1}
-                      className="w-full min-h-11 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm inline-flex items-center justify-center gap-2 disabled:opacity-60 transition-colors"
+                      className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-primary text-sm font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:opacity-60"
                     >
                       {sending && mode === "new" ? (
                         <>
@@ -844,12 +844,12 @@ function AuthGateModal({
                       )}
                     </button>
 
-                    <p className="text-center text-[11px] text-slate-500">
+                    <p className="text-center text-xs text-muted-foreground">
                       Already have an account?{" "}
                       <button
                         type="button"
                         onClick={() => setMode("returning")}
-                        className="font-bold text-emerald-300 hover:text-emerald-200"
+                        className="font-bold text-primary hover:text-primary/80"
                       >
                         Click here to sign in
                       </button>
@@ -871,7 +871,7 @@ function AuthGateModal({
                     <div
                       role="tablist"
                       aria-label="Sign-in method"
-                      className="flex items-center gap-1 p-1 bg-[#0F0F12] rounded-lg border border-white/5"
+                      className="flex items-center gap-1 rounded-[10px] border border-border bg-muted p-1"
                     >
                       <button
                         type="button"
@@ -884,8 +884,8 @@ function AuthGateModal({
                         tabIndex={mode === "returning" ? 0 : -1}
                         className={`flex-1 h-8 rounded-md text-[11px] font-bold uppercase tracking-wide transition-colors ${
                           returningMethod === "password"
-                            ? "bg-[#1E1E24] text-white shadow-[0_0_0_1px_rgba(59, 130, 246,0.35)]"
-                            : "text-slate-500 hover:text-slate-300"
+                            ? "bg-card text-foreground shadow-xs"
+                            : "text-muted-foreground hover:text-foreground"
                         }`}
                       >
                         Password
@@ -898,8 +898,8 @@ function AuthGateModal({
                         tabIndex={mode === "returning" ? 0 : -1}
                         className={`flex-1 h-8 rounded-md text-[11px] font-bold uppercase tracking-wide transition-colors ${
                           returningMethod === "otp"
-                            ? "bg-[#1E1E24] text-white shadow-[0_0_0_1px_rgba(59, 130, 246,0.35)]"
-                            : "text-slate-500 hover:text-slate-300"
+                            ? "bg-card text-foreground shadow-xs"
+                            : "text-muted-foreground hover:text-foreground"
                         }`}
                       >
                         Email code
@@ -909,7 +909,7 @@ function AuthGateModal({
                     <div>
                       <label
                         htmlFor="gate-identifier"
-                        className="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1.5"
+                        className="mb-2 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
                       >
                         Email or username
                       </label>
@@ -925,10 +925,10 @@ function AuthGateModal({
                         placeholder="you@builder.io or sovereign_architect"
                         aria-invalid={!!identifierError}
                         tabIndex={mode === "returning" ? 0 : -1}
-                        className={`w-full min-h-11 bg-[#121214] rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/60 border ${
+                        className={`min-h-12 w-full rounded-[10px] border bg-muted px-4 py-3 text-sm text-foreground outline-hidden placeholder:text-muted-foreground/60 focus:bg-card focus:ring-2 focus:ring-primary/15 ${
                           identifierError
                             ? "border-red-500/70"
-                            : "border-white/10 focus:border-emerald-500/60"
+                            : "border-border focus:border-primary"
                         }`}
                       />
                       {identifierError && (
@@ -942,7 +942,7 @@ function AuthGateModal({
                       <div>
                         <label
                           htmlFor="gate-password"
-                          className="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1.5"
+                          className="mb-2 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
                         >
                           Password
                         </label>
@@ -959,10 +959,10 @@ function AuthGateModal({
                             placeholder="••••••••"
                             aria-invalid={!!passwordError}
                             tabIndex={mode === "returning" ? 0 : -1}
-                            className={`w-full min-h-11 bg-[#121214] rounded-lg pl-3 pr-10 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/60 border ${
+                            className={`min-h-12 w-full rounded-[10px] border bg-muted py-3 pl-4 pr-11 text-sm text-foreground outline-hidden placeholder:text-muted-foreground/60 focus:bg-card focus:ring-2 focus:ring-primary/15 ${
                               passwordError
                                 ? "border-red-500/70"
-                                : "border-white/10 focus:border-emerald-500/60"
+                                : "border-border focus:border-primary"
                             }`}
                           />
                           <button
@@ -971,7 +971,7 @@ function AuthGateModal({
                             tabIndex={mode === "returning" ? 0 : -1}
                             aria-label={showPassword ? "Hide password" : "Show password"}
                             aria-pressed={showPassword}
-                            className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 hover:text-white"
+                            className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
                           >
                             {showPassword ? (
                               <EyeOff className="w-4 h-4" />
@@ -992,7 +992,7 @@ function AuthGateModal({
                       type="submit"
                       disabled={sending}
                       tabIndex={mode === "returning" ? 0 : -1}
-                      className="w-full min-h-11 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm inline-flex items-center justify-center gap-2 disabled:opacity-60 transition-colors"
+                      className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-primary text-sm font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:opacity-60"
                     >
                       {sending && mode === "returning" ? (
                         <>
@@ -1010,12 +1010,12 @@ function AuthGateModal({
                       )}
                     </button>
 
-                    <p className="text-center text-[11px] text-slate-500">
+                    <p className="text-center text-xs text-muted-foreground">
                       New to Oventric?{" "}
                       <button
                         type="button"
                         onClick={() => setMode("new")}
-                        className="font-bold text-emerald-300 hover:text-emerald-200"
+                        className="font-bold text-primary hover:text-primary/80"
                       >
                         Create an account
                       </button>
