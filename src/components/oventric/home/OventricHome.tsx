@@ -469,9 +469,9 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             {PAY_METHODS.map((m) => (
               <li
                 key={m.name}
-                className="flex h-12 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 shadow-sm"
+                className="flex h-14 items-center justify-center rounded-xl border border-slate-200 bg-white px-6 shadow-sm"
               >
-                <img src={m.src} alt={m.name} loading="lazy" className="h-7 w-auto object-contain" />
+                <img src={m.src} alt={m.name} loading="lazy" className="h-8 w-auto max-w-[110px] object-contain" />
               </li>
             ))}
           </ul>
