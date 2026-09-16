@@ -66,14 +66,6 @@ const GROUPS: Group[] = [
         tint: "rgba(124,108,246,0.12)",
         section: "Messages",
       },
-      {
-        label: "Blog",
-        desc: "Read & share",
-        icon: Newspaper,
-        color: "#E5484D",
-        tint: "rgba(229,72,77,0.12)",
-        to: "/blog",
-      },
     ],
   },
   {

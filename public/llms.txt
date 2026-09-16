@@ -11,7 +11,6 @@
 - [Help board](/help-board): Disputes, feedback and live support.
 - [Advertise](/advertise): Ad tiers and targeting across Africa.
 - [Affiliate](/affiliate): Referral program details.
-- [Blog](/blog): Deep dives, playbooks and lessons from the network.
 
 ## Optional
 
