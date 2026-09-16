@@ -51,16 +51,14 @@ interface DbNotif {
 
 const CHANNELS: { key: Channel; label: string }[] = [
   { key: "all", label: "All" },
-  { key: "financials", label: "💳 Financials" },
-  { key: "circles", label: "👥 Circles" },
-  { key: "bounties", label: "🎯 Bounties" },
-  { key: "system", label: "📢 System" },
+  { key: "financials", label: "Payments" },
+  { key: "social", label: "Social" },
+  { key: "system", label: "Announcements" },
 ];
 
 function channelForKind(kind: string): Exclude<Channel, "all"> {
   if (/wallet|payout|escrow|order|payment|cashback/i.test(kind)) return "financials";
-  if (/circle|peer|follow/i.test(kind)) return "circles";
-  if (/bounty/i.test(kind)) return "bounties";
+  if (/peer|follow|post|comment|like|mention|circle/i.test(kind)) return "social";
   // System bucket = admin-originated only: announcements, admin direct
   // messages, alerts, and anything explicitly marked system.
   return "system";
