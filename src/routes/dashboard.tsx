@@ -20,21 +20,15 @@ import {
   Pencil,
   Eye,
   LayoutDashboard,
-  Target,
-  GraduationCap,
   Wallet as WalletIcon,
   Users,
   ArrowUpRight,
   ArrowDownRight,
-  Trophy,
   Bell,
   Plus,
   TrendingUp,
   Activity as ActivityIcon,
 } from "lucide-react";
-import { CoursePublishWizard } from "@/components/oventric/CoursePublishWizard";
-import { BountyEditorModal } from "@/components/oventric/BountyEditorModal";
-import { Calendar } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   listMyPurchases,
@@ -46,15 +40,9 @@ import {
 } from "@/lib/marketplace.functions";
 import {
   getDashboardOverview,
-  listMyBounties,
-  listMyCourses,
   getMyWalletSummary,
   getMySocial,
   type DashboardOverview,
-  type DashboardBountyPosted,
-  type DashboardBountySolved,
-  type DashboardEnrolledCourse,
-  type DashboardPublishedCourse,
   type DashboardWalletSummary,
   type DashboardSocial,
 } from "@/lib/dashboard.functions";
@@ -95,8 +83,6 @@ function formatHomeCurrency(n: number, c: string): string {
 
 const TAB_VALUES = [
   "overview",
-  "bounties",
-  "courses",
   "wallet",
   "social",
   "digital",
@@ -119,8 +105,15 @@ export const Route = createFileRoute("/dashboard")({
       {
         name: "description",
         content:
-          "Manage your Oventric activity — purchases, listings, bounties, courses, wallet, and social.",
+          "Manage your Oventric purchases, digital listings, sales, wallet, and social activity.",
       },
+      { property: "og:title", content: "My Dashboard — Oventric" },
+      {
+        property: "og:description",
+        content: "Manage your Oventric purchases, digital listings, sales, wallet, and social activity.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: DashboardPage,
@@ -135,8 +128,6 @@ function DashboardPage() {
   const orderFn = useServerFn(getOrderWithDownload);
   const confirmFn = useServerFn(confirmOrderReceived);
   const overviewFn = useServerFn(getDashboardOverview);
-  const bountiesFn = useServerFn(listMyBounties);
-  const coursesFn = useServerFn(listMyCourses);
   const walletFn = useServerFn(getMyWalletSummary);
   const socialFn = useServerFn(getMySocial);
 
@@ -149,14 +140,6 @@ function DashboardPage() {
   const [overview, setOverview] = useState<DashboardOverview | null>(null);
   const [purchases, setPurchases] = useState<PurchaseDTO[] | null>(null);
   const [listings, setListings] = useState<ProductDTO[] | null>(null);
-  const [bounties, setBounties] = useState<{
-    posted: DashboardBountyPosted[];
-    solved: DashboardBountySolved[];
-  } | null>(null);
-  const [courses, setCourses] = useState<{
-    enrolled: DashboardEnrolledCourse[];
-    published: DashboardPublishedCourse[];
-  } | null>(null);
   const [walletSummary, setWalletSummary] = useState<DashboardWalletSummary | null>(null);
   const [walletPage, setWalletPage] = useState(1);
   const [social, setSocial] = useState<DashboardSocial | null>(null);
@@ -215,24 +198,6 @@ function DashboardPage() {
     }
   }, [overviewFn]);
 
-  const loadBounties = useCallback(async () => {
-    try {
-      setBounties(await bountiesFn());
-    } catch (e) {
-      toast.error((e as Error).message);
-      setBounties({ posted: [], solved: [] });
-    }
-  }, [bountiesFn]);
-
-  const loadCourses = useCallback(async () => {
-    try {
-      setCourses(await coursesFn());
-    } catch (e) {
-      toast.error((e as Error).message);
-      setCourses({ enrolled: [], published: [] });
-    }
-  }, [coursesFn]);
-
   const loadWallet = useCallback(
     async (p?: number) => {
       try {
@@ -258,8 +223,6 @@ function DashboardPage() {
     if (tab === "digital" && purchases === null) void loadPurchases();
     if (tab === "sales" && sales === null) void loadSales();
     if (tab === "listings" && listings === null) void loadListings();
-    if (tab === "bounties" && bounties === null) void loadBounties();
-    if (tab === "courses" && courses === null) void loadCourses();
     if (tab === "wallet" && walletSummary === null) void loadWallet();
     if (tab === "social" && social === null) void loadSocial();
   }, [
@@ -269,16 +232,12 @@ function DashboardPage() {
     purchases,
     sales,
     listings,
-    bounties,
-    courses,
     walletSummary,
     social,
     loadOverview,
     loadPurchases,
     loadSales,
     loadListings,
-    loadBounties,
-    loadCourses,
     loadWallet,
     loadSocial,
   ]);
@@ -320,25 +279,6 @@ function DashboardPage() {
     loadWallet,
     walletSummary,
   ]);
-
-  // Refresh triggers from child modals (bounty publish, course publish).
-  useEffect(() => {
-    if (!authChecked) return;
-    const onBounties = () => {
-      void loadBounties();
-      void loadOverview();
-    };
-    const onCourses = () => {
-      void loadCourses();
-      void loadOverview();
-    };
-    window.addEventListener("oventric:bounties-refresh", onBounties);
-    window.addEventListener("oventric:courses-refresh", onCourses);
-    return () => {
-      window.removeEventListener("oventric:bounties-refresh", onBounties);
-      window.removeEventListener("oventric:courses-refresh", onCourses);
-    };
-  }, [authChecked, loadBounties, loadCourses, loadOverview]);
 
   const handleDownload = async (
     orderId: string,
@@ -384,21 +324,21 @@ function DashboardPage() {
 
   if (!authChecked) {
     return (
-      <div className="min-h-screen bg-[#0b0b0d] md:bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-6 h-6 animate-spin text-slate-500" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0b0b0d] md:bg-slate-50 text-slate-200 md:text-slate-700">
+    <div className="web-dashboard min-h-screen bg-background text-foreground">
       <Header 
         onOpenMessages={() => {}} 
         browserVisitorHeader={!isAppShell} 
         forceSiteNavbar={!isAppShell}
       />
       <div
-        className="max-w-5xl mx-auto px-4 py-8"
+        className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12"
         style={{
           paddingLeft: "max(1rem, env(safe-area-inset-left))",
           paddingRight: "max(1rem, env(safe-area-inset-right))",
@@ -406,48 +346,33 @@ function DashboardPage() {
           paddingBottom: "max(2rem, calc(env(safe-area-inset-bottom) + 1rem))",
         }}
       >
-        <button
-          onClick={() => navigate({ to: "/" })}
-          className="inline-flex items-center gap-2 text-sm text-slate-400 md:text-slate-500 hover:text-white md:hover:text-slate-900 mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back home
-        </button>
-
-        <header className="mb-6">
-          <h1 className="text-white md:text-slate-900 text-3xl font-black">My Dashboard</h1>
-          <p className="text-slate-400 md:text-slate-500 mt-1 text-sm">
-            Your full Oventric hub — wallet, bounties, courses, marketplace and social.
-          </p>
+        <header className="mb-8 flex flex-col gap-5 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <button
+              onClick={() => navigate({ to: "/" })}
+              className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4" /> Back home
+            </button>
+            <h1 className="font-wallet-display text-3xl font-bold text-foreground">My Dashboard</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Overview of your digital commerce and social activity.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Link to="/ads-manager" className="inline-flex items-center gap-2 rounded-[10px] border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted">
+              <Bell className="h-4 w-4" /> Ads Manager
+            </Link>
+            <button type="button" onClick={() => setTab("listings")} className="inline-flex items-center gap-2 rounded-[10px] bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition hover:opacity-90">
+              <Plus className="h-4 w-4" /> New listing
+            </button>
+          </div>
         </header>
 
-        <Link
-          to="/ads-manager"
-          className="group mb-5 flex items-center justify-between gap-3 rounded-xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-3 active:bg-white/[0.03]"
-        >
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-[10px] bg-white/5 md:bg-slate-50 border border-white/10 md:border-slate-200 flex items-center justify-center shrink-0">
-              <Bell className="w-4 h-4 text-white md:text-slate-900" />
-            </div>
-            <div className="min-w-0">
-              <div className="text-white md:text-slate-900 text-sm font-semibold">Ads Manager</div>
-              <div className="text-slate-400 md:text-slate-500 text-xs">
-                Manage and track your ad campaigns.
-              </div>
-            </div>
-          </div>
-          <ArrowUpRight className="w-4 h-4 text-slate-400 md:text-slate-500 shrink-0" />
-        </Link>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-2 rounded-2xl bg-[#141418] md:bg-white md:shadow-sm border border-white/10 md:border-slate-200 p-2.5 mb-6">
+        <nav className="dashboard-tabs mb-8 flex items-center gap-6 overflow-x-auto border-b border-border" aria-label="Dashboard sections">
           <TabButton active={tab === "overview"} onClick={() => setTab("overview")}>
             <LayoutDashboard className="w-5 h-5 shrink-0" />{" "}
             <span className="truncate">Overview</span>
-          </TabButton>
-          <TabButton active={tab === "bounties"} onClick={() => setTab("bounties")}>
-            <Target className="w-5 h-5 shrink-0" /> <span className="truncate">Bounties</span>
-          </TabButton>
-          <TabButton active={tab === "courses"} onClick={() => setTab("courses")}>
-            <GraduationCap className="w-5 h-5 shrink-0" /> <span className="truncate">Courses</span>
           </TabButton>
           <TabButton active={tab === "wallet"} onClick={() => setTab("wallet")}>
             <WalletIcon className="w-5 h-5 shrink-0" /> <span className="truncate">Wallet</span>
@@ -483,12 +408,10 @@ function DashboardPage() {
           <TabButton active={tab === "creator"} onClick={() => setTab("creator")}>
             <TrendingUp className="w-5 h-5 shrink-0" /> <span className="truncate">Creator Hub</span>
           </TabButton>
-        </div>
+        </nav>
 
 
         {tab === "overview" && <OverviewPane overview={overview} onGoto={setTab} />}
-        {tab === "bounties" && <BountiesPane data={bounties} />}
-        {tab === "courses" && <CoursesPane data={courses} />}
         {tab === "wallet" && (
           <WalletPane
             data={walletSummary}
