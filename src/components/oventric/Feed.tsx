@@ -2224,8 +2224,8 @@ export function Feed() {
           onReported={markReported}
         />
       </div>
-      <aside className="hidden min-w-0 lg:block">
-        <h2 className="mb-3 font-[Outfit] text-lg font-extrabold text-slate-900">
+      <aside className="hidden min-w-0 lg:block lg:sticky lg:top-24">
+        <h2 className="mb-4 font-wallet-display text-lg font-bold text-slate-900">
           Community
         </h2>
         <DiscoveryPanel asPage />
