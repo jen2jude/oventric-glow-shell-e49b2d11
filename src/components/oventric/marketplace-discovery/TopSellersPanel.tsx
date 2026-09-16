@@ -47,7 +47,7 @@ export function TopSellersPanel({
   }, [onClose]);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["top-sellers", kind],
+    queryKey: ["top-sellers"],
     queryFn: () => fetchSellers(),
   });
 
