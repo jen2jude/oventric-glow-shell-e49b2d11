@@ -55,8 +55,14 @@ export const SECTION_ACCESS: Record<string, ManagementRole[]> = {
   "/admin/disputes": ["admin", "moderator", "finance", "support"],
   "/admin/cashback-wallet": ["admin", "finance"],
 
+  // Promotions
+  "/admin/coupons": ["admin", "content", "finance"],
+  "/admin/referrals": ["admin", "finance", "support"],
+
   // Community & moderation
   "/admin/reports": ["admin", "moderator"],
+  "/admin/reviews": ["admin", "moderator", "content", "support"],
+  "/admin/product-tags": ["admin", "moderator", "content"],
   "/admin/communications": ["admin", "content"],
   "/admin/support": ["admin", "support"],
 
