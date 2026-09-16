@@ -32,15 +32,30 @@ export const Route = createFileRoute("/referrals")({
 
 function ReferralsRoute() {
   const load = useServerFn(getMyReferralOverview);
+  // Public route: only ask the server for the invite link once a session exists,
+  // otherwise the authenticated server fn rejects the call with no bearer token.
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const { data, isLoading, isError } = useQuery({
     queryKey: ["referral-overview"],
     queryFn: () => load(),
+    enabled: signedIn === true,
   });
   const [copied, setCopied] = useState(false);
   const [origin, setOrigin] = useState("https://oventric.com");
 
   useEffect(() => {
     setOrigin(window.location.origin);
+    let alive = true;
+    supabase.auth.getSession().then(({ data: s }) => {
+      if (alive) setSignedIn(Boolean(s.session));
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setSignedIn(Boolean(session));
+    });
+    return () => {
+      alive = false;
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
   const link = data?.code ? `${origin}/?ref=${data.code}` : "";
