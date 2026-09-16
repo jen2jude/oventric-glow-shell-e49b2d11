@@ -169,7 +169,7 @@ export async function buildPaymentIntent(
   metadata.product_id = p.id;
   metadata.quantity = qty;
   metadata.display_currency = displayCurrency;
-  metadata.coupon_code = data.couponCode ?? null;
+  metadata.coupon_code = appliedCouponCode;
   metadata.total_usd = totalUSD;
   metadata.cashback_applied_usd = cashbackAppliedUSD;
   metadata.service_package_id = servicePackageId;
