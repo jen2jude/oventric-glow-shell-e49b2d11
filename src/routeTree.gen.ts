@@ -16,6 +16,7 @@ import { Route as SellersRouteImport } from './routes/sellers'
 import { Route as ReportProblemRouteImport } from './routes/report-problem'
 import { Route as RefundsRouteImport } from './routes/refunds'
 import { Route as ReferralsRouteImport } from './routes/referrals'
+import { Route as PurchaseAssistantRouteImport } from './routes/purchase-assistant'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
@@ -132,6 +133,11 @@ const RefundsRoute = RefundsRouteImport.update({
 const ReferralsRoute = ReferralsRouteImport.update({
   id: '/referrals',
   path: '/referrals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PurchaseAssistantRoute = PurchaseAssistantRouteImport.update({
+  id: '/purchase-assistant',
+  path: '/purchase-assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -573,6 +579,7 @@ export interface FileRoutesByFullPath {
   '/marketplace': typeof MarketplaceRoute
   '/messages': typeof MessagesRoute
   '/privacy': typeof PrivacyRoute
+  '/purchase-assistant': typeof PurchaseAssistantRoute
   '/referrals': typeof ReferralsRoute
   '/refunds': typeof RefundsRoute
   '/report-problem': typeof ReportProblemRoute
@@ -663,6 +670,7 @@ export interface FileRoutesByTo {
   '/marketplace': typeof MarketplaceRoute
   '/messages': typeof MessagesRoute
   '/privacy': typeof PrivacyRoute
+  '/purchase-assistant': typeof PurchaseAssistantRoute
   '/referrals': typeof ReferralsRoute
   '/refunds': typeof RefundsRoute
   '/report-problem': typeof ReportProblemRoute
@@ -753,6 +761,7 @@ export interface FileRoutesById {
   '/marketplace': typeof MarketplaceRoute
   '/messages': typeof MessagesRoute
   '/privacy': typeof PrivacyRoute
+  '/purchase-assistant': typeof PurchaseAssistantRoute
   '/referrals': typeof ReferralsRoute
   '/refunds': typeof RefundsRoute
   '/report-problem': typeof ReportProblemRoute
@@ -846,6 +855,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/messages'
     | '/privacy'
+    | '/purchase-assistant'
     | '/referrals'
     | '/refunds'
     | '/report-problem'
@@ -936,6 +946,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/messages'
     | '/privacy'
+    | '/purchase-assistant'
     | '/referrals'
     | '/refunds'
     | '/report-problem'
@@ -1025,6 +1036,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/messages'
     | '/privacy'
+    | '/purchase-assistant'
     | '/referrals'
     | '/refunds'
     | '/report-problem'
@@ -1117,6 +1129,7 @@ export interface RootRouteChildren {
   MarketplaceRoute: typeof MarketplaceRoute
   MessagesRoute: typeof MessagesRoute
   PrivacyRoute: typeof PrivacyRoute
+  PurchaseAssistantRoute: typeof PurchaseAssistantRoute
   ReferralsRoute: typeof ReferralsRoute
   RefundsRoute: typeof RefundsRoute
   ReportProblemRoute: typeof ReportProblemRoute
@@ -1197,6 +1210,13 @@ declare module '@tanstack/react-router' {
       path: '/referrals'
       fullPath: '/referrals'
       preLoaderRoute: typeof ReferralsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/purchase-assistant': {
+      id: '/purchase-assistant'
+      path: '/purchase-assistant'
+      fullPath: '/purchase-assistant'
+      preLoaderRoute: typeof PurchaseAssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -1926,6 +1946,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceRoute: MarketplaceRoute,
   MessagesRoute: MessagesRoute,
   PrivacyRoute: PrivacyRoute,
+  PurchaseAssistantRoute: PurchaseAssistantRoute,
   ReferralsRoute: ReferralsRoute,
   RefundsRoute: RefundsRoute,
   ReportProblemRoute: ReportProblemRoute,

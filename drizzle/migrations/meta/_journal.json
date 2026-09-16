@@ -57,6 +57,13 @@
       "when": 1789551547500,
       "tag": "0007_digital_only_marketplace",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1789591046314,
+      "tag": "0008_create_purchase_assistant_summaries",
+      "breakpoints": true
     }
   ]
 }

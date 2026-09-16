@@ -76,6 +76,7 @@ import {
   PhotoGridSkeleton,
 } from "@/components/oventric/skeletons";
 import { formatMoney } from "@/lib/fx-display";
+import { PurchaseAssistantPanel } from "@/components/oventric/PurchaseAssistantPanel";
 import { listMySales, type SaleDTO } from "@/lib/fulfilment.functions";
 import { OrderFulfilmentRoadmap } from "@/components/oventric/OrderFulfilmentRoadmap";
 import { QuickActions } from "@/components/oventric/dashboard/QuickActions";
@@ -499,20 +500,23 @@ function DashboardPage() {
           />
         )}
         {tab === "digital" && (
-          <DigitalList
-            rows={purchases}
-            downloadingId={downloadingId}
-            onDownload={handleDownload}
-            onConfirm={async (orderId) => {
-              try {
-                await confirmFn({ data: { orderId } });
-                toast.success("Thanks! Seller funds released.");
-                await loadPurchases();
-              } catch (e) {
-                toast.error((e as Error).message);
-              }
-            }}
-          />
+          <div className="space-y-4">
+            <PurchaseAssistantPanel />
+            <DigitalList
+              rows={purchases}
+              downloadingId={downloadingId}
+              onDownload={handleDownload}
+              onConfirm={async (orderId) => {
+                try {
+                  await confirmFn({ data: { orderId } });
+                  toast.success("Thanks! Seller funds released.");
+                  await loadPurchases();
+                } catch (e) {
+                  toast.error((e as Error).message);
+                }
+              }}
+            />
+          </div>
         )}
         {tab === "sales" && (
           <SalesList
