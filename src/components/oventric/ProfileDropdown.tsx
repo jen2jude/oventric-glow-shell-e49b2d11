@@ -1013,7 +1013,6 @@ function ProfileSettingsModal({
                   />
                 </label>
                 </div>
-              </div>
 
               {/* Display name */}
               <div>
@@ -1140,6 +1139,7 @@ function ProfileSettingsModal({
                   </span>
                 </div>
               </div>
+              </section>
 
               {/* Contact grid */}
               <section className="identity-section space-y-4">
@@ -1335,17 +1335,12 @@ function ProfileSettingsModal({
                   {
                     key: "email_digest" as const,
                     label: "Weekly email digest",
-                    desc: "Summary of activity, sales and bounty wins.",
+                    desc: "Summary of your account activity and sales.",
                   },
                   {
                     key: "dm_pings" as const,
                     label: "Direct message pings",
                     desc: "Notify me when someone messages me.",
-                  },
-                  {
-                    key: "bounty_invites" as const,
-                    label: "Bounty invite alerts",
-                    desc: "Ping me when I'm invited to a bounty.",
                   },
                 ].map((item) => {
                   const on = notifPrefs[item.key];
