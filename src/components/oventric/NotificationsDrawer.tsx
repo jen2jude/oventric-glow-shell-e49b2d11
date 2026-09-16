@@ -7,7 +7,7 @@ import {
   Bell,
   Wallet as WalletIcon,
   Users,
-  Timer,
+  
   ShieldAlert,
   Megaphone,
   Mail,
