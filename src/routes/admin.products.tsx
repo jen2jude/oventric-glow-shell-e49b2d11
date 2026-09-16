@@ -177,7 +177,7 @@ function ProductsPage() {
     const filePath = (p.file_path as string) ?? null;
     setModal({
       id: p.id as string,
-      kind: (p.kind as string) === "physical" ? "physical" : "digital",
+      kind: "digital",
       name: (p.name as string) ?? "",
       category: (p.category as string) ?? "themes",
       subcategory: (p.subcategory as string) ?? "",
