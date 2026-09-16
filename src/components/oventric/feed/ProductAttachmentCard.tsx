@@ -12,6 +12,21 @@ export function ProductAttachmentCard({
   isAppShell?: boolean 
 }) {
   const { baseCurrency } = useOnboarding();
+  if (product.available === false) {
+    return (
+      <div className={`mt-3 ${isAppShell ? "mx-4 md:mx-0" : ""}`}>
+        <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-3">
+          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-white/[0.04]">
+            <ShoppingBag className="h-5 w-5 text-white/20" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-white/70">This product is no longer available</p>
+            <p className="text-[11px] text-white/40">The seller removed or unpublished this listing.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
   // Use the product's publish-time currency + FX snapshot so the feed price is
   // identical to the marketplace and product page.
   const priceLabel = computeDisplayPrice(
