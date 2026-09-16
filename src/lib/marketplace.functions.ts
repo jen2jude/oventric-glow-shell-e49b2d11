@@ -750,7 +750,16 @@ export const createOrder = createServerFn({ method: "POST" })
     productId: String(input.productId ?? ""),
     quantity: Math.max(1, Math.min(20, Number(input.quantity ?? 1))),
     displayCurrency: (input.displayCurrency ?? "USD") as OrderCurrency,
-    paymentMethod: (input.paymentMethod ?? "wallet") as PaymentMethod,
+    // Wallet is the ONLY method this endpoint may settle. Card / bank / momo
+    // orders are created exclusively by gateway settlement (settle.server.ts)
+    // after the provider confirms the payment — never from a client request.
+    paymentMethod: ((): PaymentMethod => {
+      const m = (input.paymentMethod ?? "wallet") as PaymentMethod;
+      if (m !== "wallet") {
+        throw new Error("Card payments must be completed through the payment gateway.");
+      }
+      return "wallet";
+    })(),
     couponCode: input.couponCode ? String(input.couponCode).trim().toUpperCase() : null,
     deliveryEmail: input.deliveryEmail ? String(input.deliveryEmail).trim().slice(0, 320) : null,
     deliveryWhatsapp: input.deliveryWhatsapp ? String(input.deliveryWhatsapp).replace(/\D/g, "").slice(0, 20) : null,
@@ -860,7 +869,9 @@ export const createOrder = createServerFn({ method: "POST" })
     // release immediately.
     const holdEscrow = Boolean(product.requiresManualDelivery);
 
-    const { data: oRow, error: oErr } = await supabase
+    // Orders are written with the service client only: `authenticated` has no
+    // INSERT privilege on public.orders, so no browser can forge a paid order.
+    const { data: oRow, error: oErr } = await supabaseAdmin
       .from("orders")
       .insert({
         buyer_id: userId,
