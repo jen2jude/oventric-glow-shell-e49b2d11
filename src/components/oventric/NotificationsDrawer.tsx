@@ -68,13 +68,13 @@ function channelForKind(kind: string): Exclude<Channel, "all"> {
 
 function iconForKind(kind: string) {
   const c = channelForKind(kind);
-  if (c === "financials") return <WalletIcon className="w-4 h-4 text-emerald-400" />;
-  if (c === "circles") return <Users className="w-4 h-4 text-sky-400" />;
-  if (c === "bounties") return <Timer className="w-4 h-4 text-amber-300" />;
-  if (kind === "announcement") return <Megaphone className="w-4 h-4 text-fuchsia-400" />;
-  if (kind === "direct_message") return <Mail className="w-4 h-4 text-white" />;
-  if (kind === "alert") return <ShieldAlert className="w-4 h-4 text-red-400" />;
-  return <Bell className="w-4 h-4 text-slate-300" />;
+  if (c === "financials") return <WalletIcon className="w-4 h-4 text-emerald-600" />;
+  if (c === "circles") return <Users className="w-4 h-4 text-sky-600" />;
+  if (c === "bounties") return <Timer className="w-4 h-4 text-amber-600" />;
+  if (kind === "announcement") return <Megaphone className="w-4 h-4 text-fuchsia-600" />;
+  if (kind === "direct_message") return <Mail className="w-4 h-4 text-primary" />;
+  if (kind === "alert") return <ShieldAlert className="w-4 h-4 text-destructive" />;
+  return <Bell className="w-4 h-4 text-muted-foreground" />;
 }
 
 function timeAgo(iso: string): string {
@@ -122,7 +122,7 @@ function renderLinkified(text: string) {
           href={trimmed}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-emerald-400 underline underline-offset-2 hover:text-emerald-300 break-all"
+          className="text-primary underline underline-offset-2 hover:opacity-80 break-all"
         >
           {trimmed}
         </a>
@@ -135,7 +135,7 @@ function renderLinkified(text: string) {
           {leading}
           <a
             href={trimmed}
-            className="text-emerald-400 underline underline-offset-2 hover:text-emerald-300 break-all"
+            className="text-primary underline underline-offset-2 hover:opacity-80 break-all"
           >
             {trimmed}
           </a>
@@ -364,20 +364,22 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
   return (
     <>
       <div
-        className="modal-light fixed inset-0 bg-black/50 z-40 animate-fade-in"
+        className="modal-light fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-40 animate-fade-in"
         onClick={onClose}
         aria-hidden
       />
       <aside
-        className="w-full sm:w-[400px] h-screen bg-[#1E1E24] border-l border-white/5 shadow-2xl z-50 fixed right-0 top-0 animate-in slide-in-from-right duration-300"
+        className="web-notifications w-full sm:w-[420px] h-screen border-l shadow-2xl z-50 fixed right-0 top-0 animate-in slide-in-from-right duration-300"
         role="dialog"
         aria-modal="true"
         aria-label="Notifications"
       >
-        <div className="flex items-center justify-between px-4 h-16 border-b border-white/5">
+        <div className="flex items-center justify-between px-5 h-16 border-b">
           <div>
-            <h2 className="text-white font-bold text-sm">Notifications</h2>
-            <p className="text-[11px] text-slate-500">
+            <h2 className="font-wallet-display text-foreground font-semibold text-base">
+              Notifications
+            </h2>
+            <p className="text-[11px] text-muted-foreground">
               {isAuthenticated
                 ? "Live activity across your workspace"
                 : "Connect your account to receive alerts"}
@@ -391,8 +393,8 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
                 aria-label={pushOn ? "Turn off background alerts" : "Turn on background alerts"}
                 title={pushOn ? "Background alerts on" : "Background alerts off"}
                 aria-pressed={pushOn}
-                className={`p-2 rounded-[10px] hover:bg-white/5 transition-colors disabled:opacity-50 ${
-                  pushOn ? "text-emerald-400" : "text-slate-400 hover:text-white"
+                className={`p-2 rounded-[10px] hover:bg-muted transition-colors disabled:opacity-50 ${
+                  pushOn ? "text-primary" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {pushOn ? <BellRing className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
@@ -403,21 +405,21 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
               aria-label={muted ? "Unmute notification sound" : "Mute notification sound"}
               title={muted ? "Sound off" : "Sound on"}
               aria-pressed={!muted}
-              className="p-2 rounded-[10px] hover:bg-white/5 text-slate-400 hover:text-white transition-colors"
+              className="p-2 rounded-[10px] hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
             >
               {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
             </button>
             <button
               onClick={onClose}
               aria-label="Close notifications"
-              className="p-2 rounded-[10px] hover:bg-white/5 text-slate-400 hover:text-white transition-colors"
+              className="p-2 rounded-[10px] hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        <div className="px-4 pt-3 pb-2 flex items-center gap-2 overflow-x-auto no-scrollbar border-b border-white/5">
+        <div className="px-5 pt-3 pb-3 flex items-center gap-2 overflow-x-auto no-scrollbar border-b">
           {CHANNELS.map((c) => {
             const active = channel === c.key;
             const chanCount =
@@ -428,17 +430,17 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
               <button
                 key={c.key}
                 onClick={() => void handleSelectChannel(c.key)}
-                className={`relative shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold transition-colors border inline-flex items-center gap-1 ${
+                className={`relative shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors border inline-flex items-center gap-1.5 ${
                   active
-                    ? "bg-white text-black border-white"
-                    : "bg-[#121214] text-slate-400 border-white/10 hover:text-white hover:border-white/20"
+                    ? "bg-primary text-primary-foreground border-transparent"
+                    : "bg-muted text-muted-foreground border-border hover:text-foreground"
                 }`}
               >
                 <span>{c.label}</span>
                 {chanCount > 0 && (
                   <span
                     className={`min-w-[16px] h-4 px-1 rounded-full text-[9px] font-black inline-flex items-center justify-center ${
-                      active ? "bg-black text-white" : "bg-emerald-500 text-black"
+                      active ? "bg-white/25 text-primary-foreground" : "bg-primary text-primary-foreground"
                     }`}
                     aria-label={`${chanCount} unread`}
                   >
@@ -451,17 +453,17 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
         </div>
 
         <div
-          className="overflow-y-auto px-4 py-3"
-          style={{ maxHeight: "calc(100vh - 8.5rem - 3.25rem)" }}
+          className="overflow-y-auto px-5 py-4"
+          style={{ maxHeight: "calc(100vh - 8.75rem - 3.75rem)" }}
         >
           {!isAuthenticated ? (
-            <div className="text-center text-xs text-slate-500 py-10">
+            <div className="text-center text-xs text-muted-foreground py-12">
               Sign in to view your notifications.
             </div>
           ) : loading && items.length === 0 ? (
-            <div className="text-center text-xs text-slate-500 py-10">Loading…</div>
+            <div className="text-center text-xs text-muted-foreground py-12">Loading…</div>
           ) : filtered.length === 0 ? (
-            <div className="text-center text-xs text-slate-500 py-10">
+            <div className="text-center text-xs text-muted-foreground py-12">
               You're all caught up in this channel.
             </div>
           ) : (
@@ -469,44 +471,37 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
               <button
                 key={n.id}
                 onClick={() => void handleOpenItem(n)}
-                className={`w-full text-left rounded-xl mb-3 transition-all ${
+                className={`w-full text-left rounded-xl mb-2.5 p-3.5 border transition-all hover:shadow-[0_6px_18px_-12px_rgba(15,23,42,0.45)] ${
                   !n.read_at
-                    ? "rgb-static-border p-[2px]"
-                    : "bg-[#121214] border border-white/5 hover:border-white/10 p-3"
+                    ? "bg-primary/[0.04] border-primary/25"
+                    : "bg-card border-border hover:border-foreground/15"
                 }`}
               >
-                <div
-                  className={`bg-[#121214] w-full text-left ${!n.read_at ? "rounded-[10px] p-3" : ""}`}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 shrink-0 rounded-[10px] flex items-center justify-center bg-[#1E1E24] border border-white/10">
-                      {iconForKind(n.kind)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="text-[13px] font-semibold text-white truncate">{n.title}</p>
-                        {!n.read_at && (
-                          <span
-                            className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"
-                            aria-hidden
-                          />
-                        )}
-                      </div>
-                      {n.body && (
-                        <p className="text-[12px] leading-snug text-slate-400 mt-0.5 line-clamp-3">
-                          {plainPreview(n.body)}
-                        </p>
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 shrink-0 rounded-[10px] flex items-center justify-center bg-muted border">
+                    {iconForKind(n.kind)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-[13px] font-semibold text-foreground truncate">{n.title}</p>
+                      {!n.read_at && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" aria-hidden />
                       )}
-                      <div className="mt-1.5 flex items-center justify-between">
-                        <span className="text-[10px] text-slate-500 uppercase tracking-wider">
-                          {timeAgo(n.created_at)}
+                    </div>
+                    {n.body && (
+                      <p className="text-[12px] leading-snug text-muted-foreground mt-1 line-clamp-3">
+                        {plainPreview(n.body)}
+                      </p>
+                    )}
+                    <div className="mt-2 flex items-center justify-between">
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                        {timeAgo(n.created_at)}
+                      </span>
+                      {n.link && (
+                        <span className="text-[11px] font-semibold text-primary inline-flex items-center gap-1">
+                          Open <ArrowRight className="w-3 h-3" />
                         </span>
-                        {n.link && (
-                          <span className="text-[11px] font-semibold text-emerald-400 inline-flex items-center gap-1">
-                            Open <ArrowRight className="w-3 h-3" />
-                          </span>
-                        )}
-                      </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -515,13 +510,13 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
           )}
         </div>
 
-        <div className="absolute bottom-0 inset-x-0 px-4 py-3 border-t border-white/5 bg-[#1E1E24]">
+        <div className="absolute bottom-0 inset-x-0 px-5 py-3 border-t bg-background">
           <button
             onClick={handleMarkAll}
             disabled={!isAuthenticated || items.every((n) => n.read_at)}
-            className="w-full py-3 rounded-[10px] text-xs font-semibold text-slate-300 hover:text-white bg-[#121214] border border-white/10 hover:border-emerald-500/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 rounded-[10px] text-xs font-semibold text-foreground bg-muted border hover:border-primary/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Mark All as Read
+            Mark all as read
           </button>
         </div>
       </aside>
@@ -530,29 +525,31 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
         typeof document !== "undefined" &&
         createPortal(
           <div
-            className="modal-light fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/70 animate-fade-in p-4"
+            className="modal-light fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-900/50 backdrop-blur-[2px] animate-fade-in p-4"
             onClick={() => setViewing(null)}
             role="dialog"
             aria-modal="true"
             aria-label={viewing.title}
           >
             <div
-              className="w-full max-w-md my-auto bg-[#1E1E24] border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+              className="web-notifications w-full max-w-lg my-auto border rounded-2xl shadow-2xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-start gap-3 px-5 py-4 border-b border-white/5">
-                <div className="w-9 h-9 rounded-[10px] flex items-center justify-center bg-[#121214] border border-white/10 shrink-0">
+              <div className="flex items-start gap-3 px-5 py-4 border-b">
+                <div className="w-9 h-9 rounded-[10px] flex items-center justify-center bg-muted border shrink-0">
                   {iconForKind(viewing.kind)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-white font-bold text-sm">{viewing.title}</p>
-                  <p className="text-[10px] uppercase tracking-wider text-slate-500 mt-0.5">
+                  <p className="font-wallet-display text-foreground font-semibold text-base">
+                    {viewing.title}
+                  </p>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">
                     {viewing.kind.replace(/_/g, " ")} · {timeAgo(viewing.created_at)}
                   </p>
                 </div>
                 <button
                   onClick={() => setViewing(null)}
-                  className="p-1.5 rounded-[10px] hover:bg-white/5 text-slate-400 hover:text-white"
+                  className="p-1.5 rounded-[10px] hover:bg-muted text-muted-foreground hover:text-foreground"
                   aria-label="Close"
                 >
                   <X className="w-4 h-4" />
@@ -562,7 +559,7 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
                 {viewing.body ? (
                   isHtml(viewing.body) ? (
                     <div
-                      className="rich-comms text-sm text-slate-200 leading-relaxed break-words"
+                      className="rich-comms text-sm text-foreground leading-relaxed break-words"
                       dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(viewing.body, {
                           ALLOWED_TAGS: [
@@ -604,17 +601,17 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
                       }}
                     />
                   ) : (
-                    <p className="text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">
+                    <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
                       {renderLinkified(viewing.body)}
                     </p>
                   )
                 ) : (
-                  <p className="text-sm text-slate-500 italic">No additional content.</p>
+                  <p className="text-sm text-muted-foreground italic">No additional content.</p>
                 )}
               </div>
 
               {viewing.link && (
-                <div className="px-5 py-3 border-t border-white/5 bg-[#121214]">
+                <div className="px-5 py-3 border-t bg-muted">
                   <button
                     onClick={() => {
                       const url = viewing.link!;
@@ -626,7 +623,7 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
                         window.location.href = url;
                       }
                     }}
-                    className="w-full py-2.5 rounded-[10px] bg-emerald-500 hover:bg-emerald-400 text-black text-sm font-bold flex items-center justify-center gap-2"
+                    className="w-full py-2.5 rounded-[10px] bg-primary hover:opacity-90 text-primary-foreground text-sm font-semibold flex items-center justify-center gap-2 transition-opacity"
                   >
                     Open link <ArrowRight className="w-4 h-4" />
                   </button>
