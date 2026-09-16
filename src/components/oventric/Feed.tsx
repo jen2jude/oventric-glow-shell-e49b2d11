@@ -56,7 +56,7 @@ import {
   type FeedPost,
   type ReactionType,
 } from "@/lib/posts.functions";
-import { requestJoinCircle as requestJoinCircleFn } from "@/lib/circles-groups.functions";
+
 import {
   ReactionPicker,
   ReactionSplash,
@@ -509,34 +509,6 @@ export function Feed() {
   const createPost = useServerFn(createPostFn);
   const deletePost = useServerFn(deletePostFn);
   const setReaction = useServerFn(setReactionFn);
-  const requestJoinCircle = useServerFn(requestJoinCircleFn);
-  const [joiningCircleIds, setJoiningCircleIds] = useState<Set<string>>(new Set());
-  const handleJoinCircleFromFeed = (circleId: string, circleSlug: string) => {
-    require(1, async () => {
-      setJoiningCircleIds((s) => new Set(s).add(circleId));
-      try {
-        await requestJoinCircle({ data: { circleId } });
-        // Refresh so viewerIsMember flips once approved and code-of-conduct is accepted.
-        refreshPosts();
-        if (typeof window !== "undefined") {
-          window.dispatchEvent(
-            new CustomEvent("oventric:navigate", { detail: { section: "Circles" } }),
-          );
-          const u = new URL(window.location.href);
-          u.searchParams.set("circle", circleSlug);
-          window.history.replaceState({}, "", u.toString());
-        }
-      } catch (e) {
-        console.error("[Feed] join circle failed", e);
-      } finally {
-        setJoiningCircleIds((s) => {
-          const next = new Set(s);
-          next.delete(circleId);
-          return next;
-        });
-      }
-    }, "interaction");
-  };
   const listComments = useServerFn(listCommentsFn);
   const addComment = useServerFn(addCommentFn);
   const updateComment = useServerFn(updateCommentFn);
@@ -1700,38 +1672,6 @@ export function Feed() {
                         <Globe className="w-3 h-3" aria-hidden />
                         <span className="sr-only">Public post</span>
                       </div>
-                      {post.circle && (
-                        <div className="mt-1.5 flex items-center gap-2 text-[11px]">
-                          <span className="text-slate-500 md:text-slate-500">Posted in</span>
-                          <a
-                            href={`/?section=Circles&circle=${encodeURIComponent(post.circle.slug)}`}
-                            className="inline-flex items-center gap-1.5 text-emerald-300 md:text-emerald-700 font-semibold hover:underline"
-                          >
-                            {post.circle.avatarUrl ? (
-                              <img loading="lazy"
-                                src={post.circle.avatarUrl}
-                                alt=""
-                                className="w-4 h-4 rounded-full object-cover"
-                                decoding="async"
-                              />
-                            ) : (
-                              <Users className="w-3 h-3" />
-                            )}
-                            {post.circle.name}
-                          </a>
-                          {!post.circle.viewerIsMember && (
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleJoinCircleFromFeed(post.circle!.id, post.circle!.slug)
-                              }
-                              className="ml-1 px-2 py-0.5 rounded-full bg-[#E5484D]/15 border border-[#E5484D]/40 text-emerald-300 md:text-emerald-700 text-[10px] font-bold hover:bg-[#E5484D]/25"
-                            >
-                              Join
-                            </button>
-                          )}
-                        </div>
-                      )}
                     </div>
                     {isReported ? (
                       <ReportedBadge details={reported.get(post.id)} />
