@@ -78,7 +78,7 @@ function fmtPrice(
   return fmtSnap(usdAmount, viewer, product?.fxSnapshot ?? null);
 }
 
-/** Country-driven payment method availability. Wallet is greyed out on marketplace checkout — buyers pay directly. */
+/** Country-driven payment method availability. Wallet pays straight from the buyer's Oventric balance. */
 function methodsForCountry(
   country: string | null,
 ): Array<{
@@ -92,9 +92,9 @@ function methodsForCountry(
     id: "wallet" as PaymentMethod,
     label: "Pay with Oventric Wallet",
     Icon: WalletIcon,
-    hint: "Direct checkout preferred — fund wallet for bounties & ads only",
-    disabled: true,
+    hint: "Instant — uses your available wallet balance",
   };
+
   if (country === "NG") {
     return [
       { id: "card", label: "Debit/Credit Card", Icon: CreditCard, hint: "Verve, Mastercard, Visa" },
@@ -592,7 +592,7 @@ function CheckoutPage() {
                       aria-expanded={hasGateways ? expanded : undefined}
                       title={
                         m.disabled
-                          ? "Wallet is reserved for bounties & ads. Pay directly instead."
+                          ? "Unavailable for this purchase."
                           : undefined
                       }
                       className={`w-full text-left rounded-[10px] border p-4 flex items-center gap-4 transition-all ${
@@ -1036,7 +1036,7 @@ function CheckoutPage() {
                   </div>
                   <button
                     onClick={pay}
-                    disabled={submitting || (needsDelivery && !deliveryValid)}
+                    disabled={submitting || insufficient || (needsDelivery && !deliveryValid)}
                     className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-[10px] bg-[#E5484D] hover:bg-[#d13a3f] text-white font-black text-sm transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_8px_30px_rgb(229,72,77,0.2)]"
                   >
                     {submitting ? (
@@ -1060,7 +1060,7 @@ function CheckoutPage() {
                 <>
                   <button
                     onClick={pay}
-                    disabled={submitting || (needsDelivery && !deliveryValid)}
+                    disabled={submitting || insufficient || (needsDelivery && !deliveryValid)}
                     className="w-full mt-4 inline-flex items-center justify-center gap-2 py-3 rounded-[10px] bg-[#E5484D] hover:bg-[#d13a3f] text-white font-black text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {submitting ? (
