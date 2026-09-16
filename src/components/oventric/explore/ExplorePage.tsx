@@ -79,13 +79,172 @@ export function ExplorePage({ onSelect }: { onSelect: (section: "Marketplace") =
     staleTime: 60_000,
   });
 
-  const trending = (discovery?.trending ?? []) as ProductDTO[];
-  const newArrivals = (discovery?.newArrivals ?? []) as ProductDTO[];
-  const peers = (peerFeed?.topPeersAny ?? []).slice(0, 8);
+  const [tab, setTab] = useState<Tab>("All");
+  const [q, setQ] = useState("");
+  const query = q.trim().toLowerCase();
+
+  const allTrending = (discovery?.trending ?? []) as ProductDTO[];
+  const allNew = (discovery?.newArrivals ?? []) as ProductDTO[];
+  const allPeers = (peerFeed?.topPeersAny ?? []) as DiscoveryPeer[];
+
+  const matchP = (p: ProductDTO) =>
+    !query ||
+    p.name.toLowerCase().includes(query) ||
+    (p.vendor ?? "").toLowerCase().includes(query);
+
+  const trending = useMemo(() => allTrending.filter(matchP), [allTrending, query]);
+  const newArrivals = useMemo(() => allNew.filter(matchP), [allNew, query]);
+  const shownCategories = useMemo(
+    () => categories.filter((c) => !query || c.name.toLowerCase().includes(query)),
+    [categories, query],
+  );
+  const shownSellers = useMemo(
+    () =>
+      (sellers as TopSellerDTO[]).filter((s) => !query || s.name.toLowerCase().includes(query)),
+    [sellers, query],
+  );
+  const peers = useMemo(
+    () => allPeers.filter((p) => !query || p.name.toLowerCase().includes(query)),
+    [allPeers, query],
+  );
+
+  const show = (t: Tab) => tab === "All" || tab === t;
+
+  const categoriesBlock = (
+    <>
+      <SectionHead
+        title="Browse by category"
+        action={{ label: "View all", onClick: () => onSelect("Marketplace") }}
+      />
+      <div className="grid grid-cols-4 gap-3 sm:grid-cols-4 lg:grid-cols-6 lg:gap-4">
+        {shownCategories.slice(0, tab === "Categories" ? 60 : 12).map((c, i) => {
+          const { Icon } = visualForCategory(c.slug, c.name);
+          const tint = TILE_TINTS[i % TILE_TINTS.length]!;
+          return (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => onSelect("Marketplace")}
+              className="flex flex-col items-center gap-2 rounded-[14px] border-slate-200/80 bg-transparent p-0 text-center transition-all active:scale-[0.98] sm:border sm:bg-white sm:p-4 sm:hover:-translate-y-0.5 sm:hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
+            >
+              <span
+                className={`grid h-14 w-14 shrink-0 place-items-center rounded-full ${tint} sm:h-11 sm:w-11 sm:rounded-[12px]`}
+              >
+                <Icon className="h-6 w-6 sm:h-5 sm:w-5" />
+              </span>
+              <span className="min-w-0 max-w-full truncate text-xs font-bold capitalize text-slate-900 sm:text-sm">
+                {c.name.trim()}
+              </span>
+            </button>
+          );
+        })}
+        {shownCategories.length === 0 && <EmptyNote>No categories match.</EmptyNote>}
+      </div>
+    </>
+  );
+
+  const productsBlock = (
+    <>
+      <SectionHead
+        title="Trending right now"
+        subtitle="Most reviewed digital products this week"
+        icon={TrendingUp}
+        action={{ label: "View all", onClick: () => onSelect("Marketplace") }}
+      />
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
+        {trending.slice(0, tab === "Products" ? 40 : 8).map((p) => (
+          <ProductCard key={p.id} product={p} currency={currency} />
+        ))}
+        {trending.length === 0 && <EmptyNote>Nothing trending yet.</EmptyNote>}
+      </div>
+    </>
+  );
+
+  const sellersBlock = (
+    <>
+      <SectionHead
+        title="Top sellers"
+        subtitle="Creators with the most published work"
+        icon={Users}
+        action={{ label: "View all", onClick: () => navigate({ to: "/sellers" }) }}
+      />
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:gap-4">
+        {shownSellers.slice(0, tab === "Shops" ? 40 : 6).map((s) => (
+          <Link
+            key={s.id}
+            to="/shop/$id"
+            params={{ id: s.slug || s.id }}
+            className="flex items-center gap-3 rounded-[14px] border border-slate-200/80 bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
+          >
+            <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+              <AvatarImage src={s.avatarUrl} alt={s.name} />
+            </div>
+            <div className="min-w-0">
+              <p className="flex items-center gap-1 truncate text-sm font-bold text-slate-900">
+                <span className="truncate">{s.name}</span>
+                {s.verified && <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-[#2F5FD0]" />}
+              </p>
+              <p className="truncate text-xs text-slate-500">
+                {s.productsCount} product{s.productsCount === 1 ? "" : "s"}
+              </p>
+              <p className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600">
+                <Star className="h-3 w-3 fill-[#F5A524] text-[#F5A524]" />
+                {s.rating ? s.rating.toFixed(1) : "New"}
+              </p>
+            </div>
+          </Link>
+        ))}
+        {shownSellers.length === 0 && <EmptyNote>No sellers match.</EmptyNote>}
+      </div>
+    </>
+  );
+
+  const freshBlock = (
+    <>
+      <SectionHead
+        title="Fresh in the market"
+        subtitle="Newly published digital assets"
+        icon={Sparkles}
+        action={{ label: "View all", onClick: () => onSelect("Marketplace") }}
+      />
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
+        {newArrivals.slice(0, tab === "Products" ? 40 : 8).map((p) => (
+          <ProductCard key={p.id} product={p} currency={currency} />
+        ))}
+        {newArrivals.length === 0 && <EmptyNote>No new listings yet.</EmptyNote>}
+      </div>
+    </>
+  );
+
+  const peopleBlock = (
+    <>
+      <SectionHead title="People on Oventric" subtitle="Members earning their stars" />
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:gap-4">
+        {peers.slice(0, tab === "People" ? 40 : 8).map((p) => (
+          <Link
+            key={p.id}
+            to="/profile/$id"
+            params={{ id: p.slug }}
+            className="flex flex-col items-center gap-2 rounded-[14px] border border-slate-200/80 bg-white p-5 text-center transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
+          >
+            <div className="h-16 w-16 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+              <AvatarImage src={p.avatarUrl} alt={p.name} />
+            </div>
+            <p className="max-w-full truncate text-sm font-bold text-slate-900">{p.name}</p>
+            <p className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600">
+              <Star className="h-3 w-3 fill-[#F5A524] text-[#F5A524]" />
+              {p.stars.toFixed(1)}
+            </p>
+          </Link>
+        ))}
+        {peers.length === 0 && <EmptyNote>No people match.</EmptyNote>}
+      </div>
+    </>
+  );
 
   return (
     <div className="min-h-screen bg-[#F7F8FA]">
-      <div className="mx-auto w-full max-w-[1200px] px-4 pb-16 pt-5 sm:px-6 lg:pt-8">
+      <div className="mx-auto w-full max-w-[1280px] px-4 pb-16 pt-5 sm:px-6 lg:pt-8">
         {/* ------------------------------------------------------------ hero */}
         <section className="overflow-hidden rounded-[18px] border border-slate-200/80 bg-gradient-to-br from-[#16181D] via-[#1D2027] to-[#2A1E24] px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-14">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white/80">
@@ -116,125 +275,54 @@ export function ExplorePage({ onSelect }: { onSelect: (section: "Marketplace") =
           </div>
         </section>
 
-        {/* ------------------------------------------------------ categories */}
-        <SectionHead
-          title="Browse by category"
-          action={{ label: "View all", onClick: () => onSelect("Marketplace") }}
-        />
-        <div className="grid grid-cols-4 gap-3 sm:grid-cols-4 lg:grid-cols-6 lg:gap-4">
-          {categories.slice(0, 12).map((c, i) => {
-            const { Icon } = visualForCategory(c.slug, c.name);
-            const tint = TILE_TINTS[i % TILE_TINTS.length]!;
-            return (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => onSelect("Marketplace")}
-                className="flex flex-col items-center gap-2 rounded-[14px] border-slate-200/80 bg-transparent p-0 text-center transition-all active:scale-[0.98] sm:border sm:bg-white sm:p-4 sm:hover:-translate-y-0.5 sm:hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
-              >
-                <span
-                  className={`grid h-14 w-14 shrink-0 place-items-center rounded-full ${tint} sm:h-11 sm:w-11 sm:rounded-[12px]`}
+        {/* ------------------------------------------------- tabs + search */}
+        <div className="sticky top-14 z-20 -mx-4 mt-5 border-b border-slate-200/80 bg-[#F7F8FA]/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
+          <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-center">
+            <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {TABS.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setTab(t)}
+                  className={`shrink-0 rounded-full px-4 py-2 text-xs font-bold transition-colors sm:text-sm ${
+                    tab === t
+                      ? "bg-slate-900 text-white"
+                      : "border border-slate-200 bg-white text-slate-600 hover:text-slate-900"
+                  }`}
                 >
-                  <Icon className="h-6 w-6 sm:h-5 sm:w-5" />
-                </span>
-                <span className="min-w-0 max-w-full truncate text-xs font-bold capitalize text-slate-900 sm:text-sm">
-                  {c.name.trim()}
-                </span>
-              </button>
-            );
-          })}
-          {categories.length === 0 && <EmptyNote>Categories are being set up.</EmptyNote>}
-        </div>
-
-        {/* -------------------------------------------------------- trending */}
-        <SectionHead
-          title="Trending right now"
-          subtitle="Most reviewed digital products this week"
-          icon={TrendingUp}
-          action={{ label: "View all", onClick: () => onSelect("Marketplace") }}
-        />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-4">
-          {trending.slice(0, 10).map((p) => (
-            <ProductCard key={p.id} product={p} currency={currency} />
-          ))}
-          {trending.length === 0 && <EmptyNote>Nothing trending yet.</EmptyNote>}
-        </div>
-
-        {/* ---------------------------------------------------- top sellers */}
-        <SectionHead
-          title="Top sellers"
-          subtitle="Creators with the most published work"
-          icon={Users}
-          action={{ label: "View all", onClick: () => navigate({ to: "/sellers" }) }}
-        />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
-          {(sellers as TopSellerDTO[]).slice(0, 8).map((s) => (
-            <Link
-              key={s.id}
-              to="/shop/$id"
-              params={{ id: s.slug || s.id }}
-              className="flex items-center gap-3 rounded-[14px] border border-slate-200/80 bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
-            >
-              <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
-                <AvatarImage src={s.avatarUrl} alt={s.name} />
-              </div>
-              <div className="min-w-0">
-                <p className="flex items-center gap-1 truncate text-sm font-bold text-slate-900">
-                  <span className="truncate">{s.name}</span>
-                  {s.verified && <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-[#2F5FD0]" />}
-                </p>
-                <p className="truncate text-xs text-slate-500">
-                  {s.productsCount} product{s.productsCount === 1 ? "" : "s"}
-                </p>
-                <p className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600">
-                  <Star className="h-3 w-3 fill-[#F5A524] text-[#F5A524]" />
-                  {s.rating ? s.rating.toFixed(1) : "New"}
-                </p>
-              </div>
-            </Link>
-          ))}
-          {sellers.length === 0 && <EmptyNote>No sellers yet.</EmptyNote>}
-        </div>
-
-        {/* --------------------------------------------------- new arrivals */}
-        <SectionHead
-          title="Fresh in the market"
-          subtitle="Newly published digital assets"
-          icon={Sparkles}
-          action={{ label: "View all", onClick: () => onSelect("Marketplace") }}
-        />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-4">
-          {newArrivals.slice(0, 10).map((p) => (
-            <ProductCard key={p.id} product={p} currency={currency} />
-          ))}
-          {newArrivals.length === 0 && <EmptyNote>No new listings yet.</EmptyNote>}
-        </div>
-
-        {/* ------------------------------------------------- people to follow */}
-        {peers.length > 0 && (
-          <>
-            <SectionHead title="People on Oventric" subtitle="Members earning their stars" />
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-4 lg:gap-4">
-              {peers.map((p: DiscoveryPeer) => (
-                <Link
-                  key={p.id}
-                  to="/profile/$id"
-                  params={{ id: p.slug }}
-                  className="flex flex-col items-center gap-2 rounded-[14px] border border-slate-200/80 bg-white p-5 text-center transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
-                >
-                  <div className="h-16 w-16 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
-                    <AvatarImage src={p.avatarUrl} alt={p.name} />
-                  </div>
-                  <p className="max-w-full truncate text-sm font-bold text-slate-900">{p.name}</p>
-                  <p className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600">
-                    <Star className="h-3 w-3 fill-[#F5A524] text-[#F5A524]" />
-                    {p.stars.toFixed(1)}
-                  </p>
-                </Link>
+                  {t}
+                </button>
               ))}
             </div>
-          </>
-        )}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder={`Search ${tab === "All" ? "Oventric" : tab.toLowerCase()}…`}
+                className="h-10 w-full rounded-full border border-slate-200 bg-white pl-9 pr-4 text-sm text-slate-900 placeholder:text-slate-400 focus:border-crimson/50 focus:outline-none"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* ------------------------------------------ content + community */}
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-8">
+          <div className="min-w-0">
+            {show("Categories") && categoriesBlock}
+            {show("Products") && productsBlock}
+            {show("Shops") && sellersBlock}
+            {show("Products") && freshBlock}
+            {show("People") && peopleBlock}
+          </div>
+
+          <aside className="min-w-0 lg:pt-10">
+            <h2 className="mb-3 font-[Outfit] text-lg font-extrabold text-slate-900">
+              Community
+            </h2>
+            <DiscoveryPanel asPage />
+          </aside>
+        </div>
       </div>
     </div>
   );
