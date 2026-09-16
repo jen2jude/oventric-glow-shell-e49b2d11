@@ -14,6 +14,14 @@ import {
   Instagram,
   Youtube,
   Linkedin,
+  Facebook,
+  Lock,
+  Clock,
+  Headphones,
+  Gift,
+  Download,
+  Banknote,
+  Users,
 } from "lucide-react";
 
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
@@ -72,6 +80,75 @@ const TRUST = [
 ];
 
 const HANDWRITTEN = ["Ideas", "Skills", "Products", "Community", "Opportunities"];
+
+/** Why sell / why buy on Oventric — MVP capabilities only. */
+const REASONS = [
+  {
+    Icon: WalletIcon,
+    tint: "bg-[#E8F8EF] text-[#1F9D62]",
+    title: "Keep 80% of every sale",
+    body: "Oventric takes a flat 20%. No listing fees, no monthly subscription, no hidden cuts.",
+  },
+  {
+    Icon: ShieldCheck,
+    tint: "bg-[#EAF1FF] text-[#2F5FD0]",
+    title: "Escrow on every order",
+    body: "Buyer payments are held until the asset is delivered, then released to the seller.",
+  },
+  {
+    Icon: Download,
+    tint: "bg-[#F3ECFF] text-[#6F42D4]",
+    title: "Instant digital delivery",
+    body: "Files and access links hand over in-app the moment a payment is confirmed.",
+  },
+  {
+    Icon: Banknote,
+    tint: "bg-[#FFF6E2] text-[#C58318]",
+    title: "Withdraw in your currency",
+    body: "Earnings land in your Oventric wallet and cash out to your local bank account.",
+  },
+  {
+    Icon: Clock,
+    tint: "bg-[#FFEDE4] text-[#D4622A]",
+    title: "Fast, automatic release",
+    body: "Completed orders settle automatically — no chasing buyers for confirmation.",
+  },
+  {
+    Icon: Headphones,
+    tint: "bg-[#E3F6F6] text-[#158C8C]",
+    title: "Support & disputes",
+    body: "Raise a dispute on any order and get a mediated resolution from our team.",
+  },
+];
+
+const STEPS = [
+  {
+    title: "Create your account",
+    body: "Pick your country and currency once — every price you see is shown in it.",
+  },
+  {
+    title: "Buy or list a digital asset",
+    body: "Shop the marketplace, or publish your own product, service or tool in minutes.",
+  },
+  {
+    title: "Get paid and withdraw",
+    body: "Escrow releases into your wallet, then cash out to your bank account.",
+  },
+];
+
+const PAY_METHODS = ["Visa", "Mastercard", "Verve", "Paystack", "Bank transfer"];
+
+const SOCIALS: Array<{
+  href: string;
+  label: string;
+  Icon: React.ComponentType<{ className?: string }>;
+}> = [
+  { href: "https://x.com/oventric", label: "X", Icon: Twitter },
+  { href: "https://instagram.com/oventric", label: "Instagram", Icon: Instagram },
+  { href: "https://youtube.com/@oventric", label: "YouTube", Icon: Youtube },
+  { href: "https://linkedin.com/company/oventric", label: "LinkedIn", Icon: Linkedin },
+  { href: "https://facebook.com/oventric", label: "Facebook", Icon: Facebook },
+];
 
 export type OventricHomeProps = {
   onSelect: (section: string) => void;
