@@ -1611,63 +1611,7 @@ export function Feed() {
                 (i + 1) % 4 === 0 &&
                 commerceCards[commerceIdx]
               ) {
-                const c = commerceCards[commerceIdx++];
                 items.push(<FeedCommerceCard key={`commerce-${c.kind}-${c.id}`} item={c} />);
-              }
-              if ((i + 1) % 10 === 0 && blogPosts[blogIdx]) {
-
-                const b = blogPosts[blogIdx++];
-                items.push(
-                  <div
-                    key={`blog-${b.id}`}
-                    className="relative bg-white border border-slate-200 rounded-[10px] overflow-hidden shadow-sm hover:border-[#E5484D]/60 transition"
-                  >
-                    <Link to="/blog/$slug" params={{ slug: b.slug }} className="block">
-                      {b.cover_url && (
-                        <ResponsiveImage
-                          src={b.cover_url}
-                          alt={b.title}
-                          sizes="(min-width: 768px) 640px, 100vw"
-                          className="w-full aspect-[16/7] object-cover"
-                        />
-                      )}
-
-                      <div className="p-4">
-                        <div className="flex items-center gap-2 mb-1">
-                          <BookOpen className="w-3.5 h-3.5 text-[#E5484D] md:text-[#E5484D]" />
-                          <span className="text-[10px] uppercase tracking-wider text-[#E5484D] md:text-[#E5484D] font-bold">
-                            Blog{b.category_name ? ` · ${b.category_name}` : ""}
-                          </span>
-                        </div>
-                        <h3 className="text-slate-900 text-lg font-black leading-tight">
-                          {b.title}
-                        </h3>
-                        <p className="mt-1.5 text-sm text-slate-400 md:text-slate-600 line-clamp-3">
-                          {b.excerpt}
-                        </p>
-                        <div className="mt-3 flex items-center justify-between">
-                          <span className="text-[11px] text-slate-500 md:text-slate-500">
-                            By {b.author_name}
-                          </span>
-                          <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-[10px] bg-[#E5484D] text-black text-xs font-bold">
-                            Read article →
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setBlogShare(b);
-                      }}
-                      className="absolute top-2 right-2 p-2 rounded-full bg-black border border-white/10 text-slate-200 hover:text-white hover:bg-black"
-                      aria-label="Share article"
-                    >
-                      <Share2 className="w-4 h-4" />
-                    </button>
-                  </div>,
-                );
               }
             });
             return items;
@@ -2186,17 +2130,6 @@ export function Feed() {
 
         {/* Mock marketplace, sponsored, and bounty cards removed — live data lives in the DiscoveryPanel and dedicated routes. */}
 
-        <ShareSheet
-          open={!!blogShare}
-          onClose={() => setBlogShare(null)}
-          url={
-            blogShare
-              ? `${typeof window !== "undefined" ? window.location.origin : ""}/blog/${blogShare.slug}`
-              : ""
-          }
-          title={blogShare?.title ?? "Oventric Blog"}
-          text={blogShare?.excerpt || undefined}
-        />
         <RepostDialog
           open={!!repostTarget}
           post={repostTarget}
