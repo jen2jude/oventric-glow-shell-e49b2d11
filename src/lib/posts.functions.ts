@@ -638,6 +638,25 @@ export const createPost = createServerFn({ method: "POST" })
       (id) => id !== context.userId,
     );
 
+    // Every tagged product must resolve to a real, active Oventric product.
+    // The client only ever supplies an id — price, seller and name are read
+    // from the authoritative product record at render/checkout time.
+    const taggedIds = Array.from(
+      new Set([...(data.productAttachmentIds ?? []), ...(data.productTags ?? []).map((t) => t.productId)]),
+    );
+    if (taggedIds.length > 0) {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: valid } = await supabaseAdmin
+        .from("products")
+        .select("id")
+        .in("id", taggedIds)
+        .eq("status", "active");
+      const validIds = new Set((valid ?? []).map((p: { id: string }) => p.id));
+      if (validIds.size !== taggedIds.length) {
+        throw new Error("One of the tagged products is unavailable");
+      }
+    }
+
     const paths = Array.isArray(data.mediaPaths) ? data.mediaPaths.slice(0, 10) : [];
     const isVideo = data.mediaType === "video" && !!data.mediaPath;
     const legacyPath = isVideo ? data.mediaPath! : (paths.length === 0 ? (data.mediaPath ?? null) : null);
