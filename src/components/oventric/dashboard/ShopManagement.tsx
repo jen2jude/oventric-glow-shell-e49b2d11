@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { 
@@ -35,6 +35,76 @@ export function ShopManagement() {
   const [logoPath, setLogoPath] = useState(user?.shop_logo_path || user?.avatar_path || "");
   const [coverPath, setCoverPath] = useState(user?.shop_cover_path || user?.cover_path || "");
   const [saving, setSaving] = useState(false);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState<"logo" | "cover" | null>(null);
+  const logoRef = useRef<HTMLInputElement>(null);
+  const coverRef = useRef<HTMLInputElement>(null);
+
+  // Resolve stored storage paths into viewable URLs for the existing images.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const sign = async (bucket: "avatars" | "profile-covers", path: string) => {
+        const { data } = await supabase.storage.from(bucket).createSignedUrl(path, 60 * 60 * 24);
+        return data?.signedUrl ?? null;
+      };
+      if (logoPath && !logoPath.startsWith("blob:") && !logoPath.startsWith("http")) {
+        const url = await sign("avatars", logoPath);
+        if (!cancelled) setLogoPreview(url);
+      }
+      if (coverPath && !coverPath.startsWith("blob:") && !coverPath.startsWith("http")) {
+        const url = await sign("profile-covers", coverPath);
+        if (!cancelled) setCoverPreview(url);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // Only on first load of the stored paths.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const pickAndUpload = useCallback(
+    async (file: File, kind: "logo" | "cover") => {
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please choose an image file.");
+        return;
+      }
+      if (file.size > 8 * 1024 * 1024) {
+        toast.error("Image must be smaller than 8MB.");
+        return;
+      }
+      setUploading(kind);
+      const localUrl = URL.createObjectURL(file);
+      if (kind === "logo") setLogoPreview(localUrl);
+      else setCoverPreview(localUrl);
+      try {
+        const { data: auth } = await supabase.auth.getUser();
+        const uid = auth.user?.id;
+        if (!uid) throw new Error("Not authenticated");
+        const bucket = kind === "logo" ? "avatars" : "profile-covers";
+        const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+        const path = `${uid}/shop-${kind}-${crypto.randomUUID()}.${ext}`;
+        const { error } = await supabase.storage.from(bucket).upload(path, file, {
+          cacheControl: "3600",
+          upsert: false,
+          contentType: file.type || "image/jpeg",
+        });
+        if (error) throw error;
+        if (kind === "logo") setLogoPath(path);
+        else setCoverPath(path);
+        toast.success(kind === "logo" ? "Shop logo uploaded" : "Cover image uploaded");
+      } catch {
+        toast.error("Could not upload that image. Please try again.");
+        if (kind === "logo") setLogoPreview(null);
+        else setCoverPreview(null);
+      } finally {
+        setUploading(null);
+      }
+    },
+    [],
+  );
 
   const handleSave = async () => {
     setSaving(true);
@@ -68,25 +138,65 @@ export function ShopManagement() {
         {/* Visual Branding */}
         <div className="bg-[#141418] border border-white/10 rounded-2xl overflow-hidden">
           <div className="h-32 bg-gradient-to-r from-[#E5484D]/20 to-purple-500/20 relative">
+             {coverPreview ? (
+               <img decoding="async" src={coverPreview} alt="Shop cover" className="absolute inset-0 h-full w-full object-cover" />
+             ) : null}
              <div className="absolute inset-0 flex items-center justify-center">
-               <button className="flex items-center gap-2 px-3 py-1.5 rounded-[10px] bg-black/50 text-white text-xs font-bold hover:bg-black/70 transition-colors">
-                 <Camera className="w-4 h-4" />
+               <button
+                 type="button"
+                 onClick={() => coverRef.current?.click()}
+                 disabled={uploading !== null}
+                 className="flex items-center gap-2 px-3 py-1.5 rounded-[10px] bg-black/50 text-white text-xs font-bold hover:bg-black/70 transition-colors disabled:opacity-60"
+               >
+                 {uploading === "cover" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
                  Change Cover
                </button>
              </div>
           </div>
+          <input
+            ref={coverRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              e.target.value = "";
+              if (f) void pickAndUpload(f, "cover");
+            }}
+          />
           <div className="px-6 pb-6 relative">
             <div className="absolute -top-10 left-6">
-              <div className="w-20 h-20 rounded-2xl bg-[#141418] border-4 border-[#141418] shadow-xl overflow-hidden flex items-center justify-center group cursor-pointer">
-                {logoPath ? (
-                  <img loading="lazy" decoding="async" src={logoPath} alt="Logo" className="w-full h-full object-cover" />
+              <button
+                type="button"
+                onClick={() => logoRef.current?.click()}
+                disabled={uploading !== null}
+                aria-label="Change shop logo"
+                className="relative w-20 h-20 rounded-2xl bg-[#141418] border-4 border-[#141418] shadow-xl overflow-hidden flex items-center justify-center group cursor-pointer disabled:opacity-60"
+              >
+                {logoPreview ? (
+                  <img decoding="async" src={logoPreview} alt="Shop logo" className="w-full h-full object-cover" />
                 ) : (
                   <Store className="w-8 h-8 text-slate-700" />
                 )}
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                  <Camera className="w-4 h-4 text-white" />
+                  {uploading === "logo" ? (
+                    <Loader2 className="w-4 h-4 text-white animate-spin" />
+                  ) : (
+                    <Camera className="w-4 h-4 text-white" />
+                  )}
                 </div>
-              </div>
+              </button>
+              <input
+                ref={logoRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  e.target.value = "";
+                  if (f) void pickAndUpload(f, "logo");
+                }}
+              />
             </div>
             
             <div className="pt-14 space-y-4">
