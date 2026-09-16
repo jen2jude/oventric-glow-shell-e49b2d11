@@ -285,7 +285,7 @@ export function CoursePublishWizard({
                       {done ? (
                         <CheckCircle2 className="w-4 h-4" />
                       ) : (
-                        <span className={active ? "text-slate-900" : "text-slate-500"}>{i + 1}</span>
+                        <span className={active ? "text-white" : "text-slate-500"}>{i + 1}</span>
                       )}
                     </div>
                     {!isAppShell && (
