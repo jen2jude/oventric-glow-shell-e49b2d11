@@ -52,11 +52,16 @@ export interface AdminOrderDetail extends AdminOrderRow {
 const STATUSES = ["ALL", "pending", "paid", "failed", "refunded"] as const;
 
 async function assertManagement(context: { supabase: unknown; userId: string }) {
+  // Least privilege: orders carry financial detail, so `content` is excluded —
+  // this mirrors SECTION_ACCESS["/admin/orders"] and is enforced server-side.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = context.supabase as any;
-  const { data, error } = await sb.rpc("has_any_management_role", { _user_id: context.userId });
-  if (error) throw new Error(error.message);
-  if (!data) throw new Error("Forbidden: management role required");
+  for (const role of ["admin", "finance", "support", "moderator"] as const) {
+    const { data, error } = await sb.rpc("has_role", { _user_id: context.userId, _role: role });
+    if (error) throw new Error(error.message);
+    if (data) return;
+  }
+  throw new Error("Forbidden: requires one of admin, finance, support, moderator");
 }
 
 const SELECT_COLS =

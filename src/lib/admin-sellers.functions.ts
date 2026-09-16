@@ -32,13 +32,23 @@ export interface AdminSellerRow {
 export const adminListSellers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<AdminSellerRow[]> => {
+    // Least privilege: mirrors SECTION_ACCESS["/admin/sellers"] (admin,
+    // moderator, support). Enforced server-side, not by navigation.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sbUser = context.supabase as any;
-    const { data: allowed, error: rErr } = await sbUser.rpc("has_any_management_role", {
-      _user_id: context.userId,
-    });
-    if (rErr) throw new Error(rErr.message);
-    if (!allowed) throw new Error("Forbidden: management role required");
+    let allowed = false;
+    for (const role of ["admin", "moderator", "support"] as const) {
+      const { data, error: rErr } = await sbUser.rpc("has_role", {
+        _user_id: context.userId,
+        _role: role,
+      });
+      if (rErr) throw new Error(rErr.message);
+      if (data) {
+        allowed = true;
+        break;
+      }
+    }
+    if (!allowed) throw new Error("Forbidden: requires one of admin, moderator, support");
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
