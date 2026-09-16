@@ -1486,6 +1486,21 @@ html.light {
   --hairline-strong: rgba(15, 23, 42, 0.16);
   --muted-ink: #475569;
   --strong-ink: #0f172a;
+
+  /* Create chooser / publishing surfaces on the white web theme. */
+  --create-surface: #ffffff;
+  --create-card: #f8fafc;
+  --create-muted: #f1f5f9;
+  --create-hover: #eef2f7;
+  --create-title: #0f172a;
+  --create-copy: #475569;
+  --create-arrow: #64748b;
+  --create-border: rgba(15, 23, 42, 0.10);
+  --create-border-strong: rgba(15, 23, 42, 0.18);
+  --create-handle: rgba(15, 23, 42, 0.22);
+  --create-overlay: rgba(15, 23, 42, 0.45);
+  --create-panel-shadow: 0 24px 70px rgba(15, 23, 42, 0.16);
+  --create-card-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
 }
 
 /* Remap the specific hardcoded hex surfaces used across older components,
