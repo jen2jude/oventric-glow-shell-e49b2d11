@@ -5,10 +5,16 @@
  * into these two functions once a payment is confirmed. The `reference` is the
  * gateway reference and is what makes settlement idempotent.
  */
-import { FX_FROM_USD, SELLER_SHARE, WALLET_CASHBACK_PCT, type OrderCurrency, type PaymentMethod } from "@/lib/marketplace.functions";
+import { FX_FROM_USD, SELLER_SHARE, type OrderCurrency, type PaymentMethod } from "@/lib/marketplace.functions";
 import { primeRuntimeFxRates } from "@/lib/fx.server";
 import { convertViaSnapshot } from "@/lib/fx-display";
 import { dbCurrency } from "@/lib/currency/africa";
+import {
+  validateCouponServer,
+  recordCouponRedemption,
+  sellerFundedCashbackUSD,
+  qualifyReferralOnSettledPurchase,
+} from "@/lib/promotions.server";
 
 export async function settleWalletTopup(
   buyerId: string,
