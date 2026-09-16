@@ -28,6 +28,7 @@ import { PushOptInPrompt } from "@/components/oventric/PushOptInPrompt";
 import { BootSplash } from "@/components/oventric/BootSplash";
 
 import { OfflineBanner } from "@/components/oventric/pwa/OfflineBanner";
+import { ReferralCapture } from "@/components/oventric/ReferralCapture";
 
 import { useLiveFx } from "@/lib/useLiveFx";
 import { FeatureCarousel } from "@/components/oventric/FeatureCarousel";
@@ -432,6 +433,7 @@ function RootComponent() {
               <LiveNotificationToasts />
               <PushOptInPrompt />
               <OfflineBanner />
+              <ReferralCapture />
 
               <BootSplash />
                {show && hydrated && !isPc && isAppShell && <FeatureCarousel onComplete={markSeen} />}

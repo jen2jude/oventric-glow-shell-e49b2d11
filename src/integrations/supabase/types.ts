@@ -1260,26 +1260,103 @@ export type Database = {
           },
         ]
       }
+      coupon_redemptions: {
+        Row: {
+          coupon_code: string
+          created_at: string
+          discount_usd: number
+          id: string
+          order_id: string | null
+          reference: string | null
+          user_id: string
+        }
+        Insert: {
+          coupon_code: string
+          created_at?: string
+          discount_usd?: number
+          id?: string
+          order_id?: string | null
+          reference?: string | null
+          user_id: string
+        }
+        Update: {
+          coupon_code?: string
+          created_at?: string
+          discount_usd?: number
+          id?: string
+          order_id?: string | null
+          reference?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupon_redemptions_coupon_code_fkey"
+            columns: ["coupon_code"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "coupon_redemptions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coupons: {
         Row: {
           active: boolean
           code: string
           created_at: string
           discount_pct: number
+          expires_at: string | null
+          max_uses: number | null
+          min_purchase_usd: number
+          per_user_limit: number | null
+          product_id: string | null
+          seller_id: string | null
+          starts_at: string | null
+          used_count: number
         }
         Insert: {
           active?: boolean
           code: string
           created_at?: string
           discount_pct: number
+          expires_at?: string | null
+          max_uses?: number | null
+          min_purchase_usd?: number
+          per_user_limit?: number | null
+          product_id?: string | null
+          seller_id?: string | null
+          starts_at?: string | null
+          used_count?: number
         }
         Update: {
           active?: boolean
           code?: string
           created_at?: string
           discount_pct?: number
+          expires_at?: string | null
+          max_uses?: number | null
+          min_purchase_usd?: number
+          per_user_limit?: number | null
+          product_id?: string | null
+          seller_id?: string | null
+          starts_at?: string | null
+          used_count?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "coupons_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       course_enrollments: {
         Row: {
@@ -2847,6 +2924,7 @@ export type Database = {
           activation_guide: string | null
           basic_info: string | null
           brand: string | null
+          cashback_pct: number
           category: string
           condition: string | null
           cover_path: string | null
@@ -2886,6 +2964,7 @@ export type Database = {
           activation_guide?: string | null
           basic_info?: string | null
           brand?: string | null
+          cashback_pct?: number
           category: string
           condition?: string | null
           cover_path?: string | null
@@ -2925,6 +3004,7 @@ export type Database = {
           activation_guide?: string | null
           basic_info?: string | null
           brand?: string | null
+          cashback_pct?: number
           category?: string
           condition?: string | null
           cover_path?: string | null
@@ -2992,6 +3072,7 @@ export type Database = {
           notification_preferences: Json
           phone: string | null
           profile_completed_at: string | null
+          referral_code: string | null
           reputation_stars: number
           shop_about: string | null
           shop_cover_path: string | null
@@ -3036,6 +3117,7 @@ export type Database = {
           notification_preferences?: Json
           phone?: string | null
           profile_completed_at?: string | null
+          referral_code?: string | null
           reputation_stars?: number
           shop_about?: string | null
           shop_cover_path?: string | null
@@ -3080,6 +3162,7 @@ export type Database = {
           notification_preferences?: Json
           phone?: string | null
           profile_completed_at?: string | null
+          referral_code?: string | null
           reputation_stars?: number
           shop_about?: string | null
           shop_cover_path?: string | null
@@ -3165,6 +3248,71 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      referral_settings: {
+        Row: {
+          active: boolean
+          id: number
+          min_purchase_usd: number
+          qualification_days: number
+          reward_amount_usd: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          id?: number
+          min_purchase_usd?: number
+          qualification_days?: number
+          reward_amount_usd?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          id?: number
+          min_purchase_usd?: number
+          qualification_days?: number
+          reward_amount_usd?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          invitee_id: string
+          qualified_at: string | null
+          qualified_order_id: string | null
+          referrer_id: string
+          reward_amount_usd: number
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          invitee_id: string
+          qualified_at?: string | null
+          qualified_order_id?: string | null
+          referrer_id: string
+          reward_amount_usd?: number
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          invitee_id?: string
+          qualified_at?: string | null
+          qualified_order_id?: string | null
+          referrer_id?: string
+          reward_amount_usd?: number
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_qualified_order_id_fkey"
+            columns: ["qualified_order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       service_packages: {
         Row: {
@@ -4087,6 +4235,7 @@ export type Database = {
         | "Campaign Refund"
         | "Wallet Transfer Sent"
         | "Wallet Transfer Received"
+        | "Referral Reward"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -4282,6 +4431,7 @@ export const Constants = {
         "Campaign Refund",
         "Wallet Transfer Sent",
         "Wallet Transfer Received",
+        "Referral Reward",
       ],
     },
   },

@@ -337,6 +337,8 @@ export const createProduct = createServerFn({ method: "POST" })
     originalCurrency?: OrderCurrency;
     originalAmount?: number;
     fxSnapshot?: { base: string; rates: Record<string, number>; source?: string; fetched_at?: string } | null;
+    /** Seller-funded cashback rate (%) for this product — paid out of the seller's 80%. */
+    cashbackPct?: number | null;
   }) => ({
     name: String(input.name ?? "").trim(),
     category: input.category,
@@ -356,6 +358,7 @@ export const createProduct = createServerFn({ method: "POST" })
     originalCurrency: (input.originalCurrency ?? "USD") as OrderCurrency,
     originalAmount: Math.max(0, Number(input.originalAmount ?? input.priceUSD ?? 0)),
     fxSnapshot: input.fxSnapshot ?? null,
+    cashbackPct: Math.max(0, Math.min(50, Number(input.cashbackPct ?? 0))),
   }))
   .handler(async ({ data, context }) => {
     if (!data.name) throw new Error("Name required");
@@ -381,6 +384,7 @@ export const createProduct = createServerFn({ method: "POST" })
         original_currency: data.originalCurrency,
         original_amount: data.originalAmount,
         fx_snapshot: data.fxSnapshot ? JSON.parse(JSON.stringify(data.fxSnapshot)) : null,
+        cashback_pct: data.cashbackPct,
         vendor: data.vendor,
         hue: data.hue,
         external_url: data.externalUrl,
@@ -484,6 +488,7 @@ export const updateAndResubmitProduct = createServerFn({ method: "POST" })
     basicInfo?: string | null;
     activationGuide?: string | null;
     sellerResponse?: string | null;
+    cashbackPct?: number | null;
   }) => ({
     id: String(input.id ?? ""),
     name: input.name !== undefined ? String(input.name).trim() : undefined,
@@ -514,6 +519,10 @@ export const updateAndResubmitProduct = createServerFn({ method: "POST" })
     basicInfo: input.basicInfo !== undefined ? (input.basicInfo ? String(input.basicInfo).trim() : null) : undefined,
     activationGuide: input.activationGuide !== undefined ? (input.activationGuide ? String(input.activationGuide).trim() : null) : undefined,
     sellerResponse: input.sellerResponse ? String(input.sellerResponse).trim().slice(0, 1000) : null,
+    cashbackPct:
+      input.cashbackPct !== undefined && input.cashbackPct !== null
+        ? Math.max(0, Math.min(50, Number(input.cashbackPct)))
+        : undefined,
   }))
   .handler(async ({ data, context }) => {
     if (!data.id) throw new Error("Product id required");
@@ -550,6 +559,7 @@ export const updateAndResubmitProduct = createServerFn({ method: "POST" })
     if (data.subcategory !== undefined) patch.subcategory = data.subcategory;
     if (data.description !== undefined) patch.description = data.description;
     if (data.priceUSD !== undefined) patch.price_usd = data.priceUSD;
+    if (data.cashbackPct !== undefined) patch.cashback_pct = data.cashbackPct;
     if (data.originalCurrency !== undefined) patch.original_currency = data.originalCurrency;
     if (data.originalAmount !== undefined) patch.original_amount = data.originalAmount;
     if (data.fxSnapshot !== undefined) patch.fx_snapshot = data.fxSnapshot ? JSON.parse(JSON.stringify(data.fxSnapshot)) : null;
@@ -727,20 +737,49 @@ export function estimateSellerNetUSD(
 }
 
 
-/** Public: validate a coupon code. Returns the discount percent or null. */
+/**
+ * Validate a coupon against a real cart context. The server owns every part of
+ * this decision (existence, active window, product/seller eligibility, minimum
+ * spend, total and per-user usage limits) and returns the discount it computed.
+ */
 export const validateCoupon = createServerFn({ method: "POST" })
-  .inputValidator((i: { code: string }) => ({ code: String(i?.code ?? "").trim().toUpperCase() }))
-  .handler(async ({ data }) => {
-    if (!data.code) return { valid: false as const };
-    const sb = serverPublicClient();
-    const { data: row } = await sb
-      .from("coupons")
-      .select("code, discount_pct")
-      .eq("code", data.code)
-      .eq("active", true)
-      .maybeSingle();
-    if (!row) return { valid: false as const };
-    return { valid: true as const, code: row.code as string, discountPct: Number(row.discount_pct) };
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i: { code: string; productId?: string | null; quantity?: number | null }) => ({
+    code: String(i?.code ?? "").trim().toUpperCase(),
+    productId: i?.productId ? String(i.productId) : null,
+    quantity: Math.max(1, Math.min(20, Number(i?.quantity ?? 1))),
+  }))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    if (!data.code) return { valid: false as const, reason: "Enter a coupon code" };
+
+    let grossUSD = 0;
+    let sellerId: string | null = null;
+    if (data.productId) {
+      const { data: p } = await supabase
+        .from("products")
+        .select("id, seller_id, price_usd")
+        .eq("id", data.productId)
+        .maybeSingle();
+      if (!p) return { valid: false as const, reason: "Product not found" };
+      sellerId = (p.seller_id as string) ?? null;
+      grossUSD = Number((Number(p.price_usd) * data.quantity).toFixed(2));
+    }
+
+    const { validateCouponServer } = await import("@/lib/promotions.server");
+    const check = await validateCouponServer(supabase, data.code, {
+      userId,
+      productId: data.productId,
+      sellerId,
+      grossUSD,
+    });
+    if (!check.valid) return { valid: false as const, reason: check.reason };
+    return {
+      valid: true as const,
+      code: check.code,
+      discountPct: check.discountPct,
+      discountUSD: check.discountUSD,
+    };
   });
 
 /** Create + settle an order. Wallet method debits balance atomically. */
@@ -769,7 +808,7 @@ export const createOrder = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { data: pRow, error: pErr } = await supabase
       .from("products")
-      .select("id, seller_id, name, category, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, created_at, requires_manual_delivery, in_stock")
+      .select("id, seller_id, name, category, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, created_at, requires_manual_delivery, in_stock, cashback_pct")
       .eq("id", data.productId)
       .maybeSingle();
     if (pErr) throw new Error(pErr.message);
@@ -778,6 +817,7 @@ export const createOrder = createServerFn({ method: "POST" })
       throw new Error("This product is currently out of stock");
     }
     const product = mapProduct(pRow as Record<string, unknown>);
+    const productCashbackPct = Number((pRow as Record<string, unknown>).cashback_pct ?? 0);
 
     // Global catalogue: listings are sold across regions. The buyer is charged
     // in their own home currency (displayCurrency), converted from the USD
@@ -787,21 +827,24 @@ export const createOrder = createServerFn({ method: "POST" })
 
     const grossUSD = Number((product.priceUSD * data.quantity).toFixed(2));
 
-    // Coupon applies to every payment method, but a coupon purchase never
-    // earns cashback and cannot be combined with cashback spend.
+    // Coupon — validated server-side against the real cart. An invalid coupon
+    // is refused outright rather than silently ignored.
+    const { validateCouponServer, sellerFundedCashbackUSD, recordCouponRedemption, qualifyReferralOnSettledPurchase } =
+      await import("@/lib/promotions.server");
     let discountUSD = 0;
     let discountPct = 0;
+    let appliedCouponCode: string | null = null;
     if (data.couponCode) {
-      const { data: c } = await supabase
-        .from("coupons")
-        .select("discount_pct")
-        .eq("code", data.couponCode)
-        .eq("active", true)
-        .maybeSingle();
-      if (c) {
-        discountPct = Number(c.discount_pct);
-        discountUSD = Number(((grossUSD * discountPct) / 100).toFixed(2));
-      }
+      const check = await validateCouponServer(supabase, data.couponCode, {
+        userId,
+        productId: product.id,
+        sellerId: product.sellerId,
+        grossUSD,
+      });
+      if (!check.valid) throw new Error(check.reason);
+      discountPct = check.discountPct;
+      discountUSD = check.discountUSD;
+      appliedCouponCode = check.code;
     }
     const afterCouponUSD = Number((grossUSD - discountUSD).toFixed(2));
 
@@ -911,12 +954,13 @@ export const createOrder = createServerFn({ method: "POST" })
     // with no gateway fee, so seller/platform split the full paid amount.
     const gatewayFeeUSD = estimatePaystackFeeUSD(totalUSD, data.displayCurrency, data.paymentMethod, fx);
     const netAfterGatewayUSD = Number(Math.max(0, totalUSD - gatewayFeeUSD).toFixed(2));
-    const sellerCutUSD = Number((netAfterGatewayUSD * SELLER_SHARE).toFixed(2));
-    let cashbackUSD = 0;
-    if (data.paymentMethod === "wallet" && discountUSD <= 0) {
-      cashbackUSD = Number((netAfterGatewayUSD * WALLET_CASHBACK_PCT).toFixed(2));
-    }
-    const platformCutUSD = Number((netAfterGatewayUSD - sellerCutUSD - cashbackUSD).toFixed(2));
+    const sellerGrossUSD = Number((netAfterGatewayUSD * SELLER_SHARE).toFixed(2));
+    // Platform keeps a flat 20%; product-level cashback is funded out of the
+    // seller's own share only.
+    const platformCutUSD = Number((netAfterGatewayUSD - sellerGrossUSD).toFixed(2));
+    const cashbackUSD = sellerFundedCashbackUSD(productCashbackPct, netAfterGatewayUSD, sellerGrossUSD);
+    const sellerCutUSD = Number(Math.max(0, sellerGrossUSD - cashbackUSD).toFixed(2));
+    const sellerNetRatio = sellerGrossUSD > 0 ? sellerCutUSD / sellerGrossUSD : 1;
 
     // Persist escrow state + seller share on the order.
     await supabaseAdmin
@@ -937,7 +981,7 @@ export const createOrder = createServerFn({ method: "POST" })
     const sellerCurrency: OrderCurrency = sellerCountry === "NG" ? "NGN" : sellerCountry === "GH" ? "GHS" : "USD";
     const sellerCutLocalRaw =
       product.originalAmount > 0 && product.originalCurrency === sellerCurrency
-        ? product.originalAmount * data.quantity * SELLER_SHARE
+        ? product.originalAmount * data.quantity * SELLER_SHARE * sellerNetRatio
         : sellerCutUSD * FX_FROM_USD[sellerCurrency];
     const sellerCutLocal = Number(sellerCutLocalRaw.toFixed(sellerCurrency === "USD" ? 2 : 0));
 
@@ -969,15 +1013,14 @@ export const createOrder = createServerFn({ method: "POST" })
     });
 
 
-    // 2% cashback to buyer when paying from wallet — credited to the SPEND-ONLY
-    // Cashback Wallet (accumulated_cashback). Withdraw functions read from
-    // available_balance only, so this pot can be spent at future checkouts but
-    // never cashed out to bank.
+    // Seller-funded, product-level cashback → buyer's SPEND-ONLY Cashback
+    // Wallet (accumulated_cashback). Withdraw functions read available_balance
+    // only, so this pot can be spent at checkout but never cashed out to bank.
     if (cashbackUSD > 0) {
       await supabaseAdmin.rpc("cashback_credit", { _user_id: userId, _amount: cashbackUSD });
       await supabaseAdmin.from("wallet_transactions").insert({
         user_id: userId,
-        tx_hash: `0x${Math.random().toString(16).slice(2, 6).toUpperCase()}-${Date.now().toString(16).toUpperCase()}`,
+        tx_hash: `${oRow.id}-CB`,
         type: "Cashback Earned",
         amount: Number((cashbackUSD * fx).toFixed(2)),
         currency: dbCurrency(data.displayCurrency),
@@ -986,6 +1029,23 @@ export const createOrder = createServerFn({ method: "POST" })
         occurred_at: new Date().toISOString(),
       });
     }
+
+    if (appliedCouponCode && discountUSD > 0) {
+      await recordCouponRedemption(supabaseAdmin, {
+        code: appliedCouponCode,
+        userId,
+        orderId: oRow.id as string,
+        reference: `ORDER_${oRow.id}`,
+        discountUSD,
+      });
+    }
+
+    // Referral reward — only on the invitee's first settled purchase.
+    await qualifyReferralOnSettledPurchase(supabaseAdmin, {
+      buyerId: userId,
+      orderId: oRow.id as string,
+      orderTotalUSD: afterCouponUSD,
+    });
 
     // Manual-delivery flow: notify the seller in-platform via DM + inbox so they
     // know a paid order is waiting for them to deliver via URL, file upload, or

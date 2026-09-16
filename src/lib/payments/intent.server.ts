@@ -74,7 +74,7 @@ export async function buildPaymentIntent(
   // Order — resolve the authoritative price from the database.
   const { data: p, error } = await supabase
     .from("products")
-    .select("id, price_usd, original_currency, original_amount, fx_snapshot")
+    .select("id, seller_id, price_usd, original_currency, original_amount, fx_snapshot")
     .eq("id", data.productId)
     .maybeSingle();
   if (error) throw new Error(error.message);
@@ -104,14 +104,18 @@ export async function buildPaymentIntent(
   const grossUSD = unitUSD * qty;
 
   let discountUSD = 0;
+  let appliedCouponCode: string | null = null;
   if (data.couponCode) {
-    const { data: c } = await supabase
-      .from("coupons")
-      .select("discount_pct")
-      .eq("code", data.couponCode)
-      .eq("active", true)
-      .maybeSingle();
-    if (c) discountUSD = Number(((grossUSD * Number(c.discount_pct)) / 100).toFixed(2));
+    const { validateCouponServer } = await import("@/lib/promotions.server");
+    const check = await validateCouponServer(supabase, data.couponCode, {
+      userId,
+      productId: String(p.id),
+      sellerId: (p.seller_id as string) ?? null,
+      grossUSD,
+    });
+    if (!check.valid) throw new Error(check.reason);
+    discountUSD = check.discountUSD;
+    appliedCouponCode = check.code;
   }
   const totalAfterCouponUSD = Number((grossUSD - discountUSD).toFixed(2));
 
@@ -165,7 +169,7 @@ export async function buildPaymentIntent(
   metadata.product_id = p.id;
   metadata.quantity = qty;
   metadata.display_currency = displayCurrency;
-  metadata.coupon_code = data.couponCode ?? null;
+  metadata.coupon_code = appliedCouponCode;
   metadata.total_usd = totalUSD;
   metadata.cashback_applied_usd = cashbackAppliedUSD;
   metadata.service_package_id = servicePackageId;

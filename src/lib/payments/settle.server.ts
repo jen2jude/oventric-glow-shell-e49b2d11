@@ -5,10 +5,16 @@
  * into these two functions once a payment is confirmed. The `reference` is the
  * gateway reference and is what makes settlement idempotent.
  */
-import { FX_FROM_USD, SELLER_SHARE, WALLET_CASHBACK_PCT, type OrderCurrency, type PaymentMethod } from "@/lib/marketplace.functions";
+import { FX_FROM_USD, SELLER_SHARE, type OrderCurrency, type PaymentMethod } from "@/lib/marketplace.functions";
 import { primeRuntimeFxRates } from "@/lib/fx.server";
 import { convertViaSnapshot } from "@/lib/fx-display";
 import { dbCurrency } from "@/lib/currency/africa";
+import {
+  validateCouponServer,
+  recordCouponRedemption,
+  sellerFundedCashbackUSD,
+  qualifyReferralOnSettledPurchase,
+} from "@/lib/promotions.server";
 
 export async function settleWalletTopup(
   buyerId: string,
@@ -110,16 +116,20 @@ export async function settleOrder(
     .eq("paystack_ref", reference)
     .maybeSingle();
   if (existing.data?.id) {
-    // Replay path (webhook already settled). Recompute cashback so the return
-    // page can still play the celebratory splash.
-    const gross = Number(existing.data.total_usd ?? 0);
-    const cashbackEarnUSD = Number((gross * WALLET_CASHBACK_PCT).toFixed(2));
+    // Replay path (webhook already settled). Read back the cashback that was
+    // actually awarded — never recompute a fresh award.
+    const { data: cbRow } = await supabaseAdmin
+      .from("wallet_transactions")
+      .select("amount")
+      .eq("tx_hash", `${reference}-CB`)
+      .maybeSingle();
+    const cashbackEarnUSD = Number(cbRow?.amount ?? 0);
     return { alreadySettled: true as const, orderId: existing.data.id as string, cashbackEarnUSD };
   }
 
   const { data: pRow, error: pErr } = await supabaseAdmin
     .from("products")
-    .select("id, name, seller_id, price_usd, original_currency, original_amount, fx_snapshot, requires_manual_delivery")
+    .select("id, name, seller_id, price_usd, original_currency, original_amount, fx_snapshot, requires_manual_delivery, cashback_pct")
     .eq("id", meta.productId)
     .maybeSingle();
   if (pErr) throw new Error(pErr.message);
@@ -141,14 +151,18 @@ export async function settleOrder(
   const priceUSD = pkgRow ? Number(pkgRow.price_usd) : Number(pRow.price_usd);
   const grossUSD = Number((priceUSD * qty).toFixed(2));
   let discountUSD = 0;
+  let appliedCouponCode: string | null = null;
   if (meta.couponCode) {
-    const { data: c } = await supabaseAdmin
-      .from("coupons")
-      .select("discount_pct")
-      .eq("code", meta.couponCode)
-      .eq("active", true)
-      .maybeSingle();
-    if (c) discountUSD = Number(((grossUSD * Number(c.discount_pct)) / 100).toFixed(2));
+    const check = await validateCouponServer(supabaseAdmin, meta.couponCode, {
+      userId: buyerId,
+      productId: pRow.id as string,
+      sellerId: pRow.seller_id as string,
+      grossUSD,
+    });
+    if (check.valid) {
+      discountUSD = check.discountUSD;
+      appliedCouponCode = check.code;
+    }
   }
   const afterCouponUSD = Number((grossUSD - discountUSD).toFixed(2));
   const cashbackAppliedUSD = Math.max(0, Number(meta.cashbackAppliedUSD ?? 0));
@@ -211,13 +225,20 @@ export async function settleOrder(
     occurred_at: new Date().toISOString(),
   });
 
-  // Seller 80% + platform 20% always computed on the FULL gross sale price
-  // (post-coupon, pre-cashback). Applying cashback only shifts value from the
-  // buyer's card charge to their Cashback Wallet debit — the sale price the
-  // seller/platform see is unchanged.
+  // Platform keeps a flat 20% of the post-coupon sale price. The seller's 80%
+  // funds any product-level cashback the seller configured — the platform's
+  // share is never touched by cashback, and the seller's net can never go
+  // below zero (the reward is capped at their own share).
   const splitBaseUSD = afterCouponUSD;
-  const sellerCutUSD = Number((splitBaseUSD * SELLER_SHARE).toFixed(2));
-  const platformCutUSD = Number((splitBaseUSD - sellerCutUSD).toFixed(2));
+  const sellerGrossUSD = Number((splitBaseUSD * SELLER_SHARE).toFixed(2));
+  const platformCutUSD = Number((splitBaseUSD - sellerGrossUSD).toFixed(2));
+  const cashbackEarnUSD = sellerFundedCashbackUSD(
+    pRow.cashback_pct as number | null,
+    splitBaseUSD,
+    sellerGrossUSD,
+  );
+  const sellerCutUSD = Number(Math.max(0, sellerGrossUSD - cashbackEarnUSD).toFixed(2));
+  const sellerNetRatio = sellerGrossUSD > 0 ? sellerCutUSD / sellerGrossUSD : 1;
 
   const { data: sellerProfile } = await supabaseAdmin
     .from("profiles")
@@ -230,7 +251,7 @@ export async function settleOrder(
   const saleRatio = grossOriginalUSD > 0 ? afterCouponUSD / grossOriginalUSD : 1;
   const sellerCutLocalRaw =
     originalAmount > 0 && sellerCurrency === originalCurrency
-      ? originalAmount * qty * saleRatio * SELLER_SHARE
+      ? originalAmount * qty * saleRatio * SELLER_SHARE * sellerNetRatio
       : convertViaSnapshot(sellerCutUSD, "USD", sellerCurrency, snap);
   const sellerCutLocal = Number(sellerCutLocalRaw.toFixed(sellerCurrency === "USD" ? 2 : 0));
   const holdEscrow = Boolean(pRow.requires_manual_delivery);
@@ -275,10 +296,8 @@ export async function settleOrder(
     _meta: { order_id: oRow.id, product_id: pRow.id, buyer_id: buyerId, seller_id: pRow.seller_id, paystack_ref: reference, seller_cut_local: sellerCutLocal, seller_cut_currency: sellerCurrency, escrow: holdEscrow },
   });
 
-  // Credit 2% cashback of the FULL gross sale price into the buyer's spend-only
-  // Cashback Wallet — regardless of whether they applied cashback this time.
-  // Coupon purchases do not earn cashback.
-  const cashbackEarnUSD = discountUSD > 0 ? 0 : Number((splitBaseUSD * WALLET_CASHBACK_PCT).toFixed(2));
+  // Seller-funded cashback → buyer's spend-only Cashback Wallet. Funded from
+  // the seller's share above, so this posts no extra platform expense.
   if (cashbackEarnUSD > 0) {
     await supabaseAdmin.rpc("cashback_credit", { _user_id: buyerId, _amount: cashbackEarnUSD });
     await supabaseAdmin.from("wallet_transactions").insert({
@@ -292,6 +311,24 @@ export async function settleOrder(
       occurred_at: new Date().toISOString(),
     });
   }
+
+  // Coupon use is only burned once the payment has actually settled.
+  if (appliedCouponCode && discountUSD > 0) {
+    await recordCouponRedemption(supabaseAdmin, {
+      code: appliedCouponCode,
+      userId: buyerId,
+      orderId: oRow.id as string,
+      reference,
+      discountUSD,
+    });
+  }
+
+  // Referral reward — only on the invitee's first settled purchase.
+  await qualifyReferralOnSettledPurchase(supabaseAdmin, {
+    buyerId,
+    orderId: oRow.id as string,
+    orderTotalUSD: afterCouponUSD,
+  });
 
   // Escrowed (manual-delivery) sale: tell the seller immediately and open the
   // order-tagged chat thread so the whole hand-off happens on Oventric.

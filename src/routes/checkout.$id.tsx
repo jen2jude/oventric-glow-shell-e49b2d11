@@ -911,13 +911,15 @@ function CheckoutPage() {
                         if (!code) return;
                         setCouponBusy(true);
                         try {
-                          const res = await checkCoupon({ data: { code } });
+                          const res = await checkCoupon({
+                            data: { code, productId: product?.id, quantity: qty },
+                          });
                           if (res.valid) {
                             setCoupon({ code: res.code, pct: Number(res.discountPct) });
                             setUseCashback(false);
                             toast.success(`Coupon applied · ${res.discountPct}% off`);
                           } else {
-                            toast.error("Invalid or expired coupon code");
+                            toast.error(res.reason);
                           }
                         } catch {
                           toast.error("Could not verify that coupon");
