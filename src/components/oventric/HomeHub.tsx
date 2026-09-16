@@ -96,6 +96,7 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
   const { isAuthenticated, openGate } = useAuthGate();
   const {
     baseCurrency,
+    homeCurrency,
     country,
     fullName,
     storeName,
@@ -111,6 +112,9 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
   const [payoutOpen, setPayoutOpen] = useState(false);
   const unreadNotifs = useUnreadNotificationsCount();
   const currency: Currency = country ? baseCurrency : "USD";
+  // Wallet money is always held and shown in the user's home currency,
+  // never in the USD price-preview currency.
+  const walletCurrency: Currency = country ? homeCurrency : "USD";
 
   const goSection = (section: string) =>
     section === "Messages" ? onOpenMessages() : onSelect(section);
@@ -167,8 +171,8 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
     loadBalances()
       .then((r) => {
         if (cancelled) return;
-        setMain(r.balances[baseCurrency] ?? 0);
-        setEscrow(r.escrow[baseCurrency] ?? 0);
+        setMain(r.balances[walletCurrency] ?? 0);
+        setEscrow(r.escrow[walletCurrency] ?? 0);
         setCashback(r.cashback ?? 0);
         setBounty(r.bountyBalance ?? 0);
       })
