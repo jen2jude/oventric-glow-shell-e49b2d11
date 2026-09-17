@@ -84,7 +84,7 @@ function SystemWalletsPage() {
         <div>
           <h1 className="text-white text-2xl font-black">System Wallets</h1>
           <p className="text-sm text-slate-400">
-            Admin-only revenue held from marketplace, bounties, and ads.
+            Admin-only revenue held from marketplace sales.
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -117,7 +117,7 @@ function SystemWalletsPage() {
       {!wallets ? (
         <Loader2 className="w-5 h-5 animate-spin text-slate-500" />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           {KINDS.map((k) => {
             const w = wallets.find((x) => x.kind === k);
             const m = metaFor(k);
@@ -156,11 +156,8 @@ function SystemWalletsPage() {
             onChange={(e) => setFilter(e.target.value as SystemWalletKind | "ALL")}
             className="bg-[#0b0b0d] border border-white/10 rounded-[10px] px-3 py-1.5 text-xs text-white"
           >
-            <option value="ALL">All wallets</option>
+            <option value="ALL">Marketplace only</option>
             <option value="marketplace">Marketplace</option>
-            <option value="bounty">Bounty</option>
-            <option value="ads">Ads</option>
-            <option value="academy">Academy</option>
           </select>
         </div>
         <div className="divide-y divide-white/5">
