@@ -528,6 +528,7 @@ export const listMySales = createServerFn({ method: "GET" })
       buyerId: r.buyer_id,
       quantity: Number(r.quantity ?? 1),
       displayCurrency: (r.display_currency ?? "USD") as OrderCurrency,
+      displayTotal: Number(r.display_total ?? 0),
       totalUSD: Number(r.total_usd ?? 0),
       sellerShareUSD: Number(r.seller_share_usd ?? 0),
       requiresManualDelivery: Boolean(r.products?.requires_manual_delivery),
