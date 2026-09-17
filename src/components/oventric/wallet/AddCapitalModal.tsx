@@ -93,14 +93,14 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
     {
       id: "usdttrc20",
       label: "USDT (TRC20)",
-      desc: "Stablecoin funding on Tron — confirmed automatically",
+      desc: "Stablecoin on Tron — larger top-ups only (about $20 and above)",
       icon: TetherIcon,
       soon: false,
     },
     {
       id: "usdterc20",
       label: "USDT (ERC20)",
-      desc: "Stablecoin funding on Ethereum — confirmed automatically",
+      desc: "Stablecoin on Ethereum — larger top-ups only (about $50 and above)",
       icon: Bitcoin,
       soon: false,
     },
@@ -120,7 +120,13 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
         });
         setDepositId(deposit.id);
       } catch (err) {
-        toast.error(err instanceof Error ? err.message : "Could not start the crypto payment");
+        const raw = err instanceof Error ? err.message : "";
+        const tooSmall = /too small|minimum|amountTo/i.test(raw);
+        toast.error(
+          tooSmall
+            ? "That amount is below the crypto network minimum. Use bank transfer or card for smaller top-ups, or raise the amount."
+            : raw || "Could not start the crypto payment",
+        );
       } finally {
         setLoading(false);
       }
