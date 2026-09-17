@@ -233,9 +233,11 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
               <span className="block">for creators</span>
             </h1>
             <p className="mt-4 max-w-md text-[14px] leading-relaxed text-white md:text-black sm:text-lg">
-              <span className="block">Buy, sell and discover</span>
-              <span className="block">digital products, services and tools</span>
-              <span className="block">from amazing creators around the world.</span>
+              Buy, sell and discover
+              <br className="sm:hidden" />{" "}
+              digital products, services and tools
+              <br className="sm:hidden" />{" "}
+              from amazing creators around the world.
             </p>
           </div>
 
