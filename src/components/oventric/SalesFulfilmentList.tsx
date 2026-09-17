@@ -49,6 +49,11 @@ export function saleBadge(s: SaleDTO): { label: string; cls: string } {
     return { label: "Disputed", cls: "bg-red-500/15 text-red-300 md:text-red-700" };
   if (s.escrowStatus === "released")
     return { label: "Settled", cls: "bg-emerald-500/15 text-emerald-300 md:text-emerald-700" };
+  if (s.buyerConfirmedAt)
+    return {
+      label: "Confirmed — clearing",
+      cls: "bg-emerald-500/15 text-emerald-300 md:text-emerald-700",
+    };
   if (s.deliveredAt)
     return { label: "Awaiting buyer", cls: "bg-amber-500/15 text-amber-300 md:text-amber-700" };
   if (overdue(s)) return { label: "Overdue 24h+", cls: "bg-red-500 text-white" };
