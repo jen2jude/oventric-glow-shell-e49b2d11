@@ -30,6 +30,7 @@ import type { ProfileListing } from "@/lib/profiles/mockProfiles";
 import { FollowButton } from "@/components/oventric/FollowButton";
 import { ProfileMessageModal } from "@/components/oventric/messaging/ProfileMessageModal";
 import { ShopEditModal } from "@/components/oventric/shop/ShopEditModal";
+import { SellerVerificationModal } from "@/components/oventric/shop/SellerVerificationModal";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -160,6 +161,7 @@ function ShopPage() {
   const [tab, setTab] = useState<ShopTab>("shop");
   const [dmOpen, setDmOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [verifyOpen, setVerifyOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -280,7 +282,7 @@ function ShopPage() {
 
   const isAppShell = useIsAppShell();
   const name = shop?.shopName ?? id;
-  const verified = (shop?.verificationTier ?? "none") !== "none";
+  const verified = shop?.verified === true;
   const isOwner = !!meId && !!shop && meId === shop.userId;
 
   const handleBack = () => {
@@ -421,6 +423,15 @@ function ShopPage() {
             >
               <MessageCircle className="h-4 w-4" /> Message
             </button>
+            {isOwner && !verified && (
+              <button
+                type="button"
+                onClick={() => setVerifyOpen(true)}
+                className="col-span-2 inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-primary/40 bg-primary/5 text-sm font-bold text-primary hover:bg-primary/10"
+              >
+                <BadgeCheck className="h-4 w-4" /> Request shop verification
+              </button>
+            )}
           </div>
 
           {/* Tabs */}
@@ -684,6 +695,15 @@ function ShopPage() {
           shop={shop}
           userId={shop.userId}
           onSaved={() => setReloadKey((k) => k + 1)}
+        />
+      )}
+
+      {isOwner && shop && (
+        <SellerVerificationModal
+          open={verifyOpen}
+          onClose={() => setVerifyOpen(false)}
+          defaultBrandName={shop.shopName}
+          defaultCountry={shop.country}
         />
       )}
       {!isAppShell && <SiteFooterAuto />}
