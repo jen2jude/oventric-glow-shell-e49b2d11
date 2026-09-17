@@ -146,6 +146,10 @@ function AdminPaymentsPage() {
         )}
       </div>
 
+      <AdminCryptoDeposits />
+
+
+
       {selected && (
         <div className="fixed inset-0 z-50 bg-black/70 flex justify-end" onClick={() => setSelected(null)}>
           <div
