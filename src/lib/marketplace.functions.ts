@@ -1625,7 +1625,8 @@ export const getTopSellers = createServerFn({ method: "GET" })
     // "Verified" means an admin-approved seller verification request exists.
     const verifiedIds = new Set<string>();
     {
-      const { data: vRows } = await sb
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: vRows } = await supabaseAdmin
         .from("seller_verification_requests")
         .select("user_id")
         .eq("status", "approved")
