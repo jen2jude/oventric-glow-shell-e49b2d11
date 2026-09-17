@@ -359,8 +359,27 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
                         <Icon className="h-5 w-5" />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="text-sm font-semibold text-wallet-copy">{m.label}</span>
-                        <span className="mt-1 block text-xs text-wallet-copy-muted">{m.desc}</span>
+                        <span className="flex flex-wrap items-baseline gap-x-2">
+                          <span className="text-sm font-semibold text-wallet-copy">{m.label}</span>
+                          {activeTab === "crypto" && amount > 0 && (
+                            <span
+                              className={`text-xs font-semibold ${
+                                est?.belowMinimum ? "text-wallet-copy-muted" : "text-wallet-crimson"
+                              }`}
+                            >
+                              {estimating && !est
+                                ? "…"
+                                : est?.payAmount
+                                  ? `≈ ${formatCoin(est.payAmount)} ${m.label.split(" ")[0]}`
+                                  : ""}
+                            </span>
+                          )}
+                        </span>
+                        <span className="mt-1 block text-xs text-wallet-copy-muted">
+                          {est?.belowMinimum && est.minAmount
+                            ? `Below network minimum (${formatCoin(est.minAmount)} ${m.label.split(" ")[0]}) — raise the amount or pick another coin`
+                            : m.desc}
+                        </span>
                       </span>
                       <span
                         className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
