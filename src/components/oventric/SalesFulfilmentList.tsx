@@ -37,6 +37,16 @@ function overdue(s: SaleDTO) {
   );
 }
 
+/** Time left until the seller's earnings land in their wallet, or null. */
+export function payoutCountdown(s: SaleDTO): string | null {
+  if (!s.buyerConfirmedAt || s.escrowStatus !== "held" || !s.payoutReleaseAt) return null;
+  const ms = new Date(s.payoutReleaseAt).getTime() - Date.now();
+  if (ms <= 0) return "any moment now";
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
 export function saleBucket(s: SaleDTO): Exclude<SaleFilter, "all"> {
   if (s.disputeStatus === "open") return "disputed";
   if (s.escrowStatus === "released") return "settled";
@@ -49,6 +59,11 @@ export function saleBadge(s: SaleDTO): { label: string; cls: string } {
     return { label: "Disputed", cls: "bg-red-500/15 text-red-300 md:text-red-700" };
   if (s.escrowStatus === "released")
     return { label: "Settled", cls: "bg-emerald-500/15 text-emerald-300 md:text-emerald-700" };
+  if (s.buyerConfirmedAt)
+    return {
+      label: "Confirmed — clearing",
+      cls: "bg-emerald-500/15 text-emerald-300 md:text-emerald-700",
+    };
   if (s.deliveredAt)
     return { label: "Awaiting buyer", cls: "bg-amber-500/15 text-amber-300 md:text-amber-700" };
   if (overdue(s)) return { label: "Overdue 24h+", cls: "bg-red-500 text-white" };
@@ -278,10 +293,21 @@ export function SalesFulfilmentList({
                       {s.buyerName} · Qty {s.quantity} ·{" "}
                       {new Date(s.createdAt).toLocaleDateString()}
                     </div>
-                    {s.deliveredAt && (
+                    {s.deliveredAt && !s.buyerConfirmedAt && (
                       <div className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-300 md:text-emerald-700">
                         <PackageCheck className="w-3 h-3" /> Delivered{" "}
                         {new Date(s.deliveredAt).toLocaleString()}
+                      </div>
+                    )}
+                    {s.buyerConfirmedAt && (
+                      <div className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-300 md:text-emerald-700">
+                        <PackageCheck className="w-3 h-3" /> Buyer confirmed{" "}
+                        {new Date(s.buyerConfirmedAt).toLocaleString()}
+                      </div>
+                    )}
+                    {payoutCountdown(s) && (
+                      <div className="mt-0.5 text-[11px] font-semibold text-slate-300 md:text-slate-600">
+                        Wallet funds in {payoutCountdown(s)}
                       </div>
                     )}
                   </button>
