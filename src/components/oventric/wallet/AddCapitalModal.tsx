@@ -51,7 +51,9 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
   const [method, setMethod] = useState<string>("bank");
   const [amountDisplay, setAmountDisplay] = useState<string>("5,000");
   const [loading, setLoading] = useState(false);
+  const [depositId, setDepositId] = useState<string | null>(null);
   const startPayment = useServerFn(initPayment);
+  const startCrypto = useServerFn(createCryptoDeposit);
 
   const amount = parseAmount(amountDisplay);
   const symbol = useMemo(() => {
