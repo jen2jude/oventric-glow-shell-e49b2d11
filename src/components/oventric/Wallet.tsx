@@ -35,7 +35,7 @@ import { TransferModal } from "@/components/oventric/wallet/TransferModal";
 import { AddCapitalModal } from "@/components/oventric/wallet/AddCapitalModal";
 import { PayoutModal } from "@/components/oventric/wallet/PayoutModal";
 import { Button } from "@/components/ui/button";
-import logoFull from "@/assets/oventric-full-transparent.png";
+import logo from "@/assets/oventric-logo-dark.png";
 
 function fmt(value: number, currency: Currency) {
   return formatMoney(value, currency);
@@ -137,7 +137,7 @@ export function Wallet() {
         <Button variant="ghost" size="icon" aria-label="Menu" onClick={() => setMenuOpen(true)} className="text-wallet-copy-muted hover:bg-wallet-muted hover:text-wallet-copy">
           <Menu />
         </Button>
-        <Link to="/" aria-label="Oventric home"><img src={logoFull} alt="Oventric" className="h-6 w-auto" /></Link>
+        <Link to="/" aria-label="Oventric home"><img src={logo} alt="Oventric" className="h-6 w-auto" /></Link>
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" aria-label="Notifications" onClick={() => isAuthenticated ? setNotifOpen(true) : openGate("funding")} className="relative text-wallet-copy-muted hover:bg-wallet-muted hover:text-wallet-copy">
             <Bell />
