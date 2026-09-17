@@ -114,18 +114,18 @@ const PAYOUT_CURRENCY = process.env["NOWPAYMENTS_PAYOUT_CURRENCY"] || "usdttrc20
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** NOWPayments rate-limits bursts, so fetch one coin at a time with retries. */
-async function fetchJsonWithRetry(url: string, key: string, attempts = 3): Promise<Record<string, unknown> | null> {
+async function fetchJsonWithRetry(url: string, key: string, attempts = 6): Promise<Record<string, unknown> | null> {
   for (let i = 0; i < attempts; i++) {
     try {
       const res = await fetch(url, { headers: { "x-api-key": key } });
       if (res.status === 429) {
-        await sleep(400 * (i + 1));
+        await sleep(700 * (i + 1));
         continue;
       }
       if (!res.ok) return null;
       return (await res.json().catch(() => null)) as Record<string, unknown> | null;
     } catch {
-      await sleep(300 * (i + 1));
+      await sleep(400 * (i + 1));
     }
   }
   return null;
