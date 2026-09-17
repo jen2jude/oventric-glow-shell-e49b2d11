@@ -220,8 +220,8 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             height={912}
             className="h-full w-full object-cover object-[75%_center]"
           />
-          {/* white fade — strong on the left, clear on the right */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/10 sm:via-white/70 sm:to-transparent lg:from-white lg:via-white/55" />
+          {/* white fade — text panel on the left, image stretches to both edges */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white/95 from-0% via-white/80 via-[30%] to-transparent to-[65%] sm:via-[38%] sm:to-[72%] lg:via-[42%] lg:to-[78%]" />
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#F7F8FA] to-transparent" />
         </div>
 
