@@ -19,6 +19,8 @@ export interface ShopBranding {
   coverUrl: string | null;
   verificationTier: string;
   country: string | null;
+  /** True only when an admin has approved a seller verification request. */
+  verified: boolean;
 }
 
 export interface ShopRailItem {
