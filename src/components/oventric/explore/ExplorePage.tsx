@@ -345,11 +345,22 @@ export function ExplorePage({ onSelect }: { onSelect: (section: "Marketplace") =
         {/* ------------------------------------------ content + community */}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-8">
           <div className="min-w-0">
-            {show("Categories") && categoriesBlock}
-            {show("Products") && productsBlock}
-            {show("Shops") && sellersBlock}
-            {show("Products") && freshBlock}
-            {show("People") && peopleBlock}
+            {query ? (
+              <SearchResultsView
+                results={searchResults}
+                loading={searching && !searchResults}
+                query={q.trim()}
+                currency={currency}
+              />
+            ) : (
+              <>
+                {show("Categories") && categoriesBlock}
+                {show("Products") && productsBlock}
+                {show("Shops") && sellersBlock}
+                {show("Products") && freshBlock}
+                {show("People") && peopleBlock}
+              </>
+            )}
           </div>
 
           <aside className="min-w-0 lg:pt-10">
