@@ -58,10 +58,14 @@ export function ExplorePage({ onSelect }: { onSelect: (section: "Marketplace") =
   const { baseCurrency } = useOnboarding();
   const currency = baseCurrency ?? "USD";
 
+  // The homepage hero search (and shared links) land here with ?search=…
+  const routeSearch = useSearch({ strict: false }) as { search?: string };
+
   const fetchDiscovery = useServerFn(getMarketplaceDiscovery);
   const fetchCategories = useServerFn(listMarketplaceCategories);
   const fetchSellers = useServerFn(getTopSellers);
   const fetchPeers = useServerFn(getDiscoveryFeed);
+  const runSearch = useServerFn(searchGlobal);
 
   const { data: discovery } = useQuery({
     queryKey: ["explore-discovery"],
