@@ -8,7 +8,7 @@ import { currencyForCountry, fallbackRateTable } from "@/lib/currency/africa";
 /* -------------------------------------------------------------------------- */
 
 export type EarningsRange = "30d" | "90d" | "ytd" | "all";
-export type EarningsSource = "marketplace" | "bounty" | "academy" | "affiliate" | "other";
+export type EarningsSource = "marketplace" | "affiliate" | "other";
 
 export interface EarningsSourceBreakdown {
   source: EarningsSource;
