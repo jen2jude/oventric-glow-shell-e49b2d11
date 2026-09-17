@@ -64,6 +64,13 @@
       "when": 1789591046314,
       "tag": "0008_create_purchase_assistant_summaries",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1789630352982,
+      "tag": "0009_create_seller_verification_requests",
+      "breakpoints": true
     }
   ]
 }
