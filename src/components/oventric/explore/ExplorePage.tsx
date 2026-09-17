@@ -1,12 +1,15 @@
-import { useMemo, useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
   BadgeCheck,
   Compass,
+  Loader2,
+  MessageSquare,
   Search,
+  SearchX,
   Sparkles,
   Star,
   TrendingUp,
@@ -24,6 +27,7 @@ import {
   type TopSellerDTO,
 } from "@/lib/marketplace.functions";
 import { getDiscoveryFeed, type DiscoveryPeer } from "@/lib/discovery.functions";
+import { searchGlobal, type SearchResults } from "@/lib/search.functions";
 import { visualForCategory } from "@/components/oventric/marketplace-discovery/utils";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { DiscoveryPanel } from "@/components/oventric/DiscoveryPanel";
