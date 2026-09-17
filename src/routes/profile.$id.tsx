@@ -449,6 +449,19 @@ function ProfilePage() {
         await updateProfileFn({
           data: kind === "avatar" ? { avatarPath: path } : { coverPath: path },
         });
+        // Show the picked image immediately.
+        const preview = URL.createObjectURL(file);
+        if (kind === "avatar") {
+          setLocalAvatarPreview((prev) => {
+            if (prev) URL.revokeObjectURL(prev);
+            return preview;
+          });
+        } else {
+          setLocalCoverPreview((prev) => {
+            if (prev) URL.revokeObjectURL(prev);
+            return preview;
+          });
+        }
         await reloadRealProfile();
         try {
           window.dispatchEvent(
