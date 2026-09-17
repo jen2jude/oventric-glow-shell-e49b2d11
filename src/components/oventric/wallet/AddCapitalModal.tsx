@@ -22,7 +22,17 @@ import { createCryptoDeposit, getCryptoDeposit } from "@/lib/crypto-funding.func
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-const CRYPTO_METHODS = ["usdttrc20", "usdterc20"];
+const CRYPTO_METHODS = [
+  "usdtbsc",
+  "usdcbsc",
+  "trx",
+  "ltc",
+  "sol",
+  "eth",
+  "bnbbsc",
+  "usdttrc20",
+  "usdterc20",
+];
 
 const PRESETS = ["500", "1000", "5000", "10000", "25000"];
 
@@ -91,16 +101,65 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
       soon: false,
     },
     {
+      id: "usdtbsc",
+      label: "USDT (BEP20)",
+      desc: "Stablecoin on BNB Chain — best for small amounts",
+      icon: TetherIcon,
+      soon: false,
+    },
+    {
+      id: "usdcbsc",
+      label: "USDC (BEP20)",
+      desc: "Stablecoin on BNB Chain — low minimum",
+      icon: TetherIcon,
+      soon: false,
+    },
+    {
+      id: "trx",
+      label: "TRON (TRX)",
+      desc: "Low fees, works from about $1",
+      icon: Bitcoin,
+      soon: false,
+    },
+    {
+      id: "ltc",
+      label: "Litecoin (LTC)",
+      desc: "Fast confirmations, very low minimum",
+      icon: Bitcoin,
+      soon: false,
+    },
+    {
+      id: "sol",
+      label: "Solana (SOL)",
+      desc: "Instant confirmations, low minimum",
+      icon: Bitcoin,
+      soon: false,
+    },
+    {
+      id: "eth",
+      label: "Ethereum (ETH)",
+      desc: "Pay from any Ethereum wallet",
+      icon: Bitcoin,
+      soon: false,
+    },
+    {
+      id: "bnbbsc",
+      label: "BNB",
+      desc: "BNB Smart Chain — low fees",
+      icon: Bitcoin,
+      soon: false,
+    },
+    {
       id: "usdttrc20",
       label: "USDT (TRC20)",
-      desc: "Stablecoin on Tron — larger top-ups only (about $20 and above)",
+      desc: "Stablecoin on Tron — minimum about $12",
       icon: TetherIcon,
       soon: false,
     },
     {
       id: "usdterc20",
       label: "USDT (ERC20)",
-      desc: "Stablecoin on Ethereum — larger top-ups only (about $50 and above)",
+      desc: "Stablecoin on Ethereum — higher network minimum",
       icon: Bitcoin,
       soon: false,
     },

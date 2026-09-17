@@ -11,8 +11,15 @@ const API_BASE = "https://api.nowpayments.io/v1";
 
 /** Chains we accept. Keys are the NOWPayments `pay_currency` codes. */
 export const CRYPTO_PAY_CURRENCIES = {
+  usdtbsc: { label: "USDT (BEP20)", network: "BNB Smart Chain (BEP20)" },
+  usdcbsc: { label: "USDC (BEP20)", network: "BNB Smart Chain (BEP20)" },
   usdttrc20: { label: "USDT (TRC20)", network: "Tron (TRC20)" },
   usdterc20: { label: "USDT (ERC20)", network: "Ethereum (ERC20)" },
+  trx: { label: "TRON (TRX)", network: "Tron" },
+  ltc: { label: "Litecoin (LTC)", network: "Litecoin" },
+  sol: { label: "Solana (SOL)", network: "Solana" },
+  eth: { label: "Ethereum (ETH)", network: "Ethereum" },
+  bnbbsc: { label: "BNB", network: "BNB Smart Chain" },
 } as const;
 
 export type CryptoPayCurrency = keyof typeof CRYPTO_PAY_CURRENCIES;
@@ -67,7 +74,9 @@ export async function createCryptoPayment(args: {
     console.error("[crypto] create payment failed", res.status, body);
     const providerMessage = body && typeof body["message"] === "string" ? body["message"] : "";
     if (providerMessage.toLowerCase().includes("too small")) {
-      throw new Error("The amount is below the provider's minimum for this network. Try a larger amount.");
+      throw new Error(
+        "That amount is below this coin's network minimum. Pick a low-minimum coin such as USDT (BEP20), TRX, LTC or SOL, or raise the amount.",
+      );
     }
     throw new Error("Could not start the crypto payment. Please try again.");
   }
