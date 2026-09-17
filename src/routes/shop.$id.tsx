@@ -280,7 +280,7 @@ function ShopPage() {
 
   const isAppShell = useIsAppShell();
   const name = shop?.shopName ?? id;
-  const verified = (shop?.verificationTier ?? "none") !== "none";
+  const verified = shop?.verified === true;
   const isOwner = !!meId && !!shop && meId === shop.userId;
 
   const handleBack = () => {
