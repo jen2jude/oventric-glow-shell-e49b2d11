@@ -37,6 +37,16 @@ function overdue(s: SaleDTO) {
   );
 }
 
+/** Time left until the seller's earnings land in their wallet, or null. */
+export function payoutCountdown(s: SaleDTO): string | null {
+  if (!s.buyerConfirmedAt || s.escrowStatus !== "held" || !s.payoutReleaseAt) return null;
+  const ms = new Date(s.payoutReleaseAt).getTime() - Date.now();
+  if (ms <= 0) return "any moment now";
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
 export function saleBucket(s: SaleDTO): Exclude<SaleFilter, "all"> {
   if (s.disputeStatus === "open") return "disputed";
   if (s.escrowStatus === "released") return "settled";
