@@ -1,19 +1,28 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
   Bitcoin,
   Check,
+  CheckCircle2,
+  Clock,
+  Copy,
   CreditCard,
   Landmark,
+  Loader2,
   Lock,
   ShieldCheck,
+  TriangleAlert,
   X,
 } from "lucide-react";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useServerFn } from "@tanstack/react-start";
 import { initPayment } from "@/lib/payments.functions";
+import { createCryptoDeposit, getCryptoDeposit } from "@/lib/crypto-funding.functions";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+
+const CRYPTO_METHODS = ["usdttrc20", "usdterc20"];
 
 const PRESETS = ["500", "1000", "5000", "10000", "25000"];
 
