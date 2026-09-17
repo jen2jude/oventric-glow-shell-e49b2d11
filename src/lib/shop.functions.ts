@@ -105,8 +105,17 @@ export const getShopBranding = createServerFn({ method: "GET" })
       sign(sb, "profile-covers", [r['cover_path']]).then((a) => a[0]),
     ]);
 
+    const { data: approved } = await supabaseAdmin
+      .from("seller_verification_requests")
+      .select("id")
+      .eq("user_id", r['user_id'] as string)
+      .eq("status", "approved")
+      .limit(1)
+      .maybeSingle();
+
     return {
       shop: {
+        verified: !!approved,
         userId: r['user_id'] as string,
         slug: r['slug'] as string,
         shopName:
