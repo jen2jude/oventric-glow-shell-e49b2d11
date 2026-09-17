@@ -93,14 +93,14 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
     {
       id: "usdttrc20",
       label: "USDT (TRC20)",
-      desc: "Stablecoin funding on Tron — confirmed automatically",
+      desc: "Stablecoin on Tron — larger top-ups only (about $20 and above)",
       icon: TetherIcon,
       soon: false,
     },
     {
       id: "usdterc20",
       label: "USDT (ERC20)",
-      desc: "Stablecoin funding on Ethereum — confirmed automatically",
+      desc: "Stablecoin on Ethereum — larger top-ups only (about $50 and above)",
       icon: Bitcoin,
       soon: false,
     },
