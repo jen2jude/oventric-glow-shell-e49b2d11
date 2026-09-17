@@ -553,6 +553,7 @@ function SearchResultsView({
               <Link
                 key={p.id}
                 to="/feed"
+                search={{ post: p.id }}
                 className="flex items-start gap-3 rounded-[14px] border border-slate-200/80 bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
               >
                 <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
