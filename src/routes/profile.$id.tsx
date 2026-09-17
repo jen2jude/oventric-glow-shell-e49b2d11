@@ -408,6 +408,10 @@ function ProfilePage() {
   const avatarInputRef = useRef<HTMLInputElement | null>(null);
   const coverInputRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState<"avatar" | "cover" | null>(null);
+  // Instant local previews so the new image shows the moment it is uploaded,
+  // even if the freshly signed URL has not been re-fetched yet.
+  const [localAvatarPreview, setLocalAvatarPreview] = useState<string | null>(null);
+  const [localCoverPreview, setLocalCoverPreview] = useState<string | null>(null);
   const reloadRealProfile = useCallback(async () => {
     try {
       const p = await fetchRealProfile({ data: { idOrSlug: id } });
@@ -445,6 +449,19 @@ function ProfilePage() {
         await updateProfileFn({
           data: kind === "avatar" ? { avatarPath: path } : { coverPath: path },
         });
+        // Show the picked image immediately.
+        const preview = URL.createObjectURL(file);
+        if (kind === "avatar") {
+          setLocalAvatarPreview((prev) => {
+            if (prev) URL.revokeObjectURL(prev);
+            return preview;
+          });
+        } else {
+          setLocalCoverPreview((prev) => {
+            if (prev) URL.revokeObjectURL(prev);
+            return preview;
+          });
+        }
         await reloadRealProfile();
         try {
           window.dispatchEvent(
@@ -902,7 +919,14 @@ function ProfilePage() {
     : isUuidId
       ? "—"
       : profile.joined;
-  const displayAvatar = realProfile?.avatarUrl ?? null;
+  const displayAvatar = localAvatarPreview ?? realProfile?.avatarUrl ?? null;
+  const displayCover = localCoverPreview ?? realProfile?.coverUrl ?? null;
+  useEffect(() => {
+    return () => {
+      if (localAvatarPreview) URL.revokeObjectURL(localAvatarPreview);
+      if (localCoverPreview) URL.revokeObjectURL(localCoverPreview);
+    };
+  }, [localAvatarPreview, localCoverPreview]);
   const displayTierLabel = hasRealProfile
     ? realProfile!.verificationTier === "TIER_0"
       ? "Unverified"
@@ -1091,9 +1115,9 @@ function ProfilePage() {
             >
               {/* Cover image — full-bleed hero */}
               <div className="profile-cover-safe relative -mx-4 -mt-6 h-56 overflow-hidden border-b border-white/10 bg-[#18181d] sm:h-64 md:mx-0 md:mt-0 md:h-60 md:rounded-none md:border-0 md:border-b md:border-slate-200 md:bg-slate-100 lg:h-64">
-                {realProfile?.coverUrl ? (
+                {displayCover ? (
                   <ResponsiveImage
-                    src={realProfile.coverUrl}
+                    src={displayCover}
                     alt={`${displayName} cover`}
                     sizes="(min-width: 768px) 768px, 100vw"
                     className="block h-full w-full object-cover"
