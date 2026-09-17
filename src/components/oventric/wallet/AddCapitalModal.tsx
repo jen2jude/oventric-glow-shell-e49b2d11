@@ -18,7 +18,7 @@ import {
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useServerFn } from "@tanstack/react-start";
 import { initPayment } from "@/lib/payments.functions";
-import { createCryptoDeposit, getCryptoDeposit } from "@/lib/crypto-funding.functions";
+import { createCryptoDeposit, getCryptoDeposit, estimateCryptoDeposit } from "@/lib/crypto-funding.functions";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
