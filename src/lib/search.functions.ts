@@ -161,7 +161,7 @@ export const searchGlobal = createServerFn({ method: "GET" })
         .from("products")
         .select("id, name, category, price_usd, cover_path, vendor, seller_id, kind")
         .eq("status", "active")
-        .or(`name.ilike.${like},category.ilike.${like},vendor.ilike.${like}`)
+        .or(`name.ilike.${like},category.ilike.${like},vendor.ilike.${like},description.ilike.${like}`)
         .order("reviews", { ascending: false, nullsFirst: false })
         .limit(16), // Fetch more to separate into categories
       sb
