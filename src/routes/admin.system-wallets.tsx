@@ -54,7 +54,7 @@ function SystemWalletsPage() {
   const loadTx = useServerFn(listSystemWalletTx);
   const [wallets, setWallets] = useState<SystemWalletDTO[] | null>(null);
   const [tx, setTx] = useState<SystemWalletTxDTO[] | null>(null);
-  const [filter, setFilter] = useState<SystemWalletKind | "ALL">("ALL");
+  const [filter, setFilter] = useState<SystemWalletKind>("marketplace");
   const [view, setView] = useState<ViewCur>("NGN");
   const [err, setErr] = useState<string | null>(null);
 
@@ -150,13 +150,12 @@ function SystemWalletsPage() {
 
       <div className="bg-[#141418] border border-white/10 rounded-xl overflow-hidden">
         <div className="flex items-center justify-between p-4 border-b border-white/10">
-          <h2 className="text-white text-sm font-bold">Recent Movements</h2>
+          <h2 className="text-white text-sm font-bold">Marketplace Movements</h2>
           <select
             value={filter}
-            onChange={(e) => setFilter(e.target.value as SystemWalletKind | "ALL")}
+            onChange={(e) => setFilter(e.target.value as SystemWalletKind)}
             className="bg-[#0b0b0d] border border-white/10 rounded-[10px] px-3 py-1.5 text-xs text-white"
           >
-            <option value="ALL">Marketplace only</option>
             <option value="marketplace">Marketplace</option>
           </select>
         </div>
