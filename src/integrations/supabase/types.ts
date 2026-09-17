@@ -1596,6 +1596,80 @@ export type Database = {
         }
         Relationships: []
       }
+      crypto_deposits: {
+        Row: {
+          amount: number
+          created_at: string
+          credit_reference: string | null
+          currency: string
+          expires_at: string
+          fx_rate: number
+          id: string
+          last_provider_status: string | null
+          note: string | null
+          pay_address: string | null
+          pay_amount: number | null
+          pay_currency: string
+          provider: string
+          provider_payment_id: string
+          received_amount: number | null
+          status: string
+          updated_at: string
+          usd_amount: number
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          credit_reference?: string | null
+          currency: string
+          expires_at: string
+          fx_rate: number
+          id?: string
+          last_provider_status?: string | null
+          note?: string | null
+          pay_address?: string | null
+          pay_amount?: number | null
+          pay_currency?: string
+          provider?: string
+          provider_payment_id: string
+          received_amount?: number | null
+          status?: string
+          updated_at?: string
+          usd_amount: number
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          credit_reference?: string | null
+          currency?: string
+          expires_at?: string
+          fx_rate?: number
+          id?: string
+          last_provider_status?: string | null
+          note?: string | null
+          pay_address?: string | null
+          pay_amount?: number | null
+          pay_currency?: string
+          provider?: string
+          provider_payment_id?: string
+          received_amount?: number | null
+          status?: string
+          updated_at?: string
+          usd_amount?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crypto_deposits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       direct_messages: {
         Row: {
           body: string | null

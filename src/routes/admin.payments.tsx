@@ -9,6 +9,7 @@ import {
   adminPaymentRailStatus,
   type AdminPaymentRow,
 } from "@/lib/admin-finance.functions";
+import { AdminCryptoDeposits } from "@/components/oventric/admin/AdminCryptoDeposits";
 
 export const Route = createFileRoute("/admin/payments")({
   head: () => ({
@@ -145,6 +146,10 @@ function AdminPaymentsPage() {
           </div>
         )}
       </div>
+
+      <AdminCryptoDeposits />
+
+
 
       {selected && (
         <div className="fixed inset-0 z-50 bg-black/70 flex justify-end" onClick={() => setSelected(null)}>

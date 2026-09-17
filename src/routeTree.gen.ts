@@ -90,6 +90,7 @@ import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack-webhook'
 import { Route as ApiPublicPaymentReturnRouteImport } from './routes/api/public/payment-return'
 import { Route as ApiPublicFlutterwaveWebhookRouteImport } from './routes/api/public/flutterwave-webhook'
+import { Route as ApiPublicCryptoWebhookRouteImport } from './routes/api/public/crypto-webhook'
 import { Route as AdminBlogIdRouteImport } from './routes/admin.blog.$id'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
@@ -511,6 +512,11 @@ const ApiPublicFlutterwaveWebhookRoute =
     path: '/api/public/flutterwave-webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicCryptoWebhookRoute = ApiPublicCryptoWebhookRouteImport.update({
+  id: '/api/public/crypto-webhook',
+  path: '/api/public/crypto-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminBlogIdRoute = AdminBlogIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -645,6 +651,7 @@ export interface FileRoutesByFullPath {
   '/blog/': typeof BlogIndexRoute
   '/wallet/': typeof WalletIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
+  '/api/public/crypto-webhook': typeof ApiPublicCryptoWebhookRoute
   '/api/public/flutterwave-webhook': typeof ApiPublicFlutterwaveWebhookRoute
   '/api/public/payment-return': typeof ApiPublicPaymentReturnRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
@@ -735,6 +742,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogIndexRoute
   '/wallet': typeof WalletIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
+  '/api/public/crypto-webhook': typeof ApiPublicCryptoWebhookRoute
   '/api/public/flutterwave-webhook': typeof ApiPublicFlutterwaveWebhookRoute
   '/api/public/payment-return': typeof ApiPublicPaymentReturnRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
@@ -829,6 +837,7 @@ export interface FileRoutesById {
   '/blog/': typeof BlogIndexRoute
   '/wallet/': typeof WalletIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
+  '/api/public/crypto-webhook': typeof ApiPublicCryptoWebhookRoute
   '/api/public/flutterwave-webhook': typeof ApiPublicFlutterwaveWebhookRoute
   '/api/public/payment-return': typeof ApiPublicPaymentReturnRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
@@ -924,6 +933,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/wallet/'
     | '/admin/blog/$id'
+    | '/api/public/crypto-webhook'
     | '/api/public/flutterwave-webhook'
     | '/api/public/payment-return'
     | '/api/public/paystack-webhook'
@@ -1014,6 +1024,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/wallet'
     | '/admin/blog/$id'
+    | '/api/public/crypto-webhook'
     | '/api/public/flutterwave-webhook'
     | '/api/public/payment-return'
     | '/api/public/paystack-webhook'
@@ -1107,6 +1118,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/wallet/'
     | '/admin/blog/$id'
+    | '/api/public/crypto-webhook'
     | '/api/public/flutterwave-webhook'
     | '/api/public/payment-return'
     | '/api/public/paystack-webhook'
@@ -1160,6 +1172,7 @@ export interface RootRouteChildren {
   ProfileIdRoute: typeof ProfileIdRouteWithChildren
   ShopIdRoute: typeof ShopIdRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  ApiPublicCryptoWebhookRoute: typeof ApiPublicCryptoWebhookRoute
   ApiPublicFlutterwaveWebhookRoute: typeof ApiPublicFlutterwaveWebhookRoute
   ApiPublicPaymentReturnRoute: typeof ApiPublicPaymentReturnRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
@@ -1742,6 +1755,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicFlutterwaveWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/crypto-webhook': {
+      id: '/api/public/crypto-webhook'
+      path: '/api/public/crypto-webhook'
+      fullPath: '/api/public/crypto-webhook'
+      preLoaderRoute: typeof ApiPublicCryptoWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/blog/$id': {
       id: '/admin/blog/$id'
       path: '/$id'
@@ -1987,6 +2007,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileIdRoute: ProfileIdRouteWithChildren,
   ShopIdRoute: ShopIdRoute,
   BlogIndexRoute: BlogIndexRoute,
+  ApiPublicCryptoWebhookRoute: ApiPublicCryptoWebhookRoute,
   ApiPublicFlutterwaveWebhookRoute: ApiPublicFlutterwaveWebhookRoute,
   ApiPublicPaymentReturnRoute: ApiPublicPaymentReturnRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
