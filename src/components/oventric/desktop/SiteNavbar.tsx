@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { Bell, Menu, Plus, X, Search, User } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Bell, Menu, Plus, X, Search, User, MessageSquare } from "lucide-react";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { CurrencyPreviewToggle } from "../CurrencyPreviewToggle";
