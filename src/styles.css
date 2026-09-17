@@ -110,6 +110,49 @@
   --animate-rgb-pulse: rgb-pulse 3s ease-in-out infinite;
   --animate-promo-float: promo-float 3.2s ease-in-out infinite;
   --animate-promo-float-slow: promo-float-slow 4.5s ease-in-out infinite;
+  --shadow-public-shell: var(--public-shell-shadow);
+}
+
+/* Editorial public information and support pages. */
+.web-public-pages {
+  color-scheme: light;
+  --background: oklch(0.965 0.006 85);
+  --foreground: oklch(0.25 0.008 250);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.25 0.008 250);
+  --primary: oklch(0.56 0.17 22);
+  --primary-foreground: oklch(0.99 0.002 85);
+  --secondary: oklch(0.955 0.008 85);
+  --secondary-foreground: oklch(0.27 0.008 250);
+  --muted: oklch(0.94 0.008 85);
+  --muted-foreground: oklch(0.5 0.014 250);
+  --accent: oklch(0.95 0.022 22);
+  --accent-foreground: oklch(0.49 0.17 22);
+  --border: oklch(0.87 0.01 85);
+  --input: oklch(0.82 0.012 85);
+  --ring: oklch(0.56 0.17 22);
+  --public-shell-shadow: 0 24px 70px -45px color-mix(in oklab, var(--foreground) 28%, transparent);
+  font-family: var(--font-wallet-body);
+}
+
+.web-public-pages :is(h1, h2, h3, .font-public-display) {
+  font-family: var(--font-wallet-display);
+  letter-spacing: 0;
+}
+
+.web-public-pages .legal-copy h2 {
+  margin-bottom: 0.5rem;
+  color: var(--foreground);
+  font-family: var(--font-wallet-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .web-public-pages * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Focused, web-native customer transaction ledger. */

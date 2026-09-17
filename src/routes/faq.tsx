@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PublicChrome } from "@/components/oventric/PublicChrome";
+import { PublicInfoLayout } from "@/components/oventric/PublicInfoLayout";
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, MessageCircleQuestion } from "lucide-react";
+import helpImage from "@/assets/public-pages/help-editorial.jpg";
 
 export const Route = createFileRoute("/faq")({
   head: () => ({
@@ -18,6 +19,8 @@ export const Route = createFileRoute("/faq")({
         content: "Answers to the most common questions across Oventric.",
       },
       { property: "og:url", content: "https://oventric.com/faq" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "canonical", href: "https://oventric.com/faq" }],
   }),
@@ -78,34 +81,27 @@ const items = [
 function FaqPage() {
   const [openIdx, setOpenIdx] = useState<number | null>(0);
   return (
-    <PublicChrome>
-      <div className="max-w-3xl mx-auto px-4 py-10 text-slate-200 md:text-slate-800">
-        <h1 className="text-3xl md:text-4xl font-black text-white md:text-slate-900">
-          Frequently asked questions
-        </h1>
-        <p className="mt-2 text-slate-400 md:text-slate-500">
-          Everything from accounts to escrow to payouts.
-        </p>
-        <div className="mt-8 divide-y divide-white/5 rounded-2xl bg-[#141418] border border-white/10 md:bg-white md:border-slate-200">
+    <PublicInfoLayout eyebrow="Common questions" title="Frequently asked questions" description="Clear answers about accounts, digital products, payments, escrow, downloads and payouts." icon={MessageCircleQuestion} image={helpImage} imageAlt="A support guide, headset and safety shield">
+        <div className="divide-y divide-border border-y border-border">
           {items.map((it, i) => {
             const open = openIdx === i;
             return (
               <button
                 key={it.q}
                 onClick={() => setOpenIdx(open ? null : i)}
-                className="w-full text-left p-4"
+                className="group w-full py-5 text-left"
                 aria-expanded={open}
               >
-                <div className="flex items-center gap-3">
-                  <span className="flex-1 text-sm font-bold text-white md:text-slate-900">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
+                  <span className="min-w-0 font-public-display text-sm font-bold text-foreground sm:text-base">
                     {it.q}
                   </span>
                   <ChevronDown
-                    className={`w-4 h-4 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`}
+                    className={`size-5 shrink-0 text-muted-foreground transition-transform group-hover:text-primary ${open ? "rotate-180" : ""}`}
                   />
                 </div>
                 {open && (
-                  <p className="mt-2 text-sm text-slate-300 leading-relaxed md:text-slate-600">
+                  <p className="mt-3 max-w-2xl pr-8 text-sm leading-7 text-muted-foreground">
                     {it.a}
                   </p>
                 )}
@@ -113,7 +109,6 @@ function FaqPage() {
             );
           })}
         </div>
-      </div>
-    </PublicChrome>
+    </PublicInfoLayout>
   );
 }

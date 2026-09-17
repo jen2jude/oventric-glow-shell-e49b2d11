@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PublicChrome } from "@/components/oventric/PublicChrome";
+import { PublicInfoLayout } from "@/components/oventric/PublicInfoLayout";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { submitReport } from "@/lib/reports.functions";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { toast } from "sonner";
-import { Bug, AlertTriangle, Ban, ShieldAlert } from "lucide-react";
+import { Bug, AlertTriangle, Ban, ShieldAlert, Send } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import helpImage from "@/assets/public-pages/help-editorial.jpg";
 
 export const Route = createFileRoute("/report-problem")({
   head: () => ({
@@ -17,6 +19,8 @@ export const Route = createFileRoute("/report-problem")({
       },
       { property: "og:title", content: "Report a problem — Oventric" },
       { property: "og:description", content: "Tell us what went wrong so we can fix it." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ReportPage,
@@ -59,61 +63,54 @@ function ReportPage() {
   };
 
   return (
-    <PublicChrome>
-      <div className="max-w-2xl mx-auto px-4 py-10 text-slate-200 md:text-slate-800">
-        <h1 className="text-3xl md:text-4xl font-black text-white md:text-slate-900">
-          Report a problem
-        </h1>
-        <p className="mt-2 text-slate-400 md:text-slate-500">
-          Bugs, abuse, or anything that feels wrong. Reports go straight to the admin dashboard.
-        </p>
-
-        <div className="mt-8 grid gap-2">
+    <PublicInfoLayout eyebrow="Support" title="Tell us what went wrong." description="Report a technical issue, unsafe behavior, infringement or payment concern for review." icon={Bug} image={helpImage} imageAlt="Support headset beside a guide and safety shield">
+        <div className="grid gap-3 sm:grid-cols-2">
           {issues.map((it) => {
             const active = reason === it.key;
             return (
-              <button
+              <Button
+                type="button"
+                variant="outline"
                 key={it.key}
                 onClick={() => setReason(it.key)}
-                className={`flex items-center gap-3 p-4 rounded-2xl border text-left transition-colors ${
+                className={`h-auto min-h-20 justify-start whitespace-normal p-4 text-left ${
                   active
-                    ? "border-emerald-400 bg-emerald-500/10"
-                    : "border-white/10 bg-[#141418] hover:border-white/25"
+                    ? "border-primary bg-accent text-accent-foreground"
+                    : "border-border bg-card text-foreground"
                 }`}
               >
-                <span
-                  className={`w-9 h-9 grid place-items-center rounded-full ${active ? "bg-emerald-500/20 text-emerald-300" : "bg-[#1E1E24] md:bg-slate-100 text-slate-300 md:text-slate-600"}`}
-                >
+                <span className={`grid size-9 shrink-0 place-items-center rounded-md ${active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
                   <it.icon className="w-4 h-4" />
                 </span>
-                <span className="flex-1 text-sm font-semibold text-white md:text-slate-900">
+                <span className="min-w-0 flex-1 text-sm font-semibold">
                   {it.title}
                 </span>
-              </button>
+              </Button>
             );
           })}
         </div>
 
-        <label className="block mt-6 text-xs font-bold text-slate-400 uppercase tracking-wide md:text-slate-500">
+        <label htmlFor="report-note" className="mt-8 block text-sm font-bold text-foreground">
           What happened?
         </label>
         <textarea
+          id="report-note"
           value={note}
           onChange={(e) => setNote(e.target.value.slice(0, 280))}
           placeholder="Please describe the issue — what you were doing, what you expected, what happened instead."
           rows={5}
-          className="mt-2 w-full rounded-2xl bg-[#141418] border border-white/10 focus:border-emerald-400 outline-none p-3 text-sm text-white placeholder:text-slate-500 md:bg-white md:border-slate-200 md:text-slate-900"
+          className="mt-2 w-full rounded-md border border-input bg-background p-4 text-sm text-foreground outline-none transition-shadow placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-ring/20"
         />
-        <div className="mt-1 text-right text-[11px] text-slate-500">{note.length} / 280</div>
+        <div className="mt-1 text-right text-xs text-muted-foreground">{note.length} / 280</div>
 
-        <button
+        <Button
           onClick={onSubmit}
           disabled={sending}
-          className="mt-4 w-full h-12 rounded-full bg-emerald-500 text-black font-bold text-sm disabled:opacity-60 hover:bg-emerald-400"
+          className="mt-5 h-11 w-full sm:w-auto"
         >
-          {sending ? "Sending..." : "Send report"}
-        </button>
-      </div>
-    </PublicChrome>
+          <Send />{sending ? "Sending..." : "Send report"}
+        </Button>
+        <p className="mt-4 text-xs leading-5 text-muted-foreground">You will need to sign in before submitting so we can securely follow up with you.</p>
+    </PublicInfoLayout>
   );
 }
