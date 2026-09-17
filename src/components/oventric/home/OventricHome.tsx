@@ -227,14 +227,15 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
 
         <div className="relative z-10 mx-auto flex w-full max-w-[1280px] flex-col justify-center gap-6 px-4 py-14 sm:px-6 sm:py-20 lg:min-h-[520px] lg:px-8 lg:py-28">
           <div>
-            <h1 className="font-[Outfit] text-[32px] font-extrabold leading-[1.05] tracking-tight text-slate-900 sm:text-[48px] lg:text-[58px]">
+            <h1 className="font-[Outfit] text-[26px] font-extrabold leading-[1.05] tracking-tight text-slate-900 sm:text-[48px] lg:text-[58px]">
               1st Africa Digital
               <span className="block text-crimson">Marketplace & Community</span>
               <span className="block">for creators</span>
             </h1>
-            <p className="mt-4 max-w-md text-[14px] leading-relaxed text-slate-600 sm:text-lg">
-              Buy, sell and discover digital products, services and tools from amazing creators
-              around the world.
+            <p className="mt-4 max-w-md text-[14px] leading-relaxed text-white md:text-black sm:text-lg">
+              <span className="block">Buy, sell and discover</span>
+              <span className="block">digital products, services and tools</span>
+              <span className="block">from amazing creators around the world.</span>
             </p>
           </div>
 
