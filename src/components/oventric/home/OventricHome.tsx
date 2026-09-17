@@ -13,10 +13,8 @@ import {
   Lock,
   Clock,
   Headphones,
-  Gift,
   Download,
   Banknote,
-  Users,
   Search,
 } from "lucide-react";
 
@@ -33,6 +31,8 @@ import { getHomeStats, type HomeStatsDTO } from "@/lib/home-stats.functions";
 import { visualForCategory } from "@/components/oventric/marketplace-discovery/utils";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import heroImage from "@/assets/home-hero.jpg";
+import cashbackCreatorsImage from "@/assets/earn-cashback-creators.jpg";
+import referralCreatorsImage from "@/assets/earn-referral-creators.jpg";
 
 type CategoryNode = { id: string; slug: string; name: string };
 
@@ -436,18 +436,18 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
 
         {/* ------------------------------------------------------------- promos */}
         <SectionHead title="Ways to Earn More" />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           <PromoCard
-            Icon={Gift}
-            gradient="linear-gradient(135deg,#FFD22E 0%,#FF8A3D 100%)"
+            image={cashbackCreatorsImage}
+            imageAlt="A digital creator checking her phone at her workspace"
             title="Up to 50% cashback"
-            body="Sellers fund their own cashback on digital products — money back into your cashback wallet, automatically."
+            body="Earn cashback when you buy eligible digital products from Oventric creators."
             cta="Shop now"
             onClick={() => onSelect("Marketplace")}
           />
           <PromoCard
-            Icon={Users}
-            gradient="linear-gradient(135deg,#7DE2A8 0%,#12B39B 100%)"
+            image={referralCreatorsImage}
+            imageAlt="Two digital creators collaborating in a bright studio"
             title="Refer & earn"
             body="Invite creators and buyers to Oventric and earn a reward when they make their first qualifying purchase."
             cta="Invite friends"
@@ -551,16 +551,16 @@ function SectionHead({
 }
 
 function PromoCard({
-  Icon,
-  gradient,
+  image,
+  imageAlt,
   title,
   body,
   cta,
   onClick,
   to,
 }: {
-  Icon: React.ComponentType<{ className?: string }>;
-  gradient: string;
+  image: string;
+  imageAlt: string;
   title: string;
   body: string;
   cta: string;
@@ -568,23 +568,28 @@ function PromoCard({
   to?: string;
 }) {
   const inner = (
-    <>
-      <span
-        className="grid h-12 w-12 place-items-center rounded-[14px] text-white"
-        style={{ backgroundImage: gradient }}
-      >
-        <Icon className="h-5 w-5" />
-      </span>
-      <h3 className="mt-4 font-[Outfit] text-lg font-extrabold text-slate-900">{title}</h3>
-      <p className="mt-1.5 text-xs leading-relaxed text-slate-500">{body}</p>
-      <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-crimson">
-        {cta}
-        <ArrowRight className="h-4 w-4" />
-      </span>
-    </>
+    <div className="relative min-h-[270px] overflow-hidden rounded-[10px] sm:min-h-[300px]">
+      <img
+        src={image}
+        alt={imageAlt}
+        loading="lazy"
+        width={1408}
+        height={768}
+        className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.025]"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-white from-0% via-white/95 via-[48%] to-white/5 to-[82%]" />
+      <div className="relative flex min-h-[270px] max-w-[72%] flex-col items-start justify-center p-6 text-left sm:min-h-[300px] sm:max-w-[66%] sm:p-8 lg:max-w-[62%]">
+        <h3 className="font-[Outfit] text-2xl font-extrabold leading-tight text-slate-950 sm:text-3xl">{title}</h3>
+        <p className="mt-3 text-sm leading-6 text-slate-700">{body}</p>
+        <span className="mt-6 inline-flex min-h-10 items-center gap-2 rounded-[8px] bg-crimson px-5 text-sm font-bold text-primary-foreground shadow-sm transition-colors group-hover:bg-crimson/90">
+          {cta}
+          <ArrowRight className="h-4 w-4" />
+        </span>
+      </div>
+    </div>
   );
   const cls =
-    "block rounded-[16px] border border-slate-200/80 bg-white p-6 text-left transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_36px_-24px_rgba(15,23,42,0.6)]";
+    "group block overflow-hidden rounded-[10px] border border-slate-200 bg-white text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crimson focus-visible:ring-offset-2";
 
   if (to) {
     return (
