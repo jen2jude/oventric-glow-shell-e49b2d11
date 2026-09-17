@@ -1770,10 +1770,10 @@ export function Feed() {
                             isAppShell
                               ? layout.wrapperClass.replace("gap-1", "gap-[2px]")
                               : layout.wrapperClass
-                          } overflow-hidden md:rounded-[10px] md:border md:border-slate-200 ${
+                          } overflow-hidden ${
                             isAppShell
                               ? "mb-4 rounded-none border-y border-white/[0.06] md:mx-0 md:mb-0 md:rounded-[10px]"
-                             : "rounded-[10px] border border-slate-200"
+                              : "w-full"
                           }`}
                         >
                           {displayed.map((url, i) => {
