@@ -1193,7 +1193,8 @@ export function Feed() {
 
   // App-shell chrome (feed header + bottom nav) collapses while scrolling down.
   const feedRootRef = useRef<HTMLDivElement>(null);
-  useScrollHideChrome(isAppShell, feedRootRef);
+  const chromeHidden = useChromeHidden();
+  useScrollHideChrome(true, feedRootRef);
   const chromeHidden = useChromeHidden();
   const scrollFeedToTop = () => {
     const root = feedRootRef.current?.closest("main") ?? window;
