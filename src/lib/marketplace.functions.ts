@@ -1536,7 +1536,7 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
         bio: (s.bio as string) ?? "",
         avatarUrl: sellerAvatars[i] ?? null,
         coverUrl: sellerCovers[i] ?? null,
-        verified: s.verification_tier !== "none",
+        verified: verifiedSellerIds.has(s.user_id as string),
         rating: Number(s.reputation_stars ?? 0),
         followersCount: followers ?? 0,
         productsCount: sellerCounts.get(s.user_id as string) ?? 0,
