@@ -32,6 +32,30 @@ export const quoteCryptoDeposit = createServerFn({ method: "POST" })
     };
   });
 
+export interface CryptoEstimateDTO {
+  payCurrency: string;
+  payAmount: number | null;
+  minAmount: number | null;
+  belowMinimum: boolean;
+}
+
+/** Live per-coin send amounts for a funding amount, shown beside each network. */
+export const estimateCryptoDeposit = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { amount: number; currency: Currency }) => ({
+    amount: Number(input?.amount ?? 0),
+    currency: (input?.currency ?? "USD") as Currency,
+  }))
+  .handler(async ({ data }): Promise<{ usdAmount: number; estimates: CryptoEstimateDTO[] }> => {
+    if (!Number.isFinite(data.amount) || data.amount <= 0) return { usdAmount: 0, estimates: [] };
+    const { quoteUsd, cryptoFundingConfigured } = await import("@/lib/crypto/crypto-funding.server");
+    if (!cryptoFundingConfigured()) return { usdAmount: 0, estimates: [] };
+    const { usdAmount } = await quoteUsd(data.amount, data.currency);
+    const { estimateCryptoAmounts } = await import("@/lib/crypto/nowpayments.server");
+    const estimates = await estimateCryptoAmounts(usdAmount);
+    return { usdAmount, estimates };
+  });
+
 export const createCryptoDeposit = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { amount: number; currency: Currency; payCurrency: string }) => ({
