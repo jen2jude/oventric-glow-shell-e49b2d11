@@ -31,6 +31,7 @@ import { getHomeStats, type HomeStatsDTO } from "@/lib/home-stats.functions";
 import { visualForCategory } from "@/components/oventric/marketplace-discovery/utils";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import heroImage from "@/assets/home-hero.jpg";
+import skillsCtaImage from "@/assets/home-skills-bg.jpg";
 import cashbackCreatorsImage from "@/assets/earn-cashback-creators.jpg";
 import referralCreatorsImage from "@/assets/earn-referral-creators.jpg";
 import accountCreatorImage from "@/assets/how-account-creator.jpg";
@@ -413,27 +414,36 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         </div>
 
         {/* ------------------------------------------------------------ CTA band */}
-        <section className="mt-10 overflow-hidden rounded-[20px] bg-[#16181D] px-6 py-10 sm:px-10 sm:py-12 lg:mt-14">
-          <div className="grid items-center gap-8 lg:grid-cols-[1.1fr_1fr]">
-            <div>
-              <h2 className="font-[Outfit] text-2xl font-extrabold leading-tight text-white sm:text-3xl lg:text-[38px]">
+        <section className="relative mt-10 overflow-hidden rounded-[20px] lg:mt-14">
+          <img
+            src={skillsCtaImage}
+            alt="A 3D creator character beside a laptop showing growing sales"
+            loading="lazy"
+            width={1920}
+            height={800}
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-white from-[22%] via-white/95 via-[45%] to-white/10 to-[78%]" />
+          <div className="relative px-6 py-10 sm:px-10 sm:py-14">
+            <div className="max-w-xl">
+              <h2 className="font-[Outfit] text-2xl font-extrabold leading-tight text-slate-950 sm:text-3xl lg:text-[38px]">
                 Turn Your Skills Into Income
               </h2>
-              <p className="mt-3 max-w-lg text-sm leading-relaxed text-white/70">
+              <p className="mt-3 text-sm leading-relaxed text-slate-600">
                 Join Oventric and sell your digital products, services and tools to buyers around
                 the world and earn real money to your account.
               </p>
               <button
                 type="button"
                 onClick={startSelling}
-                className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-crimson px-7 text-sm font-bold text-white transition-all hover:brightness-110 active:scale-95"
+                className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-crimson px-7 text-sm font-bold text-white shadow-md transition-all hover:brightness-110 active:scale-95"
               >
                 Start Selling
                 <ArrowRight className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 rounded-[16px] bg-white/[0.05] p-4 sm:gap-4 sm:p-6">
+            <div className="mt-8 grid max-w-xl grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
               <Stat value={stats?.creators} label="Creators" />
               <Stat value={stats?.products} label="Products" />
               <Stat value={stats?.customers} label="Customers" />
@@ -655,11 +665,11 @@ function EmptyNote({ children }: { children: React.ReactNode }) {
 
 function Stat({ value, label }: { value?: number; label: string }) {
   return (
-    <div className="text-center">
-      <p className="font-[Outfit] text-2xl font-extrabold text-white sm:text-3xl">
+    <div className="rounded-[14px] border border-slate-200/80 bg-white/90 px-3 py-4 text-center shadow-sm backdrop-blur-sm">
+      <p className="font-[Outfit] text-xl font-extrabold text-slate-950 sm:text-2xl">
         {value === undefined ? "—" : value.toLocaleString()}
       </p>
-      <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-wide text-white/50">
+      <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
         {label}
       </p>
     </div>
