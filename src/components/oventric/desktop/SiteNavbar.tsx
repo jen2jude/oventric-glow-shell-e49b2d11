@@ -79,21 +79,6 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
             <img loading="lazy" decoding="async" src={logo} alt="Oventric" className="h-6 sm:h-8 w-auto object-contain" />
           </button>
 
-          {/* Large Search Bar */}
-          <div className="flex-1 max-w-2xl hidden md:block px-4">
-            {search || (
-              <div className="relative group">
-                <input
-                  type="text"
-                  placeholder="Search Oventric..."
-                  className="w-full h-11 pl-5 pr-12 rounded-full border border-slate-200 bg-slate-50 text-sm font-medium focus:outline-none focus:border-crimson/50 focus:bg-white transition-all"
-                />
-                <button className="absolute right-0 top-0 h-full aspect-square flex items-center justify-center bg-slate-900 text-white rounded-full transition-transform active:scale-95">
-                  <Search className="w-5 h-5" />
-                </button>
-              </div>
-            )}
-          </div>
 
           {/* Universal Navigation Links (Desktop) */}
           <nav className="hidden lg:flex items-center gap-6 text-sm font-bold text-slate-600">
