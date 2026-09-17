@@ -1475,12 +1475,31 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
       .sort((a, b) => (sellerCounts.get(b) ?? 0) - (sellerCounts.get(a) ?? 0))
       .slice(0, 12);
 
-    const { data: sellerRows } = sellerIds.length
+    const { data: sellerRowsRaw } = sellerIds.length
       ? await sb
           .from("profiles")
-          .select("user_id, slug, display_name, username, avatar_path, cover_path, verification_tier, reputation_stars, bio")
+          .select(
+            "user_id, slug, display_name, username, avatar_path, cover_path, verification_tier, reputation_stars, bio, profile_completed_at, banned_at, deleted_at",
+          )
           .in("user_id", sellerIds)
       : { data: [] as any[] };
+
+    // Only onboarded, active accounts with published listings are sellers.
+    const sellerRows = (sellerRowsRaw ?? []).filter(
+      (s: any) => !!s.profile_completed_at && !s.banned_at && !s.deleted_at,
+    );
+
+    // "Verified" requires an admin-approved seller verification request.
+    const verifiedSellerIds = new Set<string>();
+    if (sellerRows.length) {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: vRows } = await supabaseAdmin
+        .from("seller_verification_requests")
+        .select("user_id")
+        .eq("status", "approved")
+        .in("user_id", sellerRows.map((s: any) => s.user_id as string));
+      (vRows ?? []).forEach((v: any) => verifiedSellerIds.add(v.user_id as string));
+    }
 
     // 5. Live category counts (products.category stores the category slug)
     const { data: catCountRows } = await sb
