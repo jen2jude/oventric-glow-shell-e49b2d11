@@ -111,6 +111,15 @@ export interface CryptoEstimate {
  */
 const PAYOUT_CURRENCY = process.env["NOWPAYMENTS_PAYOUT_CURRENCY"] || "usdttrc20";
 
+/**
+ * Coins with their own merchant payout wallet settle without conversion, so
+ * their minimum is the coin's dust floor (cents) instead of the ~$12
+ * conversion floor. USDT (BEP20) payout wallet added 2026-09-17.
+ */
+const PAYOUT_WALLETS: Partial<Record<CryptoPayCurrency, string>> = {
+  usdtbsc: "usdtbsc",
+};
+
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** NOWPayments rate-limits bursts, so fetch one coin at a time with retries. */
@@ -147,8 +156,9 @@ async function getMinAmounts(
   if (minAmountsCache && Date.now() - minAmountsCache.at < MIN_CACHE_TTL_MS) return minAmountsCache.values;
   const values: Partial<Record<CryptoPayCurrency, MinEntry>> = {};
   for (const code of codes) {
+    const settleTo = PAYOUT_WALLETS[code] ?? PAYOUT_CURRENCY;
     const min = await fetchJsonWithRetry(
-      `${API_BASE}/min-amount?currency_from=${code}&currency_to=${PAYOUT_CURRENCY}&fiat_equivalent=usd`,
+      `${API_BASE}/min-amount?currency_from=${code}&currency_to=${settleTo}&fiat_equivalent=usd`,
       key,
     );
     values[code] = {
