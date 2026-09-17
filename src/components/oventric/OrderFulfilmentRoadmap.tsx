@@ -222,8 +222,7 @@ export function OrderFulfilmentRoadmap({
         {canDeliver && (
           <button
             onClick={() => setConfirmModal("deliver")}
-            className="inline-flex items-center gap-2 px-3.5 py-3 rounded-[10px] text-sm font-bold text-black"
-            style={{ backgroundColor: "#3b82f6" }}
+            className="inline-flex items-center gap-2 px-3.5 py-3 rounded-[10px] text-sm font-bold text-white bg-[#E5484D] hover:bg-[#D63D42] transition-colors"
           >
             <Truck className="w-4 h-4" /> Mark as delivered
           </button>
@@ -231,8 +230,7 @@ export function OrderFulfilmentRoadmap({
         {canConfirm && (
           <button
             onClick={() => setConfirmModal("receive")}
-            className="inline-flex items-center gap-2 px-3.5 py-3 rounded-[10px] text-sm font-bold text-black"
-            style={{ backgroundColor: "#3b82f6" }}
+            className="inline-flex items-center gap-2 px-3.5 py-3 rounded-[10px] text-sm font-bold text-white bg-[#E5484D] hover:bg-[#D63D42] transition-colors"
           >
             <CheckCircle2 className="w-4 h-4" /> Confirm I received it
           </button>
