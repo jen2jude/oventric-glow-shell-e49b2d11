@@ -340,6 +340,7 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
                 {activeMethods.map((m) => {
                   const Icon = m.icon;
                   const selected = method === m.id;
+                  const est = activeTab === "crypto" ? estimateFor(m.id) : undefined;
                   return (
                     <button
                       key={m.id}
