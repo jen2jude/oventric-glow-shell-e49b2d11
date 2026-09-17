@@ -377,7 +377,9 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
                         </span>
                         <span className="mt-1 block text-xs text-wallet-copy-muted">
                           {est?.belowMinimum && est.minAmount
-                            ? `Below network minimum (${formatCoin(est.minAmount)} ${m.label.split(" ")[0]}) — raise the amount or pick another coin`
+                            ? `Minimum is ${formatCoin(est.minAmount)} ${m.label.split(" ")[0]}${
+                                est.minUsd ? ` (about $${est.minUsd.toFixed(2)})` : ""
+                              } — raise the amount, or use bank transfer or card`
                             : m.desc}
                         </span>
                       </span>

@@ -75,7 +75,7 @@ export async function createCryptoPayment(args: {
     const providerMessage = body && typeof body["message"] === "string" ? body["message"] : "";
     if (providerMessage.toLowerCase().includes("too small")) {
       throw new Error(
-        "That amount is below this coin's network minimum. Pick a low-minimum coin such as USDT (BEP20), TRX, LTC or SOL, or raise the amount.",
+        "That amount is below the crypto payment minimum (about $12 at the moment). Raise the amount, or fund with bank transfer or card instead.",
       );
     }
     throw new Error("Could not start the crypto payment. Please try again.");
@@ -94,11 +94,22 @@ export interface CryptoEstimate {
   payCurrency: CryptoPayCurrency;
   /** Estimated coin amount the buyer must send for the requested USD value. */
   payAmount: number | null;
-  /** Provider/network minimum for this coin, in coin units. */
+  /** Provider minimum for this coin, in coin units. */
   minAmount: number | null;
-  /** True when the requested amount is below the network minimum. */
+  /** The same minimum expressed in USD, so the UI can state a usable figure. */
+  minUsd: number | null;
+  /** True when the requested amount is below the provider minimum. */
   belowMinimum: boolean;
 }
+
+/**
+ * The provider's real minimum is the conversion floor between the coin the
+ * buyer sends and the payout currency our merchant account settles into —
+ * not the coin's own network dust limit. Querying `currency_to=<coin>` gave
+ * a far smaller figure than the API actually accepts, which is why payments
+ * were rejected with "amountTo is too small" well above the displayed floor.
+ */
+const PAYOUT_CURRENCY = process.env["NOWPAYMENTS_PAYOUT_CURRENCY"] || "usdttrc20";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -120,19 +131,30 @@ async function fetchJsonWithRetry(url: string, key: string, attempts = 3): Promi
   return null;
 }
 
-/** Network minimums change rarely — cache them briefly to halve the request count. */
-const MIN_CACHE_TTL_MS = 10 * 60 * 1000;
-let minAmountsCache: { at: number; values: Partial<Record<CryptoPayCurrency, number | null>> } | null = null;
+interface MinEntry {
+  coin: number | null;
+  usd: number | null;
+}
 
-async function getMinAmounts(key: string, codes: CryptoPayCurrency[]): Promise<Partial<Record<CryptoPayCurrency, number | null>>> {
+/** Minimums change rarely — cache them briefly to halve the request count. */
+const MIN_CACHE_TTL_MS = 10 * 60 * 1000;
+let minAmountsCache: { at: number; values: Partial<Record<CryptoPayCurrency, MinEntry>> } | null = null;
+
+async function getMinAmounts(
+  key: string,
+  codes: CryptoPayCurrency[],
+): Promise<Partial<Record<CryptoPayCurrency, MinEntry>>> {
   if (minAmountsCache && Date.now() - minAmountsCache.at < MIN_CACHE_TTL_MS) return minAmountsCache.values;
-  const values: Partial<Record<CryptoPayCurrency, number | null>> = {};
+  const values: Partial<Record<CryptoPayCurrency, MinEntry>> = {};
   for (const code of codes) {
     const min = await fetchJsonWithRetry(
-      `${API_BASE}/min-amount?currency_from=${code}&currency_to=${code}&fiat_equivalent=usd`,
+      `${API_BASE}/min-amount?currency_from=${code}&currency_to=${PAYOUT_CURRENCY}&fiat_equivalent=usd`,
       key,
     );
-    values[code] = min ? Number(min["min_amount"] ?? 0) || null : null;
+    values[code] = {
+      coin: min ? Number(min["min_amount"] ?? 0) || null : null,
+      usd: min ? Number(min["fiat_equivalent"] ?? 0) || null : null,
+    };
     await sleep(150);
   }
   minAmountsCache = { at: Date.now(), values };
@@ -152,11 +174,13 @@ export async function estimateCryptoAmounts(usdAmount: number): Promise<CryptoEs
       key,
     );
     const payAmount = est ? Number(est["estimated_amount"] ?? 0) || null : null;
-    const minAmount = minAmounts[code] ?? null;
+    const minAmount = minAmounts[code]?.coin ?? null;
+    const minUsd = minAmounts[code]?.usd ?? null;
     results.push({
       payCurrency: code,
       payAmount,
       minAmount,
+      minUsd,
       belowMinimum: Boolean(payAmount && minAmount && payAmount < minAmount),
     });
     await sleep(150);
