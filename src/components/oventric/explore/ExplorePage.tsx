@@ -89,8 +89,25 @@ export function ExplorePage({ onSelect }: { onSelect: (section: "Marketplace") =
   });
 
   const [tab, setTab] = useState<Tab>("All");
-  const [q, setQ] = useState("");
+  const [q, setQ] = useState(routeSearch?.search ?? "");
   const query = q.trim().toLowerCase();
+
+  // Keep the box in sync when arriving with a new ?search=… link.
+  useEffect(() => {
+    const incoming = (routeSearch?.search ?? "").trim();
+    if (incoming) setQ(incoming);
+  }, [routeSearch?.search]);
+
+  // Platform-wide search (products, services, people, posts) — runs
+  // server-side so results cover the whole marketplace, not just what
+  // happens to be preloaded on this page.
+  const { data: searchResults, isFetching: searching } = useQuery({
+    queryKey: ["explore-search", query],
+    queryFn: () => runSearch({ data: { q: q.trim() } }),
+    enabled: query.length > 0,
+    staleTime: 30_000,
+    placeholderData: (prev) => prev,
+  });
 
   const allTrending = (discovery?.trending ?? []) as ProductDTO[];
   const allNew = (discovery?.newArrivals ?? []) as ProductDTO[];
