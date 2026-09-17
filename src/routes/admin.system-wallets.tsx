@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, ShoppingBag, Target, Megaphone, GraduationCap, ArrowUpRight } from "lucide-react";
+import { Loader2, ShoppingBag, ArrowUpRight } from "lucide-react";
 import {
   getSystemWallets,
   listSystemWalletTx,
@@ -28,26 +28,8 @@ const META: Record<
     icon: ShoppingBag,
     hue: "from-emerald-500/25 to-teal-700/10 border-emerald-500/30",
   },
-  bounty: {
-    label: "Bounty Revenue",
-    sub: "20% of every bounty payout",
-    icon: Target,
-    hue: "from-amber-500/25 to-orange-700/10 border-amber-500/30",
-  },
-  ads: {
-    label: "Ads & Promo Revenue",
-    sub: "Advertising and promoted posts",
-    icon: Megaphone,
-    hue: "from-sky-500/25 to-indigo-700/10 border-sky-500/30",
-  },
-  academy: {
-    label: "Academy Revenue",
-    sub: "Course sales and enrollments",
-    icon: GraduationCap,
-    hue: "from-fuchsia-500/25 to-purple-700/10 border-fuchsia-500/30",
-  },
 };
-const KINDS: SystemWalletKind[] = ["marketplace", "bounty", "ads", "academy"];
+const KINDS: SystemWalletKind[] = ["marketplace"];
 const FALLBACK_META = {
   label: "Other Revenue",
   sub: "",
