@@ -227,6 +227,16 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
                   </span>
                 )}
               </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  openMessages();
+                }}
+                className="flex min-h-11 w-full items-center gap-3 text-left text-lg font-black text-slate-900"
+              >
+                <MessageSquare className="h-5 w-5" /> Messages
+              </button>
             </div>
             {onCreate && (
               <button
