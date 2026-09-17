@@ -6,8 +6,7 @@
  *   OVF_… → Flutterwave      OV_… / OVP_… → Paystack
  */
 import { resolveFxRates } from "@/lib/fx.server";
-import { paystackFee } from "@/lib/paystack-fees";
-import { flutterwaveFee } from "@/lib/flutterwave-fees";
+
 import { dbCurrency, currencyDecimals } from "@/lib/currency/africa";
 import {
   DEFAULT_GATEWAY_SETTINGS,
