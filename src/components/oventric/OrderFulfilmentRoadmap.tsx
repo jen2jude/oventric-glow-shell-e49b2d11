@@ -192,10 +192,10 @@ export function OrderFulfilmentRoadmap({
         data.deliveredAt &&
         !data.buyerConfirmedAt &&
         data.escrowStatus === "held" && (
-        <div className="text-[11px] text-slate-500 bg-slate-50 border border-slate-200 rounded-[10px] px-3 py-3 mb-3">
-          Waiting for the buyer to confirm receipt{auto ? ` — auto-releases in ${auto}` : ""}.
-        </div>
-      )}
+          <div className="text-[11px] text-slate-500 bg-slate-50 border border-slate-200 rounded-[10px] px-3 py-3 mb-3">
+            Waiting for the buyer to confirm receipt{auto ? ` — auto-releases in ${auto}` : ""}.
+          </div>
+        )}
       {data.dispute && (
         <div className="rounded-[10px] border border-red-200 bg-red-50 p-3 mb-3">
           <div className="text-[11px] font-bold uppercase tracking-widest text-red-700 mb-1">
