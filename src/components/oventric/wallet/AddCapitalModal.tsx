@@ -526,7 +526,7 @@ function CryptoDepositScreen({
                     <Button
                       variant="outline"
                       onClick={() => copy(deposit.payAddress ?? "", "Address")}
-                      className="h-10 border-wallet-line text-wallet-copy"
+                      className="h-10 border-wallet-line bg-wallet-panel text-wallet-copy hover:bg-wallet-muted"
                     >
                       <Copy className="mr-2 h-4 w-4" /> Copy address
                     </Button>
@@ -534,7 +534,7 @@ function CryptoDepositScreen({
                       <Button
                         variant="outline"
                         onClick={() => copy(String(deposit.payAmount), "Amount")}
-                        className="h-10 border-wallet-line text-wallet-copy"
+                        className="h-10 border-wallet-line bg-wallet-panel text-wallet-copy hover:bg-wallet-muted"
                       >
                         <Copy className="mr-2 h-4 w-4" /> Copy amount
                       </Button>
