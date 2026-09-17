@@ -1832,10 +1832,10 @@ export function Feed() {
                       <button
                         type="button"
                         onClick={() => setVideoStartId(post.id)}
-                        className={`relative block w-full aspect-video overflow-hidden group bg-black md:rounded-[10px] md:border md:border-slate-200 ${
+                        className={`relative block w-full aspect-video overflow-hidden group bg-black ${
                           isAppShell
                             ? "rounded-none border-y border-white/[0.06]"
-                             : "rounded-[10px] border border-slate-200"
+                            : ""
                         }`}
                         aria-label="Play video"
                       >
