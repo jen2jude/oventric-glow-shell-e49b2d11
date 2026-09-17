@@ -312,7 +312,11 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
                   : "Pick a coin, send the exact amount shown, and your wallet is credited once confirmed."}
               </p>
 
-              <div className="mt-5 grid gap-px overflow-hidden rounded-[10px] border border-wallet-line bg-wallet-line sm:grid-cols-2">
+              <div
+                className={`mt-5 grid gap-px overflow-hidden rounded-[10px] border border-wallet-line bg-wallet-line ${
+                  activeTab === "crypto" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1 sm:grid-cols-2"
+                }`}
+              >
                 {activeMethods.map((m) => {
                   const Icon = m.icon;
                   const selected = method === m.id;
