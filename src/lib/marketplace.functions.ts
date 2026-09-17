@@ -1657,7 +1657,7 @@ export const getTopSellers = createServerFn({ method: "GET" })
         bio: (s.bio as string) ?? "",
         avatarUrl: avatars[i] ?? null,
         coverUrl: covers[i] ?? null,
-        verified: s.verification_tier !== "none",
+        verified: verifiedIds.has(id),
         rating: count > 0 ? Math.round(((ratingSum.get(id) ?? 0) / count) * 10) / 10 : 0,
         reviewsCount: count,
         followersCount: followers.get(id) ?? 0,
