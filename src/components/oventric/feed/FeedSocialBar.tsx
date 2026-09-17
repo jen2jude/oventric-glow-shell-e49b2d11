@@ -8,6 +8,7 @@ import {
 } from "@/components/oventric/NotificationsDrawer";
 import { RequestsInboxDrawer } from "@/components/oventric/RequestsInboxDrawer";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
+import { useChromeHidden } from "@/hooks/use-chrome-hide";
 
 type Props = {
   /** Opens the shared messages drawer owned by the page shell. */
