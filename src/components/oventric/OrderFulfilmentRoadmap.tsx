@@ -211,7 +211,7 @@ export function OrderFulfilmentRoadmap({
         </div>
       )}
 
-      <div className="rounded-[10px] border border-emerald-200 bg-emerald-500/5 px-3 py-3 mb-3 text-[11px] text-emerald-100 leading-relaxed">
+      <div className="rounded-[10px] border border-emerald-200 bg-emerald-50 px-3 py-3 mb-3 text-[11px] text-emerald-900 leading-relaxed">
         <strong className="text-emerald-700">Keep this trade on Oventric.</strong> Payments are held
         in escrow and we can only refund or mediate deals completed in-app. Deliver, chat and
         confirm here — never on WhatsApp or any other app.
