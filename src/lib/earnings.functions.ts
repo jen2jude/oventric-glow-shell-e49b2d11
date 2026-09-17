@@ -90,9 +90,8 @@ export const getMyEarningsBreakdown = createServerFn({ method: "POST" })
       return q;
     };
 
-    const [marketplaceRes, bountyRes, affiliateRes, cashbackRes] = await Promise.all([
+    const [marketplaceRes, affiliateRes, cashbackRes] = await Promise.all([
       buildQuery("Marketplace Sale"),
-      buildQuery("Bounty Payout"),
       buildQuery("Affiliate Cashback Payout"),
       buildQuery("Cashback Earned"),
     ]);
@@ -106,22 +105,14 @@ export const getMyEarningsBreakdown = createServerFn({ method: "POST" })
       }, 0);
 
     const marketplaceHome = sumHome(marketplaceRes.data as never);
-    const bountyHome = sumHome(bountyRes.data as never);
     const affiliateHome = sumHome(affiliateRes.data as never);
     const otherHome = sumHome(cashbackRes.data as never);
-    // No dedicated seller-side ledger entry exists yet for course/academy
-    // sales (instructor payouts are credited via RPC only), so this bucket
-    // is included for completeness and will populate once that ledger entry
-    // ships.
-    const academyHome = 0;
 
-    const totalHome = marketplaceHome + bountyHome + academyHome + affiliateHome + otherHome;
+    const totalHome = marketplaceHome + affiliateHome + otherHome;
     const pct = (v: number) => (totalHome > 0 ? Math.round((v / totalHome) * 1000) / 10 : 0);
 
     const breakdown: EarningsSourceBreakdown[] = [
       { source: "marketplace", label: SOURCE_LABELS.marketplace, amountHome: marketplaceHome, pct: pct(marketplaceHome) },
-      { source: "bounty", label: SOURCE_LABELS.bounty, amountHome: bountyHome, pct: pct(bountyHome) },
-      { source: "academy", label: SOURCE_LABELS.academy, amountHome: academyHome, pct: pct(academyHome) },
       { source: "affiliate", label: SOURCE_LABELS.affiliate, amountHome: affiliateHome, pct: pct(affiliateHome) },
       { source: "other", label: SOURCE_LABELS.other, amountHome: otherHome, pct: pct(otherHome) },
     ];
