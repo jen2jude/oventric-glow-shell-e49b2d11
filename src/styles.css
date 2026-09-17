@@ -48,6 +48,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-seller-rating: var(--seller-rating);
   --color-wallet-canvas: var(--wallet-canvas);
   --color-wallet-panel: var(--wallet-panel);
   --color-wallet-panel-raised: var(--wallet-panel-raised);
@@ -169,7 +170,7 @@
   --border: oklch(0.88 0.018 240);
   --input: oklch(0.82 0.02 240);
   --ring: oklch(0.57 0.19 22);
-  --warning: oklch(0.7 0.16 78);
+  --seller-rating: oklch(0.7 0.16 78);
   font-family: var(--font-wallet-body);
 }
 

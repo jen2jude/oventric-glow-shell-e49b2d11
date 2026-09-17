@@ -157,7 +157,7 @@ function SellersPage() {
                           {seller.verified && <BadgeCheck className="h-5 w-5 shrink-0 text-primary" aria-label="Verified seller" />}
                         </div>
                         <div className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
-                          <Star className="h-4 w-4 fill-current text-warning" />
+                          <Star className="h-4 w-4 fill-current text-seller-rating" />
                           <span className="font-bold text-foreground">{seller.rating ? seller.rating.toFixed(1) : "New"}</span>
                           <span>· {compact(seller.followersCount)} followers</span>
                         </div>
@@ -220,7 +220,7 @@ function SellersPage() {
                             <ArrowUpRight className="h-5 w-5 shrink-0 text-muted-foreground transition group-hover:text-primary" />
                           </div>
                           <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border pt-4 text-xs font-semibold text-muted-foreground">
-                            <span className="inline-flex items-center gap-1.5"><Star className="h-3.5 w-3.5 text-warning" /> {seller.rating ? seller.rating.toFixed(1) : "New"}</span>
+                            <span className="inline-flex items-center gap-1.5"><Star className="h-3.5 w-3.5 text-seller-rating" /> {seller.rating ? seller.rating.toFixed(1) : "New"}</span>
                             <span className="inline-flex items-center gap-1.5"><ShoppingBag className="h-3.5 w-3.5" /> {compact(seller.salesCount)} sales</span>
                             <span className="inline-flex items-center gap-1.5"><Users className="h-3.5 w-3.5" /> {compact(seller.followersCount)}</span>
                           </div>
