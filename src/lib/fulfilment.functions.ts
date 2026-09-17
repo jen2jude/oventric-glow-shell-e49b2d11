@@ -482,6 +482,7 @@ export interface SaleDTO {
   quantity: number;
   displayCurrency: OrderCurrency;
   displayTotal: number;
+  totalUSD: number;
   sellerShareUSD: number;
   requiresManualDelivery: boolean;
   escrowStatus: string;
