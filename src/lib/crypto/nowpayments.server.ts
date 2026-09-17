@@ -90,6 +90,55 @@ export async function createCryptoPayment(args: {
   };
 }
 
+export interface CryptoEstimate {
+  payCurrency: CryptoPayCurrency;
+  /** Estimated coin amount the buyer must send for the requested USD value. */
+  payAmount: number | null;
+  /** Provider/network minimum for this coin, in coin units. */
+  minAmount: number | null;
+  /** True when the requested amount is below the network minimum. */
+  belowMinimum: boolean;
+}
+
+/** Live send-amount estimates for every supported coin, for a USD value. */
+export async function estimateCryptoAmounts(usdAmount: number): Promise<CryptoEstimate[]> {
+  const key = apiKey();
+  const codes = Object.keys(CRYPTO_PAY_CURRENCIES) as CryptoPayCurrency[];
+
+  const results = await Promise.all(
+    codes.map(async (code): Promise<CryptoEstimate> => {
+      try {
+        const [estRes, minRes] = await Promise.all([
+          fetch(
+            `${API_BASE}/estimate?amount=${encodeURIComponent(usdAmount.toFixed(2))}&currency_from=usd&currency_to=${code}`,
+            { headers: { "x-api-key": key } },
+          ),
+          fetch(`${API_BASE}/min-amount?currency_from=${code}&currency_to=${code}&fiat_equivalent=usd`, {
+            headers: { "x-api-key": key },
+          }),
+        ]);
+
+        const est = (await estRes.json().catch(() => null)) as Record<string, unknown> | null;
+        const min = (await minRes.json().catch(() => null)) as Record<string, unknown> | null;
+
+        const payAmount = est && estRes.ok ? Number(est["estimated_amount"] ?? 0) || null : null;
+        const minAmount = min && minRes.ok ? Number(min["min_amount"] ?? 0) || null : null;
+
+        return {
+          payCurrency: code,
+          payAmount,
+          minAmount,
+          belowMinimum: Boolean(payAmount && minAmount && payAmount < minAmount),
+        };
+      } catch {
+        return { payCurrency: code, payAmount: null, minAmount: null, belowMinimum: false };
+      }
+    }),
+  );
+
+  return results;
+}
+
 export async function fetchCryptoPayment(paymentId: string): Promise<Record<string, unknown> | null> {
   const res = await fetch(`${API_BASE}/payment/${encodeURIComponent(paymentId)}`, {
     headers: { "x-api-key": apiKey() },
