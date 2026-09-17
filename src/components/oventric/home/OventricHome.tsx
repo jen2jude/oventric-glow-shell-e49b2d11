@@ -161,6 +161,13 @@ const PAY_METHODS: { name: string; src: string }[] = [
   { name: "Verve", src: payVerve },
   { name: "Paystack", src: payPaystack },
   { name: "Bank transfer", src: payBank },
+  { name: "MiniPay", src: payMinipay },
+  { name: "USDT", src: payTether },
+  { name: "Tron", src: payTron },
+  { name: "Ethereum", src: payEthereum },
+  { name: "BNB Chain", src: payBinance },
+  { name: "Solana", src: paySolana },
+  { name: "Litecoin", src: payLitecoin },
 ];
 
 export type OventricHomeProps = {
