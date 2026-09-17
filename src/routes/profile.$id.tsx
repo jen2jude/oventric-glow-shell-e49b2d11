@@ -919,7 +919,8 @@ function ProfilePage() {
     : isUuidId
       ? "—"
       : profile.joined;
-  const displayAvatar = realProfile?.avatarUrl ?? null;
+  const displayAvatar = localAvatarPreview ?? realProfile?.avatarUrl ?? null;
+  const displayCover = localCoverPreview ?? realProfile?.coverUrl ?? null;
   const displayTierLabel = hasRealProfile
     ? realProfile!.verificationTier === "TIER_0"
       ? "Unverified"
