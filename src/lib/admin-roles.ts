@@ -39,6 +39,7 @@ export const SECTION_ACCESS: Record<string, ManagementRole[]> = {
   // Core
   "/admin/users": ["admin", "support"],
   "/admin/sellers": ["admin", "moderator", "support"],
+  "/admin/seller-verification": ["admin", "moderator", "support"],
   "/admin/products": ["admin", "moderator", "content"],
   "/admin/orders": ["admin", "finance", "support", "moderator"],
   "/admin/categories": ["admin", "content"],

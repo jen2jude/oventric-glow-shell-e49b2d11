@@ -3341,12 +3341,18 @@ export type Database = {
       seller_verification_requests: {
         Row: {
           brand_name: string | null
+          business_address: string | null
+          business_type: string | null
           contact_email: string | null
           country: string | null
           created_at: string
           id: string
           legal_name: string | null
           note: string | null
+          passport_photo_path: string | null
+          proof_doc_kind: string | null
+          proof_doc_path: string | null
+          registration_number: string | null
           review_note: string | null
           reviewed_at: string | null
           reviewed_by: string | null
@@ -3357,12 +3363,18 @@ export type Database = {
         }
         Insert: {
           brand_name?: string | null
+          business_address?: string | null
+          business_type?: string | null
           contact_email?: string | null
           country?: string | null
           created_at?: string
           id?: string
           legal_name?: string | null
           note?: string | null
+          passport_photo_path?: string | null
+          proof_doc_kind?: string | null
+          proof_doc_path?: string | null
+          registration_number?: string | null
           review_note?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
@@ -3373,12 +3385,18 @@ export type Database = {
         }
         Update: {
           brand_name?: string | null
+          business_address?: string | null
+          business_type?: string | null
           contact_email?: string | null
           country?: string | null
           created_at?: string
           id?: string
           legal_name?: string | null
           note?: string | null
+          passport_photo_path?: string | null
+          proof_doc_kind?: string | null
+          proof_doc_path?: string | null
+          registration_number?: string | null
           review_note?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
