@@ -18,9 +18,11 @@ export const Route = createFileRoute("/admin/system-wallets")({
   component: SystemWalletsPage,
 });
 
-const META: Record<
-  SystemWalletKind,
-  { label: string; sub: string; icon: React.ComponentType<{ className?: string }>; hue: string }
+const META: Partial<
+  Record<
+    SystemWalletKind,
+    { label: string; sub: string; icon: React.ComponentType<{ className?: string }>; hue: string }
+  >
 > = {
   marketplace: {
     label: "Marketplace Revenue",
