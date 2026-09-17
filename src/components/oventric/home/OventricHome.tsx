@@ -202,66 +202,64 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
 
   return (
     <div className="min-h-screen w-full bg-[#F7F8FA]">
-      <main className="mx-auto w-full max-w-[1280px] px-4 pb-16 sm:px-6 lg:px-8">
-        {/* ---------------------------------------------------------- hero */}
-        <section className="relative mt-4 overflow-hidden rounded-[20px] bg-[#16181D] sm:mt-6 sm:rounded-[24px]">
-          <div className="grid items-stretch gap-0 lg:grid-cols-[1.05fr_1fr]">
-            <div className="relative z-10 flex flex-col justify-center gap-6 px-5 py-8 sm:px-10 sm:py-14 lg:py-20">
-              <div>
-                <h1 className="font-[Outfit] text-[30px] font-extrabold leading-[1.05] text-white sm:text-[46px] lg:text-[58px]">
-                  Creative People
-                  <span className="block text-crimson">Real Value</span>
-                </h1>
-                <p className="mt-3 max-w-[15rem] text-[13px] leading-relaxed text-white/70 sm:mt-4 sm:max-w-md sm:text-base">
-                  Buy, sell and discover digital products, services and tools from amazing creators
-                  around the world.
-                </p>
-              </div>
+      {/* ---------------------------------------------------------- hero */}
+      <section className="relative w-full overflow-hidden bg-white">
+        <div className="absolute inset-0">
+          <img
+            src={heroImage}
+            alt="A creator working on digital products"
+            width={1600}
+            height={912}
+            className="h-full w-full object-cover object-[75%_center]"
+          />
+          {/* white fade — strong on the left, clear on the right */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/10 sm:via-white/70 sm:to-transparent lg:from-white lg:via-white/55" />
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#F7F8FA] to-transparent" />
+        </div>
 
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => navigate({ to: "/sellers" })}
-                  className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-crimson px-5 text-sm font-bold text-white transition-all hover:brightness-110 active:scale-95 sm:h-12 sm:flex-none sm:px-7"
-                >
-                  <span className="sm:hidden">Shop</span>
-                  <span className="hidden sm:inline">Shop</span>
-                  <ArrowRight className="hidden h-4 w-4 sm:block" />
-                </button>
-                <button
-                  type="button"
-                  onClick={startSelling}
-                  className="inline-flex h-11 flex-1 items-center justify-center rounded-full border border-white/25 bg-white/5 px-5 text-sm font-bold text-white transition-colors hover:bg-white/10 active:scale-95 sm:h-12 sm:flex-none sm:bg-transparent sm:px-7"
-                >
-                  <span className="sm:hidden">Sell</span>
-                  <span className="hidden sm:inline">Become a Seller</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="absolute inset-0 lg:relative lg:min-h-[420px]">
-              <img
-                src={heroImage}
-                alt="A creator working on digital products"
-                width={1600}
-                height={912}
-                className="h-full w-full object-cover object-[70%_center]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#16181D] via-[#16181D]/75 to-[#16181D]/20 sm:via-[#16181D]/50 sm:to-transparent lg:via-[#16181D]/25" />
-              <ul className="absolute inset-y-0 right-4 hidden flex-col justify-center gap-4 text-right sm:right-8 md:flex">
-                {HANDWRITTEN.map((word, i) => (
-                  <li
-                    key={word}
-                    className="text-[22px] font-semibold italic text-white/85 lg:text-[26px]"
-                    style={{ transform: `translateX(${(i % 2 === 0 ? -1 : 1) * 10}px)` }}
-                  >
-                    {word}
-                  </li>
-                ))}
-              </ul>
-            </div>
+        <div className="relative z-10 mx-auto flex w-full max-w-[1280px] flex-col justify-center gap-6 px-4 py-14 sm:px-6 sm:py-20 lg:min-h-[520px] lg:px-8 lg:py-28">
+          <div>
+            <h1 className="font-[Outfit] text-[34px] font-extrabold leading-[1.04] tracking-tight text-slate-900 sm:text-[52px] lg:text-[64px]">
+              Creative People
+              <span className="block text-crimson">Real Value</span>
+            </h1>
+            <p className="mt-4 max-w-md text-[14px] leading-relaxed text-slate-600 sm:text-lg">
+              Buy, sell and discover digital products, services and tools from amazing creators
+              around the world.
+            </p>
           </div>
-        </section>
+
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => navigate({ to: "/sellers" })}
+              className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-crimson px-5 text-sm font-bold text-white shadow-lg shadow-crimson/20 transition-all hover:brightness-110 active:scale-95 sm:h-12 sm:flex-none sm:px-8"
+            >
+              Shop
+              <ArrowRight className="hidden h-4 w-4 sm:block" />
+            </button>
+            <button
+              type="button"
+              onClick={startSelling}
+              className="inline-flex h-11 flex-1 items-center justify-center rounded-full border border-slate-300 bg-white/80 px-5 text-sm font-bold text-slate-900 backdrop-blur transition-colors hover:bg-white active:scale-95 sm:h-12 sm:flex-none sm:px-8"
+            >
+              <span className="sm:hidden">Sell</span>
+              <span className="hidden sm:inline">Become a Seller</span>
+            </button>
+          </div>
+
+          <ul className="hidden flex-wrap gap-x-5 gap-y-2 md:flex">
+            {HANDWRITTEN.map((word) => (
+              <li key={word} className="text-[18px] font-semibold italic text-slate-500 lg:text-[20px]">
+                {word}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <main className="mx-auto w-full max-w-[1280px] px-4 pb-16 sm:px-6 lg:px-8">
+
 
         {/* ------------------------------------------------------- trust bar */}
         <section className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
