@@ -85,6 +85,13 @@
       "when": 1789632151790,
       "tag": "0011_seller_verification_storage_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1789634229927,
+      "tag": "0012_seller_sale_notification_link",
+      "breakpoints": true
     }
   ]
 }
