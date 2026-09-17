@@ -921,6 +921,12 @@ function ProfilePage() {
       : profile.joined;
   const displayAvatar = localAvatarPreview ?? realProfile?.avatarUrl ?? null;
   const displayCover = localCoverPreview ?? realProfile?.coverUrl ?? null;
+  useEffect(() => {
+    return () => {
+      if (localAvatarPreview) URL.revokeObjectURL(localAvatarPreview);
+      if (localCoverPreview) URL.revokeObjectURL(localCoverPreview);
+    };
+  }, [localAvatarPreview, localCoverPreview]);
   const displayTierLabel = hasRealProfile
     ? realProfile!.verificationTier === "TIER_0"
       ? "Unverified"
