@@ -173,13 +173,25 @@ export function OrderFulfilmentRoadmap({
         ))}
       </ol>
 
-      {data.escrowStatus === "held" && auto && data.deliveredAt && (
+      {data.escrowStatus === "held" && data.buyerConfirmedAt && (
+        <div className="flex items-center gap-2 text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-[10px] px-3 py-3 mb-3">
+          <Clock className="w-3.5 h-3.5 shrink-0" />
+          Receipt confirmed
+          {data.role === "seller"
+            ? ` — your earnings land in your wallet${timeLeft(data.payoutReleaseAt) ? ` in ${timeLeft(data.payoutReleaseAt)}` : " shortly"}.`
+            : ` — the seller is paid${timeLeft(data.payoutReleaseAt) ? ` in ${timeLeft(data.payoutReleaseAt)}` : " shortly"}.`}
+        </div>
+      )}
+      {data.escrowStatus === "held" && !data.buyerConfirmedAt && auto && data.deliveredAt && (
         <div className="flex items-center gap-2 text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded-[10px] px-3 py-3 mb-3">
           <Clock className="w-3.5 h-3.5 shrink-0" />
           Auto-confirms in {auto} if you don't act. Funds then release to the seller.
         </div>
       )}
-      {data.role === "seller" && data.deliveredAt && data.escrowStatus === "held" && (
+      {data.role === "seller" &&
+        data.deliveredAt &&
+        !data.buyerConfirmedAt &&
+        data.escrowStatus === "held" && (
         <div className="text-[11px] text-slate-500 bg-slate-50 border border-slate-200 rounded-[10px] px-3 py-3 mb-3">
           Waiting for the buyer to confirm receipt{auto ? ` — auto-releases in ${auto}` : ""}.
         </div>
