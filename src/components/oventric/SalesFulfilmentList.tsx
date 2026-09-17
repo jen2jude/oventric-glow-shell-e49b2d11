@@ -319,8 +319,8 @@ export function SalesFulfilmentList({
                 </div>
                 <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
                   <div className="text-xs text-slate-400 md:text-slate-500">
-                    {formatMoney(s.displayTotal, s.displayCurrency)} gross · your 80% ≈ $
-                    {s.sellerShareUSD.toFixed(2)}
+                    {formatMoney(s.displayTotal, s.displayCurrency)} gross · your 80% ≈{" "}
+                    {formatMoney(sellerShareDisplay(s), s.displayCurrency)}
                   </div>
                   <div className="flex items-center gap-2">
                     {canDeliver && (
