@@ -74,7 +74,9 @@ export async function createCryptoPayment(args: {
     console.error("[crypto] create payment failed", res.status, body);
     const providerMessage = body && typeof body["message"] === "string" ? body["message"] : "";
     if (providerMessage.toLowerCase().includes("too small")) {
-      throw new Error("The amount is below the provider's minimum for this network. Try a larger amount.");
+      throw new Error(
+        "That amount is below this coin's network minimum. Pick a low-minimum coin such as USDT (BEP20), TRX, LTC or SOL, or raise the amount.",
+      );
     }
     throw new Error("Could not start the crypto payment. Please try again.");
   }
