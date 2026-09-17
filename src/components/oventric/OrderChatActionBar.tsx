@@ -62,7 +62,7 @@ export function OrderChatActionBar({
     setBusy(true);
     try {
       await confirmFn({ data: { orderId: ctx.orderId } });
-      toast.success("Delivery confirmed — thank you! Please leave a review.");
+      toast.success("Receipt confirmed — trade complete. Please leave a review.");
       setWarn(false);
       onChanged();
     } catch (e) {
@@ -81,7 +81,7 @@ export function OrderChatActionBar({
               onClick={() => setWarn(true)}
               className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-[10px] text-xs font-bold text-primary-foreground bg-primary hover:bg-primary/90"
             >
-              <CheckCircle2 className="w-4 h-4" /> Confirm delivery
+              <CheckCircle2 className="w-4 h-4" /> Received — complete trade
             </button>
             <button
               onClick={() => setReport(true)}
