@@ -156,8 +156,9 @@ async function getMinAmounts(
   if (minAmountsCache && Date.now() - minAmountsCache.at < MIN_CACHE_TTL_MS) return minAmountsCache.values;
   const values: Partial<Record<CryptoPayCurrency, MinEntry>> = {};
   for (const code of codes) {
+    const settleTo = PAYOUT_WALLETS[code] ?? PAYOUT_CURRENCY;
     const min = await fetchJsonWithRetry(
-      `${API_BASE}/min-amount?currency_from=${code}&currency_to=${PAYOUT_CURRENCY}&fiat_equivalent=usd`,
+      `${API_BASE}/min-amount?currency_from=${code}&currency_to=${settleTo}&fiat_equivalent=usd`,
       key,
     );
     values[code] = {
