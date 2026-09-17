@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { Bell, Menu, Plus, X, Search, User } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Bell, Menu, Plus, X, Search, User, MessageSquare } from "lucide-react";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { CurrencyPreviewToggle } from "../CurrencyPreviewToggle";
@@ -27,6 +27,7 @@ export type SiteNavbarProps = {
 
 export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, currency, search }: SiteNavbarProps) {
   const { baseCurrency } = useOnboarding();
+  const navigate = useNavigate();
 
   const { isAuthenticated, openGate } = useAuthGate();
   const [solid, setSolid] = useState(false);
@@ -41,6 +42,14 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
       return;
     }
     setNotificationsOpen(true);
+  };
+
+  const openMessages = () => {
+    if (!isAuthenticated) {
+      openGate("generic");
+      return;
+    }
+    navigate({ to: "/messages" });
   };
 
   useEffect(() => {
@@ -137,6 +146,15 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
               />
             </button>
 
+            <button
+              type="button"
+              onClick={openMessages}
+              aria-label={isAuthenticated ? "Open messages" : "Sign in to view messages"}
+              className="relative grid min-h-11 min-w-11 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-hidden focus-visible:ring-3 focus-visible:ring-crimson/30"
+            >
+              <MessageSquare className="h-5 w-5" />
+            </button>
+
             {/* User Profile Link */}
             <div className="flex items-center gap-4 ml-auto">
               <button
@@ -208,6 +226,16 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
                     {unreadNotifications > 99 ? "99+" : unreadNotifications}
                   </span>
                 )}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  openMessages();
+                }}
+                className="flex min-h-11 w-full items-center gap-3 text-left text-lg font-black text-slate-900"
+              >
+                <MessageSquare className="h-5 w-5" /> Messages
               </button>
             </div>
             {onCreate && (

@@ -17,6 +17,7 @@ import {
   Download,
   Banknote,
   Users,
+  Search,
 } from "lucide-react";
 
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
@@ -164,6 +165,13 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
   const [sellers, setSellers] = useState<TopSellerDTO[]>([]);
   const [fresh, setFresh] = useState<ProductDTO[]>([]);
   const [stats, setStats] = useState<HomeStatsDTO | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const submitSearch = () => {
+    const q = searchQuery.trim();
+    if (!q) return;
+    navigate({ to: "/explore", search: { search: q } });
+  };
 
   useEffect(() => {
     let alive = true;
@@ -212,8 +220,8 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             height={912}
             className="h-full w-full object-cover object-[75%_center]"
           />
-          {/* white fade — strong on the left, clear on the right */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/10 sm:via-white/70 sm:to-transparent lg:from-white lg:via-white/55" />
+          {/* white fade — text panel on the left, image stretches to both edges */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white/95 from-0% via-white/80 via-[30%] to-transparent to-[65%] sm:via-[38%] sm:to-[72%] lg:via-[42%] lg:to-[78%]" />
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#F7F8FA] to-transparent" />
         </div>
 
@@ -246,6 +254,28 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
               <span className="sm:hidden">Sell</span>
               <span className="hidden sm:inline">Become a Seller</span>
             </button>
+          </div>
+
+          {/* Search bar */}
+          <div className="w-full max-w-md">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && submitSearch()}
+                placeholder="Search digital products, sellers..."
+                className="h-12 w-full rounded-full border border-slate-200 bg-white/90 pl-5 pr-14 text-sm font-medium text-slate-900 backdrop-blur-sm transition-all placeholder:text-slate-400 focus:border-crimson/50 focus:bg-white focus:outline-hidden"
+              />
+              <button
+                type="button"
+                onClick={submitSearch}
+                aria-label="Search"
+                className="absolute right-1 top-1 flex h-10 w-10 items-center justify-center rounded-full bg-crimson text-white transition-transform active:scale-95"
+              >
+                <Search className="h-5 w-5" />
+              </button>
+            </div>
           </div>
 
           <ul className="hidden flex-wrap gap-x-5 gap-y-2 md:flex">
