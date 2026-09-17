@@ -33,6 +33,9 @@ import { AvatarImage } from "@/components/oventric/AvatarImage";
 import heroImage from "@/assets/home-hero.jpg";
 import cashbackCreatorsImage from "@/assets/earn-cashback-creators.jpg";
 import referralCreatorsImage from "@/assets/earn-referral-creators.jpg";
+import accountCreatorImage from "@/assets/how-account-creator.jpg";
+import marketplaceCreatorImage from "@/assets/how-marketplace-creator.jpg";
+import paidCreatorImage from "@/assets/how-paid-creator.jpg";
 
 type CategoryNode = { id: string; slug: string; name: string };
 
@@ -121,14 +124,20 @@ const STEPS = [
   {
     title: "Create your account",
     body: "Pick your country and currency once — every price you see is shown in it.",
+    image: accountCreatorImage,
+    imageAlt: "A creator setting up her Oventric account",
   },
   {
     title: "Buy or list a digital asset",
     body: "Shop the marketplace, or publish your own product, service or tool in minutes.",
+    image: marketplaceCreatorImage,
+    imageAlt: "A digital designer creating an asset at her workspace",
   },
   {
     title: "Get paid and withdraw",
     body: "Escrow releases into your wallet, then cash out to your bank account.",
+    image: paidCreatorImage,
+    imageAlt: "A creator checking her earnings on her phone",
   },
 ];
 
@@ -477,15 +486,31 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
 
         {/* -------------------------------------------------------- how it works */}
         <SectionHead title="How It Works" subtitle="Three steps from sign-up to payout" />
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:gap-4">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-3 lg:gap-5">
           {STEPS.map((s, i) => (
-            <div key={s.title} className="rounded-[14px] border border-slate-200/80 bg-white p-6">
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-crimson/10 font-[Outfit] text-sm font-extrabold text-crimson">
-                {i + 1}
-              </span>
-              <h3 className="mt-4 text-base font-bold text-slate-900">{s.title}</h3>
-              <p className="mt-1.5 text-xs leading-relaxed text-slate-500">{s.body}</p>
-            </div>
+            <article
+              key={s.title}
+              className="group overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg"
+            >
+              <div className="relative aspect-[16/10] overflow-hidden">
+                <img
+                  src={s.image}
+                  alt={s.imageAlt}
+                  loading="lazy"
+                  width={1104}
+                  height={768}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
+                />
+                <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white to-transparent" />
+                <span className="absolute left-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-crimson font-[Outfit] text-sm font-extrabold text-primary-foreground shadow-md">
+                  {i + 1}
+                </span>
+              </div>
+              <div className="relative -mt-5 px-5 pb-6 sm:px-6 sm:pb-7">
+                <h3 className="font-[Outfit] text-lg font-extrabold leading-tight text-slate-950">{s.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{s.body}</p>
+              </div>
+            </article>
           ))}
         </div>
 
