@@ -371,7 +371,9 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
                                 ? "…"
                                 : est?.payAmount
                                   ? `≈ ${formatCoin(est.payAmount)} ${m.label.split(" ")[0]}`
-                                  : ""}
+                                  : est
+                                    ? "Quote unavailable — retrying…"
+                                    : ""}
                             </span>
                           )}
                         </span>
