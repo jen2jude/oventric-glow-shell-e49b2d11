@@ -1612,10 +1612,26 @@ export const getTopSellers = createServerFn({ method: "GET" })
 
     const { data: sellerRows } = await sb
       .from("profiles")
-      .select("user_id, slug, display_name, username, avatar_path, cover_path, verification_tier, bio")
+      .select(
+        "user_id, slug, display_name, username, avatar_path, cover_path, verification_tier, bio, profile_completed_at, banned_at, deleted_at",
+      )
       .in("user_id", sellerIds);
 
-    const rows = sellerRows ?? [];
+    // Only onboarded, active accounts with published listings count as sellers.
+    const rows = (sellerRows ?? []).filter(
+      (s: any) => !!s.profile_completed_at && !s.banned_at && !s.deleted_at,
+    );
+
+    // "Verified" means an admin-approved seller verification request exists.
+    const verifiedIds = new Set<string>();
+    {
+      const { data: vRows } = await sb
+        .from("seller_verification_requests")
+        .select("user_id")
+        .eq("status", "approved")
+        .in("user_id", rows.map((s: any) => s.user_id as string));
+      (vRows ?? []).forEach((v: any) => verifiedIds.add(v.user_id as string));
+    }
     const avatars = await signBucket(sb, "avatars", rows.map((s: any) => s.avatar_path ?? null));
     const covers = await signBucket(sb, "profile-covers", rows.map((s: any) => s.cover_path ?? null));
 
