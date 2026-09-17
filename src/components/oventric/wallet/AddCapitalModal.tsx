@@ -22,7 +22,17 @@ import { createCryptoDeposit, getCryptoDeposit } from "@/lib/crypto-funding.func
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-const CRYPTO_METHODS = ["usdttrc20", "usdterc20"];
+const CRYPTO_METHODS = [
+  "usdtbsc",
+  "usdcbsc",
+  "trx",
+  "ltc",
+  "sol",
+  "eth",
+  "bnbbsc",
+  "usdttrc20",
+  "usdterc20",
+];
 
 const PRESETS = ["500", "1000", "5000", "10000", "25000"];
 
