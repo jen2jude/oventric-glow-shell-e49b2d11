@@ -159,6 +159,26 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
   }, [onClose]);
 
   const activeMethods = activeTab === "local" ? localMethods : cryptoMethods;
+
+  // Debounced amount so we don't hit the estimator on every keystroke.
+  const [debouncedAmount, setDebouncedAmount] = useState(amount);
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedAmount(amount), 500);
+    return () => clearTimeout(t);
+  }, [amount]);
+
+  const estimateFn = useServerFn(estimateCryptoDeposit);
+  const { data: estimateData, isFetching: estimating } = useQuery({
+    queryKey: ["crypto-estimates", debouncedAmount, homeCurrency],
+    queryFn: () => estimateFn({ data: { amount: debouncedAmount, currency: homeCurrency } }),
+    enabled: activeTab === "crypto" && debouncedAmount > 0 && !depositId,
+    staleTime: 60_000,
+  });
+
+  const estimateFor = (id: string) => estimateData?.estimates.find((e) => e.payCurrency === id);
+  const formatCoin = (value: number) =>
+    value >= 1 ? value.toFixed(value >= 100 ? 2 : 4) : value.toPrecision(4).replace(/0+$/, "").replace(/\.$/, "");
+
   const methodLabel = useMemo(() => {
     const all = [...localMethods, ...cryptoMethods];
     return all.find((m) => m.id === method)?.label ?? method;
