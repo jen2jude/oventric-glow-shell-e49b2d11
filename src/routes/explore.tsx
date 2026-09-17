@@ -1,8 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
+import { z } from "zod";
 
 import { AppSurface } from "@/components/oventric/AppSurface";
 
+const exploreSearchSchema = z.object({
+  search: fallback(z.string(), "").default(""),
+});
+
 export const Route = createFileRoute("/explore")({
+  validateSearch: zodValidator(exploreSearchSchema),
   head: () => ({
     meta: [
       { title: "Explore — Discover creators and digital products | Oventric" },
