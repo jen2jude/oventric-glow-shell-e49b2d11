@@ -482,6 +482,7 @@ export interface SaleDTO {
   quantity: number;
   displayCurrency: OrderCurrency;
   displayTotal: number;
+  totalUSD: number;
   sellerShareUSD: number;
   requiresManualDelivery: boolean;
   escrowStatus: string;
@@ -501,7 +502,7 @@ export const listMySales = createServerFn({ method: "GET" })
     const { data, error } = await sb
       .from("orders")
       .select(
-        "id, buyer_id, product_id, quantity, display_currency, display_total, seller_share_usd, escrow_status, delivered_at, buyer_confirmed_at, auto_release_at, payout_release_at, dispute_status, created_at, products:product_id (name, requires_manual_delivery)",
+        "id, buyer_id, product_id, quantity, display_currency, display_total, total_usd, seller_share_usd, escrow_status, delivered_at, buyer_confirmed_at, auto_release_at, payout_release_at, dispute_status, created_at, products:product_id (name, requires_manual_delivery)",
       )
       .eq("seller_id", context.userId)
       .order("created_at", { ascending: false })
@@ -528,6 +529,7 @@ export const listMySales = createServerFn({ method: "GET" })
       quantity: Number(r.quantity ?? 1),
       displayCurrency: (r.display_currency ?? "USD") as OrderCurrency,
       displayTotal: Number(r.display_total ?? 0),
+      totalUSD: Number(r.total_usd ?? 0),
       sellerShareUSD: Number(r.seller_share_usd ?? 0),
       requiresManualDelivery: Boolean(r.products?.requires_manual_delivery),
       escrowStatus: r.escrow_status ?? "released",

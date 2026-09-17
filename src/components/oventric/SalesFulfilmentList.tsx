@@ -38,6 +38,14 @@ function overdue(s: SaleDTO) {
 }
 
 /** Time left until the seller's earnings land in their wallet, or null. */
+export function sellerShareDisplay(s: SaleDTO): number {
+  // Seller keeps 80%; convert the USD share back into the order's display currency
+  if (s.totalUSD > 0 && s.displayTotal > 0) {
+    return s.sellerShareUSD * (s.displayTotal / s.totalUSD);
+  }
+  return s.displayTotal * 0.8;
+}
+
 export function payoutCountdown(s: SaleDTO): string | null {
   if (!s.buyerConfirmedAt || s.escrowStatus !== "held" || !s.payoutReleaseAt) return null;
   const ms = new Date(s.payoutReleaseAt).getTime() - Date.now();
@@ -319,8 +327,8 @@ export function SalesFulfilmentList({
                 </div>
                 <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
                   <div className="text-xs text-slate-400 md:text-slate-500">
-                    {formatMoney(s.displayTotal, s.displayCurrency)} gross · your 80% ≈ $
-                    {s.sellerShareUSD.toFixed(2)}
+                    {formatMoney(s.displayTotal, s.displayCurrency)} gross · your 80% ≈{" "}
+                    {formatMoney(sellerShareDisplay(s), s.displayCurrency)}
                   </div>
                   <div className="flex items-center gap-2">
                     {canDeliver && (
