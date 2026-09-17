@@ -1195,7 +1195,6 @@ export function Feed() {
   const feedRootRef = useRef<HTMLDivElement>(null);
   const chromeHidden = useChromeHidden();
   useScrollHideChrome(true, feedRootRef);
-  const chromeHidden = useChromeHidden();
   const scrollFeedToTop = () => {
     const root = feedRootRef.current?.closest("main") ?? window;
     if (root instanceof Window) window.scrollTo({ top: 0, behavior: "smooth" });
