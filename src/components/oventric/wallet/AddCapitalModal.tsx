@@ -18,7 +18,7 @@ import {
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useServerFn } from "@tanstack/react-start";
 import { initPayment } from "@/lib/payments.functions";
-import { createCryptoDeposit, getCryptoDeposit } from "@/lib/crypto-funding.functions";
+import { createCryptoDeposit, getCryptoDeposit, estimateCryptoDeposit } from "@/lib/crypto-funding.functions";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -159,6 +159,26 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
   }, [onClose]);
 
   const activeMethods = activeTab === "local" ? localMethods : cryptoMethods;
+
+  // Debounced amount so we don't hit the estimator on every keystroke.
+  const [debouncedAmount, setDebouncedAmount] = useState(amount);
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedAmount(amount), 500);
+    return () => clearTimeout(t);
+  }, [amount]);
+
+  const estimateFn = useServerFn(estimateCryptoDeposit);
+  const { data: estimateData, isFetching: estimating } = useQuery({
+    queryKey: ["crypto-estimates", debouncedAmount, homeCurrency],
+    queryFn: () => estimateFn({ data: { amount: debouncedAmount, currency: homeCurrency } }),
+    enabled: activeTab === "crypto" && debouncedAmount > 0 && !depositId,
+    staleTime: 60_000,
+  });
+
+  const estimateFor = (id: string) => estimateData?.estimates.find((e) => e.payCurrency === id);
+  const formatCoin = (value: number) =>
+    value >= 1 ? value.toFixed(value >= 100 ? 2 : 4) : value.toPrecision(4).replace(/0+$/, "").replace(/\.$/, "");
+
   const methodLabel = useMemo(() => {
     const all = [...localMethods, ...cryptoMethods];
     return all.find((m) => m.id === method)?.label ?? method;
@@ -320,6 +340,7 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
                 {activeMethods.map((m) => {
                   const Icon = m.icon;
                   const selected = method === m.id;
+                  const est = activeTab === "crypto" ? estimateFor(m.id) : undefined;
                   return (
                     <button
                       key={m.id}
@@ -338,8 +359,27 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
                         <Icon className="h-5 w-5" />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="text-sm font-semibold text-wallet-copy">{m.label}</span>
-                        <span className="mt-1 block text-xs text-wallet-copy-muted">{m.desc}</span>
+                        <span className="flex flex-wrap items-baseline gap-x-2">
+                          <span className="text-sm font-semibold text-wallet-copy">{m.label}</span>
+                          {activeTab === "crypto" && amount > 0 && (
+                            <span
+                              className={`text-xs font-semibold ${
+                                est?.belowMinimum ? "text-wallet-copy-muted" : "text-wallet-crimson"
+                              }`}
+                            >
+                              {estimating && !est
+                                ? "…"
+                                : est?.payAmount
+                                  ? `≈ ${formatCoin(est.payAmount)} ${m.label.split(" ")[0]}`
+                                  : ""}
+                            </span>
+                          )}
+                        </span>
+                        <span className="mt-1 block text-xs text-wallet-copy-muted">
+                          {est?.belowMinimum && est.minAmount
+                            ? `Below network minimum (${formatCoin(est.minAmount)} ${m.label.split(" ")[0]}) — raise the amount or pick another coin`
+                            : m.desc}
+                        </span>
                       </span>
                       <span
                         className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
