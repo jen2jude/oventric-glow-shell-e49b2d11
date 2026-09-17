@@ -161,6 +161,7 @@ function ShopPage() {
   const [tab, setTab] = useState<ShopTab>("shop");
   const [dmOpen, setDmOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [verifyOpen, setVerifyOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
 
