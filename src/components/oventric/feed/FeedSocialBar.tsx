@@ -8,6 +8,7 @@ import {
 } from "@/components/oventric/NotificationsDrawer";
 import { RequestsInboxDrawer } from "@/components/oventric/RequestsInboxDrawer";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
+import { useChromeHidden } from "@/hooks/use-chrome-hide";
 
 type Props = {
   /** Opens the shared messages drawer owned by the page shell. */
@@ -22,6 +23,7 @@ type Props = {
 export function FeedSocialBar({ onOpenMessages }: Props) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [reqOpen, setReqOpen] = useState(false);
+  const chromeHidden = useChromeHidden();
 
   const unreadNotifs = useUnreadNotificationsCount();
   const { messages } = useUnreadCounts();
@@ -53,7 +55,11 @@ export function FeedSocialBar({ onOpenMessages }: Props) {
 
   return (
     <>
-      <nav className="sticky top-0 z-40 flex w-fit max-w-full self-start items-center gap-1 overflow-x-auto rounded-full border border-slate-200 bg-white/95 p-1.5 shadow-sm backdrop-blur-md no-scrollbar">
+      <nav
+        className={`sticky top-0 z-40 flex w-fit max-w-full self-start items-center gap-1 overflow-x-auto rounded-full border border-slate-200 bg-white/95 p-1.5 shadow-sm backdrop-blur-md no-scrollbar transition-all duration-300 ease-out ${
+          chromeHidden ? "-translate-y-[120%] opacity-0 pointer-events-none" : "translate-y-0 opacity-100"
+        }`}
+      >
         <Link
           to="/"
           aria-label="Back to home"

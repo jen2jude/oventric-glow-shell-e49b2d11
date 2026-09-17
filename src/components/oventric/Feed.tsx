@@ -1193,8 +1193,8 @@ export function Feed() {
 
   // App-shell chrome (feed header + bottom nav) collapses while scrolling down.
   const feedRootRef = useRef<HTMLDivElement>(null);
-  useScrollHideChrome(isAppShell, feedRootRef);
   const chromeHidden = useChromeHidden();
+  useScrollHideChrome(true, feedRootRef);
   const scrollFeedToTop = () => {
     const root = feedRootRef.current?.closest("main") ?? window;
     if (root instanceof Window) window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1224,6 +1224,19 @@ export function Feed() {
           }`}
         >
           <ArrowUp className="h-4 w-4" strokeWidth={2.5} />
+          Back to top
+        </button>
+      )}
+      {!isAppShell && (
+        <button
+          type="button"
+          onClick={scrollFeedToTop}
+          aria-label="Back to top"
+          className={`fixed left-1/2 top-[4.5rem] z-30 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full bg-[#E5484D] px-3 py-1.5 text-xs font-bold text-white shadow-lg transition-all duration-300 ${
+            chromeHidden ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-4 pointer-events-none"
+          }`}
+        >
+          <ArrowUp className="h-3.5 w-3.5" strokeWidth={2.5} />
           Back to top
         </button>
       )}
@@ -1596,10 +1609,10 @@ export function Feed() {
                   key={post.id}
                   ref={trackPostView(post.id)}
                   id={`post-${post.id}`}
-                  className={`md:bg-white md:shadow-sm border scroll-mt-24 md:scroll-mt-28 [transition:border-color_400ms_ease,box-shadow_400ms_ease,opacity_300ms_ease] ${
+                  className={`scroll-mt-24 md:scroll-mt-28 [transition:border-color_400ms_ease,box-shadow_400ms_ease,opacity_300ms_ease] ${
                     isAppShell
-                      ? "bg-[#141416] rounded-none -mx-4 p-0 overflow-hidden border-x-0 md:mx-0 md:p-5 md:rounded-xl md:border-x"
-                       : "bg-white rounded-[10px] p-5 md:p-6 shadow-sm"
+                      ? "md:bg-white md:shadow-sm border bg-[#141416] rounded-none -mx-4 p-0 overflow-hidden border-x-0 md:mx-0 md:p-5 md:rounded-xl md:border-x"
+                       : "bg-white py-5 md:py-6 border-b border-slate-100 last:border-b-0"
                   } ${isReported ? "opacity-70" : ""} ${
                     isNew
                       ? isAppShell
@@ -1607,7 +1620,7 @@ export function Feed() {
                         : "border-[#E5484D]/70 post-highlight"
                       : isAppShell
                         ? "border-white/[0.06] md:border-slate-200"
-                         : "border-slate-200"
+                        : ""
                   }`}
                   style={
                     isNew
@@ -1757,10 +1770,10 @@ export function Feed() {
                             isAppShell
                               ? layout.wrapperClass.replace("gap-1", "gap-[2px]")
                               : layout.wrapperClass
-                          } overflow-hidden md:rounded-[10px] md:border md:border-slate-200 ${
+                          } overflow-hidden ${
                             isAppShell
                               ? "mb-4 rounded-none border-y border-white/[0.06] md:mx-0 md:mb-0 md:rounded-[10px]"
-                             : "rounded-[10px] border border-slate-200"
+                              : "w-full"
                           }`}
                         >
                           {displayed.map((url, i) => {
@@ -1819,10 +1832,10 @@ export function Feed() {
                       <button
                         type="button"
                         onClick={() => setVideoStartId(post.id)}
-                        className={`relative block w-full aspect-video overflow-hidden group bg-black md:rounded-[10px] md:border md:border-slate-200 ${
+                        className={`relative block w-full aspect-video overflow-hidden group bg-black ${
                           isAppShell
                             ? "rounded-none border-y border-white/[0.06]"
-                             : "rounded-[10px] border border-slate-200"
+                            : ""
                         }`}
                         aria-label="Play video"
                       >
