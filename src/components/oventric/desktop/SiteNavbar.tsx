@@ -146,6 +146,15 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
               />
             </button>
 
+            <button
+              type="button"
+              onClick={openMessages}
+              aria-label={isAuthenticated ? "Open messages" : "Sign in to view messages"}
+              className="relative grid min-h-11 min-w-11 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-hidden focus-visible:ring-3 focus-visible:ring-crimson/30"
+            >
+              <MessageSquare className="h-5 w-5" />
+            </button>
+
             {/* User Profile Link */}
             <div className="flex items-center gap-4 ml-auto">
               <button
