@@ -376,8 +376,7 @@ function ConfirmModal({
           <button
             onClick={onConfirm}
             disabled={busy}
-            className="px-4 py-3 rounded-[10px] text-sm font-bold text-black disabled:opacity-60 inline-flex items-center gap-2"
-            style={{ backgroundColor: "#3b82f6" }}
+            className="px-4 py-3 rounded-[10px] text-sm font-bold text-white disabled:opacity-60 inline-flex items-center gap-2 bg-[#E5484D] hover:bg-[#D63D42] transition-colors"
           >
             {busy && <Loader2 className="w-4 h-4 animate-spin" />} Confirm
           </button>
