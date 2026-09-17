@@ -178,6 +178,16 @@ export async function confirmReceipt(
     },
     {
       user_id: o.buyer_id,
+      kind: mode === "auto" ? "order_auto_confirmed" : "order_confirmed",
+      title: mode === "auto" ? "Your order was auto-confirmed" : "You confirmed delivery",
+      body:
+        mode === "auto"
+          ? `"${name}" auto-confirmed because the confirmation window closed. Payment clears to the seller in ${PAYOUT_HOLD_HOURS} hours.`
+          : `You confirmed delivery of "${name}". Payment clears to the seller in ${PAYOUT_HOLD_HOURS} hours.`,
+      link: `/order/${orderId}`,
+    },
+    {
+      user_id: o.buyer_id,
       kind: "order_review_prompt",
       title: "Thanks for your purchase",
       body: `Leave a review for "${name}" and help other buyers.`,
