@@ -86,7 +86,7 @@ export function OrderFulfilmentRoadmap({
         toast.success("Marked delivered — buyer notified in chat.");
       } else {
         await confirmFn({ data: { orderId } });
-        toast.success("Receipt confirmed. Seller wallet funded.");
+        toast.success("Receipt confirmed.");
       }
       setConfirmModal(null);
       await load();
@@ -232,7 +232,7 @@ export function OrderFulfilmentRoadmap({
             onClick={() => setConfirmModal("receive")}
             className="inline-flex items-center gap-2 px-3.5 py-3 rounded-[10px] text-sm font-bold text-white bg-[#E5484D] hover:bg-[#D63D42] transition-colors"
           >
-            <CheckCircle2 className="w-4 h-4" /> Confirm I received it
+            <CheckCircle2 className="w-4 h-4" /> Received — complete trade
           </button>
         )}
         <button
