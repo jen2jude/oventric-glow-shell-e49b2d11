@@ -53,8 +53,6 @@ const STATUS_TEXT: Record<string, string> = {
 
 const SOURCE_BAR: Record<string, string> = {
   marketplace: "bg-sky-500",
-  bounty: "bg-violet-500",
-  academy: "bg-amber-500",
   affiliate: "bg-emerald-500",
   other: "bg-slate-400",
 };
