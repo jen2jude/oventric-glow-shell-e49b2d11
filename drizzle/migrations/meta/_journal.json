@@ -92,6 +92,13 @@
       "when": 1789634229927,
       "tag": "0012_seller_sale_notification_link",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1789647937743,
+      "tag": "0013_create_crypto_deposits",
+      "breakpoints": true
     }
   ]
 }
