@@ -33,9 +33,9 @@ import { AvatarImage } from "@/components/oventric/AvatarImage";
 import heroImage from "@/assets/home-hero.jpg";
 import cashbackCreatorsImage from "@/assets/earn-cashback-creators.jpg";
 import referralCreatorsImage from "@/assets/earn-referral-creators.jpg";
-import accountCreatorImage from "@/assets/how-account-creator.jpg";
-import marketplaceCreatorImage from "@/assets/how-marketplace-creator.jpg";
-import paidCreatorImage from "@/assets/how-paid-creator.jpg";
+import accountCreatorImage from "@/assets/how-account-creator-3d.png";
+import marketplaceCreatorImage from "@/assets/how-marketplace-creator-3d.png";
+import paidCreatorImage from "@/assets/how-paid-creator-3d.png";
 
 type CategoryNode = { id: string; slug: string; name: string };
 
@@ -497,7 +497,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
                   src={s.image}
                   alt={s.imageAlt}
                   loading="lazy"
-                  width={1104}
+                  width={1152}
                   height={768}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
                 />
