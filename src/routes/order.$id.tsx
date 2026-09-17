@@ -98,8 +98,19 @@ function OrderPage() {
         </Link>
 
         {err && (
-          <div className="bg-[#1E1E24] md:shadow-sm md:bg-white border border-red-500/40 rounded-[10px] p-4 text-sm text-red-300">
-            {err}
+          <div className="bg-[#1E1E24] md:shadow-sm md:bg-white border border-amber-500/40 md:border-slate-200 rounded-[10px] p-5 text-sm text-slate-300 md:text-slate-700">
+            <p className="font-semibold text-white md:text-slate-900 mb-1">
+              This page shows a buyer's receipt
+            </p>
+            <p className="text-xs text-slate-400 md:text-slate-500 mb-3">
+              If this is a sale you made, open it from your Sales &amp; Fulfilment list instead.
+            </p>
+            <a
+              href="/dashboard?tab=sales"
+              className="inline-flex items-center gap-2 rounded-[10px] bg-[#E5484D] px-4 py-2 text-sm font-semibold text-white"
+            >
+              Go to my sales
+            </a>
           </div>
         )}
         {!order && !err && (
