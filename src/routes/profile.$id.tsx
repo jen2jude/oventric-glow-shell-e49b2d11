@@ -408,6 +408,10 @@ function ProfilePage() {
   const avatarInputRef = useRef<HTMLInputElement | null>(null);
   const coverInputRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState<"avatar" | "cover" | null>(null);
+  // Instant local previews so the new image shows the moment it is uploaded,
+  // even if the freshly signed URL has not been re-fetched yet.
+  const [localAvatarPreview, setLocalAvatarPreview] = useState<string | null>(null);
+  const [localCoverPreview, setLocalCoverPreview] = useState<string | null>(null);
   const reloadRealProfile = useCallback(async () => {
     try {
       const p = await fetchRealProfile({ data: { idOrSlug: id } });
