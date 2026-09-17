@@ -36,6 +36,7 @@ export interface CryptoEstimateDTO {
   payCurrency: string;
   payAmount: number | null;
   minAmount: number | null;
+  minUsd: number | null;
   belowMinimum: boolean;
 }
 
