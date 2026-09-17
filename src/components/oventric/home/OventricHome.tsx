@@ -256,6 +256,28 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             </button>
           </div>
 
+          {/* Search bar */}
+          <div className="w-full max-w-md">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && submitSearch()}
+                placeholder="Search digital products, sellers..."
+                className="h-12 w-full rounded-full border border-slate-200 bg-white/90 pl-5 pr-14 text-sm font-medium text-slate-900 backdrop-blur-sm transition-all placeholder:text-slate-400 focus:border-crimson/50 focus:bg-white focus:outline-hidden"
+              />
+              <button
+                type="button"
+                onClick={submitSearch}
+                aria-label="Search"
+                className="absolute right-1 top-1 flex h-10 w-10 items-center justify-center rounded-full bg-crimson text-white transition-transform active:scale-95"
+              >
+                <Search className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+
           <ul className="hidden flex-wrap gap-x-5 gap-y-2 md:flex">
             {HANDWRITTEN.map((word) => (
               <li key={word} className="text-[18px] font-semibold italic text-slate-500 lg:text-[20px]">
