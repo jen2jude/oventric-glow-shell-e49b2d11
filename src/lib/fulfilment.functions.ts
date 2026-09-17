@@ -312,6 +312,13 @@ export const markOrderDelivered = createServerFn({ method: "POST" })
         link: `/order/${data.orderId}`,
         from_user_id: context.userId,
       },
+      {
+        user_id: o.seller_id,
+        kind: "order_delivered",
+        title: "You marked an order delivered",
+        body: `You marked "${name}" as delivered. The buyer has ${CONFIRM_WINDOW_HOURS} hours to confirm before it auto-confirms.`,
+        link: `/dashboard?tab=sales`,
+      },
     ]);
     await sendEmail(
       sb,
