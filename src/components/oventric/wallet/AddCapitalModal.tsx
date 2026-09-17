@@ -56,9 +56,82 @@ function TetherIcon({ className }: { className?: string }) {
   );
 }
 
+const localMethods = [
+  {
+    id: "bank",
+    label: "Bank transfer",
+    desc: "Transfer, USSD, Opay and other bank channels",
+    icon: Landmark,
+  },
+  {
+    id: "card",
+    label: "Debit or credit card",
+    desc: "Visa, Mastercard and Verve — funded instantly",
+    icon: CreditCard,
+  },
+];
+
+const cryptoMethods = [
+  {
+    id: "usdtbsc",
+    label: "USDT (BEP20)",
+    desc: "Stablecoin on BNB Chain — low minimum",
+    icon: TetherIcon,
+  },
+  {
+    id: "usdcbsc",
+    label: "USDC (BEP20)",
+    desc: "Stablecoin on BNB Chain — low minimum",
+    icon: TetherIcon,
+  },
+  {
+    id: "trx",
+    label: "TRON (TRX)",
+    desc: "Low fees, works from about $1",
+    icon: Bitcoin,
+  },
+  {
+    id: "ltc",
+    label: "Litecoin (LTC)",
+    desc: "Fast confirmations, very low minimum",
+    icon: Bitcoin,
+  },
+  {
+    id: "sol",
+    label: "Solana (SOL)",
+    desc: "Instant confirmations, low minimum",
+    icon: Bitcoin,
+  },
+  {
+    id: "eth",
+    label: "Ethereum (ETH)",
+    desc: "Pay from any Ethereum wallet",
+    icon: Bitcoin,
+  },
+  {
+    id: "bnbbsc",
+    label: "BNB",
+    desc: "BNB Smart Chain — low fees",
+    icon: Bitcoin,
+  },
+  {
+    id: "usdttrc20",
+    label: "USDT (TRC20)",
+    desc: "Stablecoin on Tron — minimum about $12",
+    icon: TetherIcon,
+  },
+  {
+    id: "usdterc20",
+    label: "USDT (ERC20)",
+    desc: "Stablecoin on Ethereum — higher network minimum",
+    icon: TetherIcon,
+  },
+];
+
 export function AddCapitalModal({ onClose }: { onClose: () => void }) {
   const { homeCurrency } = useOnboarding();
   const [method, setMethod] = useState<string>("bank");
+  const [activeTab, setActiveTab] = useState<"local" | "crypto">("local");
   const [amountDisplay, setAmountDisplay] = useState<string>("5,000");
   const [loading, setLoading] = useState(false);
   const [depositId, setDepositId] = useState<string | null>(null);
@@ -85,85 +158,11 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
     };
   }, [onClose]);
 
-  const methods = [
-    {
-      id: "bank",
-      label: "Bank transfer",
-      desc: "Transfer, USSD, Opay and other bank channels",
-      icon: Landmark,
-      soon: false,
-    },
-    {
-      id: "card",
-      label: "Debit or credit card",
-      desc: "Visa, Mastercard and Verve — funded instantly",
-      icon: CreditCard,
-      soon: false,
-    },
-    {
-      id: "usdtbsc",
-      label: "USDT (BEP20)",
-      desc: "Stablecoin on BNB Chain — best for small amounts",
-      icon: TetherIcon,
-      soon: false,
-    },
-    {
-      id: "usdcbsc",
-      label: "USDC (BEP20)",
-      desc: "Stablecoin on BNB Chain — low minimum",
-      icon: TetherIcon,
-      soon: false,
-    },
-    {
-      id: "trx",
-      label: "TRON (TRX)",
-      desc: "Low fees, works from about $1",
-      icon: Bitcoin,
-      soon: false,
-    },
-    {
-      id: "ltc",
-      label: "Litecoin (LTC)",
-      desc: "Fast confirmations, very low minimum",
-      icon: Bitcoin,
-      soon: false,
-    },
-    {
-      id: "sol",
-      label: "Solana (SOL)",
-      desc: "Instant confirmations, low minimum",
-      icon: Bitcoin,
-      soon: false,
-    },
-    {
-      id: "eth",
-      label: "Ethereum (ETH)",
-      desc: "Pay from any Ethereum wallet",
-      icon: Bitcoin,
-      soon: false,
-    },
-    {
-      id: "bnbbsc",
-      label: "BNB",
-      desc: "BNB Smart Chain — low fees",
-      icon: Bitcoin,
-      soon: false,
-    },
-    {
-      id: "usdttrc20",
-      label: "USDT (TRC20)",
-      desc: "Stablecoin on Tron — minimum about $12",
-      icon: TetherIcon,
-      soon: false,
-    },
-    {
-      id: "usdterc20",
-      label: "USDT (ERC20)",
-      desc: "Stablecoin on Ethereum — higher network minimum",
-      icon: Bitcoin,
-      soon: false,
-    },
-  ];
+  const activeMethods = activeTab === "local" ? localMethods : cryptoMethods;
+  const methodLabel = useMemo(() => {
+    const all = [...localMethods, ...cryptoMethods];
+    return all.find((m) => m.id === method)?.label ?? method;
+  }, [method]);
 
   const handleContinue = async () => {
     if (amount <= 0) {
@@ -266,59 +265,95 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
           </h1>
           <p className="mt-3 max-w-2xl text-sm text-wallet-copy-muted sm:text-base">
             Choose how you want to pay, enter an amount in {homeCurrency}, and complete the payment on the secure
-            checkout page.
+            checkout.
           </p>
         </div>
 
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-14">
           <section>
-            <h2 className="font-wallet-display text-lg font-semibold text-wallet-copy">Payment method</h2>
-            <p className="mt-1 text-sm text-wallet-copy-muted">All payments are processed on an encrypted checkout.</p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("local");
+                  setMethod("bank");
+                }}
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                  activeTab === "local"
+                    ? "bg-wallet-crimson text-wallet-on-crimson"
+                    : "border border-wallet-line bg-wallet-panel text-wallet-copy hover:bg-wallet-muted"
+                }`}
+              >
+                Bank / Card
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("crypto");
+                  setMethod(cryptoMethods[0].id);
+                }}
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                  activeTab === "crypto"
+                    ? "bg-wallet-crimson text-wallet-on-crimson"
+                    : "border border-wallet-line bg-wallet-panel text-wallet-copy hover:bg-wallet-muted"
+                }`}
+              >
+                Crypto
+              </button>
+            </div>
 
-            <div className="mt-5 grid gap-px overflow-hidden rounded-[10px] border border-wallet-line bg-wallet-line sm:grid-cols-2">
-              {methods.map((m) => {
-                const Icon = m.icon;
-                const selected = method === m.id;
-                return (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => setMethod(m.id)}
-                    aria-pressed={selected}
-                    className={`flex w-full items-start gap-3 p-5 text-left transition-colors ${
-                      selected ? "bg-wallet-crimson-soft" : "bg-wallet-panel hover:bg-wallet-panel-raised"
-                    }`}
-                  >
-                    <span
-                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] ${
-                        selected ? "bg-wallet-crimson text-wallet-on-crimson" : "bg-wallet-muted text-wallet-copy-muted"
+            <div className="mt-6">
+              <h2 className="font-wallet-display text-lg font-semibold text-wallet-copy">
+                {activeTab === "local" ? "Pay in your local currency" : "Pay with cryptocurrency"}
+              </h2>
+              <p className="mt-1 text-sm text-wallet-copy-muted">
+                {activeTab === "local"
+                  ? "All payments are processed on an encrypted checkout."
+                  : "Pick a coin, send the exact amount shown, and your wallet is credited once confirmed."}
+              </p>
+
+              <div
+                className={`mt-5 grid gap-px overflow-hidden rounded-[10px] border border-wallet-line bg-wallet-line ${
+                  activeTab === "crypto" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1 sm:grid-cols-2"
+                }`}
+              >
+                {activeMethods.map((m) => {
+                  const Icon = m.icon;
+                  const selected = method === m.id;
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setMethod(m.id)}
+                      aria-pressed={selected}
+                      className={`flex w-full items-start gap-3 p-5 text-left transition-colors ${
+                        selected ? "bg-wallet-crimson-soft" : "bg-wallet-panel hover:bg-wallet-panel-raised"
                       }`}
                     >
-                      <Icon className="h-5 w-5" />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-wallet-copy">{m.label}</span>
-                        {m.soon && (
-                          <span className="rounded-md bg-wallet-muted px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-wallet-copy-muted">
-                            Soon
-                          </span>
-                        )}
+                      <span
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] ${
+                          selected ? "bg-wallet-crimson text-wallet-on-crimson" : "bg-wallet-muted text-wallet-copy-muted"
+                        }`}
+                      >
+                        <Icon className="h-5 w-5" />
                       </span>
-                      <span className="mt-1 block text-xs text-wallet-copy-muted">{m.desc}</span>
-                    </span>
-                    <span
-                      className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
-                        selected
-                          ? "border-wallet-crimson bg-wallet-crimson text-wallet-on-crimson"
-                          : "border-wallet-line-strong bg-transparent"
-                      }`}
-                    >
-                      {selected && <Check className="h-3 w-3" />}
-                    </span>
-                  </button>
-                );
-              })}
+                      <span className="min-w-0 flex-1">
+                        <span className="text-sm font-semibold text-wallet-copy">{m.label}</span>
+                        <span className="mt-1 block text-xs text-wallet-copy-muted">{m.desc}</span>
+                      </span>
+                      <span
+                        className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
+                          selected
+                            ? "border-wallet-crimson bg-wallet-crimson text-wallet-on-crimson"
+                            : "border-wallet-line-strong bg-transparent"
+                        }`}
+                      >
+                        {selected && <Check className="h-3 w-3" />}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <h2 className="mt-10 font-wallet-display text-lg font-semibold text-wallet-copy">Amount</h2>
@@ -381,9 +416,7 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
                 </div>
                 <div className="flex items-center justify-between gap-4">
                   <dt className="text-wallet-copy-muted">Method</dt>
-                  <dd className="font-semibold text-wallet-copy">
-                    {methods.find((m) => m.id === method)?.label}
-                  </dd>
+                  <dd className="font-semibold text-wallet-copy">{methodLabel}</dd>
                 </div>
                 <div className="flex items-center justify-between gap-4 border-t border-wallet-line pt-3">
                   <dt className="text-wallet-copy-muted">Credited to wallet</dt>
