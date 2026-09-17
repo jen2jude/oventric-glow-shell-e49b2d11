@@ -131,19 +131,30 @@ async function fetchJsonWithRetry(url: string, key: string, attempts = 3): Promi
   return null;
 }
 
-/** Network minimums change rarely — cache them briefly to halve the request count. */
-const MIN_CACHE_TTL_MS = 10 * 60 * 1000;
-let minAmountsCache: { at: number; values: Partial<Record<CryptoPayCurrency, number | null>> } | null = null;
+interface MinEntry {
+  coin: number | null;
+  usd: number | null;
+}
 
-async function getMinAmounts(key: string, codes: CryptoPayCurrency[]): Promise<Partial<Record<CryptoPayCurrency, number | null>>> {
+/** Minimums change rarely — cache them briefly to halve the request count. */
+const MIN_CACHE_TTL_MS = 10 * 60 * 1000;
+let minAmountsCache: { at: number; values: Partial<Record<CryptoPayCurrency, MinEntry>> } | null = null;
+
+async function getMinAmounts(
+  key: string,
+  codes: CryptoPayCurrency[],
+): Promise<Partial<Record<CryptoPayCurrency, MinEntry>>> {
   if (minAmountsCache && Date.now() - minAmountsCache.at < MIN_CACHE_TTL_MS) return minAmountsCache.values;
-  const values: Partial<Record<CryptoPayCurrency, number | null>> = {};
+  const values: Partial<Record<CryptoPayCurrency, MinEntry>> = {};
   for (const code of codes) {
     const min = await fetchJsonWithRetry(
-      `${API_BASE}/min-amount?currency_from=${code}&currency_to=${code}&fiat_equivalent=usd`,
+      `${API_BASE}/min-amount?currency_from=${code}&currency_to=${PAYOUT_CURRENCY}&fiat_equivalent=usd`,
       key,
     );
-    values[code] = min ? Number(min["min_amount"] ?? 0) || null : null;
+    values[code] = {
+      coin: min ? Number(min["min_amount"] ?? 0) || null : null,
+      usd: min ? Number(min["fiat_equivalent"] ?? 0) || null : null,
+    };
     await sleep(150);
   }
   minAmountsCache = { at: Date.now(), values };
@@ -163,11 +174,13 @@ export async function estimateCryptoAmounts(usdAmount: number): Promise<CryptoEs
       key,
     );
     const payAmount = est ? Number(est["estimated_amount"] ?? 0) || null : null;
-    const minAmount = minAmounts[code] ?? null;
+    const minAmount = minAmounts[code]?.coin ?? null;
+    const minUsd = minAmounts[code]?.usd ?? null;
     results.push({
       payCurrency: code,
       payAmount,
       minAmount,
+      minUsd,
       belowMinimum: Boolean(payAmount && minAmount && payAmount < minAmount),
     });
     await sleep(150);
