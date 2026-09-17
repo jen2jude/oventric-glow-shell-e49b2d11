@@ -38,6 +38,14 @@ function overdue(s: SaleDTO) {
 }
 
 /** Time left until the seller's earnings land in their wallet, or null. */
+export function sellerShareDisplay(s: SaleDTO): number {
+  // Seller keeps 80%; convert the USD share back into the order's display currency
+  if (s.totalUSD > 0 && s.displayTotal > 0) {
+    return s.sellerShareUSD * (s.displayTotal / s.totalUSD);
+  }
+  return s.displayTotal * 0.8;
+}
+
 export function payoutCountdown(s: SaleDTO): string | null {
   if (!s.buyerConfirmedAt || s.escrowStatus !== "held" || !s.payoutReleaseAt) return null;
   const ms = new Date(s.payoutReleaseAt).getTime() - Date.now();
