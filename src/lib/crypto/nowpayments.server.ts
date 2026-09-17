@@ -94,11 +94,22 @@ export interface CryptoEstimate {
   payCurrency: CryptoPayCurrency;
   /** Estimated coin amount the buyer must send for the requested USD value. */
   payAmount: number | null;
-  /** Provider/network minimum for this coin, in coin units. */
+  /** Provider minimum for this coin, in coin units. */
   minAmount: number | null;
-  /** True when the requested amount is below the network minimum. */
+  /** The same minimum expressed in USD, so the UI can state a usable figure. */
+  minUsd: number | null;
+  /** True when the requested amount is below the provider minimum. */
   belowMinimum: boolean;
 }
+
+/**
+ * The provider's real minimum is the conversion floor between the coin the
+ * buyer sends and the payout currency our merchant account settles into —
+ * not the coin's own network dust limit. Querying `currency_to=<coin>` gave
+ * a far smaller figure than the API actually accepts, which is why payments
+ * were rejected with "amountTo is too small" well above the displayed floor.
+ */
+const PAYOUT_CURRENCY = process.env["NOWPAYMENTS_PAYOUT_CURRENCY"] || "usdttrc20";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
