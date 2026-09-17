@@ -19,7 +19,7 @@ import {
   type CryptoPayCurrency,
 } from "@/lib/crypto/nowpayments.server";
 
-export const DEPOSIT_WINDOW_MINUTES = 30;
+export const DEPOSIT_WINDOW_MINUTES = 5;
 /** Tolerance for provider-side rounding on the received amount. */
 const UNDERPAY_TOLERANCE = 0.995;
 
