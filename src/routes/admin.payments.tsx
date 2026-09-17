@@ -9,6 +9,7 @@ import {
   adminPaymentRailStatus,
   type AdminPaymentRow,
 } from "@/lib/admin-finance.functions";
+import { AdminCryptoDeposits } from "@/components/oventric/admin/AdminCryptoDeposits";
 
 export const Route = createFileRoute("/admin/payments")({
   head: () => ({
