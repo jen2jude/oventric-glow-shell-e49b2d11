@@ -148,16 +148,15 @@ export async function createCharge(opts: {
 
   const metadata: Record<string, unknown> = { ...intent.metadata, gateway: provider, charge_currency: chargeCurrency };
 
-  // Wallet top-ups: the user covers the gateway fee, so it is added on top.
+  // Wallet top-ups: the gateway itself passes its processing fee on to the
+  // payer at checkout, so we must NOT add a second fee here — doing so made a
+  // ₦500 top-up render as ₦515.74 while a ₦500 purchase rendered as ₦507.62.
+  // The wallet is still credited with the full requested amount.
   if (input.purpose === "wallet_topup") {
-    const { fee, charge } =
-      provider === "flutterwave"
-        ? flutterwaveFee(chargeAmount, chargeCurrency)
-        : paystackFee(chargeAmount, chargeCurrency);
-    chargeAmount = charge;
-    metadata.topup_fee = fee;
+    metadata.topup_fee = 0;
     metadata.topup_fee_currency = chargeCurrency;
   }
+
 
   // Fail closed on a live site that is still holding test credentials — a
   // production shopper must never be sent to a sandbox checkout.
