@@ -30,6 +30,7 @@ import type { ProfileListing } from "@/lib/profiles/mockProfiles";
 import { FollowButton } from "@/components/oventric/FollowButton";
 import { ProfileMessageModal } from "@/components/oventric/messaging/ProfileMessageModal";
 import { ShopEditModal } from "@/components/oventric/shop/ShopEditModal";
+import { SellerVerificationModal } from "@/components/oventric/shop/SellerVerificationModal";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -421,6 +422,15 @@ function ShopPage() {
             >
               <MessageCircle className="h-4 w-4" /> Message
             </button>
+            {isOwner && !verified && (
+              <button
+                type="button"
+                onClick={() => setVerifyOpen(true)}
+                className="col-span-2 inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-primary/40 bg-primary/5 text-sm font-bold text-primary hover:bg-primary/10"
+              >
+                <BadgeCheck className="h-4 w-4" /> Request shop verification
+              </button>
+            )}
           </div>
 
           {/* Tabs */}
