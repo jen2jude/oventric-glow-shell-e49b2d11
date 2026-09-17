@@ -98,10 +98,12 @@ export async function sendEmail(
         ? `<p style="margin:18px 0 0"><a href="${origin}${ctaUrl}" style="background:#E5484D;color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;font-weight:700">Open on Oventric</a></p>`
         : "") +
       `</div>`;
+    const messageId = `ovt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     await sb.rpc("enqueue_email", {
       queue_name: "transactional_emails",
       payload: {
-        message_id: `ovt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        message_id: messageId,
+        idempotency_key: messageId,
         to,
         from: "Oventric <noreply@oventric.com>",
         subject,

@@ -924,9 +924,13 @@ function ProfilePage() {
   useEffect(() => {
     return () => {
       if (localAvatarPreview) URL.revokeObjectURL(localAvatarPreview);
+    };
+  }, [localAvatarPreview]);
+  useEffect(() => {
+    return () => {
       if (localCoverPreview) URL.revokeObjectURL(localCoverPreview);
     };
-  }, [localAvatarPreview, localCoverPreview]);
+  }, [localCoverPreview]);
   const displayTierLabel = hasRealProfile
     ? realProfile!.verificationTier === "TIER_0"
       ? "Unverified"
