@@ -172,12 +172,6 @@ export async function createCharge(opts: {
   let authorizationUrl: string;
   if (provider === "flutterwave") {
     const { createHostedPayment } = await import("@/lib/flutterwave.server");
-    const optionsMap: Record<string, string> = {
-      card: "card",
-      bank_transfer: "banktransfer,account",
-      mobile_money: "mobilemoney,mobilemoneyghana,mpesa,mobilemoneyuganda,mobilemoneyrwanda,mobilemoneyzambia,mobilemoneyfranco",
-      ussd: "ussd",
-    };
     const res = await createHostedPayment({
       reference,
       amount: chargeAmount,
@@ -186,17 +180,12 @@ export async function createCharge(opts: {
       email: opts.email,
       title: "Oventric",
       description: input.purpose === "wallet_topup" ? "Wallet funding" : "Marketplace purchase",
-      paymentOptions: opts.channel ? optionsMap[opts.channel] : undefined,
+      // No paymentOptions: always show the provider's full checkout so the
+      // payer can pick any method the gateway supports.
       meta: metadata,
     });
     authorizationUrl = res.link;
   } else {
-    const channelsMap: Record<string, string[]> = {
-      card: ["card"],
-      bank_transfer: ["bank_transfer", "bank"],
-      mobile_money: ["mobile_money"],
-      ussd: ["ussd"],
-    };
     const res = await paystackInit({
       email: opts.email,
       amount: subunit(chargeAmount),
@@ -204,10 +193,11 @@ export async function createCharge(opts: {
       reference,
       callback_url: redirectUrl,
       metadata,
-      ...(opts.channel ? { channels: channelsMap[opts.channel] } : {}),
+      // No `channels`: always open the full Paystack checkout.
     });
     authorizationUrl = res.authorization_url;
   }
+
 
   // Record a pending top-up so the user's history reflects the intent even if
   // they abandon the hosted page.
