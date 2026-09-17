@@ -17,6 +17,7 @@ import {
   Download,
   Banknote,
   Users,
+  Search,
 } from "lucide-react";
 
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
