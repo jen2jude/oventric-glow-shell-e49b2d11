@@ -92,6 +92,12 @@ const NAV: NavItem[] = [
 
   { to: "/admin/users", label: "Users", icon: Users, group: "Core" },
   { to: "/admin/sellers", label: "Sellers", icon: ShoppingBag, group: "Core" },
+  {
+    to: "/admin/seller-verification",
+    label: "Seller Verification",
+    icon: ShieldCheck,
+    group: "Core",
+  },
   { to: "/admin/products", label: "Products", icon: Package, group: "Core" },
   { to: "/admin/orders", label: "Orders", icon: ClipboardList, group: "Core" },
   { to: "/admin/categories", label: "Categories", icon: Tags, group: "Core" },

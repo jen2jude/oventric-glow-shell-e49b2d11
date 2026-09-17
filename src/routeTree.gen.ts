@@ -55,6 +55,7 @@ import { Route as AdminSystemWalletsRouteImport } from './routes/admin.system-wa
 import { Route as AdminSupportRouteImport } from './routes/admin.support'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminSellersRouteImport } from './routes/admin.sellers'
+import { Route as AdminSellerVerificationRouteImport } from './routes/admin.seller-verification'
 import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminRefundsRouteImport } from './routes/admin.refunds'
@@ -328,6 +329,11 @@ const AdminSettingsRoute = AdminSettingsRouteImport.update({
 const AdminSellersRoute = AdminSellersRouteImport.update({
   id: '/sellers',
   path: '/sellers',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSellerVerificationRoute = AdminSellerVerificationRouteImport.update({
+  id: '/seller-verification',
+  path: '/seller-verification',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminReviewsRoute = AdminReviewsRouteImport.update({
@@ -617,6 +623,7 @@ export interface FileRoutesByFullPath {
   '/admin/refunds': typeof AdminRefundsRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/reviews': typeof AdminReviewsRoute
+  '/admin/seller-verification': typeof AdminSellerVerificationRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/support': typeof AdminSupportRoute
@@ -706,6 +713,7 @@ export interface FileRoutesByTo {
   '/admin/refunds': typeof AdminRefundsRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/reviews': typeof AdminReviewsRoute
+  '/admin/seller-verification': typeof AdminSellerVerificationRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/support': typeof AdminSupportRoute
@@ -799,6 +807,7 @@ export interface FileRoutesById {
   '/admin/refunds': typeof AdminRefundsRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/reviews': typeof AdminReviewsRoute
+  '/admin/seller-verification': typeof AdminSellerVerificationRoute
   '/admin/sellers': typeof AdminSellersRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/support': typeof AdminSupportRoute
@@ -893,6 +902,7 @@ export interface FileRouteTypes {
     | '/admin/refunds'
     | '/admin/reports'
     | '/admin/reviews'
+    | '/admin/seller-verification'
     | '/admin/sellers'
     | '/admin/settings'
     | '/admin/support'
@@ -982,6 +992,7 @@ export interface FileRouteTypes {
     | '/admin/refunds'
     | '/admin/reports'
     | '/admin/reviews'
+    | '/admin/seller-verification'
     | '/admin/sellers'
     | '/admin/settings'
     | '/admin/support'
@@ -1074,6 +1085,7 @@ export interface FileRouteTypes {
     | '/admin/refunds'
     | '/admin/reports'
     | '/admin/reviews'
+    | '/admin/seller-verification'
     | '/admin/sellers'
     | '/admin/settings'
     | '/admin/support'
@@ -1485,6 +1497,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSellersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/seller-verification': {
+      id: '/admin/seller-verification'
+      path: '/seller-verification'
+      fullPath: '/admin/seller-verification'
+      preLoaderRoute: typeof AdminSellerVerificationRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/reviews': {
       id: '/admin/reviews'
       path: '/reviews'
@@ -1839,6 +1858,7 @@ interface AdminRouteChildren {
   AdminRefundsRoute: typeof AdminRefundsRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
+  AdminSellerVerificationRoute: typeof AdminSellerVerificationRoute
   AdminSellersRoute: typeof AdminSellersRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSupportRoute: typeof AdminSupportRoute
@@ -1877,6 +1897,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminRefundsRoute: AdminRefundsRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminReviewsRoute: AdminReviewsRoute,
+  AdminSellerVerificationRoute: AdminSellerVerificationRoute,
   AdminSellersRoute: AdminSellersRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSupportRoute: AdminSupportRoute,
