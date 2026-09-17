@@ -171,6 +171,9 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
   const { data: estimateData, isFetching: estimating } = useQuery({
     queryKey: ["crypto-estimates", debouncedAmount, homeCurrency],
     queryFn: () => estimateFn({ data: { amount: debouncedAmount, currency: homeCurrency } }),
+    // Keep polling briefly until every network returns a live quote.
+    refetchInterval: (query) =>
+      query.state.data && query.state.data.estimates.some((e) => e.payAmount === null) ? 4000 : false,
     enabled: activeTab === "crypto" && debouncedAmount > 0 && !depositId,
     staleTime: 60_000,
   });
