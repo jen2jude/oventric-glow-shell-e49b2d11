@@ -1227,6 +1227,19 @@ export function Feed() {
           Back to top
         </button>
       )}
+      {!isAppShell && (
+        <button
+          type="button"
+          onClick={scrollFeedToTop}
+          aria-label="Back to top"
+          className={`fixed left-1/2 top-[4.5rem] z-30 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full bg-[#E5484D] px-3 py-1.5 text-xs font-bold text-white shadow-lg transition-all duration-300 ${
+            chromeHidden ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-4 pointer-events-none"
+          }`}
+        >
+          <ArrowUp className="h-3.5 w-3.5" strokeWidth={2.5} />
+          Back to top
+        </button>
+      )}
       <div className="mx-auto grid w-full max-w-[1120px] min-w-0 gap-8 lg:grid-cols-[minmax(0,760px)_320px] lg:items-start">
       <div className="flex w-full min-w-0 flex-col gap-3">
         {isAppShell ? (
