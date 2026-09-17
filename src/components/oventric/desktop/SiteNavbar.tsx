@@ -27,6 +27,7 @@ export type SiteNavbarProps = {
 
 export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, currency, search }: SiteNavbarProps) {
   const { baseCurrency } = useOnboarding();
+  const navigate = useNavigate();
 
   const { isAuthenticated, openGate } = useAuthGate();
   const [solid, setSolid] = useState(false);
@@ -41,6 +42,14 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
       return;
     }
     setNotificationsOpen(true);
+  };
+
+  const openMessages = () => {
+    if (!isAuthenticated) {
+      openGate("generic");
+      return;
+    }
+    navigate({ to: "/messages" });
   };
 
   useEffect(() => {
