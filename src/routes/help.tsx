@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PublicChrome } from "@/components/oventric/PublicChrome";
-import { HelpCircle, MessageCircle, ShoppingBag, Wallet, Target, Shield } from "lucide-react";
+import { PublicInfoLayout } from "@/components/oventric/PublicInfoLayout";
+import { HelpCircle, MessageCircle, ShoppingBag, Wallet, Shield, Download, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import helpImage from "@/assets/public-pages/help-editorial.jpg";
 
 export const Route = createFileRoute("/help")({
   head: () => ({
@@ -8,14 +10,16 @@ export const Route = createFileRoute("/help")({
       { title: "Help center — Oventric" },
       {
         name: "description",
-        content: "Get help with your Oventric account, marketplace, wallet, bounties, and academy.",
+        content: "Get help with your Oventric account, digital marketplace, purchases, wallet, and payouts.",
       },
       { property: "og:title", content: "Oventric Help Center" },
       {
         property: "og:description",
-        content: "Answers about accounts, payments, marketplace, wallet, bounties, and more.",
+        content: "Answers about accounts, payments, digital products, downloads, wallet, and more.",
       },
       { property: "og:url", content: "https://oventric.com/help" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "canonical", href: "https://oventric.com/help" }],
   }),
@@ -30,8 +34,8 @@ const sections = [
   },
   {
     icon: MessageCircle,
-    title: "Social & Circles",
-    body: "Post, mention (@) other users, join circles and guilds, and message people directly.",
+    title: "Newsfeed & messages",
+    body: "Publish posts, follow other builders and keep buyer or seller conversations in one place.",
   },
   {
     icon: ShoppingBag,
@@ -39,9 +43,9 @@ const sections = [
     body: "Digital assets are protected by 80/20 escrow with buyer confirmation. Oventric is a digital-only marketplace.",
   },
   {
-    icon: Target,
-    title: "Bounties",
-    body: "Post work with a reward. Winners are paid from escrow once accepted.",
+    icon: Download,
+    title: "Purchases & downloads",
+    body: "Return to My purchases to view order details, contact the seller, confirm delivery or download a digital product again.",
   },
   {
     icon: Wallet,
@@ -51,56 +55,35 @@ const sections = [
   {
     icon: HelpCircle,
     title: "Common issues",
-    body: "If media fails to render on Android, pull-to-refresh a second time or restart the app. Buttons that require sign-in will prompt you.",
+    body: "Find quick answers in the FAQ or send a detailed report when something does not work as expected.",
   },
 ];
 
 function HelpPage() {
   return (
-    <PublicChrome>
-      <div className="max-w-3xl mx-auto px-4 py-10 text-slate-200 md:text-slate-800">
-        <h1 className="text-3xl md:text-4xl font-black text-white md:text-slate-900">
-          Help center
-        </h1>
-        <p className="mt-3 text-slate-400 md:text-slate-500">
-          Quick answers to get you unstuck. If you can't find what you need,{" "}
-          <Link to="/report-problem" className="text-emerald-300 underline">
-            report a problem
-          </Link>
-          .
-        </p>
-        <div className="mt-8 grid gap-3">
+    <PublicInfoLayout eyebrow="Support" title="How can we help?" description="Straightforward guidance for your account, digital purchases, selling, wallet and payouts." icon={HelpCircle} image={helpImage} imageAlt="Support headset, guide and safety shield on a bright desk">
+      <div className="grid gap-x-8 gap-y-2 sm:grid-cols-2">
           {sections.map((s) => (
-            <div
+            <article
               key={s.title}
-              className="p-4 rounded-2xl bg-[#141418] border border-white/10 md:bg-white md:border-slate-200"
+              className="border-b border-border py-6"
             >
               <div className="flex items-center gap-3">
-                <span className="w-9 h-9 grid place-items-center rounded-full bg-emerald-500/15 text-emerald-300">
-                  <s.icon className="w-4 h-4" />
+                <span className="grid size-9 place-items-center rounded-md bg-accent text-accent-foreground">
+                  <s.icon className="size-4" />
                 </span>
-                <h2 className="font-bold text-white md:text-slate-900">{s.title}</h2>
+                <h2 className="font-public-display font-bold">{s.title}</h2>
               </div>
-              <p className="mt-2 text-sm text-slate-300 leading-relaxed md:text-slate-600">
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">
                 {s.body}
               </p>
-            </div>
+            </article>
           ))}
-        </div>
-        <div className="mt-10 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30">
-          <p className="text-sm text-emerald-100">
-            Still stuck? Head to{" "}
-            <Link to="/faq" className="underline">
-              FAQ
-            </Link>{" "}
-            or{" "}
-            <Link to="/report-problem" className="underline">
-              Report a problem
-            </Link>
-            .
-          </p>
-        </div>
       </div>
-    </PublicChrome>
+      <section className="mt-10 rounded-lg bg-foreground px-6 py-7 text-background sm:flex sm:items-center sm:justify-between sm:gap-8">
+        <div><h2 className="font-public-display text-xl font-bold">Still need a hand?</h2><p className="mt-1 text-sm leading-6 text-background/70">Check common answers or tell us exactly what happened.</p></div>
+        <div className="mt-5 flex shrink-0 flex-wrap gap-2 sm:mt-0"><Button asChild variant="secondary"><Link to="/faq">Read FAQs</Link></Button><Button asChild><Link to="/report-problem">Report issue <ArrowRight /></Link></Button></div>
+      </section>
+    </PublicInfoLayout>
   );
 }
