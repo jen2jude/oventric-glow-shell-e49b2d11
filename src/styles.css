@@ -48,6 +48,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-seller-rating: var(--seller-rating);
   --color-wallet-canvas: var(--wallet-canvas);
   --color-wallet-panel: var(--wallet-panel);
   --color-wallet-panel-raised: var(--wallet-panel-raised);
@@ -150,6 +151,41 @@
 
 @media (prefers-reduced-motion: reduce) {
   .web-public-pages * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Web-native seller leaderboard and storefront directory. */
+.web-sellers {
+  color-scheme: light;
+  --background: oklch(0.97 0.008 240);
+  --foreground: oklch(0.22 0.02 255);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.02 255);
+  --primary: oklch(0.57 0.19 22);
+  --primary-foreground: oklch(0.99 0.003 22);
+  --muted: oklch(0.955 0.012 240);
+  --muted-foreground: oklch(0.49 0.025 250);
+  --border: oklch(0.88 0.018 240);
+  --input: oklch(0.82 0.02 240);
+  --ring: oklch(0.57 0.19 22);
+  --seller-rating: oklch(0.7 0.16 78);
+  font-family: var(--font-wallet-body);
+}
+
+.web-sellers :is(h1, h2, h3) {
+  font-family: var(--font-wallet-display);
+  letter-spacing: 0;
+}
+
+.web-sellers .seller-leader:first-child {
+  border-color: color-mix(in oklab, var(--primary) 36%, var(--border));
+  box-shadow: 0 20px 55px -40px color-mix(in oklab, var(--primary) 40%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .web-sellers * {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
