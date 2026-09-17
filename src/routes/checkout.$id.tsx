@@ -694,6 +694,46 @@ function CheckoutPage() {
                 );
               })}
 
+              {/* Binance Pay — manual, confirmed by the seller */}
+              <div
+                className={`rounded-[10px] border p-4 ${
+                  isAppShell
+                    ? "bg-white/[0.03] border-white/5"
+                    : "bg-slate-50 border-slate-200"
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <span
+                    className={`w-10 h-10 rounded-[10px] flex items-center justify-center shrink-0 ${isAppShell ? "bg-white/5" : "bg-white border border-slate-200"}`}
+                  >
+                    <span className="text-[#F0B90B] text-lg font-black">₿</span>
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className={`text-sm font-semibold ${isAppShell ? "text-white" : "text-slate-900"}`}>
+                      Paying with Binance Pay?
+                    </div>
+                    <p className={`mt-1 text-xs leading-relaxed ${isAppShell ? "text-slate-400" : "text-slate-600"}`}>
+                      Send to Binance User ID{" "}
+                      <span className="font-mono font-bold">542612773</span>, then send your order
+                      ID to the seller in chat so they can confirm your payment. Binance transfers
+                      are confirmed manually — your order is not paid until the seller confirms it.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void navigator.clipboard?.writeText("542612773");
+                        toast.success("Binance User ID copied");
+                      }}
+                      className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] bg-[#F0B90B] hover:bg-[#e0ac06] text-black text-[11px] font-black"
+                    >
+                      Copy Binance ID
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+
+
               {insufficient && (
                 <div
                   className={`mt-2 flex items-start gap-3 text-xs rounded-[10px] p-3 ${
