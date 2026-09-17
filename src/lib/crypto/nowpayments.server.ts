@@ -114,18 +114,18 @@ const PAYOUT_CURRENCY = process.env["NOWPAYMENTS_PAYOUT_CURRENCY"] || "usdttrc20
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** NOWPayments rate-limits bursts, so fetch one coin at a time with retries. */
-async function fetchJsonWithRetry(url: string, key: string, attempts = 3): Promise<Record<string, unknown> | null> {
+async function fetchJsonWithRetry(url: string, key: string, attempts = 6): Promise<Record<string, unknown> | null> {
   for (let i = 0; i < attempts; i++) {
     try {
       const res = await fetch(url, { headers: { "x-api-key": key } });
       if (res.status === 429) {
-        await sleep(400 * (i + 1));
+        await sleep(700 * (i + 1));
         continue;
       }
       if (!res.ok) return null;
       return (await res.json().catch(() => null)) as Record<string, unknown> | null;
     } catch {
-      await sleep(300 * (i + 1));
+      await sleep(400 * (i + 1));
     }
   }
   return null;
@@ -167,13 +167,17 @@ export async function estimateCryptoAmounts(usdAmount: number): Promise<CryptoEs
   const codes = Object.keys(CRYPTO_PAY_CURRENCIES) as CryptoPayCurrency[];
   const minAmounts = await getMinAmounts(key, codes);
 
-  const results: CryptoEstimate[] = [];
-  for (const code of codes) {
+  const fetchEstimate = async (code: CryptoPayCurrency) => {
     const est = await fetchJsonWithRetry(
       `${API_BASE}/estimate?amount=${encodeURIComponent(usdAmount.toFixed(2))}&currency_from=usd&currency_to=${code}`,
       key,
     );
-    const payAmount = est ? Number(est["estimated_amount"] ?? 0) || null : null;
+    return est ? Number(est["estimated_amount"] ?? 0) || null : null;
+  };
+
+  const results: CryptoEstimate[] = [];
+  for (const code of codes) {
+    const payAmount = await fetchEstimate(code);
     const minAmount = minAmounts[code]?.coin ?? null;
     const minUsd = minAmounts[code]?.usd ?? null;
     results.push({
@@ -183,7 +187,15 @@ export async function estimateCryptoAmounts(usdAmount: number): Promise<CryptoEs
       minUsd,
       belowMinimum: Boolean(payAmount && minAmount && payAmount < minAmount),
     });
-    await sleep(150);
+    await sleep(250);
+  }
+
+  // Second pass: a burst 429 can blank one coin's quote — retry just those.
+  for (const r of results) {
+    if (r.payAmount !== null) continue;
+    await sleep(800);
+    r.payAmount = await fetchEstimate(r.payCurrency);
+    r.belowMinimum = Boolean(r.payAmount && r.minAmount && r.payAmount < r.minAmount);
   }
   return results;
 }

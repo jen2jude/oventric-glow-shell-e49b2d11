@@ -75,31 +75,31 @@ const cryptoMethods = [
   {
     id: "usdtbsc",
     label: "USDT (BEP20)",
-    desc: "Stablecoin on BNB Chain — low minimum",
+    desc: "Stablecoin on BNB Smart Chain",
     icon: TetherIcon,
   },
   {
     id: "usdcbsc",
     label: "USDC (BEP20)",
-    desc: "Stablecoin on BNB Chain — low minimum",
+    desc: "Stablecoin on BNB Smart Chain",
     icon: TetherIcon,
   },
   {
     id: "trx",
     label: "TRON (TRX)",
-    desc: "Low fees, works from about $1",
+    desc: "Low network fees on Tron",
     icon: Bitcoin,
   },
   {
     id: "ltc",
     label: "Litecoin (LTC)",
-    desc: "Fast confirmations, very low minimum",
+    desc: "Fast confirmations, low fees",
     icon: Bitcoin,
   },
   {
     id: "sol",
     label: "Solana (SOL)",
-    desc: "Instant confirmations, low minimum",
+    desc: "Instant confirmations, low fees",
     icon: Bitcoin,
   },
   {
@@ -117,13 +117,13 @@ const cryptoMethods = [
   {
     id: "usdttrc20",
     label: "USDT (TRC20)",
-    desc: "Stablecoin on Tron — minimum about $12",
+    desc: "Stablecoin on Tron",
     icon: TetherIcon,
   },
   {
     id: "usdterc20",
     label: "USDT (ERC20)",
-    desc: "Stablecoin on Ethereum — higher network minimum",
+    desc: "Stablecoin on Ethereum",
     icon: TetherIcon,
   },
 ];
@@ -171,6 +171,9 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
   const { data: estimateData, isFetching: estimating } = useQuery({
     queryKey: ["crypto-estimates", debouncedAmount, homeCurrency],
     queryFn: () => estimateFn({ data: { amount: debouncedAmount, currency: homeCurrency } }),
+    // Keep polling briefly until every network returns a live quote.
+    refetchInterval: (query) =>
+      query.state.data && query.state.data.estimates.some((e) => e.payAmount === null) ? 4000 : false,
     enabled: activeTab === "crypto" && debouncedAmount > 0 && !depositId,
     staleTime: 60_000,
   });
@@ -371,7 +374,9 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
                                 ? "…"
                                 : est?.payAmount
                                   ? `≈ ${formatCoin(est.payAmount)} ${m.label.split(" ")[0]}`
-                                  : ""}
+                                  : est
+                                    ? "Quote unavailable — retrying…"
+                                    : ""}
                             </span>
                           )}
                         </span>
