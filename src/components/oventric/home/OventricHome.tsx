@@ -165,6 +165,13 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
   const [sellers, setSellers] = useState<TopSellerDTO[]>([]);
   const [fresh, setFresh] = useState<ProductDTO[]>([]);
   const [stats, setStats] = useState<HomeStatsDTO | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const submitSearch = () => {
+    const q = searchQuery.trim();
+    if (!q) return;
+    navigate({ to: "/explore", search: { search: q } });
+  };
 
   useEffect(() => {
     let alive = true;
