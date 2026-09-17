@@ -293,10 +293,21 @@ export function SalesFulfilmentList({
                       {s.buyerName} · Qty {s.quantity} ·{" "}
                       {new Date(s.createdAt).toLocaleDateString()}
                     </div>
-                    {s.deliveredAt && (
+                    {s.deliveredAt && !s.buyerConfirmedAt && (
                       <div className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-300 md:text-emerald-700">
                         <PackageCheck className="w-3 h-3" /> Delivered{" "}
                         {new Date(s.deliveredAt).toLocaleString()}
+                      </div>
+                    )}
+                    {s.buyerConfirmedAt && (
+                      <div className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-300 md:text-emerald-700">
+                        <PackageCheck className="w-3 h-3" /> Buyer confirmed{" "}
+                        {new Date(s.buyerConfirmedAt).toLocaleString()}
+                      </div>
+                    )}
+                    {payoutCountdown(s) && (
+                      <div className="mt-0.5 text-[11px] font-semibold text-slate-300 md:text-slate-600">
+                        Wallet funds in {payoutCountdown(s)}
                       </div>
                     )}
                   </button>
