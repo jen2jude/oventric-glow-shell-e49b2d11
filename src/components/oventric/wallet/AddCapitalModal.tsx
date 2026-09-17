@@ -358,3 +358,210 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
     </div>
   );
 }
+
+function CryptoDepositScreen({
+  depositId,
+  onBack,
+  onClose,
+}: {
+  depositId: string;
+  onBack: () => void;
+  onClose: () => void;
+}) {
+  const readDeposit = useServerFn(getCryptoDeposit);
+  const [now, setNow] = useState(() => Date.now());
+
+  const { data: deposit, isLoading } = useQuery({
+    queryKey: ["crypto-deposit", depositId],
+    queryFn: () => readDeposit({ data: { id: depositId } }),
+    refetchInterval: (q) => {
+      const s = q.state.data?.status;
+      return s === "awaiting_payment" || s === "confirming" ? 10_000 : false;
+    },
+  });
+
+  useEffect(() => {
+    const t = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
+
+  const remaining = deposit ? new Date(deposit.expiresAt).getTime() - now : 0;
+  const countdown =
+    remaining > 0
+      ? `${String(Math.floor(remaining / 60000)).padStart(2, "0")}:${String(
+          Math.floor((remaining % 60000) / 1000),
+        ).padStart(2, "0")}`
+      : "00:00";
+
+  const copy = async (value: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      toast.success(`${label} copied`);
+    } catch {
+      toast.error("Could not copy");
+    }
+  };
+
+  const status = deposit?.status ?? "awaiting_payment";
+  const credited = status === "credited";
+  const problem = status === "underpaid" || status === "expired" || status === "failed";
+
+  return (
+    <div className="wallet-shell fixed inset-0 z-[120] overflow-y-auto bg-wallet-canvas font-wallet-body">
+      <header className="sticky top-0 z-10 border-b border-wallet-line bg-wallet-panel/95 backdrop-blur">
+        <div className="mx-auto flex w-full max-w-[1100px] items-center gap-3 px-4 py-4 sm:px-6 lg:px-10">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onBack}
+            aria-label="Back"
+            className="text-wallet-copy-muted hover:bg-wallet-muted hover:text-wallet-copy"
+          >
+            <ArrowLeft />
+          </Button>
+          <span className="font-wallet-display text-base font-semibold text-wallet-copy">Crypto payment</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            aria-label="Close"
+            className="ml-auto text-wallet-copy-muted hover:bg-wallet-muted hover:text-wallet-copy"
+          >
+            <X />
+          </Button>
+        </div>
+      </header>
+
+      <main className="mx-auto w-full max-w-[720px] px-4 py-10 sm:px-6">
+        {isLoading || !deposit ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="h-6 w-6 animate-spin text-wallet-copy-muted" />
+          </div>
+        ) : credited ? (
+          <div className="rounded-2xl border border-wallet-line bg-wallet-panel p-8 text-center">
+            <CheckCircle2 className="mx-auto h-10 w-10 text-wallet-crimson" />
+            <h1 className="mt-4 font-wallet-display text-2xl font-semibold text-wallet-copy">Wallet funded</h1>
+            <p className="mt-2 text-sm text-wallet-copy-muted">
+              Your payment is confirmed and your balance has been updated.
+            </p>
+            <Button
+              onClick={onClose}
+              className="mt-6 h-12 w-full bg-wallet-crimson text-wallet-on-crimson hover:bg-wallet-crimson-strong"
+            >
+              Back to wallet
+            </Button>
+          </div>
+        ) : problem ? (
+          <div className="rounded-2xl border border-wallet-line bg-wallet-panel p-8 text-center">
+            <TriangleAlert className="mx-auto h-10 w-10 text-wallet-crimson" />
+            <h1 className="mt-4 font-wallet-display text-2xl font-semibold text-wallet-copy">
+              {status === "expired" ? "Payment window closed" : "This deposit needs review"}
+            </h1>
+            <p className="mt-2 text-sm text-wallet-copy-muted">
+              {deposit.note ??
+                (status === "expired"
+                  ? "No payment arrived in time. You can start a new one."
+                  : "We could not complete this payment automatically.")}
+            </p>
+            <div className="mt-6 flex flex-col gap-2">
+              <Button
+                onClick={onBack}
+                className="h-12 w-full bg-wallet-crimson text-wallet-on-crimson hover:bg-wallet-crimson-strong"
+              >
+                Start a new payment
+              </Button>
+              <a
+                href="/report-problem"
+                className="text-sm text-wallet-copy-muted underline underline-offset-4"
+              >
+                Contact support about this deposit
+              </a>
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-wallet-line bg-wallet-panel p-6 sm:p-8">
+            <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-wallet-crimson">
+              <ShieldCheck className="h-4 w-4" /> Send exactly this amount
+            </div>
+            <h1 className="font-wallet-display text-2xl font-semibold text-wallet-copy sm:text-3xl">
+              {deposit.payAmount ?? "—"} {deposit.payCurrency.toUpperCase()}
+            </h1>
+            <p className="mt-2 text-sm text-wallet-copy-muted">
+              Funds your wallet with {deposit.currency}{" "}
+              {deposit.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })} (about $
+              {deposit.usdAmount.toFixed(2)}).
+            </p>
+
+            <div className="mt-5 flex items-center gap-2 rounded-[10px] border border-wallet-line bg-wallet-muted px-3 py-2 text-sm text-wallet-copy">
+              <Clock className="h-4 w-4 text-wallet-copy-muted" />
+              <span className="tabular-nums">{countdown}</span>
+              <span className="text-wallet-copy-muted">left to send this payment</span>
+            </div>
+
+            {deposit.payAddress && (
+              <div className="mt-6 grid gap-5 sm:grid-cols-[auto_1fr] sm:items-center">
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(deposit.payAddress)}`}
+                  alt="Payment address QR code"
+                  width={180}
+                  height={180}
+                  className="mx-auto rounded-[10px] border border-wallet-line bg-wallet-panel p-2"
+                />
+                <div>
+                  <div className="text-xs font-semibold uppercase tracking-[0.12em] text-wallet-copy-muted">
+                    Payment address
+                  </div>
+                  <div className="mt-2 break-all rounded-[10px] border border-wallet-line bg-wallet-muted px-3 py-2 font-mono text-sm text-wallet-copy">
+                    {deposit.payAddress}
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => copy(deposit.payAddress ?? "", "Address")}
+                      className="h-10 border-wallet-line text-wallet-copy"
+                    >
+                      <Copy className="mr-2 h-4 w-4" /> Copy address
+                    </Button>
+                    {deposit.payAmount !== null && (
+                      <Button
+                        variant="outline"
+                        onClick={() => copy(String(deposit.payAmount), "Amount")}
+                        className="h-10 border-wallet-line text-wallet-copy"
+                      >
+                        <Copy className="mr-2 h-4 w-4" /> Copy amount
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-6 flex items-center gap-2 rounded-[10px] border border-wallet-line bg-wallet-muted px-3 py-3 text-sm text-wallet-copy-muted">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              {status === "confirming"
+                ? "Payment seen — waiting for network confirmations."
+                : "Waiting for your payment. This page updates on its own."}
+            </div>
+
+            <p className="mt-4 text-xs text-wallet-copy-muted">
+              Send only {deposit.payCurrency.toUpperCase()} to this address, and send the exact amount shown. Anything
+              less is held for review instead of being credited.
+            </p>
+
+            <div className="mt-6 flex items-center justify-center gap-1.5 border-t border-wallet-line pt-4 text-xs text-wallet-copy-muted">
+              <Lock className="h-3.5 w-3.5" /> Encrypted and secured by Oventric
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
