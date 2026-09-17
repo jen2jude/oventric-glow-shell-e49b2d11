@@ -81,6 +81,7 @@ export function NotificationsPanel() {
     if (!n.read_at) await handleMarkRead(n.id);
     if (n.link) {
       if (/^https?:\/\//i.test(n.link)) window.open(n.link, "_blank", "noopener,noreferrer");
+      else if (n.link.includes("?") || n.link.includes("#")) window.location.assign(n.link);
       else navigate({ to: n.link });
     }
   };
