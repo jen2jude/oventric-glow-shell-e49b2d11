@@ -120,7 +120,13 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
         });
         setDepositId(deposit.id);
       } catch (err) {
-        toast.error(err instanceof Error ? err.message : "Could not start the crypto payment");
+        const raw = err instanceof Error ? err.message : "";
+        const tooSmall = /too small|minimum|amountTo/i.test(raw);
+        toast.error(
+          tooSmall
+            ? "That amount is below the crypto network minimum. Use bank transfer or card for smaller top-ups, or raise the amount."
+            : raw || "Could not start the crypto payment",
+        );
       } finally {
         setLoading(false);
       }
