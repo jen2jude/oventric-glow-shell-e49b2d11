@@ -100,42 +100,67 @@ export interface CryptoEstimate {
   belowMinimum: boolean;
 }
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** NOWPayments rate-limits bursts, so fetch one coin at a time with retries. */
+async function fetchJsonWithRetry(url: string, key: string, attempts = 3): Promise<Record<string, unknown> | null> {
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const res = await fetch(url, { headers: { "x-api-key": key } });
+      if (res.status === 429) {
+        await sleep(400 * (i + 1));
+        continue;
+      }
+      if (!res.ok) return null;
+      return (await res.json().catch(() => null)) as Record<string, unknown> | null;
+    } catch {
+      await sleep(300 * (i + 1));
+    }
+  }
+  return null;
+}
+
+/** Network minimums change rarely — cache them briefly to halve the request count. */
+const MIN_CACHE_TTL_MS = 10 * 60 * 1000;
+let minAmountsCache: { at: number; values: Partial<Record<CryptoPayCurrency, number | null>> } | null = null;
+
+async function getMinAmounts(key: string, codes: CryptoPayCurrency[]): Promise<Partial<Record<CryptoPayCurrency, number | null>>> {
+  if (minAmountsCache && Date.now() - minAmountsCache.at < MIN_CACHE_TTL_MS) return minAmountsCache.values;
+  const values: Partial<Record<CryptoPayCurrency, number | null>> = {};
+  for (const code of codes) {
+    const min = await fetchJsonWithRetry(
+      `${API_BASE}/min-amount?currency_from=${code}&currency_to=${code}&fiat_equivalent=usd`,
+      key,
+    );
+    values[code] = min ? Number(min["min_amount"] ?? 0) || null : null;
+    await sleep(150);
+  }
+  minAmountsCache = { at: Date.now(), values };
+  return values;
+}
+
 /** Live send-amount estimates for every supported coin, for a USD value. */
 export async function estimateCryptoAmounts(usdAmount: number): Promise<CryptoEstimate[]> {
   const key = apiKey();
   const codes = Object.keys(CRYPTO_PAY_CURRENCIES) as CryptoPayCurrency[];
+  const minAmounts = await getMinAmounts(key, codes);
 
-  const results = await Promise.all(
-    codes.map(async (code): Promise<CryptoEstimate> => {
-      try {
-        const [estRes, minRes] = await Promise.all([
-          fetch(
-            `${API_BASE}/estimate?amount=${encodeURIComponent(usdAmount.toFixed(2))}&currency_from=usd&currency_to=${code}`,
-            { headers: { "x-api-key": key } },
-          ),
-          fetch(`${API_BASE}/min-amount?currency_from=${code}&currency_to=${code}&fiat_equivalent=usd`, {
-            headers: { "x-api-key": key },
-          }),
-        ]);
-
-        const est = (await estRes.json().catch(() => null)) as Record<string, unknown> | null;
-        const min = (await minRes.json().catch(() => null)) as Record<string, unknown> | null;
-
-        const payAmount = est && estRes.ok ? Number(est["estimated_amount"] ?? 0) || null : null;
-        const minAmount = min && minRes.ok ? Number(min["min_amount"] ?? 0) || null : null;
-
-        return {
-          payCurrency: code,
-          payAmount,
-          minAmount,
-          belowMinimum: Boolean(payAmount && minAmount && payAmount < minAmount),
-        };
-      } catch {
-        return { payCurrency: code, payAmount: null, minAmount: null, belowMinimum: false };
-      }
-    }),
-  );
-
+  const results: CryptoEstimate[] = [];
+  for (const code of codes) {
+    const est = await fetchJsonWithRetry(
+      `${API_BASE}/estimate?amount=${encodeURIComponent(usdAmount.toFixed(2))}&currency_from=usd&currency_to=${code}`,
+      key,
+    );
+    const payAmount = est ? Number(est["estimated_amount"] ?? 0) || null : null;
+    const minAmount = minAmounts[code] ?? null;
+    results.push({
+      payCurrency: code,
+      payAmount,
+      minAmount,
+      belowMinimum: Boolean(payAmount && minAmount && payAmount < minAmount),
+    });
+    await sleep(150);
+  }
   return results;
 }
 
