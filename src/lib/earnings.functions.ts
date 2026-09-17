@@ -53,8 +53,6 @@ function rangeSinceISO(range: EarningsRange): string | null {
 
 const SOURCE_LABELS: Record<EarningsSource, string> = {
   marketplace: "Marketplace sales",
-  bounty: "Bounty payouts",
-  academy: "Course sales",
   affiliate: "Affiliate cashback",
   other: "Other",
 };
