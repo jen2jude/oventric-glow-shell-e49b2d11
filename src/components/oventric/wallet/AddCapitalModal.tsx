@@ -91,18 +91,18 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
       soon: false,
     },
     {
-      id: "usdt",
+      id: "usdttrc20",
       label: "USDT (TRC20)",
-      desc: "Stablecoin funding",
+      desc: "Stablecoin funding on Tron — confirmed automatically",
       icon: TetherIcon,
-      soon: true,
+      soon: false,
     },
     {
-      id: "crypto",
-      label: "Other cryptocurrencies",
-      desc: "BTC, ETH, USDC and more",
+      id: "usdterc20",
+      label: "USDT (ERC20)",
+      desc: "Stablecoin funding on Ethereum — confirmed automatically",
       icon: Bitcoin,
-      soon: true,
+      soon: false,
     },
   ];
 
@@ -111,8 +111,19 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
       toast.error("Enter a valid amount");
       return;
     }
-    if (method === "usdt" || method === "crypto") {
-      toast("Crypto funding is coming soon.");
+
+    if (CRYPTO_METHODS.includes(method)) {
+      setLoading(true);
+      try {
+        const deposit = await startCrypto({
+          data: { amount, currency: homeCurrency, payCurrency: method },
+        });
+        setDepositId(deposit.id);
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Could not start the crypto payment");
+      } finally {
+        setLoading(false);
+      }
       return;
     }
 
@@ -138,6 +149,16 @@ export function AddCapitalModal({ onClose }: { onClose: () => void }) {
       setLoading(false);
     }
   };
+
+  if (depositId) {
+    return (
+      <CryptoDepositScreen
+        depositId={depositId}
+        onBack={() => setDepositId(null)}
+        onClose={onClose}
+      />
+    );
+  }
 
   return (
     <div
