@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, ShoppingBag, Target, Megaphone, GraduationCap, ArrowUpRight } from "lucide-react";
+import { Loader2, ShoppingBag, ArrowUpRight } from "lucide-react";
 import {
   getSystemWallets,
   listSystemWalletTx,
@@ -18,9 +18,11 @@ export const Route = createFileRoute("/admin/system-wallets")({
   component: SystemWalletsPage,
 });
 
-const META: Record<
-  SystemWalletKind,
-  { label: string; sub: string; icon: React.ComponentType<{ className?: string }>; hue: string }
+const META: Partial<
+  Record<
+    SystemWalletKind,
+    { label: string; sub: string; icon: React.ComponentType<{ className?: string }>; hue: string }
+  >
 > = {
   marketplace: {
     label: "Marketplace Revenue",
@@ -28,26 +30,8 @@ const META: Record<
     icon: ShoppingBag,
     hue: "from-emerald-500/25 to-teal-700/10 border-emerald-500/30",
   },
-  bounty: {
-    label: "Bounty Revenue",
-    sub: "20% of every bounty payout",
-    icon: Target,
-    hue: "from-amber-500/25 to-orange-700/10 border-amber-500/30",
-  },
-  ads: {
-    label: "Ads & Promo Revenue",
-    sub: "Advertising and promoted posts",
-    icon: Megaphone,
-    hue: "from-sky-500/25 to-indigo-700/10 border-sky-500/30",
-  },
-  academy: {
-    label: "Academy Revenue",
-    sub: "Course sales and enrollments",
-    icon: GraduationCap,
-    hue: "from-fuchsia-500/25 to-purple-700/10 border-fuchsia-500/30",
-  },
 };
-const KINDS: SystemWalletKind[] = ["marketplace", "bounty", "ads", "academy"];
+const KINDS: SystemWalletKind[] = ["marketplace"];
 const FALLBACK_META = {
   label: "Other Revenue",
   sub: "",
@@ -70,7 +54,7 @@ function SystemWalletsPage() {
   const loadTx = useServerFn(listSystemWalletTx);
   const [wallets, setWallets] = useState<SystemWalletDTO[] | null>(null);
   const [tx, setTx] = useState<SystemWalletTxDTO[] | null>(null);
-  const [filter, setFilter] = useState<SystemWalletKind | "ALL">("ALL");
+  const [filter, setFilter] = useState<SystemWalletKind>("marketplace");
   const [view, setView] = useState<ViewCur>("NGN");
   const [err, setErr] = useState<string | null>(null);
 
@@ -100,7 +84,7 @@ function SystemWalletsPage() {
         <div>
           <h1 className="text-white text-2xl font-black">System Wallets</h1>
           <p className="text-sm text-slate-400">
-            Admin-only revenue held from marketplace, bounties, and ads.
+            Admin-only revenue held from marketplace sales.
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -133,7 +117,7 @@ function SystemWalletsPage() {
       {!wallets ? (
         <Loader2 className="w-5 h-5 animate-spin text-slate-500" />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           {KINDS.map((k) => {
             const w = wallets.find((x) => x.kind === k);
             const m = metaFor(k);
@@ -166,17 +150,13 @@ function SystemWalletsPage() {
 
       <div className="bg-[#141418] border border-white/10 rounded-xl overflow-hidden">
         <div className="flex items-center justify-between p-4 border-b border-white/10">
-          <h2 className="text-white text-sm font-bold">Recent Movements</h2>
+          <h2 className="text-white text-sm font-bold">Marketplace Movements</h2>
           <select
             value={filter}
-            onChange={(e) => setFilter(e.target.value as SystemWalletKind | "ALL")}
+            onChange={(e) => setFilter(e.target.value as SystemWalletKind)}
             className="bg-[#0b0b0d] border border-white/10 rounded-[10px] px-3 py-1.5 text-xs text-white"
           >
-            <option value="ALL">All wallets</option>
             <option value="marketplace">Marketplace</option>
-            <option value="bounty">Bounty</option>
-            <option value="ads">Ads</option>
-            <option value="academy">Academy</option>
           </select>
         </div>
         <div className="divide-y divide-white/5">
