@@ -232,7 +232,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
               <span className="block text-crimson">Marketplace & Community</span>
               <span className="block">for creators</span>
             </h1>
-            <p className="mt-4 max-w-md text-[14px] leading-relaxed text-white md:text-black sm:text-lg">
+            <p className="mt-4 max-w-md text-[14px] leading-relaxed text-black sm:text-lg">
               Buy, sell and discover
               <br className="sm:hidden" />{" "}
               digital products, services and tools
