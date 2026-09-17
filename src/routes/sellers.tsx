@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { BadgeCheck, Search, ShoppingBag, Star } from "lucide-react";
+import { ArrowUpRight, BadgeCheck, Search, ShoppingBag, Star, Store, Trophy, Users } from "lucide-react";
 import { PublicChrome } from "@/components/oventric/PublicChrome";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { getTopSellers } from "@/lib/marketplace.functions";
@@ -75,85 +75,165 @@ function SellersPage() {
     return sellers.filter((s) => s.name.toLowerCase().includes(q) || s.slug?.toLowerCase().includes(q));
   }, [sellers, query]);
 
+  const leaders = sellers.slice(0, 3);
+
   return (
     <PublicChrome lightDesktop>
-      <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 md:py-12">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-crimson/30 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-crimson">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-crimson" />
-          Live right now
-        </span>
-        <h1 className="mt-3 text-[26px] font-bold tracking-tight text-white md:text-[34px] md:text-slate-900">
-          Top Sellers
-        </h1>
-        <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-slate-400 md:text-[15px] md:text-slate-600">
-          Every seller on Oventric, ranked by live sales, ratings and followers. Tap any seller to open
-          their storefront.
-        </p>
-
-        <div className="relative mt-6 max-w-md">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search sellers"
-            aria-label="Search sellers"
-            className="h-11 w-full rounded-[10px] border border-white/10 bg-white/[0.04] pl-9 pr-3 text-[14px] text-white placeholder:text-slate-500 outline-none focus:border-crimson/50 md:border-slate-200 md:bg-white md:text-slate-800 md:placeholder:text-slate-400"
-          />
-        </div>
-
-        {loading ? (
-          <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-[112px] animate-pulse rounded-[10px] border border-white/[0.06] bg-white/[0.03] md:border-slate-200 md:bg-slate-100"
+      <main className="web-sellers min-h-screen bg-background text-foreground">
+        <section className="border-b border-border bg-card">
+          <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-10 sm:px-6 md:py-14 lg:grid-cols-[1fr_25rem] lg:items-end lg:px-8">
+            <div>
+              <span className="inline-flex items-center gap-2 text-xs font-extrabold uppercase text-primary">
+                <Trophy className="h-4 w-4" /> Seller leaderboard
+              </span>
+              <h1 className="mt-4 max-w-3xl text-4xl font-bold leading-tight sm:text-5xl">
+                Meet Oventric’s top digital sellers
+              </h1>
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
+                Discover every seller, ranked using live sales, ratings and followers. Open a storefront to explore their digital products.
+              </p>
+            </div>
+            <label className="relative block">
+              <span className="sr-only">Search sellers</span>
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search by seller name"
+                aria-label="Search sellers"
+                className="h-13 w-full rounded-[10px] border border-input bg-background pl-12 pr-4 text-sm text-foreground outline-none transition focus:border-primary focus:ring-3 focus:ring-primary/10"
               />
-            ))}
+            </label>
           </div>
-        ) : filtered.length === 0 ? (
-          <p className="mt-10 text-[14px] text-slate-400 md:text-slate-500">No sellers found.</p>
-        ) : (
-          <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((s, i) => (
-              <Link
-                key={s.id}
-                to="/shop/$id"
-                params={{ id: s.slug || s.id }}
-                className="group rounded-[10px] border border-white/[0.06] bg-[#141416] p-4 transition-transform hover:-translate-y-0.5 active:scale-[0.99] md:border-slate-200 md:bg-white"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <div className="h-12 w-12 overflow-hidden rounded-full border border-white/10 md:border-slate-200">
-                      <AvatarImage src={s.avatarUrl} alt={s.name} />
-                    </div>
-                    {!query.trim() && (
-                      <span className="absolute -left-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-crimson text-[10px] font-black text-white">
-                        {i + 1}
+        </section>
+
+        <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 md:py-14 lg:px-8">
+          {loading ? (
+            <div className="space-y-12" aria-label="Loading sellers">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="h-72 animate-pulse rounded-[10px] border border-border bg-card" />
+                ))}
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="h-44 animate-pulse rounded-[10px] border border-border bg-card" />
+                ))}
+              </div>
+            </div>
+          ) : sellers.length === 0 ? (
+            <div className="py-24 text-center">
+              <Store className="mx-auto h-10 w-10 text-muted-foreground" />
+              <h2 className="mt-4 text-xl font-bold">No sellers yet</h2>
+              <p className="mt-2 text-sm text-muted-foreground">Seller storefronts will appear here when they go live.</p>
+            </div>
+          ) : (
+            <>
+              <section aria-labelledby="leaderboard-heading">
+                <div className="mb-6 flex items-end justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-extrabold uppercase text-primary">Leading the marketplace</p>
+                    <h2 id="leaderboard-heading" className="mt-2 text-2xl font-bold sm:text-3xl">The top three</h2>
+                  </div>
+                  <p className="hidden text-sm text-muted-foreground sm:block">Ranked by live marketplace activity</p>
+                </div>
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+                  {leaders.map((seller, index) => (
+                    <Link
+                      key={seller.id}
+                      to="/shop/$id"
+                      params={{ id: seller.slug || seller.id }}
+                      className="seller-leader group relative flex min-h-72 flex-col rounded-[10px] border border-border bg-card p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg"
+                    >
+                      <span className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full border-4 border-card bg-primary text-sm font-extrabold text-primary-foreground shadow-md">
+                        {index + 1}
                       </span>
-                    )}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-1 truncate text-[14px] font-bold text-white md:text-slate-900">
-                      <span className="truncate">{s.name}</span>
-                      {s.verified && <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-crimson" />}
-                    </div>
-                    <div className="mt-0.5 flex items-center gap-1 text-[11px] text-slate-400 md:text-slate-500">
-                      <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                      {s.rating ? s.rating.toFixed(1) : "New"} · {compact(s.followersCount)} followers
-                    </div>
-                  </div>
+                      <div className="h-20 w-20 overflow-hidden rounded-[10px] border border-border bg-muted">
+                        <AvatarImage src={seller.avatarUrl} alt={seller.name} />
+                      </div>
+                      <div className="mt-5 min-w-0 pr-12">
+                        <div className="flex items-center gap-1.5">
+                          <h3 className="truncate text-xl font-bold">{seller.name}</h3>
+                          {seller.verified && <BadgeCheck className="h-5 w-5 shrink-0 text-primary" aria-label="Verified seller" />}
+                        </div>
+                        <div className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
+                          <Star className="h-4 w-4 fill-current text-warning" />
+                          <span className="font-bold text-foreground">{seller.rating ? seller.rating.toFixed(1) : "New"}</span>
+                          <span>· {compact(seller.followersCount)} followers</span>
+                        </div>
+                      </div>
+                      <div className="mt-auto grid grid-cols-2 border-t border-border pt-5 text-sm">
+                        <div>
+                          <p className="font-bold text-foreground">{compact(seller.salesCount)}</p>
+                          <p className="text-xs text-muted-foreground">Sales</p>
+                        </div>
+                        <div>
+                          <p className="font-bold text-foreground">{compact(seller.productsCount)}</p>
+                          <p className="text-xs text-muted-foreground">Digital listings</p>
+                        </div>
+                      </div>
+                      <span className="mt-5 flex min-h-11 items-center justify-between rounded-[10px] border border-border bg-muted px-4 text-sm font-bold transition group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
+                        Visit storefront <ArrowUpRight className="h-4 w-4" />
+                      </span>
+                    </Link>
+                  ))}
                 </div>
-                <div className="mt-3 flex items-center gap-3 text-[11px] font-semibold text-slate-400 md:text-slate-500">
-                  <span className="inline-flex items-center gap-1">
-                    <ShoppingBag className="h-3.5 w-3.5" /> {compact(s.salesCount)} sales
-                  </span>
-                  <span>{compact(s.productsCount)} listings</span>
+              </section>
+
+              <section className="mt-16" aria-labelledby="all-sellers-heading">
+                <div className="mb-6 flex items-end justify-between gap-4 border-b border-border pb-5">
+                  <div>
+                    <p className="text-xs font-extrabold uppercase text-primary">Seller directory</p>
+                    <h2 id="all-sellers-heading" className="mt-2 text-2xl font-bold sm:text-3xl">All sellers</h2>
+                  </div>
+                  <span className="text-sm font-semibold text-muted-foreground">{filtered.length} {filtered.length === 1 ? "seller" : "sellers"}</span>
                 </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
+
+                {filtered.length === 0 ? (
+                  <div className="rounded-[10px] border border-dashed border-border bg-card px-6 py-16 text-center">
+                    <Search className="mx-auto h-8 w-8 text-muted-foreground" />
+                    <h3 className="mt-4 text-lg font-bold">No matching sellers</h3>
+                    <p className="mt-2 text-sm text-muted-foreground">Try another name or clear your search.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {filtered.map((seller) => {
+                      const rank = sellers.findIndex((item) => item.id === seller.id) + 1;
+                      return (
+                        <Link
+                          key={seller.id}
+                          to="/shop/$id"
+                          params={{ id: seller.slug || seller.id }}
+                          className="group flex min-h-44 flex-col rounded-[10px] border border-border bg-card p-5 transition duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md"
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className="h-14 w-14 shrink-0 overflow-hidden rounded-[10px] border border-border bg-muted">
+                              <AvatarImage src={seller.avatarUrl} alt={seller.name} />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-1.5">
+                                <h3 className="truncate text-base font-bold">{seller.name}</h3>
+                                {seller.verified && <BadgeCheck className="h-4 w-4 shrink-0 text-primary" aria-label="Verified seller" />}
+                              </div>
+                              <p className="mt-1 text-xs font-bold uppercase text-muted-foreground">Rank #{rank}</p>
+                            </div>
+                            <ArrowUpRight className="h-5 w-5 shrink-0 text-muted-foreground transition group-hover:text-primary" />
+                          </div>
+                          <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border pt-4 text-xs font-semibold text-muted-foreground">
+                            <span className="inline-flex items-center gap-1.5"><Star className="h-3.5 w-3.5 text-warning" /> {seller.rating ? seller.rating.toFixed(1) : "New"}</span>
+                            <span className="inline-flex items-center gap-1.5"><ShoppingBag className="h-3.5 w-3.5" /> {compact(seller.salesCount)} sales</span>
+                            <span className="inline-flex items-center gap-1.5"><Users className="h-3.5 w-3.5" /> {compact(seller.followersCount)}</span>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
+            </>
+          )}
+        </div>
+      </main>
     </PublicChrome>
   );
 }
