@@ -697,6 +697,15 @@ function ShopPage() {
           onSaved={() => setReloadKey((k) => k + 1)}
         />
       )}
+
+      {isOwner && shop && (
+        <SellerVerificationModal
+          open={verifyOpen}
+          onClose={() => setVerifyOpen(false)}
+          defaultBrandName={shop.shopName}
+          defaultCountry={shop.country}
+        />
+      )}
       {!isAppShell && <SiteFooterAuto />}
     </div>
   );
