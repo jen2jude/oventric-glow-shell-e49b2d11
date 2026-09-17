@@ -1109,9 +1109,9 @@ function ProfilePage() {
             >
               {/* Cover image — full-bleed hero */}
               <div className="profile-cover-safe relative -mx-4 -mt-6 h-56 overflow-hidden border-b border-white/10 bg-[#18181d] sm:h-64 md:mx-0 md:mt-0 md:h-60 md:rounded-none md:border-0 md:border-b md:border-slate-200 md:bg-slate-100 lg:h-64">
-                {realProfile?.coverUrl ? (
+                {displayCover ? (
                   <ResponsiveImage
-                    src={realProfile.coverUrl}
+                    src={displayCover}
                     alt={`${displayName} cover`}
                     sizes="(min-width: 768px) 768px, 100vw"
                     className="block h-full w-full object-cover"
