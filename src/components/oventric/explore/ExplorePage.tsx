@@ -1,12 +1,15 @@
-import { useMemo, useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
   BadgeCheck,
   Compass,
+  Loader2,
+  MessageSquare,
   Search,
+  SearchX,
   Sparkles,
   Star,
   TrendingUp,
@@ -24,6 +27,7 @@ import {
   type TopSellerDTO,
 } from "@/lib/marketplace.functions";
 import { getDiscoveryFeed, type DiscoveryPeer } from "@/lib/discovery.functions";
+import { searchGlobal, type SearchResults } from "@/lib/search.functions";
 import { visualForCategory } from "@/components/oventric/marketplace-discovery/utils";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { DiscoveryPanel } from "@/components/oventric/DiscoveryPanel";
@@ -54,10 +58,14 @@ export function ExplorePage({ onSelect }: { onSelect: (section: "Marketplace") =
   const { baseCurrency } = useOnboarding();
   const currency = baseCurrency ?? "USD";
 
+  // The homepage hero search (and shared links) land here with ?search=…
+  const routeSearch = useSearch({ strict: false }) as { search?: string };
+
   const fetchDiscovery = useServerFn(getMarketplaceDiscovery);
   const fetchCategories = useServerFn(listMarketplaceCategories);
   const fetchSellers = useServerFn(getTopSellers);
   const fetchPeers = useServerFn(getDiscoveryFeed);
+  const runSearch = useServerFn(searchGlobal);
 
   const { data: discovery } = useQuery({
     queryKey: ["explore-discovery"],
@@ -81,8 +89,25 @@ export function ExplorePage({ onSelect }: { onSelect: (section: "Marketplace") =
   });
 
   const [tab, setTab] = useState<Tab>("All");
-  const [q, setQ] = useState("");
+  const [q, setQ] = useState(routeSearch?.search ?? "");
   const query = q.trim().toLowerCase();
+
+  // Keep the box in sync when arriving with a new ?search=… link.
+  useEffect(() => {
+    const incoming = (routeSearch?.search ?? "").trim();
+    if (incoming) setQ(incoming);
+  }, [routeSearch?.search]);
+
+  // Platform-wide search (products, services, people, posts) — runs
+  // server-side so results cover the whole marketplace, not just what
+  // happens to be preloaded on this page.
+  const { data: searchResults, isFetching: searching } = useQuery({
+    queryKey: ["explore-search", query],
+    queryFn: () => runSearch({ data: { q: q.trim() } }),
+    enabled: query.length > 0,
+    staleTime: 30_000,
+    placeholderData: (prev) => prev,
+  });
 
   const allTrending = (discovery?.trending ?? []) as ProductDTO[];
   const allNew = (discovery?.newArrivals ?? []) as ProductDTO[];
@@ -320,11 +345,22 @@ export function ExplorePage({ onSelect }: { onSelect: (section: "Marketplace") =
         {/* ------------------------------------------ content + community */}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-8">
           <div className="min-w-0">
-            {show("Categories") && categoriesBlock}
-            {show("Products") && productsBlock}
-            {show("Shops") && sellersBlock}
-            {show("Products") && freshBlock}
-            {show("People") && peopleBlock}
+            {query ? (
+              <SearchResultsView
+                results={searchResults}
+                loading={searching && !searchResults}
+                query={q.trim()}
+                currency={currency}
+              />
+            ) : (
+              <>
+                {show("Categories") && categoriesBlock}
+                {show("Products") && productsBlock}
+                {show("Shops") && sellersBlock}
+                {show("Products") && freshBlock}
+                {show("People") && peopleBlock}
+              </>
+            )}
           </div>
 
           <aside className="min-w-0 lg:pt-10">
@@ -378,6 +414,166 @@ function EmptyNote({ children }: { children: React.ReactNode }) {
     <p className="col-span-full rounded-[14px] border border-dashed border-slate-200 bg-white p-6 text-center text-sm text-slate-400">
       {children}
     </p>
+  );
+}
+
+/**
+ * Platform-wide search results — products, services, people and posts,
+ * fetched server-side via searchGlobal. Out-of-MVP kinds (bounties,
+ * courses, circles) are intentionally not rendered.
+ */
+function SearchResultsView({
+  results,
+  loading,
+  query,
+  currency,
+}: {
+  results: SearchResults | undefined;
+  loading: boolean;
+  query: string;
+  currency: string;
+}) {
+  if (loading) {
+    return (
+      <div className="mt-10 flex items-center justify-center gap-2 py-16 text-sm font-semibold text-slate-500">
+        <Loader2 className="h-4 w-4 animate-spin text-crimson" />
+        Searching Oventric for “{query}”…
+      </div>
+    );
+  }
+
+  const products = results?.products ?? [];
+  const services = results?.services ?? [];
+  const people = results?.peers ?? [];
+  const posts = results?.posts ?? [];
+  const total = products.length + services.length + people.length + posts.length;
+
+  const priceOf = (usd: number) =>
+    computeDisplayPrice(
+      { price_usd: usd, original_currency: null, original_amount: null, fx_snapshot: null },
+      currency,
+    ).formatted;
+
+  return (
+    <div className="mt-8">
+      <h2 className="flex items-center gap-2 font-[Outfit] text-xl font-extrabold text-slate-900 sm:text-2xl">
+        <Search className="h-5 w-5 text-crimson" />
+        Results for “{query}”
+        <span className="text-sm font-semibold text-slate-400">({total})</span>
+      </h2>
+
+      {total === 0 && (
+        <div className="mt-6 flex flex-col items-center gap-2 rounded-[14px] border border-dashed border-slate-200 bg-white px-6 py-12 text-center">
+          <SearchX className="h-8 w-8 text-slate-300" />
+          <p className="text-sm font-bold text-slate-700">Nothing found for “{query}”</p>
+          <p className="text-xs text-slate-400">
+            Try another word — a product name, a category, a seller or a member.
+          </p>
+        </div>
+      )}
+
+      {(products.length > 0 || services.length > 0) && (
+        <section className="mt-8">
+          <h3 className="mb-3 font-[Outfit] text-base font-extrabold text-slate-900">
+            Products &amp; services
+          </h3>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
+            {[...products, ...services].map((p) => (
+              <Link
+                key={`${p.kind}-${p.id}`}
+                to="/product/$id"
+                params={{ id: p.id }}
+                className="group flex flex-col overflow-hidden rounded-[14px] border border-slate-200/80 bg-white transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_36px_-24px_rgba(15,23,42,0.6)]"
+              >
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
+                  {p.coverUrl ? (
+                    <img
+                      src={p.coverUrl}
+                      alt={p.title}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : null}
+                  {p.kind === "service" && (
+                    <span className="absolute left-2 top-2 rounded-full bg-slate-900/85 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                      Service
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-1 flex-col gap-1.5 p-3">
+                  <h4 className="line-clamp-2 text-[13px] font-bold leading-snug text-slate-900 transition-colors group-hover:text-crimson">
+                    {p.title}
+                  </h4>
+                  <p className="truncate text-[11px] text-slate-500">
+                    {p.kind === "service" ? p.providerName : p.vendor}
+                  </p>
+                  <p className="mt-auto pt-1 text-sm font-extrabold text-slate-900">
+                    {priceOf(p.priceUsd)}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {people.length > 0 && (
+        <section className="mt-10">
+          <h3 className="mb-3 font-[Outfit] text-base font-extrabold text-slate-900">People</h3>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:gap-4">
+            {people.map((p) => (
+              <Link
+                key={p.id}
+                to="/profile/$id"
+                params={{ id: p.slug }}
+                className="flex flex-col items-center gap-2 rounded-[14px] border border-slate-200/80 bg-white p-5 text-center transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
+              >
+                <div className="h-16 w-16 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+                  <AvatarImage src={p.avatarUrl} alt={p.name} />
+                </div>
+                <p className="max-w-full truncate text-sm font-bold text-slate-900">{p.name}</p>
+                {p.username && (
+                  <p className="max-w-full truncate text-[11px] text-slate-400">@{p.username}</p>
+                )}
+                <p className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600">
+                  <Star className="h-3 w-3 fill-[#F5A524] text-[#F5A524]" />
+                  {p.stars.toFixed(1)}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {posts.length > 0 && (
+        <section className="mt-10">
+          <h3 className="mb-3 font-[Outfit] text-base font-extrabold text-slate-900">Posts</h3>
+          <div className="grid gap-3">
+            {posts.map((p) => (
+              <Link
+                key={p.id}
+                to="/feed"
+                search={{ post: p.id }}
+                className="flex items-start gap-3 rounded-[14px] border border-slate-200/80 bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
+              >
+                <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+                  <AvatarImage src={p.authorAvatarUrl} alt={p.authorName} />
+                </div>
+                <div className="min-w-0">
+                  <p className="flex items-center gap-1.5 text-sm font-bold text-slate-900">
+                    <span className="truncate">{p.authorName}</span>
+                    <MessageSquare className="h-3.5 w-3.5 shrink-0 text-slate-300" />
+                  </p>
+                  <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-slate-600">
+                    {p.text}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
   );
 }
 
