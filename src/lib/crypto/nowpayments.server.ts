@@ -65,6 +65,10 @@ export async function createCryptoPayment(args: {
   const body = (await res.json().catch(() => null)) as Record<string, unknown> | null;
   if (!res.ok || !body || !body["payment_id"]) {
     console.error("[crypto] create payment failed", res.status, body);
+    const providerMessage = body && typeof body["message"] === "string" ? body["message"] : "";
+    if (providerMessage.toLowerCase().includes("too small")) {
+      throw new Error("The amount is below the provider's minimum for this network. Try a larger amount.");
+    }
     throw new Error("Could not start the crypto payment. Please try again.");
   }
 
