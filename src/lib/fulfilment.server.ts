@@ -334,6 +334,24 @@ export async function refundBuyer(sb: any, orderId: string, reason: string) {
   if (!o) throw new Error("Order not found");
   if (o.escrow_status !== "held") return { alreadyRefunded: true as const };
 
+  // Atomic claim first — a refunded order can never later release seller funds,
+  // and two concurrent refunds can never both credit the buyer.
+  const { data: refundClaim } = await sb
+    .from("orders")
+    .update({
+      escrow_status: "refunded",
+      status: "refunded",
+      refunded_at: new Date().toISOString(),
+      refund_reason: reason,
+      auto_refund_at: null,
+      payout_release_at: null,
+    })
+    .eq("id", orderId)
+    .eq("escrow_status", "held")
+    .select("id");
+  if (!refundClaim || (refundClaim as unknown[]).length === 0)
+    return { alreadyRefunded: true as const };
+
   const amount = Number(o.display_total ?? 0);
   const currency = String(o.display_currency ?? "USD");
   if (amount > 0) {
@@ -342,7 +360,13 @@ export async function refundBuyer(sb: any, orderId: string, reason: string) {
       _amount: amount,
       _currency: currency,
     });
-    if (cErr) throw new Error(cErr.message);
+    if (cErr) {
+      await sb
+        .from("orders")
+        .update({ escrow_status: "held", status: "paid", refunded_at: null, refund_reason: null })
+        .eq("id", orderId);
+      throw new Error(cErr.message);
+    }
     try {
       await sb.from("wallet_transactions").insert({
         user_id: o.buyer_id,
