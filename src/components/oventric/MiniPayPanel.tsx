@@ -9,9 +9,12 @@ import {
   attachManualProof,
 } from "@/lib/manual-payments.functions";
 import { formatMoney } from "@/lib/fx-display";
+import { BINANCE_USER_ID, MANUAL_RAIL_LABEL, type ManualRail } from "@/lib/payments/active-rails";
 import minipayQrAsset from "@/assets/minipay-qr.jpg.asset.json";
 
 interface Props {
+  /** Manual rail: MiniPay transfer or Binance User ID transfer. */
+  rail?: ManualRail;
   purpose: "order" | "course" | "bounty";
   targetId?: string | null;
   quantity?: number;
@@ -27,6 +30,7 @@ interface Props {
  * receipt, and a reviewer releases the purchase. No card is charged here.
  */
 export function MiniPayPanel({
+  rail = "minipay",
   purpose,
   targetId,
   quantity = 1,
@@ -50,12 +54,15 @@ export function MiniPayPanel({
   const [instructions, setInstructions] = useState<{
     handle: string | null;
     accountName: string | null;
+    binanceUserId: string | null;
     instructions: string | null;
   }>({
     handle: null,
     accountName: null,
+    binanceUserId: null,
     instructions: null,
   });
+  const [payerRef, setPayerRef] = useState("");
   const [uploading, setUploading] = useState(false);
   const [done, setDone] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
@@ -65,7 +72,7 @@ export function MiniPayPanel({
     if (startedRef.current) return;
     startedRef.current = true;
     create({
-      data: { purpose, targetId: targetId ?? null, quantity, couponCode, amount, currency },
+      data: { provider: rail, purpose, targetId: targetId ?? null, quantity, couponCode, amount, currency },
     })
       .then((res) => {
         setPayment({
@@ -74,11 +81,11 @@ export function MiniPayPanel({
           amount: res.payment.amount,
           currency: res.payment.currency,
         });
-        setInstructions(res.minipay);
+        setInstructions(res.instructions);
       })
-      .catch((e: Error) => setError(e.message || "Could not start MiniPay payment"))
+      .catch((e: Error) => setError(e.message || "Could not start this payment"))
       .finally(() => setLoading(false));
-  }, [create, purpose, targetId, quantity, couponCode, amount, currency]);
+  }, [create, rail, purpose, targetId, quantity, couponCode, amount, currency]);
 
   const copy = (text: string) => {
     navigator.clipboard?.writeText(text);
@@ -98,7 +105,7 @@ export function MiniPayPanel({
         .from("payment-proofs")
         .uploadToSignedUrl(path, token, file);
       if (upErr) throw new Error(upErr.message);
-      await attach({ data: { id: payment.id, proofPath: path } });
+      await attach({ data: { id: payment.id, proofPath: path, payerNote: payerRef.trim() || null } });
       setDone(true);
     } catch (e) {
       toast.error("Upload failed", { description: e instanceof Error ? e.message : "Try again." });
@@ -113,7 +120,7 @@ export function MiniPayPanel({
         <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <h2 className="text-sm font-black text-white">Pay with MiniPay</h2>
+            <h2 className="text-sm font-black text-white">Pay with {MANUAL_RAIL_LABEL[rail]}</h2>
           </div>
           <button
             onClick={onClose}
@@ -137,19 +144,20 @@ export function MiniPayPanel({
           {payment && !done && (
             <>
               <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 text-center">
-                <div className="flex justify-center mb-4">
-                  <div className="relative p-2 bg-white rounded-xl">
-                    <img loading="lazy" decoding="async" 
-                      src={minipayQrAsset.url} 
-                      alt="MiniPay QR Code" 
-
-                      className="w-48 h-48 object-contain"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10">
-                      <QrCode className="w-24 h-24 text-black" />
+                {rail === "minipay" && (
+                  <div className="flex justify-center mb-4">
+                    <div className="relative p-2 bg-white rounded-xl">
+                      <img loading="lazy" decoding="async"
+                        src={minipayQrAsset.url}
+                        alt="MiniPay QR Code"
+                        className="w-48 h-48 object-contain"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10">
+                        <QrCode className="w-24 h-24 text-black" />
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
                 
                 <div className="text-[11px] uppercase tracking-wider text-emerald-300/90 font-bold mb-1">
                   Amount to send
@@ -162,8 +170,19 @@ export function MiniPayPanel({
                 </p>
               </div>
 
-              <Row label="MiniPay Account Number" value="+234 803 434 7661" onCopy={copy} />
-              <Row label="MiniPay handle" value={instructions.handle ?? "oventric"} onCopy={copy} />
+              {rail === "minipay" ? (
+                <>
+                  <Row label="MiniPay Account Number" value="+234 803 434 7661" onCopy={copy} />
+                  <Row label="MiniPay handle" value={instructions.handle ?? "oventric"} onCopy={copy} />
+                </>
+              ) : (
+                <Row
+                  label="Binance User ID"
+                  value={instructions.binanceUserId ?? BINANCE_USER_ID}
+                  onCopy={copy}
+                />
+              )}
+              <Row label="Payment reference" value={payment.reference} onCopy={copy} />
 
               {instructions.instructions && (
                 <p className="text-xs text-slate-400 leading-relaxed whitespace-pre-line">
@@ -173,9 +192,19 @@ export function MiniPayPanel({
 
               <div className="rounded-xl border border-white/10 bg-[#1E1E24] p-4">
                 <p className="text-xs text-slate-400 mb-3">
-                  Send the exact amount, then upload your receipt. We verify manually — usually
-                  within a few hours.
+                  Send the exact amount, add your transfer details, then upload your receipt. Only
+                  Oventric finance can confirm this payment — the seller cannot.
                 </p>
+                <input
+                  value={payerRef}
+                  onChange={(e) => setPayerRef(e.target.value)}
+                  placeholder={
+                    rail === "binance"
+                      ? "Binance order / transaction ID and sender name"
+                      : "Transfer reference and sender name"
+                  }
+                  className="mb-3 w-full rounded-[10px] border border-white/10 bg-[#141418] px-3 py-2 text-sm text-white placeholder:text-slate-500"
+                />
                 <input
                   ref={fileRef}
                   type="file"
@@ -185,7 +214,7 @@ export function MiniPayPanel({
                 />
                 <button
                   onClick={() => fileRef.current?.click()}
-                  disabled={uploading}
+                  disabled={uploading || payerRef.trim().length < 3}
                   className="w-full rounded-[10px] bg-emerald-500 hover:bg-emerald-400 disabled:opacity-60 text-black font-bold text-sm py-2.5 flex items-center justify-center gap-2"
                 >
                   {uploading ? (
@@ -204,7 +233,7 @@ export function MiniPayPanel({
               <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto mb-3" />
               <h3 className="text-base font-black text-white">Receipt received</h3>
               <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-                We&apos;re verifying your MiniPay transfer. You&apos;ll get a notification the
+                Oventric finance is verifying your {MANUAL_RAIL_LABEL[rail]} transfer. You&apos;ll get a notification the
                 moment it clears
                 {purpose === "order"
                   ? " and your order goes live."

@@ -14,13 +14,14 @@ import { minipayAvailable, routeGateway } from "@/lib/payments/providers";
 
 export type InitPaymentInput = PaymentIntentInput & {
   channel?: "card" | "bank_transfer" | "mobile_money" | "ussd";
-  provider?: "flutterwave" | "paystack";
+  /** MVP lock: Paystack is the only automated gateway. */
+  provider?: "paystack";
 };
 
 export interface InitPaymentResult {
   authorizationUrl: string;
   reference: string;
-  provider: "flutterwave" | "paystack";
+  provider: "paystack";
   chargeAmount: number;
   chargeCurrency: string;
 }
@@ -32,7 +33,7 @@ export const initPayment = createServerFn({ method: "POST" })
     const settings = await loadGatewaySettings();
     const email = await resolveUserEmail(context.supabase, context.userId, context.claims as { email?: string });
     const intent = await buildPaymentIntent(context.supabase, context.userId, data);
-    return createCharge({
+    const charge = await createCharge({
       userId: context.userId,
       email,
       origin: inferOrigin(),
@@ -42,6 +43,8 @@ export const initPayment = createServerFn({ method: "POST" })
       channel: data.channel,
       preferProvider: data.provider,
     });
+    // MVP lock: createCharge can only ever return the active Paystack rail.
+    return { ...charge, provider: "paystack" as const };
   });
 
 export const verifyPayment = createServerFn({ method: "POST" })
@@ -67,7 +70,7 @@ export const verifyPayment = createServerFn({ method: "POST" })
   });
 
 export interface PaymentOptionsResult {
-  provider: "flutterwave" | "paystack";
+  provider: "paystack";
   chargeCurrency: string;
   crossBorder: boolean;
   minipay: {
@@ -90,7 +93,7 @@ export const getPaymentOptions = createServerFn({ method: "POST" })
     const route = routeGateway(data.currency, settings);
     const mp = minipayAvailable(data.purpose, data.currency, settings);
     return {
-      provider: route.provider,
+      provider: "paystack" as const,
       chargeCurrency: route.chargeCurrency,
       crossBorder: route.crossBorder,
       minipay: {

@@ -6,6 +6,7 @@
  *   OVF_… → Flutterwave      OV_… / OVP_… → Paystack
  */
 import { resolveFxRates } from "@/lib/fx.server";
+import { ACTIVE_RAILS, MINIPAY_HANDLE_FALLBACK } from "@/lib/payments/active-rails";
 
 import { dbCurrency, currencyDecimals } from "@/lib/currency/africa";
 import {
@@ -27,12 +28,13 @@ export async function loadGatewaySettings(): Promise<GatewaySettings> {
       .select("*")
       .eq("id", 1)
       .maybeSingle();
-    if (!data) return DEFAULT_GATEWAY_SETTINGS;
+    if (!data) return { ...DEFAULT_GATEWAY_SETTINGS, flutterwaveEnabled: false, minipayEnabled: ACTIVE_RAILS.minipay, minipayHandle: MINIPAY_HANDLE_FALLBACK };
     return {
-      flutterwaveEnabled: Boolean(data.flutterwave_enabled) && Boolean(process.env.FLUTTERWAVE_SECRET_KEY),
+      // MVP lock: Flutterwave is retired regardless of the stored flag.
+      flutterwaveEnabled: false,
       paystackEnabled: Boolean(data.paystack_enabled) && Boolean(process.env.PAYSTACK_SECRET_KEY),
-      minipayEnabled: Boolean(data.minipay_enabled),
-      minipayHandle: (data.minipay_handle as string) ?? null,
+      minipayEnabled: ACTIVE_RAILS.minipay,
+      minipayHandle: ((data.minipay_handle as string) ?? null) || MINIPAY_HANDLE_FALLBACK,
       minipayAccountName: (data.minipay_account_name as string) ?? null,
       minipayInstructions: (data.minipay_instructions as string) ?? null,
       minipayCurrencies: (data.minipay_currencies as string[]) ?? [],
@@ -122,10 +124,15 @@ export async function createCharge(opts: {
 }): Promise<CreateChargeResult> {
   const { intent, settings, input } = opts;
   const route = routeGateway(intent.currency, settings);
+  // MVP lock: a caller can never force the retired Flutterwave rail.
+  const preferred = opts.preferProvider === "flutterwave" && !ACTIVE_RAILS.flutterwave ? undefined : opts.preferProvider;
   const provider =
-    opts.preferProvider && (opts.preferProvider === "flutterwave" ? settings.flutterwaveEnabled : settings.paystackEnabled)
-      ? opts.preferProvider
+    preferred && (preferred === "flutterwave" ? settings.flutterwaveEnabled : settings.paystackEnabled)
+      ? preferred
       : route.provider;
+  if (provider === "flutterwave" && !ACTIVE_RAILS.flutterwave) {
+    throw new Error("This payment method is not available.");
+  }
   let chargeCurrency = route.chargeCurrency;
   if (provider !== route.provider) {
     // Forced provider — recompute a currency it can actually settle.

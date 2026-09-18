@@ -190,8 +190,8 @@ function CheckoutPage() {
   const [minipayOpen, setMinipayOpen] = useState(false);
   // Gateway picker shown under "Debit/Credit Card".
   const [cardOpen, setCardOpen] = useState(true);
-  const [gateway, setGateway] = useState<"flutterwave" | "paystack" | "minipay">("paystack");
-  const [recommended, setRecommended] = useState<"flutterwave" | "paystack" | "minipay">("paystack");
+  const [gateway, setGateway] = useState<"paystack" | "minipay" | "binance">("paystack");
+  const [recommended, setRecommended] = useState<"paystack" | "minipay" | "binance">("paystack");
   const loadOptions = useServerFn(getPaymentOptions);
   const loadPackages = useServerFn(getServicePackages);
   const [servicePackage, setServicePackage] = useState<ServicePackage | null>(null);
@@ -359,8 +359,9 @@ function CheckoutPage() {
       });
       return;
     }
-    // MiniPay is a manual (proof-of-transfer) flow — open its panel instead.
-    if (method !== "wallet" && gateway === "minipay") {
+    // MiniPay and Binance are manual (proof-of-transfer) rails — open the panel
+    // instead of charging. Only Oventric finance can confirm those payments.
+    if (method !== "wallet" && (gateway === "minipay" || gateway === "binance")) {
       setMinipayOpen(true);
       return;
     }
@@ -390,7 +391,7 @@ function CheckoutPage() {
             servicePackageId: servicePackage?.id ?? null,
             serviceBrief: isService ? brief : null,
             channel,
-            provider: gateway === "minipay" ? undefined : gateway,
+            provider: gateway === "paystack" ? "paystack" : undefined,
           },
         });
         window.location.href = init.authorizationUrl;
@@ -553,7 +554,7 @@ function CheckoutPage() {
                   m.id === "card" || m.id === "mobile_money" || m.id === "bank_transfer";
                 const expanded = hasGateways && active && cardOpen;
                 const gateways: Array<{
-                  id: "flutterwave" | "paystack" | "minipay";
+                  id: "paystack" | "minipay" | "binance";
                   label: string;
                   hint: string;
                   Icon: React.ComponentType<{ className?: string }>;
@@ -566,11 +567,10 @@ function CheckoutPage() {
                     Icon: Smartphone,
                   },
                   {
-                    id: "flutterwave",
-                    label: "Flutterwave",
-                    hint: "Temporarily unavailable",
+                    id: "binance" as const,
+                    label: "Binance",
+                    hint: "Send to our Binance ID, upload proof · verified by our team",
                     Icon: CreditCard,
-                    disabled: true,
                   },
                   {
                     id: "paystack",
@@ -693,46 +693,6 @@ function CheckoutPage() {
                   </div>
                 );
               })}
-
-              {/* Binance Pay — manual, confirmed by the seller */}
-              <div
-                className={`rounded-[10px] border p-4 ${
-                  isAppShell
-                    ? "bg-white/[0.03] border-white/5"
-                    : "bg-slate-50 border-slate-200"
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <span
-                    className={`w-10 h-10 rounded-[10px] flex items-center justify-center shrink-0 ${isAppShell ? "bg-white/5" : "bg-white border border-slate-200"}`}
-                  >
-                    <span className="text-[#F0B90B] text-lg font-black">₿</span>
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className={`text-sm font-semibold ${isAppShell ? "text-white" : "text-slate-900"}`}>
-                      Paying with Binance Pay?
-                    </div>
-                    <p className={`mt-1 text-xs leading-relaxed ${isAppShell ? "text-slate-400" : "text-slate-600"}`}>
-                      Send to Binance User ID{" "}
-                      <span className="font-mono font-bold">542612773</span>, then send your order
-                      ID to the seller in chat so they can confirm your payment. Binance transfers
-                      are confirmed manually — your order is not paid until the seller confirms it.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        void navigator.clipboard?.writeText("542612773");
-                        toast.success("Binance User ID copied");
-                      }}
-                      className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] bg-[#F0B90B] hover:bg-[#e0ac06] text-black text-[11px] font-black"
-                    >
-                      Copy Binance ID
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-
 
               {insufficient && (
                 <div
@@ -1087,8 +1047,10 @@ function CheckoutPage() {
                       `Pay ${fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}`
                     ) : gateway === "minipay" ? (
                       `Pay with MiniPay`
+                    ) : gateway === "binance" ? (
+                      `Pay with Binance`
                     ) : (
-                      `Pay with ${gateway === "paystack" ? "Paystack" : "Flutterwave"}`
+                      `Pay with Paystack`
                     )}
                   </button>
                   <div className="text-[10px] text-slate-500 flex items-center justify-center gap-1 opacity-60">
@@ -1109,11 +1071,11 @@ function CheckoutPage() {
                       </>
                     ) : method === "wallet" ? (
                       `Pay ${fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}`
-                    ) : gateway === "minipay" ? (
-                      `Pay with MiniPay · ${fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}`
+                    ) : gateway === "minipay" || gateway === "binance" ? (
+                      `Pay with ${gateway === "minipay" ? "MiniPay" : "Binance"} · ${fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}`
                     ) : (
                       <span className="inline-flex items-center gap-2">
-                        Pay with {gateway === "paystack" ? "Paystack" : "Flutterwave"} · {fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}
+                        Pay with Paystack · {fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}
                       </span>
                     )}
                   </button>
@@ -1223,6 +1185,7 @@ function CheckoutPage() {
 
       {minipayOpen && product && (
         <MiniPayPanel
+          rail={gateway === "binance" ? "binance" : "minipay"}
           purpose="order"
           targetId={product.id}
           quantity={qty}

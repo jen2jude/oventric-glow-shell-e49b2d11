@@ -9,7 +9,6 @@ import {
   adminPaymentRailStatus,
   type AdminPaymentRow,
 } from "@/lib/admin-finance.functions";
-import { AdminCryptoDeposits } from "@/components/oventric/admin/AdminCryptoDeposits";
 
 export const Route = createFileRoute("/admin/payments")({
   head: () => ({
@@ -41,7 +40,7 @@ function AdminPaymentsPage() {
 
   const [purpose, setPurpose] = useState<"all" | "order" | "wallet_funding">("all");
   const [status, setStatus] = useState("ALL");
-  const [provider, setProvider] = useState<"all" | "paystack" | "flutterwave">("all");
+  const [provider, setProvider] = useState<"all" | "paystack">("all");
   const [q, setQ] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -85,8 +84,9 @@ function AdminPaymentsPage() {
         <div className="mb-4 flex flex-wrap gap-2 text-[11px]">
           <Pill ok={rails.data.paystackEnabled} label={`Paystack ${rails.data.paystackEnabled ? "enabled" : "off"}`} />
           <Pill ok={rails.data.paystackLiveKey} label={rails.data.paystackKeyConfigured ? (rails.data.paystackLiveKey ? "Live secret key" : "Test secret key") : "No secret key"} />
-          <Pill ok={rails.data.flutterwaveEnabled} label={`Flutterwave ${rails.data.flutterwaveEnabled ? "enabled" : "off"}`} />
-          <Pill ok={!rails.data.minipayEnabled} label={`MiniPay ${rails.data.minipayEnabled ? "ENABLED" : "disabled (legacy)"}`} />
+          <Pill ok={!rails.data.flutterwaveEnabled} label="Flutterwave disabled (legacy)" />
+          <Pill ok label="Crypto deposits disabled (legacy)" />
+          <Pill ok label="MiniPay + Binance manual (admin approved)" />
           <span className="px-2 py-1 rounded-[10px] bg-white/5 border border-white/10 text-slate-300">
             {rails.data.webhookEventsRecorded} webhook events recorded
           </span>
@@ -102,7 +102,7 @@ function AdminPaymentsPage() {
         />
         <Select value={purpose} onChange={(v) => setPurpose(v as typeof purpose)} options={[["all", "All purposes"], ["order", "Marketplace order"], ["wallet_funding", "Wallet funding"]]} />
         <Select value={status} onChange={setStatus} options={[["ALL", "All statuses"], ["paid", "paid"], ["pending", "pending"], ["failed", "failed"], ["refunded", "refunded"], ["success", "success"]]} />
-        <Select value={provider} onChange={(v) => setProvider(v as typeof provider)} options={[["all", "All providers"], ["paystack", "Paystack"], ["flutterwave", "Flutterwave"]]} />
+        <Select value={provider} onChange={(v) => setProvider(v as typeof provider)} options={[["all", "All providers"], ["paystack", "Paystack"]]} />
         <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="bg-[#0b0b0d] border border-white/10 rounded-[10px] px-3 py-2 text-sm text-white" />
         <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="bg-[#0b0b0d] border border-white/10 rounded-[10px] px-3 py-2 text-sm text-white" />
       </div>
@@ -147,7 +147,6 @@ function AdminPaymentsPage() {
         )}
       </div>
 
-      <AdminCryptoDeposits />
 
 
 

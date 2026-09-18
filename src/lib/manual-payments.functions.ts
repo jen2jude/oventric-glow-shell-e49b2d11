@@ -23,9 +23,13 @@ import {
   type ManualPaymentRow,
 } from "@/lib/payments/manual.server";
 
+import { isManualRail, type ManualRail } from "@/lib/payments/active-rails";
+
 export type ManualPurpose = "order" | "course" | "bounty";
 
 export interface CreateManualPaymentInput {
+  /** Which manual rail the buyer chose: MiniPay or Binance. */
+  provider: ManualRail;
   purpose: ManualPurpose;
   targetId?: string | null;
   /** Orders only. */
@@ -47,6 +51,7 @@ export const createManualPayment = createServerFn({ method: "POST" })
     const currency = String(input?.currency ?? "USD").toUpperCase();
     if (!isSupportedCurrency(currency)) throw new Error("Invalid currency");
     return {
+      provider: isManualRail(String(input?.provider)) ? (input.provider as ManualRail) : "minipay",
       purpose,
       targetId: input?.targetId ? String(input.targetId) : null,
       quantity: Math.max(1, Math.min(20, Number(input?.quantity ?? 1))),
@@ -73,15 +78,19 @@ export const getProofUploadUrl = createServerFn({ method: "POST" })
 
 export const attachManualProof = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { id: string; proofPath: string }) => ({
+  .inputValidator((input: { id: string; proofPath: string; payerNote?: string | null }) => ({
     id: String(input?.id ?? ""),
     proofPath: String(input?.proofPath ?? ""),
+    payerNote: input?.payerNote ? String(input.payerNote).slice(0, 500) : null,
   }))
   .handler(async ({ data, context }) => {
     if (!data.id || !data.proofPath) throw new Error("Missing payment or proof");
     const { error } = await context.supabase
       .from("manual_payments")
-      .update({ proof_path: data.proofPath })
+      .update({
+        proof_path: data.proofPath,
+        ...(data.payerNote ? { payer_note: data.payerNote } : {}),
+      })
       .eq("id", data.id)
       .eq("user_id", context.userId)
       .eq("status", "pending");
