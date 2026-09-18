@@ -147,11 +147,6 @@ import payMastercard from "@/assets/pay/mastercard.png";
 import payVerve from "@/assets/pay/verve.png";
 import payPaystack from "@/assets/pay/paystack.png";
 import payBank from "@/assets/pay/bank-transfer.png";
-import payTether from "@/assets/pay/tether.svg";
-import payTron from "@/assets/pay/tron.svg";
-import payEthereum from "@/assets/pay/ethereum.svg";
-import payLitecoin from "@/assets/pay/litecoin.svg";
-import paySolana from "@/assets/pay/solana.svg";
 import payBinance from "@/assets/pay/binance.svg";
 import payMinipay from "@/assets/pay/minipay.svg";
 
@@ -163,12 +158,7 @@ const PAY_METHODS: { name: string; src: string }[] = [
   { name: "Paystack", src: payPaystack },
   { name: "Bank transfer", src: payBank },
   { name: "MiniPay", src: payMinipay },
-  { name: "USDT", src: payTether },
-  { name: "Tron", src: payTron },
-  { name: "Ethereum", src: payEthereum },
-  { name: "BNB Chain", src: payBinance },
-  { name: "Solana", src: paySolana },
-  { name: "Litecoin", src: payLitecoin },
+  { name: "Binance", src: payBinance },
 ];
 
 export type OventricHomeProps = {
