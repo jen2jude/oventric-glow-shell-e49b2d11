@@ -18,8 +18,6 @@ import {
   Lock,
   Menu,
   Plus,
-  ScanLine,
-  Send,
   ShieldCheck,
   ShoppingCart,
   Sparkles,
@@ -31,7 +29,6 @@ import { getWalletBalances, listWalletTransactions, type WalletTxType } from "@/
 import { formatMoney, usdRate } from "@/lib/fx-display";
 import { MegaMenu } from "@/components/oventric/MegaMenu";
 import { NotificationsDrawer, useUnreadNotificationsCount } from "@/components/oventric/NotificationsDrawer";
-import { TransferModal } from "@/components/oventric/wallet/TransferModal";
 import { AddCapitalModal } from "@/components/oventric/wallet/AddCapitalModal";
 import { PayoutModal } from "@/components/oventric/wallet/PayoutModal";
 import { Button } from "@/components/ui/button";
@@ -61,7 +58,6 @@ function txStyle(type: WalletTxType, inflow: boolean) {
 
 export function Wallet() {
   const { balances: localBalances, balancesHidden: hide, toggleBalancesHidden, homeCurrency } = useOnboarding();
-  const [transferOpen, setTransferOpen] = useState(false);
   const [addFundsOpen, setAddFundsOpen] = useState(false);
   const [payoutOpen, setPayoutOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -91,7 +87,6 @@ export function Wallet() {
   const locked = data?.escrow?.[cur] ?? 0;
   const main = available + locked;
   const cashbackUSD = data?.cashback ?? 0;
-  const bountyUSD = data?.bountyBalance ?? 0;
   const usdEquiv = main / (usdRate(cur) || 1);
   const allTx = txData?.items ?? [];
   const pageSize = 5;
@@ -120,13 +115,11 @@ export function Wallet() {
   const actions = [
     { label: "Add funds", description: "Fund your balance", icon: Plus, primary: true, onClick: () => requireAuth(() => setAddFundsOpen(true)) },
     { label: "Withdraw", description: "Move money out", icon: ArrowUp, onClick: () => requireAuth(() => setPayoutOpen(true)) },
-    { label: "Send", description: "Pay another user", icon: Send, onClick: () => requireAuth(() => setTransferOpen(true)) },
     { label: "Request", description: "Request a payment", icon: ArrowDown, onClick: () => requireAuth(() => toast.info("Payment requests are coming soon")) },
   ];
 
   const subWallets = [
     { label: "Cashback", value: fmt(cashbackUSD * rate, cur), sub: "Available at checkout", icon: Sparkles, tone: "bg-wallet-crimson-soft text-wallet-crimson", to: "/wallet/ledger" as const },
-    { label: "Bounty earnings", value: fmt(bountyUSD * rate, cur), sub: "Earned from bounties", icon: Award, tone: "bg-wallet-warning-soft text-wallet-warning", to: "/wallet/ledger" as const },
     { label: "Escrow", value: fmt(locked, cur), sub: "Protected until completion", icon: Lock, tone: "bg-wallet-info-soft text-wallet-info", to: "/wallet/ledger" as const },
     { label: "Seller earnings", value: fmt(available, cur), sub: "From marketplace sales", icon: WalletIcon, tone: "bg-wallet-positive-soft text-wallet-positive", to: "/wallet/history" as const },
   ];
@@ -143,7 +136,6 @@ export function Wallet() {
             <Bell />
             {unreadNotifs > 0 && <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-wallet-crimson" />}
           </Button>
-          <Button variant="ghost" size="icon" aria-label="Scan to pay" onClick={() => requireAuth(() => setTransferOpen(true))} className="text-wallet-copy-muted hover:bg-wallet-muted hover:text-wallet-copy"><ScanLine /></Button>
         </div>
       </header>
 
@@ -160,7 +152,6 @@ export function Wallet() {
             <p className="mt-3 text-sm text-wallet-copy-muted sm:text-base">Balances, earnings and recent activity in {cur}.</p>
           </div>
           <div className="grid grid-cols-2 gap-2 sm:flex">
-            <Button variant="outline" onClick={() => requireAuth(() => setTransferOpen(true))} className="h-11 border-wallet-line bg-wallet-panel px-5 text-wallet-copy hover:bg-wallet-muted hover:text-wallet-copy"><Send /> Send</Button>
             <Button onClick={() => requireAuth(() => setAddFundsOpen(true))} className="h-11 bg-wallet-crimson px-5 text-wallet-on-crimson shadow-none hover:bg-wallet-crimson-strong"><Plus /> Add funds</Button>
           </div>
         </div>
@@ -229,7 +220,6 @@ export function Wallet() {
         </div>
       </main>
 
-      {transferOpen && <TransferModal onClose={() => setTransferOpen(false)} onDone={() => { setTransferOpen(false); toast.success("Transfer completed"); }} />}
       {addFundsOpen && <AddCapitalModal onClose={() => setAddFundsOpen(false)} />}
       {payoutOpen && <PayoutModal onClose={() => setPayoutOpen(false)} />}
     </div>
