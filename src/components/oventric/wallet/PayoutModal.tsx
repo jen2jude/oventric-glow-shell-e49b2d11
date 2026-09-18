@@ -49,7 +49,6 @@ const USD_CHANNELS: Array<{
 }> = [
   { id: "binance", label: "Binance (USDT)", hint: "Pay-ID / Binance ID", field: "Binance ID", placeholder: "e.g. 384920117" },
   { id: "bybit", label: "Bybit (USDT)", hint: "Bybit UID", field: "Bybit UID", placeholder: "e.g. 10293845" },
-  { id: "minipay", label: "MiniPay", hint: "MiniPay account number", field: "MiniPay Account Number", placeholder: "e.g. 0801234567" },
   { id: "wallet", label: "Crypto Wallet", hint: "Self-custody wallet address", field: "Wallet Address", placeholder: "0x… or T…" },
 ];
 
