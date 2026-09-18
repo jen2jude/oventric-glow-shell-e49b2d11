@@ -696,5 +696,24 @@ export const resolveOrderDispute = createServerFn({ method: "POST" })
       },
     ]);
 
+    // Immutable audit record for a financially significant admin decision.
+    try {
+      await sb.from("audit_logs").insert({
+        actor_id: context.userId,
+        action: "dispute.resolve",
+        target_kind: "order_dispute",
+        target_id: data.disputeId,
+        meta: {
+          order_id: o.id,
+          outcome: data.outcome,
+          note: data.note ?? null,
+          buyer_id: o.buyer_id,
+          seller_id: o.seller_id,
+        },
+      });
+    } catch (e) {
+      console.error("[resolveOrderDispute] audit insert failed", e);
+    }
+
     return { alreadyResolved: false as const };
   });
