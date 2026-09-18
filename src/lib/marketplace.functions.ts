@@ -932,7 +932,21 @@ export const createOrder = createServerFn({ method: "POST" })
       })
       .select()
       .single();
-    if (oErr) throw new Error(oErr.message);
+    if (oErr) {
+      // The order never came into existence, so no money may stay taken:
+      // return the wallet debit and any cashback spend before failing.
+      if (data.paymentMethod === "wallet" && totalUSD > 0) {
+        await supabaseAdmin.rpc("wallet_credit_currency", {
+          _user_id: userId,
+          _amount: displayTotal,
+          _currency: data.displayCurrency,
+        });
+      }
+      if (cashbackAppliedUSD > 0) {
+        await supabaseAdmin.rpc("cashback_credit", { _user_id: userId, _amount: cashbackAppliedUSD });
+      }
+      throw new Error(oErr.message);
+    }
 
     // Ledger entry for buyer.
     await supabaseAdmin.from("wallet_transactions").insert({
