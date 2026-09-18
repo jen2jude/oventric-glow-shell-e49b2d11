@@ -38,7 +38,12 @@ export async function validateCouponServer(
   const code = String(rawCode ?? "").trim().toUpperCase();
   if (!code) return { valid: false, reason: "Enter a coupon code" };
 
-  const { data: c } = await sb
+  // Coupon rows are never exposed to the Data API: the code is looked up with
+  // the server client so a signed-in client cannot enumerate coupon codes.
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const reader: Sb = supabaseAdmin ?? sb;
+
+  const { data: c } = await reader
     .from("coupons")
     .select("code, discount_pct, active, starts_at, expires_at, seller_id, product_id, min_purchase_usd, max_uses, per_user_limit, used_count")
     .eq("code", code)
