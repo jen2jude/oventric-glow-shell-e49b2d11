@@ -99,6 +99,27 @@
       "when": 1789647937743,
       "tag": "0013_create_crypto_deposits",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1789729867522,
+      "tag": "0014_financial_hardening_revoke_rpcs_and_revenue_reversal",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1789729982686,
+      "tag": "0015_revoke_public_execute_on_money_functions",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1789730005727,
+      "tag": "0016_restrict_wallet_self_seed_to_zero_balances",
+      "breakpoints": true
     }
   ]
 }

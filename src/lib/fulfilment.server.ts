@@ -337,6 +337,31 @@ export async function refundBuyer(sb: any, orderId: string, reason: string) {
     console.error("[refundBuyer] promotion reversal failed", e);
   }
 
+  // Platform revenue reversal — the 20% booked at settlement must not survive a
+  // refund. Keyed on the order id, so replays cannot debit revenue twice.
+  try {
+    const { data: revRows } = await sb
+      .from("system_wallet_transactions")
+      .select("amount_usd, source")
+      .eq("kind", "marketplace")
+      .eq("ref_id", orderId);
+    const booked = ((revRows ?? []) as Array<{ amount_usd: number }>).reduce(
+      (sum, r) => sum + Number(r.amount_usd ?? 0),
+      0,
+    );
+    if (booked > 0) {
+      await sb.rpc("system_wallet_debit", {
+        _kind: "marketplace",
+        _amount: Number(booked.toFixed(2)),
+        _source: "marketplace_order_refund",
+        _ref: orderId,
+        _meta: { order_id: orderId, reason },
+      });
+    }
+  } catch (e) {
+    console.error("[refundBuyer] platform revenue reversal failed", e);
+  }
+
   const now = new Date().toISOString();
   await sb
     .from("orders")
