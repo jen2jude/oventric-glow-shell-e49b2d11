@@ -57,12 +57,6 @@ const DISPUTES = [
     tint: "text-violet-300 bg-violet-500/15",
   },
   {
-    key: "bounty",
-    label: "Bounties dispute",
-    icon: Target,
-    tint: "text-amber-300 bg-amber-500/15",
-  },
-  {
     key: "marketplace",
     label: "Marketplace dispute",
     icon: ShoppingBag,
@@ -88,10 +82,6 @@ const FAQS = [
   {
     q: "How long do payouts take?",
     a: "Automated payouts to supported banks and mobile money usually land within minutes. Manual USD payouts are reviewed by our team.",
-  },
-  {
-    q: "How do bounty payments work?",
-    a: "The reward is escrowed when the bounty is published. Once you accept the delivered work, the solver is paid instantly.",
   },
   {
     q: "Can I change my country or currency?",
@@ -332,7 +322,7 @@ function HelpBoardPage() {
             <input
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              placeholder="Subject (e.g. order #, bounty title)"
+              placeholder="Subject (e.g. order number or product name)"
               className="mt-4 w-full rounded-xl bg-[#1E1E24] border border-white/10 px-3 py-2.5 text-sm text-white placeholder:text-slate-500 outline-none focus:border-emerald-500/50 md:bg-white md:border-slate-200 md:text-slate-900"
             />
             <textarea

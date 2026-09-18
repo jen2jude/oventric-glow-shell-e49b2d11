@@ -11,7 +11,7 @@ export const Route = createFileRoute("/faq")({
       {
         name: "description",
         content:
-          "Frequently asked questions about Oventric — accounts, feed, marketplace, bounties, wallet, and payouts.",
+          "Frequently asked questions about Oventric — accounts, feed, marketplace, wallet, and payouts.",
       },
       { property: "og:title", content: "Oventric FAQ" },
       {
@@ -51,14 +51,6 @@ const items = [
   {
     q: "What is cashback?",
     a: "Sellers can fund cashback of up to 50% on a digital product. When a listing offers it, the cashback is credited to your cashback wallet in your base currency after the purchase settles. Cashback is not earned when a coupon is used.",
-  },
-  {
-    q: "How do bounties work?",
-    a: "Post a task with a reward. Solvers submit; when you accept a submission, the reward moves from escrow to the solver's wallet.",
-  },
-  {
-    q: "What are circles and guilds?",
-    a: "Circles are curated peer groups. Guilds are larger interest-based communities. Both surface posts to a targeted audience instead of the whole platform.",
   },
   {
     q: "How do I mention someone in a post?",
