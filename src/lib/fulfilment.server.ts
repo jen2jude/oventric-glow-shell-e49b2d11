@@ -421,18 +421,9 @@ export async function refundBuyer(sb: any, orderId: string, reason: string) {
     console.error("[refundBuyer] platform revenue reversal failed", e);
   }
 
-  const now = new Date().toISOString();
-  await sb
-    .from("orders")
-    .update({
-      escrow_status: "refunded",
-      status: "refunded",
-      refunded_at: now,
-      refund_reason: reason,
-      auto_refund_at: null,
-      payout_release_at: null,
-    })
-    .eq("id", orderId);
+  // (order already marked refunded by the atomic claim above)
+
+
 
   if (o.paystack_ref) {
     try {
