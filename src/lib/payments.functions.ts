@@ -93,7 +93,7 @@ export const getPaymentOptions = createServerFn({ method: "POST" })
     const route = routeGateway(data.currency, settings);
     const mp = minipayAvailable(data.purpose, data.currency, settings);
     return {
-      provider: route.provider,
+      provider: "paystack" as const,
       chargeCurrency: route.chargeCurrency,
       crossBorder: route.crossBorder,
       minipay: {
