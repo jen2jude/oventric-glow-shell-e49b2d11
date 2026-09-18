@@ -1284,28 +1284,19 @@ export const confirmOrderReceived = createServerFn({ method: "POST" })
   .inputValidator((input: { orderId: string }) => ({ orderId: String(input.orderId ?? "") }))
   .handler(async ({ data, context }) => {
     const { userId } = context;
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: o, error } = await supabaseAdmin
+    const { admin, confirmReceipt } = await import("@/lib/fulfilment.server");
+    const sb = await admin();
+    const { data: o, error } = await sb
       .from("orders")
-      .select("id, buyer_id, seller_id, escrow_status, seller_share_usd")
+      .select("id, buyer_id")
       .eq("id", data.orderId)
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!o) throw new Error("Order not found");
     if ((o.buyer_id as string) !== userId) throw new Error("Not your order");
-    if ((o.escrow_status as string) !== "held") {
-      return { alreadyReleased: true };
-    }
-    const share = Number(o.seller_share_usd ?? 0);
-    if (share > 0) {
-      await supabaseAdmin.rpc("wallet_credit", { _user_id: o.seller_id as string, _amount: share });
-    }
-    const now = new Date().toISOString();
-    await supabaseAdmin
-      .from("orders")
-      .update({ escrow_status: "released", buyer_confirmed_at: now, released_at: now, released_by: userId })
-      .eq("id", data.orderId);
-    return { alreadyReleased: false };
+    // Single authoritative path: starts the payout hold, no direct crediting.
+    const res = await confirmReceipt(sb, data.orderId, userId, "buyer");
+    return { alreadyReleased: res.alreadyConfirmed };
   });
 
 /** Admin manually releases escrow for a stuck order. */
@@ -1316,25 +1307,10 @@ export const adminReleaseOrderEscrow = createServerFn({ method: "POST" })
     const { userId, supabase } = context;
     const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
     if (!isAdmin) throw new Error("Forbidden");
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: o, error } = await supabaseAdmin
-      .from("orders")
-      .select("id, seller_id, escrow_status, seller_share_usd")
-      .eq("id", data.orderId)
-      .maybeSingle();
-    if (error) throw new Error(error.message);
-    if (!o) throw new Error("Order not found");
-    if ((o.escrow_status as string) !== "held") return { alreadyReleased: true };
-    const share = Number(o.seller_share_usd ?? 0);
-    if (share > 0) {
-      await supabaseAdmin.rpc("wallet_credit", { _user_id: o.seller_id as string, _amount: share });
-    }
-    const now = new Date().toISOString();
-    await supabaseAdmin
-      .from("orders")
-      .update({ escrow_status: "released", released_at: now, released_by: userId })
-      .eq("id", data.orderId);
-    return { alreadyReleased: false };
+    const { admin, releaseEscrow } = await import("@/lib/fulfilment.server");
+    const sb = await admin();
+    const res = await releaseEscrow(sb, data.orderId, userId, "admin");
+    return { alreadyReleased: res.alreadyReleased };
   });
 
 /** Admin list of orders currently holding seller funds in escrow. */
