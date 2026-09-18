@@ -290,6 +290,30 @@ export const listMarketplaceCategories = createServerFn({ method: "GET" }).handl
   return roots;
 });
 
+/**
+ * Server-side guard: a listing may only be filed under an enabled DIGITAL
+ * marketplace category. Rejects anything else (including any attempt to
+ * reintroduce a physical-goods category) regardless of what the client sends.
+ */
+async function assertDigitalCategory(category: string): Promise<void> {
+  const value = String(category ?? "").trim();
+  if (!value) throw new Error("Category required");
+  if (value.toLowerCase() === "services") return; // digital service listings
+  const sb = serverPublicClient();
+  const { data, error } = await sb
+    .from("marketplace_categories")
+    .select("name, slug, kind, enabled")
+    .eq("enabled", true);
+  if (error) throw new Error(error.message);
+  const ok = (data ?? []).some(
+    (c: Record<string, unknown>) =>
+      ((c.kind as string) ?? "digital") === "digital" &&
+      (String(c.name ?? "").trim().toLowerCase() === value.toLowerCase() ||
+        String(c.slug ?? "").trim().toLowerCase() === value.toLowerCase()),
+  );
+  if (!ok) throw new Error("Unsupported category — Oventric only lists digital products.");
+}
+
 /** Public product detail. */
 export const getProduct = createServerFn({ method: "POST" })
   .inputValidator((input: { id: string }) => ({ id: String(input?.id ?? "") }))
