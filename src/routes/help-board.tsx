@@ -79,7 +79,7 @@ const FAQS = [
   },
   {
     q: "When do I get my cashback?",
-    a: "2% cashback is credited to your cashback wallet right after a successful purchase. It can be spent on digital products and courses.",
+    a: "When a seller funds cashback on a listing (up to 50%), it is credited to your cashback wallet after the purchase settles. It can be spent on digital products.",
   },
   {
     q: "Why is my price shown in a different currency?",

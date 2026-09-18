@@ -18,8 +18,8 @@ type Promo = {
 const PROMOS: Promo[] = [
   {
     id: "cashback",
-    title: "Earn 2% cashback",
-    body: "Money back into your cashback wallet on every order you place.",
+    title: "Earn up to 50% cashback",
+    body: "Seller-funded cashback lands in your cashback wallet on eligible orders.",
     cta: "Shop now",
     emoji: "💰",
     section: "Marketplace",

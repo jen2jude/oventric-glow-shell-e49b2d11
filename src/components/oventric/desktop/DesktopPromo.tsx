@@ -30,7 +30,7 @@ const BANNERS: Banner[] = [
   {
     id: "shopping",
     title: "Save big on all your shopping",
-    subtitle: "Up to 10% cashback on every completed order",
+    subtitle: "Up to 50% seller-funded cashback on eligible orders",
     icon: ShoppingBag,
     tint: "from-sky-400/15 to-sky-400/0",
     glow: "rgba(56,189,248,0.35)",
@@ -50,9 +50,9 @@ export function DesktopPromo({ onSelect }: { onSelect: (section: string) => void
           <Reveal delay={0}>
             <DesktopPromoCard
               id="cashback"
-              title="Earn 2% cashback"
-              highlight="on every order"
-              body="Money back into your cashback wallet, automatically."
+              title="Earn up to 50% cashback"
+              highlight="on eligible orders"
+              body="Seller-funded cashback lands in your cashback wallet automatically."
               cta="Shop now"
               onClick={() => onSelect("Marketplace")}
               art={promoCashbackArt}

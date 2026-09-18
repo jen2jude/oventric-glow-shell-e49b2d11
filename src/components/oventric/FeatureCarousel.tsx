@@ -5,8 +5,6 @@ import { useServerFn } from "@tanstack/react-start";
 import mockCashback from "@/assets/mock-cashback.jpg";
 import mockFeed from "@/assets/mock-feed.jpg";
 import mockMarketplace from "@/assets/mock-marketplace.jpg";
-import mockAcademy from "@/assets/mock-academy.jpg";
-import mockBounties from "@/assets/mock-bounties.jpg";
 import mockWallet from "@/assets/mock-wallet.jpg";
 import oventricFull from "@/assets/oventric-full-transparent.png";
 import oventricDark from "@/assets/oventric-logo-dark.png";
@@ -26,14 +24,14 @@ const SLIDES: Slide[] = [
     id: "cashback",
     image: mockCashback,
     title: "Cashback",
-    description: "Earn up to 10% cashback on every purchase.",
+    description: "Earn up to 50% seller-funded cashback on eligible purchases.",
     accent: "#3b82f6",
   },
   {
     id: "feed",
     image: mockFeed,
     title: "Feed",
-    description: "Follow creators, join circles, and see what Africa's builders are shipping.",
+    description: "Follow creators and see what Africa's builders are shipping.",
     accent: "#00c2ff",
   },
   {
@@ -42,20 +40,6 @@ const SLIDES: Slide[] = [
     title: "Marketplace",
     description: "Buy and sell digital products and earn real money.",
     accent: "#ff4d6d",
-  },
-  {
-    id: "academy",
-    image: mockAcademy,
-    title: "Academy",
-    description: "Earn real money while you learn or teach new skills — learn top tech skills.",
-    accent: "#3b82f6",
-  },
-  {
-    id: "bounties",
-    image: mockBounties,
-    title: "Bounties",
-    description: "Post open work, solve challenges, and get paid when the job ships.",
-    accent: "#ffb020",
   },
   {
     id: "wallet",

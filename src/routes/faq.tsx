@@ -50,7 +50,7 @@ const items = [
   },
   {
     q: "What is cashback?",
-    a: "You earn 2% of the order value on every purchase, paid back to your wallet in your base currency. Cashback is not earned when a coupon is used.",
+    a: "Sellers can fund cashback of up to 50% on a digital product. When a listing offers it, the cashback is credited to your cashback wallet in your base currency after the purchase settles. Cashback is not earned when a coupon is used.",
   },
   {
     q: "How do bounties work?",
