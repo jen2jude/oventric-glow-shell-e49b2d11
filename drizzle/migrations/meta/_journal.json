@@ -120,6 +120,13 @@
       "when": 1789730005727,
       "tag": "0016_restrict_wallet_self_seed_to_zero_balances",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1789730577006,
+      "tag": "0017_harden_withdrawal_pin_and_duplicate_payouts",
+      "breakpoints": true
     }
   ]
 }

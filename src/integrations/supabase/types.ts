@@ -3995,6 +3995,7 @@ export type Database = {
           failed_attempts: number
           locked_until: string | null
           pin_hash: string
+          pin_verified_at: string | null
           salt: string
           updated_at: string
           user_id: string
@@ -4004,6 +4005,7 @@ export type Database = {
           failed_attempts?: number
           locked_until?: string | null
           pin_hash: string
+          pin_verified_at?: string | null
           salt: string
           updated_at?: string
           user_id: string
@@ -4013,6 +4015,7 @@ export type Database = {
           failed_attempts?: number
           locked_until?: string | null
           pin_hash?: string
+          pin_verified_at?: string | null
           salt?: string
           updated_at?: string
           user_id?: string
@@ -4031,6 +4034,10 @@ export type Database = {
       }
       admin_reset_wallet: {
         Args: { _currency: string; _user_id: string; _which: string }
+        Returns: undefined
+      }
+      assert_no_duplicate_payout: {
+        Args: { _amount: number; _currency: string; _method: string }
         Returns: undefined
       }
       assert_public_column_privacy: {
@@ -4071,6 +4078,7 @@ export type Database = {
         Args: { _amount: number; _user_id: string }
         Returns: boolean
       }
+      consume_withdrawal_pin_verification: { Args: never; Returns: undefined }
       current_user_slug: { Args: never; Returns: string }
       delete_email: {
         Args: { message_id: number; queue_name: string }
