@@ -218,11 +218,9 @@ export function ProfileOverview({
         </Module>
       )}
 
-      {courses.length > 0 && (
-        <Module title="Courses" action="View courses" onAction={() => onOpenSection("courses")}>
-          <Rail>{courses.slice(0, 6).map((l) => listingCard(l, "listing", "Course", true))}</Rail>
-        </Module>
-      )}
+      {/* Courses are a paused (non-MVP) section and are not rendered. */}
+
+
 
       {posts.length > 0 && (
         <Module title="Recent posts" action="View posts" onAction={() => onOpenSection("posts")}>
