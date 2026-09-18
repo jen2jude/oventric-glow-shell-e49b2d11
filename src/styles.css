@@ -97,6 +97,11 @@
   --color-create-overlay: var(--create-overlay);
   --color-create-brand: var(--create-brand);
   --color-create-brand-soft: var(--create-brand-soft);
+  --color-newsfeed-canvas: var(--newsfeed-canvas);
+  --color-newsfeed-ink: var(--newsfeed-ink);
+  --color-newsfeed-surface: var(--newsfeed-surface);
+  --color-newsfeed-accent: var(--newsfeed-accent);
+  --color-newsfeed-on-accent: var(--newsfeed-on-accent);
   --color-create-post: var(--create-post);
   --color-create-post-soft: var(--create-post-soft);
   --color-create-bounty: var(--create-bounty);
@@ -112,6 +117,14 @@
   --animate-promo-float: promo-float 3.2s ease-in-out infinite;
   --animate-promo-float-slow: promo-float-slow 4.5s ease-in-out infinite;
   --shadow-public-shell: var(--public-shell-shadow);
+}
+
+:root {
+  --newsfeed-canvas: oklch(0.955 0.008 250);
+  --newsfeed-ink: oklch(0.21 0.025 260);
+  --newsfeed-surface: oklch(1 0 0);
+  --newsfeed-accent: oklch(0.61 0.2 22);
+  --newsfeed-on-accent: oklch(1 0 0);
 }
 
 /* Editorial public information and support pages. */
