@@ -135,27 +135,10 @@ export const getWalletBalances = createServerFn({ method: "GET" })
     return { balances, escrow, cashback, bountyBalance };
   });
 
-export const transferBountyToMain = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((i: { amount: number }) => {
-    const amount = Number(i?.amount);
-    if (!Number.isFinite(amount) || amount <= 0) throw new Error("Invalid amount");
-    return { amount: Math.round(amount * 100) / 100 };
-  })
-  .handler(async ({ data, context }) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const sb = context.supabase as any;
-    const { error } = await sb.rpc("bounty_wallet_transfer_to_main", { _amount: data.amount });
-    if (error) throw new Error(error.message);
-    return { ok: true, moved: data.amount };
-  });
-
-
 export interface WalletEarningsDTO {
   cashbackUSD: number;
   marketplaceHome: number;
   marketplaceCurrency: WalletCurrency;
-  bountyUSD: number;
   affiliateUSD: number;
 }
 
