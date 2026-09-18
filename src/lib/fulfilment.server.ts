@@ -106,6 +106,7 @@ export async function sendEmail(
         idempotency_key: messageId,
         to,
         from: "Oventric <noreply@oventric.com>",
+        sender_domain: "notify.oventric.com",
         subject,
         html,
         text: lines.join("\n\n"),
