@@ -56,10 +56,10 @@ export function MessagesDrawer({
         role="dialog"
         aria-label="Messages"
         aria-modal="true"
-        className="web-chat fixed inset-y-0 right-0 z-[80] h-[100dvh] max-h-[100dvh] w-full max-w-full overflow-hidden border-l border-border bg-background shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col md:w-[min(1120px,92vw)]"
+        className="web-chat fixed inset-y-0 right-0 z-[80] flex h-[100dvh] max-h-[100dvh] w-full max-w-full flex-col overflow-hidden border-l border-border bg-muted shadow-2xl animate-in slide-in-from-right duration-300 md:w-[min(1280px,94vw)] md:p-4 md:pl-5"
 
       >
-        <div className="flex items-center justify-between h-14 shrink-0 px-5 border-b border-border bg-background">
+        <div className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-background px-5 md:hidden">
           <div className="flex items-center gap-3">
             <span className="font-wallet-display text-sm font-semibold text-foreground">Messages</span>
             <span className="hidden sm:inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-1 text-[10px] font-semibold text-muted-foreground">
@@ -74,7 +74,7 @@ export function MessagesDrawer({
             <X className="w-4 h-4" />
           </button>
         </div>
-        <div className="flex-1 min-h-0 overflow-hidden">
+        <div className="min-h-0 flex-1 overflow-hidden">
           <Messages
             variant="compact"
             initialThreadId={initialThreadId}

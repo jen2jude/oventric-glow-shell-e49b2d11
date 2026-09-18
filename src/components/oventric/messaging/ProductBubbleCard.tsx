@@ -43,8 +43,8 @@ export function ProductBubbleCard({
     <div
       className={`mt-2 rounded-[10px] overflow-hidden border ${
         mine
-          ? "border-white/30 bg-black/15"
-          : "border-white/10 md:border-slate-200 bg-black/20 md:bg-white"
+          ? "border-white/30 bg-white/10"
+          : "border-border bg-background"
       }`}
     >
       <button
@@ -52,10 +52,10 @@ export function ProductBubbleCard({
         onClick={go}
         className="w-full flex items-center gap-2 px-2.5 py-3 hover:opacity-90 text-left"
       >
-        <ShoppingBag className={`w-4 h-4 shrink-0 ${mine ? "text-white" : "text-emerald-400"}`} />
+        <ShoppingBag className={`w-4 h-4 shrink-0 ${mine ? "text-white" : "text-primary"}`} />
         <span
           className={`text-[11px] font-semibold truncate ${
-            mine ? "text-white" : "text-slate-200 md:text-slate-700"
+            mine ? "text-white" : "text-foreground"
           }`}
         >
           Product attached — tap to open
@@ -64,7 +64,7 @@ export function ProductBubbleCard({
       <button
         type="button"
         onClick={go}
-        className="w-full flex items-center justify-center gap-1.5 bg-red-600 hover:bg-red-500 text-white text-[11px] font-bold py-2"
+        className="w-full flex items-center justify-center gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-[11px] font-bold py-2"
       >
         <ExternalLink className="w-3.5 h-3.5" /> View product
       </button>

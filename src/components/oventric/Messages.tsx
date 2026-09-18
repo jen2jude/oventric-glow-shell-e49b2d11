@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
+  ArrowLeft,
   Search,
   Send,
   Star,
@@ -11,6 +12,8 @@ import {
   Truck,
   ShieldAlert,
   AlertTriangle,
+  ShieldCheck,
+  ShoppingBag,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
@@ -38,6 +41,14 @@ import { OrderChatActionBar } from "@/components/oventric/OrderChatActionBar";
 
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { usePresence } from "@/hooks/use-presence";
+import { Button } from "@/components/ui/button";
+import { Message, MessageContent } from "@/components/ai-elements/message";
+import {
+  PromptInput,
+  PromptInputFooter,
+  PromptInputSubmit,
+  PromptInputTextarea,
+} from "@/components/ai-elements/prompt-input";
 
 interface OnlinePeer {
   name: string;
@@ -174,12 +185,12 @@ function ThreadRow({
 
 function MessageBubble({ msg, mine }: { msg: DMRow; mine: boolean }) {
   return (
-    <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
-      <div
-        className={`max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm ${
+    <Message from={mine ? "user" : "assistant"} className="max-w-[78%]">
+      <MessageContent
+        className={`rounded-2xl px-4 py-3 text-sm ${
           mine
-            ? "rounded-tr-sm bg-primary text-primary-foreground shadow-sm"
-            : "rounded-tl-sm bg-background text-foreground border border-border shadow-sm"
+            ? "rounded-br-sm bg-primary text-primary-foreground shadow-sm"
+            : "rounded-bl-sm border border-border bg-card text-card-foreground shadow-sm"
         }`}
       >
         {stripProductLink(msg.body) && (
@@ -205,8 +216,8 @@ function MessageBubble({ msg, mine }: { msg: DMRow; mine: boolean }) {
             </span>
           )}
         </div>
-      </div>
-    </div>
+      </MessageContent>
+    </Message>
   );
 }
 
@@ -216,6 +227,7 @@ export function Messages({
   onOpenEscrow: _onOpenEscrow,
   onClose,
 }: MessagesProps) {
+  const navigate = useNavigate();
   const { session, openGate } = useAuthGate();
   const me = session?.user?.id ?? null;
 
@@ -682,16 +694,36 @@ export function Messages({
     }
   };
 
+  const goBack = () => {
+    if (variant === "compact" && onClose) {
+      onClose();
+      return;
+    }
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+    void navigate({ to: "/" });
+  };
+
   const wrapperClasses =
-    "flex h-full min-h-0 max-h-full overflow-hidden bg-background text-foreground";
+    "web-chat flex h-full min-h-0 max-h-full overflow-hidden bg-background text-foreground md:rounded-[10px] md:border md:border-border md:shadow-[var(--chat-shell-shadow)]";
 
   if (!me) {
     return (
       <div className={wrapperClasses}>
-        <div className="flex flex-1 items-center justify-center p-8 text-center">
+        <div className="relative flex flex-1 items-center justify-center bg-muted/45 p-8 text-center">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={goBack}
+            className="absolute left-5 top-5 rounded-[10px] text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft /> Back
+          </Button>
           <div className="max-w-sm">
-            <div className="mx-auto mb-5 w-20 h-20 rounded-full bg-primary/5 border border-primary/15 flex items-center justify-center">
-              <MessageSquare className="w-8 h-8 text-primary" />
+            <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-full border border-primary/15 bg-primary/5">
+              <MessageSquare className="size-7 text-primary" />
             </div>
             <div className="font-wallet-display text-foreground font-semibold text-lg">
               Sign in to open Messages
@@ -699,12 +731,12 @@ export function Messages({
             <p className="text-sm text-muted-foreground mt-2">
               Sign in to securely message buyers and sellers.
             </p>
-            <button
+            <Button
               onClick={() => openGate("interaction")}
-              className="mt-4 inline-flex items-center gap-2 px-4 py-3 rounded-[10px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm"
+              className="mt-5 h-11 rounded-[10px] px-5 font-bold"
             >
               Connect account
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -717,9 +749,26 @@ export function Messages({
       <aside
         className={`${
           showListOnMobile ? "flex" : "hidden"
-        } md:flex flex-col w-full md:w-[34%] md:min-w-[310px] md:max-w-[380px] border-r border-border bg-background`}
+        } md:flex flex-col w-full md:w-[320px] lg:w-[344px] md:shrink-0 border-r border-border bg-muted/30`}
       >
-        <div className="sticky top-0 z-10 bg-background border-b border-border px-4 py-3 space-y-2.5">
+        <div className="sticky top-0 z-10 border-b border-border bg-muted/30 px-4 py-4 md:px-5 md:py-5 space-y-4">
+          <div className="hidden md:flex items-center justify-between gap-3">
+            <div>
+              <h1 className="font-wallet-display text-xl font-bold text-foreground">Messages</h1>
+              <p className="mt-0.5 text-[11px] text-muted-foreground">Secure buyer and seller conversations</p>
+            </div>
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              onClick={goBack}
+              aria-label="Back to previous page"
+              title="Back to previous page"
+              className="rounded-[10px] border border-border bg-background text-muted-foreground shadow-sm hover:text-foreground"
+            >
+              <ArrowLeft />
+            </Button>
+          </div>
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -727,8 +776,8 @@ export function Messages({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 type="text"
-                placeholder="Search peers…"
-                className="w-full h-10 pl-9 pr-3 bg-muted border border-transparent rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:bg-background focus:border-primary/40"
+                placeholder="Search conversations…"
+                className="w-full h-11 pl-9 pr-3 bg-background border border-border rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
               />
             </div>
             {variant === "compact" && onClose && (
@@ -772,7 +821,7 @@ export function Messages({
           const rail = [...online, ...offline];
           if (rail.length === 0) return null;
           return (
-            <div className="border-b border-border px-4 py-3">
+             <div className="border-b border-border px-4 py-3 md:px-5">
               <div className="text-[10px] uppercase tracking-wider font-bold text-primary mb-2">
                 {online.length > 0 ? `Online now · ${online.length}` : "Recent peers"}
               </div>
@@ -809,7 +858,7 @@ export function Messages({
             </div>
           );
         })()}
-        <div className="flex-1 overflow-y-auto p-3 space-y-1">
+         <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-1.5">
           {loadingThreads && threads.length === 0 ? (
             <div className="text-xs text-slate-500 md:text-slate-400 text-center py-8 flex items-center justify-center gap-2">
               <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading conversations…
@@ -834,19 +883,32 @@ export function Messages({
 
       {/* RIGHT — Active Chat */}
       <section
-        className={`${showListOnMobile ? "hidden" : "flex"} md:flex flex-1 min-w-0 min-h-0 h-full flex-col bg-muted/40`}
+        className={`${showListOnMobile ? "hidden" : "flex"} md:flex flex-1 min-w-0 min-h-0 h-full flex-col bg-background`}
       >
         {!activeThread ? (
           <EmptyChat hasThreads={threads.length > 0} />
         ) : (
           <>
-            <header className="shrink-0 flex items-center gap-3 px-4 sm:px-5 py-3 border-b border-border bg-background">
-              <button
+            <header className="shrink-0 flex min-h-20 items-center gap-3 px-4 sm:px-6 border-b border-border bg-background">
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
                 onClick={() => setShowListOnMobile(true)}
-                className="md:hidden text-primary text-xs font-semibold"
+                className="md:hidden -ml-2 rounded-[10px] text-primary"
               >
-                ← Back
-              </button>
+                <ArrowLeft /> Back
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={goBack}
+                className="hidden md:inline-flex -ml-2 rounded-[10px] text-muted-foreground hover:text-foreground"
+              >
+                <ArrowLeft /> Back
+              </Button>
+              <div className="hidden md:block h-7 w-px bg-border" />
               <div className="relative shrink-0">
                 <div className="w-10 h-10 rounded-full overflow-hidden">
                   <AvatarImage
@@ -902,7 +964,7 @@ export function Messages({
 
             <OrderTradeBanner ctx={orderCtx} onChanged={() => void refreshOrderCtx()} />
 
-            <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-5 space-y-3">
+            <div ref={scrollRef} className="chat-conversation flex-1 min-h-0 overflow-y-auto bg-muted/25 px-4 py-6 sm:px-8 space-y-4">
               {loadingMessages ? (
                 <div className="text-xs text-slate-500 md:text-slate-400 text-center py-8 flex items-center justify-center gap-2">
                   <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading messages…
@@ -953,8 +1015,8 @@ export function Messages({
 
             <OrderChatActionBar ctx={orderCtx} onChanged={() => void refreshOrderCtx()} />
 
-            <div
-              className="relative z-10 shrink-0 border-t border-border bg-background p-3 sm:p-4"
+             <div
+               className="relative z-10 shrink-0 border-t border-border bg-background p-3 sm:px-6 sm:py-5"
               style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.75rem)" }}
             >
               {OFF_PLATFORM_RE.test(draft) && (
@@ -966,42 +1028,71 @@ export function Messages({
                   </span>
                 </div>
               )}
-              <div className="flex items-end gap-2">
-                <textarea
-                  value={draft}
-                  onChange={(e) => {
-                    const v = e.target.value;
-                    setDraft(v);
-                    if (v.trim().length > 0) emitTyping(true);
-                    else emitTyping(false);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      void send();
-                    }
-                  }}
-                  rows={1}
-                  placeholder="Type a message…"
-                  className="flex-1 resize-none max-h-32 min-h-[44px] bg-muted border border-border rounded-xl px-3.5 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:bg-background focus:border-primary/40"
-                />
-                <button
-                  onClick={() => void send()}
-                  disabled={!draft.trim() || sending}
-                  className="shrink-0 inline-flex items-center justify-center w-11 h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed"
-                  aria-label="Send message"
-                >
-                  {sending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Send className="w-4 h-4" />
-                  )}
-                </button>
-              </div>
+               <PromptInput
+                 onSubmit={() => void send()}
+                 className="rounded-2xl border-border bg-muted/50 shadow-none transition-shadow focus-within:bg-background focus-within:shadow-sm"
+               >
+                 <PromptInputTextarea
+                   value={draft}
+                   onChange={(e) => {
+                     const v = e.target.value;
+                     setDraft(v);
+                     if (v.trim().length > 0) emitTyping(true);
+                     else emitTyping(false);
+                   }}
+                   placeholder="Write a message…"
+                   className="min-h-16 text-sm"
+                 />
+                 <PromptInputFooter className="justify-end px-2 pb-2">
+                   <PromptInputSubmit
+                     status={sending ? "submitted" : undefined}
+                     disabled={!draft.trim() || sending}
+                     aria-label="Send message"
+                     className="size-9 rounded-[10px]"
+                   >
+                     {sending ? <Loader2 className="animate-spin" /> : <Send />}
+                   </PromptInputSubmit>
+                 </PromptInputFooter>
+               </PromptInput>
             </div>
           </>
         )}
       </section>
+
+      <aside className="hidden xl:flex w-[260px] shrink-0 flex-col border-l border-border bg-muted/20 p-5">
+        <div className="font-wallet-display text-sm font-semibold text-foreground">Conversation details</div>
+        {activeThread ? (
+          <div className="mt-6 flex flex-1 flex-col">
+            <div className="flex flex-col items-center text-center">
+              <div className="size-16 overflow-hidden rounded-full ring-4 ring-background shadow-sm">
+                <AvatarImage src={activeThread.peerAvatarUrl} alt={activeThread.peerName} className="rounded-full" />
+              </div>
+              <div className="mt-3 font-wallet-display text-sm font-semibold text-foreground">{activeThread.peerName}</div>
+              <div className="mt-1 text-xs text-muted-foreground">
+                {isPeerOnline(activeThread.peerId) ? "Online now" : presence.lastSeenLabel(activeThread.peerId) ?? "Recently active"}
+              </div>
+              <Button asChild variant="outline" size="sm" className="mt-4 w-full rounded-[10px] bg-background">
+                <Link to="/profile/$id" params={{ id: activeThread.peerSlug }}>
+                  <ExternalLink /> View profile
+                </Link>
+              </Button>
+            </div>
+            <div className="mt-6 border-t border-border pt-5">
+              <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
+                {orderCtx ? <ShoppingBag className="text-primary" /> : <ShieldCheck className="text-primary" />}
+                {orderCtx ? "Active order" : "Protected conversation"}
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                {orderCtx
+                  ? `${orderCtx.productName} · Order ${orderCtx.orderId.slice(0, 8)}`
+                  : "Keep payment and delivery details inside Oventric for account protection."}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <p className="mt-3 text-xs leading-relaxed text-muted-foreground">Select a conversation to see contact and order details.</p>
+        )}
+      </aside>
     </div>
   );
 }

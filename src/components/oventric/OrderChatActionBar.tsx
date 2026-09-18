@@ -74,8 +74,8 @@ export function OrderChatActionBar({
 
   return (
     <>
-      <div className="sticky bottom-0 z-20 px-3 pb-2 pt-2 bg-background">
-        <div className="rounded-[10px] border border-border bg-background shadow-sm p-2.5">
+      <div className="sticky bottom-0 z-20 border-t border-border bg-background px-3 pb-2 pt-2 sm:px-6">
+        <div className="rounded-[10px] border border-border bg-muted/35 p-2.5">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setWarn(true)}
@@ -91,7 +91,7 @@ export function OrderChatActionBar({
             </button>
           </div>
           {left && (
-            <div className="mt-1.5 text-[10px] text-center text-slate-500">
+            <div className="mt-1.5 text-center text-[10px] text-muted-foreground">
               {ctx.deliveredAt
                 ? `Auto-confirms in ${left} if you don't act`
                 : `Auto-refunds to your wallet in ${left} if the seller doesn't deliver`}
@@ -101,31 +101,31 @@ export function OrderChatActionBar({
       </div>
 
       {warn && (
-        <div className="modal-light fixed inset-0 z-[90] flex items-end sm:items-center justify-center bg-black/70 p-0 sm:p-4">
-          <div className="w-full sm:max-w-md rounded-t-2xl sm:rounded-xl border border-amber-500/40 bg-[#1E1E24] md:bg-white p-5">
+        <div className="web-chat fixed inset-0 z-[90] flex items-end justify-center bg-slate-950/45 p-0 sm:items-center sm:p-4">
+          <div className="w-full rounded-t-2xl border border-border bg-background p-5 shadow-2xl sm:max-w-md sm:rounded-xl">
             <div className="flex items-center gap-2 mb-2">
               <AlertTriangle className="w-5 h-5 text-amber-400" />
-              <h3 className="text-white md:text-slate-900 font-bold text-base">
+              <h3 className="font-wallet-display text-base font-bold text-foreground">
                 Confirm you received it?
               </h3>
             </div>
-            <p className="text-xs text-slate-400 md:text-slate-600 leading-relaxed mb-4">
+            <p className="mb-4 text-xs leading-relaxed text-muted-foreground">
               Only continue if you have received the item <strong>and it works</strong>. This
               releases the payment to the seller after a short hold and{" "}
-              <span className="text-amber-300 md:text-amber-700 font-semibold">cannot be undone</span>
+              <span className="font-semibold text-amber-700">cannot be undone</span>
               . If anything is wrong, close this and tap <em>Report issue</em> instead.
             </p>
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setWarn(false)}
-                className="px-3 py-2.5 rounded-[10px] text-sm text-slate-300 md:text-slate-600 bg-[#2A2A31] md:bg-slate-100 border border-white/10 md:border-slate-200"
+                className="rounded-[10px] border border-border bg-muted px-3 py-2.5 text-sm text-muted-foreground"
               >
                 Cancel
               </button>
               <button
                 onClick={() => void doConfirm()}
                 disabled={busy}
-                className="px-4 py-2.5 rounded-[10px] text-sm font-bold text-black bg-emerald-500 disabled:opacity-60 inline-flex items-center gap-2"
+                className="inline-flex items-center gap-2 rounded-[10px] bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground disabled:opacity-60"
               >
                 {busy && <Loader2 className="w-4 h-4 animate-spin" />} Yes, confirm
               </button>
@@ -204,31 +204,31 @@ function ReportIssueModal({
   };
 
   return (
-    <div className="modal-light fixed inset-0 z-[90] flex items-end sm:items-center justify-center bg-black/70 p-0 sm:p-4">
-      <div className="w-full sm:max-w-lg max-h-[92vh] overflow-y-auto rounded-t-2xl sm:rounded-xl border border-white/10 md:border-slate-200 bg-[#1E1E24] md:bg-white p-5">
+    <div className="web-chat fixed inset-0 z-[90] flex items-end justify-center bg-slate-950/45 p-0 sm:items-center sm:p-4">
+      <div className="max-h-[92vh] w-full overflow-y-auto rounded-t-2xl border border-border bg-background p-5 shadow-2xl sm:max-w-lg sm:rounded-xl">
         <div className="flex items-start justify-between gap-3 mb-3">
           <div>
-            <h3 className="text-white md:text-slate-900 font-bold text-base">Report an issue</h3>
-            <p className="text-xs text-slate-500">
+            <h3 className="font-wallet-display text-base font-bold text-foreground">Report an issue</h3>
+            <p className="text-xs text-muted-foreground">
               Escrow is frozen while the seller and our team review this.
             </p>
           </div>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="p-1.5 rounded-[10px] text-slate-400 md:text-slate-500 hover:bg-white/5"
+            className="rounded-[10px] p-1.5 text-muted-foreground hover:bg-muted"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <label className="block text-[11px] uppercase tracking-widest text-slate-500 mb-1">
+        <label className="mb-1 block text-[11px] uppercase tracking-widest text-muted-foreground">
           What happened?
         </label>
         <select
           value={reason}
           onChange={(e) => setReason(e.target.value as typeof reason)}
-          className="w-full mb-3 rounded-[10px] bg-[#121214] md:bg-slate-50 border border-white/10 md:border-slate-200 px-3 py-3 text-sm text-white md:text-slate-900"
+          className="mb-3 w-full rounded-[10px] border border-border bg-muted/50 px-3 py-3 text-sm text-foreground"
         >
           {ISSUE_REASONS.map((r) => (
             <option key={r.value} value={r.value}>
@@ -237,7 +237,7 @@ function ReportIssueModal({
           ))}
         </select>
 
-        <label className="block text-[11px] uppercase tracking-widest text-slate-500 mb-1">
+        <label className="mb-1 block text-[11px] uppercase tracking-widest text-muted-foreground">
           Details
         </label>
         <textarea
@@ -245,13 +245,13 @@ function ReportIssueModal({
           onChange={(e) => setDetails(e.target.value)}
           rows={5}
           placeholder="Explain what happened — what you received, what isn't working, and when you last heard from the seller."
-          className="w-full mb-3 rounded-[10px] bg-[#121214] md:bg-slate-50 border border-white/10 md:border-slate-200 px-3 py-3 text-sm text-white md:text-slate-900 placeholder:text-slate-600"
+          className="mb-3 w-full rounded-[10px] border border-border bg-muted/50 px-3 py-3 text-sm text-foreground placeholder:text-muted-foreground"
         />
 
-        <label className="block text-[11px] uppercase tracking-widest text-slate-500 mb-1">
+        <label className="mb-1 block text-[11px] uppercase tracking-widest text-muted-foreground">
           Proof (optional, up to 5 images)
         </label>
-        <label className="inline-flex items-center gap-2 px-3 py-3 rounded-[10px] text-sm text-slate-200 md:text-slate-700 bg-[#2A2A31] md:bg-slate-100 border border-white/10 md:border-slate-200 cursor-pointer mb-3">
+        <label className="mb-3 inline-flex cursor-pointer items-center gap-2 rounded-[10px] border border-border bg-muted px-3 py-3 text-sm text-foreground">
           <Upload className="w-4 h-4" /> Upload screenshots
           <input
             type="file"
@@ -270,7 +270,7 @@ function ReportIssueModal({
                 key={u}
                 src={u}
                 alt="Proof preview"
-                className="w-16 h-16 object-cover rounded border border-white/10 md:border-slate-200"
+                className="h-16 w-16 rounded border border-border object-cover"
               />
             ))}
           </div>
@@ -279,7 +279,7 @@ function ReportIssueModal({
         <div className="flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-3 py-3 rounded-[10px] text-sm text-slate-300 md:text-slate-600 bg-[#2A2A31] md:bg-slate-100 border border-white/10 md:border-slate-200"
+            className="rounded-[10px] border border-border bg-muted px-3 py-3 text-sm text-muted-foreground"
           >
             Cancel
           </button>
