@@ -187,10 +187,8 @@ export const getWalletEarnings = createServerFn({ method: "GET" })
         const usd = r.currency === "USD" ? amount : amount / (r.currency === "NGN" ? 1500 : 14);
         return s + (marketplaceCurrency === "USD" ? usd : usd * (marketplaceCurrency === "NGN" ? 1500 : 14));
       }, 0);
-    const bountyUSD = ((bountyRes.data ?? []) as Array<{ amount: number }>)
-      .reduce((s, r) => s + Number(r.amount ?? 0), 0);
     const affiliateUSD = ((affiliateRes.data ?? []) as Array<{ amount: number }>)
       .reduce((s, r) => s + Number(r.amount ?? 0), 0);
 
-    return { cashbackUSD, marketplaceHome, marketplaceCurrency, bountyUSD, affiliateUSD };
+    return { cashbackUSD, marketplaceHome, marketplaceCurrency, affiliateUSD };
   });
