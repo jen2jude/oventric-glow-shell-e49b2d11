@@ -752,6 +752,23 @@ export function Messages({
         } md:flex flex-col w-full md:w-[320px] lg:w-[344px] md:shrink-0 border-r border-border bg-muted/30`}
       >
         <div className="sticky top-0 z-10 border-b border-border bg-muted/30 px-4 py-4 md:px-5 md:py-5 space-y-4">
+          <div className="flex md:hidden items-center gap-3">
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              onClick={goBack}
+              aria-label="Back to previous page"
+              title="Back to previous page"
+              className="rounded-[10px] border border-border bg-background text-muted-foreground shadow-sm hover:text-foreground"
+            >
+              <ArrowLeft />
+            </Button>
+            <div>
+              <h1 className="font-wallet-display text-lg font-bold text-foreground">Messages</h1>
+              <p className="text-[11px] text-muted-foreground">Secure buyer and seller conversations</p>
+            </div>
+          </div>
           <div className="hidden md:flex items-center justify-between gap-3">
             <div>
               <h1 className="font-wallet-display text-xl font-bold text-foreground">Messages</h1>
