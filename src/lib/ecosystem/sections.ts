@@ -57,11 +57,18 @@ export interface VisibleSection extends EcosystemSectionDef {
  * are dropped, so a designer, a course creator and a business each get a
  * profile shaped by what they actually do.
  */
+/**
+ * Paused (non-MVP) sections. Definitions stay above for future reactivation,
+ * but they are never rendered on an active profile.
+ */
+const PAUSED_SECTIONS = new Set<EcosystemSectionKey>(["courses", "posted", "solved"]);
+
 export function buildProfileSections(
   counts: EcosystemCounts,
   opts: { isOwner?: boolean } = {},
 ): VisibleSection[] {
   return ECOSYSTEM_SECTIONS.filter((s) => {
+    if (PAUSED_SECTIONS.has(s.key)) return false;
     if (s.alwaysVisible) return true;
     if (opts.isOwner && s.ownerVisible) return true;
     return (counts[s.key] ?? 0) > 0;

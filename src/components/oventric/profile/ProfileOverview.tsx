@@ -111,7 +111,6 @@ export function ProfileOverview({
     const keys: PreviewKey[] = [];
     if ((counts.marketplace ?? 0) > 0) keys.push("marketplace");
     if ((counts.services ?? 0) > 0) keys.push("services");
-    if ((counts.courses ?? 0) > 0) keys.push("courses");
     if ((counts.posts ?? 0) > 0) keys.push("posts");
     if ((counts.groups ?? 0) > 0) keys.push("groups");
     return keys;
@@ -179,7 +178,6 @@ export function ProfileOverview({
 
   const shop = (data.marketplace ?? []) as ProfileListing[];
   const services = (data.services ?? []) as ProfileListing[];
-  const courses = (data.courses ?? []) as ProfileListing[];
   const posts = (data.posts ?? []) as ProfilePost[];
   const groups = (data.groups ?? []) as ProfileGroup[];
 
@@ -218,11 +216,9 @@ export function ProfileOverview({
         </Module>
       )}
 
-      {courses.length > 0 && (
-        <Module title="Courses" action="View courses" onAction={() => onOpenSection("courses")}>
-          <Rail>{courses.slice(0, 6).map((l) => listingCard(l, "listing", "Course", true))}</Rail>
-        </Module>
-      )}
+      {/* Courses are a paused (non-MVP) section and are not rendered. */}
+
+
 
       {posts.length > 0 && (
         <Module title="Recent posts" action="View posts" onAction={() => onOpenSection("posts")}>

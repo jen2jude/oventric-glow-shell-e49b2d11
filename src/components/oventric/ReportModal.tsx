@@ -73,7 +73,7 @@ const REASONS = [
     label: "Intellectual Property",
     desc: "Copyright, trademark, or code license violation.",
   },
-  { id: "scam", label: "Scam", desc: "Phishing, fake bounties, or fraudulent listings." },
+  { id: "scam", label: "Scam", desc: "Phishing, impersonation, or fraudulent listings." },
 ] as const;
 
 type ReasonId = (typeof REASONS)[number]["id"];

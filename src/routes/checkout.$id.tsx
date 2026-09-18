@@ -568,7 +568,7 @@ function CheckoutPage() {
                   },
                   {
                     id: "binance" as const,
-                    label: "Binance",
+                    label: "Binance User ID",
                     hint: "Send to our Binance ID, upload proof · verified by our team",
                     Icon: CreditCard,
                   },
