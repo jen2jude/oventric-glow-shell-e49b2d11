@@ -125,7 +125,7 @@ export const verifyWithdrawalPin = createServerFn({ method: "POST" })
 
     await sb
       .from("withdrawal_pins")
-      .update({ failed_attempts: 0, locked_until: null })
+      .update({ failed_attempts: 0, locked_until: null, pin_verified_at: new Date().toISOString() })
       .eq("user_id", context.userId);
     return { ok: true };
   });
