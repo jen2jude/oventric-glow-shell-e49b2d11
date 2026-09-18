@@ -75,8 +75,7 @@ export function DesktopPromo({ onSelect }: { onSelect: (section: string) => void
               highlight="both sides win"
               body="Invite builders and earn from their activity."
               cta="Invite friends"
-              to="/affiliate"
-              search={{ reserve: "1" }}
+              to="/referrals"
               art={promoReferArt}
               gradient="linear-gradient(135deg,#7DE2A8 0%,#2ED3A0 55%,#12B39B 100%)"
             />

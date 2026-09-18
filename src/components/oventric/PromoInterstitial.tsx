@@ -30,8 +30,7 @@ const PROMOS: Promo[] = [
     body: "Invite builders and earn from their activity on Oventric.",
     cta: "Invite friends",
     emoji: "🎁",
-    to: "/affiliate",
-    search: { reserve: "1" },
+    to: "/referrals",
   },
 ];
 

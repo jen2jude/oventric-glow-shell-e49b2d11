@@ -41,7 +41,7 @@ import { MessagesDrawer } from "@/components/oventric/MessagesDrawer";
 import { AdSlot } from "@/components/oventric/ads/AdSlot";
 
 export function navigateSection(
-  section: "Feed" | "Marketplace" | "Bounties" | "Circles" | "Messages" | "Wallet" | "Academy",
+  section: "Feed" | "Marketplace" | "Messages" | "Wallet",
 ) {
   if (typeof window === "undefined") return;
   window.dispatchEvent(new CustomEvent("oventric:navigate", { detail: { section } }));
@@ -483,7 +483,7 @@ export function DiscoveryPanel({ asPage = false }: { asPage?: boolean } = {}) {
             <span className="truncate">Top Peers in Your Circle</span>
           </h3>
           <button
-            onClick={() => navigateSection("Circles")}
+            onClick={() => navigateSection("Feed")}
             className="shrink-0 rounded-[10px] px-2 py-1 text-[11px] font-semibold text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
           >
             See all
