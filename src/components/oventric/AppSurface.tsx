@@ -305,7 +305,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
       setMessagesPeer(dmPeer);
       setMessagesOpen(true);
     }
-    if (!section && !bountyId && !dmPeer) return;
+    if (!section && !dmPeer) return;
     params.delete("section");
     params.delete("bounty");
     params.delete("dm");
@@ -320,7 +320,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   // Browser visitors retain the full Hub experience. Installed/native app
   // launches use the social feed as their Home screen.
   const desktopLanding =
-    (active === "Home" || active === "Explore" || active === "Marketplace" || active === "Academy" || active === "Bounties" || active === "Circles" || active === "Feed") &&
+    (active === "Home" || active === "Explore" || active === "Marketplace" || active === "Feed") &&
     (isDesktop || !isAppShell);
   const isMarketplace = active === "Marketplace";
 
