@@ -243,9 +243,9 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
   const startSelling = () => onCreate?.();
 
   return (
-    <div className="min-h-screen w-full bg-[#F7F8FA]">
+    <div className="home-pop min-h-screen w-full bg-home-canvas">
       {/* ---------------------------------------------------------- hero */}
-      <section className="relative w-full overflow-hidden bg-white">
+      <section className="home-pop-hero relative w-full overflow-hidden bg-home-surface">
         <div className="absolute inset-0">
           <img
             src={heroImage}
@@ -256,17 +256,17 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           />
           {/* white fade — text panel on the left, image stretches to both edges */}
           <div className="absolute inset-0 bg-gradient-to-r from-white/95 from-0% via-white/80 via-[30%] to-transparent to-[65%] sm:via-[38%] sm:to-[72%] lg:via-[42%] lg:to-[78%]" />
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#F7F8FA] to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-home-canvas to-transparent" />
         </div>
 
         <div className="relative z-10 mx-auto flex w-full max-w-[1280px] flex-col justify-center gap-6 px-4 py-14 sm:px-6 sm:py-20 lg:min-h-[520px] lg:px-8 lg:py-28">
           <div>
-            <h1 className="font-[Outfit] text-[26px] font-extrabold leading-[1.05] tracking-tight text-slate-900 sm:text-[48px] lg:text-[58px]">
+            <h1 className="font-wallet-display text-[26px] font-extrabold leading-[1.05] text-home-ink sm:text-[48px] lg:text-[58px]">
               1st Africa Digital
               <span className="block text-crimson">Marketplace & Community</span>
               <span className="block">for creators</span>
             </h1>
-            <p className="mt-4 max-w-md text-[14px] leading-relaxed text-black sm:text-lg">
+            <p className="mt-4 max-w-md text-[14px] leading-relaxed text-home-copy sm:text-lg">
               Buy, sell and discover
               <br className="sm:hidden" />{" "}
               digital products, services and tools
@@ -279,7 +279,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             <button
               type="button"
               onClick={() => navigate({ to: "/sellers" })}
-              className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-crimson px-5 text-sm font-bold text-white shadow-lg shadow-crimson/20 transition-all hover:brightness-110 active:scale-95 sm:h-12 sm:flex-none sm:px-8"
+                className="home-pop-primary inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full px-5 text-sm font-bold text-primary-foreground transition-all active:scale-95 sm:h-12 sm:flex-none sm:px-8"
             >
               Shop
               <ArrowRight className="hidden h-4 w-4 sm:block" />
@@ -287,7 +287,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             <button
               type="button"
               onClick={startSelling}
-              className="inline-flex h-11 flex-1 items-center justify-center rounded-full border border-slate-300 bg-white/80 px-5 text-sm font-bold text-slate-900 backdrop-blur transition-colors hover:bg-white active:scale-95 sm:h-12 sm:flex-none sm:px-8"
+                className="inline-flex h-11 flex-1 items-center justify-center rounded-full border border-home-line bg-home-surface/90 px-5 text-sm font-bold text-home-ink shadow-home-soft backdrop-blur transition-all hover:-translate-y-0.5 active:scale-95 sm:h-12 sm:flex-none sm:px-8"
             >
               <span className="sm:hidden">Sell</span>
               <span className="hidden sm:inline">Become a Seller</span>
@@ -303,13 +303,13 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && submitSearch()}
                 placeholder="Search digital products, sellers..."
-                className="h-12 w-full rounded-full border border-slate-200 bg-white/90 pl-5 pr-14 text-sm font-medium text-slate-900 backdrop-blur-sm transition-all placeholder:text-slate-400 focus:border-crimson/50 focus:bg-white focus:outline-hidden"
+                className="h-12 w-full rounded-full border border-home-line bg-home-surface/95 pl-5 pr-14 text-sm font-medium text-home-ink shadow-home-soft backdrop-blur-sm transition-all placeholder:text-home-muted focus:border-primary/50 focus:bg-home-surface focus:outline-hidden"
               />
               <button
                 type="button"
                 onClick={submitSearch}
                 aria-label="Search"
-                className="absolute right-1 top-1 flex h-10 w-10 items-center justify-center rounded-full bg-crimson text-white transition-transform active:scale-95"
+                className="home-pop-primary absolute right-1 top-1 flex h-10 w-10 items-center justify-center rounded-full text-primary-foreground transition-transform active:scale-95"
               >
                 <Search className="h-5 w-5" />
               </button>
@@ -334,14 +334,14 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           <h2 className="mb-3 px-1 text-base font-bold text-slate-900 sm:hidden">
             Platform Perks
           </h2>
-          <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-4 lg:gap-4 [&::-webkit-scrollbar]:hidden">
-            {TRUST.map(({ Icon, tint, title, body }) => (
+          <div className="home-pop-trust flex snap-x snap-mandatory gap-3 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-4 lg:gap-4 [&::-webkit-scrollbar]:hidden">
+            {TRUST.map(({ Icon, title, body }) => (
               <div
                 key={title}
-                className="min-w-[85%] shrink-0 snap-center rounded-[14px] border border-slate-200/80 bg-white p-5 sm:min-w-0 sm:flex sm:items-center sm:gap-3 sm:p-4"
+                className="home-pop-trust-card min-w-[85%] shrink-0 snap-center rounded-[14px] border p-5 transition-transform hover:-translate-y-1 sm:min-w-0 sm:flex sm:items-center sm:gap-3 sm:p-4"
               >
                 <span
-                  className={`grid h-11 w-11 shrink-0 place-items-center rounded-[12px] ${tint}`}
+                  className="home-pop-icon grid h-11 w-11 shrink-0 place-items-center rounded-[12px]"
                 >
                   <Icon className="h-5 w-5" />
                 </span>
@@ -377,7 +377,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           title="Shop by Category"
           action={{ label: "View all", onClick: () => onSelect("Marketplace") }}
         />
-        <div className="grid grid-cols-4 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
+        <div className="home-pop-categories grid grid-cols-4 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
           {categories.map((c, i) => {
             const { Icon } = visualForCategory(c.slug, c.name);
             const tint = TILE_TINTS[i % TILE_TINTS.length]!;
@@ -386,7 +386,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
                 key={c.id}
                 type="button"
                 onClick={() => onSelect("Marketplace")}
-                className="flex flex-col items-center gap-2 rounded-[14px] border-slate-200/80 bg-transparent p-0 text-center transition-all active:scale-[0.98] sm:flex-row sm:gap-3 sm:border sm:bg-white sm:p-4 sm:text-left sm:hover:-translate-y-0.5 sm:hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
+                className="home-pop-category flex flex-col items-center gap-2 rounded-[14px] p-2 text-center transition-all active:scale-[0.98] sm:flex-row sm:gap-3 sm:p-4 sm:text-left sm:hover:-translate-y-1"
               >
                 <span className={`grid h-14 w-14 shrink-0 place-items-center rounded-full ${tint} sm:h-11 sm:w-11 sm:rounded-[12px]`}>
                   <Icon className="h-6 w-6 sm:h-5 sm:w-5" />
@@ -411,7 +411,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           subtitle="Handpicked by our team"
           action={{ label: "View all", onClick: () => onSelect("Marketplace") }}
         />
-        <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5 lg:gap-4">
+        <div className="home-pop-products -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5 lg:gap-4">
           {featured.slice(0, 10).map((p) => (
             <div key={p.id} className="w-[84%] shrink-0 snap-start sm:w-auto sm:shrink">
               <ProductCard product={p} currency={baseCurrency} />
@@ -731,7 +731,7 @@ function ProductCard({ product, currency }: { product: ProductDTO; currency: str
   ).formatted;
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-[14px] border border-slate-200/80 bg-white transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_36px_-24px_rgba(15,23,42,0.6)]">
+    <div className="home-pop-product group flex flex-col overflow-hidden rounded-[14px] border bg-home-surface transition-all hover:-translate-y-1">
       <Link
         to="/product/$id"
         params={{ id: product.id }}
@@ -787,7 +787,7 @@ function NewsfeedRail({ posts, onOpenFeed }: { posts: FeedPost[]; onOpenFeed: ()
   };
 
   return (
-    <section className="mt-10 lg:mt-14">
+    <section className="home-pop-feed mt-10 rounded-[20px] px-4 py-6 sm:px-6 lg:mt-14 lg:px-8">
       {/* Header */}
       <div className="mb-4 flex items-end justify-between">
         <div>
@@ -822,7 +822,7 @@ function NewsfeedRail({ posts, onOpenFeed }: { posts: FeedPost[]; onOpenFeed: ()
         </div>
 
         {/* Desktop scroll controls */}
-        <div className="pointer-events-none absolute inset-y-0 -right-2 hidden w-20 items-center justify-end bg-gradient-to-l from-[#F7F8FA] via-[#F7F8FA]/70 to-transparent lg:flex">
+        <div className="pointer-events-none absolute inset-y-0 -right-2 hidden w-20 items-center justify-end bg-gradient-to-l from-home-feed via-home-feed/70 to-transparent lg:flex">
           <button
             type="button"
             onClick={() => scrollRail(1)}
@@ -832,7 +832,7 @@ function NewsfeedRail({ posts, onOpenFeed }: { posts: FeedPost[]; onOpenFeed: ()
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
-        <div className="pointer-events-none absolute inset-y-0 -left-2 hidden w-20 items-center justify-start bg-gradient-to-r from-[#F7F8FA] via-[#F7F8FA]/70 to-transparent lg:flex">
+        <div className="pointer-events-none absolute inset-y-0 -left-2 hidden w-20 items-center justify-start bg-gradient-to-r from-home-feed via-home-feed/70 to-transparent lg:flex">
           <button
             type="button"
             onClick={() => scrollRail(-1)}
