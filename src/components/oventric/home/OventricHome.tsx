@@ -781,8 +781,10 @@ function ProductCard({ product, currency }: { product: ProductDTO; currency: str
 }
 
 function NewsfeedRail({ posts, onOpenFeed }: { posts: FeedPost[]; onOpenFeed: () => void }) {
-  const featured = posts[0];
-  const secondary = posts.slice(1, 5);
+  const railRef = useRef<HTMLDivElement | null>(null);
+  const scrollRail = (dir: 1 | -1) => {
+    railRef.current?.scrollBy({ left: dir * 660, behavior: "smooth" });
+  };
 
   return (
     <section className="-mx-4 mt-10 overflow-hidden bg-newsfeed-canvas px-4 py-8 sm:mx-0 sm:rounded-[24px] sm:px-6 sm:py-10 lg:mt-14 lg:px-8 lg:py-12">
@@ -807,27 +809,47 @@ function NewsfeedRail({ posts, onOpenFeed }: { posts: FeedPost[]; onOpenFeed: ()
         </Link>
       </div>
 
-      {/* Magazine layout */}
-      <div className="flex flex-col gap-5 lg:flex-row lg:gap-6">
-        {featured && (
-          <div className="lg:w-[55%] lg:shrink-0">
-            <FeaturedPostCard post={featured} />
-          </div>
-        )}
-        <div className="flex flex-col gap-4 lg:flex-1">
-          <div className="grid grid-cols-2 gap-4">
-            {secondary.map((post) => (
-              <SecondaryPostCard key={post.id} post={post} />
-            ))}
-          </div>
-          <CommunityPulseBar posts={posts} onOpenFeed={onOpenFeed} />
+      {/* Scrollable rail */}
+      <div className="relative">
+        <div
+          ref={railRef}
+          className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] sm:gap-5 [&::-webkit-scrollbar]:hidden"
+        >
+          {posts.map((post, index) => (
+            <RailPostCard key={post.id} post={post} index={index} />
+          ))}
+          <JoinDiscussionCard posts={posts} onOpenFeed={onOpenFeed} />
+        </div>
+
+        {/* Desktop scroll controls */}
+        <div className="pointer-events-none absolute inset-y-0 -right-2 hidden w-24 items-center justify-end bg-gradient-to-l from-newsfeed-canvas via-newsfeed-canvas/70 to-transparent lg:flex">
+          <button
+            type="button"
+            onClick={() => scrollRail(1)}
+            aria-label="Scroll to more posts"
+            className="pointer-events-auto mr-2 grid h-11 w-11 place-items-center rounded-full border border-newsfeed-ink/10 bg-newsfeed-surface text-newsfeed-ink shadow-lg transition-transform hover:scale-105"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="pointer-events-none absolute inset-y-0 -left-2 hidden w-24 items-center justify-start bg-gradient-to-r from-newsfeed-canvas via-newsfeed-canvas/70 to-transparent lg:flex">
+          <button
+            type="button"
+            onClick={() => scrollRail(-1)}
+            aria-label="Scroll back"
+            className="pointer-events-auto ml-2 grid h-11 w-11 place-items-center rounded-full border border-newsfeed-ink/10 bg-newsfeed-surface text-newsfeed-ink shadow-lg transition-transform hover:scale-105"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
         </div>
       </div>
     </section>
   );
 }
 
-function FeaturedPostCard({ post }: { post: FeedPost }) {
+const RAIL_LABELS = ["Community", "Creator", "Spotlight", "Update", "Fresh"];
+
+function RailPostCard({ post, index }: { post: FeedPost; index: number }) {
   const image = post.media.find((item) => item.type === "image");
   const video = post.media.find((item) => item.type === "video" && item.poster_url);
   const thumb = image?.url ?? video?.poster_url ?? post.poster_url ?? null;
@@ -835,12 +857,20 @@ function FeaturedPostCard({ post }: { post: FeedPost }) {
   const timeLabel = Number.isNaN(created.getTime())
     ? "Recently"
     : created.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  const label = RAIL_LABELS[index % RAIL_LABELS.length];
+  const accentCard = !thumb && index % 3 === 2;
 
   return (
     <Link
       to="/feed"
       search={{ post: post.id }}
-      className="group relative flex aspect-[4/5] w-full flex-col overflow-hidden rounded-[28px] bg-newsfeed-ink shadow-2xl shadow-newsfeed-ink/10 sm:rounded-[32px]"
+      className={`group relative flex h-[360px] w-[270px] shrink-0 snap-start flex-col overflow-hidden rounded-[26px] shadow-lg transition-transform duration-300 hover:-translate-y-1.5 sm:h-[400px] sm:w-[320px] sm:rounded-[30px] ${
+        thumb
+          ? "bg-newsfeed-ink shadow-newsfeed-ink/15"
+          : accentCard
+            ? "bg-newsfeed-accent shadow-newsfeed-accent/25"
+            : "bg-newsfeed-ink shadow-newsfeed-ink/15"
+      }`}
     >
       {thumb ? (
         <>
@@ -851,128 +881,105 @@ function FeaturedPostCard({ post }: { post: FeedPost }) {
             decoding="async"
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-newsfeed-ink via-newsfeed-ink/50 to-newsfeed-ink/10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-newsfeed-ink via-newsfeed-ink/40 to-newsfeed-ink/5" />
         </>
       ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-newsfeed-ink to-newsfeed-ink/80" />
+        <>
+          <div
+            className={`absolute -right-16 -top-16 h-48 w-48 rounded-full blur-2xl ${
+              accentCard ? "bg-white/20" : "bg-newsfeed-accent/40"
+            }`}
+          />
+          <div
+            className={`absolute -bottom-20 -left-16 h-52 w-52 rounded-full blur-3xl ${
+              accentCard ? "bg-newsfeed-ink/25" : "bg-white/10"
+            }`}
+          />
+        </>
       )}
 
-      <div className="absolute top-5 left-5 sm:top-6 sm:left-6">
-        <span className="inline-flex items-center rounded-full border border-white/30 bg-white/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-md">
-          Featured
+      <div className="absolute left-4 top-4 sm:left-5 sm:top-5">
+        <span
+          className={`inline-flex items-center rounded-full border px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider backdrop-blur-md ${
+            thumb
+              ? "border-white/30 bg-white/20 text-white"
+              : accentCard
+                ? "border-white/40 bg-white/15 text-white"
+                : "border-white/20 bg-newsfeed-accent/90 text-newsfeed-on-accent"
+          }`}
+        >
+          {label}
         </span>
       </div>
 
-      <div className="relative z-10 mt-auto flex flex-col justify-end p-5 text-newsfeed-surface sm:p-7">
-        <div className="mb-4 flex items-center gap-2.5">
-          <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full border border-white/40 bg-newsfeed-canvas sm:h-9 sm:w-9">
+      <div className="relative z-10 mt-auto flex flex-col p-5 text-white sm:p-6">
+        <div className="mb-3 flex items-center gap-2.5">
+          <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full border border-white/40 bg-newsfeed-canvas">
             <AvatarImage src={post.author_avatar_url} alt={post.author_name} />
           </div>
-          <span className="text-xs font-semibold text-white/90 sm:text-sm">{post.author_name}</span>
+          <span className="truncate text-xs font-semibold text-white/90">{post.author_name}</span>
+          <span className="ml-auto shrink-0 text-[10px] font-semibold text-white/60">{timeLabel}</span>
         </div>
-        {post.text ? (
-          <h3 className="font-[Instrument_Serif] text-[26px] leading-[1.1] text-white sm:text-[32px] lg:text-[38px]">
-            {post.text}
-          </h3>
-        ) : (
-          <h3 className="font-[Instrument_Serif] text-[26px] leading-[1.1] text-white sm:text-[32px] lg:text-[38px]">
-            A fresh update from the Oventric community.
-          </h3>
-        )}
-        <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-white/65">
-          Posted by {post.author_name} on {timeLabel}. Join the conversation and discover what creators are sharing right now.
-        </p>
-        <div className="mt-5 flex items-center gap-5 text-[11px] font-semibold text-white/75">
-          <span className="flex items-center gap-1.5"><Heart className="h-4 w-4 text-newsfeed-accent" /> {post.likes_count}</span>
-          <span className="flex items-center gap-1.5"><MessageCircle className="h-4 w-4" /> {post.comments_count}</span>
-          <span className="flex items-center gap-1.5"><Eye className="h-4 w-4" /> {post.views_count}</span>
-        </div>
-      </div>
-    </Link>
-  );
-}
-
-const POST_LABELS = ["Community", "Creator", "Spotlight", "Update"];
-
-function SecondaryPostCard({ post }: { post: FeedPost }) {
-  const image = post.media.find((item) => item.type === "image");
-  const video = post.media.find((item) => item.type === "video" && item.poster_url);
-  const thumb = image?.url ?? video?.poster_url ?? post.poster_url ?? null;
-  const created = new Date(post.created_at);
-  const timeLabel = Number.isNaN(created.getTime())
-    ? "Recently"
-    : created.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-  const label = POST_LABELS[Math.abs(post.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0)) % POST_LABELS.length];
-
-  return (
-    <Link
-      to="/feed"
-      search={{ post: post.id }}
-      className="group flex flex-col gap-3 overflow-hidden rounded-[22px] bg-newsfeed-surface p-2.5 shadow-sm transition-transform hover:-translate-y-1 sm:rounded-[24px] sm:p-3"
-    >
-      <div className="aspect-square overflow-hidden rounded-[18px] bg-newsfeed-canvas">
-        {thumb ? (
-          <img
-            src={thumb}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-newsfeed-ink/20">
-            <MessageCircle className="h-8 w-8" />
-          </div>
-        )}
-      </div>
-      <div className="px-1 pb-1">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-newsfeed-accent">{label}</span>
-        <h4 className="mt-1 line-clamp-2 text-sm font-bold leading-tight text-newsfeed-ink sm:text-base">
+        <h3 className="line-clamp-3 font-[Instrument_Serif] text-[21px] leading-[1.15] sm:text-[24px]">
           {post.text || "A fresh update from the Oventric community."}
-        </h4>
-        <div className="mt-3 flex items-center justify-between text-[10px] font-semibold text-newsfeed-ink/50 sm:text-[11px]">
-          <span>{timeLabel}</span>
-          <span className="flex items-center gap-1"><Heart className="h-3 w-3" /> {post.likes_count}</span>
+        </h3>
+        <div className="mt-4 flex items-center gap-4 text-[11px] font-semibold text-white/75">
+          <span className="flex items-center gap-1.5">
+            <Heart className={`h-3.5 w-3.5 ${accentCard ? "text-white" : "text-newsfeed-accent"}`} /> {post.likes_count}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <MessageCircle className="h-3.5 w-3.5" /> {post.comments_count}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Eye className="h-3.5 w-3.5" /> {post.views_count}
+          </span>
         </div>
       </div>
     </Link>
   );
 }
 
-function CommunityPulseBar({ posts, onOpenFeed }: { posts: FeedPost[]; onOpenFeed: () => void }) {
-  const authors = Array.from(new Map(posts.map((p) => [p.author_id, p])).values()).slice(0, 4);
-  const count = posts.length;
+function JoinDiscussionCard({ posts, onOpenFeed }: { posts: FeedPost[]; onOpenFeed: () => void }) {
+  const authors = Array.from(new Map(posts.map((p) => [p.author_id, p])).values()).slice(0, 3);
 
   return (
     <button
       type="button"
       onClick={onOpenFeed}
-      className="group flex items-center justify-between rounded-[20px] border border-newsfeed-ink/5 bg-newsfeed-surface p-4 shadow-sm transition-transform hover:-translate-y-0.5 sm:p-5"
+      className="group relative flex h-[360px] w-[270px] shrink-0 snap-start flex-col items-center justify-center gap-5 overflow-hidden rounded-[26px] border-2 border-dashed border-newsfeed-accent/40 bg-newsfeed-surface p-6 text-center transition-all duration-300 hover:-translate-y-1.5 hover:border-newsfeed-accent hover:shadow-xl hover:shadow-newsfeed-accent/15 sm:h-[400px] sm:w-[320px] sm:rounded-[30px]"
     >
-      <div className="flex items-center gap-3">
-        <div className="flex -space-x-2">
-          {authors.map((post) => (
-            <div
-              key={post.author_id}
-              className="h-9 w-9 overflow-hidden rounded-full border-2 border-newsfeed-surface bg-newsfeed-canvas sm:h-10 sm:w-10"
-            >
-              <AvatarImage src={post.author_avatar_url} alt={post.author_name} />
-            </div>
-          ))}
-          {posts.length > authors.length && (
-            <div className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-newsfeed-surface bg-white text-[10px] font-bold text-newsfeed-ink/70 shadow-sm sm:h-10 sm:w-10">
-              +{posts.length - authors.length}
-            </div>
-          )}
-        </div>
+      <div className="flex -space-x-3">
+        {authors.map((post) => (
+          <div
+            key={post.author_id}
+            className="h-12 w-12 overflow-hidden rounded-full border-[3px] border-newsfeed-surface bg-newsfeed-canvas shadow-md sm:h-14 sm:w-14"
+          >
+            <AvatarImage src={post.author_avatar_url} alt={post.author_name} />
+          </div>
+        ))}
+        {posts.length > authors.length && (
+          <div className="grid h-12 w-12 place-items-center rounded-full border-[3px] border-newsfeed-surface bg-newsfeed-canvas text-xs font-extrabold text-newsfeed-ink/70 shadow-md sm:h-14 sm:w-14">
+            +{posts.length - authors.length}
+          </div>
+        )}
       </div>
-      <div className="text-right">
+      <div>
         <p className="text-[10px] font-extrabold uppercase tracking-widest text-newsfeed-ink/40">Active now</p>
-        <p className="text-sm font-bold text-newsfeed-ink sm:text-base">Join the discussion</p>
+        <p className="mt-1.5 font-[Instrument_Serif] text-[26px] leading-tight text-newsfeed-ink sm:text-[28px]">
+          Join the discussion
+        </p>
+        <p className="mx-auto mt-2 max-w-[200px] text-xs leading-relaxed text-newsfeed-ink/55">
+          See what creators and buyers are talking about right now.
+        </p>
       </div>
+      <span className="inline-flex items-center gap-2 rounded-full bg-newsfeed-accent px-5 py-2.5 text-xs font-bold text-newsfeed-on-accent shadow-lg shadow-newsfeed-accent/30 transition-transform group-hover:scale-105">
+        Open feed
+        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+      </span>
     </button>
   );
 }
+
 
 function HomeFooter() {
   const links: Array<{ to: string; label: string }> = [
