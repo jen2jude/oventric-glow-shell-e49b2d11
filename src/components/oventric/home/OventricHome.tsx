@@ -858,8 +858,8 @@ function NewsfeedPostCard({ post, featured }: { post: FeedPost; featured: boolea
     <Link
       to="/feed"
       search={{ post: post.id }}
-      className={`group relative flex h-[390px] shrink-0 snap-start overflow-hidden rounded-[20px] border-4 border-newsfeed-surface shadow-sm transition-transform hover:-translate-y-1 sm:h-[460px] ${
-        featured ? "w-[88%] bg-newsfeed-ink sm:w-[440px]" : "w-[78%] bg-newsfeed-surface sm:w-[330px]"
+      className={`group relative flex h-[390px] shrink-0 snap-start flex-col overflow-hidden rounded-[20px] border-4 border-newsfeed-surface shadow-sm transition-transform hover:-translate-y-1 sm:h-[460px] ${
+        featured || !thumb ? "w-[88%] bg-newsfeed-ink sm:w-[440px]" : "w-[78%] bg-newsfeed-surface sm:w-[330px]"
       }`}
     >
       {thumb ? (
