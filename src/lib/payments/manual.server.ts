@@ -218,6 +218,28 @@ export async function signProofUrl(supabase: Sb, path: string): Promise<string |
   return data?.signedUrl ?? null;
 }
 
+/** Immutable audit trail for manual (Binance / MiniPay) payment decisions. */
+async function writeManualAudit(
+  actorId: string,
+  paymentId: string,
+  action: "manual_payment.approve" | "manual_payment.reject",
+  meta: Record<string, unknown>,
+) {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabaseAdmin as any).from("audit_logs").insert({
+      actor_id: actorId,
+      action,
+      target_kind: "manual_payment",
+      target_id: paymentId,
+      meta,
+    });
+  } catch (e) {
+    console.error("[manual payment audit] insert failed", e);
+  }
+}
+
 export async function reviewManualPayment(
   supabase: Sb,
   reviewerId: string,
@@ -255,6 +277,14 @@ export async function reviewManualPayment(
       kind: "manual_payment_rejected",
       title: `${railLabel} payment not verified`,
       body: reason ?? "We couldn't match your transfer. Reply with a clearer receipt.",
+    });
+    await writeManualAudit(reviewerId, id, "manual_payment.reject", {
+      provider: row.provider,
+      purpose: row.purpose,
+      amount: row.amount,
+      currency: row.currency,
+      reason: reason ?? null,
+      payer_id: row.user_id,
     });
     return { ok: true, approved: false };
   }
@@ -331,6 +361,15 @@ export async function reviewManualPayment(
           ? "Your payment is verified — the amount is in your wallet, finish enrolling now."
           : "Your payment is verified — the amount is in your wallet, publish your bounty now.",
     link: redirectTo,
+  });
+
+  await writeManualAudit(reviewerId, id, "manual_payment.approve", {
+    provider: row.provider,
+    purpose,
+    amount,
+    currency,
+    reference,
+    payer_id: row.user_id,
   });
 
   return { ok: true, approved: true, redirectTo };

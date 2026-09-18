@@ -144,6 +144,26 @@ export const resolveReport = createServerFn({ method: "POST" })
 
 
 
+    // Immutable audit record for every moderation decision.
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabaseAdmin as any).from("audit_logs").insert({
+        actor_id: context.userId,
+        action: "report.resolve",
+        target_kind: "post_report",
+        target_id: row.id,
+        meta: {
+          action: data.action,
+          status: nextStatus,
+          target_kind: row.target_kind,
+          target_id: row.target_id,
+        },
+      });
+    } catch (e) {
+      console.error("[resolveReport] audit insert failed", e);
+    }
+
     const [enriched] = await attachTargetPreviews(context.supabase, [row]);
     return { report: enriched };
   });
