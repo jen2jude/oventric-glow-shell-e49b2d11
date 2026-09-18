@@ -4323,6 +4323,16 @@ export type Database = {
         }
         Returns: undefined
       }
+      system_wallet_debit: {
+        Args: {
+          _amount: number
+          _kind: string
+          _meta?: Json
+          _ref?: string
+          _source: string
+        }
+        Returns: undefined
+      }
       wallet_credit: {
         Args: { _amount: number; _user_id: string }
         Returns: undefined

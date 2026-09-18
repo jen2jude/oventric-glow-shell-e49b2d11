@@ -623,46 +623,12 @@ export const updateAndResubmitProduct = createServerFn({ method: "POST" })
 
 
 
-/** Wallet top-up (mock card/bank/momo processing). Credits the user's wallet in USD equivalent. */
-export const topUpWallet = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input: {
-    amount: number;
-    currency: OrderCurrency;
-    method: PaymentMethod;
-  }) => ({
-    amount: Number(input.amount),
-    currency: input.currency,
-    method: input.method,
-  }))
-  .handler(async ({ data, context }) => {
-    if (!(data.amount > 0)) throw new Error("Amount must be > 0");
-    if (data.method === "wallet") throw new Error("Cannot top up wallet from wallet");
-    const usd = data.amount / FX_FROM_USD[data.currency];
-
-    // Simulated card / bank / momo processing. Wallet mutations run through the
-    // service-role client — wallet_credit/wallet_debit RPCs are no longer
-    // callable by end-user JWTs to prevent direct RPC abuse.
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error: cErr } = await supabaseAdmin.rpc("wallet_credit", {
-      _user_id: context.userId,
-      _amount: usd,
-    });
-    if (cErr) throw new Error(cErr.message);
-
-    await supabaseAdmin.from("wallet_transactions").insert({
-      user_id: context.userId,
-      tx_hash: `0x${Math.random().toString(16).slice(2, 6).toUpperCase()}-${Date.now().toString(16).toUpperCase()}`,
-      type: "Wallet Top-Up",
-      amount: data.amount,
-      currency: dbCurrency(data.currency),
-      inflow: true,
-      status: "success",
-      occurred_at: new Date().toISOString(),
-    });
-
-    return { creditedUSD: usd };
-  });
+/**
+ * REMOVED (financial hardening): the legacy mock `topUpWallet` endpoint credited
+ * a caller-supplied amount to their own wallet with no payment behind it.
+ * Wallet funding now happens exclusively through gateway settlement
+ * (`settleWalletTopup`) or admin-approved manual payments.
+ */
 
 export interface CreateOrderInput {
   productId: string;
