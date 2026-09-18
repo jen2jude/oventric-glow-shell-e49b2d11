@@ -22,6 +22,8 @@ import {
   MessageCircle,
   Eye,
   Sparkles,
+  Pause,
+  Play,
 } from "lucide-react";
 
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
@@ -41,6 +43,7 @@ import { visualForCategory } from "@/components/oventric/marketplace-discovery/u
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/home-hero.jpg";
+import heroVideo from "@/assets/oventric-hero-loop.mp4.asset.json";
 import skillsCtaImage from "@/assets/home-skills-bg.jpg";
 import cashbackCreatorsImage from "@/assets/earn-cashback-creators.jpg";
 import referralCreatorsImage from "@/assets/earn-referral-creators.jpg";
@@ -195,6 +198,27 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
   const [latestPosts, setLatestPosts] = useState<FeedPost[]>([]);
   const [stats, setStats] = useState<HomeStatsDTO | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [heroVideoEnabled, setHeroVideoEnabled] = useState(false);
+  const [heroVideoPaused, setHeroVideoPaused] = useState(false);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    if (!reducedMotion && !connection?.saveData) setHeroVideoEnabled(true);
+  }, []);
+
+  const toggleHeroVideo = () => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+    if (video.paused) {
+      void video.play();
+      setHeroVideoPaused(false);
+    } else {
+      video.pause();
+      setHeroVideoPaused(true);
+    }
+  };
 
   const submitSearch = () => {
     const q = searchQuery.trim();
@@ -254,10 +278,40 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             height={912}
             className="h-full w-full object-cover object-[75%_center]"
           />
+          {heroVideoEnabled && (
+            <video
+              ref={heroVideoRef}
+              src={heroVideo.url}
+              poster={heroImage}
+              muted
+              autoPlay
+              loop
+              playsInline
+              preload="metadata"
+              aria-hidden="true"
+              onPause={() => setHeroVideoPaused(true)}
+              onPlay={() => setHeroVideoPaused(false)}
+              className="home-pop-hero-video absolute inset-0 h-full w-full object-cover object-[75%_center]"
+            />
+          )}
           {/* white fade — text panel on the left, image stretches to both edges */}
           <div className="absolute inset-0 bg-gradient-to-r from-white/95 from-0% via-white/80 via-[30%] to-transparent to-[65%] sm:via-[38%] sm:to-[72%] lg:via-[42%] lg:to-[78%]" />
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-home-canvas to-transparent" />
         </div>
+
+        {heroVideoEnabled && (
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={toggleHeroVideo}
+            aria-label={heroVideoPaused ? "Play hero animation" : "Pause hero animation"}
+            title={heroVideoPaused ? "Play animation" : "Pause animation"}
+            className="home-pop-hero-control absolute bottom-7 right-4 z-20 h-10 w-10 rounded-full border-home-line bg-home-surface/90 text-home-ink shadow-home-soft backdrop-blur-sm sm:bottom-9 sm:right-6"
+          >
+            {heroVideoPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+          </Button>
+        )}
 
         <div className="relative z-10 mx-auto flex w-full max-w-[1280px] flex-col justify-center gap-6 px-4 py-14 sm:px-6 sm:py-20 lg:min-h-[520px] lg:px-8 lg:py-28">
           <div>
