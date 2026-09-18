@@ -339,6 +339,36 @@ export const getProduct = createServerFn({ method: "POST" })
     return mapProduct(row as Record<string, unknown>, url, imgUrls, sellerSlug);
   });
 
+/** Revalidate browser-stored viewing history against the live public catalogue. */
+export const getRecentProducts = createServerFn({ method: "POST" })
+  .inputValidator((input: { ids: string[] }) => ({
+    ids: Array.from(new Set((input?.ids ?? []).map(String).filter(Boolean))).slice(0, 12),
+  }))
+  .handler(async ({ data }) => {
+    if (data.ids.length === 0) return [] as ProductDTO[];
+    const sb = serverPublicClient();
+    const { data: rows, error } = await sb
+      .from("products")
+      .select(PRODUCT_COLS)
+      .in("id", data.ids)
+      .eq("status", "active")
+      .eq("in_stock", true)
+      .in("kind", ["digital", "service"]);
+    if (error) throw new Error(error.message);
+    const products = (rows ?? []) as Record<string, unknown>[];
+    const covers = await signCovers(
+      sb,
+      products.map((row) => (row.cover_path as string) ?? null),
+    );
+    const byId = new Map(
+      products.map((row, index) => [
+        row.id as string,
+        mapProduct(row, covers[index] ?? null),
+      ]),
+    );
+    return data.ids.map((id) => byId.get(id)).filter((product): product is ProductDTO => Boolean(product));
+  });
+
 /** Authenticated seller creates a digital-asset product (goes to pending for admin review). */
 export const createProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
