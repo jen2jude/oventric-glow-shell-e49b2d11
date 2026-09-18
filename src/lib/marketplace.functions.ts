@@ -387,6 +387,7 @@ export const createProduct = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     if (!data.name) throw new Error("Name required");
     if (data.priceUSD < 0) throw new Error("Price cannot be negative");
+    await assertDigitalCategory(data.category as unknown as string);
 
     // Admins publish directly; regular sellers enter the moderation queue.
     const { data: isAdmin } = await context.supabase.rpc("has_role", {
@@ -550,6 +551,7 @@ export const updateAndResubmitProduct = createServerFn({ method: "POST" })
   }))
   .handler(async ({ data, context }) => {
     if (!data.id) throw new Error("Product id required");
+    if (data.category !== undefined) await assertDigitalCategory(data.category);
 
     // Load and verify ownership. Owners may edit pending, rejected AND live
     // listings; live listings only fall back into moderation when the actual
@@ -594,11 +596,9 @@ export const updateAndResubmitProduct = createServerFn({ method: "POST" })
       patch.image_paths = data.imagePaths;
       if (data.imagePaths.length > 0) patch.cover_path = data.imagePaths[0];
     }
-    if (data.condition !== undefined) patch.condition = data.condition;
+    // Physical-goods fields (condition, location, negotiable, shipping delivery)
+    // are intentionally ignored: Oventric is digital-only, so no edit may write them.
     if (data.brand !== undefined) patch.brand = data.brand;
-    if (data.location !== undefined) patch.location = data.location;
-    if (data.negotiable !== undefined) patch.negotiable = data.negotiable;
-    if (data.delivery !== undefined) patch.delivery = data.delivery;
     if (data.sellerPhone !== undefined) patch.seller_phone = data.sellerPhone;
     if (data.whatsappNumber !== undefined) patch.whatsapp_number = data.whatsappNumber;
     if (data.socialLink !== undefined) patch.social_link = data.socialLink;
