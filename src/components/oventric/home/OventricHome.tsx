@@ -489,17 +489,23 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           title="Why Oventric"
           subtitle="Everything you need to build an income online"
         />
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
           {REASONS.map(({ Icon, tint, title, body }) => (
             <div
               key={title}
-              className="rounded-[14px] border border-slate-200/80 bg-white p-5 transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
+              className="rounded-[14px] border border-slate-200/80 bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)] sm:p-5"
             >
-              <span className={`grid h-11 w-11 place-items-center rounded-[12px] ${tint}`}>
-                <Icon className="h-5 w-5" />
+              <span
+                className={`grid h-9 w-9 place-items-center rounded-[10px] ${tint} max-sm:bg-crimson/10 max-sm:text-crimson sm:h-11 sm:w-11 sm:rounded-[12px]`}
+              >
+                <Icon className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
               </span>
-              <h3 className="mt-4 text-sm font-bold text-slate-900">{title}</h3>
-              <p className="mt-1.5 text-xs leading-relaxed text-slate-500">{body}</p>
+              <h3 className="mt-3 text-xs font-bold leading-tight text-slate-900 sm:mt-4 sm:text-sm">
+                {title}
+              </h3>
+              <p className="mt-1.5 hidden text-xs leading-relaxed text-slate-500 sm:block">
+                {body}
+              </p>
             </div>
           ))}
         </div>
