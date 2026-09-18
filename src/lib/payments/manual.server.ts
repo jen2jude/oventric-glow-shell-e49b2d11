@@ -7,7 +7,13 @@
  */
 import { buildPaymentIntent } from "@/lib/payments/intent.server";
 import { settleFromMetadata, loadGatewaySettings } from "@/lib/payments/gateway.server";
-import { minipayAvailable } from "@/lib/payments/providers";
+import { manualRailAvailable } from "@/lib/payments/providers";
+import {
+  BINANCE_USER_ID,
+  MANUAL_RAIL_LABEL,
+  MINIPAY_HANDLE_FALLBACK,
+  type ManualRail,
+} from "@/lib/payments/active-rails";
 import { resolveFxRates } from "@/lib/fx.server";
 import { currencyDecimals, dbCurrency } from "@/lib/currency/africa";
 
@@ -17,6 +23,8 @@ type Sb = any;
 export interface ManualPaymentRow {
   id: string;
   userId: string;
+  /** Which manual rail the buyer used. */
+  provider: ManualRail;
   purpose: "order" | "course" | "bounty";
   targetId: string | null;
   targetLabel: string | null;
@@ -39,6 +47,7 @@ function mapRow(r: Record<string, unknown>): ManualPaymentRow {
   return {
     id: r.id as string,
     userId: r.user_id as string,
+    provider: ((r.provider as string) === "binance" ? "binance" : "minipay") as ManualRail,
     purpose: r.purpose as ManualPaymentRow["purpose"],
     targetId: (r.target_id as string) ?? null,
     targetLabel: (r.target_label as string) ?? null,
@@ -72,6 +81,7 @@ async function localOf(amountUsd: number, currency: string): Promise<number> {
 }
 
 export interface BuildManualInput {
+  provider: ManualRail;
   purpose: "order" | "course" | "bounty";
   targetId: string | null;
   quantity: number;
@@ -83,8 +93,8 @@ export interface BuildManualInput {
 
 export async function buildManualPayment(supabase: Sb, userId: string, input: BuildManualInput) {
   const settings = await loadGatewaySettings();
-  if (!minipayAvailable(input.purpose, input.currency, settings)) {
-    throw new Error("MiniPay is not available for this payment.");
+  if (!manualRailAvailable(input.provider, input.purpose, input.currency, settings)) {
+    throw new Error(`${MANUAL_RAIL_LABEL[input.provider]} is not available for this payment.`);
   }
 
   let amount = 0;
@@ -137,7 +147,7 @@ export async function buildManualPayment(supabase: Sb, userId: string, input: Bu
     .from("manual_payments")
     .insert({
       user_id: userId,
-      provider: "minipay",
+      provider: input.provider,
       purpose: input.purpose,
       target_id: input.targetId,
       target_label: label.slice(0, 200),
@@ -155,10 +165,13 @@ export async function buildManualPayment(supabase: Sb, userId: string, input: Bu
 
   return {
     payment: mapRow(row as Record<string, unknown>),
-    minipay: {
-      handle: settings.minipayHandle,
-      accountName: settings.minipayAccountName,
-      instructions: settings.minipayInstructions,
+    instructions: {
+      rail: input.provider,
+      /** MiniPay handle — null on the Binance rail. */
+      handle: input.provider === "minipay" ? (settings.minipayHandle ?? MINIPAY_HANDLE_FALLBACK) : null,
+      accountName: input.provider === "minipay" ? settings.minipayAccountName : "Oventric",
+      binanceUserId: input.provider === "binance" ? BINANCE_USER_ID : null,
+      instructions: input.provider === "minipay" ? settings.minipayInstructions : null,
     },
   };
 }
@@ -225,6 +238,7 @@ export async function reviewManualPayment(
   if (error) throw new Error(error.message);
   if (!row) throw new Error("Payment not found");
   if (row.status !== "pending") throw new Error("Already reviewed");
+  const railLabel = (row.provider as string) === "binance" ? "Binance" : "MiniPay";
 
   if (!approve) {
     await supabaseAdmin
@@ -239,11 +253,25 @@ export async function reviewManualPayment(
     await supabaseAdmin.from("notifications").insert({
       user_id: row.user_id as string,
       kind: "manual_payment_rejected",
-      title: "MiniPay payment not verified",
+      title: `${railLabel} payment not verified`,
       body: reason ?? "We couldn't match your transfer. Reply with a clearer receipt.",
     });
     return { ok: true, approved: false };
   }
+
+  // Claim the row BEFORE any money moves. The conditional update is atomic:
+  // a second concurrent approval finds no pending row and exits without
+  // settling again, so seller earnings, platform revenue, cashback, referral
+  // rewards and ledger entries can never be duplicated.
+  const claim = await supabaseAdmin
+    .from("manual_payments")
+    .update({ status: "approved", reviewed_by: reviewerId, reviewed_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("status", "pending")
+    .select("id")
+    .maybeSingle();
+  if (claim.error) throw new Error(claim.error.message);
+  if (!claim.data) return { ok: true, approved: true, redirectTo: null, alreadyApproved: true };
 
   const meta = (row.meta ?? {}) as Record<string, unknown>;
   const purpose = row.purpose as "order" | "course" | "bounty";
@@ -253,6 +281,7 @@ export async function reviewManualPayment(
 
   let redirectTo: string | null = null;
 
+  try {
   if (purpose === "order") {
     const res = await settleFromMetadata(
       reference,
@@ -281,20 +310,19 @@ export async function reviewManualPayment(
     });
     redirectTo = purpose === "course" ? "/academy" : "/?section=Bounties";
   }
-
-  await supabaseAdmin
-    .from("manual_payments")
-    .update({
-      status: "approved",
-      reviewed_by: reviewerId,
-      reviewed_at: new Date().toISOString(),
-    })
-    .eq("id", id);
+  } catch (err) {
+    // Settlement failed — release the claim so finance can retry.
+    await supabaseAdmin
+      .from("manual_payments")
+      .update({ status: "pending", reviewed_by: null, reviewed_at: null })
+      .eq("id", id);
+    throw err;
+  }
 
   await supabaseAdmin.from("notifications").insert({
     user_id: row.user_id as string,
     kind: "manual_payment_approved",
-    title: "MiniPay payment confirmed",
+    title: `${railLabel} payment confirmed`,
     body:
       purpose === "order"
         ? "Your payment is verified and your order is now live."

@@ -14,7 +14,7 @@ import { formatMoney } from "@/lib/fx-display";
 export const Route = createFileRoute("/admin/manual-payments")({
   head: () => ({
     meta: [
-      { title: "MiniPay Payments · Admin · Oventric" },
+      { title: "Manual Payments (MiniPay & Binance) · Admin · Oventric" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
@@ -80,7 +80,7 @@ function AdminManualPaymentsPage() {
     <div className="p-4 sm:p-6 space-y-4">
       <header className="flex items-center gap-3">
         <Receipt className="w-5 h-5 text-emerald-400" />
-        <h1 className="text-lg font-black text-white">MiniPay Payments</h1>
+        <h1 className="text-lg font-black text-white">Manual Payments (MiniPay & Binance)</h1>
       </header>
 
       <div className="flex flex-wrap gap-2">

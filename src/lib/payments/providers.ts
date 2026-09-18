@@ -16,6 +16,8 @@
  *    wallet top-ups.
  */
 
+import { ACTIVE_RAILS, type ManualRail } from "@/lib/payments/active-rails";
+
 export type PaymentProvider = "flutterwave" | "paystack" | "minipay";
 
 /** Currencies Flutterwave can charge/settle directly. */
@@ -82,11 +84,14 @@ export interface RouteResult {
 
 /**
  * Pick the automated gateway for a given home currency.
- * Throws only when both gateways are disabled.
+ *
+ * MVP lock: Paystack is the only active automated gateway. The Flutterwave
+ * branches below are retained for future development but are unreachable
+ * while `ACTIVE_RAILS.flutterwave` is false.
  */
 export function routeGateway(currency: string, settings: GatewaySettings): RouteResult {
   const cur = String(currency || "USD").toUpperCase();
-  const fw = settings.flutterwaveEnabled;
+  const fw = settings.flutterwaveEnabled && ACTIVE_RAILS.flutterwave;
   const ps = settings.paystackEnabled;
 
   if (!fw && !ps) throw new Error("No payment gateway is currently enabled.");
@@ -107,6 +112,18 @@ export function routeGateway(currency: string, settings: GatewaySettings): Route
   // 2. Cross-border USD fallback.
   if (fw) return { provider: "flutterwave", chargeCurrency: "USD", crossBorder: true };
   return { provider: "paystack", chargeCurrency: "USD", crossBorder: true };
+}
+
+/** Whether a manual (proof-of-payment) rail may be offered. */
+export function manualRailAvailable(
+  rail: ManualRail,
+  purpose: "order" | "course" | "bounty" | "wallet_topup",
+  currency: string,
+  settings: GatewaySettings,
+): boolean {
+  if (purpose === "wallet_topup") return false; // manual rails never fund the wallet directly
+  if (rail === "binance") return ACTIVE_RAILS.binance;
+  return ACTIVE_RAILS.minipay && minipayAvailable(purpose, currency, settings);
 }
 
 /** Whether MiniPay may be offered for this purpose + currency. */
