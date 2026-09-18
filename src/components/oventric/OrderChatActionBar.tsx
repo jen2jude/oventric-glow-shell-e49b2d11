@@ -74,7 +74,7 @@ export function OrderChatActionBar({
 
   return (
     <>
-      <div className="sticky bottom-0 z-20 border-t border-border bg-background px-3 pb-2 pt-2 sm:px-6">
+      <div className="shrink-0 border-t border-border bg-background px-3 pb-2 pt-2 sm:px-6">
         <div className="rounded-[10px] border border-border bg-muted/35 p-2.5">
           <div className="flex items-center gap-2">
             <button

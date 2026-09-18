@@ -1232,8 +1232,8 @@ export function Feed() {
           type="button"
           onClick={scrollFeedToTop}
           aria-label="Back to top"
-          className={`fixed left-1/2 top-[4.5rem] z-30 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full bg-[#E5484D] px-3 py-1.5 text-xs font-bold text-white shadow-lg transition-all duration-300 ${
-            chromeHidden ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-4 pointer-events-none"
+          className={`fixed left-1/2 bottom-6 z-40 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full bg-[#E5484D] px-3 py-1.5 text-xs font-bold text-white shadow-lg transition-all duration-300 ${
+            chromeHidden ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-6 pointer-events-none"
           }`}
         >
           <ArrowUp className="h-3.5 w-3.5" strokeWidth={2.5} />
