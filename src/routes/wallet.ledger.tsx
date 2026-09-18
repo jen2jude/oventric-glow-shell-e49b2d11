@@ -48,6 +48,8 @@ export const Route = createFileRoute("/wallet/ledger")({
   component: WalletLedgerPage,
 });
 
+import { walletTxLabel } from "@/lib/wallet-tx-labels";
+
 const TABS = ["All", "Cashback", "Escrow", "Payouts"] as const;
 type Tab = (typeof TABS)[number];
 
@@ -261,7 +263,7 @@ function WalletLedgerPage() {
                         <style.icon className="size-5" />
                       </span>
                       <div className="min-w-0 flex-1">
-                        <div className="truncate text-sm font-bold text-foreground">{t.type}</div>
+                        <div className="truncate text-sm font-bold text-foreground">{walletTxLabel(t.type)}</div>
                         <div className="mt-1 truncate font-mono text-xs text-muted-foreground">{t.txHash}</div>
                       </div>
                       <div className="hidden text-right sm:block">

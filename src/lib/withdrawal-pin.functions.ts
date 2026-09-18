@@ -86,6 +86,9 @@ export const setWithdrawalPin = createServerFn({ method: "POST" })
       user_id: context.userId,
       pin_hash,
       salt,
+      // Creating the PIN proves possession, so the payout about to be submitted
+      // is covered by the same 10-minute server-side verification window.
+      pin_verified_at: new Date().toISOString(),
     });
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -125,7 +128,7 @@ export const verifyWithdrawalPin = createServerFn({ method: "POST" })
 
     await sb
       .from("withdrawal_pins")
-      .update({ failed_attempts: 0, locked_until: null })
+      .update({ failed_attempts: 0, locked_until: null, pin_verified_at: new Date().toISOString() })
       .eq("user_id", context.userId);
     return { ok: true };
   });
