@@ -478,7 +478,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
               title: "Escrow protection",
               body: "Funds held until delivery is confirmed",
             },
-            { Icon: Clock, title: "Fast delivery", body: "In-app handover with 48h auto-release" },
+            { Icon: Clock, title: "Fast delivery", body: "In-app handover with 24h auto-release" },
             { Icon: Star, title: "2% cashback", body: "Earned on every completed purchase" },
             {
               Icon: Headphones,

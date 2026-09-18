@@ -252,7 +252,7 @@ export const getOrderFulfilment = createServerFn({ method: "POST" })
     };
   });
 
-/** Seller marks a manual-delivery order as delivered. Starts the 48h clock. */
+/** Seller marks a manual-delivery order as delivered. Starts the 24h confirmation clock. */
 export const markOrderDelivered = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>

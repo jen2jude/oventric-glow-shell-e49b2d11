@@ -127,6 +127,13 @@
       "when": 1789730577006,
       "tag": "0017_harden_withdrawal_pin_and_duplicate_payouts",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1789731140368,
+      "tag": "0018_lock_order_escrow_timer_fields_from_buyers",
+      "breakpoints": true
     }
   ]
 }

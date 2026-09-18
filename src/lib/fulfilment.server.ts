@@ -143,14 +143,20 @@ export async function confirmReceipt(
 
   const now = new Date().toISOString();
   const payoutAt = hoursFromNow(PAYOUT_HOLD_HOURS);
-  await sb
+  // Atomic claim: only one caller (buyer click, cron sweep, admin) can win the
+  // confirmation, so the payout hold can never be started twice.
+  const { data: claimed } = await sb
     .from("orders")
     .update({
       buyer_confirmed_at: now,
       payout_release_at: payoutAt,
       auto_refund_at: null,
     })
-    .eq("id", orderId);
+    .eq("id", orderId)
+    .eq("escrow_status", "held")
+    .is("buyer_confirmed_at", null)
+    .select("id");
+  if (!claimed || (claimed as unknown[]).length === 0) return { alreadyConfirmed: true as const };
 
   const name = (o.products?.name as string) ?? "your order";
 
@@ -228,12 +234,6 @@ export async function releaseEscrow(
   if (o.dispute_status === "open")
     throw new Error("This order has an open dispute. Funds stay held until it is resolved.");
 
-  const share = Number(o.seller_share_usd ?? 0);
-  if (share > 0) {
-    const { error: cErr } = await sb.rpc("wallet_credit", { _user_id: o.seller_id, _amount: share });
-    if (cErr) throw new Error(cErr.message);
-  }
-
   const now = new Date().toISOString();
   const patch: Record<string, unknown> = {
     escrow_status: "released",
@@ -243,17 +243,52 @@ export async function releaseEscrow(
     auto_refund_at: null,
   };
   if (!o.buyer_confirmed_at) patch.buyer_confirmed_at = now;
-  await sb.from("orders").update(patch).eq("id", orderId);
+  // Claim the escrow BEFORE any money moves: the conditional update is the
+  // single point of truth, so two concurrent releases (cron + admin + buyer)
+  // can never both pay the seller.
+  const { data: claimedRows } = await sb
+    .from("orders")
+    .update(patch)
+    .eq("id", orderId)
+    .eq("escrow_status", "held")
+    .select("id");
+  if (!claimedRows || (claimedRows as unknown[]).length === 0)
+    return { alreadyReleased: true as const };
 
-  if (o.paystack_ref) {
-    try {
-      await sb
-        .from("wallet_transactions")
-        .update({ status: "success" })
-        .eq("tx_hash", `${o.paystack_ref}-S`);
-    } catch (e) {
-      console.error("[releaseEscrow] ledger update failed", e);
+  // Pay the seller in the currency their sale was booked in (matches the
+  // pending "Marketplace Sale" ledger row written at settlement).
+  const saleHash = o.paystack_ref ? `${o.paystack_ref}-S` : `${orderId}-S`;
+  const { data: saleRow } = await sb
+    .from("wallet_transactions")
+    .select("amount, currency")
+    .eq("tx_hash", saleHash)
+    .maybeSingle();
+  const share = Number(o.seller_share_usd ?? 0);
+  try {
+    if (saleRow && Number(saleRow.amount ?? 0) > 0) {
+      const { error: cErr } = await sb.rpc("wallet_credit_currency", {
+        _user_id: o.seller_id,
+        _amount: Number(saleRow.amount),
+        _currency: String(saleRow.currency ?? "USD"),
+      });
+      if (cErr) throw new Error(cErr.message);
+    } else if (share > 0) {
+      const { error: cErr } = await sb.rpc("wallet_credit", { _user_id: o.seller_id, _amount: share });
+      if (cErr) throw new Error(cErr.message);
     }
+  } catch (e) {
+    // Money did not move — hand the escrow back so the sweep can retry.
+    await sb
+      .from("orders")
+      .update({ escrow_status: "held", released_at: null, released_by: null })
+      .eq("id", orderId);
+    throw e;
+  }
+
+  try {
+    await sb.from("wallet_transactions").update({ status: "success" }).eq("tx_hash", saleHash);
+  } catch (e) {
+    console.error("[releaseEscrow] ledger update failed", e);
   }
 
   const productName = (o.products?.name as string) ?? "your product";
@@ -299,6 +334,24 @@ export async function refundBuyer(sb: any, orderId: string, reason: string) {
   if (!o) throw new Error("Order not found");
   if (o.escrow_status !== "held") return { alreadyRefunded: true as const };
 
+  // Atomic claim first — a refunded order can never later release seller funds,
+  // and two concurrent refunds can never both credit the buyer.
+  const { data: refundClaim } = await sb
+    .from("orders")
+    .update({
+      escrow_status: "refunded",
+      status: "refunded",
+      refunded_at: new Date().toISOString(),
+      refund_reason: reason,
+      auto_refund_at: null,
+      payout_release_at: null,
+    })
+    .eq("id", orderId)
+    .eq("escrow_status", "held")
+    .select("id");
+  if (!refundClaim || (refundClaim as unknown[]).length === 0)
+    return { alreadyRefunded: true as const };
+
   const amount = Number(o.display_total ?? 0);
   const currency = String(o.display_currency ?? "USD");
   if (amount > 0) {
@@ -307,7 +360,13 @@ export async function refundBuyer(sb: any, orderId: string, reason: string) {
       _amount: amount,
       _currency: currency,
     });
-    if (cErr) throw new Error(cErr.message);
+    if (cErr) {
+      await sb
+        .from("orders")
+        .update({ escrow_status: "held", status: "paid", refunded_at: null, refund_reason: null })
+        .eq("id", orderId);
+      throw new Error(cErr.message);
+    }
     try {
       await sb.from("wallet_transactions").insert({
         user_id: o.buyer_id,
@@ -362,28 +421,19 @@ export async function refundBuyer(sb: any, orderId: string, reason: string) {
     console.error("[refundBuyer] platform revenue reversal failed", e);
   }
 
-  const now = new Date().toISOString();
-  await sb
-    .from("orders")
-    .update({
-      escrow_status: "refunded",
-      status: "refunded",
-      refunded_at: now,
-      refund_reason: reason,
-      auto_refund_at: null,
-      payout_release_at: null,
-    })
-    .eq("id", orderId);
+  // (order already marked refunded by the atomic claim above)
 
-  if (o.paystack_ref) {
-    try {
-      await sb
-        .from("wallet_transactions")
-        .update({ status: "failed" })
-        .eq("tx_hash", `${o.paystack_ref}-S`);
-    } catch (e) {
-      console.error("[refundBuyer] seller ledger update failed", e);
-    }
+
+
+  try {
+    // Void the pending seller sale row (card orders key on the gateway
+    // reference, wallet orders on the order id).
+    await sb
+      .from("wallet_transactions")
+      .update({ status: "failed" })
+      .eq("tx_hash", o.paystack_ref ? `${o.paystack_ref}-S` : `${orderId}-S`);
+  } catch (e) {
+    console.error("[refundBuyer] seller ledger update failed", e);
   }
 
   const name = (o.products?.name as string) ?? "the order";

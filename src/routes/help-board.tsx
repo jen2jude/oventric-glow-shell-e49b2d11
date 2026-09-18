@@ -75,7 +75,7 @@ const DISPUTES = [
 const FAQS = [
   {
     q: "How does escrow protect my purchase?",
-    a: "Digital purchases are held in escrow. Funds release to the seller when you confirm delivery, or automatically 48 hours after delivery is marked if you take no action.",
+    a: "Digital purchases are held in escrow. Funds release to the seller when you confirm delivery, or automatically 24 hours after delivery is marked if you take no action.",
   },
   {
     q: "When do I get my cashback?",
