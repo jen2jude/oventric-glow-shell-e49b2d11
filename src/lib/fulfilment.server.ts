@@ -425,15 +425,15 @@ export async function refundBuyer(sb: any, orderId: string, reason: string) {
 
 
 
-  if (o.paystack_ref) {
-    try {
-      await sb
-        .from("wallet_transactions")
-        .update({ status: "failed" })
-        .eq("tx_hash", `${o.paystack_ref}-S`);
-    } catch (e) {
-      console.error("[refundBuyer] seller ledger update failed", e);
-    }
+  try {
+    // Void the pending seller sale row (card orders key on the gateway
+    // reference, wallet orders on the order id).
+    await sb
+      .from("wallet_transactions")
+      .update({ status: "failed" })
+      .eq("tx_hash", o.paystack_ref ? `${o.paystack_ref}-S` : `${orderId}-S`);
+  } catch (e) {
+    console.error("[refundBuyer] seller ledger update failed", e);
   }
 
   const name = (o.products?.name as string) ?? "the order";
