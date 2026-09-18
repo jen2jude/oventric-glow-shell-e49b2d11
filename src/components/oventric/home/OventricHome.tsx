@@ -311,23 +311,28 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
 
 
         {/* ------------------------------------------------------- trust bar */}
-        <section className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
-          {TRUST.map(({ Icon, tint, title, body }) => (
-            <div
-              key={title}
-              className="flex items-center gap-3 rounded-[14px] border border-slate-200/80 bg-white p-4"
-            >
-              <span
-                className={`grid h-11 w-11 shrink-0 place-items-center rounded-[12px] ${tint}`}
+        <section className="mt-5">
+          <h2 className="mb-3 px-1 text-base font-bold text-slate-900 sm:hidden">
+            Platform Perks
+          </h2>
+          <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-4 lg:gap-4 [&::-webkit-scrollbar]:hidden">
+            {TRUST.map(({ Icon, tint, title, body }) => (
+              <div
+                key={title}
+                className="min-w-[85%] shrink-0 snap-center rounded-[14px] border border-slate-200/80 bg-white p-5 sm:min-w-0 sm:flex sm:items-center sm:gap-3 sm:p-4"
               >
-                <Icon className="h-5 w-5" />
-              </span>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-bold text-slate-900">{title}</p>
-                <p className="truncate text-xs text-slate-500">{body}</p>
+                <span
+                  className={`grid h-11 w-11 shrink-0 place-items-center rounded-[12px] ${tint}`}
+                >
+                  <Icon className="h-5 w-5" />
+                </span>
+                <div className="mt-3 min-w-0 sm:mt-0">
+                  <p className="text-sm font-bold text-slate-900 sm:truncate">{title}</p>
+                  <p className="text-xs leading-relaxed text-slate-500 sm:truncate">{body}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </section>
 
         {/* ------------------------------------------------- shop by category */}
