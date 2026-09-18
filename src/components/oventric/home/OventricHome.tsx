@@ -22,12 +22,15 @@ import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { computeDisplayPrice } from "@/lib/fx-display";
 import {
   getMarketplaceDiscovery,
+  getRecentProducts,
   listMarketplaceCategories,
   getTopSellers,
   type ProductDTO,
   type TopSellerDTO,
 } from "@/lib/marketplace.functions";
 import { getHomeStats, type HomeStatsDTO } from "@/lib/home-stats.functions";
+import { listPosts, type FeedPost } from "@/lib/posts.functions";
+import { readRecentProductIds } from "@/lib/recent-products";
 import { visualForCategory } from "@/components/oventric/marketplace-discovery/utils";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import heroImage from "@/assets/home-hero.jpg";
@@ -174,11 +177,15 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
   const loadCategories = useServerFn(listMarketplaceCategories);
   const loadSellers = useServerFn(getTopSellers);
   const loadStats = useServerFn(getHomeStats);
+  const loadRecentProducts = useServerFn(getRecentProducts);
+  const loadPosts = useServerFn(listPosts);
 
   const [featured, setFeatured] = useState<ProductDTO[]>([]);
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [sellers, setSellers] = useState<TopSellerDTO[]>([]);
   const [fresh, setFresh] = useState<ProductDTO[]>([]);
+  const [recentProducts, setRecentProducts] = useState<ProductDTO[]>([]);
+  const [marketplacePosts, setMarketplacePosts] = useState<FeedPost[]>([]);
   const [stats, setStats] = useState<HomeStatsDTO | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -192,11 +199,14 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
     let alive = true;
     void (async () => {
       try {
-        const [discovery, cats, tops, s] = await Promise.all([
+        const recentIds = readRecentProductIds();
+        const [discovery, cats, tops, s, recent, postResult] = await Promise.all([
           loadDiscovery(),
           loadCategories(),
           loadSellers(),
           loadStats(),
+          loadRecentProducts({ data: { ids: recentIds } }),
+          loadPosts(),
         ]);
         if (!alive) return;
         const picks = [
@@ -212,6 +222,12 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         setCategories((cats ?? []).slice(0, 8));
         setSellers((tops ?? []).slice(0, 5));
         setStats(s);
+        setRecentProducts((recent ?? []).slice(0, 10));
+        setMarketplacePosts(
+          (postResult?.posts ?? [])
+            .filter((post) => (post.product_attachments ?? []).some((product) => product.available))
+            .slice(0, 10),
+        );
       } catch {
         /* public page stays usable even if a feed is unavailable */
       }
@@ -219,7 +235,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
     return () => {
       alive = false;
     };
-  }, [loadDiscovery, loadCategories, loadSellers, loadStats]);
+  }, [loadDiscovery, loadCategories, loadPosts, loadRecentProducts, loadSellers, loadStats]);
 
   const startSelling = () => onCreate?.();
 
@@ -335,6 +351,24 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           </div>
         </section>
 
+        {/* ----------------------------------------------- recently viewed */}
+        {recentProducts.length > 0 && (
+          <section>
+            <SectionHead
+              title="Recently Viewed"
+              subtitle="Pick up where you left off"
+              action={{ label: "Explore more", onClick: () => onSelect("Marketplace") }}
+            />
+            <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5 lg:gap-4">
+              {recentProducts.map((product) => (
+                <div key={product.id} className="w-[72%] shrink-0 snap-start sm:w-auto sm:shrink">
+                  <ProductCard product={product} currency={baseCurrency} />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* ------------------------------------------------- shop by category */}
         <SectionHead
           title="Shop by Category"
@@ -362,6 +396,22 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           })}
           {categories.length === 0 && <EmptyNote>Categories are being set up.</EmptyNote>}
         </div>
+
+        {/* ------------------------------------------ latest marketplace posts */}
+        {marketplacePosts.length > 0 && (
+          <section>
+            <SectionHead
+              title="Latest from the Marketplace"
+              subtitle="Fresh posts from creators and their shops"
+              action={{ label: "Open feed", onClick: () => onSelect("Feed") }}
+            />
+            <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:px-0">
+              {marketplacePosts.map((post) => (
+                <MarketplacePostCard key={post.id} post={post} />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* -------------------------------------------------- featured products */}
         <SectionHead
@@ -735,6 +785,62 @@ function ProductCard({ product, currency }: { product: ProductDTO; currency: str
         </div>
       </div>
     </div>
+  );
+}
+
+function MarketplacePostCard({ post }: { post: FeedPost }) {
+  const image = post.media.find((item) => item.type === "image");
+  const video = post.media.find((item) => item.type === "video" && item.poster_url);
+  const thumb = image?.url ?? video?.poster_url ?? post.poster_url ?? null;
+  const product = (post.product_attachments ?? []).find((item) => item.available);
+  const created = new Date(post.created_at);
+  const timeLabel = Number.isNaN(created.getTime())
+    ? "Recently"
+    : created.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+
+  return (
+    <Link
+      to="/feed"
+      search={{ post: post.id }}
+      className="group w-[82%] shrink-0 snap-start overflow-hidden rounded-[14px] border border-slate-200/80 bg-white transition-all active:scale-[0.99] sm:w-[300px] lg:w-[320px]"
+    >
+      {thumb ? (
+        <img
+          src={thumb}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="aspect-[16/9] w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
+        />
+      ) : product?.coverUrl ? (
+        <img
+          src={product.coverUrl}
+          alt={product.name}
+          loading="lazy"
+          decoding="async"
+          className="aspect-[16/9] w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
+        />
+      ) : null}
+      <div className="p-4">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+            <AvatarImage src={post.author_avatar_url} alt={post.author_name} />
+          </div>
+          <div className="min-w-0">
+            <p className="truncate text-xs font-bold text-slate-900">{post.author_name}</p>
+            <p className="text-[11px] text-slate-500">{timeLabel}</p>
+          </div>
+        </div>
+        {post.text && <p className="mt-3 line-clamp-2 text-sm leading-5 text-slate-600">{post.text}</p>}
+        {product && (
+          <div className="mt-3 flex items-center gap-2 rounded-[10px] bg-slate-50 p-2.5">
+            <ShoppingCart className="h-4 w-4 shrink-0 text-crimson" />
+            <span className="min-w-0 flex-1 truncate text-xs font-bold text-slate-800">{product.name}</span>
+            <span className="shrink-0 text-[11px] font-bold text-crimson">View</span>
+          </div>
+        )}
+      </div>
+    </Link>
   );
 }
 
