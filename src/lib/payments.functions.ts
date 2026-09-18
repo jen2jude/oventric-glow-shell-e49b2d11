@@ -33,7 +33,7 @@ export const initPayment = createServerFn({ method: "POST" })
     const settings = await loadGatewaySettings();
     const email = await resolveUserEmail(context.supabase, context.userId, context.claims as { email?: string });
     const intent = await buildPaymentIntent(context.supabase, context.userId, data);
-    return createCharge({
+    const charge = await createCharge({
       userId: context.userId,
       email,
       origin: inferOrigin(),
