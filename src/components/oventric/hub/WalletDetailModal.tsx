@@ -7,7 +7,6 @@ interface WalletDetailModalProps {
   onClose: () => void;
   balanceLabel: string;
   cashbackLabel: string;
-  bountyLabel: string;
   escrowLabel: string;
   onAddFunds: () => void;
   onWithdraw: () => void;
@@ -18,7 +17,6 @@ export function WalletDetailModal({
   onClose,
   balanceLabel,
   cashbackLabel,
-  bountyLabel,
   escrowLabel,
   onAddFunds,
   onWithdraw,
@@ -86,14 +84,10 @@ export function WalletDetailModal({
           </button>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 pt-4 border-t border-white/[0.06]">
+        <div className="grid grid-cols-2 gap-2 pt-4 border-t border-white/[0.06]">
           <div className="space-y-0.5">
             <div className="text-[9px] font-bold uppercase tracking-widest text-white/25">Cashback</div>
             <div className="text-[13px] font-bold text-emerald-400 truncate">{cashbackLabel}</div>
-          </div>
-          <div className="space-y-0.5">
-            <div className="text-[9px] font-bold uppercase tracking-widest text-white/25">Bounty</div>
-            <div className="text-[13px] font-bold text-blue-400 truncate">{bountyLabel}</div>
           </div>
           <div className="space-y-0.5">
             <div className="text-[9px] font-bold uppercase tracking-widest text-white/25">Escrow</div>

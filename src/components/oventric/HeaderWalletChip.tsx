@@ -6,7 +6,6 @@ import {
   ChevronDown,
   Lock,
   Coins,
-  TrendingUp,
   Gift,
   Store,
 } from "lucide-react";
@@ -40,7 +39,6 @@ export function HeaderWalletChip({
   const [main, setMain] = useState(0);
   const [escrow, setEscrow] = useState(0);
   const [cashback, setCashback] = useState(0);
-  const [bounty, setBounty] = useState(0);
   const [seller, setSeller] = useState(0);
   const wrapRef = useRef<HTMLDivElement | null>(null);
 
@@ -54,7 +52,6 @@ export function HeaderWalletChip({
           setMain(r.balances[homeCurrency] ?? 0);
           setEscrow(r.escrow[homeCurrency] ?? 0);
           setCashback(r.cashback ?? 0);
-          setBounty(r.bountyBalance ?? 0);
         })
         .catch(() => {});
     };
@@ -121,7 +118,6 @@ export function HeaderWalletChip({
 
   const mainDisplay = hasCountry ? main : fromUSD(main, "USD");
   const escrowDisplay = hasCountry ? escrow : fromUSD(escrow, "USD");
-  const bountyDisplay = fromUSD(bounty, displayCurrency);
   const cashbackDisplay = fromUSD(cashback, displayCurrency);
   const sellerDisplay = hasCountry ? seller : fromUSD(seller, "USD");
   const display = balancesHidden ? "••••" : fmt(mainDisplay, displayCurrency);
@@ -174,12 +170,6 @@ export function HeaderWalletChip({
               label="Escrowed"
               value={balancesHidden ? "••••" : fmt(escrowDisplay, displayCurrency)}
               tint="text-amber-300"
-            />
-            <SubTile
-              icon={<TrendingUp className="w-4 h-4" />}
-              label="Bounty earnings"
-              value={balancesHidden ? "••••" : fmt(bountyDisplay, displayCurrency)}
-              tint="text-sky-300"
             />
             <SubTile
               icon={<Gift className="w-4 h-4" />}

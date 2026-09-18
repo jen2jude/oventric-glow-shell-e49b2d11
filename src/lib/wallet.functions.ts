@@ -106,7 +106,6 @@ export interface WalletBalancesDTO {
   balances: Record<WalletCurrency, number>;
   escrow: Record<WalletCurrency, number>;
   cashback: number;
-  bountyBalance: number;
 }
 
 export const getWalletBalances = createServerFn({ method: "GET" })
@@ -115,47 +114,28 @@ export const getWalletBalances = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const { data, error } = await supabase
       .from("wallets")
-      .select("currency, available_balance, escrow_balance, accumulated_cashback, bounty_balance")
+      .select("currency, available_balance, escrow_balance, accumulated_cashback")
       .eq("user_id", userId);
     if (error) throw new Error(error.message);
 
     const balances: Record<string, number> = zeroAmounts();
     const escrow: Record<string, number> = zeroAmounts();
     let cashback = 0;
-    let bountyBalance = 0;
     for (const r of (data ?? []) as Array<Record<string, unknown>>) {
       const c = r.currency as WalletCurrency;
       if (c in balances) {
         balances[c] = Number(r.available_balance ?? 0);
         escrow[c] = Number(r.escrow_balance ?? 0);
         cashback += Number(r.accumulated_cashback ?? 0);
-        if (c === "USD") bountyBalance = Number(r.bounty_balance ?? 0);
       }
     }
-    return { balances, escrow, cashback, bountyBalance };
+    return { balances, escrow, cashback };
   });
-
-export const transferBountyToMain = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((i: { amount: number }) => {
-    const amount = Number(i?.amount);
-    if (!Number.isFinite(amount) || amount <= 0) throw new Error("Invalid amount");
-    return { amount: Math.round(amount * 100) / 100 };
-  })
-  .handler(async ({ data, context }) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const sb = context.supabase as any;
-    const { error } = await sb.rpc("bounty_wallet_transfer_to_main", { _amount: data.amount });
-    if (error) throw new Error(error.message);
-    return { ok: true, moved: data.amount };
-  });
-
 
 export interface WalletEarningsDTO {
   cashbackUSD: number;
   marketplaceHome: number;
   marketplaceCurrency: WalletCurrency;
-  bountyUSD: number;
   affiliateUSD: number;
 }
 
@@ -164,20 +144,13 @@ export const getWalletEarnings = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<WalletEarningsDTO> => {
     const { supabase, userId } = context;
 
-    const [walletsRes, saleRes, bountyRes, affiliateRes] = await Promise.all([
+    const [walletsRes, saleRes, affiliateRes] = await Promise.all([
       supabase.from("wallets").select("accumulated_cashback").eq("user_id", userId),
       supabase
         .from("wallet_transactions")
         .select("amount, currency")
         .eq("user_id", userId)
         .eq("type", "Marketplace Sale")
-        .eq("inflow", true)
-        .eq("status", "success"),
-      supabase
-        .from("wallet_transactions")
-        .select("amount")
-        .eq("user_id", userId)
-        .eq("type", "Gig Bounty Escrowed")
         .eq("inflow", true)
         .eq("status", "success"),
       supabase
@@ -211,79 +184,8 @@ export const getWalletEarnings = createServerFn({ method: "GET" })
         const usd = r.currency === "USD" ? amount : amount / (r.currency === "NGN" ? 1500 : 14);
         return s + (marketplaceCurrency === "USD" ? usd : usd * (marketplaceCurrency === "NGN" ? 1500 : 14));
       }, 0);
-    const bountyUSD = ((bountyRes.data ?? []) as Array<{ amount: number }>)
-      .reduce((s, r) => s + Number(r.amount ?? 0), 0);
     const affiliateUSD = ((affiliateRes.data ?? []) as Array<{ amount: number }>)
       .reduce((s, r) => s + Number(r.amount ?? 0), 0);
 
-    return { cashbackUSD, marketplaceHome, marketplaceCurrency, bountyUSD, affiliateUSD };
-  });
-
-// ---------------------------------------------------------------------------
-// User-to-user wallet transfers
-// ---------------------------------------------------------------------------
-
-export interface TransferRecipientDTO {
-  userId: string;
-  username: string | null;
-  displayName: string | null;
-  avatarUrl: string | null;
-}
-
-export const searchTransferRecipients = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input: { query: string }) => ({
-    query: String(input?.query ?? "").trim().slice(0, 60),
-  }))
-  .handler(async ({ data, context }): Promise<TransferRecipientDTO[]> => {
-    const { supabase, userId } = context;
-    if (data.query.length < 2) return [];
-    const like = `%${data.query.replace(/[%,]/g, "")}%`;
-    const { data: rows, error } = await supabase
-      .from("profiles")
-      .select("user_id, username, display_name, avatar_path")
-      .or(`username.ilike.${like},display_name.ilike.${like}`)
-      .neq("user_id", userId)
-      .limit(8);
-    if (error) throw new Error(error.message);
-    return ((rows ?? []) as Array<Record<string, unknown>>).map((r) => ({
-      userId: r.user_id as string,
-      username: (r.username as string | null) ?? null,
-      displayName: (r.display_name as string | null) ?? null,
-      avatarUrl: null,
-    }));
-  });
-
-export interface TransferToUserInput {
-  recipientId: string;
-  currency: WalletCurrency;
-  amount: number;
-  note?: string;
-}
-
-export const transferToUser = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input: TransferToUserInput) => {
-    const amount = Number(input?.amount);
-    if (!Number.isFinite(amount) || amount <= 0) throw new Error("Invalid amount");
-    const recipientId = String(input?.recipientId ?? "");
-    if (!recipientId) throw new Error("Recipient required");
-    return {
-      recipientId,
-      currency: dbCurrency(String(input?.currency ?? "")),
-      amount: Math.round(amount * 100) / 100,
-      note: typeof input?.note === "string" ? input.note.slice(0, 200) : null,
-    };
-  })
-  .handler(async ({ data, context }) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const sb = context.supabase as any;
-    const { data: result, error } = await sb.rpc("wallet_transfer_to_user", {
-      _recipient_id: data.recipientId,
-      _currency: data.currency,
-      _amount: data.amount,
-      _note: data.note,
-    });
-    if (error) throw new Error(error.message);
-    return result as { ok: true; ref: string; recipient_name: string; sender_name: string };
+    return { cashbackUSD, marketplaceHome, marketplaceCurrency, affiliateUSD };
   });

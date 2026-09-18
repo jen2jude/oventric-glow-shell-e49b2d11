@@ -125,7 +125,6 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
 
   const [main, setMain] = useState(0);
   const [cashback, setCashback] = useState(0);
-  const [bounty, setBounty] = useState(0);
   const [escrow, setEscrow] = useState(0);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [topUsers, setTopUsers] = useState<TopUser[]>([]);
@@ -151,7 +150,6 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
       setAvatarUrl(null);
       setMain(0);
       setCashback(0);
-      setBounty(0);
       setEscrow(0);
       return;
     }
@@ -169,7 +167,6 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
         setMain(r.balances[walletCurrency] ?? 0);
         setEscrow(r.escrow[walletCurrency] ?? 0);
         setCashback(r.cashback ?? 0);
-        setBounty(r.bountyBalance ?? 0);
       })
       .catch(() => {});
 
@@ -470,7 +467,6 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
         onClose={() => setWalletOpen(false)}
         balanceLabel={formatMoney(main, walletCurrency)}
         cashbackLabel={formatMoney(fromUSD(cashback, walletCurrency), walletCurrency)}
-        bountyLabel={formatMoney(fromUSD(bounty, walletCurrency), walletCurrency)}
         escrowLabel={formatMoney(escrow, walletCurrency)}
         onAddFunds={() => {
           setWalletOpen(false);
