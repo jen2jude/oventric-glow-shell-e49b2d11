@@ -270,7 +270,7 @@ function ReportIssueModal({
                 key={u}
                 src={u}
                 alt="Proof preview"
-                className="w-16 h-16 object-cover rounded border border-white/10 md:border-slate-200"
+                className="h-16 w-16 rounded border border-border object-cover"
               />
             ))}
           </div>
@@ -279,7 +279,7 @@ function ReportIssueModal({
         <div className="flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-3 py-3 rounded-[10px] text-sm text-slate-300 md:text-slate-600 bg-[#2A2A31] md:bg-slate-100 border border-white/10 md:border-slate-200"
+            className="rounded-[10px] border border-border bg-muted px-3 py-3 text-sm text-muted-foreground"
           >
             Cancel
           </button>
