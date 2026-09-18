@@ -862,6 +862,20 @@ export const createOrder = createServerFn({ method: "POST" })
     // Paystack top-ups credit per currency), not USD. This makes the balance
     // the buyer sees at checkout equal the "true" amount they funded.
     if (data.paymentMethod === "wallet" && totalUSD > 0) {
+      // Double-submit guard: an identical wallet purchase inside 90s is treated
+      // as a replay of the same click and must never debit the wallet twice.
+      const { data: recent } = await supabaseAdmin
+        .from("orders")
+        .select("id")
+        .eq("buyer_id", userId)
+        .eq("product_id", product.id)
+        .eq("payment_method", "wallet")
+        .eq("display_total", displayTotal)
+        .gte("created_at", new Date(Date.now() - 90_000).toISOString())
+        .limit(1);
+      if (recent && recent.length > 0) {
+        throw new Error("This wallet payment was already processed — check your orders.");
+      }
       const { data: ok, error: dErr } = await supabaseAdmin.rpc("wallet_debit_currency", {
         _user_id: userId,
         _amount: displayTotal,
