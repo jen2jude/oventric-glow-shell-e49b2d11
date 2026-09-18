@@ -290,6 +290,30 @@ export const listMarketplaceCategories = createServerFn({ method: "GET" }).handl
   return roots;
 });
 
+/**
+ * Server-side guard: a listing may only be filed under an enabled DIGITAL
+ * marketplace category. Rejects anything else (including any attempt to
+ * reintroduce a physical-goods category) regardless of what the client sends.
+ */
+async function assertDigitalCategory(category: string): Promise<void> {
+  const value = String(category ?? "").trim();
+  if (!value) throw new Error("Category required");
+  if (value.toLowerCase() === "services") return; // digital service listings
+  const sb = serverPublicClient();
+  const { data, error } = await sb
+    .from("marketplace_categories")
+    .select("name, slug, kind, enabled")
+    .eq("enabled", true);
+  if (error) throw new Error(error.message);
+  const ok = (data ?? []).some(
+    (c: Record<string, unknown>) =>
+      ((c.kind as string) ?? "digital") === "digital" &&
+      (String(c.name ?? "").trim().toLowerCase() === value.toLowerCase() ||
+        String(c.slug ?? "").trim().toLowerCase() === value.toLowerCase()),
+  );
+  if (!ok) throw new Error("Unsupported category — Oventric only lists digital products.");
+}
+
 /** Public product detail. */
 export const getProduct = createServerFn({ method: "POST" })
   .inputValidator((input: { id: string }) => ({ id: String(input?.id ?? "") }))
@@ -363,6 +387,7 @@ export const createProduct = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     if (!data.name) throw new Error("Name required");
     if (data.priceUSD < 0) throw new Error("Price cannot be negative");
+    await assertDigitalCategory(data.category as unknown as string);
 
     // Admins publish directly; regular sellers enter the moderation queue.
     const { data: isAdmin } = await context.supabase.rpc("has_role", {
@@ -526,6 +551,7 @@ export const updateAndResubmitProduct = createServerFn({ method: "POST" })
   }))
   .handler(async ({ data, context }) => {
     if (!data.id) throw new Error("Product id required");
+    if (data.category !== undefined) await assertDigitalCategory(data.category);
 
     // Load and verify ownership. Owners may edit pending, rejected AND live
     // listings; live listings only fall back into moderation when the actual
@@ -570,11 +596,9 @@ export const updateAndResubmitProduct = createServerFn({ method: "POST" })
       patch.image_paths = data.imagePaths;
       if (data.imagePaths.length > 0) patch.cover_path = data.imagePaths[0];
     }
-    if (data.condition !== undefined) patch.condition = data.condition;
+    // Physical-goods fields (condition, location, negotiable, shipping delivery)
+    // are intentionally ignored: Oventric is digital-only, so no edit may write them.
     if (data.brand !== undefined) patch.brand = data.brand;
-    if (data.location !== undefined) patch.location = data.location;
-    if (data.negotiable !== undefined) patch.negotiable = data.negotiable;
-    if (data.delivery !== undefined) patch.delivery = data.delivery;
     if (data.sellerPhone !== undefined) patch.seller_phone = data.sellerPhone;
     if (data.whatsappNumber !== undefined) patch.whatsapp_number = data.whatsappNumber;
     if (data.socialLink !== undefined) patch.social_link = data.socialLink;
@@ -774,13 +798,23 @@ export const createOrder = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { data: pRow, error: pErr } = await supabase
       .from("products")
-      .select("id, seller_id, name, category, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, created_at, requires_manual_delivery, in_stock, cashback_pct")
+      .select("id, seller_id, name, category, kind, status, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, created_at, requires_manual_delivery, in_stock, cashback_pct")
       .eq("id", data.productId)
       .maybeSingle();
     if (pErr) throw new Error(pErr.message);
     if (!pRow) throw new Error("Product not found");
+    // Only live, in-stock, supported listings can be bought — decided server-side.
+    if ((pRow as Record<string, unknown>).status !== "active") {
+      throw new Error("This listing is not available for purchase");
+    }
     if ((pRow as Record<string, unknown>).in_stock === false) {
       throw new Error("This product is currently out of stock");
+    }
+    if (!["digital", "service"].includes(String((pRow as Record<string, unknown>).kind ?? "digital"))) {
+      throw new Error("This listing type is not supported on Oventric");
+    }
+    if ((pRow as Record<string, unknown>).seller_id === userId) {
+      throw new Error("You cannot purchase your own listing");
     }
     const product = mapProduct(pRow as Record<string, unknown>);
     const productCashbackPct = Number((pRow as Record<string, unknown>).cashback_pct ?? 0);
