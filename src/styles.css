@@ -189,6 +189,15 @@
   animation: home-hero-video-reveal 500ms ease-out both;
 }
 
+.home-pop-hero-fade {
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--home-surface) 97%, transparent) 0%,
+    color-mix(in oklab, var(--home-surface) 84%, transparent) 38%,
+    transparent 78%
+  );
+}
+
 @keyframes home-hero-video-reveal {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -259,6 +268,15 @@
 @media (max-width: 639px) {
   .home-pop-hero::before,
   .home-pop-hero::after { display: none; }
+  .home-pop-hero-fade {
+    background: linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--home-surface) 96%, transparent) 0%,
+      color-mix(in oklab, var(--home-surface) 88%, transparent) 48%,
+      color-mix(in oklab, var(--home-surface) 58%, transparent) 78%,
+      color-mix(in oklab, var(--home-surface) 25%, transparent) 100%
+    );
+  }
   .home-pop-feed { margin-inline: -0.5rem; border-radius: 1rem; }
 }
 

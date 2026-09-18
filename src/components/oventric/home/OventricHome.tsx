@@ -298,7 +298,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             </video>
           )}
           {/* white fade — text panel on the left, image stretches to both edges */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white/95 from-0% via-white/80 via-[30%] to-transparent to-[65%] sm:via-[38%] sm:to-[72%] lg:via-[42%] lg:to-[78%]" />
+          <div className="home-pop-hero-fade absolute inset-0" />
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-home-canvas to-transparent" />
         </div>
 
