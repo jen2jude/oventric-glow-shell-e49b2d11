@@ -147,20 +147,13 @@ export const getWalletEarnings = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<WalletEarningsDTO> => {
     const { supabase, userId } = context;
 
-    const [walletsRes, saleRes, bountyRes, affiliateRes] = await Promise.all([
+    const [walletsRes, saleRes, affiliateRes] = await Promise.all([
       supabase.from("wallets").select("accumulated_cashback").eq("user_id", userId),
       supabase
         .from("wallet_transactions")
         .select("amount, currency")
         .eq("user_id", userId)
         .eq("type", "Marketplace Sale")
-        .eq("inflow", true)
-        .eq("status", "success"),
-      supabase
-        .from("wallet_transactions")
-        .select("amount")
-        .eq("user_id", userId)
-        .eq("type", "Gig Bounty Escrowed")
         .eq("inflow", true)
         .eq("status", "success"),
       supabase
