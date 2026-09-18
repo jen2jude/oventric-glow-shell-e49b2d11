@@ -36,15 +36,6 @@ const BANNERS: Banner[] = [
     glow: "rgba(56,189,248,0.35)",
     section: "Marketplace",
   },
-  {
-    id: "skills",
-    title: "Learn high value digital skills",
-    subtitle: "Earn while you learn on Oventric Academy",
-    icon: GraduationCap,
-    tint: "from-indigo-500/15 to-indigo-500/0",
-    glow: "rgba(99,102,241,0.35)",
-    section: "Academy",
-  },
 ];
 
 export function DesktopPromo({ onSelect }: { onSelect: (section: string) => void }) {
