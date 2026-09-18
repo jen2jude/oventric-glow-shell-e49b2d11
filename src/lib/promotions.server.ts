@@ -73,7 +73,7 @@ export async function validateCouponServer(
     return { valid: false, reason: "This coupon has reached its usage limit" };
   }
   if (c.per_user_limit != null && ctx.userId) {
-    const { count } = await sb
+    const { count } = await reader
       .from("coupon_redemptions")
       .select("id", { count: "exact", head: true })
       .eq("coupon_code", code)
