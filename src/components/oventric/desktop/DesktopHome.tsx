@@ -196,7 +196,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
     return () => {
       cancelled = true;
     };
-  }, [loadDiscovery, loadCourses, currency]);
+  }, [loadDiscovery, currency]);
 
   const primary = () => (isAuthenticated ? onSelect("Feed") : openGate("generic"));
 
