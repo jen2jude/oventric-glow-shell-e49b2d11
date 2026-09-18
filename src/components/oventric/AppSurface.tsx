@@ -78,10 +78,7 @@ function usePrefetchSections() {
     const warm = () => {
       void import("@/components/oventric/Feed");
       void import("@/components/oventric/Marketplace");
-      void import("@/components/oventric/Academy");
-      void import("@/components/oventric/Bounties");
       void import("@/components/oventric/Wallet");
-      void import("@/components/oventric/CirclesHub");
       void import("@/components/oventric/Messages");
       void import("@/components/oventric/CreatePanel");
     };
