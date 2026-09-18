@@ -1,8 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import { AppSurface } from "@/components/oventric/AppSurface";
 
 export const Route = createFileRoute("/academy")({
+  // Paused legacy feature — not part of the MVP. The page is retained for
+  // future reactivation but is unreachable: every visit redirects home.
+  beforeLoad: () => {
+    throw redirect({ to: "/" });
+  },
   head: () => ({
     meta: [
       { title: "Academy — Courses from African creators | Oventric" },

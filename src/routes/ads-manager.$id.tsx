@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -30,6 +30,11 @@ import {
 } from "@/lib/my-ads.functions";
 
 export const Route = createFileRoute("/ads-manager/$id")({
+  // Paused legacy feature — not part of the MVP. The page is retained for
+  // future reactivation but is unreachable: every visit redirects home.
+  beforeLoad: () => {
+    throw redirect({ to: "/" });
+  },
   ssr: false,
   head: () => ({ meta: [{ title: "Campaign — Ads Manager" }] }),
   component: CampaignDetailPage,
