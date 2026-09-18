@@ -5,17 +5,17 @@ import { AppSurface } from "@/components/oventric/AppSurface";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Oventric — Sell, learn and get paid across Africa" },
+      { title: "Oventric — Africa's digital marketplace for creators" },
       {
         name: "description",
         content:
-          "Marketplace, academy, bounties and a multi-currency wallet in one platform. Escrow-protected payments in your own currency.",
+          "Buy and sell digital products with escrow-protected payments, cashback and a multi-currency wallet — all priced in your own currency.",
       },
-      { property: "og:title", content: "Oventric — Sell, learn and get paid across Africa" },
+      { property: "og:title", content: "Oventric — Africa's digital marketplace for creators" },
       {
         property: "og:description",
         content:
-          "Marketplace, academy, bounties and a multi-currency wallet in one platform. Escrow-protected payments in your own currency.",
+          "Buy and sell digital products with escrow-protected payments, cashback and a multi-currency wallet — all priced in your own currency.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://oventric.com/" },
