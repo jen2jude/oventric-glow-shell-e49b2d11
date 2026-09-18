@@ -363,5 +363,14 @@ export async function reviewManualPayment(
     link: redirectTo,
   });
 
+  await writeManualAudit(reviewerId, id, "manual_payment.approve", {
+    provider: row.provider,
+    purpose,
+    amount,
+    currency,
+    reference,
+    payer_id: row.user_id,
+  });
+
   return { ok: true, approved: true, redirectTo };
 }
