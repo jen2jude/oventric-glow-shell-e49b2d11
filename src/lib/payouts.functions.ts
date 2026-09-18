@@ -756,14 +756,14 @@ export const adminGetPendingPayoutCount = createServerFn({ method: "GET" })
  * Wallets are always held in the user's home currency. A USD withdrawal
  * converts the requested USD amount back into the home currency at live
  * FX, debits that wallet and files a USD payout request for finance to
- * settle off-platform (Binance / Bybit / MiniPay / wallet address).
+ * settle off-platform (Binance / Bybit / wallet address).
  * ------------------------------------------------------------------ */
 
-export type UsdPayoutChannel = "binance" | "bybit" | "minipay" | "wallet";
+export type UsdPayoutChannel = "binance" | "bybit" | "wallet";
 
 export interface CreateUsdPayoutInput {
   channel: UsdPayoutChannel;
-  /** Binance ID, Bybit UID, MiniPay account number or wallet address. */
+  /** Binance ID, Bybit UID or wallet address. */
   identifier: string;
   accountName?: string;
   /** Optional network label for raw wallet payouts, e.g. TRC20. */
@@ -776,7 +776,7 @@ export const createUsdPayoutRequest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: CreateUsdPayoutInput) => {
     const channel = input?.channel;
-    if (!["binance", "bybit", "minipay", "wallet"].includes(channel)) {
+    if (!["binance", "bybit", "wallet"].includes(channel)) {
       throw new Error("Choose a USD payout destination");
     }
     const identifier = String(input?.identifier ?? "").trim().slice(0, 200);
