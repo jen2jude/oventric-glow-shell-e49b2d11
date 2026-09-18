@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -16,6 +16,12 @@ import {
   Download,
   Banknote,
   Search,
+  ChevronLeft,
+  ChevronRight,
+  Heart,
+  MessageCircle,
+  Eye,
+  Sparkles,
 } from "lucide-react";
 
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
@@ -33,6 +39,7 @@ import { listPosts, type FeedPost } from "@/lib/posts.functions";
 import { readRecentProductIds } from "@/lib/recent-products";
 import { visualForCategory } from "@/components/oventric/marketplace-discovery/utils";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
+import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/home-hero.jpg";
 import skillsCtaImage from "@/assets/home-skills-bg.jpg";
 import cashbackCreatorsImage from "@/assets/earn-cashback-creators.jpg";
@@ -185,7 +192,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
   const [sellers, setSellers] = useState<TopSellerDTO[]>([]);
   const [fresh, setFresh] = useState<ProductDTO[]>([]);
   const [recentProducts, setRecentProducts] = useState<ProductDTO[]>([]);
-  const [marketplacePosts, setMarketplacePosts] = useState<FeedPost[]>([]);
+  const [latestPosts, setLatestPosts] = useState<FeedPost[]>([]);
   const [stats, setStats] = useState<HomeStatsDTO | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -223,11 +230,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         setSellers((tops ?? []).slice(0, 5));
         setStats(s);
         setRecentProducts((recent ?? []).slice(0, 10));
-        setMarketplacePosts(
-          (postResult?.posts ?? [])
-            .filter((post) => (post.product_attachments ?? []).some((product) => product.available))
-            .slice(0, 10),
-        );
+        setLatestPosts((postResult?.posts ?? []).slice(0, 10));
       } catch {
         /* public page stays usable even if a feed is unavailable */
       }
@@ -397,20 +400,9 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           {categories.length === 0 && <EmptyNote>Categories are being set up.</EmptyNote>}
         </div>
 
-        {/* ------------------------------------------ latest marketplace posts */}
-        {marketplacePosts.length > 0 && (
-          <section>
-            <SectionHead
-              title="Latest from the Marketplace"
-              subtitle="Fresh posts from creators and their shops"
-              action={{ label: "Open feed", onClick: () => onSelect("Feed") }}
-            />
-            <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:px-0">
-              {marketplacePosts.map((post) => (
-                <MarketplacePostCard key={post.id} post={post} />
-              ))}
-            </div>
-          </section>
+        {/* ------------------------------------------------ latest newsfeed posts */}
+        {latestPosts.length > 0 && (
+          <NewsfeedRail posts={latestPosts} onOpenFeed={() => onSelect("Feed")} />
         )}
 
         {/* -------------------------------------------------- featured products */}
@@ -788,11 +780,75 @@ function ProductCard({ product, currency }: { product: ProductDTO; currency: str
   );
 }
 
-function MarketplacePostCard({ post }: { post: FeedPost }) {
+function NewsfeedRail({ posts, onOpenFeed }: { posts: FeedPost[]; onOpenFeed: () => void }) {
+  const railRef = useRef<HTMLDivElement>(null);
+  const move = (direction: number) => {
+    railRef.current?.scrollBy({ left: direction * 360, behavior: "smooth" });
+  };
+
+  return (
+    <section className="-mx-4 mt-10 overflow-hidden bg-newsfeed-canvas py-8 sm:mx-0 sm:rounded-[20px] sm:px-6 lg:mt-14 lg:px-8 lg:py-10">
+      <div className="mb-6 flex items-end justify-between px-4 sm:px-0">
+        <div>
+          <div className="mb-2 flex items-center gap-2 text-newsfeed-accent">
+            <Sparkles className="h-4 w-4" />
+            <span className="text-[10px] font-extrabold uppercase tracking-widest">Community pulse</span>
+          </div>
+          <h2 className="font-wallet-display text-2xl font-bold text-newsfeed-ink sm:text-3xl">
+            Latest from Newsfeed
+          </h2>
+          <div className="mt-3 h-1 w-16 rounded-full bg-newsfeed-accent" />
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={() => move(-1)}
+            aria-label="Previous posts"
+            className="hidden h-11 w-11 border-newsfeed-surface bg-newsfeed-surface/70 text-newsfeed-ink hover:border-newsfeed-accent hover:bg-newsfeed-accent hover:text-newsfeed-on-accent sm:inline-flex"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={() => move(1)}
+            aria-label="Next posts"
+            className="hidden h-11 w-11 border-newsfeed-surface bg-newsfeed-surface/70 text-newsfeed-ink hover:border-newsfeed-accent hover:bg-newsfeed-accent hover:text-newsfeed-on-accent sm:inline-flex"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+          <Button type="button" onClick={onOpenFeed} className="h-10 rounded-full bg-newsfeed-ink px-4 text-xs font-bold text-newsfeed-surface hover:bg-newsfeed-accent sm:hidden">
+            Open feed
+          </Button>
+        </div>
+      </div>
+      <div ref={railRef} className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:px-0 [&::-webkit-scrollbar]:hidden">
+        {posts.map((post, index) => (
+          <NewsfeedPostCard key={post.id} post={post} featured={index === 0} />
+        ))}
+        <button
+          type="button"
+          onClick={onOpenFeed}
+          className="group flex h-[390px] w-[190px] shrink-0 snap-start flex-col justify-between rounded-[20px] bg-newsfeed-accent p-6 text-left text-newsfeed-on-accent transition-transform hover:-translate-y-1 sm:h-[460px] sm:w-[240px]"
+        >
+          <Sparkles className="h-9 w-9" />
+          <span>
+            <strong className="font-wallet-display block text-2xl">See what’s happening</strong>
+            <span className="mt-3 flex items-center gap-2 text-sm font-semibold">Open Newsfeed <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
+          </span>
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function NewsfeedPostCard({ post, featured }: { post: FeedPost; featured: boolean }) {
   const image = post.media.find((item) => item.type === "image");
   const video = post.media.find((item) => item.type === "video" && item.poster_url);
   const thumb = image?.url ?? video?.poster_url ?? post.poster_url ?? null;
-  const product = (post.product_attachments ?? []).find((item) => item.available);
   const created = new Date(post.created_at);
   const timeLabel = Number.isNaN(created.getTime())
     ? "Recently"
@@ -802,43 +858,33 @@ function MarketplacePostCard({ post }: { post: FeedPost }) {
     <Link
       to="/feed"
       search={{ post: post.id }}
-      className="group w-[82%] shrink-0 snap-start overflow-hidden rounded-[14px] border border-slate-200/80 bg-white transition-all active:scale-[0.99] sm:w-[300px] lg:w-[320px]"
+      className={`group relative flex h-[390px] shrink-0 snap-start overflow-hidden rounded-[20px] border-4 border-newsfeed-surface shadow-sm transition-transform hover:-translate-y-1 sm:h-[460px] ${
+        featured ? "w-[88%] bg-newsfeed-ink sm:w-[440px]" : "w-[78%] bg-newsfeed-surface sm:w-[330px]"
+      }`}
     >
       {thumb ? (
-        <img
-          src={thumb}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          className="aspect-[16/9] w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
-        />
-      ) : product?.coverUrl ? (
-        <img
-          src={product.coverUrl}
-          alt={product.name}
-          loading="lazy"
-          decoding="async"
-          className="aspect-[16/9] w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
-        />
+        <div className={`${featured ? "absolute inset-0" : "h-[58%] w-full"}`}>
+          <img src={thumb} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+          {featured && <div className="absolute inset-0 bg-gradient-to-t from-newsfeed-ink via-newsfeed-ink/55 to-newsfeed-ink/10" />}
+        </div>
       ) : null}
-      <div className="p-4">
-        <div className="flex min-w-0 items-center gap-2.5">
-          <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+      <div className={`relative z-10 flex min-w-0 flex-1 flex-col justify-end p-5 sm:p-7 ${featured || !thumb ? "text-newsfeed-surface" : "text-newsfeed-ink"}`}>
+        <div className="mb-auto flex items-center gap-2.5">
+          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-[12px] border border-newsfeed-surface/30 bg-newsfeed-canvas">
             <AvatarImage src={post.author_avatar_url} alt={post.author_name} />
           </div>
           <div className="min-w-0">
-            <p className="truncate text-xs font-bold text-slate-900">{post.author_name}</p>
-            <p className="text-[11px] text-slate-500">{timeLabel}</p>
+            <p className="truncate text-xs font-bold">{post.author_name}</p>
+            <p className={`text-[11px] ${featured || !thumb ? "text-newsfeed-surface/65" : "text-muted-foreground"}`}>{timeLabel}</p>
           </div>
         </div>
-        {post.text && <p className="mt-3 line-clamp-2 text-sm leading-5 text-slate-600">{post.text}</p>}
-        {product && (
-          <div className="mt-3 flex items-center gap-2 rounded-[10px] bg-slate-50 p-2.5">
-            <ShoppingCart className="h-4 w-4 shrink-0 text-crimson" />
-            <span className="min-w-0 flex-1 truncate text-xs font-bold text-slate-800">{product.name}</span>
-            <span className="shrink-0 text-[11px] font-bold text-crimson">View</span>
-          </div>
-        )}
+        {post.text && <p className={`font-wallet-display mt-5 font-bold leading-snug ${featured ? "line-clamp-4 text-2xl sm:text-3xl" : "line-clamp-3 text-lg"}`}>{post.text}</p>}
+        {!post.text && <p className="font-wallet-display mt-5 text-xl font-bold">A fresh update from the Oventric community.</p>}
+        <div className={`mt-5 flex items-center gap-4 text-[11px] font-bold ${featured || !thumb ? "text-newsfeed-surface/70" : "text-muted-foreground"}`}>
+          <span className="flex items-center gap-1"><Heart className="h-4 w-4 text-newsfeed-accent" />{post.likes_count}</span>
+          <span className="flex items-center gap-1"><MessageCircle className="h-4 w-4" />{post.comments_count}</span>
+          <span className="flex items-center gap-1"><Eye className="h-4 w-4" />{post.views_count}</span>
+        </div>
       </div>
     </Link>
   );
