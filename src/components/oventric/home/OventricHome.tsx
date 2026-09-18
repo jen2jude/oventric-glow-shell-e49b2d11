@@ -44,6 +44,7 @@ import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/home-hero.jpg";
 import heroVideo from "@/assets/oventric-hero-loop.mp4.asset.json";
+import heroVideoWebm from "@/assets/oventric-hero-loop.webm.asset.json";
 import skillsCtaImage from "@/assets/home-skills-bg.jpg";
 import cashbackCreatorsImage from "@/assets/earn-cashback-creators.jpg";
 import referralCreatorsImage from "@/assets/earn-referral-creators.jpg";
@@ -281,7 +282,6 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           {heroVideoEnabled && (
             <video
               ref={heroVideoRef}
-              src={heroVideo.url}
               poster={heroImage}
               muted
               autoPlay
@@ -292,7 +292,10 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
               onPause={() => setHeroVideoPaused(true)}
               onPlay={() => setHeroVideoPaused(false)}
               className="home-pop-hero-video absolute inset-0 h-full w-full object-cover object-[75%_center]"
-            />
+            >
+              <source src={heroVideoWebm.url} type="video/webm" />
+              <source src={heroVideo.url} type="video/mp4" />
+            </video>
           )}
           {/* white fade — text panel on the left, image stretches to both edges */}
           <div className="absolute inset-0 bg-gradient-to-r from-white/95 from-0% via-white/80 via-[30%] to-transparent to-[65%] sm:via-[38%] sm:to-[72%] lg:via-[42%] lg:to-[78%]" />
