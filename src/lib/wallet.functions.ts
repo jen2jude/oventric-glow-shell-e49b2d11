@@ -106,7 +106,6 @@ export interface WalletBalancesDTO {
   balances: Record<WalletCurrency, number>;
   escrow: Record<WalletCurrency, number>;
   cashback: number;
-  bountyBalance: number;
 }
 
 export const getWalletBalances = createServerFn({ method: "GET" })
@@ -115,24 +114,22 @@ export const getWalletBalances = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const { data, error } = await supabase
       .from("wallets")
-      .select("currency, available_balance, escrow_balance, accumulated_cashback, bounty_balance")
+      .select("currency, available_balance, escrow_balance, accumulated_cashback")
       .eq("user_id", userId);
     if (error) throw new Error(error.message);
 
     const balances: Record<string, number> = zeroAmounts();
     const escrow: Record<string, number> = zeroAmounts();
     let cashback = 0;
-    let bountyBalance = 0;
     for (const r of (data ?? []) as Array<Record<string, unknown>>) {
       const c = r.currency as WalletCurrency;
       if (c in balances) {
         balances[c] = Number(r.available_balance ?? 0);
         escrow[c] = Number(r.escrow_balance ?? 0);
         cashback += Number(r.accumulated_cashback ?? 0);
-        if (c === "USD") bountyBalance = Number(r.bounty_balance ?? 0);
       }
     }
-    return { balances, escrow, cashback, bountyBalance };
+    return { balances, escrow, cashback };
   });
 
 export interface WalletEarningsDTO {
