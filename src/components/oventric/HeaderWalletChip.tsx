@@ -6,7 +6,6 @@ import {
   ChevronDown,
   Lock,
   Coins,
-  TrendingUp,
   Gift,
   Store,
 } from "lucide-react";
