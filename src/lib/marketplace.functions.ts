@@ -774,13 +774,23 @@ export const createOrder = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { data: pRow, error: pErr } = await supabase
       .from("products")
-      .select("id, seller_id, name, category, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, created_at, requires_manual_delivery, in_stock, cashback_pct")
+      .select("id, seller_id, name, category, kind, status, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, created_at, requires_manual_delivery, in_stock, cashback_pct")
       .eq("id", data.productId)
       .maybeSingle();
     if (pErr) throw new Error(pErr.message);
     if (!pRow) throw new Error("Product not found");
+    // Only live, in-stock, supported listings can be bought — decided server-side.
+    if ((pRow as Record<string, unknown>).status !== "active") {
+      throw new Error("This listing is not available for purchase");
+    }
     if ((pRow as Record<string, unknown>).in_stock === false) {
       throw new Error("This product is currently out of stock");
+    }
+    if (!["digital", "service"].includes(String((pRow as Record<string, unknown>).kind ?? "digital"))) {
+      throw new Error("This listing type is not supported on Oventric");
+    }
+    if ((pRow as Record<string, unknown>).seller_id === userId) {
+      throw new Error("You cannot purchase your own listing");
     }
     const product = mapProduct(pRow as Record<string, unknown>);
     const productCashbackPct = Number((pRow as Record<string, unknown>).cashback_pct ?? 0);

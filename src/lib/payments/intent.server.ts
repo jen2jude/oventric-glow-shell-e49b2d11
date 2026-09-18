@@ -74,11 +74,18 @@ export async function buildPaymentIntent(
   // Order — resolve the authoritative price from the database.
   const { data: p, error } = await supabase
     .from("products")
-    .select("id, seller_id, price_usd, original_currency, original_amount, fx_snapshot")
+    .select("id, seller_id, kind, status, in_stock, price_usd, original_currency, original_amount, fx_snapshot")
     .eq("id", data.productId)
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!p) throw new Error("Product not found");
+  // Purchasability is decided here, server-side, never by the client.
+  if ((p.status as string) !== "active") throw new Error("This listing is not available for purchase");
+  if ((p.in_stock as boolean) === false) throw new Error("This product is currently out of stock");
+  if (!["digital", "service"].includes((p.kind as string) ?? "digital")) {
+    throw new Error("This listing type is not supported on Oventric");
+  }
+  if ((p.seller_id as string) === userId) throw new Error("You cannot purchase your own listing");
 
   const qty = Math.max(1, Math.min(20, Number(data.quantity ?? 1)));
   const displayCurrency = data.displayCurrency;
