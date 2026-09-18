@@ -781,8 +781,10 @@ function ProductCard({ product, currency }: { product: ProductDTO; currency: str
 }
 
 function NewsfeedRail({ posts, onOpenFeed }: { posts: FeedPost[]; onOpenFeed: () => void }) {
-  const featured = posts[0];
-  const secondary = posts.slice(1, 5);
+  const railRef = useRef<HTMLDivElement | null>(null);
+  const scrollRail = (dir: 1 | -1) => {
+    railRef.current?.scrollBy({ left: dir * 660, behavior: "smooth" });
+  };
 
   return (
     <section className="-mx-4 mt-10 overflow-hidden bg-newsfeed-canvas px-4 py-8 sm:mx-0 sm:rounded-[24px] sm:px-6 sm:py-10 lg:mt-14 lg:px-8 lg:py-12">
