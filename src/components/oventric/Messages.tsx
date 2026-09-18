@@ -1034,7 +1034,7 @@ export function Messages({
 
              <div
                className="relative z-10 shrink-0 border-t border-border bg-background p-3 sm:px-6 sm:py-5"
-              style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.75rem)" }}
+              style={{ paddingBottom: "max(env(safe-area-inset-bottom), 1.25rem)" }}
             >
               {OFF_PLATFORM_RE.test(draft) && (
                 <div className="mb-2 flex items-start gap-2 rounded-[10px] border border-amber-200 bg-amber-50 px-3 py-3 text-[11px] text-amber-800">
