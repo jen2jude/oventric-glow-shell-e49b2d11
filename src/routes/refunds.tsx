@@ -72,7 +72,7 @@ function RefundsPage() {
 
           <H2>How to request a refund</H2>
           <p>
-            Open the order, message the seller first, and if it is not resolved within 48 hours use
+            Open the order, message the seller first, and if it is not resolved within 24 hours use
             &ldquo;Report a problem&rdquo; on that order to escalate to Oventric support. Approved
             refunds are credited to your Oventric wallet in your home currency within 1–3 business
             days; wallet funds can then be withdrawn using your saved payout method.

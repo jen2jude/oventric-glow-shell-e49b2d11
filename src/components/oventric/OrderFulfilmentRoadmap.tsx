@@ -273,7 +273,7 @@ export function OrderFulfilmentRoadmap({
           }
           body={
             confirmModal === "deliver"
-              ? "We'll post your delivery note in the buyer's chat. They get 48 hours to confirm — after that funds auto-release to your wallet."
+              ? "We'll post your delivery note in the buyer's chat. They get 24 hours to confirm — after that funds auto-release to your wallet."
               : "This releases the escrowed payment to the seller immediately. Only confirm if you have the item."
           }
           busy={busy !== null}

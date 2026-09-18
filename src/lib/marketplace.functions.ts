@@ -972,13 +972,17 @@ export const createOrder = createServerFn({ method: "POST" })
     const sellerCutUSD = Number(Math.max(0, sellerGrossUSD - cashbackUSD).toFixed(2));
     const sellerNetRatio = sellerGrossUSD > 0 ? sellerCutUSD / sellerGrossUSD : 1;
 
-    // Persist escrow state + seller share on the order.
+    // Persist escrow state + seller share on the order. Escrowed orders get the
+    // same delivery deadline as card orders, so the sweep can refund a buyer
+    // whose seller never delivers.
+    const { DELIVER_DEADLINE_HOURS, hoursFromNow } = await import("@/lib/fulfilment.server");
     await supabaseAdmin
       .from("orders")
       .update({
         escrow_status: holdEscrow ? "held" : "released",
         seller_share_usd: sellerCutUSD,
         released_at: holdEscrow ? null : new Date().toISOString(),
+        auto_refund_at: holdEscrow ? hoursFromNow(DELIVER_DEADLINE_HOURS) : null,
       })
       .eq("id", oRow.id as string);
 

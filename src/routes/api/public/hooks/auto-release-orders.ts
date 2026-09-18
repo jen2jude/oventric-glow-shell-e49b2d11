@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 /**
- * Cron: release escrow for orders whose 48-hour buyer-confirmation window
+ * Cron: release escrow for orders whose 24-hour buyer-confirmation window
  * has elapsed with no dispute. Called by pg_cron with the anon `apikey`
  * header; `/api/public/*` bypasses the site auth gate.
  */

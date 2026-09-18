@@ -499,7 +499,7 @@ export function SalesFulfilmentList({
               <span className="font-semibold text-white md:text-slate-900">
                 {confirmSale.productName}
               </span>{" "}
-              to {confirmSale.buyerName} inside Oventric chat. The buyer has 48 hours to confirm
+              to {confirmSale.buyerName} inside Oventric chat. The buyer has 24 hours to confirm
               before escrow auto-releases.
             </p>
             <div className="rounded-[10px] border border-white/10 md:border-slate-200 bg-white/5 md:bg-slate-50 px-3 py-3 text-[11px] text-slate-400 md:text-slate-600 mb-4">
