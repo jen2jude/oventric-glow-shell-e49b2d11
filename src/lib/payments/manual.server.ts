@@ -218,6 +218,28 @@ export async function signProofUrl(supabase: Sb, path: string): Promise<string |
   return data?.signedUrl ?? null;
 }
 
+/** Immutable audit trail for manual (Binance / MiniPay) payment decisions. */
+async function writeManualAudit(
+  actorId: string,
+  paymentId: string,
+  action: "manual_payment.approve" | "manual_payment.reject",
+  meta: Record<string, unknown>,
+) {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabaseAdmin as any).from("audit_logs").insert({
+      actor_id: actorId,
+      action,
+      target_kind: "manual_payment",
+      target_id: paymentId,
+      meta,
+    });
+  } catch (e) {
+    console.error("[manual payment audit] insert failed", e);
+  }
+}
+
 export async function reviewManualPayment(
   supabase: Sb,
   reviewerId: string,
