@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, useCallback } from "react";
 import { useServerFn } from "@tanstack/react-start";
 
 import { Sidebar } from "@/components/oventric/Sidebar";
@@ -78,10 +78,7 @@ function usePrefetchSections() {
     const warm = () => {
       void import("@/components/oventric/Feed");
       void import("@/components/oventric/Marketplace");
-      void import("@/components/oventric/Academy");
-      void import("@/components/oventric/Bounties");
       void import("@/components/oventric/Wallet");
-      void import("@/components/oventric/CirclesHub");
       void import("@/components/oventric/Messages");
       void import("@/components/oventric/CreatePanel");
     };
@@ -104,18 +101,24 @@ const SECTION_PATHS: Record<string, string> = {
   Explore: "/explore",
   Feed: "/feed",
   Marketplace: "/marketplace",
-  Academy: "/academy",
-  Bounties: "/bounties",
   Wallet: "/wallet",
-  Circles: "/circles",
 };
+
+/**
+ * Academy, Bounties and Circles are paused legacy features. Their components
+ * remain in the repo for future reactivation, but no section switch, deep link
+ * or notification link may land on them: everything falls back to Home.
+ */
+const LEGACY_SECTIONS = new Set(["Academy", "Bounties", "Circles"]);
+const liveSection = (section: string) => (LEGACY_SECTIONS.has(section) ? "Home" : section);
 
 export function AppSurface({ initialSection = "Home" }: { initialSection?: string }) {
   const [createOpen, setCreateOpen] = useState(false);
   const [createChoice, setCreateChoice] = useState<ChoiceKey | null>(null);
   const [messagesOpen, setMessagesOpen] = useState(false);
   const [messagesPeer, setMessagesPeer] = useState<string | undefined>(undefined);
-  const [active, setActive] = useState<string>(initialSection);
+  const [active, setActiveSection] = useState<string>(liveSection(initialSection));
+  const setActive = useCallback((section: string) => setActiveSection(liveSection(section)), []);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [name, setName] = useState<string>("");
   const [q, setQ] = useState("");
@@ -279,56 +282,27 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
     };
   }, []);
 
-  // Resume the bounty publish flow after a successful wallet top-up.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("resume") !== "bounty") return;
-    setActive("Bounties");
-    // Give Bounties a tick to mount its listener before opening the editor.
-    const t = setTimeout(() => {
-      window.dispatchEvent(new CustomEvent("oventric:bounty:open"));
-    }, 120);
-    // Clean the URL so refreshes don't re-trigger the flow.
-    params.delete("resume");
-    const qs = params.toString();
-    const next = `${window.location.pathname}${qs ? `?${qs}` : ""}${window.location.hash}`;
-    window.history.replaceState({}, "", next);
-    return () => clearTimeout(t);
-  }, []);
-
+  // Bounty publish resume flow removed: bounties are a paused legacy feature.
   // Deep link ?section=<name>&bounty=<id>&dm=<peerId> (used by notification links).
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     const section = params.get("section");
-    const bountyId = params.get("bounty");
     const dmPeer = params.get("dm");
     const allowed = [
       "Home",
       "Explore",
       "Feed",
       "Marketplace",
-      "Academy",
-      "Bounties",
       "Wallet",
-      "Circles",
       "Messages",
     ];
     if (section && allowed.includes(section)) setActive(section);
-    if (bountyId) {
-      setActive("Bounties");
-      setTimeout(() => {
-        window.dispatchEvent(
-          new CustomEvent("oventric:bounty:open-detail", { detail: { id: bountyId } }),
-        );
-      }, 160);
-    }
     if (dmPeer) {
       setMessagesPeer(dmPeer);
       setMessagesOpen(true);
     }
-    if (!section && !bountyId && !dmPeer) return;
+    if (!section && !dmPeer) return;
     params.delete("section");
     params.delete("bounty");
     params.delete("dm");
@@ -343,7 +317,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   // Browser visitors retain the full Hub experience. Installed/native app
   // launches use the social feed as their Home screen.
   const desktopLanding =
-    (active === "Home" || active === "Explore" || active === "Marketplace" || active === "Academy" || active === "Bounties" || active === "Circles" || active === "Feed") &&
+    (active === "Home" || active === "Explore" || active === "Marketplace" || active === "Feed") &&
     (isDesktop || !isAppShell);
   const isMarketplace = active === "Marketplace";
 
@@ -432,7 +406,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
       <div className="flex h-full flex-col">
         {/* Managed Header (Desktop Landing/Browser Context only) */}
         {desktopLanding && active !== "Feed" ? (
-          active === "Marketplace" || active === "Academy" ? (
+          active === "Marketplace" ? (
             <MarketplaceHeader
               onSelect={setActive}
               avatarUrl={avatarUrl}

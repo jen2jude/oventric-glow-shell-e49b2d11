@@ -112,13 +112,6 @@ export function FeedCommerceCard({ item }: { item: CommerceItem }) {
       </Link>
     );
   }
-  return (
-    <button
-      type="button"
-      onClick={() => navigateSection(item.kind === "bounty" ? "Bounties" : "Academy")}
-      className={`w-full ${shell}`}
-    >
-      {body}
-    </button>
-  );
+  // Bounty and course cards belong to paused legacy features and are not rendered.
+  return null;
 }

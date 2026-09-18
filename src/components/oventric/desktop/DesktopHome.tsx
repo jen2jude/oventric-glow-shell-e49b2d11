@@ -25,7 +25,6 @@ import heroCollage from "@/assets/hero-collage.png.asset.json";
 import { getWalletBalances } from "@/lib/wallet.functions";
 import { getMyFullProfile } from "@/lib/profiles.functions";
 import { getDiscoveryFeed } from "@/lib/discovery.functions";
-import { listCourses } from "@/lib/academy.functions";
 import { listMarketplaceCategories, type CategoryNode } from "@/lib/marketplace.functions";
 import { formatMoney, safeFormatDisplayPrice } from "@/lib/fx-display";
 import { COUNTRY_META } from "@/lib/currency/africa";
@@ -43,9 +42,6 @@ import {
 
 import walletIcon from "@/assets/wallet-3d.webp.asset.json";
 import marketIcon from "@/assets/marketplace-3d.png.asset.json";
-import academyIcon from "@/assets/academy-3d.png.asset.json";
-import bountiesIcon from "@/assets/bounties-3d.webp.asset.json";
-import circlesIcon from "@/assets/circles-3d.png.asset.json";
 import feedIcon from "@/assets/home-3d.png.asset.json";
 
 export type DesktopHomeProps = {
@@ -66,49 +62,19 @@ const FEATURES = [
     tint: "from-emerald-500/10",
   },
   {
-    label: "Academy",
-    section: "Academy",
-    icon: GraduationCap,
-    img: academyIcon.url,
-    title: "Learn a skill, or teach one and get paid",
-    body: "Structured courses from practitioners, priced in your own currency. Publish your own course and keep the majority of every enrolment.",
-    tint: "from-violet-500/10",
-  },
-  {
-    label: "Bounties",
-    section: "Bounties",
-    icon: Target,
-    img: bountiesIcon.url,
-    title: "Post work. Fund it. Release on delivery.",
-    body: "Bounties are funded up front and held in escrow, so solvers know the money is real and posters only release when the work lands.",
-    tint: "from-amber-500/10",
-  },
-  {
     label: "Wallet",
     section: "Wallet",
     icon: WalletIcon,
     img: walletIcon.url,
     title: "One wallet, your home currency",
-    body: "Fund with card, bank or mobile money through Flutterwave, Paystack and MiniPay. Main, cashback, bounty and escrow balances in one place.",
+    body: "Fund with card, bank transfer or MiniPay. Main, cashback and escrow balances in one place.",
     tint: "from-teal-500/10",
-  },
-  {
-    label: "Circles",
-    section: "Circles",
-    icon: Users,
-    img: circlesIcon.url,
-    title: "Communities that actually ship",
-    body: "Join or forge a circle around a craft, a city or a product. Share posts to your circle, the main feed, or both.",
-    tint: "from-pink-500/10",
   },
 ] as const;
 
 const HUB_TILES = [
   { label: "Marketplace", section: "Marketplace", img: marketIcon.url },
-  { label: "Academy", section: "Academy", img: academyIcon.url },
-  { label: "Bounties", section: "Bounties", img: bountiesIcon.url },
   { label: "Wallet", section: "Wallet", img: walletIcon.url },
-  { label: "Circles", section: "Circles", img: circlesIcon.url },
   { label: "Feed", section: "Feed", img: feedIcon.url },
 ] as const;
 
@@ -139,7 +105,6 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
   const loadBalances = useServerFn(getWalletBalances);
   const loadProfile = useServerFn(getMyFullProfile);
   const loadDiscovery = useServerFn(getDiscoveryFeed);
-  const loadCourses = useServerFn(listCourses);
   const loadCats = useServerFn(listMarketplaceCategories);
   const navigate = useNavigate();
 
@@ -147,9 +112,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [name, setName] = useState<string>(fullName || storeName || "");
   const [products, setProducts] = useState<Card[]>([]);
-  const [courses, setCourses] = useState<Card[]>([]);
-  const [bounties, setBounties] = useState<Card[]>([]);
-  const [counts, setCounts] = useState({ products: 0, courses: 0, bounties: 0 });
+  const [counts, setCounts] = useState({ products: 0 });
   const [cats, setCats] = useState<CategoryNode[]>([]);
   const catTab = "digital" as const;
   const [q, setQ] = useState("");
@@ -180,15 +143,11 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
 
   const results = useMemo(() => {
     const term = q.trim().toLowerCase();
-    if (term.length < 2) return [] as Array<Card & { kind: "product" | "course" | "bounty" }>;
-    const tag = (list: Card[], kind: "product" | "course" | "bounty") =>
+    if (term.length < 2) return [] as Array<Card & { kind: "product" }>;
+    const tag = (list: Card[], kind: "product") =>
       list.filter((c) => c.title.toLowerCase().includes(term)).map((c) => ({ ...c, kind }));
-    return [
-      ...tag(products, "product"),
-      ...tag(courses, "course"),
-      ...tag(bounties, "bounty"),
-    ].slice(0, 8);
-  }, [q, products, courses, bounties]);
+    return tag(products, "product").slice(0, 8);
+  }, [q, products]);
 
   const catList = useMemo(() => cats.filter((c) => c.kind === catTab), [cats, catTab]);
 
@@ -223,7 +182,6 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
       .then((r) => {
         if (cancelled) return;
         const p = r?.products ?? [];
-        const b = r?.bounties ?? [];
         setProducts(
           p.slice(0, 8).map((x) => ({
             id: x.id,
@@ -232,36 +190,13 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
             meta: safeFormatDisplayPrice({ price_usd: x.priceUsd }, currency),
           })),
         );
-        setBounties(
-          b.slice(0, 8).map((x) => ({
-            id: x.id,
-            title: x.title,
-            coverUrl: x.coverUrl,
-            meta: safeFormatDisplayPrice({ price_usd: x.amountUsd }, currency),
-          })),
-        );
-        setCounts((c) => ({ ...c, products: p.length, bounties: b.length }));
-      })
-      .catch(() => {});
-    loadCourses()
-      .then((rows) => {
-        if (cancelled) return;
-        const list = rows ?? [];
-        setCourses(
-          list.slice(0, 8).map((c) => ({
-            id: c.id,
-            title: c.title,
-            coverUrl: c.coverUrl,
-            meta: c.isFree ? "Free" : safeFormatDisplayPrice({ price_usd: c.priceUSD }, currency),
-          })),
-        );
-        setCounts((c) => ({ ...c, courses: list.length }));
+        setCounts((c) => ({ ...c, products: p.length }));
       })
       .catch(() => {});
     return () => {
       cancelled = true;
     };
-  }, [loadDiscovery, loadCourses, currency]);
+  }, [loadDiscovery, currency]);
 
   const primary = () => (isAuthenticated ? onSelect("Feed") : openGate("generic"));
 
@@ -279,9 +214,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
             e.preventDefault();
             if (results[0]) {
               setSearchOpen(null);
-              if (results[0].kind === "product")
-                navigate({ to: "/product/$id", params: { id: results[0].id }, search: { qty: 1 } });
-              else onSelect(results[0].kind === "course" ? "Academy" : "Bounties");
+              navigate({ to: "/product/$id", params: { id: results[0].id }, search: { qty: 1 } });
             } else onSelect("Marketplace");
           }}
           className={`flex items-center rounded-[10px] border border-slate-200 bg-white transition-colors focus-within:border-crimson/45 ${
@@ -296,7 +229,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
               setSearchOpen(place);
             }}
             onFocus={() => setSearchOpen(place)}
-            placeholder={compact ? "Search Oventric" : "Search products, courses and bounties"}
+            placeholder={compact ? "Search Oventric" : "Search digital products and sellers"}
             aria-label="Search Oventric"
             className="h-full min-w-0 flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
           />
@@ -321,9 +254,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
                 type="button"
                 onClick={() => {
                   setSearchOpen(null);
-                  if (r.kind === "product")
-                    navigate({ to: "/product/$id", params: { id: r.id }, search: { qty: 1 } });
-                  else onSelect(r.kind === "course" ? "Academy" : "Bounties");
+                  navigate({ to: "/product/$id", params: { id: r.id }, search: { qty: 1 } });
                 }}
                 className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-50"
               >
@@ -374,7 +305,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
               <span className="text-crimson"> sell, learn and get paid.</span>
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-slate-600 [text-shadow:0_1px_16px_rgba(255,255,255,0.9)] mx-auto lg:mx-0">
-              Marketplace, academy, bounties and a multi-currency wallet in one place.
+              A digital marketplace and a multi-currency wallet in one place.
               Escrow-protected payments in your own currency, wherever you are on the continent.
             </p>
             <div className="mt-9 max-w-lg mx-auto lg:mx-0">{renderSearch("hero")}</div>
@@ -458,8 +389,6 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
         <div className="mx-auto grid w-full max-w-[1440px] grid-cols-2 gap-6 px-4 py-10 sm:px-6 lg:px-11 md:grid-cols-4 md:gap-8 md:py-12">
           {[
             { v: counts.products, l: "Live products" },
-            { v: counts.courses, l: "Courses to learn" },
-            { v: counts.bounties, l: "Open bounties" },
             { v: 54, l: "Countries covered" },
           ].map((s, i) => (
             <Reveal key={s.l} delay={i * 90}>
@@ -590,8 +519,6 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
             items={products}
             onSeeAll={() => onSelect("Marketplace")}
           />
-          <CardGrid title="Learn on Academy" items={courses} onSeeAll={() => onSelect("Academy")} />
-          <CardGrid title="Open bounties" items={bounties} onSeeAll={() => onSelect("Bounties")} />
         </div>
       </section>
 
@@ -667,7 +594,7 @@ export function DesktopHome({ onSelect, onCreate }: DesktopHomeProps) {
                 Ready to start earning on Oventric?
               </h3>
               <p className="mt-2 max-w-xl text-sm text-slate-600">
-                Join builders across the continent trading, teaching and solving bounties —
+                Join builders across the continent selling digital products —
                 protected by escrow, paid in your own currency.
               </p>
             </div>

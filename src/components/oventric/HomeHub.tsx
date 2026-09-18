@@ -23,7 +23,6 @@ import { getDiscoveryFeed } from "@/lib/discovery.functions";
 import { safeFormatDisplayPrice, formatMoney, usdRate } from "@/lib/fx-display";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { SellSwitcherModal } from "@/components/oventric/SellSwitcherModal";
-import { CoursePublishWizard } from "@/components/oventric/CoursePublishWizard";
 import type { ChoiceKey } from "@/components/oventric/CreatePanel";
 import { getTopUsers, type TopUser } from "@/lib/top-users.functions";
 import {
@@ -102,7 +101,6 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
     require: requireTier,
   } = useOnboarding();
   const [sellOpen, setSellOpen] = useState(false);
-  const [courseOpen, setCourseOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
@@ -445,14 +443,6 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
       )}
 
       <SellSwitcherModal open={sellOpen} onClose={() => setSellOpen(false)} />
-      <CoursePublishWizard
-        open={courseOpen}
-        onClose={() => setCourseOpen(false)}
-        onSaved={() => {
-          setCourseOpen(false);
-          onSelect("Academy");
-        }}
-      />
       <AllFeaturesSheet
         open={moreOpen}
         onClose={() => setMoreOpen(false)}

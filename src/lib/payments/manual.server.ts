@@ -308,7 +308,8 @@ export async function reviewManualPayment(
       status: "success",
       occurred_at: new Date().toISOString(),
     });
-    redirectTo = purpose === "course" ? "/academy" : "/?section=Bounties";
+    // Academy and bounty top-ups are paused; manual funding returns to the wallet.
+    redirectTo = "/wallet";
   }
   } catch (err) {
     // Settlement failed — release the claim so finance can retry.

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { X, PenSquare, Target, ShoppingBag, GraduationCap, ArrowUpRight } from "lucide-react";
+import { X, PenSquare, ShoppingBag, ArrowUpRight } from "lucide-react";
 import { useOnboarding, type Tier } from "@/lib/onboarding/OnboardingContext";
 import { Button } from "@/components/ui/button";
 import { SellSwitcherModal } from "./SellSwitcherModal";
-import { CoursePublishWizard } from "./CoursePublishWizard";
-import { BountyEditorModal } from "./BountyEditorModal";
 
-export type ChoiceKey = "post" | "bounty" | "sell" | "course";
+// Academy (courses) and Bounties are not active MVP features: their creation
+// entry points are removed here. Legacy modules remain for future reactivation.
+export type ChoiceKey = "post" | "sell";
 type Choice = {
   key: ChoiceKey;
   icon: typeof PenSquare;
@@ -52,8 +52,6 @@ export function CreatePanel({
 }) {
   const { require } = useOnboarding();
   const [sellOpen, setSellOpen] = useState(false);
-  const [courseOpen, setCourseOpen] = useState(false);
-  const [bountyOpen, setBountyOpen] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -74,14 +72,6 @@ export function CreatePanel({
         setSellOpen(true);
         return;
       }
-      if (c.key === "course") {
-        setCourseOpen(true);
-        return;
-      }
-      if (c.key === "bounty") {
-        setBountyOpen(true);
-        return;
-      }
       onClose();
       window.dispatchEvent(new CustomEvent("oventric:navigate", { detail: { section: "Feed" } }));
       // Delay so Feed can mount before we scroll/focus its composer.
@@ -91,7 +81,7 @@ export function CreatePanel({
     });
   };
 
-  const subOpen = sellOpen || courseOpen || bountyOpen;
+  const subOpen = sellOpen;
 
   useEffect(() => {
     if (!open || !initialChoice) return;
@@ -183,34 +173,6 @@ export function CreatePanel({
         onClose={() => {
           setSellOpen(false);
           onClose();
-        }}
-      />
-      <CoursePublishWizard
-        open={courseOpen}
-        onClose={() => {
-          setCourseOpen(false);
-          onClose();
-        }}
-        onSaved={() => {
-          setCourseOpen(false);
-          onClose();
-          window.dispatchEvent(
-            new CustomEvent("oventric:navigate", { detail: { section: "Academy" } }),
-          );
-        }}
-      />
-      <BountyEditorModal
-        open={bountyOpen}
-        onClose={() => {
-          setBountyOpen(false);
-          onClose();
-        }}
-        onPublished={() => {
-          setBountyOpen(false);
-          onClose();
-          window.dispatchEvent(
-            new CustomEvent("oventric:navigate", { detail: { section: "Bounties" } }),
-          );
         }}
       />
     </>

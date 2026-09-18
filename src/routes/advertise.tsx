@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { PublicChrome } from "@/components/oventric/PublicChrome";
@@ -28,6 +28,11 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/advertise")({
+  // Paused legacy feature — not part of the MVP. The page is retained for
+  // future reactivation but is unreachable: every visit redirects home.
+  beforeLoad: () => {
+    throw redirect({ to: "/" });
+  },
   head: () => ({
     meta: [
       { title: "Advertise on Oventric — Reach builders across Africa" },

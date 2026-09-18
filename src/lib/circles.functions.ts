@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assertLegacyFeatureDisabled } from "@/lib/mvp-features";
 
 const SlugInput = z.object({
   targetSlug: z.string().trim().min(1).max(120),
@@ -123,6 +124,8 @@ export const sendCircleRequest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => SlugInput.parse(input))
   .handler(async ({ data, context }): Promise<CircleStatusResult> => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("circles");
     const { supabase, userId } = context;
     const { data: row, error } = await supabase
       .from("circle_requests")
@@ -222,6 +225,8 @@ export const acceptIncomingRequest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => RequesterInput.parse(input))
   .handler(async ({ data, context }): Promise<{ status: CircleStatus }> => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("circles");
     const { supabase, userId } = context;
     const { data: me } = await supabase
       .from("profiles")

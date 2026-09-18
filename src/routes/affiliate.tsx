@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useRouter, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter, useNavigate, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { PublicChrome } from "@/components/oventric/PublicChrome";
@@ -19,6 +19,11 @@ import { getMyFullProfile } from "@/lib/profiles.functions";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 
 export const Route = createFileRoute("/affiliate")({
+  // Paused legacy feature — not part of the MVP. The page is retained for
+  // future reactivation but is unreachable: every visit redirects home.
+  beforeLoad: () => {
+    throw redirect({ to: "/" });
+  },
   head: () => ({
     meta: [
       { title: "Affiliate Program · Oventric" },

@@ -150,27 +150,6 @@ export function FeedDiscoverExplore({
               ))}
             </div>
           )}
-          {(activeTab as any) === "Topics" && (
-            <div className="grid grid-cols-1 gap-3 p-4">
-              {circles.filter(c => 
-                !searchQuery || 
-                c.name.toLowerCase().includes(searchQuery.toLowerCase())
-              ).map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => navigateSection("Circles")}
-                  className="flex items-center gap-3 w-full rounded-2xl border border-white/[0.06] bg-[#141416] p-4 text-left active:scale-[0.98]"
-                >
-                  <span className="text-3xl">{c.emoji}</span>
-                  <div>
-                    <p className="text-[15px] font-bold text-white">{c.name}</p>
-                    <p className="text-[12px] text-white/40">{c.memberCount} members</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
         </div>
         
       </div>
@@ -226,39 +205,6 @@ export function FeedDiscoverExplore({
         </Section>
       )}
 
-      {bounties.length > 0 && (
-        <Section
-          icon={Trophy}
-          title="Hot bounties"
-          action="All bounties"
-          onAction={() => navigateSection("Bounties")}
-        >
-          <Rail>
-            {bounties.slice(0, 10).map((b) => (
-              <button
-                key={b.id}
-                type="button"
-                onClick={() => navigateSection("Bounties")}
-                className="w-[200px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-white/[0.06] bg-[#141416] text-left active:scale-[0.98]"
-              >
-                {b.coverUrl ? (
-                  <img loading="lazy" decoding="async" src={b.coverUrl} alt="" className="h-24 w-full object-cover" />
-                ) : (
-                  <div className="h-24 w-full bg-gradient-to-br from-[#E5484D]/30 to-[#7C6CF6]/25" />
-                )}
-
-                <div className="p-3">
-                  <p className="line-clamp-2 text-[13px] font-semibold text-white">{b.title}</p>
-                  <p className="mt-1 text-[12px] font-bold text-[#E5484D]">
-                    {fmtUsd(b.amountUsd, baseCurrency)}
-                  </p>
-                </div>
-              </button>
-            ))}
-          </Rail>
-        </Section>
-      )}
-
       {products.length > 0 && (
         <Section
           icon={ShoppingBag}
@@ -292,63 +238,6 @@ export function FeedDiscoverExplore({
         </Section>
       )}
 
-      {courses.length > 0 && (
-        <Section
-          icon={GraduationCap}
-          title="Academy Trending"
-          action="Academy"
-          onAction={() => navigateSection("Academy")}
-        >
-          <Rail>
-            {courses.slice(0, 10).map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => navigateSection("Academy")}
-                className="w-[200px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-white/[0.06] bg-[#141416] text-left active:scale-[0.98]"
-
-              >
-                {c.coverUrl ? (
-                  <img loading="lazy" decoding="async" src={c.coverUrl} alt="" className="h-24 w-full object-cover" />
-                ) : (
-                  <div className="h-24 w-full bg-gradient-to-br from-[#7C6CF6]/35 to-[#30A46C]/25" />
-                )}
-                <div className="p-3">
-                  <p className="line-clamp-2 text-[13px] font-semibold text-white">{c.title}</p>
-                  <p className="mt-1 text-[11.5px] text-white/45">
-                    {c.isFree ? "Free" : fmtUsd(c.priceUsd, baseCurrency)}
-                    {c.instructor ? ` · ${c.instructor}` : ""}
-                  </p>
-                </div>
-              </button>
-            ))}
-          </Rail>
-        </Section>
-      )}
-
-      {circles.length > 0 && (
-        <Section
-          icon={Users}
-          title="Communities to join"
-          action="Circles"
-          onAction={() => navigateSection("Circles")}
-        >
-          <Rail>
-            {circles.slice(0, 10).map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => navigateSection("Circles")}
-                className="w-[150px] shrink-0 snap-start rounded-2xl border border-white/[0.06] bg-[#141416] p-3 text-left active:scale-[0.98]"
-              >
-                <span className="text-2xl">{c.emoji}</span>
-                <p className="mt-1.5 line-clamp-2 text-[13px] font-semibold text-white">{c.name}</p>
-                <p className="text-[11px] text-white/40">{c.memberCount} members</p>
-              </button>
-            ))}
-          </Rail>
-        </Section>
-      )}
 
       {!loading && peers.length === 0 && trending.length === 0 && (
         <div className="rounded-2xl border border-white/[0.06] bg-[#141416] p-8 text-center">

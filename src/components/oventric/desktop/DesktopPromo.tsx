@@ -36,15 +36,6 @@ const BANNERS: Banner[] = [
     glow: "rgba(56,189,248,0.35)",
     section: "Marketplace",
   },
-  {
-    id: "skills",
-    title: "Learn high value digital skills",
-    subtitle: "Earn while you learn on Oventric Academy",
-    icon: GraduationCap,
-    tint: "from-indigo-500/15 to-indigo-500/0",
-    glow: "rgba(99,102,241,0.35)",
-    section: "Academy",
-  },
 ];
 
 export function DesktopPromo({ onSelect }: { onSelect: (section: string) => void }) {
@@ -75,8 +66,7 @@ export function DesktopPromo({ onSelect }: { onSelect: (section: string) => void
               highlight="both sides win"
               body="Invite builders and earn from their activity."
               cta="Invite friends"
-              to="/affiliate"
-              search={{ reserve: "1" }}
+              to="/referrals"
               art={promoReferArt}
               gradient="linear-gradient(135deg,#7DE2A8 0%,#2ED3A0 55%,#12B39B 100%)"
             />

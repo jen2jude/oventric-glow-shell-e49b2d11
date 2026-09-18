@@ -42,12 +42,10 @@ import { HeaderWalletChip } from "@/components/oventric/HeaderWalletChip";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { COUNTRY_META } from "@/lib/currency/africa";
 
+// Academy, Bounties and Circles are paused features and are not navigable.
 const HUB_NAV: { label: string; icon: LucideIcon; section?: string; to?: string }[] = [
   { label: "Market", icon: Store, section: "Marketplace" },
   { label: "Shop", icon: ShoppingBag, to: "/sellers" },
-  { label: "Academy", icon: GraduationCap, section: "Academy" },
-  { label: "Bounties", icon: Target, section: "Bounties" },
-  { label: "Circles", icon: Users, section: "Circles" },
   { label: "Help", icon: Headphones, to: "/help-board" },
 ];
 

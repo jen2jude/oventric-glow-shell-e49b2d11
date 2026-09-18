@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { currencySymbol } from "@/lib/fx-display";
+import { assertLegacyFeatureDisabled } from "@/lib/mvp-features";
 
 async function assertAdmin(ctx: { supabase: ReturnType<typeof Object>; userId: string }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -288,6 +289,8 @@ export const publishBounty = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: BountyInput) => i)
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("bounties");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = context.supabase as any;
     if (!data.title?.trim()) throw new Error("Title required");
@@ -382,6 +385,8 @@ export const applyToBounty = createServerFn({ method: "POST" })
     pitch: String(i?.pitch ?? "").slice(0, 2000),
   }))
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("bounties");
     if (!data.bounty_id) throw new Error("bounty_id required");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = context.supabase as any;
@@ -447,6 +452,8 @@ export const acceptApplicant = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: { bounty_id: string; applicant_id: string }) => i)
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("bounties");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = context.supabase as any;
     const { data: b, error: bErr } = await sb
@@ -497,6 +504,8 @@ export const markBountySolved = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: { bounty_id: string }) => i)
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("bounties");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = context.supabase as any;
     const { data: b, error } = await sb
@@ -554,6 +563,8 @@ export const confirmAndRelease = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: { bounty_id: string }) => i)
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("bounties");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = context.supabase as any;
     const { data: b, error } = await sb
@@ -574,6 +585,8 @@ export const openBountyDispute = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: { bounty_id: string; reason?: string }) => i)
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("bounties");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = context.supabase as any;
     const { data: b, error } = await sb.from("bounties")

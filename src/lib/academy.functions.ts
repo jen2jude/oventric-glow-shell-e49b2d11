@@ -4,6 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
 import { dbCurrency } from "@/lib/currency/africa";
 import { fallbackRateTable } from "@/lib/currency/africa";
+import { assertLegacyFeatureDisabled } from "@/lib/mvp-features";
 
 export type CourseCategory = "frontend" | "uiux" | "ai" | "backend" | "security";
 export type CourseLevel = "beginner" | "intermediate" | "advanced";
@@ -332,6 +333,8 @@ export const createCourse = createServerFn({ method: "POST" })
     fxSnapshot: input.fxSnapshot ?? null,
   }))
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("academy");
     if (!data.title) throw new Error("Title required");
     if (!data.isFree && !(data.priceUSD > 0)) throw new Error("Paid courses need a price > 0");
     const base = slugify(data.title);
@@ -382,6 +385,8 @@ export const updateCourse = createServerFn({ method: "POST" })
     fxSnapshot?: CourseFxSnapshot;
   }) => input)
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("academy");
     if (!data.id) throw new Error("Course id required");
     const patch: Record<string, unknown> = {};
     if (data.title !== undefined) patch.title = data.title;
@@ -414,6 +419,8 @@ export const deleteCourse = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { id: string }) => ({ id: String(input.id) }))
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("academy");
     const { error } = await context.supabase.from("courses").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -437,6 +444,8 @@ export const upsertModule = createServerFn({ method: "POST" })
     isPreview?: boolean;
   }) => input)
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("academy");
     if (!data.courseId) throw new Error("Course id required");
     if (!data.title?.trim()) throw new Error("Module title required");
     const hasUrl = !!data.videoUrl?.trim();
@@ -489,6 +498,8 @@ export const deleteModule = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { id: string }) => ({ id: String(input.id) }))
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("academy");
     const { error } = await context.supabase.from("course_modules").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -500,6 +511,8 @@ export const enrollFree = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { courseId: string }) => ({ courseId: String(input.courseId) }))
   .handler(async ({ data, context }): Promise<EnrollmentDTO> => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("academy");
     const { data: course, error: cErr } = await context.supabase
       .from("courses")
       .select("id, is_free, is_published")
@@ -685,6 +698,8 @@ export const getCourseCoverUploadUrl = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { filename: string }) => ({ filename: String(input.filename) }))
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("academy");
     const safe = data.filename.replace(/[^a-zA-Z0-9._-]/g, "_");
     const path = `${context.userId}/${Date.now()}-${safe}`;
     const { data: signed, error } = await context.supabase.storage
@@ -702,6 +717,8 @@ export const getCourseMediaUploadUrl = createServerFn({ method: "POST" })
     kind: input.kind === "video" ? "video" : "image",
   }))
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("academy");
     const safe = data.filename.replace(/[^a-zA-Z0-9._-]/g, "_") || "file";
     const path = `${context.userId}/${data.kind}/${Date.now()}-${safe}`;
     const { data: signed, error } = await context.supabase.storage
@@ -779,6 +796,8 @@ export const enrollPaid = createServerFn({ method: "POST" })
     applyCashbackUSD: Math.max(0, Number(input.applyCashbackUSD ?? 0)),
   }))
   .handler(async ({ data, context }): Promise<EnrollPaidResult> => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("academy");
     const { supabase, userId } = context;
     if (!data.courseId) throw new Error("Course id required");
 
@@ -1046,6 +1065,8 @@ export const saveCourseWizard = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: SaveCourseWizardInput) => input)
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("academy");
     if (!data.title?.trim()) throw new Error("Course title is required");
     const totalLessons = (data.sections ?? []).reduce((n, s) => n + (s.lessons?.length ?? 0), 0);
     if (data.isPublished && totalLessons === 0) throw new Error("Add at least one lesson before publishing");

@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -25,6 +25,11 @@ import {
 } from "@/components/oventric/ads/BannerAdModal";
 
 export const Route = createFileRoute("/ads-manager")({
+  // Paused legacy feature — not part of the MVP. The page is retained for
+  // future reactivation but is unreachable: every visit redirects home.
+  beforeLoad: () => {
+    throw redirect({ to: "/" });
+  },
   ssr: false,
   head: () => ({
     meta: [

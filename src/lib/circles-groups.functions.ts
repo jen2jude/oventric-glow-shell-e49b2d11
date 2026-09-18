@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assertLegacyFeatureDisabled } from "@/lib/mvp-features";
 
 export type CircleRole = "owner" | "admin" | "member";
 export type JoinStatus = "none" | "pending" | "awaiting_coc" | "member";
@@ -269,6 +270,8 @@ export const createCircle = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => CreateCircleInput.parse(d))
   .handler(async ({ data, context }): Promise<CircleSummary> => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("circles");
     const me = context.userId;
     const base = slugify(data.name);
     let slug = base;
@@ -309,6 +312,8 @@ export const updateCircle = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => UpdateCircleInput.parse(d))
   .handler(async ({ data, context }): Promise<{ ok: true }> => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("circles");
     const patch: Record<string, any> = {};
     if (data.name !== undefined) patch.name = data.name;
     if (data.description !== undefined) patch.description = data.description;
@@ -329,6 +334,8 @@ export const deleteCircle = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => CircleIdInput.parse(d))
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("circles");
     const { error } = await context.supabase.from("circles").delete().eq("id", data.circleId);
     if (error) throw new Error("Failed to delete circle");
     return { ok: true } as const;
@@ -461,6 +468,8 @@ export const requestJoinCircle = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => CircleIdInput.parse(d))
   .handler(async ({ data, context }): Promise<{ status: JoinStatus }> => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("circles");
     const me = context.userId;
     const { data: existing } = await context.supabase
       .from("circle_members")
@@ -572,6 +581,8 @@ export const acceptJoinRequest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => RequestActionInput.parse(d))
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("circles");
     const { data: req, error: rErr } = await context.supabase
       .from("circle_join_requests")
       .select("id, circle_id, requester_id, status")
@@ -614,6 +625,8 @@ export const declineJoinRequest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => RequestActionInput.parse(d))
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("circles");
     const { error } = await context.supabase
       .from("circle_join_requests")
       .update({ status: "declined" })
@@ -627,6 +640,8 @@ export const submitCircleCoc = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => CoCInput.parse(d))
   .handler(async ({ data, context }): Promise<{ ok: true }> => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("circles");
     const me = context.userId;
     const { data: req } = await context.supabase
       .from("circle_join_requests")
@@ -692,6 +707,8 @@ export const createCirclePost = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => CreatePostInput.parse(d))
   .handler(async ({ data, context }): Promise<{ id: string; sharedToFeed: boolean }> => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("circles");
     // Every 5th post to a given circle also lands on the main news feed as a
     // preview so non-members discover the circle. RLS still hides the other 4.
     const { count } = await context.supabase
@@ -780,6 +797,8 @@ export const addCircleResource = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => ResourceInput.parse(d))
   .handler(async ({ data, context }): Promise<{ id: string }> => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("circles");
     const { data: row, error } = await context.supabase
       .from("circle_resources")
       .insert({
@@ -799,6 +818,8 @@ export const removeCircleResource = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("circles");
     const { error } = await context.supabase.from("circle_resources").delete().eq("id", data.id);
     if (error) throw new Error("Failed to remove");
     return { ok: true } as const;

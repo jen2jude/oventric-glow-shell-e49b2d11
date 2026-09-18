@@ -4,18 +4,12 @@ import { useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
   Home,
-  Users,
   MessageSquare,
   ShoppingBag,
   Wallet,
-  Target,
   Package,
   LayoutDashboard,
-  Gift,
   Store,
-  GraduationCap,
-  BookOpen,
-  Award,
   FileText,
   HelpCircle,
   Info,
@@ -37,6 +31,8 @@ type Item = {
 
 type Group = { title: string; items: Item[] };
 
+// Circles, Bounties, Affiliate and Academy are not active MVP features and are
+// intentionally absent from this sheet. Legacy code is retained elsewhere.
 const GROUPS: Group[] = [
   {
     title: "Community",
@@ -48,14 +44,6 @@ const GROUPS: Group[] = [
         color: "#5B8DEF",
         tint: "rgba(91,141,239,0.12)",
         section: "Feed",
-      },
-      {
-        label: "Circles",
-        desc: "Join communities",
-        icon: Users,
-        color: "#A78BFA",
-        tint: "rgba(167,139,250,0.12)",
-        section: "Circles",
       },
       {
         label: "Messages",
@@ -87,14 +75,6 @@ const GROUPS: Group[] = [
         section: "Wallet",
       },
       {
-        label: "Bounties",
-        desc: "Complete tasks",
-        icon: Target,
-        color: "#F7B500",
-        tint: "rgba(247,181,0,0.12)",
-        section: "Bounties",
-      },
-      {
         label: "Orders",
         desc: "Track your orders",
         icon: Package,
@@ -116,14 +96,6 @@ const GROUPS: Group[] = [
         to: "/dashboard",
       },
       {
-        label: "Affiliate",
-        desc: "Earn with referrals",
-        icon: Gift,
-        color: "#E5484D",
-        tint: "rgba(229,72,77,0.12)",
-        to: "/affiliate",
-      },
-      {
         label: "Sell",
         desc: "List your products",
         icon: Store,
@@ -134,32 +106,8 @@ const GROUPS: Group[] = [
     ],
   },
   {
-    title: "Learning",
+    title: "Resources",
     items: [
-      {
-        label: "Academy",
-        desc: "Online courses",
-        icon: GraduationCap,
-        color: "#A78BFA",
-        tint: "rgba(167,139,250,0.12)",
-        section: "Academy",
-      },
-      {
-        label: "Course",
-        desc: "Your learning",
-        icon: BookOpen,
-        color: "#5B8DEF",
-        tint: "rgba(91,141,239,0.12)",
-        section: "Academy",
-      },
-      {
-        label: "Certifications",
-        desc: "Get certified",
-        icon: Award,
-        color: "#E5484D",
-        tint: "rgba(229,72,77,0.12)",
-        section: "Academy",
-      },
       {
         label: "Resources",
         desc: "Useful tools",
