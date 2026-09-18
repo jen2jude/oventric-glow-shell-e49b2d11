@@ -43,6 +43,8 @@ export const initPayment = createServerFn({ method: "POST" })
       channel: data.channel,
       preferProvider: data.provider,
     });
+    // MVP lock: createCharge can only ever return the active Paystack rail.
+    return { ...charge, provider: "paystack" as const };
   });
 
 export const verifyPayment = createServerFn({ method: "POST" })
