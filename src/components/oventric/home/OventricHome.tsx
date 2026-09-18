@@ -799,7 +799,7 @@ function NewsfeedRail({ posts, onOpenFeed }: { posts: FeedPost[]; onOpenFeed: ()
         </div>
         <Link
           to="/feed"
-          search={{}}
+          search={{ post: undefined }}
           className="group flex items-center gap-1 text-sm font-semibold text-newsfeed-accent hover:text-newsfeed-ink"
         >
           View all
