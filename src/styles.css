@@ -3100,20 +3100,35 @@ section + section {
 .web-chat {
   color-scheme: light;
   --background: oklch(1 0 0);
-  --foreground: oklch(0.2 0.012 260);
-  --primary: oklch(0.61 0.2 24);
+  --foreground: oklch(0.24 0.035 255);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.24 0.035 255);
+  --primary: oklch(0.58 0.19 24);
   --primary-foreground: oklch(0.99 0.003 24);
-  --muted: oklch(0.97 0.004 260);
-  --muted-foreground: oklch(0.48 0.014 260);
-  --border: oklch(0.2 0.012 260 / 12%);
+  --secondary: oklch(0.96 0.008 240);
+  --secondary-foreground: oklch(0.28 0.035 255);
+  --muted: oklch(0.97 0.009 240);
+  --muted-foreground: oklch(0.5 0.035 250);
+  --accent: oklch(0.95 0.02 24);
+  --accent-foreground: oklch(0.5 0.18 24);
+  --border: oklch(0.9 0.015 240);
+  --input: oklch(0.88 0.018 240);
+  --ring: oklch(0.58 0.19 24);
   --destructive: oklch(0.58 0.22 25);
+  --chat-shell-shadow: 0 22px 60px -42px color-mix(in oklab, var(--foreground) 32%, transparent);
   font-family: var(--font-wallet-body);
   background-color: var(--background);
   color: var(--foreground);
 }
 
-.web-chat .font-wallet-display {
+.web-chat :is(h1, h2, h3, .font-wallet-display) {
   font-family: var(--font-wallet-display);
+  letter-spacing: 0;
+}
+
+.web-chat .chat-conversation {
+  scrollbar-color: color-mix(in oklab, var(--muted-foreground) 28%, transparent) transparent;
+  scrollbar-width: thin;
 }
 
 /* Followers and connections use the cool professional web directory palette. */

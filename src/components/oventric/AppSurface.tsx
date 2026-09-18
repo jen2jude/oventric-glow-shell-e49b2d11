@@ -368,13 +368,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         <Bounties />
       </AppOnlyGate>
     ) : active === "Messages" ? (
-      <AppOnlyGate
-        title="Messages live in the app"
-        description="Install the Oventric app to chat with buyers and sellers in real time."
-        from="messages"
-      >
-        <Messages variant="page" />
-      </AppOnlyGate>
+      <Messages variant="page" />
     ) : active === "Circles" ? (
       <AppOnlyGate
         title="Circles live in the app"
@@ -396,7 +390,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   const isMessages = active === "Messages";
 
   return (
-    <div className={`relative h-screen h-[100dvh] overflow-hidden ${isAppShell ? "bg-[#070A08]" : "bg-white"} text-slate-200`}>
+    <div className={`relative h-screen h-[100dvh] overflow-hidden ${isMessages && !isAppShell ? "bg-muted" : isAppShell ? "bg-[#070A08]" : "bg-white"} text-slate-200`}>
       <div className="pointer-events-none fixed top-0 inset-x-0 h-[2px] z-50  hidden md:block" />
       <div className="pointer-events-none fixed bottom-0 inset-x-0 h-[2px] z-50  hidden md:block" />
 
@@ -433,11 +427,11 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
           {!isDesktop && !desktopLanding && (
             <Sidebar onCreate={handleCreate} active={active} onSelect={setActive} />
           )}
-          {isDesktop && !desktopLanding && <DesktopAppSidebar onSelect={setActive} />}
+          {isDesktop && !desktopLanding && !isMessages && <DesktopAppSidebar onSelect={setActive} />}
 
           <main
             id={desktopLanding ? "desktop-home-scroll" : undefined}
-            className={`flex-1 min-w-0 min-h-0 ${isMessages ? "overflow-hidden" : "overflow-y-auto"} ${desktopLanding || isMessages ? "" : "pb-20 md:pb-0"} ${isAppShell ? "bg-[#070A08]" : "bg-white"}`}
+            className={`flex-1 min-w-0 min-h-0 ${isMessages ? "overflow-hidden md:p-6" : "overflow-y-auto"} ${desktopLanding || isMessages ? "" : "pb-20 md:pb-0"} ${isMessages && !isAppShell ? "web-chat bg-muted" : isAppShell ? "bg-[#070A08]" : "bg-white"}`}
           >
             {view}
             {desktopLanding && active !== "Feed" && active !== "Home" && !isAppShell && <SiteFooterAuto />}
