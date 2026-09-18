@@ -43,6 +43,7 @@ import { DesktopAppSidebar } from "@/components/oventric/desktop/DesktopAppSideb
 import { SiteFooterAuto } from "@/components/oventric/desktop/SiteFooterAuto";
 import { SiteNavbar } from "@/components/oventric/desktop/SiteNavbar";
 import { MarketplaceHeader } from "@/components/oventric/desktop/MarketplaceHeader";
+import { WebMobileFooterNav } from "@/components/oventric/home/WebMobileFooterNav";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { AppOnlyGate } from "@/lib/app-gate";
 
@@ -431,7 +432,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
 
           <main
             id={desktopLanding ? "desktop-home-scroll" : undefined}
-            className={`flex-1 min-w-0 min-h-0 ${isMessages ? "overflow-hidden md:p-6" : "overflow-y-auto"} ${desktopLanding || isMessages ? "" : "pb-20 md:pb-0"} ${isMessages && !isAppShell ? "web-chat bg-muted" : isAppShell ? "bg-[#070A08]" : "bg-white"}`}
+            className={`flex-1 min-w-0 min-h-0 ${isMessages ? "overflow-hidden md:p-6" : "overflow-y-auto"} ${isMessages ? "" : "pb-20 md:pb-0"} ${isMessages && !isAppShell ? "web-chat bg-muted" : isAppShell ? "bg-[#070A08]" : "bg-white"}`}
           >
             {view}
             {desktopLanding && active !== "Feed" && active !== "Home" && !isAppShell && <SiteFooterAuto />}
@@ -450,6 +451,9 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
               Wallet: walletCount.count,
             }}
           />
+        )}
+        {!isAppShell && !isMessages && (
+          <WebMobileFooterNav active={active} onSelect={setActive} />
         )}
       </div>
 

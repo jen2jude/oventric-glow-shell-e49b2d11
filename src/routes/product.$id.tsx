@@ -46,6 +46,7 @@ import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { ProfileMessageModal } from "@/components/oventric/messaging/ProfileMessageModal";
 import { ProductComments } from "@/components/oventric/ProductComments";
 import { EditListingModal } from "@/components/oventric/EditListingModal";
+import { rememberRecentProduct } from "@/lib/recent-products";
 
 
 function ProductRating({
@@ -285,7 +286,12 @@ function ProductPage() {
     setActiveImage(0);
     load({ data: { id } })
       .then((p) => {
-        if (!cancelled) setProduct(p);
+        if (!cancelled) {
+          setProduct(p);
+          if (p.status === "active" && p.inStock && (p.kind === "digital" || p.kind === "service")) {
+            rememberRecentProduct(p.id);
+          }
+        }
       })
       .catch((e: Error) => {
         if (!cancelled) setError(e.message || "Failed to load");
