@@ -256,6 +256,14 @@ export async function reviewManualPayment(
       title: `${railLabel} payment not verified`,
       body: reason ?? "We couldn't match your transfer. Reply with a clearer receipt.",
     });
+    await writeManualAudit(reviewerId, id, "manual_payment.reject", {
+      provider: row.provider,
+      purpose: row.purpose,
+      amount: row.amount,
+      currency: row.currency,
+      reason: reason ?? null,
+      payer_id: row.user_id,
+    });
     return { ok: true, approved: false };
   }
 
