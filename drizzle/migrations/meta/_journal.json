@@ -134,6 +134,13 @@
       "when": 1789731140368,
       "tag": "0018_lock_order_escrow_timer_fields_from_buyers",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1789735421423,
+      "tag": "0019_lock_coupon_reads_and_pause_legacy_bounty_cron",
+      "breakpoints": true
     }
   ]
 }
