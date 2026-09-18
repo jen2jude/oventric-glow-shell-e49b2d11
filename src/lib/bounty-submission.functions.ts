@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assertLegacyFeatureDisabled } from "@/lib/mvp-features";
 
 const BUCKET = "bounty-submissions";
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -88,6 +89,8 @@ export const uploadSubmissionFile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: { bounty_id: string; name: string; type: string; data_base64: string }) => i)
   .handler(async ({ data, context }): Promise<SubmissionFile> => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("bounties");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = context.supabase as any;
     const b = await loadBounty(sb, data.bounty_id);
@@ -120,6 +123,8 @@ export const saveBountySubmission = createServerFn({ method: "POST" })
     }) => i,
   )
   .handler(async ({ data, context }) => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("bounties");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = context.supabase as any;
     const b = await loadBounty(sb, data.bounty_id);

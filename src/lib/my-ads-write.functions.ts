@@ -7,6 +7,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assertLegacyFeatureDisabled } from "@/lib/mvp-features";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnySB = any;
@@ -49,6 +50,8 @@ export const createMyBannerAd = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: unknown) => BannerFields.parse(i))
   .handler(async ({ data, context }): Promise<{ id: string }> => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("adsManager");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const sb = supabaseAdmin as AnySB;
 
@@ -80,6 +83,8 @@ export const updateMyBannerAd = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: unknown) => BannerFields.extend({ id: z.string().uuid() }).parse(i))
   .handler(async ({ data, context }): Promise<{ ok: true }> => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("adsManager");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const sb = supabaseAdmin as AnySB;
     const { id, ...fields } = data;
@@ -100,6 +105,8 @@ export const setMyBannerAdVisibility = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: unknown) => z.object({ id: z.string().uuid(), visible: z.boolean() }).parse(i))
   .handler(async ({ data, context }): Promise<{ status: "active" | "paused" }> => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("adsManager");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const sb = supabaseAdmin as AnySB;
 

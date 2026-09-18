@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assertLegacyFeatureDisabled } from "@/lib/mvp-features";
 
 export interface AffiliateReservationDTO {
   id: string;
@@ -39,6 +40,8 @@ export const reserveAffiliateSpot = createServerFn({ method: "POST" })
     note: typeof i?.note === "string" ? i.note.trim().slice(0, 500) : "",
   }))
   .handler(async ({ data, context }): Promise<AffiliateReservationDTO> => {
+    // Paused legacy feature: fail closed even if called directly.
+    assertLegacyFeatureDisabled("affiliate");
     const { supabase, userId, claims } = context;
     const email =
       (claims?.email as string | undefined) ||
