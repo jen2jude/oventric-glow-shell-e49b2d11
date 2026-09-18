@@ -18,7 +18,7 @@ import { haptic } from "@/lib/haptics";
 import { useChatOpen } from "@/hooks/use-chat-open";
 
 export type AppTabCounts = Partial<
-  Record<"Home" | "Feed" | "Market" | "Academy" | "Bounties" | "Wallet" | "Circles", number>
+  Record<"Home" | "Feed" | "Market" | "Wallet", number>
 >;
 
 const TABS = [
@@ -27,11 +27,9 @@ const TABS = [
   { icon: ShoppingBag, label: "Market", section: "Marketplace" },
 ] as const;
 
+// Academy, Bounties and Circles are not active MVP features and are not listed.
 const HUB_ITEMS = [
-  { icon: GraduationCap, label: "Academy", section: "Academy", hint: "Courses & certificates" },
-  { icon: Target, label: "Bounties", section: "Bounties", hint: "Paid tasks & escrow" },
   { icon: WalletIcon, label: "Wallet", section: "Wallet", hint: "Balances & payouts" },
-  { icon: Users, label: "Circles", section: "Circles", hint: "Guilds & communities" },
   { icon: MessageSquare, label: "Messages", section: "Messages", hint: "Direct chats" },
   { icon: UserIcon, label: "Profile", section: "Profile", hint: "Your identity hub" },
 ] as const;
@@ -39,7 +37,7 @@ const HUB_ITEMS = [
 /**
  * Rebuilt native bottom navigation for the app shell.
  * Four primary tabs + a centre create action, plus a full identity hub sheet
- * that exposes every remaining surface (academy, bounties, wallet, circles…).
+ * that exposes every remaining surface (wallet, messages, profile…).
  */
 export function AppTabBar({
   active,
@@ -64,11 +62,7 @@ export function AppTabBar({
     };
   }, [hubOpen]);
 
-  const hubCount =
-    (counts?.Academy ?? 0) +
-    (counts?.Bounties ?? 0) +
-    (counts?.Wallet ?? 0) +
-    (counts?.Circles ?? 0);
+  const hubCount = counts?.Wallet ?? 0;
 
   const hubActive = !["Home", "Feed", "Marketplace"].includes(active);
 
