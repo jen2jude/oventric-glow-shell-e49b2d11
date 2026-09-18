@@ -4,7 +4,6 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   Receipt,
   MessageSquareWarning,
-  Target,
   ShoppingBag,
   Wallet,
   ShieldAlert,

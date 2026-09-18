@@ -57,10 +57,6 @@ const items = [
     a: "Tap the @ icon in the composer and pick a user. They get a notification with a link back to your post.",
   },
   {
-    q: "Can I make my post visible to only my circle or followers?",
-    a: "Yes — the audience dropdown lets you choose Public, Followers, or a specific Circle before posting.",
-  },
-  {
     q: "How do I delete my account?",
     a: "Menu → Settings & Privacy → Danger zone. Deletion is soft for 30 days — sign in during that window to reactivate. After 30 days, it becomes permanent.",
   },
