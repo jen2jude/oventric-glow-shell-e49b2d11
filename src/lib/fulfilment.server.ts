@@ -234,12 +234,6 @@ export async function releaseEscrow(
   if (o.dispute_status === "open")
     throw new Error("This order has an open dispute. Funds stay held until it is resolved.");
 
-  const share = Number(o.seller_share_usd ?? 0);
-  if (share > 0) {
-    const { error: cErr } = await sb.rpc("wallet_credit", { _user_id: o.seller_id, _amount: share });
-    if (cErr) throw new Error(cErr.message);
-  }
-
   const now = new Date().toISOString();
   const patch: Record<string, unknown> = {
     escrow_status: "released",
@@ -249,17 +243,52 @@ export async function releaseEscrow(
     auto_refund_at: null,
   };
   if (!o.buyer_confirmed_at) patch.buyer_confirmed_at = now;
-  await sb.from("orders").update(patch).eq("id", orderId);
+  // Claim the escrow BEFORE any money moves: the conditional update is the
+  // single point of truth, so two concurrent releases (cron + admin + buyer)
+  // can never both pay the seller.
+  const { data: claimedRows } = await sb
+    .from("orders")
+    .update(patch)
+    .eq("id", orderId)
+    .eq("escrow_status", "held")
+    .select("id");
+  if (!claimedRows || (claimedRows as unknown[]).length === 0)
+    return { alreadyReleased: true as const };
 
-  if (o.paystack_ref) {
-    try {
-      await sb
-        .from("wallet_transactions")
-        .update({ status: "success" })
-        .eq("tx_hash", `${o.paystack_ref}-S`);
-    } catch (e) {
-      console.error("[releaseEscrow] ledger update failed", e);
+  // Pay the seller in the currency their sale was booked in (matches the
+  // pending "Marketplace Sale" ledger row written at settlement).
+  const saleHash = o.paystack_ref ? `${o.paystack_ref}-S` : `${orderId}-S`;
+  const { data: saleRow } = await sb
+    .from("wallet_transactions")
+    .select("amount, currency")
+    .eq("tx_hash", saleHash)
+    .maybeSingle();
+  const share = Number(o.seller_share_usd ?? 0);
+  try {
+    if (saleRow && Number(saleRow.amount ?? 0) > 0) {
+      const { error: cErr } = await sb.rpc("wallet_credit_currency", {
+        _user_id: o.seller_id,
+        _amount: Number(saleRow.amount),
+        _currency: String(saleRow.currency ?? "USD"),
+      });
+      if (cErr) throw new Error(cErr.message);
+    } else if (share > 0) {
+      const { error: cErr } = await sb.rpc("wallet_credit", { _user_id: o.seller_id, _amount: share });
+      if (cErr) throw new Error(cErr.message);
     }
+  } catch (e) {
+    // Money did not move — hand the escrow back so the sweep can retry.
+    await sb
+      .from("orders")
+      .update({ escrow_status: "held", released_at: null, released_by: null })
+      .eq("id", orderId);
+    throw e;
+  }
+
+  try {
+    await sb.from("wallet_transactions").update({ status: "success" }).eq("tx_hash", saleHash);
+  } catch (e) {
+    console.error("[releaseEscrow] ledger update failed", e);
   }
 
   const productName = (o.products?.name as string) ?? "your product";
