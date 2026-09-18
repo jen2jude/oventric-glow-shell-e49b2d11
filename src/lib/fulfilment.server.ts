@@ -143,14 +143,20 @@ export async function confirmReceipt(
 
   const now = new Date().toISOString();
   const payoutAt = hoursFromNow(PAYOUT_HOLD_HOURS);
-  await sb
+  // Atomic claim: only one caller (buyer click, cron sweep, admin) can win the
+  // confirmation, so the payout hold can never be started twice.
+  const { data: claimed } = await sb
     .from("orders")
     .update({
       buyer_confirmed_at: now,
       payout_release_at: payoutAt,
       auto_refund_at: null,
     })
-    .eq("id", orderId);
+    .eq("id", orderId)
+    .eq("escrow_status", "held")
+    .is("buyer_confirmed_at", null)
+    .select("id");
+  if (!claimed || (claimed as unknown[]).length === 0) return { alreadyConfirmed: true as const };
 
   const name = (o.products?.name as string) ?? "your order";
 
