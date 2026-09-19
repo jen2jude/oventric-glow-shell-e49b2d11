@@ -120,6 +120,7 @@ import { Header } from "@/components/oventric/Header";
 import { SiteNavbar } from "@/components/oventric/desktop/SiteNavbar";
 
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
+import { computeDisplayPrice } from "@/lib/fx-display";
 import { normalizeCountryCode, COUNTRY_META } from "@/lib/currency/africa";
 import {
   getProfile,
