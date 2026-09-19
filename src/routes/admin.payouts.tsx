@@ -258,6 +258,7 @@ function PayoutRow({
   onApprove,
   onReject,
   onMarkPaid,
+  onFlagIssue,
 }: {
   p: PayoutDTO;
   expanded: boolean;
@@ -265,6 +266,7 @@ function PayoutRow({
   onApprove: () => void;
   onReject: () => void;
   onMarkPaid: () => void;
+  onFlagIssue: () => void;
 }) {
   const sym = p.currency === "USD" ? "$" : p.currency === "NGN" ? "₦" : "₵";
   const tone: Record<PayoutStatus, string> = {
