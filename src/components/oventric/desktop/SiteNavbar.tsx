@@ -77,7 +77,7 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
             className="shrink-0"
             aria-label="Oventric home"
           >
-            <img loading="lazy" decoding="async" src={logo} alt="Oventric" className="h-6 sm:h-8 w-auto object-contain" />
+            <img loading="lazy" decoding="async" src={logo} alt="Oventric" className="h-7 sm:h-9 w-auto object-contain" />
           </button>
 
 
