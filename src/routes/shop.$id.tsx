@@ -165,12 +165,20 @@ function ShopPage() {
   const [loading, setLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
 
-  const fx = baseCurrency === "USD" ? 1 : baseCurrency === "NGN" ? 1500 : 14;
-  const sym = baseCurrency === "USD" ? "$" : baseCurrency === "NGN" ? "₦" : "₵";
+  // Prices must match the marketplace exactly: convert with the listing's
+  // publish-time currency + FX snapshot, falling back to live USD rates.
   const price = useCallback(
-    (usd: number) =>
-      usd === 0 ? "Free" : `${sym}${(usd * fx).toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
-    [sym, fx],
+    (usd: number, listing?: ProfileListing) =>
+      computeDisplayPrice(
+        {
+          price_usd: usd,
+          original_currency: (listing?.originalCurrency ?? "USD") as never,
+          original_amount: listing?.originalAmount ?? usd,
+          fx_snapshot: (listing?.fxSnapshot ?? null) as never,
+        },
+        baseCurrency,
+      ).formatted,
+    [baseCurrency],
   );
 
   const { productId } = Route.useSearch();
