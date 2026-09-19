@@ -347,6 +347,34 @@ export const adminMarkPayoutPaid = createServerFn({ method: "POST" })
   });
 
 /**
+ * Manual transfer failed, but the money stays held against this request.
+ * The user is notified with the reason so they can correct their details.
+ */
+export const adminFlagPayoutIssue = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string; reason: string }) => ({
+    id: String(input?.id ?? ""),
+    reason:
+      String(input?.reason ?? "").trim().slice(0, 500) ||
+      "We could not complete this transfer with the details provided.",
+  }))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+    if (!isAdmin) throw new Error("Forbidden");
+    const { error } = await (supabase as any).rpc("payout_request_flag_issue", {
+      _id: data.id,
+      _reason: data.reason,
+    });
+    if (error) throw new Error(error.message);
+    await writePayoutAudit(supabase, userId, "payout.reject", data.id, {
+      reason: data.reason,
+      kept_pending: true,
+    });
+    return { ok: true };
+  });
+
+/**
  * Return the audit trail for a single payout request, most-recent first,
  * enriched with the acting admin's display name / username when available.
  */
