@@ -3894,3 +3894,31 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
     transition: none;
   }
 }
+
+/* Web-native light create chooser — always light/premium outside the app shell,
+   regardless of the global color theme. */
+.create-web {
+  --create-surface: #ffffff;
+  --create-card: #ffffff;
+  --create-muted: #f6f7f9;
+  --create-hover: #fff7f7;
+  --create-title: #101828;
+  --create-copy: #667085;
+  --create-arrow: #98a2b3;
+  --create-border: rgba(16, 24, 40, 0.08);
+  --create-border-strong: rgba(229, 72, 77, 0.45);
+  --create-handle: rgba(16, 24, 40, 0.16);
+  --create-overlay: rgba(16, 24, 40, 0.5);
+  --create-brand: #e5484d;
+  --create-brand-soft: rgba(229, 72, 77, 0.1);
+  --create-post: #8b5cf6;
+  --create-post-soft: rgba(139, 92, 246, 0.12);
+  --create-sell: #e5484d;
+  --create-sell-soft: rgba(229, 72, 77, 0.12);
+  --create-panel-shadow: 0 32px 90px -20px rgba(16, 24, 40, 0.35);
+  --create-card-shadow: 0 12px 32px -12px rgba(16, 24, 40, 0.18);
+}
+
+.create-web [class*="hover:border-create-border-strong"]:hover {
+  transform: translateY(-2px);
+}

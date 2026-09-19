@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { X, PenSquare, ShoppingBag, ArrowUpRight } from "lucide-react";
 import { useOnboarding, type Tier } from "@/lib/onboarding/OnboardingContext";
 import { Button } from "@/components/ui/button";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 import { SellSwitcherModal } from "./SellSwitcherModal";
 
 // Academy (courses) and Bounties are not active MVP features: their creation
@@ -52,6 +53,7 @@ export function CreatePanel({
 }) {
   const { require } = useOnboarding();
   const [sellOpen, setSellOpen] = useState(false);
+  const isAppShell = useIsAppShell();
 
   useEffect(() => {
     if (!open) return;
@@ -107,7 +109,7 @@ export function CreatePanel({
             role="dialog"
             aria-modal="true"
             aria-labelledby="create-panel-title"
-            className="slide-up relative w-full max-w-[620px] overflow-hidden rounded-t-[10px] border border-create-border bg-create-surface px-4 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-3 shadow-create-panel sm:rounded-[10px] sm:p-6"
+            className={`slide-up relative w-full max-w-[620px] overflow-hidden rounded-t-[10px] border border-create-border bg-create-surface px-4 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-3 shadow-create-panel sm:rounded-[24px] sm:p-8 ${isAppShell ? "" : "create-web"}`}
           >
             <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-create-handle sm:hidden" />
             <div className="mb-5 flex items-start justify-between gap-4 sm:mb-6">
