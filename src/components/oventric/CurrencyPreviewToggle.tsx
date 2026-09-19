@@ -26,26 +26,45 @@ export function CurrencyPreviewToggle({
     : "border-white/10 bg-white/[0.04] text-slate-400";
   const activeCls = light ? "bg-white text-slate-900 shadow-sm" : "bg-[#E5484D] text-white";
 
+  const homeSymbol = currencySymbol(homeCurrency);
+
   return (
     <div
       role="group"
       aria-label="Display currency"
       title="Preview prices in USD. You always pay and get paid in your home currency."
-      className={`inline-flex items-center rounded-full border ${compact ? "gap-[1px] p-[1px]" : "gap-0.5 p-0.5"} ${base} ${className}`}
+      className={`inline-flex items-center rounded-full border ${
+        compact ? "gap-[1px] p-[1px]" : "gap-[1px] p-[1px] sm:gap-0.5 sm:p-0.5"
+      } ${base} ${className}`}
     >
       <button
         type="button"
         onClick={() => setUsdPreview(false)}
-        className={`rounded-full font-black transition ${compact ? "px-1.5 py-0.5 text-[10px]" : "px-2.5 py-1 text-[11px]"} ${!usdPreview ? activeCls : ""}`}
+        className={`rounded-full font-black transition ${
+          compact
+            ? "px-1.5 py-0.5 text-[10px]"
+            : "px-1.5 py-0.5 text-[10px] sm:px-2.5 sm:py-1 sm:text-[11px]"
+        } ${!usdPreview ? activeCls : ""}`}
       >
-        {compact ? currencySymbol(homeCurrency) : `${currencySymbol(homeCurrency)} ${homeCurrency}`}
+        {compact ? (
+          homeSymbol
+        ) : (
+          <>
+            <span className="sm:hidden">{homeSymbol}</span>
+            <span className="hidden sm:inline">{homeSymbol} {homeCurrency}</span>
+          </>
+        )}
       </button>
       <button
         type="button"
         onClick={() => setUsdPreview(true)}
-        className={`rounded-full font-black transition ${compact ? "px-1.5 py-0.5 text-[10px]" : "px-2.5 py-1 text-[11px]"} ${usdPreview ? activeCls : ""}`}
+        className={`rounded-full font-black transition ${
+          compact
+            ? "px-1.5 py-0.5 text-[10px]"
+            : "px-1.5 py-0.5 text-[10px] sm:px-2.5 sm:py-1 sm:text-[11px]"
+        } ${usdPreview ? activeCls : ""}`}
       >
-        {compact ? "$" : "$ USD"}
+        {compact ? "$" : <><span className="sm:hidden">$</span><span className="hidden sm:inline">$ USD</span></>}
       </button>
     </div>
   );
