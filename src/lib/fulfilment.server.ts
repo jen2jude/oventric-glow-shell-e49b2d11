@@ -552,6 +552,37 @@ export async function sweepEscrowTimers() {
   return out;
 }
 
+/**
+ * Apply any matured escrow timer for the orders a single user is party to.
+ * Used when they open an escrow surface, so a confirmed order clears into the
+ * seller wallet as soon as the hold matures instead of waiting for the sweep.
+ * Idempotent and best-effort: every state change still goes through the same
+ * claim-then-pay functions.
+ */
+export async function settleDueForUser(sb: any, userId: string) {
+  const nowIso = new Date().toISOString();
+  const { data, error } = await sb
+    .from("orders")
+    .select("id, delivered_at, buyer_confirmed_at, auto_refund_at, auto_release_at, payout_release_at")
+    .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
+    .eq("escrow_status", "held")
+    .eq("dispute_status", "none")
+    .limit(100);
+  if (error) return;
+  const due = (iso: string | null) => Boolean(iso) && new Date(iso as string).getTime() <= Date.now();
+  for (const r of (data ?? []) as Array<Record<string, any>>) {
+    try {
+      if (due(r.payout_release_at)) await releaseEscrow(sb, r.id, null, "auto");
+      else if (!r.delivered_at && due(r.auto_refund_at))
+        await refundBuyer(sb, r.id, "seller_missed_delivery_window");
+      else if (r.delivered_at && !r.buyer_confirmed_at && due(r.auto_release_at))
+        await confirmReceipt(sb, r.id, null, "auto");
+    } catch (e) {
+      console.error("[settleDueForUser] failed for", r.id, e, nowIso);
+    }
+  }
+}
+
 /** Back-compat wrapper used by the older cron entry point. */
 export async function autoReleaseDueOrders() {
   const { released, autoConfirmed, refunded } = await sweepEscrowTimers();
