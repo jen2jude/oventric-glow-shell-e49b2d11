@@ -173,6 +173,11 @@ function EscrowInboxPage() {
 
   useEffect(() => {
     void refresh();
+    // Keep the board live: escrow clocks mature server-side while it is open.
+    const t = setInterval(() => {
+      if (document.visibilityState === "visible") void refresh();
+    }, 60_000);
+    return () => clearInterval(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
