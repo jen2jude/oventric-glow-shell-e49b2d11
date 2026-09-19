@@ -36,7 +36,7 @@ export function SiteFooter({ onSelect, currency, flag }: SiteFooterProps) {
 
           <div className="mt-4 flex items-center gap-2">
             <SocialLink href="https://www.facebook.com/oventric" label="Facebook" icon={<Facebook className="h-4 w-4" />} />
-            <SocialLink href="#" label="Instagram" icon={<Instagram className="h-4 w-4" />} />
+            <SocialLink href="https://www.instagram.com/oventrictech?stkn=MTV1Y3UwaHhmYWRjOA==" label="Instagram" icon={<Instagram className="h-4 w-4" />} />
             <SocialLink href="https://tiktok.com/@oventric" label="TikTok" icon={<TikTokIcon className="h-4 w-4" />} />
             <SocialLink href="https://youtube.com/@oventric?si=W4Gir4DZB1cA21En" label="YouTube" icon={<Youtube className="h-4 w-4" />} />
           </div>
