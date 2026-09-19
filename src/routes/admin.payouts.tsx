@@ -21,6 +21,7 @@ import {
   adminApprovePayout,
   adminRejectPayout,
   adminMarkPayoutPaid,
+  adminFlagPayoutIssue,
   adminListPayoutAudit,
   type PayoutDTO,
   type PayoutStatus,
