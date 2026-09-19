@@ -104,7 +104,7 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
           </nav>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-3 lg:gap-4 ml-auto">
+          <div className="flex items-center gap-2 lg:gap-4 ml-auto">
             {/* Display currency preview (home ⇄ USD) */}
             <CurrencyPreviewToggle variant="light" className="hidden sm:inline-flex" />
 
@@ -123,9 +123,9 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
               type="button"
               onClick={openNotifications}
               aria-label={isAuthenticated ? "Open notifications" : "Sign in to view notifications"}
-              className="relative grid min-h-11 min-w-11 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-hidden focus-visible:ring-3 focus-visible:ring-crimson/30"
+              className="relative grid min-h-9 min-w-9 sm:min-h-11 sm:min-w-11 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-hidden focus-visible:ring-3 focus-visible:ring-crimson/30"
             >
-              <Bell className="h-5 w-5" />
+              <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
               <CountBadge
                 count={unreadNotifications}
                 ariaLabel={`${unreadNotifications} unread notifications`}
@@ -136,24 +136,24 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
               type="button"
               onClick={openMessages}
               aria-label={isAuthenticated ? "Open messages" : "Sign in to view messages"}
-              className="relative grid min-h-11 min-w-11 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-hidden focus-visible:ring-3 focus-visible:ring-crimson/30"
+              className="relative grid min-h-9 min-w-9 sm:min-h-11 sm:min-w-11 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-hidden focus-visible:ring-3 focus-visible:ring-crimson/30"
             >
-              <MessageSquare className="h-5 w-5" />
+              <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
 
             {/* User Profile Link */}
-            <div className="flex items-center gap-4 ml-auto">
+            <div className="flex items-center gap-2 sm:gap-4 ml-auto">
               <button
                 type="button"
                 aria-label={isAuthenticated ? "Open menu" : "Connect account"}
                 onClick={() => (isAuthenticated ? setMegaOpen(true) : openGate("generic"))}
                 className="flex items-center gap-2 cursor-pointer group p-1 rounded-full hover:bg-slate-100 transition-colors"
               >
-                <div className="h-11 w-11 rounded-full overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center transition-colors group-hover:border-crimson/40">
+                <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-full overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center transition-colors group-hover:border-crimson/40">
                   {isAuthenticated ? (
                     <AvatarImage src={avatarUrl ?? null} alt={name || "You"} loading="eager" />
                   ) : (
-                    <User className="w-5 h-5 text-slate-400" />
+                    <User className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
                   )}
                 </div>
               </button>
@@ -164,9 +164,9 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
               aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
-              className="p-2 text-slate-900 lg:hidden"
+              className="p-1.5 sm:p-2 text-slate-900 lg:hidden"
             >
-              {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {menuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
             </button>
           </div>
         </div>
