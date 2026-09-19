@@ -24,7 +24,13 @@ export function ShopManagement() {
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-      const { data } = await supabase.from("profiles").select("*").eq("user_id", user.id).single();
+      const { data } = await supabase
+        .from("profiles")
+        .select(
+          "user_id, display_name, username, slug, bio, avatar_path, cover_path, shop_name, shop_about, shop_logo_path, shop_cover_path",
+        )
+        .eq("user_id", user.id)
+        .single();
       return data;
     }
   });
