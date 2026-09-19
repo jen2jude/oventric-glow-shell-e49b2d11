@@ -1253,7 +1253,10 @@ export function Feed() {
             meSlug={meSlug}
           />
         ) : (
-          <FeedSocialBar onOpenMessages={() => window.dispatchEvent(new CustomEvent("oventric:open-messages"))} />
+          <>
+            <WebStoriesRail meAvatarUrl={meAvatarUrl} meInitials={meInitials} />
+            <FeedSocialBar onOpenMessages={() => window.dispatchEvent(new CustomEvent("oventric:open-messages"))} />
+          </>
         )}
         {/* Composer — hidden in Discover / Following because those tabs are view-only */}
         {!(feedTab === "discover" || feedTab === "following") && (
