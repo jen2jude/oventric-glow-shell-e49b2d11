@@ -217,7 +217,7 @@ export function PostActionsMenu({
       <button
         onClick={() => run(action)}
         className={`w-full flex items-center gap-2.5 px-3 py-3 text-left text-sm rounded-[10px] ${
-          danger ? "text-red-300 hover:bg-red-500/10" : "text-slate-200 hover:bg-white/5"
+          danger ? "text-red-600 hover:bg-red-50" : "text-slate-700 hover:bg-slate-100"
         }`}
       >
         <Icon className="w-4 h-4" />
@@ -237,24 +237,24 @@ export function PostActionsMenu({
     return (
       <button
         onClick={() => run(action)}
-        className="w-full flex items-start gap-4 px-5 py-3.5 text-left active:bg-white/5"
+        className="w-full flex items-start gap-4 px-5 py-3.5 text-left active:bg-slate-100"
       >
-        <Icon className={`w-5 h-5 mt-0.5 shrink-0 ${danger ? "text-red-400" : "text-white/70"}`} />
+        <Icon className={`w-5 h-5 mt-0.5 shrink-0 ${danger ? "text-red-600" : "text-slate-500"}`} />
         <span className="min-w-0">
-          <span className={`block text-[15px] ${danger ? "text-[#E5484D]" : "text-white/90"}`}>
+          <span className={`block text-[15px] ${danger ? "text-red-600" : "text-slate-900"}`}>
             {label}
           </span>
-          {sub ? <span className="block text-[12px] text-white/40 mt-0.5">{sub}</span> : null}
+          {sub ? <span className="block text-[12px] text-slate-500 mt-0.5">{sub}</span> : null}
         </span>
       </button>
     );
   };
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className={open ? "relative z-[300]" : "relative"}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="p-1.5 rounded-[10px] text-slate-500 md:text-slate-500 hover:text-white md:hover:text-slate-900 hover:bg-white/5 md:hover:bg-slate-100 transition-colors"
+        className="p-1.5 rounded-[10px] text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
         aria-label="More"
       >
         <MoreHorizontal className="w-4 h-4" />
@@ -262,7 +262,7 @@ export function PostActionsMenu({
 
       {/* Desktop dropdown */}
       {open && (
-        <div className="hidden md:block absolute right-0 top-full mt-1 z-40 w-56 rounded-xl bg-[#1a1a20] md:bg-white md:shadow-lg border border-white/10 md:border-slate-200 shadow-2xl p-1">
+        <div className="hidden md:block absolute right-0 top-full mt-1 z-[300] w-56 rounded-xl bg-white shadow-lg border border-slate-200 p-1">
           {item(ThumbsUp, "Interested", "interested")}
           {item(ThumbsDown, "Not interested", "not_interested")}
           {item(EyeOff, "Hide post", "hide")}
@@ -279,7 +279,7 @@ export function PostActionsMenu({
               {item(Ban, `Don't show content from ${authorName ?? "author"}`, "block")}
             </>
           )}
-          <div className="h-px bg-white/5 md:bg-slate-100 my-1" />
+          <div className="h-px bg-slate-100 my-1" />
           {item(Flag, "Report", "report", true)}
           {isOwn && onDelete && (
             <button
@@ -287,7 +287,7 @@ export function PostActionsMenu({
                 setOpen(false);
                 onDelete();
               }}
-              className="w-full flex items-center gap-2.5 px-3 py-3 text-left text-sm text-red-300 md:text-red-600 hover:bg-red-500/10 rounded-[10px]"
+              className="w-full flex items-center gap-2.5 px-3 py-3 text-left text-sm text-red-600 hover:bg-red-50 rounded-[10px]"
             >
               <Flag className="w-4 h-4" /> Delete
             </button>
@@ -295,26 +295,26 @@ export function PostActionsMenu({
         </div>
       )}
 
-      {/* Mobile bottom sheet */}
+      {/* Mobile centered dialog */}
       {open && (
-        <div className="md:hidden fixed inset-0 z-[100]">
+        <div className="md:hidden fixed inset-0 z-[1000] grid place-items-center p-4">
           <div
-            className="absolute inset-0 bg-black/55 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="absolute inset-x-0 bottom-[calc(64px+env(safe-area-inset-bottom)+8px)] mx-3 flex max-h-[75dvh] flex-col rounded-[20px] bg-[#1B1D1F] border border-white/10 shadow-[0_20px_60px_-10px_rgba(0,0,0,0.7)] animate-in slide-in-from-bottom duration-200">
+          <div className="relative w-full max-w-sm flex max-h-[75dvh] flex-col rounded-[20px] bg-white border border-slate-200 shadow-[0_20px_60px_-10px_rgba(15,23,42,0.25)] animate-in zoom-in-95 fade-in duration-150">
             <div className="flex items-center justify-between px-5 pt-5 pb-3 shrink-0">
-              <h3 className="text-[17px] font-semibold text-white">More options</h3>
+              <h3 className="text-[17px] font-semibold text-slate-900">More options</h3>
               <button
                 onClick={() => setOpen(false)}
                 aria-label="Close"
-                className="p-1.5 -mr-1.5 text-white/60 active:text-white"
+                className="p-1.5 -mr-1.5 text-slate-400 active:text-slate-700"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="h-px bg-white/10 mx-5 shrink-0" />
+            <div className="h-px bg-slate-100 mx-5 shrink-0" />
             <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain py-2 pb-[calc(env(safe-area-inset-bottom)+12px)]">
               {sheetItem(Bookmark, saved ? "Unsave" : "Save", "save", "Add this to your saved items")}
               {sheetItem(ThumbsDown, "See less content like this", "not_interested")}
@@ -340,7 +340,7 @@ export function PostActionsMenu({
                     setOpen(false);
                     onDelete();
                   }}
-                  className="w-full flex items-center gap-4 px-5 py-3.5 text-left text-[15px] text-[#E5484D] active:bg-white/5"
+                  className="w-full flex items-center gap-4 px-5 py-3.5 text-left text-[15px] text-red-600 active:bg-red-50"
                 >
                   <Trash2 className="w-5 h-5" /> Delete post
                 </button>
