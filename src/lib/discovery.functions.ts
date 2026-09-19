@@ -266,6 +266,7 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
     // ---- Products (10 trending, randomized between visits) ----
     const pRows = productsRes.data ?? [];
     const pCovers = await signBucket(sb, "product-covers", pRows.map((p) => p.cover_path));
+    const shopNames = await fetchShopNames(sb, pRows.map((p) => p.seller_id as string));
     const productsAll: DiscoveryProduct[] = pRows.map((p, i) => ({
       id: p.id as string,
       title: p.name as string,
@@ -273,7 +274,7 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
       priceUsd: Number(p.price_usd ?? 0),
       coverUrl: pCovers[i],
       hue: (p.hue as string) ?? "from-emerald-500 to-teal-600",
-      vendor: (p.vendor as string) ?? "",
+      vendor: shopNames.get(p.seller_id as string) ?? ((p.vendor as string) ?? ""),
       originalCurrency: (p.original_currency as string) ?? "USD",
       originalAmount: Number(p.original_amount ?? p.price_usd ?? 0),
       fxSnapshot: (p.fx_snapshot as DiscoveryProduct["fxSnapshot"]) ?? null,
