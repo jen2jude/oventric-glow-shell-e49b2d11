@@ -750,7 +750,15 @@ function Stat({ value, label }: { value?: number; label: string }) {
   );
 }
 
-function ProductCard({ product, currency }: { product: ProductDTO; currency: string }) {
+function ProductCard({
+  product,
+  currency,
+  compact = false,
+}: {
+  product: ProductDTO;
+  currency: string;
+  compact?: boolean;
+}) {
   const price = computeDisplayPrice(
     {
       price_usd: product.priceUSD,
@@ -766,7 +774,7 @@ function ProductCard({ product, currency }: { product: ProductDTO; currency: str
       <Link
         to="/product/$id"
         params={{ id: product.id }}
-        className="relative block aspect-[4/3] w-full overflow-hidden bg-slate-100"
+        className={`relative block w-full overflow-hidden bg-slate-100 ${compact ? "aspect-[16/10]" : "aspect-[4/3]"}`}
       >
         {product.coverUrl ? (
           <img
@@ -778,17 +786,21 @@ function ProductCard({ product, currency }: { product: ProductDTO; currency: str
         ) : null}
       </Link>
 
-      <div className="flex flex-1 flex-col gap-2 p-3">
+      <div className={`flex flex-1 flex-col ${compact ? "gap-1 p-2" : "gap-2 p-3"}`}>
         <Link to="/product/$id" params={{ id: product.id }} className="min-w-0">
-          <h3 className="line-clamp-2 text-[13px] font-bold leading-snug text-slate-900 transition-colors group-hover:text-crimson">
+          <h3
+            className={`font-bold leading-snug text-slate-900 transition-colors group-hover:text-crimson ${compact ? "line-clamp-1 text-[12px]" : "line-clamp-2 text-[13px]"}`}
+          >
             {product.name}
           </h3>
         </Link>
 
-        <p className="truncate text-[11px] text-slate-500">{product.vendor}</p>
+        <p className={`truncate text-slate-500 ${compact ? "text-[10px]" : "text-[11px]"}`}>
+          {product.vendor}
+        </p>
 
-        <p className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600">
-          <Star className="h-3 w-3 fill-[#F5A524] text-[#F5A524]" />
+        <p className={`inline-flex items-center gap-1 font-semibold text-slate-600 ${compact ? "text-[10px]" : "text-[11px]"}`}>
+          <Star className={`fill-[#F5A524] text-[#F5A524] ${compact ? "h-2.5 w-2.5" : "h-3 w-3"}`} />
           {product.rating ? product.rating.toFixed(1) : "New"}
           {product.reviews ? (
             <span className="font-normal text-slate-400">({product.reviews})</span>
@@ -796,14 +808,16 @@ function ProductCard({ product, currency }: { product: ProductDTO; currency: str
         </p>
 
         <div className="mt-auto flex items-center justify-between gap-2 pt-1">
-          <span className="truncate text-sm font-extrabold text-slate-900">{price}</span>
+          <span className={`truncate font-extrabold text-slate-900 ${compact ? "text-xs" : "text-sm"}`}>
+            {price}
+          </span>
           <Link
             to="/product/$id"
             params={{ id: product.id }}
             aria-label={`View ${product.name}`}
-            className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-crimson text-white transition-transform active:scale-95"
+            className={`grid shrink-0 place-items-center rounded-full bg-crimson text-white transition-transform active:scale-95 ${compact ? "h-7 w-7" : "h-8 w-8"}`}
           >
-            <ShoppingCart className="h-4 w-4" />
+            <ShoppingCart className={`${compact ? "h-3.5 w-3.5" : "h-4 w-4"}`} />
           </Link>
         </div>
       </div>
