@@ -277,30 +277,30 @@ export function Header({
   return (
     <header className={`sticky top-0 z-40 w-full ${bg} border-b ${edge}`}>
       {/* Mobile top row: logo + search + hamburger (home only) */}
-      {showMobileTopRow && (
-        <div className="md:hidden grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 h-11 px-3 border-b border-white/5">
-          <Link to="/" aria-label="Oventric" className="flex items-center shrink-0">
-            {LogoMark}
-          </Link>
-          <div className="min-w-0" />
-          <div className="flex items-center gap-1 shrink-0">
-            <button
-              onClick={() => setMobileSearchOpen(true)}
-              aria-label="Open search"
-              className="p-2 rounded-[10px] hover:bg-white/5 text-white"
-            >
-              <Search className="w-5 h-5" strokeWidth={2.5} />
-            </button>
-            <button
-              onClick={() => setMegaOpen(true)}
-              aria-label="Open menu"
-              className="p-2 -mr-1 rounded-[10px] hover:bg-white/5 text-white"
-            >
-              <Menu className="w-5 h-5" strokeWidth={2.5} />
-            </button>
+        {showMobileTopRow && (
+          <div className="md:hidden grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 h-11 px-3 border-b border-white/5">
+            <Link to="/" aria-label="Oventric" className="flex items-center shrink-0">
+              {LogoMark}
+            </Link>
+            <div className="min-w-0" />
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                onClick={() => setMobileSearchOpen(true)}
+                aria-label="Open search"
+                className="p-1.5 rounded-[10px] hover:bg-white/5 text-white"
+              >
+                <Search className="w-[18px] h-[18px]" strokeWidth={2.5} />
+              </button>
+              <button
+                onClick={() => setMegaOpen(true)}
+                aria-label="Open menu"
+                className="p-1.5 -mr-1 rounded-[10px] hover:bg-white/5 text-white"
+              >
+                <Menu className="w-[18px] h-[18px]" strokeWidth={2.5} />
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Main row */}
       <div
