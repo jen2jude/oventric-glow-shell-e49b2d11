@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { X, PenSquare, ShoppingBag, ArrowUpRight } from "lucide-react";
 import { useOnboarding, type Tier } from "@/lib/onboarding/OnboardingContext";
 import { Button } from "@/components/ui/button";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 import { SellSwitcherModal } from "./SellSwitcherModal";
 
 // Academy (courses) and Bounties are not active MVP features: their creation
