@@ -1585,7 +1585,16 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
     const signedUrls = await signCovers(sb, uniquePaths);
     const urlMap = new Map(uniquePaths.map((p, i) => [p, signedUrls[i]]));
 
-    const mapRow = (r: any) => mapProduct(r, urlMap.get(r.cover_path as string | null) ?? null);
+    const discoveryShopNames = await fetchShopNames(
+      sb,
+      allProductRows.map((r) => r.seller_id as string),
+    );
+    const mapRow = (r: any) => {
+      const dto = mapProduct(r, urlMap.get(r.cover_path as string | null) ?? null);
+      const shopName = discoveryShopNames.get(dto.sellerId);
+      if (shopName) dto.vendor = shopName;
+      return dto;
+    };
 
     const sellerAvatars = await signBucket(sb, "avatars", (sellerRows ?? []).map((s: any) => s.avatar_path ?? null));
     const sellerCovers = await signBucket(sb, "profile-covers", (sellerRows ?? []).map((s: any) => s.cover_path ?? null));
