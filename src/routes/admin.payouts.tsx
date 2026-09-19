@@ -474,7 +474,13 @@ function PayoutRow({
                   onClick={onReject}
                   className="inline-flex items-center gap-1.5 rounded-[10px] border border-red-500/50 text-red-300 hover:bg-red-500/10 font-bold px-3 py-1.5 text-xs"
                 >
-                  <XCircle className="w-3.5 h-3.5" /> Reject & refund
+                  <XCircle className="w-3.5 h-3.5" /> Transfer failed — refund wallet
+                </button>
+                <button
+                  onClick={onFlagIssue}
+                  className="inline-flex items-center gap-1.5 rounded-[10px] border border-amber-500/50 text-amber-300 hover:bg-amber-500/10 font-bold px-3 py-1.5 text-xs"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5" /> Transfer failed — keep pending
                 </button>
               </>
             )}
