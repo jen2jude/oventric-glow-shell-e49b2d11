@@ -10,14 +10,20 @@ import {
   ChevronDown,
   Star,
   MessageCircle,
-  Send,
   Check,
   X,
+  ArrowRight,
+  BadgeHelp,
+  Clock3,
+  HeartHandshake,
+  LifeBuoy,
 } from "lucide-react";
 import { PublicChrome } from "@/components/oventric/PublicChrome";
 import { SupportLiveChat } from "@/components/oventric/SupportLiveChat";
+import { Button } from "@/components/ui/button";
 import { submitSupportTicket, submitSupportFeedback } from "@/lib/support.functions";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
+import supportHeadset from "@/assets/support-headset.png.asset.json";
 
 export const Route = createFileRoute("/help-board")({
   head: () => ({
@@ -47,22 +53,25 @@ const DISPUTES = [
     key: "transaction",
     label: "Transaction dispute",
     icon: Receipt,
-    tint: "text-sky-300 bg-sky-500/15",
+    tint: "bg-help-teal-soft text-help-teal",
+    copy: "Payment, receipt or settlement issue",
   },
   {
     key: "social_post",
     label: "Social post dispute",
     icon: MessageSquareWarning,
-    tint: "text-violet-300 bg-violet-500/15",
+    tint: "bg-help-violet-soft text-help-ink",
+    copy: "Report content or account activity",
   },
   {
     key: "marketplace",
     label: "Marketplace dispute",
     icon: ShoppingBag,
-    tint: "text-emerald-300 bg-emerald-500/15",
+    tint: "bg-help-crimson-soft text-help-crimson",
+    copy: "Product, delivery or seller concern",
   },
-  { key: "wallet", label: "Wallet dispute", icon: Wallet, tint: "text-cyan-300 bg-cyan-500/15" },
-  { key: "scam", label: "Report a scam", icon: ShieldAlert, tint: "text-rose-300 bg-rose-500/15" },
+  { key: "wallet", label: "Wallet dispute", icon: Wallet, tint: "bg-help-gold-soft text-help-ink", copy: "Balance, funding or withdrawal issue" },
+  { key: "scam", label: "Report a scam", icon: ShieldAlert, tint: "bg-help-crimson-soft text-help-crimson", copy: "Flag suspicious activity quickly" },
 ] as const;
 
 const FAQS = [
@@ -156,137 +165,109 @@ function HelpBoardPage() {
   };
 
   return (
-    <PublicChrome>
-      <div className="max-w-3xl mx-auto px-4 py-8 md:py-12 text-slate-200 md:text-slate-800">
-        <header className="text-center">
-          <h1 className="text-3xl md:text-4xl font-black text-white md:text-slate-900">
-            Oventric Help Board
-          </h1>
-          <p className="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-emerald-300">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            24/7 Service for you
-          </p>
-        </header>
-
-        {/* Dispute grid */}
-        <section className="mt-8">
-          <h2 className="text-sm font-bold uppercase tracking-wide text-slate-400 md:text-slate-500">
-            Open a case
-          </h2>
-          <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {DISPUTES.map((d) => (
-              <button
-                key={d.key}
-                onClick={() => startDispute(d.key)}
-                className="p-3 rounded-2xl bg-[#141418] border border-white/10 text-left hover:border-emerald-500/40 transition-colors md:bg-white md:border-slate-200"
-              >
-                <span className={`w-9 h-9 grid place-items-center rounded-full ${d.tint}`}>
-                  <d.icon className="w-4 h-4" />
+    <PublicChrome lightDesktop>
+      <div className="help-board-web min-h-full bg-help-canvas text-help-ink">
+        <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8 lg:py-14">
+          <header className="relative overflow-hidden rounded-[10px] border border-help-line bg-help-surface shadow-help-card lg:grid lg:grid-cols-[minmax(0,1.35fr)_minmax(21rem,0.65fr)]">
+            <div className="relative z-10 px-5 py-9 sm:px-9 sm:py-12 lg:px-12 lg:py-16">
+              <div className="inline-flex items-center gap-2 rounded-full bg-help-teal-soft px-3 py-1.5 text-xs font-bold text-help-teal">
+                <span className="relative flex size-2">
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-help-teal opacity-60" />
+                  <span className="relative inline-flex size-2 rounded-full bg-help-teal" />
                 </span>
-                <span className="mt-2 block text-sm font-semibold text-white leading-snug md:text-slate-900">
-                  {d.label}
-                </span>
-              </button>
-            ))}
-          </div>
-          {ticketDone && (
-            <p className="mt-3 flex items-center gap-2 text-sm text-emerald-300">
-              <Check className="w-4 h-4" /> Case submitted. Our team will follow up shortly.
-            </p>
-          )}
-        </section>
-
-        {/* Feedback */}
-        <section className="mt-8">
-          <button
-            onClick={() => setFeedbackOpen((v) => !v)}
-            className="w-full flex items-center gap-3 p-4 rounded-2xl bg-[#141418] border border-white/10 md:bg-white md:border-slate-200"
-            aria-expanded={feedbackOpen}
-          >
-            <Star className="w-4 h-4 text-amber-300" />
-            <span className="font-bold text-white md:text-slate-900">My Feedback</span>
-            <ChevronDown
-              className={`ml-auto w-4 h-4 text-slate-400 transition-transform ${feedbackOpen ? "rotate-180" : ""}`}
-            />
-          </button>
-          {feedbackOpen && (
-            <div className="mt-2 p-4 rounded-2xl bg-[#141418] border border-white/10 md:bg-white md:border-slate-200">
-              <p className="text-sm text-slate-400 md:text-slate-500">
-                Rate your experience with an issue we resolved.
-              </p>
-              <div className="mt-3 flex items-center gap-1.5">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <button key={n} onClick={() => setRating(n)} aria-label={`${n} star`}>
-                    <Star
-                      className={`w-6 h-6 ${n <= rating ? "text-amber-300 fill-amber-300" : "text-slate-600"}`}
-                    />
-                  </button>
-                ))}
+                Support is online · 24/7
               </div>
-              <textarea
-                value={feedbackText}
-                onChange={(e) => setFeedbackText(e.target.value)}
-                rows={4}
-                placeholder="Tell us about your experience…"
-                className="mt-3 w-full resize-none rounded-xl bg-[#1E1E24] border border-white/10 px-3 py-2.5 text-sm text-white placeholder:text-slate-500 outline-none focus:border-emerald-500/50 md:bg-white md:border-slate-200 md:text-slate-900"
-              />
-              <div className="mt-3 flex items-center gap-3">
-                <button
-                  onClick={() => void sendFeedback()}
-                  disabled={feedbackBusy || rating < 1 || feedbackText.trim().length < 3}
-                  className="px-4 py-2 rounded-full bg-emerald-500 text-black font-bold text-sm disabled:opacity-40"
-                >
-                  {feedbackBusy ? "Sending…" : "Send feedback"}
-                </button>
-                {feedbackDone && (
-                  <span className="text-sm text-emerald-300">Thanks for the feedback!</span>
-                )}
+              <h1 className="mt-5 max-w-3xl text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
+                Help is closer than you think.
+              </h1>
+              <p className="mt-4 max-w-2xl text-base leading-7 text-help-copy sm:text-lg">
+                Get quick answers, open a case, or talk with the Oventric support team whenever you need us.
+              </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Button onClick={() => setChatOpen(true)} className="h-11 rounded-[10px] bg-help-crimson px-5 text-primary-foreground hover:bg-help-crimson/90">
+                  <MessageCircle /> Start live chat
+                </Button>
+                <Button asChild variant="outline" className="h-11 rounded-[10px] border-help-line bg-help-surface px-5 text-help-ink hover:bg-help-teal-soft">
+                  <Link to="/help">Browse help center <ArrowRight /></Link>
+                </Button>
               </div>
             </div>
-          )}
-        </section>
-
-        {/* FAQs */}
-        <section className="mt-8">
-          <h2 className="text-sm font-bold uppercase tracking-wide text-slate-400 md:text-slate-500">
-            Relevant FAQs
-          </h2>
-          <div className="mt-3 grid gap-2">
-            {FAQS.map((f, i) => (
-              <div
-                key={f.q}
-                className="rounded-2xl bg-[#141418] border border-white/10 overflow-hidden md:bg-white md:border-slate-200"
-              >
-                <button
-                  onClick={() => setFaqOpen(faqOpen === i ? null : i)}
-                  className="w-full flex items-center gap-3 p-4 text-left"
-                  aria-expanded={faqOpen === i}
-                >
-                  <span className="text-sm font-semibold text-white md:text-slate-900">{f.q}</span>
-                  <ChevronDown
-                    className={`ml-auto w-4 h-4 shrink-0 text-slate-400 transition-transform ${faqOpen === i ? "rotate-180" : ""}`}
-                  />
-                </button>
-                {faqOpen === i && (
-                  <p className="px-4 pb-4 text-sm text-slate-300 leading-relaxed md:text-slate-600">
-                    {f.a}
-                  </p>
-                )}
+            <div className="relative min-h-64 overflow-hidden bg-help-teal-soft lg:min-h-full">
+              <div className="absolute inset-x-6 bottom-0 top-5 rounded-t-[10px] bg-help-surface/60" />
+              <img src={supportHeadset.url} alt="Oventric support headset" className="absolute inset-0 h-full w-full object-contain p-8 lg:p-10" />
+              <div className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-[10px] border border-help-line bg-help-surface/90 p-3 shadow-help-card backdrop-blur-sm">
+                <span className="grid size-10 place-items-center rounded-[10px] bg-help-teal text-primary-foreground"><HeartHandshake /></span>
+                <div><p className="text-sm font-bold">Human support</p><p className="text-xs text-help-copy">Clear, practical help from our team</p></div>
               </div>
-            ))}
+            </div>
+          </header>
+
+          <section className="mt-10" aria-labelledby="open-case-title">
+            <div className="flex items-end justify-between gap-4">
+              <div><p className="text-xs font-bold uppercase text-help-crimson">Resolve an issue</p><h2 id="open-case-title" className="mt-2 text-2xl font-bold sm:text-3xl">Open a support case</h2></div>
+              <p className="hidden max-w-md text-right text-sm text-help-copy sm:block">Choose the closest match so your case reaches the right team faster.</p>
+            </div>
+            <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
+              {DISPUTES.map((d, index) => (
+                <Button key={d.key} variant="outline" onClick={() => startDispute(d.key)} className={`help-board-card h-auto min-h-44 items-start justify-start whitespace-normal rounded-[10px] border-help-line bg-help-surface p-5 text-left shadow-help-card hover:bg-help-surface ${index < 2 ? "lg:col-span-2" : index === 2 ? "lg:col-span-2" : "lg:col-span-3"}`}>
+                  <span className="flex h-full w-full flex-col items-start">
+                    <span className={`grid size-12 place-items-center rounded-[10px] ${d.tint}`}><d.icon className="size-5" /></span>
+                    <span className="mt-5 block text-base font-bold text-help-ink">{d.label}</span>
+                    <span className="mt-1 block text-sm font-normal leading-6 text-help-copy">{d.copy}</span>
+                    <ArrowRight className="mt-auto size-4 text-help-crimson" />
+                  </span>
+                </Button>
+              ))}
+            </div>
+            {ticketDone && <p className="mt-4 flex items-center gap-2 rounded-[10px] bg-help-teal-soft px-4 py-3 text-sm font-semibold text-help-teal"><Check className="size-4" /> Case submitted. Our team will follow up shortly.</p>}
+          </section>
+
+          <div className="mt-12 grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.65fr)]">
+            <section className="rounded-[10px] border border-help-line bg-help-surface p-5 shadow-help-card sm:p-7" aria-labelledby="faq-title">
+              <div className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-[10px] bg-help-teal-soft text-help-teal"><BadgeHelp /></span><div><p className="text-xs font-bold uppercase text-help-teal">Quick answers</p><h2 id="faq-title" className="text-2xl font-bold">Frequently asked</h2></div></div>
+              <div className="mt-6 divide-y divide-help-line">
+                {FAQS.map((f, i) => (
+                  <div key={f.q}>
+                    <Button variant="ghost" onClick={() => setFaqOpen(faqOpen === i ? null : i)} className="h-auto w-full justify-between whitespace-normal rounded-none px-0 py-5 text-left text-help-ink hover:bg-transparent" aria-expanded={faqOpen === i}>
+                      <span className="pr-4 text-sm font-bold sm:text-base">{f.q}</span>
+                      <ChevronDown className={`size-4 shrink-0 text-help-copy transition-transform ${faqOpen === i ? "rotate-180" : ""}`} />
+                    </Button>
+                    {faqOpen === i && <p className="max-w-2xl pb-5 pr-8 text-sm leading-7 text-help-copy">{f.a}</p>}
+                  </div>
+                ))}
+              </div>
+              <p className="mt-5 text-sm text-help-copy">More answers in the <Link to="/faq" className="font-bold text-help-crimson underline underline-offset-4">FAQ</Link> and <Link to="/help" className="font-bold text-help-crimson underline underline-offset-4">Help center</Link>.</p>
+            </section>
+
+            <div className="space-y-6">
+              <section className="overflow-hidden rounded-[10px] bg-help-teal p-6 text-primary-foreground shadow-help-card">
+                <div className="flex items-center justify-between"><span className="grid size-11 place-items-center rounded-[10px] bg-help-surface/15"><LifeBuoy /></span><span className="inline-flex items-center gap-1.5 text-xs font-bold"><span className="size-2 rounded-full bg-help-surface" />Online</span></div>
+                <h2 className="mt-8 text-2xl font-bold">Need a real person?</h2>
+                <p className="mt-2 text-sm leading-6 text-primary-foreground/80">Start a private conversation with Oventric support. Your chat history stays available when you return.</p>
+                <Button onClick={() => setChatOpen(true)} className="mt-6 h-11 w-full rounded-[10px] bg-help-surface text-help-teal hover:bg-help-canvas"><MessageCircle /> Open live chat</Button>
+                <div className="mt-5 flex items-center gap-2 border-t border-help-surface/20 pt-4 text-xs text-primary-foreground/75"><Clock3 className="size-4" /> Available around the clock</div>
+              </section>
+
+              <section className="rounded-[10px] border border-help-line bg-help-surface p-6 shadow-help-card">
+                <Button variant="ghost" onClick={() => setFeedbackOpen((v) => !v)} className="h-auto w-full justify-start gap-3 p-0 text-left text-help-ink hover:bg-transparent" aria-expanded={feedbackOpen}>
+                  <span className="grid size-10 place-items-center rounded-[10px] bg-help-gold-soft"><Star className="text-help-crimson" /></span>
+                  <span><span className="block font-bold">Share feedback</span><span className="block text-xs font-normal text-help-copy">Rate a resolved issue</span></span>
+                  <ChevronDown className={`ml-auto size-4 text-help-copy transition-transform ${feedbackOpen ? "rotate-180" : ""}`} />
+                </Button>
+                {feedbackOpen && (
+                  <div className="mt-5 border-t border-help-line pt-5">
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((n) => <Button key={n} variant="ghost" size="icon" onClick={() => setRating(n)} aria-label={`${n} star`} className="text-help-copy hover:bg-help-gold-soft"><Star className={n <= rating ? "fill-help-crimson text-help-crimson" : "text-help-copy"} /></Button>)}
+                    </div>
+                    <textarea value={feedbackText} onChange={(e) => setFeedbackText(e.target.value)} rows={4} placeholder="Tell us about your experience…" className="mt-3 w-full resize-none rounded-[10px] border border-help-line bg-help-canvas px-3 py-2.5 text-sm text-help-ink outline-none placeholder:text-help-copy focus:border-help-teal" />
+                    <Button onClick={() => void sendFeedback()} disabled={feedbackBusy || rating < 1 || feedbackText.trim().length < 3} className="mt-3 w-full rounded-[10px] bg-help-crimson text-primary-foreground hover:bg-help-crimson/90">{feedbackBusy ? "Sending…" : "Send feedback"}</Button>
+                    {feedbackDone && <p className="mt-3 text-sm font-semibold text-help-teal">Thanks for the feedback!</p>}
+                  </div>
+                )}
+              </section>
+            </div>
           </div>
-          <p className="mt-4 text-sm text-slate-400 md:text-slate-500">
-            More answers in the{" "}
-            <Link to="/faq" className="text-emerald-300 underline">
-              FAQ
-            </Link>{" "}
-            and{" "}
-            <Link to="/help" className="text-emerald-300 underline">
-              Help center
-            </Link>
-            .
-          </p>
-        </section>
+        </div>
       </div>
 
       {/* Dispute form modal */}
@@ -301,7 +282,7 @@ function HelpBoardPage() {
             role="dialog"
             aria-modal="true"
             aria-label={activeDispute.label}
-            className="relative w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl bg-[#141418] border border-white/10 p-4 md:bg-white md:border-slate-200"
+            className="help-board-web relative w-full rounded-t-[10px] border border-help-line bg-help-surface p-5 text-help-ink shadow-help-card sm:max-w-md sm:rounded-[10px]"
           >
             <div className="flex items-center gap-3">
               <span
@@ -309,48 +290,47 @@ function HelpBoardPage() {
               >
                 <activeDispute.icon className="w-4 h-4" />
               </span>
-              <h3 className="font-bold text-white md:text-slate-900">{activeDispute.label}</h3>
-              <button
+                <h3 className="font-bold text-help-ink">{activeDispute.label}</h3>
+               <Button variant="ghost" size="icon"
                 onClick={() => setOpenDispute(null)}
                 aria-label="Close"
-                className="ml-auto p-2 rounded-[10px] text-slate-300 hover:bg-white/5 md:text-slate-600 md:hover:bg-slate-100"
+                className="ml-auto rounded-[10px] text-help-copy hover:bg-help-canvas"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
             <input
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="Subject (e.g. order number or product name)"
-              className="mt-4 w-full rounded-xl bg-[#1E1E24] border border-white/10 px-3 py-2.5 text-sm text-white placeholder:text-slate-500 outline-none focus:border-emerald-500/50 md:bg-white md:border-slate-200 md:text-slate-900"
+              className="mt-4 w-full rounded-[10px] border border-help-line bg-help-canvas px-3 py-2.5 text-sm text-help-ink outline-none placeholder:text-help-copy focus:border-help-teal"
             />
             <textarea
               value={details}
               onChange={(e) => setDetails(e.target.value)}
               rows={5}
               placeholder="What happened? Add as much detail as you can."
-              className="mt-2 w-full resize-none rounded-xl bg-[#1E1E24] border border-white/10 px-3 py-2.5 text-sm text-white placeholder:text-slate-500 outline-none focus:border-emerald-500/50 md:bg-white md:border-slate-200 md:text-slate-900"
+              className="mt-2 w-full resize-none rounded-[10px] border border-help-line bg-help-canvas px-3 py-2.5 text-sm text-help-ink outline-none placeholder:text-help-copy focus:border-help-teal"
             />
-            <button
+            <Button
               onClick={() => void sendTicket()}
               disabled={ticketBusy || subject.trim().length < 3 || details.trim().length < 5}
-              className="mt-3 w-full py-3 rounded-full bg-emerald-500 text-black font-bold text-sm disabled:opacity-40"
+              className="mt-3 h-11 w-full rounded-[10px] bg-help-crimson font-bold text-primary-foreground hover:bg-help-crimson/90"
             >
               {ticketBusy ? "Submitting…" : "Submit case"}
-            </button>
+            </Button>
           </div>
         </div>
       )}
 
-      {/* Live chat side button */}
-      <button
+      <Button
         onClick={() => setChatOpen(true)}
-        className="fixed right-3 bottom-24 md:bottom-8 z-50 inline-flex items-center gap-2 pl-3 pr-4 py-3 rounded-full bg-emerald-500 text-black font-bold text-sm shadow-lg shadow-emerald-500/25 active:scale-95 transition-transform"
+        className="fixed bottom-24 right-3 z-50 h-12 rounded-full bg-help-crimson px-4 font-bold text-primary-foreground shadow-help-card hover:bg-help-crimson/90 md:bottom-8 md:right-6"
         aria-label="Open live chat with support"
       >
         <MessageCircle className="w-5 h-5" />
         Live Chat
-      </button>
+      </Button>
 
       <SupportLiveChat open={chatOpen} onClose={() => setChatOpen(false)} />
     </PublicChrome>
