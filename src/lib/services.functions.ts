@@ -48,11 +48,11 @@ export const createServiceListing = createServerFn({ method: "POST" })
     });
     const { data: prof } = await context.supabase
       .from("profiles")
-      .select("display_name, username")
+      .select("display_name, username, shop_name")
       .eq("user_id", context.userId)
       .maybeSingle();
     const vendor =
-      ((prof?.display_name as string) || (prof?.username as string) || "Member").trim() || "Member";
+      ((prof?.shop_name as string) || (prof?.display_name as string) || (prof?.username as string) || "Member").trim() || "Member";
 
     const description = data.deliveryDays
       ? `${data.description}\n\nTypical delivery: ${data.deliveryDays} day${data.deliveryDays === 1 ? "" : "s"}.`

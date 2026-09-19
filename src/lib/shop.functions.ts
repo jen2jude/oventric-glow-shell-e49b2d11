@@ -233,10 +233,21 @@ export const getShopDiscovery = createServerFn({ method: "GET" })
     pAll = pAll.slice(0, 12);
 
     const pCovers = await sign(sb, "product-covers", pAll.map((p) => p['cover_path'] as string));
+    const shopNames = new Map<string, string>();
+    {
+      const ids = Array.from(new Set(pAll.map((p) => p['seller_id'] as string).filter(Boolean)));
+      if (ids.length) {
+        const { data: sRows } = await sb.from("profiles").select("user_id, shop_name").in("user_id", ids);
+        (sRows ?? []).forEach((s: any) => {
+          const n = typeof s?.shop_name === "string" ? s.shop_name.trim() : "";
+          if (n) shopNames.set(s.user_id as string, n);
+        });
+      }
+    }
     const similarProducts: ShopRailItem[] = pAll.map((p, i) => ({
       id: ((p['slug'] as string) || (p['id'] as string)),
       title: (p['name'] as string) ?? "Product",
-      subtitle: (p['vendor'] as string) ?? null,
+      subtitle: shopNames.get(p['seller_id'] as string) ?? ((p['vendor'] as string) ?? null),
       coverUrl: pCovers[i] ?? null,
       priceUsd: Number(p['price_usd'] ?? 0),
       originalCurrency: (p['original_currency'] as string) ?? null,

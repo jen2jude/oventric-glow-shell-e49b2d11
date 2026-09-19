@@ -294,7 +294,7 @@ async function buildFeedPosts(
       if (sellerIds.length) {
         const { data: vRows } = await sb
           .from("profiles")
-          .select("user_id, display_name, username, slug, avatar_path")
+          .select("user_id, display_name, username, slug, avatar_path, shop_name")
           .in("user_id", sellerIds);
         (vRows ?? []).forEach((v: any) => vendorById.set(v.user_id, v));
         const vPaths = Array.from(
@@ -340,7 +340,11 @@ async function buildFeedPosts(
               ? p.cover_path
               : (coverByPath.get(p.cover_path) ?? null)
             : null,
-          vendor: vendor?.display_name || vendor?.username || "Seller",
+          vendor:
+            (typeof vendor?.shop_name === "string" && vendor.shop_name.trim()) ||
+            vendor?.display_name ||
+            vendor?.username ||
+            "Seller",
           vendorId: p.seller_id,
           vendorSlug: vendor?.slug || null,
           vendorAvatarUrl: avatarPath

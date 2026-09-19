@@ -2,6 +2,19 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 
+/** Batch-fetch seller shop names so product cards show the storefront name, not the social profile name. */
+async function fetchShopNames(sb: any, sellerIds: string[]): Promise<Map<string, string>> {
+  const ids = Array.from(new Set(sellerIds.filter(Boolean)));
+  const map = new Map<string, string>();
+  if (!ids.length) return map;
+  const { data } = await sb.from("profiles").select("user_id, shop_name").in("user_id", ids);
+  (data ?? []).forEach((p: any) => {
+    const name = typeof p?.shop_name === "string" ? p.shop_name.trim() : "";
+    if (name) map.set(p.user_id as string, name);
+  });
+  return map;
+}
+
 export interface DiscoveryPeer {
   id: string;
   slug: string;
@@ -123,7 +136,7 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
         .limit(25),
       sb
         .from("products")
-        .select("id, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, hue, vendor, promoted, reviews, rating")
+        .select("id, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, hue, vendor, seller_id, promoted, reviews, rating")
         .order("promoted", { ascending: false })
         .order("reviews", { ascending: false })
         .order("rating", { ascending: false })
@@ -253,6 +266,7 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
     // ---- Products (10 trending, randomized between visits) ----
     const pRows = productsRes.data ?? [];
     const pCovers = await signBucket(sb, "product-covers", pRows.map((p) => p.cover_path));
+    const shopNames = await fetchShopNames(sb, pRows.map((p) => p.seller_id as string));
     const productsAll: DiscoveryProduct[] = pRows.map((p, i) => ({
       id: p.id as string,
       title: p.name as string,
@@ -260,7 +274,7 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
       priceUsd: Number(p.price_usd ?? 0),
       coverUrl: pCovers[i],
       hue: (p.hue as string) ?? "from-emerald-500 to-teal-600",
-      vendor: (p.vendor as string) ?? "",
+      vendor: shopNames.get(p.seller_id as string) ?? ((p.vendor as string) ?? ""),
       originalCurrency: (p.original_currency as string) ?? "USD",
       originalAmount: Number(p.original_amount ?? p.price_usd ?? 0),
       fxSnapshot: (p.fx_snapshot as DiscoveryProduct["fxSnapshot"]) ?? null,
@@ -352,7 +366,7 @@ export const getAcademyRecommendations = createServerFn({ method: "GET" }).handl
       supabaseAdmin.from("course_enrollments").select("course_id"),
       sb
         .from("products")
-        .select("id, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, hue, vendor, kind, status, reviews, rating, promoted")
+        .select("id, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, hue, vendor, seller_id, kind, status, reviews, rating, promoted")
         .eq("status", "active")
         .order("promoted", { ascending: false })
         .order("reviews", { ascending: false })
@@ -406,6 +420,7 @@ export const getAcademyRecommendations = createServerFn({ method: "GET" }).handl
     // ---- Products (top rated / most reviewed) ----
     const pRows = prodRes.data ?? [];
     const pCovers = await signBucket(sb, "product-covers", pRows.map((p: any) => p.cover_path));
+    const shopNames = await fetchShopNames(sb, pRows.map((p: any) => p.seller_id as string));
     const productsAll: DiscoveryProduct[] = pRows.map((p: any, i: number) => ({
       id: p.id,
       title: p.name,
@@ -413,7 +428,7 @@ export const getAcademyRecommendations = createServerFn({ method: "GET" }).handl
       priceUsd: Number(p.price_usd ?? 0),
       coverUrl: pCovers[i],
       hue: p.hue ?? "from-emerald-500 to-teal-600",
-      vendor: p.vendor ?? "",
+      vendor: shopNames.get(p.seller_id as string) ?? (p.vendor ?? ""),
       originalCurrency: p.original_currency ?? "USD",
       originalAmount: Number(p.original_amount ?? p.price_usd ?? 0),
       fxSnapshot: (p.fx_snapshot as DiscoveryProduct["fxSnapshot"]) ?? null,

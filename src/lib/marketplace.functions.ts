@@ -191,6 +191,25 @@ async function signBucket(
 // Sensitive contact columns (seller_phone, whatsapp_number, social_link) are excluded here;
 // anon has no column-level grant on them. Owner/admin flows fetch them via dedicated RPCs
 // or the authenticated context.supabase client (see PRODUCT_COLS_OWNER).
+/** Batch-fetch seller shop names so product cards show the storefront name, not the social profile name. */
+async function fetchShopNames(
+  sb: ReturnType<typeof serverPublicClient>,
+  sellerIds: string[],
+): Promise<Map<string, string>> {
+  const ids = Array.from(new Set(sellerIds.filter(Boolean)));
+  const map = new Map<string, string>();
+  if (!ids.length) return map;
+  const { data } = await sb
+    .from("profiles")
+    .select("user_id, shop_name")
+    .in("user_id", ids);
+  (data ?? []).forEach((p: any) => {
+    const name = typeof p?.shop_name === "string" ? p.shop_name.trim() : "";
+    if (name) map.set(p.user_id as string, name);
+  });
+  return map;
+}
+
 const PRODUCT_COLS = "id, slug, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, created_at, kind, status, reject_reason, condition, brand, location, negotiable, delivery, image_paths, requires_manual_delivery, in_stock, cashback_pct, basic_info, activation_guide";
 const PRODUCT_COLS_OWNER = "id, slug, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, created_at, kind, status, reject_reason, condition, brand, location, negotiable, delivery, image_paths, requires_manual_delivery, in_stock, cashback_pct, seller_phone, whatsapp_number, social_link, basic_info, activation_guide";
 
@@ -239,10 +258,13 @@ export const listProducts = createServerFn({ method: "GET" })
       /* sales metrics are best-effort */
     }
 
-    return items.map((r, i) => ({
-      ...mapProduct(r as Record<string, unknown>, urls[i]),
-      salesCount: salesMap.get(r.id as string) ?? 0,
-    }));
+    const shopNames = await fetchShopNames(sb, items.map((r) => r.seller_id as string));
+    return items.map((r, i) => {
+      const dto = mapProduct(r as Record<string, unknown>, urls[i]);
+      const shopName = shopNames.get(dto.sellerId);
+      if (shopName) dto.vendor = shopName;
+      return { ...dto, salesCount: salesMap.get(r.id as string) ?? 0 };
+    });
   });
 
 export interface CategoryNode {
@@ -332,11 +354,14 @@ export const getProduct = createServerFn({ method: "POST" })
     const imgUrls = await signImagePaths(sb, imgs);
     const { data: prof } = await sb
       .from("profiles")
-      .select("slug")
+      .select("slug, shop_name")
       .eq("user_id", row.seller_id as string)
       .maybeSingle();
     const sellerSlug = (prof?.slug as string) ?? null;
-    return mapProduct(row as Record<string, unknown>, url, imgUrls, sellerSlug);
+    const dto = mapProduct(row as Record<string, unknown>, url, imgUrls, sellerSlug);
+    const shopName = typeof prof?.shop_name === "string" ? prof.shop_name.trim() : "";
+    if (shopName) dto.vendor = shopName;
+    return dto;
   });
 
 /** Revalidate browser-stored viewing history against the live public catalogue. */
@@ -360,11 +385,14 @@ export const getRecentProducts = createServerFn({ method: "POST" })
       sb,
       products.map((row) => (row.cover_path as string) ?? null),
     );
+    const shopNames = await fetchShopNames(sb, products.map((row) => row.seller_id as string));
     const byId = new Map(
-      products.map((row, index) => [
-        row.id as string,
-        mapProduct(row, covers[index] ?? null),
-      ]),
+      products.map((row, index) => {
+        const dto = mapProduct(row, covers[index] ?? null);
+        const shopName = shopNames.get(dto.sellerId);
+        if (shopName) dto.vendor = shopName;
+        return [row.id as string, dto];
+      }),
     );
     return data.ids.map((id) => byId.get(id)).filter((product): product is ProductDTO => Boolean(product));
   });
@@ -426,6 +454,15 @@ export const createProduct = createServerFn({ method: "POST" })
     });
     const initialStatus = isAdmin ? "active" : "pending";
 
+    // The displayed seller name is the storefront (shop) name when one is set.
+    const { data: sellerProf } = await context.supabase
+      .from("profiles")
+      .select("shop_name")
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    const vendorName =
+      (typeof sellerProf?.shop_name === "string" && sellerProf.shop_name.trim()) || data.vendor;
+
     const cover = data.coverPath ?? data.imagePaths[0] ?? null;
     const { data: row, error } = await context.supabase
       .from("products")
@@ -440,7 +477,7 @@ export const createProduct = createServerFn({ method: "POST" })
         original_amount: data.originalAmount,
         fx_snapshot: data.fxSnapshot ? JSON.parse(JSON.stringify(data.fxSnapshot)) : null,
         cashback_pct: data.cashbackPct,
-        vendor: data.vendor,
+        vendor: vendorName,
         hue: data.hue,
         external_url: data.externalUrl,
         file_path: data.filePath,
@@ -1557,7 +1594,16 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
     const signedUrls = await signCovers(sb, uniquePaths);
     const urlMap = new Map(uniquePaths.map((p, i) => [p, signedUrls[i]]));
 
-    const mapRow = (r: any) => mapProduct(r, urlMap.get(r.cover_path as string | null) ?? null);
+    const discoveryShopNames = await fetchShopNames(
+      sb,
+      allProductRows.map((r) => r.seller_id as string),
+    );
+    const mapRow = (r: any) => {
+      const dto = mapProduct(r, urlMap.get(r.cover_path as string | null) ?? null);
+      const shopName = discoveryShopNames.get(dto.sellerId);
+      if (shopName) dto.vendor = shopName;
+      return dto;
+    };
 
     const sellerAvatars = await signBucket(sb, "avatars", (sellerRows ?? []).map((s: any) => s.avatar_path ?? null));
     const sellerCovers = await signBucket(sb, "profile-covers", (sellerRows ?? []).map((s: any) => s.cover_path ?? null));
