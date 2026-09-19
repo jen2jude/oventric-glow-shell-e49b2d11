@@ -277,11 +277,14 @@ function UsersPage() {
                 const flagged = Boolean(u.flagged);
                 const banned = Boolean(u.banned_at);
                 const checked = selected.has(uid);
+                const createdAt = Date.parse(String(u.created_at ?? ""));
+                const isNew =
+                  Number.isFinite(createdAt) && Date.now() - createdAt < 24 * 60 * 60 * 1000;
                 return (
                   <tr
                     key={uid}
                     onClick={() => setOpenUserId(uid)}
-                    className={`hover:bg-white/[0.03] cursor-pointer ${checked ? "bg-emerald-500/[0.04]" : ""}`}
+                    className={`hover:bg-white/[0.03] cursor-pointer ${checked ? "bg-emerald-500/[0.04]" : ""} ${isNew ? "bg-red-500/[0.06] shadow-[inset_3px_0_0_0_#ef4444]" : ""}`}
                   >
                     <td
                       className="px-3 py-2"
