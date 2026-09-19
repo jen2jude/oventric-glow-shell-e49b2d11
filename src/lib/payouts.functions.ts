@@ -594,9 +594,7 @@ export const createLivePayout = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     if (!data.recipientId) throw new Error("Recipient required");
     if (!(data.amount > 0)) throw new Error("Amount must be greater than zero");
-    const { estimateTransferFee, initiateTransfer: psInitiateTransfer, toSubunit } = await import(
-      "./paystack-transfers.server"
-    );
+    const { estimateTransferFee } = await import("./paystack-transfers.server");
 
     const { data: rec, error: recErr } = await supabase
       .from("payout_recipients")
