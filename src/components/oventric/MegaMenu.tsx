@@ -24,6 +24,9 @@ import {
   ChevronRight,
   Package,
   Sparkle,
+  Home,
+  Compass,
+  Newspaper,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
@@ -366,13 +369,13 @@ export function MegaMenu({ open, onClose }: Props) {
           </button>
           {settingsExpanded && (
             <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1 border-t border-border pt-3">
-              <WebUtilityLink label="Profile & KYC" onClick={() => { onClose(); window.dispatchEvent(new Event("oventric:open-profile-settings")); }} />
-              <WebUtilityLink label="Help" onClick={() => go("/help")} />
-              <WebUtilityLink label="About" onClick={() => go("/about")} />
-              <WebUtilityLink label="Terms" onClick={() => go("/terms")} />
-              <WebUtilityLink label="Privacy" onClick={() => go("/privacy")} />
-              <WebUtilityLink label="Report problem" onClick={() => go("/report-problem")} />
-              <WebUtilityLink label="FAQ" onClick={() => go("/faq")} />
+              <WebUtilityLink icon={Settings} label="Profile & KYC" onClick={() => { onClose(); window.dispatchEvent(new Event("oventric:open-profile-settings")); }} />
+              <WebUtilityLink icon={HelpCircle} label="Help" onClick={() => go("/help")} />
+              <WebUtilityLink icon={Info} label="About" onClick={() => go("/about")} />
+              <WebUtilityLink icon={FileText} label="Terms" onClick={() => go("/terms")} />
+              <WebUtilityLink icon={Lock} label="Privacy" onClick={() => go("/privacy")} />
+              <WebUtilityLink icon={Bug} label="Report problem" onClick={() => go("/report-problem")} />
+              <WebUtilityLink icon={ListChecks} label="FAQ" onClick={() => go("/faq")} />
             </div>
           )}
         </div>
