@@ -286,6 +286,9 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
 
   // Bounty publish resume flow removed: bounties are a paused legacy feature.
   // Deep link ?section=<name>&bounty=<id>&dm=<peerId> (used by notification links).
+  // Reacts to search changes (not just mount) so navigating to /messages —
+  // which redirects to /?section=Messages — opens the chat while already on the homepage.
+  const locationSearch = useRouterState({ select: (s) => s.location.searchStr });
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
