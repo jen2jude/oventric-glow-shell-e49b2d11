@@ -302,7 +302,7 @@ function AdminLayout() {
             const badgeLabel =
               n.to === "/admin/payouts"
                 ? `${badgeCount} pending payouts`
-                : n.to === "/admin/products`
+                : n.to === "/admin/products"
                   ? `${badgeCount} listings awaiting approval`
                   : `${badgeCount} pending`;
             return (
