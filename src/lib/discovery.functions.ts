@@ -2,6 +2,19 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 
+/** Batch-fetch seller shop names so product cards show the storefront name, not the social profile name. */
+async function fetchShopNames(sb: any, sellerIds: string[]): Promise<Map<string, string>> {
+  const ids = Array.from(new Set(sellerIds.filter(Boolean)));
+  const map = new Map<string, string>();
+  if (!ids.length) return map;
+  const { data } = await sb.from("profiles").select("user_id, shop_name").in("user_id", ids);
+  (data ?? []).forEach((p: any) => {
+    const name = typeof p?.shop_name === "string" ? p.shop_name.trim() : "";
+    if (name) map.set(p.user_id as string, name);
+  });
+  return map;
+}
+
 export interface DiscoveryPeer {
   id: string;
   slug: string;
@@ -123,7 +136,7 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
         .limit(25),
       sb
         .from("products")
-        .select("id, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, hue, vendor, promoted, reviews, rating")
+        .select("id, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, hue, vendor, seller_id, promoted, reviews, rating")
         .order("promoted", { ascending: false })
         .order("reviews", { ascending: false })
         .order("rating", { ascending: false })
