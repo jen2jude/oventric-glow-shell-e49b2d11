@@ -220,8 +220,13 @@ export const searchGlobal = createServerFn({ method: "GET" })
     const pCovers = await signBucket(sb, "product-covers", pRows.map((p) => p.cover_path));
     
     const sellerIds = Array.from(new Set(pRows.map(p => p.seller_id)));
-    const { data: sellerProfiles } = await sb.from("profiles").select("user_id, slug").in("user_id", sellerIds);
+    const { data: sellerProfiles } = await sb.from("profiles").select("user_id, slug, shop_name").in("user_id", sellerIds);
     const sellerSlugMap = new Map((sellerProfiles ?? []).map(s => [s.user_id, s.slug]));
+    const shopNameMap = new Map(
+      (sellerProfiles ?? [])
+        .filter((s: any) => typeof s.shop_name === "string" && s.shop_name.trim())
+        .map((s: any) => [s.user_id as string, (s.shop_name as string).trim()]),
+    );
 
     const products: SearchResultProduct[] = pRows.map((p, i) => ({
       kind: "product",
@@ -229,7 +234,7 @@ export const searchGlobal = createServerFn({ method: "GET" })
       title: p.name as string,
       category: (p.category as string) ?? "misc",
       priceUsd: Number(p.price_usd ?? 0),
-      vendor: (p.vendor as string) ?? "",
+      vendor: shopNameMap.get(p.seller_id as string) ?? ((p.vendor as string) ?? ""),
       coverUrl: pCovers[i],
       sellerSlug: sellerSlugMap.get(p.seller_id as string),
     }));

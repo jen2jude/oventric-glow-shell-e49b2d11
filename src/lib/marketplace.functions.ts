@@ -191,6 +191,25 @@ async function signBucket(
 // Sensitive contact columns (seller_phone, whatsapp_number, social_link) are excluded here;
 // anon has no column-level grant on them. Owner/admin flows fetch them via dedicated RPCs
 // or the authenticated context.supabase client (see PRODUCT_COLS_OWNER).
+/** Batch-fetch seller shop names so product cards show the storefront name, not the social profile name. */
+async function fetchShopNames(
+  sb: ReturnType<typeof serverPublicClient>,
+  sellerIds: string[],
+): Promise<Map<string, string>> {
+  const ids = Array.from(new Set(sellerIds.filter(Boolean)));
+  const map = new Map<string, string>();
+  if (!ids.length) return map;
+  const { data } = await sb
+    .from("profiles")
+    .select("user_id, shop_name")
+    .in("user_id", ids);
+  (data ?? []).forEach((p: any) => {
+    const name = typeof p?.shop_name === "string" ? p.shop_name.trim() : "";
+    if (name) map.set(p.user_id as string, name);
+  });
+  return map;
+}
+
 const PRODUCT_COLS = "id, slug, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, created_at, kind, status, reject_reason, condition, brand, location, negotiable, delivery, image_paths, requires_manual_delivery, in_stock, cashback_pct, basic_info, activation_guide";
 const PRODUCT_COLS_OWNER = "id, slug, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, created_at, kind, status, reject_reason, condition, brand, location, negotiable, delivery, image_paths, requires_manual_delivery, in_stock, cashback_pct, seller_phone, whatsapp_number, social_link, basic_info, activation_guide";
 
