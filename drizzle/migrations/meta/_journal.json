@@ -155,6 +155,13 @@
       "when": 1789841204147,
       "tag": "0021_add_product_stock_quantity",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1789858980346,
+      "tag": "0022_payout_live_pin_guard",
+      "breakpoints": true
     }
   ]
 }
