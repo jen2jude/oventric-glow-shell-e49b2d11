@@ -673,12 +673,19 @@ export const createLivePayout = createServerFn({ method: "POST" })
         .from("payout_requests")
         .update({ paystack_transfer_code: result.transfer_code })
         .eq("id", payoutId);
+      await supabaseAdmin.from("notifications").insert({
+        user_id: userId,
+        kind: "payout_request",
+        title: "Payout request submitted",
+        body: `${currency} ${data.amount} is on its way to your account.`,
+      });
       return { id: payoutId, status: result.status, fee, net, currency };
     } catch (transferErr) {
-      const reason =
-        transferErr instanceof Error
-          ? transferErr.message.slice(0, 200)
-          : "Transfer initialisation failed";
+      const raw =
+        transferErr instanceof Error ? transferErr.message : "Transfer initialisation failed";
+      const reason = /balance is not enough/i.test(raw)
+        ? "Withdrawals are temporarily unavailable while the payout account is being funded. Please try again shortly."
+        : raw.slice(0, 200);
       try {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { data: payoutRow } = await supabaseAdmin
@@ -725,7 +732,7 @@ export const createLivePayout = createServerFn({ method: "POST" })
       } catch (rollbackErr) {
         console.error("[createLivePayout] refund rollback failed", rollbackErr);
       }
-      throw transferErr;
+      throw new Error(reason);
     }
   });
 
