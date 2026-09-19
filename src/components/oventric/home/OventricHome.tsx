@@ -22,8 +22,9 @@ import {
   MessageCircle,
   Eye,
   Sparkles,
-  Pause,
-  Play,
+  Facebook,
+  Instagram,
+  Youtube,
 } from "lucide-react";
 
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
@@ -41,7 +42,6 @@ import { listPosts, type FeedPost } from "@/lib/posts.functions";
 import { readRecentProductIds } from "@/lib/recent-products";
 import { visualForCategory } from "@/components/oventric/marketplace-discovery/utils";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
-import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/home-hero.jpg";
 import heroVideo from "@/assets/oventric-hero-loop.mp4.asset.json";
 import heroVideoWebm from "@/assets/oventric-hero-loop.webm.asset.json";
@@ -200,8 +200,6 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
   const [stats, setStats] = useState<HomeStatsDTO | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [heroVideoEnabled, setHeroVideoEnabled] = useState(false);
-  const [heroVideoPaused, setHeroVideoPaused] = useState(false);
-  const heroVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -209,17 +207,6 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
     if (!reducedMotion && !connection?.saveData) setHeroVideoEnabled(true);
   }, []);
 
-  const toggleHeroVideo = () => {
-    const video = heroVideoRef.current;
-    if (!video) return;
-    if (video.paused) {
-      void video.play();
-      setHeroVideoPaused(false);
-    } else {
-      video.pause();
-      setHeroVideoPaused(true);
-    }
-  };
 
   const submitSearch = () => {
     const q = searchQuery.trim();
@@ -281,7 +268,6 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           />
           {heroVideoEnabled && (
             <video
-              ref={heroVideoRef}
               poster={heroImage}
               muted
               autoPlay
@@ -289,8 +275,6 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
               playsInline
               preload="metadata"
               aria-hidden="true"
-              onPause={() => setHeroVideoPaused(true)}
-              onPlay={() => setHeroVideoPaused(false)}
               className="home-pop-hero-video absolute inset-0 h-full w-full object-cover object-[75%_center]"
             >
               <source src={heroVideoWebm.url} type="video/webm" />
@@ -302,19 +286,6 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-home-canvas to-transparent" />
         </div>
 
-        {heroVideoEnabled && (
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={toggleHeroVideo}
-            aria-label={heroVideoPaused ? "Play hero animation" : "Pause hero animation"}
-            title={heroVideoPaused ? "Play animation" : "Pause animation"}
-            className="home-pop-hero-control absolute bottom-7 right-4 z-20 h-10 w-10 rounded-full border-home-line bg-home-surface/90 text-home-ink shadow-home-soft backdrop-blur-sm sm:bottom-9 sm:right-6"
-          >
-            {heroVideoPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
-          </Button>
-        )}
 
         <div className="relative z-10 mx-auto flex w-full max-w-[1280px] flex-col justify-center gap-6 px-4 py-14 sm:px-6 sm:py-20 lg:min-h-[520px] lg:px-8 lg:py-28">
           <div>
@@ -1007,6 +978,14 @@ function JoinDiscussionCard({ posts, onOpenFeed }: { posts: FeedPost[]; onOpenFe
 
 
 
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.53V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
+    </svg>
+  );
+}
+
 function HomeFooter() {
   const links: Array<{ to: string; label: string }> = [
     { to: "/about", label: "About" },
@@ -1023,6 +1002,13 @@ function HomeFooter() {
           <span className="font-extrabold text-slate-900">Oventric</span> &copy; 2026
         </p>
 
+        <div className="flex items-center gap-2">
+          <SocialLink href="#" label="Facebook" icon={<Facebook className="h-4 w-4" />} />
+          <SocialLink href="#" label="Instagram" icon={<Instagram className="h-4 w-4" />} />
+          <SocialLink href="#" label="TikTok" icon={<TikTokIcon className="h-4 w-4" />} />
+          <SocialLink href="#" label="YouTube" icon={<Youtube className="h-4 w-4" />} />
+        </div>
+
         <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
           {links.map((l) => (
             <Link
@@ -1036,5 +1022,19 @@ function HomeFooter() {
         </nav>
       </div>
     </footer>
+  );
+}
+
+function SocialLink({ href, label, icon }: { href: string; label: string; icon: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      aria-label={label}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-900"
+    >
+      {icon}
+    </a>
   );
 }
