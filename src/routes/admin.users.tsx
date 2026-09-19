@@ -104,8 +104,13 @@ function UsersPage() {
 
   const counts = useMemo(() => {
     const r = rows ?? [];
+    const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
     return {
       all: r.length,
+      new24h: r.filter((x) => {
+        const t = Date.parse(String(x.created_at ?? ""));
+        return Number.isFinite(t) && t >= dayAgo;
+      }).length,
       admins: r.filter((x) => (x.roles ?? []).includes("admin")).length,
       verified: r.filter((x) => x.kyc_completed_at).length,
       unverified: r.filter((x) => !x.kyc_completed_at).length,
@@ -198,7 +203,11 @@ function UsersPage() {
         <div>
           <h1 className="text-white text-2xl font-black">Users</h1>
           <p className="text-sm text-slate-400">
-            {rows?.length ?? 0} accounts · click a row to manage
+            {rows?.length ?? 0} accounts
+            {counts.new24h > 0 && (
+              <span className="text-red-300 font-bold"> · {counts.new24h} new in 24h</span>
+            )}{" "}
+            · click a row to manage
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -277,11 +286,14 @@ function UsersPage() {
                 const flagged = Boolean(u.flagged);
                 const banned = Boolean(u.banned_at);
                 const checked = selected.has(uid);
+                const createdAt = Date.parse(String(u.created_at ?? ""));
+                const isNew =
+                  Number.isFinite(createdAt) && Date.now() - createdAt < 24 * 60 * 60 * 1000;
                 return (
                   <tr
                     key={uid}
                     onClick={() => setOpenUserId(uid)}
-                    className={`hover:bg-white/[0.03] cursor-pointer ${checked ? "bg-emerald-500/[0.04]" : ""}`}
+                    className={`hover:bg-white/[0.03] cursor-pointer ${checked ? "bg-emerald-500/[0.04]" : ""} ${isNew ? "bg-red-500/[0.06] shadow-[inset_3px_0_0_0_#ef4444]" : ""}`}
                   >
                     <td
                       className="px-3 py-2"
@@ -297,8 +309,13 @@ function UsersPage() {
                       )}
                     </td>
                     <td className="px-3 py-2">
-                      <div className="text-white font-semibold">
+                      <div className="text-white font-semibold flex items-center gap-1.5">
                         {(u.display_name as string) ?? (u.username as string) ?? uid.slice(0, 8)}
+                        {isNew && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-red-500/20 border border-red-500/50 text-red-300 font-black uppercase tracking-wider animate-pulse">
+                            New
+                          </span>
+                        )}
                       </div>
                       <div className="text-[11px] text-slate-500 font-mono">
                         @{(u.username as string) ?? "—"}
