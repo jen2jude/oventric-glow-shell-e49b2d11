@@ -3971,3 +3971,87 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
 .create-web [class*="hover:border-create-border-strong"]:hover {
   transform: translateY(-2px);
 }
+
+/* Web-native light live support chat — matches the Help Board Luminous Support Hub. */
+.support-live-web {
+  color-scheme: light;
+  --support-canvas: oklch(0.975 0.009 185);
+  --support-surface: oklch(1 0 0);
+  --support-ink: oklch(0.25 0.04 258);
+  --support-copy: oklch(0.5 0.025 250);
+  --support-line: oklch(0.91 0.015 195);
+  --support-teal: oklch(0.53 0.09 185);
+  --support-teal-soft: oklch(0.95 0.035 185);
+  --support-crimson: oklch(0.61 0.19 22);
+  --support-crimson-soft: oklch(0.96 0.025 22);
+  --support-card-shadow: 0 18px 48px -34px color-mix(in oklab, var(--support-ink) 38%, transparent);
+  font-family: var(--font-wallet-body);
+}
+
+.support-live-web .support-live-dialog {
+  background: var(--support-surface);
+  border-color: var(--support-line);
+  box-shadow: var(--support-card-shadow);
+}
+
+.support-live-web .support-live-header {
+  background: var(--support-surface);
+  border-color: var(--support-line);
+}
+
+.support-live-web .support-live-close {
+  color: var(--support-copy);
+}
+.support-live-web .support-live-close:hover {
+  background: var(--support-crimson-soft);
+  color: var(--support-crimson);
+}
+
+.support-live-web .support-live-user-bubble {
+  background: var(--support-crimson);
+  color: oklch(1 0 0);
+}
+
+.support-live-web .support-live-agent-bubble {
+  background: var(--support-surface);
+  color: var(--support-ink);
+  border-color: var(--support-line);
+}
+
+.support-live-web .support-live-input {
+  background: var(--support-surface);
+  border-color: var(--support-line);
+  color: var(--support-ink);
+}
+.support-live-web .support-live-input::placeholder {
+  color: var(--support-copy);
+}
+.support-live-web .support-live-input:focus {
+  border-color: var(--support-crimson);
+  box-shadow: 0 0 0 3px var(--support-crimson-soft);
+}
+
+.support-live-web .support-live-send {
+  background: var(--support-crimson);
+  color: oklch(1 0 0);
+}
+.support-live-web .support-live-send:hover {
+  background: color-mix(in oklab, var(--support-crimson) 90%, oklch(0.2 0 0));
+}
+
+.support-live-web .support-live-empty {
+  background: var(--support-surface);
+  border-color: var(--support-line);
+}
+
+.support-live-web .support-live-notice {
+  background: var(--support-crimson-soft);
+  color: var(--support-crimson);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .support-live-web .support-live-close,
+  .support-live-web .support-live-send {
+    transition: none;
+  }
+}
