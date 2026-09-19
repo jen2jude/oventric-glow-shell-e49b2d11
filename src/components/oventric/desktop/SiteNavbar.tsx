@@ -49,7 +49,9 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
       openGate("generic");
       return;
     }
-    navigate({ to: "/messages" });
+    // Open the chat drawer in place — same pattern as the shared Header —
+    // instead of navigating to /messages (a redirect-only deep link).
+    window.dispatchEvent(new CustomEvent("oventric:open-messages"));
   };
 
   useEffect(() => {
