@@ -83,18 +83,12 @@ async function fetchLiveRates(): Promise<FxSnapshotResult | null> {
 }
 
 async function fetchAdminRates(): Promise<FxSnapshotResult> {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_PUBLISHABLE_KEY;
   const fetched_at = new Date().toISOString();
-  if (!url || !key) {
-    return { base: "USD", rates: HARD_FALLBACK, source: "fallback", fetched_at };
-  }
   try {
-    const sb = createClient<Database>(url, key, {
-      auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
-    });
+    // platform_settings is admin-only; read it with the service role.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data } = await (sb as any).from("platform_settings").select("fx_rates").maybeSingle();
+    const { data } = await (supabaseAdmin as any).from("platform_settings").select("fx_rates").maybeSingle();
     const rates = (data?.fx_rates ?? null) as Record<string, number> | null;
     if (!rates) return { base: "USD", rates: HARD_FALLBACK, source: "fallback", fetched_at };
     const merged: FxRates = { ...HARD_FALLBACK, USD: 1 };
