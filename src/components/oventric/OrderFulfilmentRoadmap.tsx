@@ -367,6 +367,51 @@ export function OrderFulfilmentRoadmap({
   );
 }
 
+function TimelineRow({
+  label,
+  at,
+  expected,
+  expectedPrefix,
+  last,
+}: {
+  label: string;
+  at: string | null;
+  expected: string | null;
+  expectedPrefix?: string | null;
+  last: boolean;
+}) {
+  return (
+    <li className="flex gap-3">
+      <span className="flex flex-col items-center shrink-0">
+        <span
+          className={`w-4 h-4 rounded-full flex items-center justify-center ${
+            at ? "bg-emerald-100 text-emerald-600" : "bg-white border border-slate-300 text-slate-400"
+          }`}
+        >
+          {at ? (
+            <CheckCircle2 className="w-3 h-3" />
+          ) : (
+            <Circle className="w-2 h-2" />
+          )}
+        </span>
+        {!last && <span className="w-px flex-1 min-h-3 bg-slate-300" />}
+      </span>
+      <span className={`min-w-0 ${last ? "" : "pb-3"}`}>
+        <span className={`block text-xs font-semibold ${at ? "text-slate-900" : "text-slate-500"}`}>
+          {label}
+        </span>
+        <span className="block text-[11px] text-slate-500">
+          {at
+            ? new Date(at).toLocaleString()
+            : expected
+              ? `${expectedPrefix ?? "Expected"} ${new Date(expected).toLocaleString()}`
+              : "Pending"}
+        </span>
+      </span>
+    </li>
+  );
+}
+
 function StepNode({ step }: { step: FulfilmentStep }) {
   const done = step.state === "done";
   const active = step.state === "active";
