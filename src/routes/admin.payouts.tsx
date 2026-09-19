@@ -66,6 +66,7 @@ function AdminPayoutsPage() {
   const approveFn = useServerFn(adminApprovePayout);
   const rejectFn = useServerFn(adminRejectPayout);
   const paidFn = useServerFn(adminMarkPayoutPaid);
+  const flagFn = useServerFn(adminFlagPayoutIssue);
   const qc = useQueryClient();
 
   const query = useQuery({
