@@ -286,7 +286,13 @@ function PayoutRow({
           : Clock3;
 
   return (
-    <div className="border-t border-[#1c1c20] first:border-t-0">
+    <div
+      className={`border-t border-[#1c1c20] first:border-t-0 ${
+        p.status === "pending"
+          ? "relative bg-amber-500/[0.06] animate-pulse-slow before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[3px] before:bg-amber-400"
+          : ""
+      }`}
+    >
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 p-4">
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
