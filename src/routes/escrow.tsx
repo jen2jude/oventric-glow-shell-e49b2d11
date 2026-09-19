@@ -341,7 +341,6 @@ function EscrowInboxPage() {
                   </Link>
                   <Link
                     to="/messages"
-                    search={{ order: o.orderId }}
                     className="flex-1 rounded-[10px] border border-slate-200 px-3 py-2 text-center text-xs font-bold text-slate-700 hover:border-slate-300"
                   >
                     Open chat
