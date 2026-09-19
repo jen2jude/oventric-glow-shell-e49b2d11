@@ -179,6 +179,7 @@ function AdminPayoutsPage() {
             onApprove={() => approve(p.id)}
             onReject={() => reject(p.id)}
             onMarkPaid={() => markPaid(p.id)}
+            onFlagIssue={() => flagIssue(p.id)}
           />
         ))}
       </div>
