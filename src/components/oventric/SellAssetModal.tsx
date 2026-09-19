@@ -105,6 +105,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
   const [basicInfo, setBasicInfo] = useState("");
   const [activationGuide, setActivationGuide] = useState("");
   const [inStock, setInStock] = useState(true);
+  const [stockInput, setStockInput] = useState("");
   const [requiresManualDelivery, setRequiresManualDelivery] = useState(false);
   const [agreedToSplit, setAgreedToSplit] = useState(false);
   const [images, setImages] = useState<File[]>([]);
@@ -284,6 +285,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
           imagePaths,
           requiresManualDelivery,
           inStock,
+          stockQuantity: stockInput.trim() === "" ? null : Math.max(0, Math.floor(Number(stockInput) || 0)),
           basicInfo: basicInfo.trim() || null,
           activationGuide: activationGuide.trim() || null,
         },
@@ -603,6 +605,25 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
               </div>
 
               <StockToggleField inStock={inStock} onChange={setInStock} appearance="light" />
+
+              <label className="block">
+                <span className="text-xs font-medium text-slate-300 sm:text-slate-700">
+                  Stock available (optional)
+                </span>
+                <input
+                  type="number"
+                  min={0}
+                  step={1}
+                  inputMode="numeric"
+                  value={stockInput}
+                  onChange={(e) => setStockInput(e.target.value)}
+                  placeholder="Leave blank for unlimited"
+                  className="mt-1 w-full bg-[#121214] sm:bg-white border border-white/10 sm:border-slate-300 rounded-[10px] px-3 py-3 text-sm text-white sm:text-slate-900 placeholder-slate-500 sm:placeholder-slate-400 focus:border-emerald-500/60 sm:focus:border-emerald-500 outline-none"
+                />
+                <span className="mt-1 block text-[11px] text-slate-400 sm:text-slate-500">
+                  Shown on the product page as &quot;X in stock&quot;. Blank means unlimited copies.
+                </span>
+              </label>
 
               <div>
                 <span className="text-xs font-medium text-slate-300 sm:text-slate-700">

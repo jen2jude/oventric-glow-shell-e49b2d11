@@ -525,11 +525,25 @@ function ProductPage() {
               <h1 className={`min-w-0 text-2xl md:text-3xl font-black ${isAppShell ? "text-white" : "text-slate-900"} md:text-slate-900 mb-2 truncate`}>
                 {product.name}
               </h1>
-              {outOfStock && (
+              {outOfStock ? (
                 <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-[#E5484D]/12 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#E5484D]">
                   Out of stock
                 </div>
-              )}
+              ) : typeof product.stockQuantity === "number" ? (
+                <div
+                  className={`mb-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-wider ${
+                    product.stockQuantity === 0
+                      ? "bg-[#E5484D]/12 text-[#E5484D]"
+                      : product.stockQuantity <= 5
+                        ? "bg-amber-500/15 text-amber-600"
+                        : "bg-emerald-500/12 text-emerald-600"
+                  }`}
+                >
+                  {product.stockQuantity === 0
+                    ? "Sold out"
+                    : `${product.stockQuantity} in stock`}
+                </div>
+              ) : null}
               <div className="mb-3 space-y-2">
                 <CreatorChip
                   idOrSlug={product.sellerSlug ?? product.sellerId}
