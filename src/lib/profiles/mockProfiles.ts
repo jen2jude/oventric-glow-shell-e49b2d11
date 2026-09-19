@@ -25,6 +25,10 @@ export interface ProfileListing {
   rating?: number;
   blurb?: string | null;
   promoted?: boolean;
+  /** Publish-time currency + FX snapshot so prices match the marketplace. */
+  originalCurrency?: string | null;
+  originalAmount?: number | null;
+  fxSnapshot?: unknown;
 }
 export interface ProfileBounty {
   id: string;

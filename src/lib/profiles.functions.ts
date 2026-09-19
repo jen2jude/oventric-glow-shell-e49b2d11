@@ -835,7 +835,7 @@ export const getLiveProfileTab = createServerFn({ method: "GET" })
       let q = supabase
         .from("products")
         .select(
-          "id, name, category, price_usd, created_at, cover_path, image_paths, rating, description, promoted",
+          "id, name, category, price_usd, original_currency, original_amount, fx_snapshot, created_at, cover_path, image_paths, rating, description, promoted",
           { count: "exact" },
         )
         .eq("seller_id", userId);
@@ -871,6 +871,10 @@ export const getLiveProfileTab = createServerFn({ method: "GET" })
         title: (r.name as string) ?? "Untitled",
         category: (r.category as string) ?? "General",
         priceUsd: Number(r.price_usd ?? 0),
+        originalCurrency: ((r as any).original_currency as string) ?? null,
+        originalAmount:
+          (r as any).original_amount != null ? Number((r as any).original_amount) : null,
+        fxSnapshot: (r as any).fx_snapshot ?? null,
         sales: salesMap.get(r.id as string) ?? 0,
         coverUrl: coverUrls[i],
         rating: Number((r as { rating?: number }).rating ?? 0),
