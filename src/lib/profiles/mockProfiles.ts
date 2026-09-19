@@ -28,7 +28,12 @@ export interface ProfileListing {
   /** Publish-time currency + FX snapshot so prices match the marketplace. */
   originalCurrency?: string | null;
   originalAmount?: number | null;
-  fxSnapshot?: unknown;
+  fxSnapshot?: {
+    base?: string;
+    rates?: Record<string, number>;
+    source?: string;
+    fetched_at?: string;
+  } | null;
 }
 export interface ProfileBounty {
   id: string;
