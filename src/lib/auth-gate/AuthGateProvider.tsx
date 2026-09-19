@@ -26,7 +26,6 @@ import {
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { seedNewUser as seedNewUserFn } from "@/lib/onboarding.functions";
 import {
   sendLoginOtpByIdentifier as sendLoginOtpByIdentifierFn,
   signInWithIdentifierPassword as signInWithIdentifierPasswordFn,
