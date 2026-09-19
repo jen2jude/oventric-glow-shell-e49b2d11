@@ -30,7 +30,6 @@ import { seedNewUser as seedNewUserFn } from "@/lib/onboarding.functions";
 import {
   sendLoginOtpByIdentifier as sendLoginOtpByIdentifierFn,
   signInWithIdentifierPassword as signInWithIdentifierPasswordFn,
-  verifyLoginOtpByIdentifier as verifyLoginOtpByIdentifierFn,
 } from "@/lib/auth-lookup.functions";
 
 // ---------------------------------------------------------------------------
@@ -320,7 +319,6 @@ const usernameSchema = z
   .max(24, "Username must be under 24 characters")
   .regex(/^[a-zA-Z0-9_.-]+$/u, "Letters, numbers, . _ - only");
 
-const OTP_LENGTH = 6;
 const RESEND_SECONDS = 60;
 
 type Stage = "email" | "otp";
@@ -349,18 +347,11 @@ function AuthGateModal({
   const [emailError, setEmailError] = useState<string | null>(null);
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [identifierError, setIdentifierError] = useState<string | null>(null);
-  const [otpDigits, setOtpDigits] = useState<string[]>(() => Array(OTP_LENGTH).fill(""));
-  const [otpError, setOtpError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
-  const [verifying, setVerifying] = useState(false);
-  const [verified, setVerified] = useState(false);
   const [resendIn, setResendIn] = useState(0);
   const [flash, setFlash] = useState<string | null>(null);
-  const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
-  const seedNewUser = useServerFn(seedNewUserFn);
   const sendLoginOtpByIdentifier = useServerFn(sendLoginOtpByIdentifierFn);
   const signInWithIdentifierPassword = useServerFn(signInWithIdentifierPasswordFn);
-  const verifyLoginOtpByIdentifier = useServerFn(verifyLoginOtpByIdentifierFn);
 
   const humanizeError = (msg: string): string => {
     const m = msg.toLowerCase();
@@ -383,13 +374,6 @@ function AuthGateModal({
     return () => window.clearInterval(t);
   }, [resendIn]);
 
-  useEffect(() => {
-    if (stage === "otp") {
-      const t = window.setTimeout(() => otpRefs.current[0]?.focus(), 60);
-      return () => window.clearTimeout(t);
-    }
-  }, [stage]);
-
   // Lock body scroll while gate is open
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -402,11 +386,11 @@ function AuthGateModal({
   // Escape closes
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !verifying && !verified) onClose();
+      if (e.key === "Escape") onClose();
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [verifying, onClose]);
+  }, [onClose]);
 
   const sendCode = useCallback(async () => {
     setEmailError(null);
@@ -426,8 +410,7 @@ function AuthGateModal({
     }
     setSending(true);
     try {
-      // Include emailRedirectTo so the email contains a one-time login link
-      // users can click to auto-verify (the 6-digit code is still included as a fallback).
+      // Include emailRedirectTo so the activation link verifies the account automatically.
       const { error } = await supabase.auth.signInWithOtp({
         email: parsedEmail.data,
         options: {
@@ -439,9 +422,8 @@ function AuthGateModal({
 
       if (error) throw error;
       setStage("otp");
-      setOtpDigits(Array(OTP_LENGTH).fill(""));
       setResendIn(RESEND_SECONDS);
-      setFlash(`Login link sent to ${parsedEmail.data}`);
+      setFlash(`Activation link sent to ${parsedEmail.data}`);
     } catch (err) {
       setEmailError(humanizeError(err instanceof Error ? err.message : "Could not send code"));
     } finally {
@@ -479,7 +461,6 @@ function AuthGateModal({
       // Keep raw email out of client state — we rely on `identifier` at verify time.
       setEmail("");
       setStage("otp");
-      setOtpDigits(Array(OTP_LENGTH).fill(""));
       setResendIn(RESEND_SECONDS);
       setFlash(res.maskedEmail ? `Login link sent to ${res.maskedEmail}` : "Login link sent");
     } catch (err) {
@@ -528,123 +509,6 @@ function AuthGateModal({
     }
   }, [identifier, password, signInWithIdentifierPassword]);
 
-  const verifyCode = useCallback(
-    async (token: string) => {
-      setOtpError(null);
-      if (token.length !== OTP_LENGTH) return;
-      setVerifying(true);
-      try {
-        // New-user tab has the raw email in state; returning-user tab keeps
-        // email out of the client and verifies via the identifier server-side.
-        if (email.trim()) {
-          const { data, error } = await supabase.auth.verifyOtp({
-            email: email.trim(),
-            token,
-            type: "email",
-          });
-          if (error) throw error;
-          if (!data.session) throw new Error("Verification succeeded but no session was returned");
-        } else {
-          const res = await verifyLoginOtpByIdentifier({
-            data: { identifier: identifier.trim(), token },
-          });
-          if (!res.ok || !res.session) throw new Error("Invalid or expired code");
-          const { error: setErr } = await supabase.auth.setSession({
-            access_token: res.session.access_token,
-            refresh_token: res.session.refresh_token,
-          });
-          if (setErr) throw setErr;
-        }
-        setVerified(true);
-        setFlash(null);
-        try {
-          await seedNewUser({ data: username.trim() ? { username: username.trim() } : {} });
-        } catch (seedErr) {
-          console.error("[AuthGate] seed failed", seedErr);
-          const friendly =
-            "We verified your email, but couldn't finish setting up your profile. Please try again in a moment — your sign-in is safe.";
-          setOtpError(friendly);
-          toast.error("Profile setup failed", {
-            description:
-              "You're signed in, but we couldn't create your profile. Tap resend or try again shortly.",
-          });
-          return;
-        }
-        // The provider's onAuthStateChange('SIGNED_IN') closes the modal and
-        // runs the pending action. Nothing else to do here.
-      } catch (err) {
-        setOtpError(humanizeError(err instanceof Error ? err.message : "Invalid or expired code"));
-        setOtpDigits(Array(OTP_LENGTH).fill(""));
-        window.setTimeout(() => otpRefs.current[0]?.focus(), 40);
-      } finally {
-        setVerifying(false);
-      }
-    },
-    [email, identifier, seedNewUser, username, verifyLoginOtpByIdentifier],
-  );
-
-  const setDigit = (idx: number, raw: string) => {
-    const clean = raw.replace(/\D/g, "");
-    if (!clean) {
-      setOtpDigits((prev) => {
-        const n = [...prev];
-        n[idx] = "";
-        return n;
-      });
-      return;
-    }
-    if (clean.length > 1) {
-      const chars = clean.slice(0, OTP_LENGTH - idx).split("");
-      setOtpDigits((prev) => {
-        const n = [...prev];
-        chars.forEach((c, i) => {
-          n[idx + i] = c;
-        });
-        return n;
-      });
-      const nextFocus = Math.min(idx + chars.length, OTP_LENGTH - 1);
-      window.setTimeout(() => otpRefs.current[nextFocus]?.focus(), 0);
-      const combined = [...otpDigits];
-      chars.forEach((c, i) => {
-        combined[idx + i] = c;
-      });
-      const full = combined.join("");
-      if (full.length === OTP_LENGTH && !full.includes("")) void verifyCode(full);
-      return;
-    }
-    setOtpDigits((prev) => {
-      const n = [...prev];
-      n[idx] = clean;
-      return n;
-    });
-    if (idx < OTP_LENGTH - 1) {
-      window.setTimeout(() => otpRefs.current[idx + 1]?.focus(), 0);
-    }
-    const combined = [...otpDigits];
-    combined[idx] = clean;
-    const full = combined.join("");
-    if (full.length === OTP_LENGTH && !full.includes("")) void verifyCode(full);
-  };
-
-  const onKeyDownDigit = (idx: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace" && !otpDigits[idx] && idx > 0) {
-      e.preventDefault();
-      setOtpDigits((prev) => {
-        const n = [...prev];
-        n[idx - 1] = "";
-        return n;
-      });
-      otpRefs.current[idx - 1]?.focus();
-    } else if (e.key === "ArrowLeft" && idx > 0) {
-      otpRefs.current[idx - 1]?.focus();
-    } else if (e.key === "ArrowRight" && idx < OTP_LENGTH - 1) {
-      otpRefs.current[idx + 1]?.focus();
-    } else if (e.key === "Enter") {
-      const full = otpDigits.join("");
-      if (full.length === OTP_LENGTH) void verifyCode(full);
-    }
-  };
-
   if (typeof document === "undefined") return null;
 
   return createPortal(
@@ -654,7 +518,7 @@ function AuthGateModal({
       aria-modal="true"
       aria-label={copy.title}
       onClick={(e) => {
-        if (e.target === e.currentTarget && !verifying && !verified) onClose();
+        if (e.target === e.currentTarget) onClose();
       }}
     >
       <div className="relative w-full max-w-[440px]">
@@ -692,7 +556,6 @@ function AuthGateModal({
             <button
               type="button"
               onClick={onClose}
-              disabled={verifying || verified}
               className="absolute right-3 top-3 rounded-[10px] p-2 text-wallet-copy-muted transition-colors hover:bg-wallet-muted hover:text-wallet-copy disabled:opacity-40"
               aria-label="Close"
             >
@@ -715,7 +578,7 @@ function AuthGateModal({
               </h1>
               <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-wallet-copy-muted">
                 {stage === "otp"
-                  ? `Click the one-time login link sent to ${email || "your email"}.`
+                  ? `Click the activation link sent to ${email || "your email"}. It will verify you automatically.`
                   : mode === "new"
                     ? copy.subtitle
                     : "Sign in with your email or username — we'll send a one-time login link."}
@@ -1024,96 +887,24 @@ function AuthGateModal({
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
-                  <p className="text-center text-xs text-wallet-copy-muted">
-                  Didn&apos;t receive the link? You can enter the 6-digit code from the email
-                  instead.
-                </p>
-                <div
-                  className="flex justify-between gap-2"
-                  role="group"
-                  aria-label="6-digit verification code"
-                >
-                  {otpDigits.map((d, i) => (
-                    <input
-                      key={i}
-                      ref={(el) => {
-                        otpRefs.current[i] = el;
-                      }}
-                      type="text"
-                      inputMode="numeric"
-                      autoComplete="one-time-code"
-                      pattern="[0-9]*"
-                      maxLength={i === 0 ? OTP_LENGTH : 1}
-                      value={d}
-                      aria-label={`Digit ${i + 1}`}
-                      onChange={(e) => setDigit(i, e.target.value)}
-                      onKeyDown={(e) => onKeyDownDigit(i, e)}
-                      onFocus={(e) => e.currentTarget.select()}
-                      disabled={verifying || verified}
-                      className={`h-12 w-11 rounded-[10px] border bg-wallet-muted text-center text-lg font-bold tabular-nums text-wallet-copy outline-hidden transition-colors focus:ring-2 focus:ring-wallet-crimson/15 sm:h-14 sm:w-12 sm:text-xl ${
-                        verified
-                          ? "border-emerald-500/70 shadow-[0_0_0_1px_rgba(59, 130, 246,0.4)]"
-                          : otpError
-                            ? "border-red-500/70"
-                            : "border-wallet-line focus:border-wallet-crimson"
-                      }`}
-                    />
-                  ))}
+              <div className="space-y-5">
+                <div className="rounded-[10px] border border-wallet-crimson/20 bg-wallet-crimson/5 px-4 py-4 text-center">
+                  <Mail className="mx-auto mb-2 h-5 w-5 text-wallet-crimson" aria-hidden />
+                  <p className="text-sm font-semibold text-wallet-copy">
+                    Click the activation link in your email.
+                  </p>
+                  <p className="mt-1 text-xs leading-relaxed text-wallet-copy-muted">
+                    The link automatically verifies your email and signs you in to Oventric.
+                  </p>
                 </div>
-
-                {verified ? (
-                  <div
-                    role="status"
-                    aria-live="polite"
-                    className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2.5 text-[12px] text-emerald-300 inline-flex items-center gap-2 w-full"
-                  >
-                    <ShieldCheck className="w-4 h-4 shrink-0" />
-                    <span className="font-semibold">Email verified. Signing you in…</span>
-                  </div>
-                ) : otpError ? (
-                  <p
-                    role="alert"
-                    className="text-[11px] font-semibold text-red-400 border-l-2 border-red-500 pl-2"
-                  >
-                    {otpError}
-                  </p>
-                ) : verifying ? (
-                  <p className="text-[11px] text-slate-500 inline-flex items-center gap-1.5">
-                    <Loader2 className="w-3 h-3 animate-spin" /> Verifying…
-                  </p>
-                ) : null}
-
-                <button
-                  type="button"
-                  onClick={() => void verifyCode(otpDigits.join(""))}
-                  disabled={verifying || verified || otpDigits.join("").length !== OTP_LENGTH}
-                    className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-wallet-crimson text-sm font-bold text-wallet-on-crimson disabled:opacity-50"
-                >
-                  {verifying ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" /> Verifying…
-                    </>
-                  ) : verified ? (
-                    <>
-                      <ShieldCheck className="w-4 h-4 text-emerald-300" /> Verified
-                    </>
-                  ) : (
-                    <>
-                      Verify code <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
 
                 <div className="flex items-center justify-between text-[12px]">
                   <button
                     type="button"
                     onClick={() => {
                       setStage("email");
-                      setOtpError(null);
                       setFlash(null);
                     }}
-                    disabled={verifying || verified}
                     className="inline-flex min-h-11 items-center gap-1 px-1 text-wallet-copy-muted hover:text-wallet-copy disabled:opacity-40"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" /> Change email
@@ -1124,7 +915,7 @@ function AuthGateModal({
                       if (resendIn === 0)
                         void (mode === "returning" ? sendReturningCode() : sendCode());
                     }}
-                    disabled={resendIn > 0 || sending || verifying || verified}
+                    disabled={resendIn > 0 || sending}
                     className="inline-flex min-h-11 items-center gap-1 px-1 font-semibold text-wallet-crimson hover:text-wallet-crimson-strong disabled:text-wallet-copy-muted"
                   >
                     <RotateCw className={`w-3.5 h-3.5 ${sending ? "animate-spin" : ""}`} />
@@ -1134,7 +925,7 @@ function AuthGateModal({
               </div>
             )}
 
-            {flash && stage === "otp" && !verified && (
+            {flash && stage === "otp" && (
               <p className="mt-4 text-center text-[11px] text-wallet-crimson">{flash}</p>
             )}
           </div>

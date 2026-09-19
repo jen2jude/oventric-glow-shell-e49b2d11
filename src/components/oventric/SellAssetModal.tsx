@@ -747,15 +747,15 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
               </div>
 
               {requiresManualDelivery && (
-                <div className="rounded-[10px] border border-amber-500/40 sm:border-amber-300 bg-amber-500/5 sm:bg-amber-50 p-3 text-[12px] sm:text-xs text-amber-100 sm:text-amber-900 leading-relaxed">
-                  <div className="font-semibold text-amber-200 sm:text-amber-900 mb-1">
+                <div className="rounded-[10px] border border-red-500/50 sm:border-red-300 bg-red-500/10 sm:bg-red-50 p-3 text-[12px] sm:text-xs text-red-100 sm:text-red-900 leading-relaxed">
+                  <div className="font-semibold text-red-300 sm:text-red-800 mb-1">
                     Manual delivery selected — file / link fields are locked.
                   </div>
                   After a buyer pays, funds are held in escrow and you must deliver on Oventric
                   (share a link, upload a file, or attach it in the buyer's chat). We also relay the
                   order to your Oventric inbox and email. Payment releases to your wallet only after
                   the buyer confirms receipt.{" "}
-                  <span className="text-amber-300 sm:text-amber-800 font-semibold">
+                  <span className="text-red-300 sm:text-red-800 font-semibold">
                     Never finish deals on WhatsApp or any other app
                   </span>{" "}
                   — escrow, refunds and dispute mediation only cover trades completed on Oventric.
