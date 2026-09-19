@@ -525,7 +525,7 @@ function WebProductCard({
       onClick={onClick}
       className="group flex flex-col overflow-hidden rounded-[10px] border border-border bg-card text-left transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg"
     >
-      <SellerIdentity seller={seller} vendor={product.vendor} rating={product.rating} />
+      <SellerIdentity seller={seller} vendor={product.vendor} />
       <div className="relative mx-3 aspect-video overflow-hidden rounded-[8px] bg-muted">
         {product.coverUrl ? (
           <img
@@ -553,7 +553,13 @@ function WebProductCard({
         <p className="line-clamp-2 text-[13.5px] font-bold leading-snug text-slate-900">
           {product.name}
         </p>
-        <p className="mt-1 truncate text-[11.5px] font-medium text-slate-500">{product.vendor}</p>
+        <p className="mt-1 truncate text-[11.5px] font-medium text-slate-500">
+          {product.stockQuantity === null
+            ? "Stock available"
+            : product.stockQuantity === 0
+              ? "Sold out"
+              : `${product.stockQuantity} in stock`}
+        </p>
         <div className="mt-auto flex items-end justify-between pt-3">
           <span className="text-[16px] font-black text-primary">{price}</span>
           <span className="flex items-center gap-0.5 text-[11.5px] font-bold text-slate-500">
@@ -567,12 +573,12 @@ function WebProductCard({
   );
 }
 
-function SellerIdentity({ seller, vendor, rating }: { seller?: SellerLite; vendor: string; rating: number }) {
-  return <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 p-3"><div className="flex min-w-0 items-center gap-2.5"><span className="grid h-8 w-8 shrink-0 place-items-center overflow-hidden rounded-full bg-muted">{seller?.avatarUrl ? <img src={seller.avatarUrl} alt={seller.name} className="h-full w-full object-cover" /> : <Store className="h-4 w-4 text-muted-foreground" />}</span><div className="min-w-0"><p className="truncate text-[12px] font-bold text-foreground">{seller?.name ?? vendor}</p><p className="flex items-center gap-1 text-[10px] text-muted-foreground">{seller?.verified && <BadgeCheck className="h-3 w-3 text-primary" />} {seller?.verified ? "Verified seller" : "Oventric seller"}</p></div></div><span className="flex shrink-0 items-center gap-1 rounded-[6px] bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-700"><Star className="h-3 w-3 fill-amber-400 text-amber-400" />{rating > 0 ? rating.toFixed(1) : "5.0"}</span></div>;
+function SellerIdentity({ seller, vendor }: { seller?: SellerLite; vendor: string }) {
+  return <div className="flex min-w-0 items-center gap-2.5 p-3"><span className="grid h-8 w-8 shrink-0 place-items-center overflow-hidden rounded-full bg-muted">{seller?.avatarUrl ? <img src={seller.avatarUrl} alt={seller.name} className="h-full w-full object-cover" /> : <Store className="h-4 w-4 text-muted-foreground" />}</span><p className="flex min-w-0 items-center gap-1 truncate text-[12px] font-bold text-foreground"><span className="truncate">{seller?.name ?? vendor}</span>{seller?.verified && <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-primary" />}</p></div>;
 }
 
 function SellerProductCard({ product, seller, price, onClick }: { product: ProductDTO; seller?: SellerLite; price: string; onClick: () => void }) {
-  return <button type="button" onClick={onClick} className="group w-[78vw] max-w-[310px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-border bg-card text-left transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg sm:w-auto sm:max-w-none"><SellerIdentity seller={seller} vendor={product.vendor} rating={product.rating} /><div className="mx-3 aspect-video overflow-hidden rounded-[8px] bg-muted">{product.coverUrl && <img src={product.coverUrl} alt={product.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />}</div><div className="p-4"><p className="line-clamp-2 min-h-10 text-[13.5px] font-bold leading-snug">{product.name}</p><div className="mt-4 flex items-center justify-between border-t border-border pt-3"><div><span className="block text-[9px] font-bold uppercase text-muted-foreground">Price</span><span className="text-[17px] font-extrabold text-primary">{price}</span></div><span className="grid h-9 w-9 place-items-center rounded-[8px] bg-muted text-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground"><ArrowRight className="h-4 w-4" /></span></div></div></button>;
+  return <button type="button" onClick={onClick} className="group w-[78vw] max-w-[310px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-border bg-card text-left transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg sm:w-auto sm:max-w-none"><SellerIdentity seller={seller} vendor={product.vendor} /><div className="mx-3 aspect-video overflow-hidden rounded-[8px] bg-muted">{product.coverUrl && <img src={product.coverUrl} alt={product.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />}</div><div className="p-4"><p className="line-clamp-2 min-h-10 text-[13.5px] font-bold leading-snug">{product.name}</p><div className="mt-4 flex items-center justify-between border-t border-border pt-3"><div><span className="block text-[9px] font-bold uppercase text-muted-foreground">Price</span><span className="text-[17px] font-extrabold text-primary">{price}</span></div><span className="grid h-9 w-9 place-items-center rounded-[8px] bg-muted text-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground"><ArrowRight className="h-4 w-4" /></span></div></div></button>;
 }
 
 function SellerCard({ seller, onClick }: { seller: SellerLite; onClick: () => void }) {
