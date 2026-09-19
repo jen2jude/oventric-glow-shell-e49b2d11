@@ -47,9 +47,12 @@ const ORDER_COLS =
 export const listEscrowInbox = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<EscrowInboxItem[]> => {
-    const { admin } = await import("@/lib/fulfilment.server");
+    const { admin, settleDueForUser } = await import("@/lib/fulfilment.server");
     const sb = await admin();
     const me = context.userId;
+
+    // Apply any escrow clock that matured since the last visit before reading.
+    await settleDueForUser(sb, me);
 
     const { data, error } = await sb
       .from("orders")
