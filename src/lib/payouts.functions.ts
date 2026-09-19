@@ -613,14 +613,9 @@ export const createLivePayout = createServerFn({ method: "POST" })
     const net = Number((data.amount - fee).toFixed(2));
     if (net <= 0) throw new Error("Amount is too small to cover the transfer fee");
 
-    const { data: prof } = await supabase
-      .from("profiles")
-      .select("kyc_completed_at")
-      .eq("user_id", userId)
-      .maybeSingle();
-    if (!prof || !prof.kyc_completed_at) {
-      throw new Error("Complete identity verification before requesting a payout");
-    }
+    // Identity/liveness enrolment is retired platform-wide; withdrawals are
+    // protected by the 4-digit withdrawal PIN, enforced in the database via
+    // consume_withdrawal_pin_verification() inside payout_request_create_live.
 
     const destination: PayoutDestination =
       method === "bank"
