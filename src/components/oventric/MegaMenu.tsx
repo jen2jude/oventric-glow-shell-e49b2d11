@@ -210,12 +210,15 @@ export function MegaMenu({ open, onClose }: Props) {
   };
 
   const grid = [
-    { icon: Package, label: "My purchases", onClick: goPurchases },
-    { icon: Sparkle, label: "Purchase assistant", onClick: goPurchaseAssistant },
-    { icon: MessageCircle, label: "Messages", onClick: openMessages },
-    { icon: Users, label: "Followers", onClick: goFollowers },
+    { icon: Home, label: "Home", onClick: () => go("/") },
+    { icon: Compass, label: "Explore", onClick: () => go("/", "Explore") },
+    { icon: Newspaper, label: "Feed", onClick: () => go("/", "Feed") },
     { icon: ShoppingBag, label: "Marketplace", onClick: () => go("/", "Marketplace") },
     { icon: WalletIcon, label: "Wallet", onClick: () => go("/wallet") },
+    { icon: MessageCircle, label: "Messages", onClick: openMessages },
+    { icon: Users, label: "Followers", onClick: goFollowers },
+    { icon: Package, label: "My purchases", onClick: goPurchases },
+    { icon: Sparkle, label: "Purchase assistant", onClick: goPurchaseAssistant },
   ];
 
   const inviteLink =
@@ -800,13 +803,24 @@ function WebMenuItem({
   );
 }
 
-function WebUtilityLink({ label, onClick }: { label: string; onClick: () => void }) {
+function WebUtilityLink({
+  icon: Icon,
+  label,
+  onClick,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  onClick: () => void;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="rounded-[8px] px-2 py-2 text-left text-xs font-semibold text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+      className="flex items-center gap-2.5 rounded-[8px] px-2 py-2 text-left text-xs font-semibold text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
     >
+      <span className="grid h-6 w-6 shrink-0 place-items-center rounded-[6px] bg-muted text-muted-foreground">
+        <Icon className="h-3.5 w-3.5" />
+      </span>
       {label}
     </button>
   );
