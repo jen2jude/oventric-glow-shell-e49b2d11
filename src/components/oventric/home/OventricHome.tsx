@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -265,7 +265,6 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           />
           {heroVideoEnabled && (
             <video
-              ref={heroVideoRef}
               poster={heroImage}
               muted
               autoPlay
@@ -273,8 +272,6 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
               playsInline
               preload="metadata"
               aria-hidden="true"
-              onPause={() => setHeroVideoPaused(true)}
-              onPlay={() => setHeroVideoPaused(false)}
               className="home-pop-hero-video absolute inset-0 h-full w-full object-cover object-[75%_center]"
             >
               <source src={heroVideoWebm.url} type="video/webm" />
@@ -286,19 +283,6 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-home-canvas to-transparent" />
         </div>
 
-        {heroVideoEnabled && (
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={toggleHeroVideo}
-            aria-label={heroVideoPaused ? "Play hero animation" : "Pause hero animation"}
-            title={heroVideoPaused ? "Play animation" : "Pause animation"}
-            className="home-pop-hero-control absolute bottom-7 right-4 z-20 h-10 w-10 rounded-full border-home-line bg-home-surface/90 text-home-ink shadow-home-soft backdrop-blur-sm sm:bottom-9 sm:right-6"
-          >
-            {heroVideoPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
-          </Button>
-        )}
 
         <div className="relative z-10 mx-auto flex w-full max-w-[1280px] flex-col justify-center gap-6 px-4 py-14 sm:px-6 sm:py-20 lg:min-h-[520px] lg:px-8 lg:py-28">
           <div>

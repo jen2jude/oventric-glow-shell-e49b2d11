@@ -108,3 +108,17 @@ function FooterAction({ label, onClick }: { label: string; onClick: () => void }
     </li>
   );
 }
+
+function SocialLink({ href, label, icon }: { href: string; label: string; icon: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      aria-label={label}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-900"
+    >
+      {icon}
+    </a>
+  );
+}
