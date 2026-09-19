@@ -1,0 +1,1 @@
+GRANT SELECT (shop_name, shop_about, shop_logo_path, shop_cover_path) ON public.profiles TO authenticated, anon;
