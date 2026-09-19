@@ -638,100 +638,17 @@ export const createLivePayout = createServerFn({ method: "POST" })
       _destination: destination as never,
       _recipient_id: rec.id as string,
       _recipient_code: rec.paystack_recipient_code as string,
+      _provider: "manual",
     });
     if (error) throw new Error(error.message);
     const payoutId = newId as unknown as string;
 
-    try {
-      const ref = `PYT_${payoutId.replace(/-/g, "").slice(0, 24)}`;
-      const result = await new Promise<Awaited<ReturnType<typeof psInitiateTransfer>>>((resolve, reject) => {
-        const controller = new AbortController();
-        const timer = setTimeout(() => {
-          controller.abort();
-          reject(new Error("Transfer provider timed out. Your wallet was refunded; please try again."));
-        }, 25_000);
-        psInitiateTransfer({
-          amountSubunit: toSubunit(net),
-          recipient_code: rec.paystack_recipient_code as string,
-          reason: `Oventric payout ${payoutId.slice(0, 8)}`,
-          reference: ref,
-          signal: controller.signal,
-        })
-          .then((value) => {
-            clearTimeout(timer);
-            resolve(value);
-          })
-          .catch((err) => {
-            clearTimeout(timer);
-            reject(err);
-          });
-      });
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      await supabaseAdmin
-        .from("payout_requests")
-        .update({ paystack_transfer_code: result.transfer_code })
-        .eq("id", payoutId);
-      await supabaseAdmin.from("notifications").insert({
-        user_id: userId,
-        kind: "payout_request",
-        title: "Payout request submitted",
-        body: `${currency} ${data.amount} is on its way to your account.`,
-      });
-      return { id: payoutId, status: result.status, fee, net, currency };
-    } catch (transferErr) {
-      const raw =
-        transferErr instanceof Error ? transferErr.message : "Transfer initialisation failed";
-      const reason = /balance is not enough/i.test(raw)
-        ? "Withdrawals are temporarily unavailable while the payout account is being funded. Please try again shortly."
-        : raw.slice(0, 200);
-      try {
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const { data: payoutRow } = await supabaseAdmin
-          .from("payout_requests")
-          .select("user_id, amount, currency")
-          .eq("id", payoutId)
-          .maybeSingle();
-        if (payoutRow) {
-          const { data: walletRow } = await supabaseAdmin
-            .from("wallets")
-            .select("available_balance, escrow_balance")
-            .eq("user_id", payoutRow.user_id as string)
-            .eq("currency", payoutRow.currency as string)
-            .maybeSingle();
-          const amount = Number(payoutRow.amount ?? 0);
-          if (walletRow && amount > 0) {
-            const currentAvailable = Number(walletRow.available_balance ?? 0);
-            const currentEscrow = Number(walletRow.escrow_balance ?? 0);
-            await supabaseAdmin
-              .from("wallets")
-              .update({
-                available_balance: Number((currentAvailable + amount).toFixed(2)),
-                escrow_balance: Number(Math.max(0, currentEscrow - amount).toFixed(2)),
-                updated_at: new Date().toISOString(),
-              })
-              .eq("user_id", payoutRow.user_id as string)
-              .eq("currency", payoutRow.currency as string);
-          }
-          await supabaseAdmin
-            .from("wallet_transactions")
-            .update({ status: "failed" })
-            .eq("user_id", payoutRow.user_id as string)
-            .eq("type", "Payout Withdrawal")
-            .eq("tx_hash", `PYT-${payoutId.slice(0, 8)}`);
-        }
-        await supabaseAdmin
-          .from("payout_requests")
-          .update({
-            status: "rejected",
-            reject_reason: reason,
-            processed_at: new Date().toISOString(),
-          })
-          .eq("id", payoutId);
-      } catch (rollbackErr) {
-        console.error("[createLivePayout] refund rollback failed", rollbackErr);
-      }
-      throw new Error(reason);
-    }
+    // Manual rail: no provider transfer is triggered. The amount is already
+    // moved out of the available balance by the RPC and the request waits in
+    // the admin payout queue until an admin transfers it by hand. The
+    // "withdrawal request submitted" notification is raised by the database
+    // trigger on insert.
+    return { id: payoutId, status: "pending" as const, fee, net, currency };
   });
 
 
