@@ -534,8 +534,9 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         )}
 
         {/* ------------------------------------------------------------- promos */}
+        <section className="home-pop-earn relative mt-10 overflow-hidden rounded-[20px] px-4 pb-5 pt-1 sm:px-6 sm:pb-6 lg:mt-14 lg:px-8 lg:pb-8">
         <SectionHead title="Ways to Earn More" />
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5">
           <PromoCard
             image={cashbackCreatorsImage}
             imageAlt="A digital creator checking her phone at her workspace"
@@ -553,17 +554,16 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             to="/referrals"
           />
         </div>
+        </section>
 
         {/* --------------------------------------------------- why sell / why buy */}
-        <SectionHead
-          title="Why Oventric"
-          subtitle="Everything you need to build an income online"
-        />
+        <section className="home-pop-why mt-10 overflow-hidden rounded-[20px] px-4 pb-5 pt-1 sm:px-6 sm:pb-6 lg:mt-14 lg:px-8 lg:pb-8">
+        <SectionHead title="Why Oventric" subtitle="Everything you need to build an income online" />
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
           {REASONS.map(({ Icon, tint, title, body }) => (
             <div
               key={title}
-              className="rounded-[14px] border border-slate-200/80 bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)] sm:p-5"
+              className="home-pop-reason rounded-[14px] border p-4 transition-all hover:-translate-y-1 sm:p-5"
             >
               <span
                 className={`grid h-9 w-9 place-items-center rounded-[10px] ${tint} max-sm:bg-crimson/10 max-sm:text-crimson sm:h-11 sm:w-11 sm:rounded-[12px]`}
@@ -579,14 +579,16 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             </div>
           ))}
         </div>
+        </section>
 
         {/* -------------------------------------------------------- how it works */}
+        <section className="home-pop-how mt-10 rounded-[20px] px-4 pb-5 pt-1 sm:px-6 sm:pb-6 lg:mt-14 lg:px-8 lg:pb-8">
         <SectionHead title="How It Works" subtitle="Three steps from sign-up to payout" />
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-3 lg:gap-5">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:gap-5">
           {STEPS.map((s, i) => (
             <article
               key={s.title}
-              className="group overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg"
+              className="home-pop-step group overflow-hidden rounded-[14px] border bg-white transition-all hover:-translate-y-1"
             >
               <div className="relative aspect-[16/10] overflow-hidden">
                 <img
@@ -609,9 +611,10 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             </article>
           ))}
         </div>
+        </section>
 
         {/* ----------------------------------------------------- secure payments */}
-        <section className="mt-10 rounded-[20px] border border-slate-200/80 bg-white px-6 py-10 text-center lg:mt-14">
+        <section className="home-pop-payments mt-10 overflow-hidden rounded-[20px] border px-5 py-9 text-center sm:px-8 lg:mt-14 lg:py-12">
           <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-crimson">
             <Lock className="h-3.5 w-3.5" /> Secured payments
           </span>
@@ -626,7 +629,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             {PAY_METHODS.map((m) => (
               <li
                 key={m.name}
-                className="flex h-14 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white px-6 shadow-sm"
+                className="home-pop-payment flex h-14 shrink-0 items-center justify-center rounded-xl border bg-white px-6"
               >
                 <img src={m.src} alt={m.name} loading="lazy" className="h-8 w-auto max-w-[110px] object-contain" />
               </li>
@@ -996,10 +999,10 @@ function HomeFooter() {
   ];
 
   return (
-    <footer className="border-t border-slate-200 bg-white">
-      <div className="mx-auto flex w-full max-w-[1280px] flex-col items-center gap-5 px-4 py-8 text-center sm:px-6 lg:flex-row lg:justify-between lg:gap-6 lg:px-8 lg:text-left">
-        <p className="text-sm text-slate-500">
-          <span className="font-extrabold text-slate-900">Oventric</span> &copy; 2026
+    <footer className="home-pop-footer mt-12 overflow-hidden border-t lg:mt-16">
+      <div className="mx-auto flex w-full max-w-[1280px] flex-col items-center gap-6 px-4 py-10 text-center sm:px-6 lg:flex-row lg:justify-between lg:gap-8 lg:px-8 lg:py-12 lg:text-left">
+        <p className="text-sm text-slate-400">
+          <span className="font-extrabold text-white">Oventric</span> &copy; 2026
         </p>
 
         <div className="flex items-center gap-2">
@@ -1014,7 +1017,7 @@ function HomeFooter() {
             <Link
               key={l.label}
               to={l.to}
-              className="text-sm font-semibold text-slate-500 transition-colors hover:text-slate-900"
+              className="text-sm font-semibold text-slate-400 transition-colors hover:text-white"
             >
               {l.label}
             </Link>
@@ -1032,7 +1035,7 @@ function SocialLink({ href, label, icon }: { href: string; label: string; icon: 
       aria-label={label}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-900"
+      className="home-pop-social inline-flex h-10 w-10 items-center justify-center rounded-full border text-slate-300 transition-all hover:-translate-y-0.5 hover:text-white"
     >
       {icon}
     </a>
