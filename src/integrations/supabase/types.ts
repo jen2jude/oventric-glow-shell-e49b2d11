@@ -3029,6 +3029,7 @@ export type Database = {
           slug: string | null
           social_link: string | null
           status: string
+          stock_quantity: number | null
           subcategory: string | null
           updated_at: string
           vendor: string
@@ -3069,6 +3070,7 @@ export type Database = {
           slug?: string | null
           social_link?: string | null
           status?: string
+          stock_quantity?: number | null
           subcategory?: string | null
           updated_at?: string
           vendor?: string
@@ -3109,6 +3111,7 @@ export type Database = {
           slug?: string | null
           social_link?: string | null
           status?: string
+          stock_quantity?: number | null
           subcategory?: string | null
           updated_at?: string
           vendor?: string

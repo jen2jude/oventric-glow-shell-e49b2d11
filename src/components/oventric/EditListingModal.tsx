@@ -48,6 +48,9 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
   const [description, setDescription] = useState(product.description);
   const [basicInfo, setBasicInfo] = useState(product.basicInfo ?? "");
   const [inStock, setInStock] = useState(product.inStock !== false);
+  const [stockInput, setStockInput] = useState(
+    typeof product.stockQuantity === "number" ? String(product.stockQuantity) : "",
+  );
   const [activationGuide, setActivationGuide] = useState(product.activationGuide ?? "");
   const [category, setCategory] = useState(product.category);
   const [subcategory, setSubcategory] = useState(product.subcategory ?? "");
@@ -177,6 +180,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
           name: name.trim(),
           description: description.trim(),
           inStock,
+          stockQuantity: stockInput.trim() === "" ? null : Math.max(0, Math.floor(Number(stockInput) || 0)),
           basicInfo: basicInfo.trim() || null,
           activationGuide: activationGuide.trim() || null,
           category,
@@ -488,6 +492,21 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
               </div>
 
               <StockToggleField inStock={inStock} onChange={setInStock} disabled={submitting} />
+
+              <label className="block">
+                <span className="text-xs font-medium text-slate-300">Stock available (optional)</span>
+                <input
+                  type="number"
+                  min={0}
+                  step={1}
+                  inputMode="numeric"
+                  value={stockInput}
+                  onChange={(e) => setStockInput(e.target.value)}
+                  disabled={submitting}
+                  placeholder="Leave blank for unlimited"
+                  className="mt-1 w-full bg-[#121214] border border-white/10 rounded-[10px] px-3 py-3 text-sm text-white outline-none focus:border-emerald-500/60"
+                />
+              </label>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <label className="block">
