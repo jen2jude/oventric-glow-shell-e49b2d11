@@ -454,6 +454,15 @@ export const createProduct = createServerFn({ method: "POST" })
     });
     const initialStatus = isAdmin ? "active" : "pending";
 
+    // The displayed seller name is the storefront (shop) name when one is set.
+    const { data: sellerProf } = await context.supabase
+      .from("profiles")
+      .select("shop_name")
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    const vendorName =
+      (typeof sellerProf?.shop_name === "string" && sellerProf.shop_name.trim()) || data.vendor;
+
     const cover = data.coverPath ?? data.imagePaths[0] ?? null;
     const { data: row, error } = await context.supabase
       .from("products")
