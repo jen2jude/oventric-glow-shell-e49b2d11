@@ -179,16 +179,16 @@ export function Header({
             <button
               onClick={() => setMobileSearchOpen(true)}
               aria-label="Open search"
-              className={`p-2 md:p-2.5 rounded-xl transition-colors ${flat}`}
+              className={`p-1.5 md:p-2.5 rounded-xl transition-colors ${flat}`}
             >
-              <Search className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2} />
+              <Search className="w-[18px] h-[18px] md:w-6 md:h-6" strokeWidth={2} />
             </button>
             <button
               onClick={() => setMegaOpen(true)}
               aria-label="Open menu"
-              className={`inline-flex p-2 md:p-2.5 rounded-xl transition-colors shrink-0 ${flat}`}
+              className={`inline-flex p-1.5 md:p-2.5 rounded-xl transition-colors shrink-0 ${flat}`}
             >
-              <Menu className="w-5 h-5 md:hidden" strokeWidth={2} />
+              <Menu className="w-[18px] h-[18px] md:hidden" strokeWidth={2} />
               <Grip className="w-6 h-6 hidden md:block" strokeWidth={2} />
             </button>
           </div>
@@ -207,9 +207,9 @@ export function Header({
             <button
               onClick={() => setNotifOpen(true)}
               aria-label="Open notifications"
-              className={`relative inline-flex p-2 md:p-2.5 rounded-xl transition-colors shrink-0 ${flat}`}
+              className={`relative inline-flex p-1.5 md:p-2.5 rounded-xl transition-colors shrink-0 ${flat}`}
             >
-              <Bell className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2} />
+              <Bell className="w-[18px] h-[18px] md:w-6 md:h-6" strokeWidth={2} />
               <CountBadge count={unreadCount} ariaLabel={`${unreadCount} unread notifications`} />
             </button>
           </div>
