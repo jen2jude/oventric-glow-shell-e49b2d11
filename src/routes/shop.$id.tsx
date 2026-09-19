@@ -656,7 +656,7 @@ function ShopPage() {
                             {p.title}
                           </div>
                            <div className="mt-1 text-[11px] font-black text-primary">
-                            {price(p.priceUsd ?? 0)}
+                            {price(p.priceUsd ?? 0, p as never)}
                           </div>
                         </div>
                       </Link>
