@@ -296,7 +296,7 @@ export const searchGlobal = createServerFn({ method: "GET" })
         kind: "service",
         id: s.id as string,
         title: s.name as string,
-        providerName: (s.vendor as string) ?? "Member",
+        providerName: shopNameMap.get(s.seller_id as string) ?? ((s.vendor as string) ?? "Member"),
         providerSlug: sellerSlugMap.get(s.seller_id as string) ?? "",
         priceUsd: Number(s.price_usd ?? 0),
         coverUrl: sCovers[i],

@@ -477,7 +477,7 @@ export const createProduct = createServerFn({ method: "POST" })
         original_amount: data.originalAmount,
         fx_snapshot: data.fxSnapshot ? JSON.parse(JSON.stringify(data.fxSnapshot)) : null,
         cashback_pct: data.cashbackPct,
-        vendor: data.vendor,
+        vendor: vendorName,
         hue: data.hue,
         external_url: data.externalUrl,
         file_path: data.filePath,
