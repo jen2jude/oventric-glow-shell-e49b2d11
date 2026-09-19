@@ -237,14 +237,14 @@ export function PostActionsMenu({
     return (
       <button
         onClick={() => run(action)}
-        className="w-full flex items-start gap-4 px-5 py-3.5 text-left active:bg-white/5"
+        className="w-full flex items-start gap-4 px-5 py-3.5 text-left active:bg-slate-100"
       >
-        <Icon className={`w-5 h-5 mt-0.5 shrink-0 ${danger ? "text-red-400" : "text-white/70"}`} />
+        <Icon className={`w-5 h-5 mt-0.5 shrink-0 ${danger ? "text-red-600" : "text-slate-500"}`} />
         <span className="min-w-0">
-          <span className={`block text-[15px] ${danger ? "text-[#E5484D]" : "text-white/90"}`}>
+          <span className={`block text-[15px] ${danger ? "text-red-600" : "text-slate-900"}`}>
             {label}
           </span>
-          {sub ? <span className="block text-[12px] text-white/40 mt-0.5">{sub}</span> : null}
+          {sub ? <span className="block text-[12px] text-slate-500 mt-0.5">{sub}</span> : null}
         </span>
       </button>
     );
@@ -254,7 +254,7 @@ export function PostActionsMenu({
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="p-1.5 rounded-[10px] text-slate-500 md:text-slate-500 hover:text-white md:hover:text-slate-900 hover:bg-white/5 md:hover:bg-slate-100 transition-colors"
+        className="p-1.5 rounded-[10px] text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
         aria-label="More"
       >
         <MoreHorizontal className="w-4 h-4" />
