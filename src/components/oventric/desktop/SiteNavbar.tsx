@@ -106,8 +106,7 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
           {/* Right Actions */}
           <div className="flex items-center gap-2 lg:gap-4 ml-auto">
             {/* Display currency preview (home ⇄ USD) */}
-            <CurrencyPreviewToggle variant="light" compact className="inline-flex sm:hidden" />
-            <CurrencyPreviewToggle variant="light" className="hidden sm:inline-flex" />
+            <CurrencyPreviewToggle variant="light" className="inline-flex" />
 
             {/* Create Button (Desktop) */}
             {onCreate && (
