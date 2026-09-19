@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { Bell, Menu, Plus, X, User, MessageSquare } from "lucide-react";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
@@ -27,7 +27,6 @@ export type SiteNavbarProps = {
 
 export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, currency, search }: SiteNavbarProps) {
   const { baseCurrency } = useOnboarding();
-  const navigate = useNavigate();
 
   const { isAuthenticated, openGate } = useAuthGate();
   const [solid, setSolid] = useState(false);
@@ -49,7 +48,9 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
       openGate("generic");
       return;
     }
-    navigate({ to: "/messages" });
+    // Open the chat drawer in place — same pattern as the shared Header —
+    // instead of navigating to /messages (a redirect-only deep link).
+    window.dispatchEvent(new CustomEvent("oventric:open-messages"));
   };
 
   useEffect(() => {

@@ -11,6 +11,7 @@ export const Route = createFileRoute("/messages")({
     throw redirect({
       to: "/",
       search: dm ? { section: "Messages", dm } : { section: "Messages" },
+      replace: true,
     });
   },
 });

@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState, useCallback } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { useRouterState } from "@tanstack/react-router";
 
 import { Sidebar } from "@/components/oventric/Sidebar";
 import { MobileNav } from "@/components/oventric/MobileNav";
@@ -285,6 +286,9 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
 
   // Bounty publish resume flow removed: bounties are a paused legacy feature.
   // Deep link ?section=<name>&bounty=<id>&dm=<peerId> (used by notification links).
+  // Reacts to search changes (not just mount) so navigating to /messages —
+  // which redirects to /?section=Messages — opens the chat while already on the homepage.
+  const locationSearch = useRouterState({ select: (s) => s.location.searchStr });
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
@@ -310,7 +314,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
     const qs = params.toString();
     const next = `${window.location.pathname}${qs ? `?${qs}` : ""}${window.location.hash}`;
     window.history.replaceState({}, "", next);
-  }, []);
+  }, [locationSearch]);
 
   const isDesktop = useIsDesktop();
   const isAppShell = useIsAppShell();
