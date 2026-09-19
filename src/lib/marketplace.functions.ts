@@ -55,6 +55,8 @@ export interface ProductDTO {
   imageUrls: string[];
   requiresManualDelivery: boolean;
   inStock: boolean;
+  /** Units available; null means unlimited. */
+  stockQuantity: number | null;
   /** Seller-funded cashback percentage (0–50), display only. */
   cashbackPct: number;
   salesCount?: number;
@@ -147,6 +149,7 @@ function mapProduct(
     imageUrls,
     requiresManualDelivery: Boolean(r.requires_manual_delivery),
     inStock: r.in_stock === false ? false : true,
+    stockQuantity: r.stock_quantity === null || r.stock_quantity === undefined ? null : Number(r.stock_quantity),
     // Seller-funded cashback rate (Stage 3). Display only — settlement always
     // recomputes this from the product row on the server.
     cashbackPct: Math.max(0, Math.min(50, Number(r.cashback_pct ?? 0))),
@@ -210,8 +213,8 @@ async function fetchShopNames(
   return map;
 }
 
-const PRODUCT_COLS = "id, slug, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, created_at, kind, status, reject_reason, condition, brand, location, negotiable, delivery, image_paths, requires_manual_delivery, in_stock, cashback_pct, basic_info, activation_guide";
-const PRODUCT_COLS_OWNER = "id, slug, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, created_at, kind, status, reject_reason, condition, brand, location, negotiable, delivery, image_paths, requires_manual_delivery, in_stock, cashback_pct, seller_phone, whatsapp_number, social_link, basic_info, activation_guide";
+const PRODUCT_COLS = "id, slug, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, created_at, kind, status, reject_reason, condition, brand, location, negotiable, delivery, image_paths, requires_manual_delivery, in_stock, stock_quantity, cashback_pct, basic_info, activation_guide";
+const PRODUCT_COLS_OWNER = "id, slug, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, created_at, kind, status, reject_reason, condition, brand, location, negotiable, delivery, image_paths, requires_manual_delivery, in_stock, stock_quantity, cashback_pct, seller_phone, whatsapp_number, social_link, basic_info, activation_guide";
 
 async function signImagePaths(
   sb: ReturnType<typeof serverPublicClient>,
@@ -414,6 +417,7 @@ export const createProduct = createServerFn({ method: "POST" })
     imagePaths?: string[];
     requiresManualDelivery?: boolean;
     inStock?: boolean;
+    stockQuantity?: number | null;
     basicInfo?: string | null;
     activationGuide?: string | null;
     originalCurrency?: OrderCurrency;
@@ -435,6 +439,10 @@ export const createProduct = createServerFn({ method: "POST" })
     imagePaths: (input.imagePaths ?? []).filter(Boolean),
     requiresManualDelivery: Boolean(input.requiresManualDelivery),
     inStock: input.inStock !== false,
+    stockQuantity:
+      input.stockQuantity === undefined || input.stockQuantity === null || input.stockQuantity === ("" as unknown as number)
+        ? null
+        : Math.max(0, Math.floor(Number(input.stockQuantity) || 0)),
     basicInfo: input.basicInfo ? String(input.basicInfo).trim() : null,
     activationGuide: input.activationGuide ? String(input.activationGuide).trim() : null,
     originalCurrency: (input.originalCurrency ?? "USD") as OrderCurrency,
@@ -485,13 +493,14 @@ export const createProduct = createServerFn({ method: "POST" })
         image_paths: data.imagePaths,
         requires_manual_delivery: data.requiresManualDelivery,
         in_stock: data.inStock,
+        stock_quantity: data.stockQuantity,
         basic_info: data.basicInfo,
         activation_guide: data.activationGuide,
         promoted: false,
         kind: "digital",
         status: initialStatus,
       })
-      .select("id, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, image_paths, created_at, updated_at, kind, status, reject_reason, requires_manual_delivery, in_stock, basic_info, activation_guide")
+      .select("id, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, image_paths, created_at, updated_at, kind, status, reject_reason, requires_manual_delivery, in_stock, stock_quantity, basic_info, activation_guide")
       .single();
 
 
@@ -577,6 +586,7 @@ export const updateAndResubmitProduct = createServerFn({ method: "POST" })
     whatsappNumber?: string | null;
     socialLink?: string | null;
     inStock?: boolean;
+    stockQuantity?: number | null;
     basicInfo?: string | null;
     activationGuide?: string | null;
     sellerResponse?: string | null;
@@ -608,6 +618,12 @@ export const updateAndResubmitProduct = createServerFn({ method: "POST" })
       : input.whatsappNumber,
     socialLink: input.socialLink,
     inStock: input.inStock,
+    stockQuantity:
+      input.stockQuantity === undefined
+        ? undefined
+        : input.stockQuantity === null
+          ? null
+          : Math.max(0, Math.floor(Number(input.stockQuantity) || 0)),
     basicInfo: input.basicInfo !== undefined ? (input.basicInfo ? String(input.basicInfo).trim() : null) : undefined,
     activationGuide: input.activationGuide !== undefined ? (input.activationGuide ? String(input.activationGuide).trim() : null) : undefined,
     sellerResponse: input.sellerResponse ? String(input.sellerResponse).trim().slice(0, 1000) : null,
@@ -670,6 +686,7 @@ export const updateAndResubmitProduct = createServerFn({ method: "POST" })
     if (data.whatsappNumber !== undefined) patch.whatsapp_number = data.whatsappNumber;
     if (data.socialLink !== undefined) patch.social_link = data.socialLink;
     if (data.inStock !== undefined) patch.in_stock = data.inStock;
+    if (data.stockQuantity !== undefined) patch.stock_quantity = data.stockQuantity;
     if (data.basicInfo !== undefined) patch.basic_info = data.basicInfo;
     if (data.activationGuide !== undefined) patch.activation_guide = data.activationGuide;
 
@@ -865,7 +882,7 @@ export const createOrder = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { data: pRow, error: pErr } = await supabase
       .from("products")
-      .select("id, seller_id, name, category, kind, status, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, created_at, requires_manual_delivery, in_stock, cashback_pct")
+      .select("id, seller_id, name, category, kind, status, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, created_at, requires_manual_delivery, in_stock, stock_quantity, cashback_pct")
       .eq("id", data.productId)
       .maybeSingle();
     if (pErr) throw new Error(pErr.message);
