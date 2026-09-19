@@ -203,7 +203,11 @@ function UsersPage() {
         <div>
           <h1 className="text-white text-2xl font-black">Users</h1>
           <p className="text-sm text-slate-400">
-            {rows?.length ?? 0} accounts · click a row to manage
+            {rows?.length ?? 0} accounts
+            {counts.new24h > 0 && (
+              <span className="text-red-300 font-bold"> · {counts.new24h} new in 24h</span>
+            )}{" "}
+            · click a row to manage
           </p>
         </div>
         <div className="flex items-center gap-2">
