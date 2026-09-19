@@ -11,9 +11,11 @@ import { currencySymbol } from "@/lib/fx-display";
 export function CurrencyPreviewToggle({
   variant = "dark",
   className = "",
+  compact = false,
 }: {
   variant?: "dark" | "light";
   className?: string;
+  compact?: boolean;
 }) {
   const { homeCurrency, usdPreview, setUsdPreview } = useOnboarding();
   if (!homeCurrency || homeCurrency === "USD") return null;
@@ -24,26 +26,45 @@ export function CurrencyPreviewToggle({
     : "border-white/10 bg-white/[0.04] text-slate-400";
   const activeCls = light ? "bg-white text-slate-900 shadow-sm" : "bg-[#E5484D] text-white";
 
+  const homeSymbol = currencySymbol(homeCurrency);
+
   return (
     <div
       role="group"
       aria-label="Display currency"
       title="Preview prices in USD. You always pay and get paid in your home currency."
-      className={`inline-flex items-center gap-0.5 rounded-full border p-0.5 ${base} ${className}`}
+      className={`inline-flex items-center rounded-full border ${
+        compact ? "gap-[1px] p-[1px]" : "gap-[1px] p-[1px] sm:gap-0.5 sm:p-0.5"
+      } ${base} ${className}`}
     >
       <button
         type="button"
         onClick={() => setUsdPreview(false)}
-        className={`px-2.5 py-1 rounded-full text-[11px] font-black transition ${!usdPreview ? activeCls : ""}`}
+        className={`rounded-full font-black transition ${
+          compact
+            ? "px-1.5 py-0.5 text-[10px]"
+            : "px-1.5 py-0.5 text-[10px] sm:px-2.5 sm:py-1 sm:text-[11px]"
+        } ${!usdPreview ? activeCls : ""}`}
       >
-        {currencySymbol(homeCurrency)} {homeCurrency}
+        {compact ? (
+          homeSymbol
+        ) : (
+          <>
+            <span className="sm:hidden">{homeSymbol}</span>
+            <span className="hidden sm:inline">{homeSymbol} {homeCurrency}</span>
+          </>
+        )}
       </button>
       <button
         type="button"
         onClick={() => setUsdPreview(true)}
-        className={`px-2.5 py-1 rounded-full text-[11px] font-black transition ${usdPreview ? activeCls : ""}`}
+        className={`rounded-full font-black transition ${
+          compact
+            ? "px-1.5 py-0.5 text-[10px]"
+            : "px-1.5 py-0.5 text-[10px] sm:px-2.5 sm:py-1 sm:text-[11px]"
+        } ${usdPreview ? activeCls : ""}`}
       >
-        $ USD
+        {compact ? "$" : <><span className="sm:hidden">$</span><span className="hidden sm:inline">$ USD</span></>}
       </button>
     </div>
   );

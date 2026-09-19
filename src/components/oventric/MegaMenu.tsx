@@ -313,13 +313,13 @@ export function MegaMenu({ open, onClose }: Props) {
           </button>
         </div>
 
-        <div className="px-5 py-4">
-          <div className="flex items-center justify-between rounded-[10px] border border-border bg-muted/60 px-4 py-3">
+        <div className="px-5 py-3">
+          <div className="flex items-center justify-between rounded-[10px] border border-border bg-muted/60 px-3 py-2.5">
             <div className="min-w-0">
               <p className="text-[10px] font-bold uppercase text-muted-foreground">Display currency</p>
-              <p className="mt-1 font-wallet-display text-sm font-bold text-foreground">{baseCurrency}</p>
+              <p className="mt-0.5 font-wallet-display text-sm font-bold text-foreground">{baseCurrency}</p>
             </div>
-            <CurrencyPreviewToggle variant="light" />
+            <CurrencyPreviewToggle variant="light" compact />
           </div>
         </div>
 
