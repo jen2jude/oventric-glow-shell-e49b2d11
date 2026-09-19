@@ -21,6 +21,7 @@ import {
   adminApprovePayout,
   adminRejectPayout,
   adminMarkPayoutPaid,
+  adminFlagPayoutIssue,
   adminListPayoutAudit,
   type PayoutDTO,
   type PayoutStatus,
@@ -65,6 +66,7 @@ function AdminPayoutsPage() {
   const approveFn = useServerFn(adminApprovePayout);
   const rejectFn = useServerFn(adminRejectPayout);
   const paidFn = useServerFn(adminMarkPayoutPaid);
+  const flagFn = useServerFn(adminFlagPayoutIssue);
   const qc = useQueryClient();
 
   const query = useQuery({
@@ -106,7 +108,20 @@ function AdminPayoutsPage() {
       ) ?? "";
     try {
       await paidFn({ data: { id, note } });
-      toast.success("Marked as paid");
+      toast.success("Marked as paid — user notified");
+      refetch();
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  };
+  const flagIssue = async (id: string) => {
+    const reason = window.prompt(
+      "What went wrong? (sent to the user — funds stay held on this request)",
+    );
+    if (!reason || !reason.trim()) return;
+    try {
+      await flagFn({ data: { id, reason: reason.trim() } });
+      toast.success("User notified — request kept pending");
       refetch();
     } catch (e) {
       toast.error((e as Error).message);
@@ -164,6 +179,7 @@ function AdminPayoutsPage() {
             onApprove={() => approve(p.id)}
             onReject={() => reject(p.id)}
             onMarkPaid={() => markPaid(p.id)}
+            onFlagIssue={() => flagIssue(p.id)}
           />
         ))}
       </div>
@@ -242,6 +258,7 @@ function PayoutRow({
   onApprove,
   onReject,
   onMarkPaid,
+  onFlagIssue,
 }: {
   p: PayoutDTO;
   expanded: boolean;
@@ -249,6 +266,7 @@ function PayoutRow({
   onApprove: () => void;
   onReject: () => void;
   onMarkPaid: () => void;
+  onFlagIssue: () => void;
 }) {
   const sym = p.currency === "USD" ? "$" : p.currency === "NGN" ? "₦" : "₵";
   const tone: Record<PayoutStatus, string> = {
@@ -268,7 +286,13 @@ function PayoutRow({
           : Clock3;
 
   return (
-    <div className="border-t border-[#1c1c20] first:border-t-0">
+    <div
+      className={`border-t border-[#1c1c20] first:border-t-0 ${
+        p.status === "pending"
+          ? "relative bg-amber-500/[0.06] animate-pulse-slow before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[3px] before:bg-amber-400"
+          : ""
+      }`}
+    >
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 p-4">
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -428,7 +452,13 @@ function PayoutRow({
                   onClick={onReject}
                   className="inline-flex items-center gap-1.5 rounded-[10px] border border-red-500/50 text-red-300 hover:bg-red-500/10 font-bold px-3 py-1.5 text-xs"
                 >
-                  <XCircle className="w-3.5 h-3.5" /> Reject & refund
+                  <XCircle className="w-3.5 h-3.5" /> Transfer failed — refund wallet
+                </button>
+                <button
+                  onClick={onFlagIssue}
+                  className="inline-flex items-center gap-1.5 rounded-[10px] border border-amber-500/50 text-amber-300 hover:bg-amber-500/10 font-bold px-3 py-1.5 text-xs"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5" /> Transfer failed — keep pending
                 </button>
               </>
             )}
@@ -444,7 +474,13 @@ function PayoutRow({
                   onClick={onReject}
                   className="inline-flex items-center gap-1.5 rounded-[10px] border border-red-500/50 text-red-300 hover:bg-red-500/10 font-bold px-3 py-1.5 text-xs"
                 >
-                  <XCircle className="w-3.5 h-3.5" /> Reject & refund
+                  <XCircle className="w-3.5 h-3.5" /> Transfer failed — refund wallet
+                </button>
+                <button
+                  onClick={onFlagIssue}
+                  className="inline-flex items-center gap-1.5 rounded-[10px] border border-amber-500/50 text-amber-300 hover:bg-amber-500/10 font-bold px-3 py-1.5 text-xs"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5" /> Transfer failed — keep pending
                 </button>
               </>
             )}

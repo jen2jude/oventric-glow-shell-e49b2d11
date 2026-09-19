@@ -4254,6 +4254,10 @@ export type Database = {
         }
         Returns: string
       }
+      payout_request_flag_issue: {
+        Args: { _id: string; _reason: string }
+        Returns: undefined
+      }
       payout_request_mark_paid: {
         Args: { _id: string; _note: string }
         Returns: undefined
