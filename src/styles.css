@@ -265,6 +265,104 @@
   box-shadow: 0 24px 48px -27px color-mix(in oklab, var(--home-card-accent) 65%, var(--home-ink));
 }
 
+/* Premium layered lower homepage — continues the category colour language. */
+.home-pop-earn {
+  background:
+    linear-gradient(125deg, color-mix(in oklab, var(--home-pop-violet) 9%, var(--home-surface)), transparent 48%),
+    color-mix(in oklab, var(--home-pop-cyan) 5%, var(--home-surface));
+  border: 1px solid color-mix(in oklab, var(--home-pop-violet) 18%, var(--home-line));
+  box-shadow: var(--home-shadow-soft);
+}
+
+.home-pop-earn::before {
+  position: absolute;
+  width: 13rem;
+  height: 13rem;
+  top: -8rem;
+  left: -6rem;
+  content: "";
+  pointer-events: none;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--home-pop-violet) 18%, transparent);
+  filter: blur(36px);
+}
+
+.home-pop-earn > * { position: relative; }
+
+.home-pop-why {
+  background:
+    linear-gradient(140deg, color-mix(in oklab, var(--home-pop-yellow) 10%, var(--home-surface)), transparent 46%),
+    color-mix(in oklab, var(--home-pop-red) 4%, var(--home-surface));
+  border: 1px solid color-mix(in oklab, var(--home-pop-yellow) 25%, var(--home-line));
+}
+
+.home-pop-reason {
+  --home-card-accent: var(--home-pop-cyan);
+  border-color: color-mix(in oklab, var(--home-card-accent) 23%, var(--home-line));
+  background: color-mix(in oklab, var(--home-card-accent) 8%, var(--home-surface));
+  box-shadow: 0 18px 35px -30px color-mix(in oklab, var(--home-card-accent) 65%, var(--home-ink));
+}
+
+.home-pop-reason:nth-child(4n + 2) { --home-card-accent: var(--home-pop-violet); }
+.home-pop-reason:nth-child(4n + 3) { --home-card-accent: var(--home-pop-red); }
+.home-pop-reason:nth-child(4n + 4) { --home-card-accent: var(--home-pop-yellow); }
+.home-pop-reason:nth-child(4n + 5) { --home-card-accent: var(--home-pop-red); }
+.home-pop-reason:nth-child(4n + 6) { --home-card-accent: var(--home-pop-cyan); }
+.home-pop-reason:hover {
+  box-shadow: 0 24px 45px -29px color-mix(in oklab, var(--home-card-accent) 70%, var(--home-ink));
+}
+
+.home-pop-how {
+  background:
+    linear-gradient(120deg, color-mix(in oklab, var(--home-pop-cyan) 10%, var(--home-surface)), transparent 55%),
+    var(--home-surface);
+  border: 1px solid color-mix(in oklab, var(--home-pop-cyan) 20%, var(--home-line));
+}
+
+.home-pop-step {
+  --home-card-accent: var(--home-pop-cyan);
+  border-color: color-mix(in oklab, var(--home-card-accent) 23%, var(--home-line));
+  box-shadow: 0 18px 40px -29px color-mix(in oklab, var(--home-card-accent) 60%, var(--home-ink));
+}
+.home-pop-step:nth-child(2) { --home-card-accent: var(--home-pop-violet); }
+.home-pop-step:nth-child(3) { --home-card-accent: var(--home-pop-red); }
+.home-pop-step:hover {
+  box-shadow: 0 28px 50px -31px color-mix(in oklab, var(--home-card-accent) 70%, var(--home-ink));
+}
+
+.home-pop-payments {
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--home-pop-violet) 8%, var(--home-surface)), transparent 52%),
+    linear-gradient(315deg, color-mix(in oklab, var(--home-pop-cyan) 8%, var(--home-surface)), transparent 48%),
+    var(--home-surface);
+  border-color: color-mix(in oklab, var(--home-pop-violet) 20%, var(--home-line));
+  box-shadow: var(--home-shadow-soft);
+}
+
+.home-pop-payment {
+  border-color: color-mix(in oklab, var(--home-pop-cyan) 18%, var(--home-line));
+  box-shadow: 0 12px 30px -24px color-mix(in oklab, var(--home-ink) 45%, transparent);
+}
+
+.home-pop-footer {
+  background:
+    linear-gradient(110deg, color-mix(in oklab, var(--home-pop-violet) 17%, transparent), transparent 42%),
+    linear-gradient(290deg, color-mix(in oklab, var(--home-pop-red) 12%, transparent), transparent 45%),
+    oklch(0.17 0.025 270);
+  border-color: color-mix(in oklab, var(--home-pop-violet) 25%, transparent);
+}
+
+.home-pop-social {
+  border-color: color-mix(in oklab, var(--home-pop-cyan) 22%, transparent);
+  background: color-mix(in oklab, var(--home-surface) 8%, transparent);
+}
+
+.home-pop-social:hover {
+  border-color: color-mix(in oklab, var(--home-pop-red) 65%, transparent);
+  background: color-mix(in oklab, var(--home-pop-red) 20%, transparent);
+  box-shadow: 0 12px 30px -14px color-mix(in oklab, var(--home-pop-red) 70%, transparent);
+}
+
 @media (max-width: 639px) {
   .home-pop-hero::before,
   .home-pop-hero::after { display: none; }
@@ -278,6 +376,10 @@
     );
   }
   .home-pop-feed { margin-inline: -0.5rem; border-radius: 1rem; }
+  .home-pop-earn,
+  .home-pop-why,
+  .home-pop-how,
+  .home-pop-payments { margin-inline: -0.5rem; border-radius: 1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
