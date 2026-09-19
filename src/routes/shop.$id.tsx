@@ -32,6 +32,7 @@ import { ProfileMessageModal } from "@/components/oventric/messaging/ProfileMess
 import { ShopEditModal } from "@/components/oventric/shop/ShopEditModal";
 import { SellerVerificationModal } from "@/components/oventric/shop/SellerVerificationModal";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
+import { computeDisplayPrice } from "@/lib/fx-display";
 import { supabase } from "@/integrations/supabase/client";
 
 type ShopTab = "shop" | "collections" | "services" | "about";
