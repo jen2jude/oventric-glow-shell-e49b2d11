@@ -183,6 +183,13 @@
       "when": 1789860334200,
       "tag": "0025_fix_live_payout_currency_type_boundaries",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1789860833081,
+      "tag": "0026_payout_notify_only_on_confirmed",
+      "breakpoints": true
     }
   ]
 }
