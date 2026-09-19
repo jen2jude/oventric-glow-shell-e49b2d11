@@ -3919,6 +3919,7 @@ export type Database = {
           amount: number
           created_at: string
           currency: Database["public"]["Enums"]["wallet_currency"]
+          description: string | null
           id: string
           inflow: boolean
           occurred_at: string
@@ -3932,6 +3933,7 @@ export type Database = {
           amount: number
           created_at?: string
           currency: Database["public"]["Enums"]["wallet_currency"]
+          description?: string | null
           id?: string
           inflow: boolean
           occurred_at?: string
@@ -3945,6 +3947,7 @@ export type Database = {
           amount?: number
           created_at?: string
           currency?: Database["public"]["Enums"]["wallet_currency"]
+          description?: string | null
           id?: string
           inflow?: boolean
           occurred_at?: string
