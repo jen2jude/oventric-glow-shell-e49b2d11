@@ -262,7 +262,7 @@ export function PostActionsMenu({
 
       {/* Desktop dropdown */}
       {open && (
-        <div className="hidden md:block absolute right-0 top-full mt-1 z-40 w-56 rounded-xl bg-[#1a1a20] md:bg-white md:shadow-lg border border-white/10 md:border-slate-200 shadow-2xl p-1">
+        <div className="hidden md:block absolute right-0 top-full mt-1 z-[300] w-56 rounded-xl bg-white shadow-lg border border-slate-200 p-1">
           {item(ThumbsUp, "Interested", "interested")}
           {item(ThumbsDown, "Not interested", "not_interested")}
           {item(EyeOff, "Hide post", "hide")}
@@ -279,7 +279,7 @@ export function PostActionsMenu({
               {item(Ban, `Don't show content from ${authorName ?? "author"}`, "block")}
             </>
           )}
-          <div className="h-px bg-white/5 md:bg-slate-100 my-1" />
+          <div className="h-px bg-slate-100 my-1" />
           {item(Flag, "Report", "report", true)}
           {isOwn && onDelete && (
             <button
@@ -287,7 +287,7 @@ export function PostActionsMenu({
                 setOpen(false);
                 onDelete();
               }}
-              className="w-full flex items-center gap-2.5 px-3 py-3 text-left text-sm text-red-300 md:text-red-600 hover:bg-red-500/10 rounded-[10px]"
+              className="w-full flex items-center gap-2.5 px-3 py-3 text-left text-sm text-red-600 hover:bg-red-50 rounded-[10px]"
             >
               <Flag className="w-4 h-4" /> Delete
             </button>
