@@ -314,7 +314,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
     const qs = params.toString();
     const next = `${window.location.pathname}${qs ? `?${qs}` : ""}${window.location.hash}`;
     window.history.replaceState({}, "", next);
-  }, []);
+  }, [locationSearch]);
 
   const isDesktop = useIsDesktop();
   const isAppShell = useIsAppShell();
