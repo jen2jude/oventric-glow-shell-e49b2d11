@@ -98,6 +98,12 @@ function methodsForCountry(
   if (country === "NG") {
     return [
       { id: "card", label: "Debit/Credit Card", Icon: CreditCard, hint: "Verve, Mastercard, Visa" },
+      {
+        id: "bank_transfer",
+        label: "Bank Transfer",
+        Icon: Building2,
+        hint: "Pay from any Nigerian bank app",
+      },
       wallet,
     ];
   }
@@ -113,6 +119,7 @@ function methodsForCountry(
       wallet,
     ];
   }
+
   return [
     { id: "card", label: "Debit/Credit Card", Icon: CreditCard, hint: "Global cards" },
     wallet,
