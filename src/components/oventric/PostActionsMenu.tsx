@@ -217,7 +217,7 @@ export function PostActionsMenu({
       <button
         onClick={() => run(action)}
         className={`w-full flex items-center gap-2.5 px-3 py-3 text-left text-sm rounded-[10px] ${
-          danger ? "text-red-300 hover:bg-red-500/10" : "text-slate-200 hover:bg-white/5"
+          danger ? "text-red-600 hover:bg-red-50" : "text-slate-700 hover:bg-slate-100"
         }`}
       >
         <Icon className="w-4 h-4" />
