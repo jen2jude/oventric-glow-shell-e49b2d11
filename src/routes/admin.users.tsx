@@ -300,8 +300,13 @@ function UsersPage() {
                       )}
                     </td>
                     <td className="px-3 py-2">
-                      <div className="text-white font-semibold">
+                      <div className="text-white font-semibold flex items-center gap-1.5">
                         {(u.display_name as string) ?? (u.username as string) ?? uid.slice(0, 8)}
+                        {isNew && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-red-500/20 border border-red-500/50 text-red-300 font-black uppercase tracking-wider animate-pulse">
+                            New
+                          </span>
+                        )}
                       </div>
                       <div className="text-[11px] text-slate-500 font-mono">
                         @{(u.username as string) ?? "—"}
