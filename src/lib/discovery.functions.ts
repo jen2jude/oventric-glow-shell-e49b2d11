@@ -366,7 +366,7 @@ export const getAcademyRecommendations = createServerFn({ method: "GET" }).handl
       supabaseAdmin.from("course_enrollments").select("course_id"),
       sb
         .from("products")
-        .select("id, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, hue, vendor, kind, status, reviews, rating, promoted")
+        .select("id, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, hue, vendor, seller_id, kind, status, reviews, rating, promoted")
         .eq("status", "active")
         .order("promoted", { ascending: false })
         .order("reviews", { ascending: false })
@@ -420,6 +420,7 @@ export const getAcademyRecommendations = createServerFn({ method: "GET" }).handl
     // ---- Products (top rated / most reviewed) ----
     const pRows = prodRes.data ?? [];
     const pCovers = await signBucket(sb, "product-covers", pRows.map((p: any) => p.cover_path));
+    const shopNames = await fetchShopNames(sb, pRows.map((p: any) => p.seller_id as string));
     const productsAll: DiscoveryProduct[] = pRows.map((p: any, i: number) => ({
       id: p.id,
       title: p.name,
@@ -427,7 +428,7 @@ export const getAcademyRecommendations = createServerFn({ method: "GET" }).handl
       priceUsd: Number(p.price_usd ?? 0),
       coverUrl: pCovers[i],
       hue: p.hue ?? "from-emerald-500 to-teal-600",
-      vendor: p.vendor ?? "",
+      vendor: shopNames.get(p.seller_id as string) ?? (p.vendor ?? ""),
       originalCurrency: p.original_currency ?? "USD",
       originalAmount: Number(p.original_amount ?? p.price_usd ?? 0),
       fxSnapshot: (p.fx_snapshot as DiscoveryProduct["fxSnapshot"]) ?? null,
