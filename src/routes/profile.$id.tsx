@@ -120,6 +120,7 @@ import { Header } from "@/components/oventric/Header";
 import { SiteNavbar } from "@/components/oventric/desktop/SiteNavbar";
 
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
+import { computeDisplayPrice } from "@/lib/fx-display";
 import { normalizeCountryCode, COUNTRY_META } from "@/lib/currency/africa";
 import {
   getProfile,
@@ -874,10 +875,18 @@ function ProfilePage() {
   const rep = profile.reputation;
   const starBreakdown = useMemo(() => computeStarBreakdown(rep), [rep]);
   const circleMembers = useMemo(() => getCircleMembersPreview(profile), [profile]);
-  const fx = baseCurrency === "USD" ? 1 : baseCurrency === "NGN" ? 1500 : 14;
-  const sym = baseCurrency === "USD" ? "$" : baseCurrency === "NGN" ? "₦" : "₵";
-  const price = (usd: number) =>
-    `${sym}${(usd * fx).toLocaleString(undefined, { maximumFractionDigits: baseCurrency === "USD" ? 0 : 0 })}`;
+  // Same conversion path as the marketplace: publish-time currency + FX
+  // snapshot when the listing carries one, live USD rates otherwise.
+  const price = (usd: number, listing?: ProfileListing) =>
+    computeDisplayPrice(
+      {
+        price_usd: usd,
+        original_currency: (listing?.originalCurrency ?? "USD") as never,
+        original_amount: listing?.originalAmount ?? usd,
+        fx_snapshot: (listing?.fxSnapshot ?? null) as never,
+      },
+      baseCurrency,
+    ).formatted;
 
   // Real-profile overlay. When we have a live row, prefer its identity fields
   // over the deterministic mock so the header shows the real person.

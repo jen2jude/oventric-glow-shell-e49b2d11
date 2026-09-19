@@ -30,6 +30,15 @@ export interface ShopRailItem {
   coverUrl: string | null;
   priceUsd?: number;
   meta?: string | null;
+  /** Publish-time currency + FX snapshot so prices match the marketplace. */
+  originalCurrency?: string | null;
+  originalAmount?: number | null;
+  fxSnapshot?: {
+    base?: string;
+    rates?: Record<string, number>;
+    source?: string;
+    fetched_at?: string;
+  } | null;
 }
 
 export interface ShopDiscovery {
@@ -178,7 +187,7 @@ export const getShopDiscovery = createServerFn({ method: "GET" })
 
     const productQuery = sb
       .from("products")
-      .select("id, slug, name, category, price_usd, cover_path, vendor, seller_id, status, rating")
+      .select("id, slug, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, vendor, seller_id, status, rating")
       .eq("status", "active")
       .neq("seller_id", data.sellerId)
       .limit(18);
@@ -209,7 +218,7 @@ export const getShopDiscovery = createServerFn({ method: "GET" })
     if (data.category && pRows.length < 6) {
       const { data: fallback } = await sb
         .from("products")
-        .select("id, slug, name, category, price_usd, cover_path, vendor, seller_id, status, rating")
+        .select("id, slug, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, vendor, seller_id, status, rating")
         .eq("status", "active")
         .neq("seller_id", data.sellerId)
         .limit(18);
@@ -230,6 +239,9 @@ export const getShopDiscovery = createServerFn({ method: "GET" })
       subtitle: (p['vendor'] as string) ?? null,
       coverUrl: pCovers[i] ?? null,
       priceUsd: Number(p['price_usd'] ?? 0),
+      originalCurrency: (p['original_currency'] as string) ?? null,
+      originalAmount: p['original_amount'] != null ? Number(p['original_amount']) : null,
+      fxSnapshot: (p['fx_snapshot'] as never) ?? null,
       meta: (p['category'] as string) ?? null,
     }));
 

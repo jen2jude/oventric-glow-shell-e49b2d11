@@ -32,6 +32,7 @@ import { ProfileMessageModal } from "@/components/oventric/messaging/ProfileMess
 import { ShopEditModal } from "@/components/oventric/shop/ShopEditModal";
 import { SellerVerificationModal } from "@/components/oventric/shop/SellerVerificationModal";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
+import { computeDisplayPrice } from "@/lib/fx-display";
 import { supabase } from "@/integrations/supabase/client";
 
 type ShopTab = "shop" | "collections" | "services" | "about";
@@ -165,12 +166,20 @@ function ShopPage() {
   const [loading, setLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
 
-  const fx = baseCurrency === "USD" ? 1 : baseCurrency === "NGN" ? 1500 : 14;
-  const sym = baseCurrency === "USD" ? "$" : baseCurrency === "NGN" ? "₦" : "₵";
+  // Prices must match the marketplace exactly: convert with the listing's
+  // publish-time currency + FX snapshot, falling back to live USD rates.
   const price = useCallback(
-    (usd: number) =>
-      usd === 0 ? "Free" : `${sym}${(usd * fx).toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
-    [sym, fx],
+    (usd: number, listing?: ProfileListing) =>
+      computeDisplayPrice(
+        {
+          price_usd: usd,
+          original_currency: (listing?.originalCurrency ?? "USD") as never,
+          original_amount: listing?.originalAmount ?? usd,
+          fx_snapshot: (listing?.fxSnapshot ?? null) as never,
+        },
+        baseCurrency,
+      ).formatted,
+    [baseCurrency],
   );
 
   const { productId } = Route.useSearch();
@@ -516,7 +525,7 @@ function ShopPage() {
                           </p>
                         </div>
                         <div className="text-2xl font-black text-[#E5484D]">
-                          {price(focalProduct.priceUsd)}
+                          {price(focalProduct.priceUsd, focalProduct)}
                         </div>
                       </div>
 
@@ -566,7 +575,7 @@ function ShopPage() {
                           </div>
                           <div className="mt-2 flex items-center justify-between gap-2">
                             <span className="text-sm font-black text-primary">
-                              {price(p.priceUsd)}
+                              {price(p.priceUsd, p)}
                             </span>
                             {(p.rating ?? 0) > 0 && (
                               <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-400">
@@ -647,7 +656,7 @@ function ShopPage() {
                             {p.title}
                           </div>
                            <div className="mt-1 text-[11px] font-black text-primary">
-                            {price(p.priceUsd ?? 0)}
+                            {price(p.priceUsd ?? 0, p as never)}
                           </div>
                         </div>
                       </Link>
@@ -717,7 +726,7 @@ function ProductCard({
   web = false,
 }: {
   item: ProfileListing;
-  price: (usd: number) => string;
+  price: (usd: number, listing?: ProfileListing) => string;
   web?: boolean;
 }) {
   return (
@@ -731,7 +740,7 @@ function ProductCard({
         <div className="line-clamp-2 text-xs font-bold leading-snug">{item.title}</div>
         <div className="mt-1 flex items-center justify-between gap-2">
           <span className="text-xs font-black text-primary">
-            {price(item.priceUsd)}
+            {price(item.priceUsd, item)}
           </span>
           {(item.rating ?? 0) > 0 && (
             <span className="inline-flex items-center gap-0.5 text-[11px] font-bold text-amber-400">
@@ -752,7 +761,7 @@ function Grid({
   web = false,
 }: {
   items: ProfileListing[];
-  price: (usd: number) => string;
+  price: (usd: number, listing?: ProfileListing) => string;
   emptyLabel: string;
   web?: boolean;
 }) {
@@ -777,7 +786,7 @@ function Grid({
             <div className="line-clamp-2 text-xs font-bold leading-snug">{p.title}</div>
             <div className="mt-1 flex items-center justify-between gap-2">
               <span className="text-xs font-black text-primary">
-                {price(p.priceUsd)}
+                {price(p.priceUsd, p)}
               </span>
               {(p.rating ?? 0) > 0 && (
                 <span className="inline-flex items-center gap-0.5 text-[11px] font-bold text-amber-400">
