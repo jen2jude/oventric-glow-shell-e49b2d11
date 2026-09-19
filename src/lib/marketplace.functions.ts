@@ -258,10 +258,13 @@ export const listProducts = createServerFn({ method: "GET" })
       /* sales metrics are best-effort */
     }
 
-    return items.map((r, i) => ({
-      ...mapProduct(r as Record<string, unknown>, urls[i]),
-      salesCount: salesMap.get(r.id as string) ?? 0,
-    }));
+    const shopNames = await fetchShopNames(sb, items.map((r) => r.seller_id as string));
+    return items.map((r, i) => {
+      const dto = mapProduct(r as Record<string, unknown>, urls[i]);
+      const shopName = shopNames.get(dto.sellerId);
+      if (shopName) dto.vendor = shopName;
+      return { ...dto, salesCount: salesMap.get(r.id as string) ?? 0 };
+    });
   });
 
 export interface CategoryNode {
@@ -351,11 +354,14 @@ export const getProduct = createServerFn({ method: "POST" })
     const imgUrls = await signImagePaths(sb, imgs);
     const { data: prof } = await sb
       .from("profiles")
-      .select("slug")
+      .select("slug, shop_name")
       .eq("user_id", row.seller_id as string)
       .maybeSingle();
     const sellerSlug = (prof?.slug as string) ?? null;
-    return mapProduct(row as Record<string, unknown>, url, imgUrls, sellerSlug);
+    const dto = mapProduct(row as Record<string, unknown>, url, imgUrls, sellerSlug);
+    const shopName = typeof prof?.shop_name === "string" ? prof.shop_name.trim() : "";
+    if (shopName) dto.vendor = shopName;
+    return dto;
   });
 
 /** Revalidate browser-stored viewing history against the live public catalogue. */
