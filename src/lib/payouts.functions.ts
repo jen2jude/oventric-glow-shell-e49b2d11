@@ -732,7 +732,7 @@ export const createLivePayout = createServerFn({ method: "POST" })
       } catch (rollbackErr) {
         console.error("[createLivePayout] refund rollback failed", rollbackErr);
       }
-      throw transferErr;
+      throw new Error(reason);
     }
   });
 
