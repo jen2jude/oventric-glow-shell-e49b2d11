@@ -295,26 +295,26 @@ export function PostActionsMenu({
         </div>
       )}
 
-      {/* Mobile bottom sheet */}
+      {/* Mobile centered dialog */}
       {open && (
-        <div className="md:hidden fixed inset-0 z-[100]">
+        <div className="md:hidden fixed inset-0 z-[1000] grid place-items-center p-4">
           <div
-            className="absolute inset-0 bg-black/55 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="absolute inset-x-0 bottom-[calc(64px+env(safe-area-inset-bottom)+8px)] mx-3 flex max-h-[75dvh] flex-col rounded-[20px] bg-[#1B1D1F] border border-white/10 shadow-[0_20px_60px_-10px_rgba(0,0,0,0.7)] animate-in slide-in-from-bottom duration-200">
+          <div className="relative w-full max-w-sm flex max-h-[75dvh] flex-col rounded-[20px] bg-white border border-slate-200 shadow-[0_20px_60px_-10px_rgba(15,23,42,0.25)] animate-in zoom-in-95 fade-in duration-150">
             <div className="flex items-center justify-between px-5 pt-5 pb-3 shrink-0">
-              <h3 className="text-[17px] font-semibold text-white">More options</h3>
+              <h3 className="text-[17px] font-semibold text-slate-900">More options</h3>
               <button
                 onClick={() => setOpen(false)}
                 aria-label="Close"
-                className="p-1.5 -mr-1.5 text-white/60 active:text-white"
+                className="p-1.5 -mr-1.5 text-slate-400 active:text-slate-700"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="h-px bg-white/10 mx-5 shrink-0" />
+            <div className="h-px bg-slate-100 mx-5 shrink-0" />
             <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain py-2 pb-[calc(env(safe-area-inset-bottom)+12px)]">
               {sheetItem(Bookmark, saved ? "Unsave" : "Save", "save", "Add this to your saved items")}
               {sheetItem(ThumbsDown, "See less content like this", "not_interested")}
