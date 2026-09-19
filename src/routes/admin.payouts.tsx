@@ -108,7 +108,20 @@ function AdminPayoutsPage() {
       ) ?? "";
     try {
       await paidFn({ data: { id, note } });
-      toast.success("Marked as paid");
+      toast.success("Marked as paid — user notified");
+      refetch();
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  };
+  const flagIssue = async (id: string) => {
+    const reason = window.prompt(
+      "What went wrong? (sent to the user — funds stay held on this request)",
+    );
+    if (!reason || !reason.trim()) return;
+    try {
+      await flagFn({ data: { id, reason: reason.trim() } });
+      toast.success("User notified — request kept pending");
       refetch();
     } catch (e) {
       toast.error((e as Error).message);
