@@ -62,7 +62,7 @@ export function ProfileShopTab({
   items: ProfileListing[];
   total: number;
   isOwner: boolean;
-  price: (usd: number) => string;
+  price: (usd: number, listing?: ProfileListing) => string;
   shopSlug: string;
 }) {
   const sales = items.reduce((s, i) => s + (i.sales ?? 0), 0);
@@ -121,7 +121,7 @@ export function ProfileShopTab({
                   </div>
                   <div className="mt-1.5 flex items-center justify-between gap-3">
                     <span className="text-sm font-black text-white md:text-slate-900">
-                      {price(p.priceUsd)}
+                      {price(p.priceUsd, p)}
                     </span>
                     {(p.rating ?? 0) > 0 && (
                       <span className="inline-flex shrink-0 items-center gap-1 text-xs font-bold text-amber-400">
@@ -152,7 +152,7 @@ export function ProfileShopTab({
                 {p.title}
               </div>
               <div className="mt-1 text-[11px] font-black" style={{ color: ACCENT }}>
-                {price(p.priceUsd)}
+                {price(p.priceUsd, p)}
               </div>
             </div>
           </Link>

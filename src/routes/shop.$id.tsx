@@ -525,7 +525,7 @@ function ShopPage() {
                           </p>
                         </div>
                         <div className="text-2xl font-black text-[#E5484D]">
-                          {price(focalProduct.priceUsd)}
+                          {price(focalProduct.priceUsd, focalProduct)}
                         </div>
                       </div>
 
@@ -575,7 +575,7 @@ function ShopPage() {
                           </div>
                           <div className="mt-2 flex items-center justify-between gap-2">
                             <span className="text-sm font-black text-primary">
-                              {price(p.priceUsd)}
+                              {price(p.priceUsd, p)}
                             </span>
                             {(p.rating ?? 0) > 0 && (
                               <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-400">
@@ -726,7 +726,7 @@ function ProductCard({
   web = false,
 }: {
   item: ProfileListing;
-  price: (usd: number) => string;
+  price: (usd: number, listing?: ProfileListing) => string;
   web?: boolean;
 }) {
   return (
@@ -740,7 +740,7 @@ function ProductCard({
         <div className="line-clamp-2 text-xs font-bold leading-snug">{item.title}</div>
         <div className="mt-1 flex items-center justify-between gap-2">
           <span className="text-xs font-black text-primary">
-            {price(item.priceUsd)}
+            {price(item.priceUsd, item)}
           </span>
           {(item.rating ?? 0) > 0 && (
             <span className="inline-flex items-center gap-0.5 text-[11px] font-bold text-amber-400">
@@ -761,7 +761,7 @@ function Grid({
   web = false,
 }: {
   items: ProfileListing[];
-  price: (usd: number) => string;
+  price: (usd: number, listing?: ProfileListing) => string;
   emptyLabel: string;
   web?: boolean;
 }) {
@@ -786,7 +786,7 @@ function Grid({
             <div className="line-clamp-2 text-xs font-bold leading-snug">{p.title}</div>
             <div className="mt-1 flex items-center justify-between gap-2">
               <span className="text-xs font-black text-primary">
-                {price(p.priceUsd)}
+                {price(p.priceUsd, p)}
               </span>
               {(p.rating ?? 0) > 0 && (
                 <span className="inline-flex items-center gap-0.5 text-[11px] font-bold text-amber-400">
