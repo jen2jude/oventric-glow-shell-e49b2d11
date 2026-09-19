@@ -76,6 +76,17 @@ export function OrderFulfilmentRoadmap({
     void load();
   }, [load]);
 
+  // While money is still in escrow the server keeps advancing the clocks
+  // (auto-confirm, clearing, payout). Poll so the card updates on its own.
+  const held = data?.escrowStatus === "held";
+  useEffect(() => {
+    if (!held) return;
+    const t = setInterval(() => {
+      if (document.visibilityState === "visible") void load();
+    }, 45_000);
+    return () => clearInterval(t);
+  }, [held, load]);
+
   const act = async (kind: "deliver" | "receive") => {
     setBusy(kind);
     try {
