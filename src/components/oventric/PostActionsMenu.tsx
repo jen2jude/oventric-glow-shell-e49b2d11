@@ -340,7 +340,7 @@ export function PostActionsMenu({
                     setOpen(false);
                     onDelete();
                   }}
-                  className="w-full flex items-center gap-4 px-5 py-3.5 text-left text-[15px] text-[#E5484D] active:bg-white/5"
+                  className="w-full flex items-center gap-4 px-5 py-3.5 text-left text-[15px] text-red-600 active:bg-red-50"
                 >
                   <Trash2 className="w-5 h-5" /> Delete post
                 </button>
