@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -22,8 +22,6 @@ import {
   MessageCircle,
   Eye,
   Sparkles,
-  Pause,
-  Play,
 } from "lucide-react";
 
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
@@ -41,7 +39,6 @@ import { listPosts, type FeedPost } from "@/lib/posts.functions";
 import { readRecentProductIds } from "@/lib/recent-products";
 import { visualForCategory } from "@/components/oventric/marketplace-discovery/utils";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
-import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/home-hero.jpg";
 import heroVideo from "@/assets/oventric-hero-loop.mp4.asset.json";
 import heroVideoWebm from "@/assets/oventric-hero-loop.webm.asset.json";
@@ -200,8 +197,6 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
   const [stats, setStats] = useState<HomeStatsDTO | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [heroVideoEnabled, setHeroVideoEnabled] = useState(false);
-  const [heroVideoPaused, setHeroVideoPaused] = useState(false);
-  const heroVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -209,17 +204,6 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
     if (!reducedMotion && !connection?.saveData) setHeroVideoEnabled(true);
   }, []);
 
-  const toggleHeroVideo = () => {
-    const video = heroVideoRef.current;
-    if (!video) return;
-    if (video.paused) {
-      void video.play();
-      setHeroVideoPaused(false);
-    } else {
-      video.pause();
-      setHeroVideoPaused(true);
-    }
-  };
 
   const submitSearch = () => {
     const q = searchQuery.trim();

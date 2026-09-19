@@ -1,5 +1,14 @@
 import { Link } from "@tanstack/react-router";
+import { Facebook, Instagram, Youtube } from "lucide-react";
 import logo from "@/assets/oventric-logo-dark.png";
+
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.53V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
+    </svg>
+  );
+}
 
 export type SiteFooterProps = {
   onSelect: (section: string) => void;
@@ -17,13 +26,20 @@ export function SiteFooter({ onSelect, currency, flag }: SiteFooterProps) {
             <img loading="lazy" decoding="async" src={logo} alt="Oventric" className="h-6 w-auto object-contain" />
           </span>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-400">
-            One platform for African builders — buy and sell, learn and earn, post bounties, and
-            move money in your own currency.
+            One platform for African builders — buy and sell digital products and services,
+            and move money in your own currency.
           </p>
           <span className="mt-5 inline-flex h-8 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700">
             {flag && <span aria-hidden>{flag}</span>}
             {currency}
           </span>
+
+          <div className="mt-4 flex items-center gap-2">
+            <SocialLink href="#" label="Facebook" icon={<Facebook className="h-4 w-4" />} />
+            <SocialLink href="#" label="Instagram" icon={<Instagram className="h-4 w-4" />} />
+            <SocialLink href="#" label="TikTok" icon={<TikTokIcon className="h-4 w-4" />} />
+            <SocialLink href="#" label="YouTube" icon={<Youtube className="h-4 w-4" />} />
+          </div>
         </div>
 
         <FooterCol title="Product">
