@@ -15,9 +15,11 @@ function countryToHomeCurrency(country: string | null | undefined): HomeCurrency
 const FX_FALLBACK: Record<HomeCurrency, number> = fallbackRateTable();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function loadUsdRates(sb: any): Promise<Record<HomeCurrency, number>> {
+async function loadUsdRates(_sb?: any): Promise<Record<HomeCurrency, number>> {
   try {
-    const { data } = await sb.from("platform_settings").select("fx_rates").maybeSingle();
+    // platform_settings is admin-only; read it with the service role.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin.from("platform_settings").select("fx_rates").maybeSingle();
     const r = (data?.fx_rates ?? null) as Record<string, number> | null;
     if (!r) return FX_FALLBACK;
     const merged: Record<string, number> = { ...FX_FALLBACK, USD: 1 };

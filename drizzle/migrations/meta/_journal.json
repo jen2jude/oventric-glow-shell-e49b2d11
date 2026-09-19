@@ -162,6 +162,13 @@
       "when": 1789858980346,
       "tag": "0022_payout_live_pin_guard",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1789859534309,
+      "tag": "0023_tighten_public_read_policies",
+      "breakpoints": true
     }
   ]
 }

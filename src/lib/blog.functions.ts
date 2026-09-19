@@ -103,7 +103,10 @@ async function signCovers(sb: SupabaseClient<Database>, paths: string[]): Promis
   const uniq = Array.from(new Set(paths.filter((p): p is string => !!p)));
   const map = new Map<string, string>();
   if (!uniq.length) return map;
-  const { data } = await sb.storage.from("blog-covers").createSignedUrls(uniq, 60 * 60 * 6);
+  // blog-covers has no public read policy; sign with the service role.
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const signer = (supabaseAdmin as unknown as SupabaseClient<Database>) ?? sb;
+  const { data } = await signer.storage.from("blog-covers").createSignedUrls(uniq, 60 * 60 * 6);
   (data ?? []).forEach((s) => { if (s.path && s.signedUrl) map.set(s.path, s.signedUrl); });
   return map;
 }
