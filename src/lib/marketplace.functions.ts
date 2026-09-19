@@ -385,11 +385,14 @@ export const getRecentProducts = createServerFn({ method: "POST" })
       sb,
       products.map((row) => (row.cover_path as string) ?? null),
     );
+    const shopNames = await fetchShopNames(sb, products.map((row) => row.seller_id as string));
     const byId = new Map(
-      products.map((row, index) => [
-        row.id as string,
-        mapProduct(row, covers[index] ?? null),
-      ]),
+      products.map((row, index) => {
+        const dto = mapProduct(row, covers[index] ?? null);
+        const shopName = shopNames.get(dto.sellerId);
+        if (shopName) dto.vendor = shopName;
+        return [row.id as string, dto];
+      }),
     );
     return data.ids.map((id) => byId.get(id)).filter((product): product is ProductDTO => Boolean(product));
   });
