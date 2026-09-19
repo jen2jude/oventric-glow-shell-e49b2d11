@@ -276,6 +276,7 @@ export const markOrderDelivered = createServerFn({ method: "POST" })
     await sb
       .from("orders")
       .update({
+        status: "delivered",
         delivered_at: now.toISOString(),
         delivered_by: context.userId,
         delivery_note: data.note ?? null,

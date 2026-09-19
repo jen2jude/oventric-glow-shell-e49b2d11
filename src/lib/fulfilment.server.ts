@@ -237,6 +237,7 @@ export async function releaseEscrow(
   const now = new Date().toISOString();
   const patch: Record<string, unknown> = {
     escrow_status: "released",
+    status: "completed",
     released_at: now,
     released_by: by,
     payout_release_at: null,
@@ -280,7 +281,7 @@ export async function releaseEscrow(
     // Money did not move — hand the escrow back so the sweep can retry.
     await sb
       .from("orders")
-      .update({ escrow_status: "held", released_at: null, released_by: null })
+      .update({ escrow_status: "held", status: "paid", released_at: null, released_by: null })
       .eq("id", orderId);
     throw e;
   }
