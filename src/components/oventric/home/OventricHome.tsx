@@ -390,10 +390,10 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
               subtitle="Pick up where you left off"
               action={{ label: "Explore more", onClick: () => onSelect("Marketplace") }}
             />
-            <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5 lg:gap-4">
+            <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-4 sm:overflow-visible sm:px-0 lg:grid-cols-6 lg:gap-4">
               {recentProducts.map((product) => (
-                <div key={product.id} className="w-[72%] shrink-0 snap-start sm:w-auto sm:shrink">
-                  <ProductCard product={product} currency={baseCurrency} />
+                <div key={product.id} className="w-[46%] shrink-0 snap-start sm:w-auto sm:shrink">
+                  <ProductCard product={product} currency={baseCurrency} compact />
                 </div>
               ))}
             </div>
