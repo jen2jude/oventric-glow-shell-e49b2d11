@@ -184,6 +184,46 @@ export function OrderFulfilmentRoadmap({
         ))}
       </ol>
 
+      {/* Delivery timeline */}
+      <div className="rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 mb-4">
+        <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">
+          Delivery timeline
+        </h3>
+        <ol className="flex flex-col gap-0">
+          <TimelineRow
+            label="Payment held in escrow"
+            at={data.paidAt}
+            expected={null}
+            last={false}
+          />
+          <TimelineRow
+            label={data.requiresManualDelivery ? "Seller delivered" : "Delivered automatically"}
+            at={data.deliveredAt}
+            expected={data.escrowStatus === "held" && !data.deliveredAt ? data.autoRefundAt : null}
+            expectedPrefix={data.escrowStatus === "held" && !data.deliveredAt ? "Auto-refund if not delivered by" : null}
+            last={false}
+          />
+          <TimelineRow
+            label="Buyer confirmed receipt"
+            at={data.buyerConfirmedAt}
+            expected={
+              data.escrowStatus === "held" && data.deliveredAt && !data.buyerConfirmedAt
+                ? data.autoReleaseAt
+                : null
+            }
+            expectedPrefix="Auto-confirms"
+            last={false}
+          />
+          <TimelineRow
+            label={data.role === "seller" ? "Funds released to your wallet" : "Funds released to seller"}
+            at={data.releasedAt}
+            expected={data.escrowStatus === "held" && data.buyerConfirmedAt ? data.payoutReleaseAt : null}
+            expectedPrefix="Expected"
+            last
+          />
+        </ol>
+      </div>
+
       {data.escrowStatus === "held" && data.buyerConfirmedAt && (
         <div className="flex items-center gap-2 text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-[10px] px-3 py-3 mb-3">
           <Clock className="w-3.5 h-3.5 shrink-0" />
