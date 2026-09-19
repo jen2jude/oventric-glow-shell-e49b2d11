@@ -251,7 +251,7 @@ export function PostActionsMenu({
   };
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className={open ? "relative z-[300]" : "relative"}>
       <button
         onClick={() => setOpen((v) => !v)}
         className="p-1.5 rounded-[10px] text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
