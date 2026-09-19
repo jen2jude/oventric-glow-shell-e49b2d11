@@ -367,9 +367,9 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
               </button>
             </div>
 
-            <div className="mb-4 flex items-start gap-2 p-3 rounded-[10px] bg-amber-500/5 sm:bg-amber-50 border border-amber-500/20 sm:border-amber-200">
-              <ShieldAlert className="w-4 h-4 text-amber-400 sm:text-amber-600 shrink-0 mt-0.5" />
-              <p className="text-[11px] sm:text-xs text-amber-200/90 sm:text-amber-900 leading-relaxed font-medium">
+            <div className="mb-4 flex items-start gap-2 p-3 rounded-[10px] bg-muted border border-border">
+              <ShieldAlert className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+              <p className="text-[11px] sm:text-xs text-foreground leading-relaxed font-medium">
                 Every submission is scanned for malware and verified for licensing. Nulled, pirated,
                 or malicious uploads are rejected and posters may be banned. Only upload genuine
                 products with valid licenses (GPL or commercial).
