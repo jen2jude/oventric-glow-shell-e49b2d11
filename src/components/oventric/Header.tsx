@@ -179,16 +179,16 @@ export function Header({
             <button
               onClick={() => setMobileSearchOpen(true)}
               aria-label="Open search"
-              className={`p-2 md:p-2.5 rounded-xl transition-colors ${flat}`}
+              className={`p-1.5 md:p-2.5 rounded-xl transition-colors ${flat}`}
             >
-              <Search className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2} />
+              <Search className="w-[18px] h-[18px] md:w-6 md:h-6" strokeWidth={2} />
             </button>
             <button
               onClick={() => setMegaOpen(true)}
               aria-label="Open menu"
-              className={`inline-flex p-2 md:p-2.5 rounded-xl transition-colors shrink-0 ${flat}`}
+              className={`inline-flex p-1.5 md:p-2.5 rounded-xl transition-colors shrink-0 ${flat}`}
             >
-              <Menu className="w-5 h-5 md:hidden" strokeWidth={2} />
+              <Menu className="w-[18px] h-[18px] md:hidden" strokeWidth={2} />
               <Grip className="w-6 h-6 hidden md:block" strokeWidth={2} />
             </button>
           </div>
@@ -207,9 +207,9 @@ export function Header({
             <button
               onClick={() => setNotifOpen(true)}
               aria-label="Open notifications"
-              className={`relative inline-flex p-2 md:p-2.5 rounded-xl transition-colors shrink-0 ${flat}`}
+              className={`relative inline-flex p-1.5 md:p-2.5 rounded-xl transition-colors shrink-0 ${flat}`}
             >
-              <Bell className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2} />
+              <Bell className="w-[18px] h-[18px] md:w-6 md:h-6" strokeWidth={2} />
               <CountBadge count={unreadCount} ariaLabel={`${unreadCount} unread notifications`} />
             </button>
           </div>
@@ -277,30 +277,30 @@ export function Header({
   return (
     <header className={`sticky top-0 z-40 w-full ${bg} border-b ${edge}`}>
       {/* Mobile top row: logo + search + hamburger (home only) */}
-      {showMobileTopRow && (
-        <div className="md:hidden grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 h-11 px-3 border-b border-white/5">
-          <Link to="/" aria-label="Oventric" className="flex items-center shrink-0">
-            {LogoMark}
-          </Link>
-          <div className="min-w-0" />
-          <div className="flex items-center gap-1 shrink-0">
-            <button
-              onClick={() => setMobileSearchOpen(true)}
-              aria-label="Open search"
-              className="p-2 rounded-[10px] hover:bg-white/5 text-white"
-            >
-              <Search className="w-5 h-5" strokeWidth={2.5} />
-            </button>
-            <button
-              onClick={() => setMegaOpen(true)}
-              aria-label="Open menu"
-              className="p-2 -mr-1 rounded-[10px] hover:bg-white/5 text-white"
-            >
-              <Menu className="w-5 h-5" strokeWidth={2.5} />
-            </button>
+        {showMobileTopRow && (
+          <div className="md:hidden grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 h-11 px-3 border-b border-white/5">
+            <Link to="/" aria-label="Oventric" className="flex items-center shrink-0">
+              {LogoMark}
+            </Link>
+            <div className="min-w-0" />
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                onClick={() => setMobileSearchOpen(true)}
+                aria-label="Open search"
+                className="p-1.5 rounded-[10px] hover:bg-white/5 text-white"
+              >
+                <Search className="w-[18px] h-[18px]" strokeWidth={2.5} />
+              </button>
+              <button
+                onClick={() => setMegaOpen(true)}
+                aria-label="Open menu"
+                className="p-1.5 -mr-1 rounded-[10px] hover:bg-white/5 text-white"
+              >
+                <Menu className="w-[18px] h-[18px]" strokeWidth={2.5} />
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Main row */}
       <div
@@ -371,7 +371,7 @@ export function Header({
           </nav>
         )}
 
-        <div className="flex items-center justify-between md:justify-start gap-1 md:gap-2.5 w-full md:w-auto shrink-0 min-w-0">
+        <div className="flex items-center justify-end gap-0.5 md:gap-2.5 w-auto shrink-0 min-w-0">
           {/* Wallet chip - desktop/tablet position in the right cluster */}
           <div className="hidden md:inline-flex shrink-0">
             <HeaderWalletChip align="right" />
@@ -387,18 +387,18 @@ export function Header({
               )
             }
             aria-label="Circles & Guilds"
-            className={`relative inline-flex p-2 md:p-2.5 rounded-full ${chip} transition-transform duration-150 hover:-translate-y-0.5 active:scale-90 active:translate-y-0 shrink-0`}
+            className={`relative inline-flex p-1.5 md:p-2.5 rounded-full ${chip} transition-transform duration-150 hover:-translate-y-0.5 active:scale-90 active:translate-y-0 shrink-0`}
           >
-            <Users className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2.5} />
+            <Users className="w-[18px] h-[18px] md:w-6 md:h-6" strokeWidth={2.5} />
           </button>
 
           {/* Notifications */}
           <button
             onClick={() => setNotifOpen(true)}
             aria-label="Open notifications"
-            className={`relative p-2 md:p-2.5 rounded-full ${chip} transition-transform duration-150 hover:-translate-y-0.5 active:scale-90 active:translate-y-0 shrink-0`}
+            className={`relative p-1.5 md:p-2.5 rounded-full ${chip} transition-transform duration-150 hover:-translate-y-0.5 active:scale-90 active:translate-y-0 shrink-0`}
           >
-            <Bell className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2.5} />
+            <Bell className="w-[18px] h-[18px] md:w-6 md:h-6" strokeWidth={2.5} />
             <CountBadge count={unreadCount} ariaLabel={`${unreadCount} unread notifications`} />
           </button>
 
@@ -406,9 +406,9 @@ export function Header({
           <button
             onClick={() => setFollowReqOpen(true)}
             aria-label={`Requests (${pendingFollow + pendingCircles} pending)`}
-            className={`relative inline-flex p-2 md:p-2.5 rounded-full ${chip} transition-transform duration-150 hover:-translate-y-0.5 active:scale-90 active:translate-y-0 shrink-0`}
+            className={`relative inline-flex p-1.5 md:p-2.5 rounded-full ${chip} transition-transform duration-150 hover:-translate-y-0.5 active:scale-90 active:translate-y-0 shrink-0`}
           >
-            <UserPlus className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2.5} />
+            <UserPlus className="w-[18px] h-[18px] md:w-6 md:h-6" strokeWidth={2.5} />
             <CountBadge
               count={pendingFollow + pendingCircles}
               ariaLabel={`${pendingFollow + pendingCircles} pending follow and circle requests`}
@@ -419,15 +419,15 @@ export function Header({
           <button
             onClick={onOpenMessages}
             aria-label="Open messages"
-            className={`relative p-2 md:p-2.5 rounded-full ${chip} transition-transform duration-150 hover:-translate-y-0.5 active:scale-90 active:translate-y-0 shrink-0`}
+            className={`relative p-1.5 md:p-2.5 rounded-full ${chip} transition-transform duration-150 hover:-translate-y-0.5 active:scale-90 active:translate-y-0 shrink-0`}
           >
-            <MessageSquare className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2.5} />
+            <MessageSquare className="w-[18px] h-[18px] md:w-6 md:h-6" strokeWidth={2.5} />
             <CountBadge count={unreadMessages} ariaLabel={`${unreadMessages} unread messages`} />
           </button>
 
           {/* Profile */}
           {isAuthenticated ? (
-            <div className="shrink-0 flex items-center gap-2.5 md:gap-3">
+            <div className="shrink-0 flex items-center gap-2 md:gap-3">
               <ProfileDropdown trigger="mega" />
 
               {/* Desktop candy-box menu (MegaMenu) */}
