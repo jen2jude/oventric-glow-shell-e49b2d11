@@ -143,8 +143,8 @@ export function Wallet() {
       <MegaMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
       <NotificationsDrawer open={notifOpen} onClose={() => setNotifOpen(false)} />
 
-      <main className="mx-auto w-full max-w-[1360px] px-4 py-8 sm:px-6 md:px-10 md:py-14 xl:px-14">
-        <div className="mb-10 flex flex-col gap-6 border-b border-wallet-line pb-8 lg:flex-row lg:items-end lg:justify-between">
+      <main className="wallet-main mx-auto w-full max-w-[1360px] px-4 py-8 sm:px-6 md:px-10 md:py-14 xl:px-14">
+        <div className="wallet-page-heading mb-10 flex flex-col gap-6 border-b border-wallet-line pb-8 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-wallet-crimson">
               <ShieldCheck className="h-4 w-4" /> Protected wallet
@@ -152,7 +152,7 @@ export function Wallet() {
             <h1 className="font-wallet-display text-3xl font-semibold text-wallet-copy sm:text-5xl">Your wallet</h1>
             <p className="mt-3 text-sm text-wallet-copy-muted sm:text-base">Balances, earnings and recent activity in {cur}.</p>
           </div>
-          <div className="grid grid-cols-2 gap-2 sm:flex">
+          <div className="wallet-heading-action grid grid-cols-2 gap-2 sm:flex">
             <Button onClick={() => requireAuth(() => setAddFundsOpen(true))} className="h-11 bg-wallet-crimson px-5 text-wallet-on-crimson shadow-none hover:bg-wallet-crimson-strong"><Plus /> Add funds</Button>
           </div>
         </div>
@@ -163,7 +163,10 @@ export function Wallet() {
           </button>
         )}
 
-        <section className="relative border-y border-wallet-line bg-wallet-panel px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+        <div className="wallet-mobile-composition">
+        <section className="wallet-balance-card relative overflow-hidden border-y border-wallet-line bg-wallet-panel px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+            <div aria-hidden="true" className="wallet-balance-glow wallet-balance-glow-one" />
+            <div aria-hidden="true" className="wallet-balance-glow wallet-balance-glow-two" />
             <div className="relative z-10 max-w-4xl">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-wallet-copy-muted">
                 Total balance <span className="rounded-md bg-wallet-muted px-2 py-1 text-[10px] text-wallet-copy">{cur}</span>
@@ -171,31 +174,32 @@ export function Wallet() {
               <div className="mt-4 font-wallet-display text-4xl font-semibold tabular-nums text-wallet-copy sm:text-6xl lg:text-7xl">{mask(fmt(main, cur))}</div>
               <div className="mt-3 flex items-center gap-1.5 text-sm text-wallet-copy-muted">≈ {mask(`$${usdEquiv.toFixed(2)}`)} USD <Info className="h-3.5 w-3.5" /></div>
             </div>
-            <div className="relative z-10 mt-10 grid max-w-2xl grid-cols-2 gap-8 border-t border-wallet-line pt-6">
+            <div className="wallet-balance-split relative z-10 mt-10 grid max-w-2xl grid-cols-2 gap-8 border-t border-wallet-line pt-6">
               <div><p className="text-xs text-wallet-copy-muted">Available</p><p className="mt-1 text-lg font-semibold tabular-nums text-wallet-copy">{mask(fmt(available, cur))}</p></div>
               <div><p className="text-xs text-wallet-copy-muted">In escrow</p><p className="mt-1 text-lg font-semibold tabular-nums text-wallet-copy">{mask(fmt(locked, cur))}</p></div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => requireAuth(toggleBalancesHidden)} aria-label={hide ? "Show balances" : "Hide balances"} className="absolute right-4 top-4 z-20 border border-wallet-line bg-wallet-muted text-wallet-copy-muted hover:text-wallet-copy"><Eye className={hide ? "hidden" : "block"} /><EyeOff className={hide ? "block" : "hidden"} /></Button>
         </section>
 
-          <section className="border-b border-wallet-line py-8">
-            <div className="mb-5"><h2 className="font-wallet-display text-xl font-semibold text-wallet-copy">Move your money</h2><p className="mt-1 text-sm text-wallet-copy-muted">Manage your funds securely.</p></div>
-            <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[10px] border border-wallet-line bg-wallet-line md:grid-cols-4">
+          <section className="wallet-actions-section border-b border-wallet-line py-8">
+            <div className="wallet-actions-heading mb-5"><h2 className="font-wallet-display text-xl font-semibold text-wallet-copy">Move your money</h2><p className="mt-1 text-sm text-wallet-copy-muted">Manage your funds securely.</p></div>
+            <div className="wallet-actions-grid grid grid-cols-2 gap-px overflow-hidden rounded-[10px] border border-wallet-line bg-wallet-line md:grid-cols-4">
               {actions.map((action) => (
-                <Button key={action.label} variant="ghost" onClick={action.onClick} className={`h-auto min-h-28 flex-col items-start gap-3 rounded-none border-0 p-5 text-left ${action.primary ? "bg-wallet-crimson-soft text-wallet-copy hover:bg-wallet-crimson-soft" : "bg-wallet-panel text-wallet-copy hover:bg-wallet-panel-raised hover:text-wallet-copy"}`}>
-                  <action.icon className={action.primary ? "text-wallet-crimson" : "text-wallet-copy-muted"} />
+                <Button key={action.label} variant="ghost" onClick={action.onClick} className={`wallet-action-button h-auto min-h-28 flex-col items-start gap-3 rounded-none border-0 p-5 text-left ${action.primary ? "wallet-action-primary bg-wallet-crimson-soft text-wallet-copy hover:bg-wallet-crimson-soft" : "bg-wallet-panel text-wallet-copy hover:bg-wallet-panel-raised hover:text-wallet-copy"}`}>
+                  <span className="wallet-action-icon"><action.icon className={action.primary ? "text-wallet-crimson" : "text-wallet-copy-muted"} /></span>
                   <span><span className="block text-sm font-semibold">{action.label}</span><span className="mt-0.5 block text-[11px] font-normal text-wallet-copy-muted">{action.description}</span></span>
                 </Button>
               ))}
             </div>
           </section>
+        </div>
 
-        <section className="py-10">
+        <section className="wallet-breakdown-section py-10">
           <div className="mb-6 flex items-end justify-between"><div><h2 className="font-wallet-display text-2xl font-semibold text-wallet-copy">Balance breakdown</h2><p className="mt-2 text-sm text-wallet-copy-muted">How your Oventric funds are distributed.</p></div></div>
-          <div className="grid grid-cols-1 border-y border-wallet-line sm:grid-cols-2 xl:grid-cols-4 xl:divide-x xl:divide-wallet-line">
+          <div className="wallet-breakdown-grid grid grid-cols-1 border-y border-wallet-line sm:grid-cols-2 xl:grid-cols-4 xl:divide-x xl:divide-wallet-line">
             {subWallets.map((wallet) => {
               const content = <><div className="flex items-start justify-between"><span className={`flex h-9 w-9 items-center justify-center rounded-[10px] ${wallet.tone}`}><wallet.icon className="h-4 w-4" /></span><ChevronRight className="h-4 w-4 text-wallet-copy-faint" /></div><p className="mt-5 text-xs text-wallet-copy-muted">{wallet.label}</p><p className="mt-1 font-wallet-display text-xl font-semibold tabular-nums text-wallet-copy">{mask(wallet.value)}</p><p className="mt-1 text-[11px] text-wallet-copy-faint">{wallet.sub}</p></>;
-              return isAuthenticated ? <Link key={wallet.label} to={wallet.to} className="border-b border-wallet-line bg-wallet-panel p-5 transition-colors hover:bg-wallet-panel-raised sm:nth-[3]:border-b-0 sm:nth-[4]:border-b-0 xl:border-b-0 xl:px-7">{content}</Link> : <button key={wallet.label} onClick={() => openGate("funding")} className="border-b border-wallet-line bg-wallet-panel p-5 text-left opacity-75 transition-opacity hover:opacity-100 sm:nth-[3]:border-b-0 sm:nth-[4]:border-b-0 xl:border-b-0 xl:px-7">{content}</button>;
+              return isAuthenticated ? <Link key={wallet.label} to={wallet.to} className="wallet-breakdown-card border-b border-wallet-line bg-wallet-panel p-5 transition-colors hover:bg-wallet-panel-raised sm:nth-[3]:border-b-0 sm:nth-[4]:border-b-0 xl:border-b-0 xl:px-7">{content}</Link> : <button key={wallet.label} onClick={() => openGate("funding")} className="wallet-breakdown-card border-b border-wallet-line bg-wallet-panel p-5 text-left opacity-75 transition-opacity hover:opacity-100 sm:nth-[3]:border-b-0 sm:nth-[4]:border-b-0 xl:border-b-0 xl:px-7">{content}</button>;
             })}
           </div>
         </section>
