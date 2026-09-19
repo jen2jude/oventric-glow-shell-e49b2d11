@@ -4230,34 +4230,20 @@ export type Database = {
         }
         Returns: string
       }
-      payout_request_create_live:
-        | {
-            Args: {
-              _amount: number
-              _currency: string
-              _destination: Json
-              _fee: number
-              _method: string
-              _net: number
-              _recipient_code: string
-              _recipient_id: string
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              _amount: number
-              _currency: string
-              _destination: Json
-              _fee: number
-              _method: string
-              _net: number
-              _provider?: string
-              _recipient_code: string
-              _recipient_id: string
-            }
-            Returns: string
-          }
+      payout_request_create_live: {
+        Args: {
+          _amount: number
+          _currency: string
+          _destination: Json
+          _fee: number
+          _method: string
+          _net: number
+          _provider?: string
+          _recipient_code: string
+          _recipient_id: string
+        }
+        Returns: string
+      }
       payout_request_create_usd: {
         Args: {
           _channel: string
