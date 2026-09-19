@@ -330,7 +330,7 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
       aria-expanded={trigger === "mega" ? undefined : open}
       aria-controls={trigger === "mega" ? undefined : open ? menuId : undefined}
       onClick={() => (trigger === "mega" ? setMegaOpen(true) : setOpen((v) => !v))}
-      className="rgb-static-border relative w-10 h-10 rounded-full flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#121214] overflow-hidden"
+      className="rgb-static-border relative w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#121214] overflow-hidden"
     >
       <span className="absolute inset-0 flex items-center justify-center bg-neutral-800">
         {profile.avatarDataUrl ? (
@@ -343,7 +343,7 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
             decoding="async"
           />
         ) : (
-          <User className="w-6 h-6 text-white/85" strokeWidth={1.75} aria-hidden />
+          <User className="w-5 h-5 md:w-6 md:h-6 text-white/85" strokeWidth={1.75} aria-hidden />
         )}
       </span>
     </button>
