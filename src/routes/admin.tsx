@@ -30,6 +30,7 @@ import {
   Ticket,
   Star,
   Tag,
+  ChevronLeft,
 } from "lucide-react";
 
 import { canAccessSection, type ManagementRole } from "@/lib/admin-roles";
@@ -132,6 +133,8 @@ const NAV: NavItem[] = [
   { to: "/admin/settings", label: "Settings", icon: Settings, group: "System" },
 ];
 
+const SIDEBAR_COLLAPSED_KEY = "oventric:admin-sidebar-collapsed";
+
 function AdminLayout() {
   const check = useServerFn(checkIsAdmin);
   const getPendingPayouts = useServerFn(adminGetPendingPayoutCount);
@@ -142,6 +145,27 @@ function AdminLayout() {
   const [roles, setRoles] = useState<ManagementRole[]>([]);
   const [pendingPayouts, setPendingPayouts] = useState(0);
   const [pendingProducts, setPendingProducts] = useState(0);
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    try {
+      setCollapsed(window.localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === "true");
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const toggleCollapsed = () => {
+    setCollapsed((v) => {
+      const next = !v;
+      try {
+        window.localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(next));
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -233,21 +257,41 @@ function AdminLayout() {
 
   return (
     <div className="admin-light min-h-screen bg-[#0b0b0d] text-slate-200 flex">
-      <aside className="w-60 shrink-0 bg-[#141418] border-r border-white/10 flex flex-col">
-        <div className="px-4 py-5 border-b border-white/10 flex items-center gap-2">
-          <div className="w-8 h-8 rounded-[10px] bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center">
-            <ShieldCheck className="w-4 h-4 text-emerald-300" />
-          </div>
-          <div>
-            <div className="text-white text-sm font-black leading-tight">Admin CRM</div>
-            <div className="text-[10px] text-slate-500 uppercase tracking-wider">
-              {roles.length > 0 ? roles.join(" • ") : "Oventric"}
+      <aside
+        className={`shrink-0 bg-[#141418] border-r border-white/10 flex flex-col transition-all duration-300 ease-out ${
+          collapsed ? "w-16" : "w-60"
+        }`}
+      >
+        <div
+          className={`px-3 py-4 border-b border-white/10 flex items-center ${
+            collapsed ? "justify-center" : "justify-between gap-2"
+          }`}
+        >
+          <div className={`flex items-center gap-2 ${collapsed ? "hidden" : "flex"}`}>
+            <div className="w-8 h-8 rounded-[10px] bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center">
+              <ShieldCheck className="w-4 h-4 text-emerald-300" />
+            </div>
+            <div>
+              <div className="text-white text-sm font-black leading-tight">Admin CRM</div>
+              <div className="text-[10px] text-slate-500 uppercase tracking-wider">
+                {roles.length > 0 ? roles.join(" • ") : "Oventric"}
+              </div>
             </div>
           </div>
+
+          <button
+            onClick={toggleCollapsed}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            className="p-1.5 rounded-[8px] text-slate-500 hover:text-white hover:bg-white/5 transition-colors"
+          >
+            <ChevronLeft className={`w-4 h-4 transition-transform ${collapsed ? "rotate-180" : ""}`} />
+          </button>
         </div>
-        <nav className="flex-1 p-2 flex flex-col gap-0.5 overflow-y-auto">
+
+        <nav className="flex-1 p-2 flex flex-col gap-0.5 overflow-y-auto overflow-x-hidden">
           {visibleNav.map((n, i) => {
-            const showGroup = i === 0 || visibleNav[i - 1]!.group !== n.group;
+            const showGroup = !collapsed && (i === 0 || visibleNav[i - 1]!.group !== n.group);
             const badgeCount =
               n.to === "/admin/payouts"
                 ? pendingPayouts
@@ -258,7 +302,7 @@ function AdminLayout() {
             const badgeLabel =
               n.to === "/admin/payouts"
                 ? `${badgeCount} pending payouts`
-                : n.to === "/admin/products"
+                : n.to === "/admin/products`
                   ? `${badgeCount} listings awaiting approval`
                   : `${badgeCount} pending`;
             return (
@@ -281,11 +325,21 @@ function AdminLayout() {
                       ? "text-red-300 bg-red-500/10 hover:bg-red-500/20 border-red-500/40 animate-pulse"
                       : "text-slate-400 hover:text-white hover:bg-white/5 border-transparent",
                   }}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-[10px] border text-sm font-medium transition-colors"
+                  className={`flex items-center rounded-[10px] border text-sm font-medium transition-colors ${
+                    collapsed ? "justify-center px-2 py-2.5" : "gap-2.5 px-3 py-2"
+                  }`}
                 >
-                  <n.icon className="w-4 h-4 shrink-0" />
-                  <span className="flex-1">{n.label}</span>
-                  {alert && (
+                  <span className="relative shrink-0">
+                    <n.icon className="w-4 h-4" />
+                    {collapsed && alert && (
+                      <span
+                        aria-label={badgeLabel}
+                        className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-red-500 ring-2 ring-[#141418]"
+                      />
+                    )}
+                  </span>
+                  {!collapsed && <span className="flex-1 truncate">{n.label}</span>}
+                  {!collapsed && alert && (
                     <span
                       aria-label={badgeLabel}
                       className="min-w-[20px] h-[18px] px-1.5 rounded-full text-[10px] font-black bg-red-500 text-white flex items-center justify-center"
@@ -298,14 +352,19 @@ function AdminLayout() {
             );
           })}
         </nav>
+
         <button
           onClick={async () => {
             await supabase.auth.signOut();
             router.invalidate();
           }}
-          className="m-2 flex items-center gap-2 px-3 py-2 rounded-[10px] text-slate-400 hover:text-white hover:bg-white/5 text-sm"
+          className={`m-2 flex items-center rounded-[10px] text-slate-400 hover:text-white hover:bg-white/5 text-sm transition-colors ${
+            collapsed ? "justify-center p-2" : "gap-2 px-3 py-2"
+          }`}
+          title="Sign out"
         >
-          <LogOut className="w-4 h-4" /> Sign out
+          <LogOut className="w-4 h-4" />
+          {!collapsed && <span>Sign out</span>}
         </button>
       </aside>
       <main className="flex-1 min-w-0 overflow-y-auto">
