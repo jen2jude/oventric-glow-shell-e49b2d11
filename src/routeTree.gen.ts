@@ -25,6 +25,7 @@ import { Route as HelpRouteImport } from './routes/help'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ExploreRouteImport } from './routes/explore'
+import { Route as EscrowRouteImport } from './routes/escrow'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CirclesRouteImport } from './routes/circles'
 import { Route as BountiesRouteImport } from './routes/bounties'
@@ -180,6 +181,11 @@ const FaqRoute = FaqRouteImport.update({
 const ExploreRoute = ExploreRouteImport.update({
   id: '/explore',
   path: '/explore',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EscrowRoute = EscrowRouteImport.update({
+  id: '/escrow',
+  path: '/escrow',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -583,6 +589,7 @@ export interface FileRoutesByFullPath {
   '/bounties': typeof BountiesRoute
   '/circles': typeof CirclesRoute
   '/dashboard': typeof DashboardRoute
+  '/escrow': typeof EscrowRoute
   '/explore': typeof ExploreRoute
   '/faq': typeof FaqRoute
   '/feed': typeof FeedRoute
@@ -676,6 +683,7 @@ export interface FileRoutesByTo {
   '/bounties': typeof BountiesRoute
   '/circles': typeof CirclesRoute
   '/dashboard': typeof DashboardRoute
+  '/escrow': typeof EscrowRoute
   '/explore': typeof ExploreRoute
   '/faq': typeof FaqRoute
   '/feed': typeof FeedRoute
@@ -769,6 +777,7 @@ export interface FileRoutesById {
   '/bounties': typeof BountiesRoute
   '/circles': typeof CirclesRoute
   '/dashboard': typeof DashboardRoute
+  '/escrow': typeof EscrowRoute
   '/explore': typeof ExploreRoute
   '/faq': typeof FaqRoute
   '/feed': typeof FeedRoute
@@ -865,6 +874,7 @@ export interface FileRouteTypes {
     | '/bounties'
     | '/circles'
     | '/dashboard'
+    | '/escrow'
     | '/explore'
     | '/faq'
     | '/feed'
@@ -958,6 +968,7 @@ export interface FileRouteTypes {
     | '/bounties'
     | '/circles'
     | '/dashboard'
+    | '/escrow'
     | '/explore'
     | '/faq'
     | '/feed'
@@ -1050,6 +1061,7 @@ export interface FileRouteTypes {
     | '/bounties'
     | '/circles'
     | '/dashboard'
+    | '/escrow'
     | '/explore'
     | '/faq'
     | '/feed'
@@ -1145,6 +1157,7 @@ export interface RootRouteChildren {
   BountiesRoute: typeof BountiesRoute
   CirclesRoute: typeof CirclesRoute
   DashboardRoute: typeof DashboardRoute
+  EscrowRoute: typeof EscrowRoute
   ExploreRoute: typeof ExploreRoute
   FaqRoute: typeof FaqRoute
   FeedRoute: typeof FeedRoute
@@ -1298,6 +1311,13 @@ declare module '@tanstack/react-router' {
       path: '/explore'
       fullPath: '/explore'
       preLoaderRoute: typeof ExploreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/escrow': {
+      id: '/escrow'
+      path: '/escrow'
+      fullPath: '/escrow'
+      preLoaderRoute: typeof EscrowRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -1979,6 +1999,7 @@ const rootRouteChildren: RootRouteChildren = {
   BountiesRoute: BountiesRoute,
   CirclesRoute: CirclesRoute,
   DashboardRoute: DashboardRoute,
+  EscrowRoute: EscrowRoute,
   ExploreRoute: ExploreRoute,
   FaqRoute: FaqRoute,
   FeedRoute: FeedRoute,
