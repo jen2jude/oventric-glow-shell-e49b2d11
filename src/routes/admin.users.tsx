@@ -104,8 +104,13 @@ function UsersPage() {
 
   const counts = useMemo(() => {
     const r = rows ?? [];
+    const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
     return {
       all: r.length,
+      new24h: r.filter((x) => {
+        const t = Date.parse(String(x.created_at ?? ""));
+        return Number.isFinite(t) && t >= dayAgo;
+      }).length,
       admins: r.filter((x) => (x.roles ?? []).includes("admin")).length,
       verified: r.filter((x) => x.kyc_completed_at).length,
       unverified: r.filter((x) => !x.kyc_completed_at).length,
