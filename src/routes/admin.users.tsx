@@ -1120,6 +1120,105 @@ function ModBtn({
 
 type ResetTarget = "available" | "escrow" | "cashback" | "bounty" | "all";
 
+/** Credit a wallet for money received outside checkout (crypto, Grey, bank transfer). */
+function CreditWalletCard({
+  userId,
+  onChanged,
+}: {
+  userId: string;
+  onChanged: () => void | Promise<void>;
+}) {
+  const creditFn = useServerFn(adminCreditWallet);
+  const [amount, setAmount] = useState("");
+  const [currency, setCurrency] = useState("USD");
+  const [reference, setReference] = useState("");
+  const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  const submit = async () => {
+    setErr(null);
+    setMsg(null);
+    const amt = Number(amount);
+    if (!(amt > 0)) return setErr("Enter the amount you received.");
+    if (reference.trim().length < 4) return setErr("Enter the payment reference / transaction ID.");
+    if (!window.confirm(`Credit this user with ${amt} ${currency} (converted to their home currency)?`)) return;
+    setBusy(true);
+    try {
+      const res = (await creditFn({
+        data: { userId, amount: amt, currency, reference: reference.trim(), note: note.trim() },
+      })) as { credited: number; currency: string; usd: number };
+      setMsg(`Credited ${res.credited.toLocaleString()} ${res.currency} (≈ $${res.usd.toFixed(2)}).`);
+      setAmount("");
+      setReference("");
+      setNote("");
+      await onChanged();
+    } catch (e) {
+      setErr((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const input =
+    "w-full bg-black/30 border border-white/10 rounded px-2 py-1.5 text-xs text-white placeholder:text-slate-500 outline-none focus:border-emerald-500/50";
+
+  return (
+    <div className="bg-emerald-500/[0.06] border border-emerald-500/25 rounded-[10px] p-3 space-y-2">
+      <div className="text-[10px] uppercase text-emerald-300 tracking-wider font-bold">
+        Fund wallet manually
+      </div>
+      <p className="text-[11px] text-slate-400 leading-snug">
+        Enter the amount exactly as received. It is converted at the current Oventric rate and
+        credited to the user&apos;s home-currency wallet.
+      </p>
+      <div className="grid grid-cols-3 gap-2">
+        <input
+          className={`${input} col-span-2`}
+          inputMode="decimal"
+          placeholder="Amount received"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+        />
+        <select
+          className={input}
+          value={currency}
+          onChange={(e) => setCurrency(e.target.value)}
+        >
+          {CURRENCY_CODES.map((c) => (
+            <option key={c} value={c} className="bg-slate-900">
+              {c}
+            </option>
+          ))}
+        </select>
+      </div>
+      <input
+        className={input}
+        placeholder="Payment reference / transaction ID"
+        value={reference}
+        onChange={(e) => setReference(e.target.value)}
+      />
+      <input
+        className={input}
+        placeholder="Note (optional) — e.g. USDT TRC20 top-up"
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+      />
+      {err && <div className="text-[11px] text-red-300">{err}</div>}
+      {msg && <div className="text-[11px] text-emerald-300">{msg}</div>}
+      <button
+        onClick={submit}
+        disabled={busy}
+        className="w-full text-[11px] uppercase font-bold px-2 py-2 rounded bg-emerald-500/15 border border-emerald-500/40 text-emerald-200 hover:bg-emerald-500/25 disabled:opacity-50 inline-flex items-center justify-center gap-1"
+      >
+        {busy ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+        Credit wallet
+      </button>
+    </div>
+  );
+}
+
 function WalletTab({
   d,
   userId,
