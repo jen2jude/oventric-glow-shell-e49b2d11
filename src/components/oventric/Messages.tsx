@@ -14,6 +14,8 @@ import {
   AlertTriangle,
   ShieldCheck,
   ShoppingBag,
+  FileText,
+  Paperclip,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
@@ -33,6 +35,8 @@ import {
   getPeerProfiles,
   type ThreadSummary,
   getPeerOrderContext,
+  getMessageMediaUploadUrl,
+  getMessageAttachmentUrls,
   type DMRow,
   type PeerOrderContext,
 } from "@/lib/messaging/messages.functions";
@@ -183,7 +187,15 @@ function ThreadRow({
   );
 }
 
-function MessageBubble({ msg, mine }: { msg: DMRow; mine: boolean }) {
+function MessageBubble({
+  msg,
+  mine,
+  attachmentUrl,
+}: {
+  msg: DMRow;
+  mine: boolean;
+  attachmentUrl?: string | null;
+}) {
   return (
     <Message from={mine ? "user" : "assistant"} className="max-w-[78%]">
       <MessageContent
@@ -201,7 +213,34 @@ function MessageBubble({ msg, mine }: { msg: DMRow; mine: boolean }) {
         {extractProductId(msg.body) && (
           <ProductBubbleCard productId={extractProductId(msg.body)!} mine={mine} />
         )}
-        {msg.media_path && <div className="mt-1 text-[11px] italic opacity-80">📎 attachment</div>}
+        {msg.media_path && (
+          <div className="mt-1.5">
+            {msg.media_type?.startsWith("image/") && attachmentUrl ? (
+              <a href={attachmentUrl} target="_blank" rel="noreferrer">
+                <img
+                  loading="lazy"
+                  decoding="async"
+                  src={attachmentUrl}
+                  alt="attachment"
+                  className="max-h-56 rounded-[10px] border border-border/60"
+                />
+              </a>
+            ) : attachmentUrl ? (
+              <a
+                href={attachmentUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-[11px] underline underline-offset-2 opacity-90"
+              >
+                <FileText className="w-3.5 h-3.5" /> Open attachment
+              </a>
+            ) : (
+              <div className="inline-flex items-center gap-1.5 text-[11px] italic opacity-80">
+                <FileText className="w-3.5 h-3.5" /> Attachment
+              </div>
+            )}
+          </div>
+        )}
         <div
           className={`text-[10px] mt-1 flex items-center gap-1 ${mine ? "text-primary-foreground/75 justify-end" : "text-muted-foreground"}`}
         >
@@ -248,6 +287,17 @@ export function Messages({
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
+  const [attachment, setAttachment] = useState<{
+    file: File;
+    previewUrl: string | null;
+    path: string | null;
+    uploading: boolean;
+    error: string | null;
+  } | null>(null);
+  const [attachmentUrls, setAttachmentUrls] = useState<Record<string, string>>({});
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const getUploadUrl = useServerFn(getMessageMediaUploadUrl);
+  const getAttachmentUrls = useServerFn(getMessageAttachmentUrls);
   const [orderCtx, setOrderCtx] = useState<PeerOrderContext | null>(null);
   const [showListOnMobile, setShowListOnMobile] = useState(!initialThreadId);
   const [onlinePeers, setOnlinePeers] = useState<Map<string, OnlinePeer>>(new Map());
@@ -658,31 +708,103 @@ export function Messages({
     setShowListOnMobile(false);
   };
 
+  const clearAttachment = useCallback(() => {
+    setAttachment((prev) => {
+      if (prev?.previewUrl) URL.revokeObjectURL(prev.previewUrl);
+      return null;
+    });
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, []);
+
+  const onPickFile = useCallback(
+    async (file?: File) => {
+      if (!file) return;
+      if (!me) {
+        openGate("interaction");
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error("File is too large", { description: "Attachments must be 10MB or smaller." });
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
+      const previewUrl = file.type.startsWith("image/") ? URL.createObjectURL(file) : null;
+      setAttachment({ file, previewUrl, path: null, uploading: true, error: null });
+      try {
+        const { path, token } = await getUploadUrl({ data: { filename: file.name } });
+        const { error: upErr } = await supabase.storage
+          .from("post-media")
+          .uploadToSignedUrl(path, token, file);
+        if (upErr) throw new Error(upErr.message);
+        setAttachment({ file, previewUrl, path, uploading: false, error: null });
+      } catch (e) {
+        setAttachment({
+          file,
+          previewUrl,
+          path: null,
+          uploading: false,
+          error: e instanceof Error ? e.message : "Upload failed.",
+        });
+      }
+    },
+    [me, openGate, getUploadUrl],
+  );
+
+  // Sign attachment paths so images/files in the thread can be previewed.
+  useEffect(() => {
+    const paths = messages.map((m) => m.media_path).filter((p): p is string => !!p);
+    const missing = paths.filter((p) => !attachmentUrls[p]);
+    if (!missing.length) return;
+    getAttachmentUrls({ data: { paths: missing.slice(0, 50) } })
+      .then((map) => setAttachmentUrls((prev) => ({ ...prev, ...map })))
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages]);
+
   const send = async () => {
     if (!activePeer) return;
     const body = draft.trim();
-    if (!body) return;
+    const mediaPath = attachment?.path ?? null;
+    if (!body && !mediaPath) return;
+    if (attachment?.uploading) {
+      toast.error("Attachment is still uploading");
+      return;
+    }
     if (!me) {
       openGate("interaction");
       return;
     }
     setSending(true);
+    const mediaType = attachment?.file.type ?? null;
     const optimistic: DMRow = {
       id: `tmp-${Date.now()}`,
       sender_id: me,
       recipient_id: activePeer,
-      body,
-      media_path: null,
-      media_type: null,
+      body: body || null,
+      media_path: mediaPath,
+      media_type: mediaType,
       created_at: new Date().toISOString(),
       read_at: null,
     };
+    if (mediaPath && attachment?.previewUrl) {
+      const localPreview = attachment.previewUrl;
+      setAttachmentUrls((prev) => ({ ...prev, [mediaPath]: prev[mediaPath] ?? localPreview }));
+    }
     setMessages((prev) => [...prev, optimistic]);
     setDraft("");
+    setAttachment(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     emitTyping(false);
 
     try {
-      const row = await postMessage({ data: { recipientId: activePeer, body } });
+      const row = await postMessage({
+        data: {
+          recipientId: activePeer,
+          body: body || undefined,
+          mediaPath: mediaPath ?? undefined,
+          mediaType: mediaType ?? undefined,
+        },
+      });
       setMessages((prev) => prev.map((m) => (m.id === optimistic.id ? row : m)));
       void reloadThreads();
     } catch (e) {
@@ -1010,7 +1132,12 @@ export function Messages({
                     </div>
                   )}
                   {messages.map((m) => (
-                    <MessageBubble key={m.id} msg={m} mine={m.sender_id === me} />
+                    <MessageBubble
+                      key={m.id}
+                      msg={m}
+                      mine={m.sender_id === me}
+                      attachmentUrl={m.media_path ? (attachmentUrls[m.media_path] ?? null) : null}
+                    />
                   ))}
                 </>
               )}
@@ -1045,6 +1172,45 @@ export function Messages({
                   </span>
                 </div>
               )}
+              {attachment && (
+                <div className="mb-2 flex items-center gap-2 rounded-[10px] border border-border bg-muted/50 px-2.5 py-2">
+                  {attachment.previewUrl ? (
+                    <img
+                      src={attachment.previewUrl}
+                      alt=""
+                      className="size-10 rounded-[8px] object-cover border border-border"
+                    />
+                  ) : (
+                    <span className="grid size-10 place-items-center rounded-[8px] border border-border bg-background text-muted-foreground">
+                      <FileText className="w-4 h-4" />
+                    </span>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-xs font-medium text-foreground">
+                      {attachment.file.name}
+                    </div>
+                    {attachment.uploading ? (
+                      <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                        <Loader2 className="w-3 h-3 animate-spin" /> Uploading…
+                      </div>
+                    ) : attachment.error ? (
+                      <div className="flex items-center gap-1 text-[10px] text-destructive">
+                        <AlertTriangle className="w-3 h-3" /> {attachment.error}
+                      </div>
+                    ) : (
+                      <div className="text-[10px] text-muted-foreground">Ready to send</div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={clearAttachment}
+                    aria-label="Remove attachment"
+                    className="rounded-[8px] p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
                <PromptInput
                  onSubmit={() => void send()}
                  className="rounded-2xl border-border bg-muted/50 shadow-none transition-shadow focus-within:bg-background focus-within:shadow-sm"
@@ -1060,10 +1226,31 @@ export function Messages({
                    placeholder="Write a message…"
                    className="min-h-16 text-sm"
                  />
-                 <PromptInputFooter className="justify-end px-2 pb-2">
+                 <PromptInputFooter className="justify-between px-2 pb-2">
+                   <input
+                     ref={fileInputRef}
+                     type="file"
+                     accept="image/*,video/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip"
+                     className="hidden"
+                     onChange={(e) => void onPickFile(e.target.files?.[0])}
+                   />
+                   <Button
+                     type="button"
+                     variant="ghost"
+                     size="icon"
+                     aria-label="Attach a photo, video or file"
+                     title="Attach a photo, video or file"
+                     disabled={sending || !!attachment}
+                     onClick={() => fileInputRef.current?.click()}
+                     className="size-9 rounded-[10px] text-muted-foreground hover:text-foreground"
+                   >
+                     <Paperclip />
+                   </Button>
                    <PromptInputSubmit
                      status={sending ? "submitted" : undefined}
-                     disabled={!draft.trim() || sending}
+                     disabled={
+                       (!draft.trim() && !attachment?.path) || sending || !!attachment?.uploading
+                     }
                      aria-label="Send message"
                      className="size-9 rounded-[10px]"
                    >
