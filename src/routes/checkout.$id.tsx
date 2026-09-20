@@ -340,6 +340,8 @@ function CheckoutPage() {
   // Gateway picker shown under "Debit/Credit Card".
   const [cardOpen, setCardOpen] = useState(true);
   const [gateway, setGateway] = useState<"paystack" | "minipay" | "binance">("paystack");
+  const [payTab, setPayTab] = useState<PayTabId>("card");
+  const [optionKey, setOptionKey] = useState<string>("paystack-card");
   const [recommended, setRecommended] = useState<"paystack" | "minipay" | "binance">("paystack");
   const loadOptions = useServerFn(getPaymentOptions);
   const loadPackages = useServerFn(getServicePackages);
