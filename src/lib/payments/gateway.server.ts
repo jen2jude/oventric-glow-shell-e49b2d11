@@ -278,7 +278,16 @@ function assertPaidMatchesCharge(
   paidAmount: number,
 ) {
   const expected = Number(meta.charge_amount);
-  if (!Number.isFinite(expected) || expected <= 0) return;
+  if (!Number.isFinite(expected) || expected <= 0) {
+    // Gateway references (OVP_/OVF_) are always created with an authoritative
+    // charge amount. Missing it means the metadata was not produced by our own
+    // charge creation, so fail closed rather than settle an unverifiable sum.
+    const ref = reference.toUpperCase();
+    if (ref.startsWith("OVP") || ref.startsWith("OVF") || ref.startsWith("OV_")) {
+      throw new Error(`Payment ${reference} carries no authoritative charge amount — settlement refused.`);
+    }
+    return;
+  }
   const expectedCurrency = String(meta.charge_currency ?? paidCurrency).toUpperCase();
   if (String(paidCurrency).toUpperCase() !== expectedCurrency) {
     throw new Error(

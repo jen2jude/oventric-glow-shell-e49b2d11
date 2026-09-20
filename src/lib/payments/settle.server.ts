@@ -221,7 +221,30 @@ export async function settleOrder(
     })
     .select()
     .single();
-  if (oErr) throw new Error(oErr.message);
+  if (oErr) {
+    // Unique index on orders.paystack_ref: a concurrent verification already
+    // settled this payment. Return that order instead of paying anyone twice.
+    if ((oErr as { code?: string }).code === "23505") {
+      const { data: raced } = await supabaseAdmin
+        .from("orders")
+        .select("id")
+        .eq("paystack_ref", reference)
+        .maybeSingle();
+      const { data: cbRow } = await supabaseAdmin
+        .from("wallet_transactions")
+        .select("amount")
+        .eq("tx_hash", `${reference}-CB`)
+        .maybeSingle();
+      if (raced?.id) {
+        return {
+          alreadySettled: true as const,
+          orderId: raced.id as string,
+          cashbackEarnUSD: Number(cbRow?.amount ?? 0),
+        };
+      }
+    }
+    throw new Error(oErr.message);
+  }
 
   await supabaseAdmin.from("wallet_transactions").insert({
     user_id: buyerId,
