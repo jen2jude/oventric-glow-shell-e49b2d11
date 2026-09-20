@@ -142,8 +142,8 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
 
   const subWallets = [
     { label: "Cashback", value: fmt(cashbackUSD * rate, cur), sub: "Available at checkout", icon: Sparkles, tone: "bg-wallet-crimson-soft text-wallet-crimson", to: "/wallet/ledger" as const },
-    { label: "Escrow", value: fmt(locked, cur), sub: "Protected until completion", icon: Lock, tone: "bg-wallet-info-soft text-wallet-info", to: "/wallet/ledger" as const },
-    { label: "Seller earnings", value: fmt(available, cur), sub: "From marketplace sales", icon: WalletIcon, tone: "bg-wallet-positive-soft text-wallet-positive", to: "/wallet/history" as const },
+    { label: "Escrow", value: fmt(locked, cur), sub: "Protected until completion", icon: Lock, tone: "bg-wallet-crimson-soft text-wallet-crimson", to: "/wallet/ledger" as const },
+    { label: "Seller earnings", value: fmt(available, cur), sub: "From marketplace sales", icon: WalletIcon, tone: "bg-wallet-crimson-soft text-wallet-crimson", to: "/wallet/history" as const },
   ];
   const walletNav = [
     { label: "Home", section: "Home", icon: Home },
@@ -282,12 +282,12 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
           <section className="rounded-[10px] border border-wallet-line bg-wallet-panel p-4 shadow-wallet-card">
             <div className="flex items-center justify-between"><h2 className="text-sm font-bold text-wallet-copy">Quick stats</h2><span className="text-[9px] text-wallet-copy-faint">All time</span></div>
             <div className="mt-4 space-y-4">
-              {[{ label: "Sales earnings", value: salesEarned, icon: Store, tone: "bg-wallet-info-soft text-wallet-info" }, { label: "Cashback earned", value: cashbackUSD * rate, icon: Sparkles, tone: "bg-wallet-warning-soft text-wallet-warning" }, { label: "Referral rewards", value: referralEarned, icon: Award, tone: "bg-wallet-warm text-wallet-rich" }, { label: "Withdrawals", value: totalWithdrawn, icon: ArrowUp, tone: "bg-wallet-crimson-soft text-wallet-crimson" }].map((stat) => <div key={stat.label} className="flex items-center gap-3"><span className={`grid h-8 w-8 shrink-0 place-items-center rounded-[10px] ${stat.tone}`}><stat.icon className="h-4 w-4" /></span><div><p className="text-sm font-bold tabular-nums text-wallet-copy">{mask(fmt(stat.value, cur))}</p><p className="text-[10px] text-wallet-copy-muted">{stat.label}</p></div></div>)}
+              {[{ label: "Sales earnings", value: salesEarned, icon: Store }, { label: "Cashback earned", value: cashbackUSD * rate, icon: Sparkles }, { label: "Referral rewards", value: referralEarned, icon: Award }, { label: "Withdrawals", value: totalWithdrawn, icon: ArrowUp }].map((stat) => <div key={stat.label} className="flex items-center gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-wallet-crimson-soft text-wallet-crimson"><stat.icon className="h-4 w-4" /></span><div><p className="text-sm font-bold tabular-nums text-wallet-copy">{mask(fmt(stat.value, cur))}</p><p className="text-[10px] text-wallet-copy-muted">{stat.label}</p></div></div>)}
             </div>
           </section>
           <section className="rounded-[10px] border border-wallet-line bg-wallet-panel p-4 shadow-wallet-card">
-            <h2 className="flex items-center gap-2 text-sm font-bold text-wallet-copy"><CircleDollarSign className="text-wallet-warning" /> Wallet tips</h2>
-            <ul className="mt-3 space-y-2 text-[10px] text-wallet-copy-muted"><li className="flex gap-2"><ShieldCheck className="h-3.5 w-3.5 shrink-0 text-wallet-positive" />Use your wallet for faster checkout.</li><li className="flex gap-2"><Clock3 className="h-3.5 w-3.5 shrink-0 text-wallet-warning" />Escrow stays protected until completion.</li><li className="flex gap-2"><Sparkles className="h-3.5 w-3.5 shrink-0 text-wallet-crimson" />Earn cashback on eligible purchases.</li></ul>
+            <h2 className="flex items-center gap-2 text-sm font-bold text-wallet-copy"><CircleDollarSign className="text-wallet-crimson" /> Wallet tips</h2>
+            <ul className="mt-3 space-y-2 text-[10px] text-wallet-copy-muted"><li className="flex gap-2"><ShieldCheck className="h-3.5 w-3.5 shrink-0 text-wallet-crimson" />Use your wallet for faster checkout.</li><li className="flex gap-2"><Clock3 className="h-3.5 w-3.5 shrink-0 text-wallet-crimson" />Escrow stays protected until completion.</li><li className="flex gap-2"><Sparkles className="h-3.5 w-3.5 shrink-0 text-wallet-crimson" />Earn cashback on eligible purchases.</li></ul>
           </section>
           <section className="rounded-[10px] border border-wallet-line bg-wallet-panel p-4 shadow-wallet-card">
             <div className="mb-5"><p className="text-[10px] font-semibold uppercase text-wallet-crimson">Cashback planner</p><h2 className="mt-1 font-wallet-display text-base font-bold text-wallet-copy">Estimate your earnings</h2></div>
