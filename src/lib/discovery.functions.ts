@@ -23,6 +23,7 @@ export interface DiscoveryPeer {
   stars: number;
   avatarUrl: string | null;
   gradient: string;
+  hasActiveShop: boolean;
 }
 
 export interface DiscoveryBounty {
@@ -154,13 +155,13 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
     );
     const candidateIds = profileRows.map((p) => p.user_id as string);
 
-    let allProducts: Array<{ seller_id: string; rating: number | null; reviews: number | null }> = [];
+    let allProducts: Array<{ seller_id: string; rating: number | null; reviews: number | null; status: string | null }> = [];
     let allBounties: Array<{ poster_id: string; status: string | null }> = [];
     let allPosts: Array<{ author_id: string; created_at: string }> = [];
 
     if (candidateIds.length > 0) {
       const [prodAll, bntAll, postAll] = await Promise.all([
-        supabaseAdmin.from("products").select("seller_id, rating, reviews").in("seller_id", candidateIds),
+        supabaseAdmin.from("products").select("seller_id, rating, reviews, status").in("seller_id", candidateIds),
         supabaseAdmin.from("bounties").select("poster_id, status").in("poster_id", candidateIds),
         supabaseAdmin.from("posts").select("author_id, created_at").in("author_id", candidateIds),
       ]);
@@ -223,11 +224,14 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
       .sort((a, b) => b.stars - a.stars)
       .slice(0, 10);
 
-    // Top peers ANY tier — walk down from 5★ to 1★ until we have 5 candidates.
+    const activeShopSellerIds = new Set(
+      allProducts.filter((product) => product.status === "active").map((product) => product.seller_id),
+    );
+
+    // Suggestions include up to ten active profiles, ordered by reputation.
     const anyScored = scored
-      .filter((x) => x.stars >= 1.0)
       .sort((a, b) => b.stars - a.stars)
-      .slice(0, 5);
+      .slice(0, 10);
 
     const combined = Array.from(
       new Map([...topScored, ...anyScored].map((s) => [s.p.user_id, s])).values(),
@@ -246,9 +250,10 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
         stars: x.stars,
         avatarUrl: urlByUser.get(x.p.user_id as string) ?? null,
         gradient: GRADIENTS[i % GRADIENTS.length],
+        hasActiveShop: activeShopSellerIds.has(x.p.user_id as string),
       };
     };
-    const peers: DiscoveryPeer[] = topScored.map(toPeer);
+    const peers: DiscoveryPeer[] = combined.map(toPeer);
     const topPeersAny: DiscoveryPeer[] = anyScored.map(toPeer);
 
     // ---- Bounties (top 5 by escrow) ----
