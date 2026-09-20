@@ -70,7 +70,11 @@ export function PeopleSuggestionsRail({
                   asChild
                   variant="outline"
                   size="sm"
-                  className={appShell ? "h-8 border-white/10 bg-white/5 px-2 text-[11px] text-white shadow-none hover:bg-white/10 hover:text-white" : "h-8 px-2 text-[11px]"}
+                  className={
+                    appShell
+                      ? "h-8 border-white/20 bg-white/10 px-2 text-[11px] font-semibold text-white shadow-none hover:bg-white/20 hover:text-white"
+                      : "h-8 border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-900 shadow-none hover:bg-slate-50"
+                  }
                 >
                   <Link to="/shop/$id" params={{ id: person.slug }}>
                     <Store className="h-3.5 w-3.5" /> See shop

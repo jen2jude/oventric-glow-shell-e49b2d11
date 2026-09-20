@@ -56,7 +56,7 @@ export function PeopleExploreItem({
           <Link
             to="/shop/$id"
             params={{ id: slug }}
-            className="inline-flex h-8 items-center justify-center gap-1 rounded-[8px] border border-white/10 bg-white/5 px-2 text-[11px] font-semibold text-white"
+            className="inline-flex h-8 items-center justify-center gap-1 rounded-[8px] border border-white/20 bg-white/10 px-2 text-[11px] font-semibold text-white hover:bg-white/20"
           >
             <Store className="h-3.5 w-3.5" /> See shop
           </Link>
