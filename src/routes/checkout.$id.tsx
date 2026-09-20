@@ -318,6 +318,7 @@ function CheckoutPage() {
 
   const [product, setProduct] = useState<ProductDTO | null>(null);
   const [loadErr, setLoadErr] = useState<string | null>(null);
+  const [viewerId, setViewerId] = useState<string | null>(null);
   const [balanceUSD, setBalanceUSD] = useState<number | null>(null);
   const [cashbackUSD, setCashbackUSD] = useState<number>(0);
   const [useCashback, setUseCashback] = useState(false);
@@ -489,12 +490,17 @@ function CheckoutPage() {
   useEffect(() => {
     let cancelled = false;
     supabase.auth.getUser().then(({ data }) => {
-      if (!cancelled && data.user?.email) setDeliveryEmail((prev) => prev || data.user!.email!);
+      if (cancelled) return;
+      setViewerId(data.user?.id ?? null);
+      if (data.user?.email) setDeliveryEmail((prev) => prev || data.user!.email!);
     });
     return () => {
       cancelled = true;
     };
   }, []);
+
+  // A seller can never buy their own listing (the server rejects it too).
+  const isOwnListing = Boolean(product && viewerId && product.sellerId === viewerId);
 
   const isDigital = product?.kind === "digital";
   const needsDelivery = Boolean(isDigital);
@@ -516,6 +522,12 @@ function CheckoutPage() {
 
   const pay = async () => {
     if (!product || submitting) return;
+    if (isOwnListing) {
+      toast.error("This is your own listing", {
+        description: "You can't buy a product you're selling.",
+      });
+      return;
+    }
     if (isService && !briefValid) {
       toast.error("Tell the seller about your project", {
         description: "Fill in the short project brief so they can start straight away.",
@@ -682,6 +694,13 @@ function CheckoutPage() {
         {loadErr && (
           <div className={`${isAppShell ? "bg-white/[0.03] border-[#E5484D]/20 mx-4 shadow-sm" : "bg-white shadow-sm border-red-200"} border rounded-[10px] p-6 text-sm text-[#E5484D]`}>
             {loadErr}
+          </div>
+        )}
+
+        {isOwnListing && (
+          <div className={`${isAppShell ? "bg-white/[0.03] border-amber-400/20 mx-4" : "bg-amber-50 border-amber-200"} border rounded-[10px] p-4 text-sm text-amber-700 mb-4`}>
+            This is your own listing — you can't purchase it. Open it from your shop to edit or
+            share it instead.
           </div>
         )}
 
@@ -1171,7 +1190,7 @@ function CheckoutPage() {
                   </div>
                   <button
                     onClick={pay}
-                    disabled={submitting || insufficient || (needsDelivery && !deliveryValid)}
+                    disabled={submitting || isOwnListing || insufficient || (needsDelivery && !deliveryValid)}
                     className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-[10px] bg-[#E5484D] hover:bg-[#d13a3f] text-white font-black text-sm transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_8px_30px_rgb(229,72,77,0.2)]"
                   >
                     {submitting ? (
@@ -1197,7 +1216,7 @@ function CheckoutPage() {
                 <>
                   <button
                     onClick={pay}
-                    disabled={submitting || insufficient || (needsDelivery && !deliveryValid)}
+                    disabled={submitting || isOwnListing || insufficient || (needsDelivery && !deliveryValid)}
                     className="w-full mt-4 inline-flex items-center justify-center gap-2 py-3 rounded-[10px] bg-[#E5484D] hover:bg-[#d13a3f] text-white font-black text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {submitting ? (
