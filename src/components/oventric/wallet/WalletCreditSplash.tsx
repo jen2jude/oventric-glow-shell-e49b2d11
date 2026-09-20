@@ -12,6 +12,19 @@ import type { Currency } from "@/lib/onboarding/OnboardingContext";
 import { walletTxLabel } from "@/lib/wallet-tx-labels";
 import { Button } from "@/components/ui/button";
 
+/** Decorative confetti pieces — fixed values so server and client render alike. */
+const CONFETTI: { left: string; color: string; delay: string; duration: string; drift: string }[] = [
+  { left: "6%", color: "#e5484d", delay: "0s", duration: "2.6s", drift: "18px" },
+  { left: "16%", color: "#f59e0b", delay: "0.35s", duration: "3.1s", drift: "-14px" },
+  { left: "27%", color: "#22c55e", delay: "0.7s", duration: "2.4s", drift: "24px" },
+  { left: "38%", color: "#3b82f6", delay: "0.15s", duration: "2.9s", drift: "-22px" },
+  { left: "49%", color: "#d946ef", delay: "0.9s", duration: "2.7s", drift: "12px" },
+  { left: "60%", color: "#f43f5e", delay: "0.5s", duration: "3.3s", drift: "-18px" },
+  { left: "71%", color: "#14b8a6", delay: "1.1s", duration: "2.5s", drift: "20px" },
+  { left: "82%", color: "#eab308", delay: "0.25s", duration: "3s", drift: "-10px" },
+  { left: "91%", color: "#8b5cf6", delay: "0.8s", duration: "2.8s", drift: "16px" },
+];
+
 /**
  * One-time celebration overlay shown on the wallet page whenever new money
  * has landed since the user's last visit. Items are driven by the ledger's
