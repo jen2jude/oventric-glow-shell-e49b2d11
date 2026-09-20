@@ -35,6 +35,8 @@ import {
   getPeerProfiles,
   type ThreadSummary,
   getPeerOrderContext,
+  getMessageMediaUploadUrl,
+  getMessageAttachmentUrls,
   type DMRow,
   type PeerOrderContext,
 } from "@/lib/messaging/messages.functions";
