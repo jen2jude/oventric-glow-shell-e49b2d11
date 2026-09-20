@@ -126,6 +126,146 @@ function methodsForCountry(
   ];
 }
 
+/* ---- Compact checkout rails -------------------------------------------------
+ * Five tabs, visible to every buyer:
+ *   card → Paystack only · bank → bank transfer + mobile money
+ *   crypto → Binance Pay (Bybit soon) · virtual → Grey / Eversend (soon)
+ *   wallet → Oventric balance
+ * Crypto and virtual-bank rails settle in USD; everything else in the buyer's
+ * home currency. Rails without account details yet render as "Coming soon".
+ */
+type PayTabId = "card" | "bank" | "crypto" | "virtual" | "wallet";
+
+interface PayOption {
+  key: string;
+  label: string;
+  hint: string;
+  method: PaymentMethod;
+  gateway: "paystack" | "minipay" | "binance";
+  /** Settles in USD (crypto / virtual banks). */
+  usd?: boolean;
+  /** Account details not supplied yet. */
+  soon?: boolean;
+}
+
+const PAY_TABS: { id: PayTabId; label: string; Icon: typeof CreditCard }[] = [
+  { id: "card", label: "Card", Icon: CreditCard },
+  { id: "bank", label: "Bank / MoMo", Icon: Building2 },
+  { id: "crypto", label: "Crypto", Icon: Bitcoin },
+  { id: "virtual", label: "Virtual banks", Icon: Landmark },
+  { id: "wallet", label: "Wallet", Icon: Wallet },
+];
+
+function optionsForTab(tab: PayTabId, country: string | null): PayOption[] {
+  const c = (country ?? "").toUpperCase();
+  if (tab === "card") {
+    return [
+      {
+        key: "paystack-card",
+        label: "Paystack",
+        hint: "Visa · Mastercard · Verve — instant",
+        method: "card",
+        gateway: "paystack",
+      },
+    ];
+  }
+  if (tab === "bank") {
+    const list: PayOption[] = [];
+    if (c === "NG")
+      list.push({
+        key: "paystack-bank",
+        label: "Bank transfer",
+        hint: "Pay from any Nigerian bank app — instant",
+        method: "bank_transfer",
+        gateway: "paystack",
+      });
+    if (c === "GH")
+      list.push({
+        key: "paystack-momo",
+        label: "Mobile money",
+        hint: "MTN · Vodafone · AirtelTigo — instant",
+        method: "mobile_money",
+        gateway: "paystack",
+      });
+    list.push({
+      key: "minipay",
+      label: "MiniPay",
+      hint: "Send to our MiniPay handle, upload the receipt",
+      method: "bank_transfer",
+      gateway: "minipay",
+    });
+    list.push({
+      key: "momo-manual",
+      label: "MTN MoMo (other countries)",
+      hint: "Account details coming soon",
+      method: "mobile_money",
+      gateway: "minipay",
+      soon: true,
+    });
+    list.push({
+      key: "bank-manual",
+      label: "Other African bank transfer",
+      hint: "Account details coming soon",
+      method: "bank_transfer",
+      gateway: "minipay",
+      soon: true,
+    });
+    return list;
+  }
+  if (tab === "crypto") {
+    return [
+      {
+        key: "binance",
+        label: "Binance Pay",
+        hint: "Send USDT to our Binance ID, upload the receipt",
+        method: "card",
+        gateway: "binance",
+        usd: true,
+      },
+      {
+        key: "bybit",
+        label: "Bybit Pay",
+        hint: "Account details coming soon",
+        method: "card",
+        gateway: "binance",
+        usd: true,
+        soon: true,
+      },
+    ];
+  }
+  if (tab === "virtual") {
+    return [
+      {
+        key: "grey",
+        label: "Grey",
+        hint: "Account details coming soon",
+        method: "bank_transfer",
+        gateway: "minipay",
+        usd: true,
+        soon: true,
+      },
+      {
+        key: "eversend",
+        label: "Eversend",
+        hint: "Account details coming soon",
+        method: "bank_transfer",
+        gateway: "minipay",
+        usd: true,
+        soon: true,
+      },
+    ];
+  }
+  return [
+    {
+      key: "wallet",
+      label: "Oventric Wallet",
+      hint: "Pay instantly from your balance",
+      method: "wallet",
+      gateway: "paystack",
+    },
+  ];
+}
+
 export const Route = createFileRoute("/checkout/$id")({
   ssr: false,
   head: () => ({
