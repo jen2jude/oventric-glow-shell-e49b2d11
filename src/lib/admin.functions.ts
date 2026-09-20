@@ -911,6 +911,89 @@ export const adminResetWallet = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/**
+ * Admin: credit a user's wallet for money received outside any checkout
+ * (Binance/USDT/Grey/bank transfer). The admin enters the amount exactly as it
+ * was received (USD or any supported currency); the server converts it with
+ * the current Oventric FX snapshot and credits the user's HOME currency wallet,
+ * so a buyer who sent the USD equivalent of 40 GHS ends up with 40 GHS.
+ * The reference is unique per credit, so a repeated submit never double-credits.
+ */
+export const adminCreditWallet = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i: { userId: string; amount: number; currency: string; reference: string; note?: string }) => {
+    if (!i?.userId) throw new Error("userId required");
+    const amount = Number(i.amount);
+    if (!Number.isFinite(amount) || amount <= 0) throw new Error("amount must be greater than 0");
+    if (amount > 10_000_000) throw new Error("amount too large");
+    if (!isSupportedCurrency(i.currency)) throw new Error("invalid currency");
+    const reference = String(i.reference ?? "").trim();
+    if (reference.length < 4) throw new Error("payment reference required (min 4 characters)");
+    return { userId: i.userId, amount, currency: i.currency, reference, note: (i.note ?? "").trim().slice(0, 240) };
+  })
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { resolveFxRates } = await import("@/lib/fx.server");
+    const { currencyForCountry, dbCurrency } = await import("@/lib/currency/africa");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sb = supabaseAdmin as any;
+
+    const txHash = `admin-credit:${data.reference}`;
+    const dupe = await sb.from("wallet_transactions").select("id").eq("tx_hash", txHash).maybeSingle();
+    if (dupe.data) throw new Error("This payment reference was already credited");
+
+    const { data: prof } = await sb.from("profiles").select("country, full_name").eq("user_id", data.userId).maybeSingle();
+    const homeCurrency = currencyForCountry((prof?.country as string | null) ?? null);
+
+    const fx = await resolveFxRates();
+    const rateFrom = data.currency === "USD" ? 1 : Number(fx.rates?.[data.currency] ?? 0);
+    const rateTo = homeCurrency === "USD" ? 1 : Number(fx.rates?.[homeCurrency] ?? 0);
+    if (!(rateFrom > 0) || !(rateTo > 0)) throw new Error("FX rate unavailable for this currency pair");
+    const usd = data.amount / rateFrom;
+    const credited = Math.round(usd * rateTo * 100) / 100;
+    if (!(credited > 0)) throw new Error("converted amount is zero");
+
+    const { error: cErr } = await sb.rpc("wallet_credit_currency", {
+      _user_id: data.userId,
+      _amount: credited,
+      _currency: homeCurrency,
+    });
+    if (cErr) throw new Error(cErr.message);
+
+    await sb.from("wallet_transactions").insert({
+      user_id: data.userId,
+      tx_hash: txHash,
+      type: "Wallet Top-Up",
+      amount: credited,
+      currency: dbCurrency(homeCurrency),
+      inflow: true,
+      status: "success",
+      occurred_at: new Date().toISOString(),
+      description: `Manual credit by admin · received ${data.amount} ${data.currency}${data.note ? ` · ${data.note}` : ""}`,
+    });
+
+    await sb.from("notifications").insert({
+      user_id: data.userId,
+      kind: "wallet_credited",
+      title: "Wallet funded",
+      body: `${credited.toLocaleString()} ${homeCurrency} has been added to your wallet.`,
+    });
+
+    await writeAudit(sb, context.userId, "wallet.admin_credit", "user", data.userId, {
+      reference: data.reference,
+      received_amount: data.amount,
+      received_currency: data.currency,
+      credited_amount: credited,
+      credited_currency: homeCurrency,
+      usd_value: Math.round(usd * 100) / 100,
+      fx_source: fx.source,
+      note: data.note || null,
+    });
+
+    return { ok: true, credited, currency: homeCurrency, usd: Math.round(usd * 100) / 100 };
+  });
+
 /** Feature a seller (admin only). Toggles manually featured status. */
 export const featureSeller = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
