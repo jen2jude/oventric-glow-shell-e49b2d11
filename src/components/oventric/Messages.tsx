@@ -1132,7 +1132,12 @@ export function Messages({
                     </div>
                   )}
                   {messages.map((m) => (
-                    <MessageBubble key={m.id} msg={m} mine={m.sender_id === me} />
+                    <MessageBubble
+                      key={m.id}
+                      msg={m}
+                      mine={m.sender_id === me}
+                      attachmentUrl={m.media_path ? (attachmentUrls[m.media_path] ?? null) : null}
+                    />
                   ))}
                 </>
               )}
