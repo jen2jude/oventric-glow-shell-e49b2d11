@@ -82,8 +82,9 @@ export interface PaymentOptionsResult {
 }
 
 /** What the checkout UI should offer for a given purpose + currency. */
+// Public: returns only gateway routing config (no user data), so it must not
+// require a bearer token — checkout renders it before the session is attached.
 export const getPaymentOptions = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((input: { currency: string; purpose: "order" | "course" | "bounty" | "wallet_topup" }) => ({
     currency: String(input?.currency ?? "USD").toUpperCase(),
     purpose: (input?.purpose ?? "order") as "order" | "course" | "bounty" | "wallet_topup",
