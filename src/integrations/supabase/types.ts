@@ -4008,6 +4008,7 @@ export type Database = {
           inflow: boolean
           occurred_at: string
           paystack_ref: string | null
+          splash_seen: boolean
           status: Database["public"]["Enums"]["wallet_tx_status"]
           tx_hash: string
           type: Database["public"]["Enums"]["wallet_tx_type"]
@@ -4022,6 +4023,7 @@ export type Database = {
           inflow: boolean
           occurred_at?: string
           paystack_ref?: string | null
+          splash_seen?: boolean
           status?: Database["public"]["Enums"]["wallet_tx_status"]
           tx_hash: string
           type: Database["public"]["Enums"]["wallet_tx_type"]
@@ -4036,6 +4038,7 @@ export type Database = {
           inflow?: boolean
           occurred_at?: string
           paystack_ref?: string | null
+          splash_seen?: boolean
           status?: Database["public"]["Enums"]["wallet_tx_status"]
           tx_hash?: string
           type?: Database["public"]["Enums"]["wallet_tx_type"]

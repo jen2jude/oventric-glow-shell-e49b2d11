@@ -189,3 +189,62 @@ export const getWalletEarnings = createServerFn({ method: "GET" })
 
     return { cashbackUSD, marketplaceHome, marketplaceCurrency, affiliateUSD };
   });
+
+export interface WalletCreditSplashItem {
+  id: string;
+  type: WalletTxType;
+  amount: number;
+  currency: WalletCurrency;
+  occurredAt: string;
+}
+
+/**
+ * Incoming successful credits the user has not been shown the funding splash
+ * for yet. Read-only, scoped to the signed-in user.
+ */
+export const getUnseenWalletCredits = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ items: WalletCreditSplashItem[] }> => {
+    const { supabase, userId } = context;
+    const { data, error } = await supabase
+      .from("wallet_transactions")
+      .select("id, type, amount, currency, occurred_at")
+      .eq("user_id", userId)
+      .eq("inflow", true)
+      .eq("status", "success")
+      .eq("splash_seen", false)
+      .order("occurred_at", { ascending: true })
+      .limit(20);
+    if (error) throw new Error(error.message);
+    const items: WalletCreditSplashItem[] = (data ?? []).map((r) => ({
+      id: r.id as string,
+      type: r.type as WalletTxType,
+      amount: Number(r.amount),
+      currency: r.currency as WalletCurrency,
+      occurredAt: r.occurred_at as string,
+    }));
+    return { items };
+  });
+
+/**
+ * Mark funding-splash credits as seen. Uses the privileged client because
+ * users must never get a general UPDATE grant on their ledger rows — this
+ * only ever flips splash_seen on rows owned by the caller.
+ */
+export const markWalletCreditsSeen = createServerFn({ method: "POST" })
+  .inputValidator((input: { ids?: unknown }) => ({
+    ids: Array.isArray(input?.ids) ? (input.ids as unknown[]).filter((v): v is string => typeof v === "string").slice(0, 50) : [],
+  }))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ ok: boolean }> => {
+    if (data.ids.length === 0) return { ok: true };
+    const { userId } = context;
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("wallet_transactions")
+      .update({ splash_seen: true })
+      .eq("user_id", userId)
+      .in("id", data.ids);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });

@@ -31,6 +31,7 @@ import { MegaMenu } from "@/components/oventric/MegaMenu";
 import { NotificationsDrawer, useUnreadNotificationsCount } from "@/components/oventric/NotificationsDrawer";
 import { AddCapitalModal } from "@/components/oventric/wallet/AddCapitalModal";
 import { PayoutModal } from "@/components/oventric/wallet/PayoutModal";
+import { WalletCreditSplash } from "@/components/oventric/wallet/WalletCreditSplash";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/oventric-logo-dark.png";
 import { walletTxLabel } from "@/lib/wallet-tx-labels";
@@ -229,6 +230,7 @@ export function Wallet() {
 
       {addFundsOpen && <AddCapitalModal onClose={() => setAddFundsOpen(false)} />}
       {payoutOpen && <PayoutModal onClose={() => setPayoutOpen(false)} />}
+      <WalletCreditSplash enabled={isAuthenticated} />
     </div>
   );
 }
