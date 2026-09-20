@@ -13,6 +13,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { getAdminStats, getRecentActivity } from "@/lib/admin.functions";
+import { getAdminActivityCounts, type AdminActivityCounts, type AdminActivitySection } from "@/lib/admin-activity.functions";
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({
@@ -37,6 +38,7 @@ interface Stats {
 function AdminOverview() {
   const statsFn = useServerFn(getAdminStats);
   const activityFn = useServerFn(getRecentActivity);
+  const activityCountsFn = useServerFn(getAdminActivityCounts);
   const [stats, setStats] = useState<Stats | null>(null);
   const [activity, setActivity] = useState<Awaited<ReturnType<typeof getRecentActivity>> | null>(
     null,
@@ -44,13 +46,15 @@ function AdminOverview() {
   const [err, setErr] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<number>(0);
   const [refreshing, setRefreshing] = useState(false);
+  const [activityCounts, setActivityCounts] = useState<AdminActivityCounts>({});
 
   const load = useCallback(async () => {
     setRefreshing(true);
     try {
-      const [s, a] = await Promise.all([statsFn(), activityFn()]);
+      const [s, a, counts] = await Promise.all([statsFn(), activityFn(), activityCountsFn()]);
       setStats(s);
       setActivity(a);
+      setActivityCounts(counts);
       setLastUpdated(Date.now());
       setErr(null);
     } catch (e) {
@@ -58,7 +62,7 @@ function AdminOverview() {
     } finally {
       setRefreshing(false);
     }
-  }, [statsFn, activityFn]);
+  }, [statsFn, activityFn, activityCountsFn]);
 
   useEffect(() => {
     load();
@@ -80,6 +84,7 @@ function AdminOverview() {
     icon: typeof Users;
     tint: string;
     to: string;
+    activitySection?: AdminActivitySection;
   }> = [
     {
       label: "Users",
@@ -87,6 +92,7 @@ function AdminOverview() {
       icon: Users,
       tint: "text-blue-300 bg-blue-500/10 border-blue-500/30",
       to: "/admin/users",
+      activitySection: "/admin/users",
     },
     {
       label: "Products",
@@ -94,6 +100,7 @@ function AdminOverview() {
       icon: Package,
       tint: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
       to: "/admin/products",
+      activitySection: "/admin/products",
     },
     {
       label: "Orders",
@@ -101,6 +108,7 @@ function AdminOverview() {
       icon: ShoppingBag,
       tint: "text-amber-300 bg-amber-500/10 border-amber-500/30",
       to: "/admin/orders",
+      activitySection: "/admin/orders",
     },
     {
       label: "Revenue (USD)",
@@ -108,6 +116,7 @@ function AdminOverview() {
       icon: DollarSign,
       tint: "text-fuchsia-300 bg-fuchsia-500/10 border-fuchsia-500/30",
       to: "/admin/system-wallets",
+      activitySection: "/admin/system-wallets",
     },
     {
       label: "Active Campaigns",
@@ -122,6 +131,7 @@ function AdminOverview() {
       icon: Flag,
       tint: "text-red-300 bg-red-500/10 border-red-500/30",
       to: "/admin/reports",
+      activitySection: "/admin/reports",
     },
     {
       label: "Wallet Txns",
@@ -129,6 +139,7 @@ function AdminOverview() {
       icon: Activity,
       tint: "text-violet-300 bg-violet-500/10 border-violet-500/30",
       to: "/admin/ledger",
+      activitySection: "/admin/ledger",
     },
   ];
 
@@ -157,16 +168,27 @@ function AdminOverview() {
       </header>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
-        {kpis.map((k) => (
+        {kpis.map((k) => {
+          const newCount = k.activitySection ? activityCounts[k.activitySection] ?? 0 : 0;
+          return (
           <Link
             key={k.label}
             to={k.to}
-            className="bg-[#141418] border border-white/10 rounded-xl p-4 hover:border-emerald-500/40 hover:bg-white/[0.03] transition-colors group"
+            className={`relative bg-[#141418] border rounded-xl p-4 transition-colors group ${
+              newCount > 0
+                ? "border-red-500/60 bg-red-500/[0.08] shadow-[0_0_22px_rgba(239,68,68,0.18)] animate-pulse"
+                : "border-white/10 hover:border-emerald-500/40 hover:bg-white/[0.03]"
+            }`}
           >
             <div className="flex items-center justify-between mb-2">
               <div className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">
                 {k.label}
               </div>
+              {newCount > 0 && (
+                <span className="absolute -top-2 -right-2 min-w-[22px] h-[22px] px-1.5 rounded-full bg-red-500 text-white text-[10px] font-black flex items-center justify-center ring-2 ring-[#0b0b0d]">
+                  {newCount > 99 ? "99+" : newCount}
+                </span>
+              )}
               <div
                 className={`w-7 h-7 rounded-[10px] border flex items-center justify-center ${k.tint}`}
               >
@@ -177,7 +199,8 @@ function AdminOverview() {
               {k.value}
             </div>
           </Link>
-        ))}
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

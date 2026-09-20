@@ -37,8 +37,14 @@ import {
 import { canAccessSection, type ManagementRole } from "@/lib/admin-roles";
 
 import { supabase } from "@/integrations/supabase/client";
-import { checkIsAdmin, adminGetPendingProductsCount } from "@/lib/admin.functions";
-import { adminGetPendingPayoutCount } from "@/lib/payouts.functions";
+import { checkIsAdmin } from "@/lib/admin.functions";
+import {
+  ADMIN_ACTIVITY_SECTIONS,
+  getAdminActivityCounts,
+  markAdminActivitySeen,
+  type AdminActivityCounts,
+  type AdminActivitySection,
+} from "@/lib/admin-activity.functions";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -139,14 +145,13 @@ const SIDEBAR_COLLAPSED_KEY = "oventric:admin-sidebar-collapsed";
 
 function AdminLayout() {
   const check = useServerFn(checkIsAdmin);
-  const getPendingPayouts = useServerFn(adminGetPendingPayoutCount);
-  const getPendingProducts = useServerFn(adminGetPendingProductsCount);
+  const getActivityCounts = useServerFn(getAdminActivityCounts);
+  const markActivitySeen = useServerFn(markAdminActivitySeen);
   const router = useRouter();
   const location = useLocation();
   const [state, setState] = useState<"loading" | "unauth" | "forbidden" | "ok">("loading");
   const [roles, setRoles] = useState<ManagementRole[]>([]);
-  const [pendingPayouts, setPendingPayouts] = useState(0);
-  const [pendingProducts, setPendingProducts] = useState(0);
+  const [activityCounts, setActivityCounts] = useState<AdminActivityCounts>({});
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
@@ -196,10 +201,9 @@ function AdminLayout() {
     let cancelled = false;
     const load = async () => {
       try {
-        const [payouts, products] = await Promise.all([getPendingPayouts(), getPendingProducts()]);
+        const counts = await getActivityCounts();
         if (cancelled) return;
-        setPendingPayouts(payouts.count);
-        setPendingProducts(products.count);
+        setActivityCounts(counts);
       } catch {
         /* ignore */
       }
@@ -210,7 +214,28 @@ function AdminLayout() {
       cancelled = true;
       window.clearInterval(id);
     };
-  }, [state, getPendingPayouts, getPendingProducts]);
+  }, [state, getActivityCounts]);
+
+  useEffect(() => {
+    if (state !== "ok") return;
+    const section = ADMIN_ACTIVITY_SECTIONS.find((item) => item === location.pathname);
+    if (!section || !canAccessSection(section, roles)) return;
+    let cancelled = false;
+    const timer = window.setTimeout(async () => {
+      try {
+        await markActivitySeen({ data: { section } });
+        if (!cancelled) {
+          setActivityCounts((current) => ({ ...current, [section]: 0 }));
+        }
+      } catch {
+        /* keep the alert visible if marking it seen fails */
+      }
+    }, 900);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [state, location.pathname, roles, markActivitySeen]);
 
   const visibleNav = useMemo(() => NAV.filter((n) => canAccessSection(n.to, roles)), [roles]);
   const currentAllowed = canAccessSection(location.pathname, roles);
@@ -294,19 +319,9 @@ function AdminLayout() {
         <nav className="flex-1 p-2 flex flex-col gap-0.5 overflow-y-auto overflow-x-hidden">
           {visibleNav.map((n, i) => {
             const showGroup = !collapsed && (i === 0 || visibleNav[i - 1]!.group !== n.group);
-            const badgeCount =
-              n.to === "/admin/payouts"
-                ? pendingPayouts
-                : n.to === "/admin/products"
-                  ? pendingProducts
-                  : 0;
+            const badgeCount = activityCounts[n.to as AdminActivitySection] ?? 0;
             const alert = badgeCount > 0;
-            const badgeLabel =
-              n.to === "/admin/payouts"
-                ? `${badgeCount} pending payouts`
-                : n.to === "/admin/products"
-                  ? `${badgeCount} listings awaiting approval`
-                  : `${badgeCount} pending`;
+            const badgeLabel = `${badgeCount} new or pending ${n.label.toLowerCase()} item${badgeCount === 1 ? "" : "s"}`;
             return (
               <div key={n.to}>
                 {showGroup && (
