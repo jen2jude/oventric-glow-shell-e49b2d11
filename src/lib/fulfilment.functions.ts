@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { OrderCurrency } from "@/lib/marketplace.functions";
+import { imageStorage } from "@/lib/storage/images.server";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -71,7 +72,7 @@ async function party(sb: any, userId: string): Promise<FulfilmentParty> {
     .maybeSingle();
   let avatarUrl: string | null = null;
   if (p?.avatar_path) {
-    const { data: sig } = await sb.storage.from("avatars").createSignedUrl(p.avatar_path, 60 * 60 * 24);
+    const { data: sig } = await (await imageStorage()).from("avatars").createSignedUrl(p.avatar_path, 60 * 60 * 24);
     avatarUrl = sig?.signedUrl ?? null;
   }
   return {

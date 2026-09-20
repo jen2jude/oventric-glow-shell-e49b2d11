@@ -5,6 +5,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
 import { REACTION_TYPES, type ReactionType } from "@/lib/posts.functions";
+import { imageStorage } from "@/lib/storage/images.server";
 
 const CreateInput = z.object({
   postId: z.string().uuid(),
@@ -102,7 +103,7 @@ export const listComments = createServerFn({ method: "GET" })
         new Set((profs ?? []).map((p: any) => p.avatar_path).filter((p: any): p is string => !!p)),
       );
       if (paths.length) {
-        const { data: signed } = await sb.storage.from("avatars").createSignedUrls(paths, 60 * 60 * 6);
+        const { data: signed } = await (await imageStorage()).from("avatars").createSignedUrls(paths, 60 * 60 * 6);
         (signed ?? []).forEach((s) => {
           if (s.path && s.signedUrl) avatarByPath.set(s.path, s.signedUrl);
         });

@@ -4,6 +4,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
+import { imageStorage } from "@/lib/storage/images.server";
 
 export type ReactionType = "love" | "like" | "dislike" | "laugh" | "crown";
 export const REACTION_TYPES: ReactionType[] = ["love", "like", "dislike", "laugh", "crown"];
@@ -176,7 +177,7 @@ async function buildFeedPosts(
   );
   const avatarByPath = new Map<string, string>();
   if (avatarPaths.length) {
-    const { data: signed } = await sb.storage.from("avatars").createSignedUrls(avatarPaths, 60 * 60 * 6);
+    const { data: signed } = await (await imageStorage()).from("avatars").createSignedUrls(avatarPaths, 60 * 60 * 6);
     (signed ?? []).forEach((s) => { if (s.path && s.signedUrl) avatarByPath.set(s.path, s.signedUrl); });
   }
 
@@ -301,8 +302,7 @@ async function buildFeedPosts(
           new Set((vRows ?? []).map((v: any) => v.avatar_path).filter(Boolean)),
         ) as string[];
         if (vPaths.length) {
-          const { data: signedV } = await sb.storage
-            .from("avatars")
+          const { data: signedV } = await (await imageStorage()).from("avatars")
             .createSignedUrls(vPaths, 60 * 60 * 6);
           (signedV ?? []).forEach((s) => {
             if (s.path && s.signedUrl) avatarByPath.set(s.path, s.signedUrl);
@@ -316,8 +316,7 @@ async function buildFeedPosts(
       ) as string[];
       const coverByPath = new Map<string, string>();
       if (coverPaths.length) {
-        const { data: signedC } = await sb.storage
-          .from("product-covers")
+        const { data: signedC } = await (await imageStorage()).from("product-covers")
           .createSignedUrls(coverPaths, 60 * 60 * 24 * 7);
         (signedC ?? []).forEach((s) => {
           if (s.path && s.signedUrl) coverByPath.set(s.path, s.signedUrl);
@@ -821,8 +820,7 @@ export const searchMentionCandidates = createServerFn({ method: "GET" })
     const paths = list.map((p) => p.avatar_path).filter((p): p is string => !!p);
     const map = new Map<string, string>();
     if (paths.length) {
-      const { data: signed } = await context.supabase.storage
-        .from("avatars")
+      const { data: signed } = await (await imageStorage()).from("avatars")
         .createSignedUrls(paths, 60 * 60);
       (signed ?? []).forEach((s) => {
         if (s.path && s.signedUrl) map.set(s.path, s.signedUrl);
