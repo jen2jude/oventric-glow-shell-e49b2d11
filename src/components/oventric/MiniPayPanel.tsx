@@ -151,7 +151,9 @@ export function MiniPayPanel({
         <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <h2 className="text-sm font-black text-white">Pay with {MANUAL_RAIL_LABEL[rail]}</h2>
+            <h2 className="text-sm font-black text-white">
+              Pay with {destination?.label ?? MANUAL_RAIL_LABEL[rail]}
+            </h2>
           </div>
           <button
             onClick={onClose}
