@@ -287,6 +287,17 @@ export function Messages({
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
+  const [attachment, setAttachment] = useState<{
+    file: File;
+    previewUrl: string | null;
+    path: string | null;
+    uploading: boolean;
+    error: string | null;
+  } | null>(null);
+  const [attachmentUrls, setAttachmentUrls] = useState<Record<string, string>>({});
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const getUploadUrl = useServerFn(getMessageMediaUploadUrl);
+  const getAttachmentUrls = useServerFn(getMessageAttachmentUrls);
   const [orderCtx, setOrderCtx] = useState<PeerOrderContext | null>(null);
   const [showListOnMobile, setShowListOnMobile] = useState(!initialThreadId);
   const [onlinePeers, setOnlinePeers] = useState<Map<string, OnlinePeer>>(new Map());
