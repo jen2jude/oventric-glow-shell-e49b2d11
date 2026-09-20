@@ -35,7 +35,7 @@ import { initPayment, getPaymentOptions } from "@/lib/payments.functions";
 import { getServicePackages, type ServicePackage } from "@/lib/services.functions";
 import { ServiceBriefForm, BRIEF_FIELDS, type BriefState } from "@/components/oventric/services/ServiceBriefForm";
 import { MiniPayPanel } from "@/components/oventric/MiniPayPanel";
-import { CRYPTO_DESTINATIONS } from "@/lib/payments/active-rails";
+import { CRYPTO_DESTINATIONS, VIRTUAL_BANK_DESTINATIONS } from "@/lib/payments/active-rails";
 import { usdRate, convertViaSnapshot, formatMoney } from "@/lib/fx-display";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { useIsAppShell } from "@/hooks/use-launch-context";
@@ -236,13 +236,12 @@ function optionsForTab(tab: PayTabId, country: string | null): PayOption[] {
   if (tab === "virtual") {
     return [
       {
-        key: "grey",
-        label: "Grey",
-        hint: "Account details coming soon",
+        key: "grey-usd",
+        label: "Grey USD",
+        hint: "US dollar bank transfer — manual confirmation",
         method: "bank_transfer",
         gateway: "minipay",
         usd: true,
-        soon: true,
       },
       {
         key: "eversend",
@@ -1326,7 +1325,11 @@ function CheckoutPage() {
           targetId={product.id}
           quantity={qty}
           currency={usdRail ? "USD" : homeCurrency}
-          destination={CRYPTO_DESTINATIONS[optionKey] ?? null}
+          destination={
+            (payTab === "virtual"
+              ? VIRTUAL_BANK_DESTINATIONS[optionKey]
+              : CRYPTO_DESTINATIONS[optionKey]) ?? null
+          }
           productName={product.name}
           chatHref={product.sellerId ? `/messages?dm=${product.sellerId}` : null}
           onClose={() => setMinipayOpen(false)}
