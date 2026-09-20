@@ -489,12 +489,17 @@ function CheckoutPage() {
   useEffect(() => {
     let cancelled = false;
     supabase.auth.getUser().then(({ data }) => {
-      if (!cancelled && data.user?.email) setDeliveryEmail((prev) => prev || data.user!.email!);
+      if (cancelled) return;
+      setViewerId(data.user?.id ?? null);
+      if (data.user?.email) setDeliveryEmail((prev) => prev || data.user!.email!);
     });
     return () => {
       cancelled = true;
     };
   }, []);
+
+  // A seller can never buy their own listing (the server rejects it too).
+  const isOwnListing = Boolean(product && viewerId && product.sellerId === viewerId);
 
   const isDigital = product?.kind === "digital";
   const needsDelivery = Boolean(isDigital);
