@@ -138,7 +138,6 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
   const actions = [
     { label: "Add funds", icon: Plus, primary: true, onClick: () => requireAuth(() => setAddFundsOpen(true)) },
     { label: "Withdraw", icon: ArrowUp, onClick: () => requireAuth(() => setPayoutOpen(true)) },
-    { label: "Request", icon: ArrowDown, onClick: () => requireAuth(() => toast.info("Payment requests are coming soon")) },
   ];
 
   const subWallets = [
@@ -244,7 +243,7 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
               <Button asChild variant="ghost" className="wallet-action-button h-auto min-h-24 flex-col gap-2 rounded-[10px] border border-wallet-line bg-wallet-panel p-3 text-wallet-copy shadow-wallet-card hover:bg-wallet-panel-raised hover:text-wallet-copy">
                 <Link to="/wallet/ledger"><span className="wallet-action-icon"><History className="text-wallet-rich" /></span><span className="text-xs font-semibold">Transaction history</span></Link>
               </Button>
-              <Button variant="ghost" onClick={() => actions[2]?.onClick()} className="wallet-action-button h-auto min-h-24 flex-col gap-2 rounded-[10px] border border-wallet-line bg-wallet-panel p-3 text-wallet-copy shadow-wallet-card hover:bg-wallet-panel-raised hover:text-wallet-copy">
+              <Button variant="ghost" onClick={() => requireAuth(() => toast.info("Payment methods are managed during checkout"))} className="wallet-action-button h-auto min-h-24 flex-col gap-2 rounded-[10px] border border-wallet-line bg-wallet-panel p-3 text-wallet-copy shadow-wallet-card hover:bg-wallet-panel-raised hover:text-wallet-copy">
                 <span className="wallet-action-icon"><CircleDollarSign className="text-wallet-rich" /></span><span className="text-xs font-semibold">Payment methods</span>
               </Button>
             </div>
@@ -256,7 +255,7 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
           <Button asChild className="shrink-0 bg-wallet-rich text-wallet-on-rich shadow-none hover:bg-wallet-rich-strong"><Link to="/marketplace">Shop now <ChevronRight /></Link></Button>
         </section>
 
-        <section className="wallet-breakdown-section py-3">
+        <section className="wallet-breakdown-section py-3 md:hidden">
           <div className="wallet-breakdown-grid grid grid-cols-1 gap-3 sm:grid-cols-3">
             {subWallets.map((wallet) => {
               const content = <><div className="flex items-center justify-between"><span className={`flex h-9 w-9 items-center justify-center rounded-[10px] ${wallet.tone}`}><wallet.icon className="h-4 w-4" /></span><ChevronRight className="h-4 w-4 text-wallet-copy-faint" /></div><p className="mt-3 text-[11px] text-wallet-copy-muted">{wallet.label}</p><p className="mt-1 font-wallet-display text-lg font-bold tabular-nums text-wallet-copy">{mask(wallet.value)}</p><p className="mt-1 text-[10px] text-wallet-copy-faint">{wallet.sub}</p></>;

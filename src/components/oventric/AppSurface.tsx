@@ -433,7 +433,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
           {!isDesktop && !desktopLanding && (
             <Sidebar onCreate={handleCreate} active={active} onSelect={setActive} />
           )}
-          {isDesktop && !desktopLanding && !isMessages && active !== "Wallet" && <DesktopAppSidebar onSelect={setActive} />}
+          {isDesktop && !desktopLanding && !isMessages && liveSection(active) !== "Wallet" && <DesktopAppSidebar onSelect={setActive} />}
 
           <main
             id={desktopLanding ? "desktop-home-scroll" : undefined}
