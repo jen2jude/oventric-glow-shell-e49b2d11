@@ -421,6 +421,27 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_activity_reads: {
+        Row: {
+          section: string
+          seen_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          section: string
+          seen_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          section?: string
+          seen_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       affiliate_reservations: {
         Row: {
           country: string | null

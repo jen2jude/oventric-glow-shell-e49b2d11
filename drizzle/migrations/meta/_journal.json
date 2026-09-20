@@ -218,6 +218,13 @@
       "when": 1789887133950,
       "tag": "0030_create_visitor_events",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1789896749019,
+      "tag": "0031_create_admin_activity_reads",
+      "breakpoints": true
     }
   ]
 }
