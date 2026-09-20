@@ -51,12 +51,16 @@ function AdminOverview() {
   const load = useCallback(async () => {
     setRefreshing(true);
     try {
-      const [s, a, counts] = await Promise.all([statsFn(), activityFn(), activityCountsFn()]);
+      const [s, a] = await Promise.all([statsFn(), activityFn()]);
       setStats(s);
       setActivity(a);
-      setActivityCounts(counts);
       setLastUpdated(Date.now());
       setErr(null);
+      void activityCountsFn()
+        .then(setActivityCounts)
+        .catch(() => {
+          /* Activity alerts must never block the admin overview. */
+        });
     } catch (e) {
       setErr((e as Error).message);
     } finally {
