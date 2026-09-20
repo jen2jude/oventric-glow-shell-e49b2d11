@@ -33,7 +33,9 @@ import {
   deleteUserAdmin,
   deleteUsersBulkAdmin,
   adminResetWallet,
+  adminCreditWallet,
 } from "@/lib/admin.functions";
+import { CURRENCY_CODES } from "@/lib/currency/africa";
 
 export const Route = createFileRoute("/admin/users")({
   validateSearch: (s: Record<string, unknown>) => ({
