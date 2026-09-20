@@ -1172,6 +1172,45 @@ export function Messages({
                   </span>
                 </div>
               )}
+              {attachment && (
+                <div className="mb-2 flex items-center gap-2 rounded-[10px] border border-border bg-muted/50 px-2.5 py-2">
+                  {attachment.previewUrl ? (
+                    <img
+                      src={attachment.previewUrl}
+                      alt=""
+                      className="size-10 rounded-[8px] object-cover border border-border"
+                    />
+                  ) : (
+                    <span className="grid size-10 place-items-center rounded-[8px] border border-border bg-background text-muted-foreground">
+                      <FileText className="w-4 h-4" />
+                    </span>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-xs font-medium text-foreground">
+                      {attachment.file.name}
+                    </div>
+                    {attachment.uploading ? (
+                      <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                        <Loader2 className="w-3 h-3 animate-spin" /> Uploading…
+                      </div>
+                    ) : attachment.error ? (
+                      <div className="flex items-center gap-1 text-[10px] text-destructive">
+                        <AlertTriangle className="w-3 h-3" /> {attachment.error}
+                      </div>
+                    ) : (
+                      <div className="text-[10px] text-muted-foreground">Ready to send</div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={clearAttachment}
+                    aria-label="Remove attachment"
+                    className="rounded-[8px] p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
                <PromptInput
                  onSubmit={() => void send()}
                  className="rounded-2xl border-border bg-muted/50 shadow-none transition-shadow focus-within:bg-background focus-within:shadow-sm"
