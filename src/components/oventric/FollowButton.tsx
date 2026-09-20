@@ -153,7 +153,7 @@ export function FollowButton({ targetId, className, compact, onStatusChange }: P
       <button
         onClick={() => act(() => cancel({ data: { targetId } }))}
         disabled={busy}
-        className={`${base} bg-yellow-500/10 border border-yellow-500/40 text-yellow-300 hover:bg-yellow-500/15 ${className ?? ""}`}
+        className={`${base} bg-amber-400 border border-amber-400 text-amber-950 hover:bg-amber-300 ${className ?? ""}`}
       >
         {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Clock className="w-4 h-4" />}
         {label.requested}
