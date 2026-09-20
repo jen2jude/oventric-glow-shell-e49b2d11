@@ -120,6 +120,17 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
 
     const walletRows = (wallets.data ?? []) as Array<{ currency: string; available_balance: number; escrow_balance: number }>;
     const home = walletRows.find((w) => w.currency === homeCurrency) ?? null;
+    // Sales still inside the escrow clock sit as pending inflow ledger rows.
+    const { data: pendingInflow } = await sb
+      .from("wallet_transactions")
+      .select("amount, currency")
+      .eq("user_id", me)
+      .eq("inflow", true)
+      .eq("status", "pending");
+    const pendingEscrowHome = ((pendingInflow ?? []) as Array<{ amount: number; currency: string }>)
+      .filter((r) => r.currency === homeCurrency)
+      .reduce((s, r) => s + Number(r.amount ?? 0), 0);
+
 
     const orderRows = (ordersRes.data ?? []) as Array<{
       status: string;
