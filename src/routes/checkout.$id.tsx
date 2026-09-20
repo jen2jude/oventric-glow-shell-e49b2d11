@@ -697,6 +697,13 @@ function CheckoutPage() {
           </div>
         )}
 
+        {isOwnListing && (
+          <div className={`${isAppShell ? "bg-white/[0.03] border-amber-400/20 mx-4" : "bg-amber-50 border-amber-200"} border rounded-[10px] p-4 text-sm text-amber-700 mb-4`}>
+            This is your own listing — you can't purchase it. Open it from your shop to edit or
+            share it instead.
+          </div>
+        )}
+
         {!product && !loadErr && (
           <div className={`flex items-center gap-2 text-sm ${isAppShell ? "text-slate-500 px-4" : "text-slate-500"}`}>
             <Loader2 className="w-4 h-4 animate-spin" /> Loading order…
