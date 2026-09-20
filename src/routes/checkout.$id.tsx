@@ -35,6 +35,7 @@ import { initPayment, getPaymentOptions } from "@/lib/payments.functions";
 import { getServicePackages, type ServicePackage } from "@/lib/services.functions";
 import { ServiceBriefForm, BRIEF_FIELDS, type BriefState } from "@/components/oventric/services/ServiceBriefForm";
 import { MiniPayPanel } from "@/components/oventric/MiniPayPanel";
+import { CRYPTO_DESTINATIONS } from "@/lib/payments/active-rails";
 import { usdRate, convertViaSnapshot, formatMoney } from "@/lib/fx-display";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { useIsAppShell } from "@/hooks/use-launch-context";
@@ -215,24 +216,21 @@ function optionsForTab(tab: PayTabId, country: string | null): PayOption[] {
     return list;
   }
   if (tab === "crypto") {
+    const crypto = (key: string, hint: string): PayOption => ({
+      key,
+      label: CRYPTO_DESTINATIONS[key]!.label,
+      hint,
+      method: "card",
+      gateway: "binance",
+      usd: true,
+    });
     return [
-      {
-        key: "binance",
-        label: "Binance Pay",
-        hint: "Send USDT to our Binance ID, upload the receipt",
-        method: "card",
-        gateway: "binance",
-        usd: true,
-      },
-      {
-        key: "bybit",
-        label: "Bybit Pay",
-        hint: "Account details coming soon",
-        method: "card",
-        gateway: "binance",
-        usd: true,
-        soon: true,
-      },
+      crypto("binance", "Send to our Binance User ID, upload the receipt"),
+      crypto("bybit", "Send to our Bybit User ID, upload the receipt"),
+      crypto("usdt-trc20", "TRON network — send USDT to our TRC20 wallet"),
+      crypto("usdt-bep20", "BNB Smart Chain — send USDT to our BEP20 wallet"),
+      crypto("usdc-bep20", "BNB Smart Chain — send USDC to our BEP20 wallet"),
+      crypto("usdc-solana", "Solana network — send USDC to our SPL wallet"),
     ];
   }
   if (tab === "virtual") {
@@ -812,8 +810,25 @@ function CheckoutPage() {
                 >
                   This payment is settled in US dollars — send{" "}
                   <span className="font-bold">{formatMoney(totalUSD, "USD")}</span>, then upload your
-                  receipt. Our team verifies it and releases your order.
+                  receipt.
                 </p>
+              )}
+
+              {activeOption && activeOption.gateway !== "paystack" && !activeOption.soon && (
+                <div
+                  className={`flex items-start gap-2 text-[11px] rounded-[10px] p-3 ${
+                    isAppShell
+                      ? "text-amber-300 bg-amber-500/5 border border-amber-500/20"
+                      : "text-amber-800 bg-amber-50 border border-amber-200"
+                  }`}
+                >
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                  <span>
+                    Only card payments confirm automatically. This one is confirmed manually — after
+                    paying, send your Order / Payment ID to the seller in chat so it&apos;s confirmed
+                    quickly. We copy the order details for you on the payment screen.
+                  </span>
+                </div>
               )}
 
 
@@ -1311,6 +1326,9 @@ function CheckoutPage() {
           targetId={product.id}
           quantity={qty}
           currency={usdRail ? "USD" : homeCurrency}
+          destination={CRYPTO_DESTINATIONS[optionKey] ?? null}
+          productName={product.name}
+          chatHref={product.sellerId ? `/messages?dm=${product.sellerId}` : null}
           onClose={() => setMinipayOpen(false)}
         />
       )}

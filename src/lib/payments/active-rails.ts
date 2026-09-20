@@ -35,6 +35,66 @@ export function isManualRail(value: string): value is ManualRail {
 /** Oventric's Binance account buyers send manual transfers to. */
 export const BINANCE_USER_ID = "542612773";
 
+/** Oventric's Bybit account buyers send manual transfers to. */
+export const BYBIT_USER_ID = "578845976";
+
+/**
+ * Manual crypto destinations shown at checkout. They all settle through the
+ * existing manual (proof-of-payment) rail — no new settlement mechanism.
+ */
+export interface ManualDestination {
+  key: string;
+  label: string;
+  /** What the buyer copies: exchange user ID or on-chain wallet address. */
+  address: string;
+  /** Row label for the copyable value. */
+  addressLabel: string;
+  network?: string;
+}
+
+export const CRYPTO_DESTINATIONS: Record<string, ManualDestination> = {
+  binance: {
+    key: "binance",
+    label: "Binance Pay",
+    address: BINANCE_USER_ID,
+    addressLabel: "Binance User ID",
+  },
+  bybit: {
+    key: "bybit",
+    label: "Bybit Pay",
+    address: BYBIT_USER_ID,
+    addressLabel: "Bybit User ID",
+  },
+  "usdt-trc20": {
+    key: "usdt-trc20",
+    label: "USDT (TRC20)",
+    address: "TVecd8nE4eUPPTbtXjzPS2Mcrz7eqa2WBZ",
+    addressLabel: "USDT TRC20 wallet address",
+    network: "TRON (TRC20)",
+  },
+  "usdt-bep20": {
+    key: "usdt-bep20",
+    label: "USDT (BEP20)",
+    address: "0xA20104107AC03DeAbDf219a484b0f1db2De428Cd",
+    addressLabel: "USDT BEP20 wallet address",
+    network: "BNB Smart Chain (BEP20)",
+  },
+  "usdc-bep20": {
+    key: "usdc-bep20",
+    label: "USDC (BEP20)",
+    address: "0x6E0981DB0FC0679bDa1459162ae7316A1F2C271B",
+    addressLabel: "USDC BEP20 wallet address",
+    network: "BNB Smart Chain (BEP20)",
+  },
+  "usdc-solana": {
+    key: "usdc-solana",
+    label: "USDC (Solana)",
+    address: "CrGztHnYi4S7xB7vJKUspq9tRURk6Yic2qP7eDc7XMYr",
+    addressLabel: "USDC Solana wallet address",
+    network: "Solana (SPL)",
+  },
+};
+
 /** Fallback MiniPay handle when the settings row has none. */
 export const MINIPAY_HANDLE_FALLBACK = "oventric";
 

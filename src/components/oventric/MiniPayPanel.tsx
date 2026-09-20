@@ -9,7 +9,12 @@ import {
   attachManualProof,
 } from "@/lib/manual-payments.functions";
 import { formatMoney } from "@/lib/fx-display";
-import { BINANCE_USER_ID, MANUAL_RAIL_LABEL, type ManualRail } from "@/lib/payments/active-rails";
+import {
+  BINANCE_USER_ID,
+  MANUAL_RAIL_LABEL,
+  type ManualDestination,
+  type ManualRail,
+} from "@/lib/payments/active-rails";
 import minipayQrAsset from "@/assets/minipay-qr.jpg.asset.json";
 
 interface Props {
@@ -22,6 +27,12 @@ interface Props {
   /** Bounty funding only — the poster's chosen amount, in `currency`. */
   amount?: number;
   currency: string;
+  /** Crypto rail: which exchange ID / wallet address the buyer must pay. */
+  destination?: ManualDestination | null;
+  /** Shown in the copied order summary the buyer sends the seller. */
+  productName?: string | null;
+  /** Direct chat link to the seller, e.g. /messages?dm=<sellerId>. */
+  chatHref?: string | null;
   onClose: () => void;
 }
 
@@ -37,6 +48,9 @@ export function MiniPayPanel({
   couponCode = null,
   amount,
   currency,
+  destination = null,
+  productName = null,
+  chatHref = null,
   onClose,
 }: Props) {
   const create = useServerFn(createManualPayment);
@@ -63,6 +77,7 @@ export function MiniPayPanel({
     instructions: null,
   });
   const [payerRef, setPayerRef] = useState("");
+  const [orderSummary, setOrderSummary] = useState("");
   const [uploading, setUploading] = useState(false);
   const [done, setDone] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
@@ -82,6 +97,22 @@ export function MiniPayPanel({
           currency: res.payment.currency,
         });
         setInstructions(res.instructions);
+        // Put the order details on the clipboard straight away so the buyer can
+        // paste them to the seller in chat without typing anything.
+        const summary = [
+          `Oventric payment — ${MANUAL_RAIL_LABEL[rail]}${destination ? ` (${destination.label})` : ""}`,
+          productName ? `Item: ${productName}` : null,
+          `Order / Payment ID: ${res.payment.reference}`,
+          `Amount: ${formatMoney(res.payment.amount, res.payment.currency)}`,
+          "I have sent this payment — please confirm.",
+        ]
+          .filter(Boolean)
+          .join("\n");
+        setOrderSummary(summary);
+        navigator.clipboard?.writeText(summary).then(
+          () => toast.success("Order ID copied", { description: "Paste it to the seller in chat." }),
+          () => undefined,
+        );
       })
       .catch((e: Error) => setError(e.message || "Could not start this payment"))
       .finally(() => setLoading(false));
@@ -120,7 +151,9 @@ export function MiniPayPanel({
         <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <h2 className="text-sm font-black text-white">Pay with {MANUAL_RAIL_LABEL[rail]}</h2>
+            <h2 className="text-sm font-black text-white">
+              Pay with {destination?.label ?? MANUAL_RAIL_LABEL[rail]}
+            </h2>
           </div>
           <button
             onClick={onClose}
@@ -162,9 +195,14 @@ export function MiniPayPanel({
                 <div className="text-[11px] uppercase tracking-wider text-emerald-300/90 font-bold mb-1">
                   Amount to send
                 </div>
-                <div className="text-3xl font-black text-white">
+                <button
+                  onClick={() => copy(String(payment.amount))}
+                  className="text-3xl font-black text-white inline-flex items-center gap-2 hover:opacity-90"
+                  aria-label="Copy amount"
+                >
                   {formatMoney(payment.amount, payment.currency)}
-                </div>
+                  <Copy className="w-4 h-4 text-emerald-300" />
+                </button>
                 <p className="mt-3 text-[10px] text-amber-300/90 font-medium bg-amber-500/10 py-1.5 px-3 rounded-full border border-amber-500/20">
                   Pay the full amount or your transaction won't be confirmed
                 </p>
@@ -175,6 +213,16 @@ export function MiniPayPanel({
                   <Row label="MiniPay Account Number" value="+234 803 434 7661" onCopy={copy} />
                   <Row label="MiniPay handle" value={instructions.handle ?? "oventric"} onCopy={copy} />
                 </>
+              ) : destination ? (
+                <>
+                  <Row label={destination.addressLabel} value={destination.address} onCopy={copy} />
+                  {destination.network && (
+                    <p className="text-[11px] text-amber-300/90">
+                      Send only on <span className="font-bold">{destination.network}</span>. Funds
+                      sent on another network cannot be recovered.
+                    </p>
+                  )}
+                </>
               ) : (
                 <Row
                   label="Binance User ID"
@@ -182,7 +230,7 @@ export function MiniPayPanel({
                   onCopy={copy}
                 />
               )}
-              <Row label="Payment reference" value={payment.reference} onCopy={copy} />
+              <Row label="Order / Payment ID" value={payment.reference} onCopy={copy} />
 
               {instructions.instructions && (
                 <p className="text-xs text-slate-400 leading-relaxed whitespace-pre-line">
@@ -190,10 +238,33 @@ export function MiniPayPanel({
                 </p>
               )}
 
+              <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-4 space-y-3">
+                <p className="text-xs text-amber-200/90 leading-relaxed">
+                  This payment is confirmed manually — it is not automatic. After sending, message
+                  the seller your Order / Payment ID so your order is confirmed quickly. We already
+                  copied the full order details for you.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => copy(orderSummary || payment.reference)}
+                    className="flex-1 rounded-[10px] bg-white/10 hover:bg-white/15 text-white font-bold text-xs py-2"
+                  >
+                    Copy order details
+                  </button>
+                  {chatHref && (
+                    <a
+                      href={chatHref}
+                      className="flex-1 text-center rounded-[10px] bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs py-2"
+                    >
+                      Message seller
+                    </a>
+                  )}
+                </div>
+              </div>
+
               <div className="rounded-xl border border-white/10 bg-[#1E1E24] p-4">
                 <p className="text-xs text-slate-400 mb-3">
-                  Send the exact amount, add your transfer details, then upload your receipt. Only
-                  Oventric finance can confirm this payment — the seller cannot.
+                  Send the exact amount, add your transfer details, then upload your receipt.
                 </p>
                 <input
                   value={payerRef}
