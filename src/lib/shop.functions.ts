@@ -201,12 +201,9 @@ export const getShopDiscovery = createServerFn({ method: "GET" })
         .eq("status", "published")
         .order("published_at", { ascending: false })
         .limit(8),
-      sb
-        .from("bounties")
-        .select("id, title, price_usd, cover_path, category, status")
-        .eq("status", "active")
-        .order("price_usd", { ascending: false })
-        .limit(8),
+      // Bounties are a paused legacy feature and unreadable by public visitors.
+      Promise.resolve({ data: [] as Array<Record<string, unknown>> }),
+
       supabaseAdmin
         .from("courses")
         .select("id, title, category, cover_path, price_usd, is_free, instructor_name, is_published")
