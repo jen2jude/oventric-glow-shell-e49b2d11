@@ -89,7 +89,7 @@ export function FollowButton({ targetId, className, compact, onStatusChange }: P
     return (
       <a
         href="/auth"
-        className={`inline-flex items-center justify-center gap-2 px-4 py-3 rounded-[10px] bg-sky-500 hover:bg-sky-400 text-black font-semibold text-sm ${className ?? ""}`}
+        className={`inline-flex items-center justify-center gap-2 px-4 py-3 rounded-[10px] bg-[#E5484D] hover:bg-[#c73d42] text-white font-semibold text-sm ${className ?? ""}`}
       >
         <UserPlus className="w-4 h-4" /> Follow
       </a>
