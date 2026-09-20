@@ -810,8 +810,25 @@ function CheckoutPage() {
                 >
                   This payment is settled in US dollars — send{" "}
                   <span className="font-bold">{formatMoney(totalUSD, "USD")}</span>, then upload your
-                  receipt. Our team verifies it and releases your order.
+                  receipt.
                 </p>
+              )}
+
+              {activeOption && activeOption.gateway !== "paystack" && !activeOption.soon && (
+                <div
+                  className={`flex items-start gap-2 text-[11px] rounded-[10px] p-3 ${
+                    isAppShell
+                      ? "text-amber-300 bg-amber-500/5 border border-amber-500/20"
+                      : "text-amber-800 bg-amber-50 border border-amber-200"
+                  }`}
+                >
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                  <span>
+                    Only card payments confirm automatically. This one is confirmed manually — after
+                    paying, send your Order / Payment ID to the seller in chat so it&apos;s confirmed
+                    quickly. We copy the order details for you on the payment screen.
+                  </span>
+                </div>
               )}
 
 
