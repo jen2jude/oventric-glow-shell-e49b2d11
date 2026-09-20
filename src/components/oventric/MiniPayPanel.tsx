@@ -9,7 +9,12 @@ import {
   attachManualProof,
 } from "@/lib/manual-payments.functions";
 import { formatMoney } from "@/lib/fx-display";
-import { BINANCE_USER_ID, MANUAL_RAIL_LABEL, type ManualRail } from "@/lib/payments/active-rails";
+import {
+  BINANCE_USER_ID,
+  MANUAL_RAIL_LABEL,
+  type ManualDestination,
+  type ManualRail,
+} from "@/lib/payments/active-rails";
 import minipayQrAsset from "@/assets/minipay-qr.jpg.asset.json";
 
 interface Props {
@@ -22,6 +27,12 @@ interface Props {
   /** Bounty funding only — the poster's chosen amount, in `currency`. */
   amount?: number;
   currency: string;
+  /** Crypto rail: which exchange ID / wallet address the buyer must pay. */
+  destination?: ManualDestination | null;
+  /** Shown in the copied order summary the buyer sends the seller. */
+  productName?: string | null;
+  /** Direct chat link to the seller, e.g. /messages?dm=<sellerId>. */
+  chatHref?: string | null;
   onClose: () => void;
 }
 
