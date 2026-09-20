@@ -61,12 +61,10 @@ export const getProfileEcosystem = createServerFn({ method: "GET" })
           .select("id", head)
           .eq("owner_id", userId)
           .eq("is_published", true),
-        supabase
-          .from("bounties")
-          .select("id", head)
-          .eq("poster_id", userId)
-          .neq("status", "solved"),
-        supabase.from("bounties").select("id", head).eq("poster_id", userId).eq("status", "solved"),
+        // Bounties are a paused legacy feature and unreadable by public visitors.
+        Promise.resolve({ count: 0 }),
+        Promise.resolve({ count: 0 }),
+
         supabase.from("circle_members").select("circle_id", head).eq("user_id", userId),
       ]);
 
