@@ -64,41 +64,71 @@ export function WalletCreditSplash({ enabled }: { enabled: boolean }) {
 
   return (
     <div
-      className="fixed inset-0 z-[90] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in"
+      className="fixed inset-0 z-[90] flex items-center justify-center bg-black/55 backdrop-blur-sm p-4 animate-fade-in"
       role="dialog"
       aria-modal="true"
       aria-label={headline}
       onClick={close}
     >
       <div
-        className="relative w-full max-w-sm overflow-hidden rounded-[10px] border border-border bg-card p-6 text-center shadow-2xl animate-scale-in"
+        className="relative w-full max-w-sm overflow-hidden rounded-[10px] border border-border bg-card text-center shadow-2xl animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          type="button"
-          onClick={close}
-          aria-label="Close"
-          className="absolute right-3 top-3 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-        >
-          <X className="h-4 w-4" />
-        </button>
-
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-          <PartyPopper className="h-8 w-8 text-primary" />
-        </div>
-
-        <h2 className="text-xl font-bold text-foreground">{headline}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {single ? "New money just landed in your wallet." : `${items.length} payments just landed in your wallet.`}
-        </p>
-
-        <div className="mt-5 space-y-1">
-          {[...totals.entries()].map(([currency, amount]) => (
-            <p key={currency} className="text-3xl font-extrabold tracking-tight text-primary">
-              +{formatMoney(amount, currency as Currency)}
-            </p>
+        {/* Falling confetti — decorative only. */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+          {CONFETTI.map((c, i) => (
+            <span
+              key={i}
+              className="wallet-confetti-piece"
+              style={{
+                left: c.left,
+                background: c.color,
+                animationDelay: c.delay,
+                animationDuration: c.duration,
+                // @ts-expect-error CSS custom property
+                "--drift": c.drift,
+              }}
+            />
           ))}
         </div>
+
+        {/* Party header band. */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-fuchsia-500 via-rose-500 to-amber-400 px-6 pb-8 pt-7 wallet-party-hue">
+          <span
+            aria-hidden
+            className="wallet-party-sheen pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 skew-x-12 bg-white/25 blur-md"
+          />
+          <button
+            type="button"
+            onClick={close}
+            aria-label="Close"
+            className="absolute right-3 top-3 rounded-full bg-white/20 p-1.5 text-white transition-colors hover:bg-white/35"
+          >
+            <X className="h-4 w-4" />
+          </button>
+
+          <div className="wallet-coin-pop mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-white/25 ring-4 ring-white/25 backdrop-blur">
+            <PartyPopper className="h-8 w-8 text-white" />
+          </div>
+
+          <h2 className="relative text-xl font-extrabold text-white drop-shadow-sm">{headline}</h2>
+          <p className="relative mt-1 text-sm text-white/90">
+            {single ? "New money just landed in your wallet." : `${items.length} payments just landed in your wallet.`}
+          </p>
+        </div>
+
+        <div className="relative px-6 pb-6">
+          <div className="-mt-5 space-y-1 rounded-[10px] border border-border bg-card px-4 py-3 shadow-sm">
+            {[...totals.entries()].map(([currency, amount]) => (
+              <p
+                key={currency}
+                className="wallet-amount-pop bg-gradient-to-r from-fuchsia-600 via-rose-500 to-amber-500 bg-clip-text text-3xl font-extrabold tracking-tight text-transparent"
+              >
+                +{formatMoney(amount, currency as Currency)}
+              </p>
+            ))}
+          </div>
+
 
         {!single && (
           <ul className="mt-4 max-h-40 space-y-2 overflow-y-auto rounded-[10px] border border-border bg-muted/40 p-3 text-left">
