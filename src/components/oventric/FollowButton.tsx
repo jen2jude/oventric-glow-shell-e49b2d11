@@ -131,7 +131,7 @@ export function FollowButton({ targetId, className, compact, onStatusChange }: P
       <button
         onClick={() => act(() => send({ data: { targetId } }))}
         disabled={busy}
-        className={`${base} bg-sky-500 hover:bg-sky-400 text-black ${className ?? ""}`}
+        className={`${base} bg-[#E5484D] hover:bg-[#c73d42] text-white ${className ?? ""}`}
       >
         {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
         {label.follow}
@@ -142,7 +142,7 @@ export function FollowButton({ targetId, className, compact, onStatusChange }: P
       <button
         onClick={() => act(() => send({ data: { targetId } }))}
         disabled={busy}
-        className={`${base} bg-sky-500 hover:bg-sky-400 text-black ${className ?? ""}`}
+        className={`${base} bg-[#E5484D] hover:bg-[#c73d42] text-white ${className ?? ""}`}
       >
         {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
         {label.follows_you}
