@@ -48,6 +48,9 @@ export function MiniPayPanel({
   couponCode = null,
   amount,
   currency,
+  destination = null,
+  productName = null,
+  chatHref = null,
   onClose,
 }: Props) {
   const create = useServerFn(createManualPayment);
