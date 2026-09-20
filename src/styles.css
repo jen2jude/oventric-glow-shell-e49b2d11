@@ -4163,15 +4163,11 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
     background-size: 28px 28px;
     content: "";
     mask-image: linear-gradient(to bottom, black, transparent 78%);
+    opacity: 0.32;
   }
 
   .wallet-balance-glow {
-    position: absolute;
-    z-index: -1;
-    height: 1px;
-    transform: rotate(-10deg);
-    background: linear-gradient(90deg, transparent, var(--wallet-info), transparent);
-    box-shadow: 0 0 28px 7px var(--wallet-info-soft);
+    display: none;
   }
 
   .wallet-balance-glow-one {
