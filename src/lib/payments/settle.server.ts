@@ -23,48 +23,32 @@ export async function settleWalletTopup(
   currency: OrderCurrency,
 ) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  // Idempotency guard.
+  const now = new Date().toISOString();
+
+  // Exactly-once claim BEFORE any money moves. The ledger row for this gateway
+  // reference is flipped pending -> success atomically (and the DB carries a
+  // unique index on the reference), so two concurrent verifications — e.g. the
+  // Paystack webhook and the buyer's return page — can never credit twice.
   const existing = await supabaseAdmin
     .from("wallet_transactions")
     .select("id, status")
     .eq("paystack_ref", reference)
     .eq("type", "Wallet Top-Up")
     .maybeSingle();
-  if (existing.data && existing.data.status === "success") {
-    return { alreadySettled: true as const };
-  }
-
-  // Credit the wallet in the currency the user actually paid in, so the
-  // primary balance shown on the Sovereign Wallet page updates immediately.
-  // The USD equivalent card is derived on the client from FX rates.
-  const { data: wRow } = await supabaseAdmin
-    .from("wallets")
-    .select("id, available_balance")
-    .eq("user_id", buyerId)
-    .eq("currency", currency)
-    .maybeSingle();
-  const now = new Date().toISOString();
-  if (wRow?.id) {
-    const nextBal = Number(wRow.available_balance ?? 0) + amount;
-    const { error: uErr } = await supabaseAdmin
-      .from("wallets")
-      .update({ available_balance: nextBal, updated_at: now })
-      .eq("id", wRow.id);
-    if (uErr) throw new Error(uErr.message);
-  } else {
-    const { error: iErr } = await supabaseAdmin
-      .from("wallets")
-      .insert({ user_id: buyerId, currency, available_balance: amount });
-    if (iErr) throw new Error(iErr.message);
-  }
 
   if (existing.data?.id) {
-    await supabaseAdmin
+    if (existing.data.status === "success") return { alreadySettled: true as const };
+    const claim = await supabaseAdmin
       .from("wallet_transactions")
       .update({ status: "success", occurred_at: now, amount, currency: dbCurrency(currency) })
-      .eq("id", existing.data.id);
+      .eq("id", existing.data.id)
+      .neq("status", "success")
+      .select("id")
+      .maybeSingle();
+    if (claim.error) throw new Error(claim.error.message);
+    if (!claim.data) return { alreadySettled: true as const };
   } else {
-    await supabaseAdmin.from("wallet_transactions").insert({
+    const ins = await supabaseAdmin.from("wallet_transactions").insert({
       user_id: buyerId,
       paystack_ref: reference,
       tx_hash: reference,
@@ -75,6 +59,32 @@ export async function settleWalletTopup(
       status: "success",
       occurred_at: now,
     });
+    if (ins.error) {
+      // Unique index on the reference: another settlement already credited it.
+      if ((ins.error as { code?: string }).code === "23505") {
+        return { alreadySettled: true as const };
+      }
+      throw new Error(ins.error.message);
+    }
+  }
+
+  // Credit the wallet in the currency the user actually paid in, so the
+  // primary balance shown on the Sovereign Wallet page updates immediately.
+  // The USD equivalent card is derived on the client from FX rates.
+  const { error: cErr } = await supabaseAdmin.rpc("wallet_credit_currency", {
+    _user_id: buyerId,
+    _amount: amount,
+    _currency: currency,
+  });
+  if (cErr) {
+    // The claim is only valid if the money actually landed — release it so the
+    // next verification (webhook retry) can settle cleanly.
+    await supabaseAdmin
+      .from("wallet_transactions")
+      .update({ status: "pending" })
+      .eq("paystack_ref", reference)
+      .eq("type", "Wallet Top-Up");
+    throw new Error(cErr.message);
   }
 
   return { alreadySettled: false as const, creditedAmount: amount, creditedCurrency: currency };
@@ -211,7 +221,30 @@ export async function settleOrder(
     })
     .select()
     .single();
-  if (oErr) throw new Error(oErr.message);
+  if (oErr) {
+    // Unique index on orders.paystack_ref: a concurrent verification already
+    // settled this payment. Return that order instead of paying anyone twice.
+    if ((oErr as { code?: string }).code === "23505") {
+      const { data: raced } = await supabaseAdmin
+        .from("orders")
+        .select("id")
+        .eq("paystack_ref", reference)
+        .maybeSingle();
+      const { data: cbRow } = await supabaseAdmin
+        .from("wallet_transactions")
+        .select("amount")
+        .eq("tx_hash", `${reference}-CB`)
+        .maybeSingle();
+      if (raced?.id) {
+        return {
+          alreadySettled: true as const,
+          orderId: raced.id as string,
+          cashbackEarnUSD: Number(cbRow?.amount ?? 0),
+        };
+      }
+    }
+    throw new Error(oErr.message);
+  }
 
   await supabaseAdmin.from("wallet_transactions").insert({
     user_id: buyerId,

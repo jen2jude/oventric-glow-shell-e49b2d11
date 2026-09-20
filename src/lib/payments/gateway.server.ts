@@ -268,8 +268,8 @@ async function markTopupFailed(reference: string, meta: Record<string, unknown>)
 /**
  * Guard: what the provider says was paid must match the charge we created.
  *
- * References created before `charge_amount` existed carry no expectation and
- * are settled on the provider's confirmation alone.
+ * Fails closed for gateway references (OV…): if the metadata carries no
+ * authoritative charge amount, the payment is not settled at all.
  */
 function assertPaidMatchesCharge(
   reference: string,
@@ -278,7 +278,16 @@ function assertPaidMatchesCharge(
   paidAmount: number,
 ) {
   const expected = Number(meta.charge_amount);
-  if (!Number.isFinite(expected) || expected <= 0) return;
+  if (!Number.isFinite(expected) || expected <= 0) {
+    // Gateway references (OVP_/OVF_) are always created with an authoritative
+    // charge amount. Missing it means the metadata was not produced by our own
+    // charge creation, so fail closed rather than settle an unverifiable sum.
+    const ref = reference.toUpperCase();
+    if (ref.startsWith("OVP") || ref.startsWith("OVF") || ref.startsWith("OV_")) {
+      throw new Error(`Payment ${reference} carries no authoritative charge amount — settlement refused.`);
+    }
+    return;
+  }
   const expectedCurrency = String(meta.charge_currency ?? paidCurrency).toUpperCase();
   if (String(paidCurrency).toUpperCase() !== expectedCurrency) {
     throw new Error(
