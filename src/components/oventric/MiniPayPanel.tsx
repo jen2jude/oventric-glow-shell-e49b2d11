@@ -77,6 +77,7 @@ export function MiniPayPanel({
     instructions: null,
   });
   const [payerRef, setPayerRef] = useState("");
+  const [orderSummary, setOrderSummary] = useState("");
   const [uploading, setUploading] = useState(false);
   const [done, setDone] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
