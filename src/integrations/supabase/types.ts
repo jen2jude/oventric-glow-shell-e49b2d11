@@ -3914,6 +3914,66 @@ export type Database = {
         }
         Relationships: []
       }
+      visitor_events: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          device: string | null
+          id: string
+          language: string | null
+          occurred_at: string
+          os: string | null
+          path: string
+          referrer: string | null
+          referrer_host: string | null
+          region: string | null
+          screen_w: number | null
+          session_id: string
+          user_agent: string | null
+          user_id: string | null
+          visitor_id: string
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          device?: string | null
+          id?: string
+          language?: string | null
+          occurred_at?: string
+          os?: string | null
+          path: string
+          referrer?: string | null
+          referrer_host?: string | null
+          region?: string | null
+          screen_w?: number | null
+          session_id: string
+          user_agent?: string | null
+          user_id?: string | null
+          visitor_id: string
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          device?: string | null
+          id?: string
+          language?: string | null
+          occurred_at?: string
+          os?: string | null
+          path?: string
+          referrer?: string | null
+          referrer_host?: string | null
+          region?: string | null
+          screen_w?: number | null
+          session_id?: string
+          user_agent?: string | null
+          user_id?: string | null
+          visitor_id?: string
+        }
+        Relationships: []
+      }
       wallet_transactions: {
         Row: {
           amount: number
