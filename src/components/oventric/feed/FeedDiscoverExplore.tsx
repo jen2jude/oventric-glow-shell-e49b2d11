@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Flame, Sparkles, Trophy, GraduationCap, Users, ShoppingBag, PlayCircle, Search, Star } from "lucide-react";
-import { AvatarImage } from "@/components/oventric/AvatarImage";
+import { Flame, ShoppingBag, PlayCircle, Search } from "lucide-react";
 import { navigateSection } from "@/components/oventric/DiscoveryPanel";
 import { useFeedDiscovery } from "@/components/oventric/feed/useFeedDiscovery";
 import { ReelsRail, useReels } from "@/components/oventric/feed/ReelsShelf";
@@ -10,6 +9,7 @@ import { ExploreHeader, type ExploreTab } from "./ExploreHeader";
 import { PeopleExploreList } from "./PeopleExploreList";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { computeDisplayPrice } from "@/lib/fx-display";
+import { PeopleSuggestionsRail } from "./PeopleSuggestionsRail";
 
 
 function fmtUsd(usd: number, viewer: Currency): string {
@@ -70,9 +70,13 @@ function Rail({ children }: { children: React.ReactNode }) {
 export function FeedDiscoverExplore({
   posts,
   renderPost,
+  viewerId,
+  followingIds,
 }: {
   posts: FeedPost[];
   renderPost: (p: FeedPost) => React.ReactNode;
+  viewerId?: string | null;
+  followingIds?: Set<string> | null;
 }) {
   const { peers, products, bounties, courses, circles, loading } = useFeedDiscovery(true);
   const { baseCurrency } = useOnboarding();
@@ -80,6 +84,9 @@ export function FeedDiscoverExplore({
   const [activeTab, setActiveTab] = useState<ExploreTab | "Discovery">("Discovery");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const suggestedPeople = peers.filter(
+    (person) => person.id !== viewerId && !followingIds?.has(person.id),
+  );
   const trending = [...posts]
     .sort(
       (a, b) =>
@@ -166,38 +173,7 @@ export function FeedDiscoverExplore({
       )}
 
 
-      {peers.length > 0 && (
-
-        <Section icon={Sparkles} title="Top Creators">
-          <Rail>
-            {peers.slice(0, 12).map((p) => (
-              <Link
-                key={p.id}
-                to="/profile/$id"
-                params={{ id: p.slug }}
-                className="flex flex-col items-center gap-2 shrink-0 group snap-start"
-              >
-                <div className="relative">
-                  <div className="w-[72px] h-[72px] rounded-full p-[2px] bg-gradient-to-tr from-[#E5484D] to-purple-600 transition-transform duration-300 group-active:scale-90 shadow-[0_0_15px_rgba(229,72,77,0.15)]">
-                    <div className="w-full h-full rounded-full border-[3px] border-[#0A0A0B] overflow-hidden bg-[#1A1A1F]">
-                      <AvatarImage src={p.avatarUrl} alt={p.name} initials={p.initials} />
-                    </div>
-                  </div>
-                  {p.stars >= 4.5 && (
-                    <div className="absolute bottom-0 right-0 h-5 w-5 rounded-full bg-blue-500 border-2 border-[#0A0A0B] flex items-center justify-center shadow-lg">
-                      <Star className="w-2.5 h-2.5 fill-white text-white" />
-                    </div>
-                  )}
-                </div>
-                <span className="text-[11px] font-bold text-white/70 truncate w-[72px] text-center group-hover:text-white transition-colors">
-                  {p.name.split(" ")[0]}
-                </span>
-
-              </Link>
-            ))}
-          </Rail>
-        </Section>
-      )}
+      <PeopleSuggestionsRail people={suggestedPeople} title="People you may know" />
 
       {trending.length > 0 && (
         <Section icon={Flame} title="Trending posts">

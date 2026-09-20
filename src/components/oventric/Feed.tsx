@@ -85,6 +85,8 @@ import {
   useFeedCommerceCards,
 } from "@/components/oventric/feed/FeedCommerceCard";
 import { ProductAttachmentCard } from "@/components/oventric/feed/ProductAttachmentCard";
+import { PeopleSuggestionsRail } from "@/components/oventric/feed/PeopleSuggestionsRail";
+import { useFeedDiscovery } from "@/components/oventric/feed/useFeedDiscovery";
 
 
 import {
@@ -400,6 +402,7 @@ export function Feed() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
   const commerceCards = useFeedCommerceCards(isAppShell && feedTab === "foryou");
+  const { peers: suggestedPeers } = useFeedDiscovery(showSuggestedPeople);
 
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   // Seed from the session cache so returning to the feed paints instantly.
@@ -1581,12 +1584,21 @@ export function Feed() {
             const shareOrigin = typeof window !== "undefined" ? window.location.origin : "";
             if (isAppShell && feedTab === "discover") {
               return (
-                <FeedDiscoverExplore posts={filteredPosts} renderPost={renderPost} />
+                <FeedDiscoverExplore
+                  posts={filteredPosts}
+                  renderPost={renderPost}
+                  viewerId={meId}
+                  followingIds={followingIds}
+                />
               );
             }
             const visible = filteredPosts;
+            const availableSuggestions = suggestedPeers.filter(
+              (person) => person.id !== meId && !followingIds?.has(person.id),
+            );
             const items: React.ReactNode[] = [];
             let commerceIdx = 0;
+            let peopleRailIdx = 0;
             visible.forEach((post, i) => {
               items.push(renderPost(post));
               if (
@@ -1597,6 +1609,21 @@ export function Feed() {
               ) {
                 const c = commerceCards[commerceIdx++];
                 items.push(<FeedCommerceCard key={`commerce-${c.kind}-${c.id}`} item={c} />);
+              }
+              if ((i + 1) % 12 === 0 && availableSuggestions.length > 0) {
+                const offset = (peopleRailIdx * 4) % availableSuggestions.length;
+                const rotated = [
+                  ...availableSuggestions.slice(offset),
+                  ...availableSuggestions.slice(0, offset),
+                ].slice(0, 10);
+                items.push(
+                  <PeopleSuggestionsRail
+                    key={`people-suggestions-${peopleRailIdx}`}
+                    people={rotated}
+                    appShell={isAppShell}
+                  />,
+                );
+                peopleRailIdx += 1;
               }
             });
             return items;
