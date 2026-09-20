@@ -15,6 +15,8 @@ import {
   Check,
   Headphones,
   TicketPercent,
+  Bitcoin,
+  Landmark,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
