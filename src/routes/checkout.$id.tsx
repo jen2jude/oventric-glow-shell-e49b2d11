@@ -1309,6 +1309,9 @@ function CheckoutPage() {
           targetId={product.id}
           quantity={qty}
           currency={usdRail ? "USD" : homeCurrency}
+          destination={CRYPTO_DESTINATIONS[optionKey] ?? null}
+          productName={product.name}
+          chatHref={product.sellerId ? `/messages?dm=${product.sellerId}` : null}
           onClose={() => setMinipayOpen(false)}
         />
       )}
