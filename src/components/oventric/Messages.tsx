@@ -708,31 +708,103 @@ export function Messages({
     setShowListOnMobile(false);
   };
 
+  const clearAttachment = useCallback(() => {
+    setAttachment((prev) => {
+      if (prev?.previewUrl) URL.revokeObjectURL(prev.previewUrl);
+      return null;
+    });
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, []);
+
+  const onPickFile = useCallback(
+    async (file?: File) => {
+      if (!file) return;
+      if (!me) {
+        openGate("interaction");
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error("File is too large", { description: "Attachments must be 10MB or smaller." });
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
+      const previewUrl = file.type.startsWith("image/") ? URL.createObjectURL(file) : null;
+      setAttachment({ file, previewUrl, path: null, uploading: true, error: null });
+      try {
+        const { path, token } = await getUploadUrl({ data: { filename: file.name } });
+        const { error: upErr } = await supabase.storage
+          .from("post-media")
+          .uploadToSignedUrl(path, token, file);
+        if (upErr) throw new Error(upErr.message);
+        setAttachment({ file, previewUrl, path, uploading: false, error: null });
+      } catch (e) {
+        setAttachment({
+          file,
+          previewUrl,
+          path: null,
+          uploading: false,
+          error: e instanceof Error ? e.message : "Upload failed.",
+        });
+      }
+    },
+    [me, openGate, getUploadUrl],
+  );
+
+  // Sign attachment paths so images/files in the thread can be previewed.
+  useEffect(() => {
+    const paths = messages.map((m) => m.media_path).filter((p): p is string => !!p);
+    const missing = paths.filter((p) => !attachmentUrls[p]);
+    if (!missing.length) return;
+    getAttachmentUrls({ data: { paths: missing.slice(0, 50) } })
+      .then((map) => setAttachmentUrls((prev) => ({ ...prev, ...map })))
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages]);
+
   const send = async () => {
     if (!activePeer) return;
     const body = draft.trim();
-    if (!body) return;
+    const mediaPath = attachment?.path ?? null;
+    if (!body && !mediaPath) return;
+    if (attachment?.uploading) {
+      toast.error("Attachment is still uploading");
+      return;
+    }
     if (!me) {
       openGate("interaction");
       return;
     }
     setSending(true);
+    const mediaType = attachment?.file.type ?? null;
     const optimistic: DMRow = {
       id: `tmp-${Date.now()}`,
       sender_id: me,
       recipient_id: activePeer,
-      body,
-      media_path: null,
-      media_type: null,
+      body: body || null,
+      media_path: mediaPath,
+      media_type: mediaType,
       created_at: new Date().toISOString(),
       read_at: null,
     };
+    if (mediaPath && attachment?.previewUrl) {
+      const localPreview = attachment.previewUrl;
+      setAttachmentUrls((prev) => ({ ...prev, [mediaPath]: prev[mediaPath] ?? localPreview }));
+    }
     setMessages((prev) => [...prev, optimistic]);
     setDraft("");
+    setAttachment(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     emitTyping(false);
 
     try {
-      const row = await postMessage({ data: { recipientId: activePeer, body } });
+      const row = await postMessage({
+        data: {
+          recipientId: activePeer,
+          body: body || undefined,
+          mediaPath: mediaPath ?? undefined,
+          mediaType: mediaType ?? undefined,
+        },
+      });
       setMessages((prev) => prev.map((m) => (m.id === optimistic.id ? row : m)));
       void reloadThreads();
     } catch (e) {
