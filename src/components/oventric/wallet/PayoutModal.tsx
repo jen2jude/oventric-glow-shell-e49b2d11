@@ -32,6 +32,7 @@ import {
   type TransferCurrency,
 } from "@/lib/payouts.functions";
 import { getWithdrawalPinStatus } from "@/lib/withdrawal-pin.functions";
+import { getWalletBalances } from "@/lib/wallet.functions";
 import { AddMethodSheet, type MethodKind } from "./withdraw/AddMethodSheet";
 import { PinSheet } from "./withdraw/PinSheet";
 
@@ -69,7 +70,7 @@ function kindOf(r: PayoutRecipientDTO): MethodKind {
 }
 
 export function PayoutModal({ onClose }: { onClose: () => void }) {
-  const { balances, homeCurrency } = useOnboarding();
+  const { balances, homeCurrency, setBalances } = useOnboarding();
   const qc = useQueryClient();
 
   const currency: TransferCurrency = homeCurrency === "GHS" ? "GHS" : "NGN";
@@ -80,6 +81,7 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
   const feeFn = useServerFn(estimatePayoutFee);
   const payoutFn = useServerFn(createLivePayout);
   const pinStatusFn = useServerFn(getWithdrawalPinStatus);
+  const balancesFn = useServerFn(getWalletBalances);
 
   const recipientsQ = useQuery({
     queryKey: ["payout-recipients"],
@@ -244,10 +246,16 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
           `$${res.amountUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} will be sent to your ${USD_CHANNELS.find((c) => c.id === usdChannel)?.label}.`,
         );
       } else {
-        await payoutFn({ data: { recipientId: activeRecipient!.id, amount } });
-        setDone(`${money(net, sym)} will be sent to ${activeRecipient!.account_name}.`);
+        if (!activeRecipient) throw new Error("Recipient required");
+        await payoutFn({ data: { recipientId: activeRecipient.id, amount } });
+        setDone(`${money(net, sym)} will be sent to ${activeRecipient.account_name}.`);
       }
-      void qc.invalidateQueries();
+      const freshBalances = await balancesFn();
+      setBalances(freshBalances.balances, freshBalances.escrow, freshBalances.cashback);
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ["wallet-balances"] }),
+        qc.invalidateQueries({ queryKey: ["wallet-recent-tx"] }),
+      ]);
       setReview(false);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Withdrawal failed");
