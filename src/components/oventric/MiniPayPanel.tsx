@@ -96,6 +96,22 @@ export function MiniPayPanel({
           currency: res.payment.currency,
         });
         setInstructions(res.instructions);
+        // Put the order details on the clipboard straight away so the buyer can
+        // paste them to the seller in chat without typing anything.
+        const summary = [
+          `Oventric payment — ${MANUAL_RAIL_LABEL[rail]}${destination ? ` (${destination.label})` : ""}`,
+          productName ? `Item: ${productName}` : null,
+          `Order / Payment ID: ${res.payment.reference}`,
+          `Amount: ${formatMoney(res.payment.amount, res.payment.currency)}`,
+          "I have sent this payment — please confirm.",
+        ]
+          .filter(Boolean)
+          .join("\n");
+        setOrderSummary(summary);
+        navigator.clipboard?.writeText(summary).then(
+          () => toast.success("Order ID copied", { description: "Paste it to the seller in chat." }),
+          () => undefined,
+        );
       })
       .catch((e: Error) => setError(e.message || "Could not start this payment"))
       .finally(() => setLoading(false));
