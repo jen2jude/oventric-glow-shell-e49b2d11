@@ -4302,3 +4302,48 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
 @media (prefers-reduced-motion: reduce) {
   .animate-pulse-slow { animation: none; background-color: rgba(245, 158, 11, 0.1); }
 }
+
+/* ── Wallet credit celebration ─────────────────────────────────────────── */
+@keyframes wallet-confetti-fall {
+  0% { transform: translate3d(0, -20%, 0) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translate3d(var(--drift, 0px), 460px, 0) rotate(720deg); opacity: 0; }
+}
+.wallet-confetti-piece {
+  position: absolute;
+  top: -12px;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  animation: wallet-confetti-fall 2.6s linear infinite;
+}
+@keyframes wallet-coin-pop {
+  0% { transform: scale(0.4) rotate(-18deg); opacity: 0; }
+  55% { transform: scale(1.12) rotate(6deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.wallet-coin-pop { animation: wallet-coin-pop 0.7s cubic-bezier(0.22, 1.2, 0.36, 1) both; }
+@keyframes wallet-amount-pop {
+  0% { transform: scale(0.7); opacity: 0; }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.wallet-amount-pop { animation: wallet-amount-pop 0.6s 0.15s cubic-bezier(0.22, 1.2, 0.36, 1) both; }
+@keyframes wallet-party-sheen {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(220%); }
+}
+.wallet-party-sheen { animation: wallet-party-sheen 2.4s ease-in-out infinite; }
+@keyframes wallet-party-hue {
+  0%, 100% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(28deg); }
+}
+.wallet-party-hue { animation: wallet-party-hue 5s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .wallet-confetti-piece,
+  .wallet-coin-pop,
+  .wallet-amount-pop,
+  .wallet-party-sheen,
+  .wallet-party-hue { animation: none; }
+  .wallet-confetti-piece { display: none; }
+}
