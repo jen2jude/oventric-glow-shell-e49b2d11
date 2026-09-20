@@ -383,7 +383,24 @@ function CheckoutPage() {
     };
   }, [pkg, id, loadPackages]);
 
-  const methods = useMemo(() => methodsForCountry(country), [country]);
+  const tabOptions = useMemo(() => optionsForTab(payTab, country), [payTab, country]);
+  const activeOption = useMemo(
+    () => tabOptions.find((o) => o.key === optionKey) ?? null,
+    [tabOptions, optionKey],
+  );
+  /** Crypto and virtual-bank rails settle in USD. */
+  const usdRail = activeOption?.usd === true;
+
+  // Keep the selected rail valid whenever the tab (or country) changes.
+  useEffect(() => {
+    const first = tabOptions.find((o) => !o.soon) ?? tabOptions[0];
+    if (!first) return;
+    if (tabOptions.some((o) => o.key === optionKey && !o.soon)) return;
+    setOptionKey(first.key);
+    setMethod(first.method);
+    setGateway(first.gateway);
+  }, [tabOptions, optionKey]);
+
   const unitUSD = servicePackage ? servicePackage.priceUsd : (product?.priceUSD ?? 0);
   const unitLocal = servicePackage ? servicePackage.originalAmount : (product?.originalAmount ?? 0);
   const subtotalUSD = useMemo(() => (product ? unitUSD * qty : 0), [product, unitUSD, qty]);
