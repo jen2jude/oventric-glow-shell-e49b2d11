@@ -50,6 +50,7 @@ import { Route as OrderIdRouteImport } from './routes/order.$id'
 import { Route as CheckoutIdRouteImport } from './routes/checkout.$id'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdsManagerIdRouteImport } from './routes/ads-manager.$id'
+import { Route as AdminVisitorsRouteImport } from './routes/admin.visitors'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminToolsRouteImport } from './routes/admin.tools'
 import { Route as AdminSystemWalletsRouteImport } from './routes/admin.system-wallets'
@@ -308,6 +309,11 @@ const AdsManagerIdRoute = AdsManagerIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => AdsManagerRoute,
+} as any)
+const AdminVisitorsRoute = AdminVisitorsRouteImport.update({
+  id: '/visitors',
+  path: '/visitors',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
@@ -649,6 +655,7 @@ export interface FileRoutesByFullPath {
   '/admin/system-wallets': typeof AdminSystemWalletsRoute
   '/admin/tools': typeof AdminToolsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/visitors': typeof AdminVisitorsRoute
   '/ads-manager/$id': typeof AdsManagerIdRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/checkout/$id': typeof CheckoutIdRoute
@@ -742,6 +749,7 @@ export interface FileRoutesByTo {
   '/admin/system-wallets': typeof AdminSystemWalletsRoute
   '/admin/tools': typeof AdminToolsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/visitors': typeof AdminVisitorsRoute
   '/ads-manager/$id': typeof AdsManagerIdRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/checkout/$id': typeof CheckoutIdRoute
@@ -839,6 +847,7 @@ export interface FileRoutesById {
   '/admin/system-wallets': typeof AdminSystemWalletsRoute
   '/admin/tools': typeof AdminToolsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/visitors': typeof AdminVisitorsRoute
   '/ads-manager/$id': typeof AdsManagerIdRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/checkout/$id': typeof CheckoutIdRoute
@@ -937,6 +946,7 @@ export interface FileRouteTypes {
     | '/admin/system-wallets'
     | '/admin/tools'
     | '/admin/users'
+    | '/admin/visitors'
     | '/ads-manager/$id'
     | '/blog/$slug'
     | '/checkout/$id'
@@ -1030,6 +1040,7 @@ export interface FileRouteTypes {
     | '/admin/system-wallets'
     | '/admin/tools'
     | '/admin/users'
+    | '/admin/visitors'
     | '/ads-manager/$id'
     | '/blog/$slug'
     | '/checkout/$id'
@@ -1126,6 +1137,7 @@ export interface FileRouteTypes {
     | '/admin/system-wallets'
     | '/admin/tools'
     | '/admin/users'
+    | '/admin/visitors'
     | '/ads-manager/$id'
     | '/blog/$slug'
     | '/checkout/$id'
@@ -1500,6 +1512,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/ads-manager/$id'
       preLoaderRoute: typeof AdsManagerIdRouteImport
       parentRoute: typeof AdsManagerRoute
+    }
+    '/admin/visitors': {
+      id: '/admin/visitors'
+      path: '/visitors'
+      fullPath: '/admin/visitors'
+      preLoaderRoute: typeof AdminVisitorsRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/users': {
       id: '/admin/users'
@@ -1925,6 +1944,7 @@ interface AdminRouteChildren {
   AdminSystemWalletsRoute: typeof AdminSystemWalletsRoute
   AdminToolsRoute: typeof AdminToolsRoute
   AdminUsersRoute: typeof AdminUsersRoute
+  AdminVisitorsRoute: typeof AdminVisitorsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -1964,6 +1984,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSystemWalletsRoute: AdminSystemWalletsRoute,
   AdminToolsRoute: AdminToolsRoute,
   AdminUsersRoute: AdminUsersRoute,
+  AdminVisitorsRoute: AdminVisitorsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 

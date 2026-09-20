@@ -31,6 +31,7 @@ import {
   Star,
   Tag,
   ChevronLeft,
+  BarChart3,
 } from "lucide-react";
 
 import { canAccessSection, type ManagementRole } from "@/lib/admin-roles";
@@ -90,6 +91,7 @@ type NavItem = {
  */
 const NAV: NavItem[] = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true, group: "Dashboard" },
+  { to: "/admin/visitors", label: "Visitors", icon: BarChart3, group: "Dashboard" },
 
   { to: "/admin/users", label: "Users", icon: Users, group: "Core" },
   { to: "/admin/sellers", label: "Sellers", icon: ShoppingBag, group: "Core" },

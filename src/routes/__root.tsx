@@ -428,6 +428,7 @@ function RootComponent() {
               <ProfileSettingsLauncher />
 
               <ReactivationGate />
+              <VisitorTracker />
               {!isAppShell ? null : <GlobalMobileNav />}
               <Toaster position="top-center" richColors closeButton />
               <LiveNotificationToasts />
