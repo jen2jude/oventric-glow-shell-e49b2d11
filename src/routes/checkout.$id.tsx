@@ -424,6 +424,10 @@ function CheckoutPage() {
   const cashbackApplyLocal = Number((cashbackApplyUSD * ratio).toFixed(2));
   const discountLocal = Number((discountUSD * ratio).toFixed(2));
   const totalLocalExact = Number(Math.max(0, subtotalLocal - discountLocal - cashbackApplyLocal).toFixed(2));
+  /** Crypto / virtual-bank rails quote in USD; every other rail in home currency. */
+  const payTotalLabel = usdRail
+    ? formatMoney(totalUSD, "USD")
+    : fmtPrice(totalUSD, homeCurrency, product, totalLocalExact);
   // Cashback is seller-funded and configured per product (Stage 3). This is a
   // preview of what settlement will award: the same post-coupon base and the
   // same rate the server reads back off the product row.
