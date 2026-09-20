@@ -1164,10 +1164,12 @@ function WalletTab({
           {err}
         </div>
       )}
+      <CreditWalletCard userId={userId} onChanged={onChanged} />
       <div className="text-[10px] uppercase text-slate-500 tracking-wider">
         Wallet balances · admin can reset any component
       </div>
       <div className="grid grid-cols-1 gap-3">
+
         {currencies.map((c) => {
           const w = rowFor(c);
           const cells: Array<{ key: ResetTarget; label: string; value: number }> = [
