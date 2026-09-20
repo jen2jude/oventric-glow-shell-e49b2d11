@@ -34,6 +34,7 @@ export interface SearchResultProduct {
   vendor: string;
   coverUrl: string | null;
   sellerSlug?: string;
+  cashbackPct: number;
 }
 
 export interface SearchResultCircle {
@@ -159,7 +160,7 @@ export const searchGlobal = createServerFn({ method: "GET" })
         .limit(8),
       sb
         .from("products")
-        .select("id, name, category, price_usd, cover_path, vendor, seller_id, kind")
+        .select("id, name, category, price_usd, cover_path, vendor, seller_id, kind, cashback_pct")
         .eq("status", "active")
         .or(`name.ilike.${like},category.ilike.${like},vendor.ilike.${like},description.ilike.${like}`)
         .order("reviews", { ascending: false, nullsFirst: false })
@@ -237,6 +238,7 @@ export const searchGlobal = createServerFn({ method: "GET" })
       vendor: shopNameMap.get(p.seller_id as string) ?? ((p.vendor as string) ?? ""),
       coverUrl: pCovers[i],
       sellerSlug: sellerSlugMap.get(p.seller_id as string),
+      cashbackPct: Math.max(0, Math.min(50, Number(p.cashback_pct ?? 0))),
     }));
 
     // Circles

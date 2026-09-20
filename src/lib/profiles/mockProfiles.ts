@@ -25,6 +25,7 @@ export interface ProfileListing {
   rating?: number;
   blurb?: string | null;
   promoted?: boolean;
+  cashbackPct?: number;
   /** Publish-time currency + FX snapshot so prices match the marketplace. */
   originalCurrency?: string | null;
   originalAmount?: number | null;
