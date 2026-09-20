@@ -86,7 +86,9 @@ export function Wallet() {
   const cur = homeCurrency;
   const available = data?.balances?.[cur] ?? localBalances[cur] ?? 0;
   const locked = data?.escrow?.[cur] ?? 0;
-  const main = available + locked;
+  // Pending withdrawals are held in escrow, so the primary figure must show
+  // what the user can actually spend or withdraw rather than adding held funds back.
+  const main = available;
   const cashbackUSD = data?.cashback ?? 0;
   const usdEquiv = main / (usdRate(cur) || 1);
   const allTx = txData?.items ?? [];
@@ -169,7 +171,7 @@ export function Wallet() {
             <div aria-hidden="true" className="wallet-balance-glow wallet-balance-glow-two" />
             <div className="relative z-10 max-w-4xl">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-wallet-copy-muted">
-                Total balance <span className="rounded-md bg-wallet-muted px-2 py-1 text-[10px] text-wallet-copy">{cur}</span>
+                 Available balance <span className="rounded-md bg-wallet-muted px-2 py-1 text-[10px] text-wallet-copy">{cur}</span>
               </div>
               <div className="mt-4 font-wallet-display text-4xl font-semibold tabular-nums text-wallet-copy sm:text-6xl lg:text-7xl">{mask(fmt(main, cur))}</div>
               <div className="mt-3 flex items-center gap-1.5 text-sm text-wallet-copy-muted">≈ {mask(`$${usdEquiv.toFixed(2)}`)} USD <Info className="h-3.5 w-3.5" /></div>
