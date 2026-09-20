@@ -148,7 +148,10 @@ export function WalletCreditSplash({ enabled }: { enabled: boolean }) {
           </ul>
         )}
 
-        <Button onClick={close} className="mt-6 w-full gap-2">
+        <Button
+          onClick={close}
+          className="mt-6 w-full gap-2 border-0 bg-gradient-to-r from-fuchsia-600 via-rose-500 to-amber-500 text-white hover:opacity-90"
+        >
           <Sparkles className="h-4 w-4" />
           Nice, thanks!
         </Button>
@@ -157,6 +160,7 @@ export function WalletCreditSplash({ enabled }: { enabled: boolean }) {
           <WalletIcon className="h-3 w-3" />
           Available now in your balance
         </p>
+        </div>
       </div>
     </div>
   );
