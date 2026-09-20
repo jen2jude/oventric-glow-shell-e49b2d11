@@ -45,12 +45,29 @@ export const BYBIT_USER_ID = "578845976";
 export interface ManualDestination {
   key: string;
   label: string;
-  /** What the buyer copies: exchange user ID or on-chain wallet address. */
+  /** What the buyer copies: exchange user ID, on-chain wallet address or account number. */
   address: string;
   /** Row label for the copyable value. */
   addressLabel: string;
   network?: string;
+  /** Extra copyable rows for bank/wire details (bank name, routing, holder, etc.). */
+  extraRows?: Array<{ label: string; value: string }>;
 }
+
+/** Oventric's Grey USD virtual account buyers send manual transfers to. */
+export const VIRTUAL_BANK_DESTINATIONS: Record<string, ManualDestination> = {
+  "grey-usd": {
+    key: "grey-usd",
+    label: "Grey USD",
+    address: "210478102841",
+    addressLabel: "Account number",
+    extraRows: [
+      { label: "Bank name", value: "Lead" },
+      { label: "Routing number", value: "101019644" },
+      { label: "Account holder", value: "Jude Ifeanyi Chukwuaboh" },
+    ],
+  },
+};
 
 export const CRYPTO_DESTINATIONS: Record<string, ManualDestination> = {
   binance: {
