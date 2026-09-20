@@ -155,7 +155,7 @@ const PAY_TABS: { id: PayTabId; label: string; Icon: typeof CreditCard }[] = [
   { id: "bank", label: "Bank / MoMo", Icon: Building2 },
   { id: "crypto", label: "Crypto", Icon: Bitcoin },
   { id: "virtual", label: "Virtual banks", Icon: Landmark },
-  { id: "wallet", label: "Wallet", Icon: Wallet },
+  { id: "wallet", label: "Wallet", Icon: WalletIcon },
 ];
 
 function optionsForTab(tab: PayTabId, country: string | null): PayOption[] {
@@ -340,6 +340,8 @@ function CheckoutPage() {
   // Gateway picker shown under "Debit/Credit Card".
   const [cardOpen, setCardOpen] = useState(true);
   const [gateway, setGateway] = useState<"paystack" | "minipay" | "binance">("paystack");
+  const [payTab, setPayTab] = useState<PayTabId>("card");
+  const [optionKey, setOptionKey] = useState<string>("paystack-card");
   const [recommended, setRecommended] = useState<"paystack" | "minipay" | "binance">("paystack");
   const loadOptions = useServerFn(getPaymentOptions);
   const loadPackages = useServerFn(getServicePackages);
@@ -383,7 +385,24 @@ function CheckoutPage() {
     };
   }, [pkg, id, loadPackages]);
 
-  const methods = useMemo(() => methodsForCountry(country), [country]);
+  const tabOptions = useMemo(() => optionsForTab(payTab, country), [payTab, country]);
+  const activeOption = useMemo(
+    () => tabOptions.find((o) => o.key === optionKey) ?? null,
+    [tabOptions, optionKey],
+  );
+  /** Crypto and virtual-bank rails settle in USD. */
+  const usdRail = activeOption?.usd === true;
+
+  // Keep the selected rail valid whenever the tab (or country) changes.
+  useEffect(() => {
+    const first = tabOptions.find((o) => !o.soon) ?? tabOptions[0];
+    if (!first) return;
+    if (tabOptions.some((o) => o.key === optionKey && !o.soon)) return;
+    setOptionKey(first.key);
+    setMethod(first.method);
+    setGateway(first.gateway);
+  }, [tabOptions, optionKey]);
+
   const unitUSD = servicePackage ? servicePackage.priceUsd : (product?.priceUSD ?? 0);
   const unitLocal = servicePackage ? servicePackage.originalAmount : (product?.originalAmount ?? 0);
   const subtotalUSD = useMemo(() => (product ? unitUSD * qty : 0), [product, unitUSD, qty]);
@@ -405,6 +424,10 @@ function CheckoutPage() {
   const cashbackApplyLocal = Number((cashbackApplyUSD * ratio).toFixed(2));
   const discountLocal = Number((discountUSD * ratio).toFixed(2));
   const totalLocalExact = Number(Math.max(0, subtotalLocal - discountLocal - cashbackApplyLocal).toFixed(2));
+  /** Crypto / virtual-bank rails quote in USD; every other rail in home currency. */
+  const payTotalLabel = usdRail
+    ? formatMoney(totalUSD, "USD")
+    : fmtPrice(totalUSD, homeCurrency, product, totalLocalExact);
   // Cashback is seller-funded and configured per product (Stage 3). This is a
   // preview of what settlement will award: the same post-coupon base and the
   // same rate the server reads back off the product row.
@@ -692,156 +715,107 @@ function CheckoutPage() {
                   </div>
                 </div>
               )}
-              <h2 className={`text-xs font-bold uppercase tracking-widest mb-3 ${isAppShell ? "text-slate-400" : "text-slate-600"}`}>
+              <h2 className={`text-xs font-bold uppercase tracking-widest mb-2 ${isAppShell ? "text-slate-400" : "text-slate-600"}`}>
                 Select Payment Method
               </h2>
-              {methods.map((m) => {
-                const active = method === m.id;
-                const Icon = m.Icon;
-                const walletTag = m.id === "wallet" && balanceUSD !== null;
-                const hasGateways =
-                  m.id === "card" || m.id === "mobile_money" || m.id === "bank_transfer";
-                const expanded = hasGateways && active && cardOpen;
-                const gateways: Array<{
-                  id: "paystack" | "minipay" | "binance";
-                  label: string;
-                  hint: string;
-                  Icon: React.ComponentType<{ className?: string }>;
-                  disabled?: boolean;
-                }> = [
-                  {
-                    id: "minipay" as const,
-                    label: "MiniPay",
-                    hint: "Send manually, upload receipt · verified by our team",
-                    Icon: Smartphone,
-                  },
-                  {
-                    id: "binance" as const,
-                    label: "Binance User ID",
-                    hint: "Send to our Binance ID, upload proof · verified by our team",
-                    Icon: CreditCard,
-                  },
-                  {
-                    id: "paystack",
-                    label: "Paystack",
-                    hint: "Cards, bank transfer & USSD",
-                    Icon: Building2,
-                  },
-                ];
-                return (
-                  <div key={m.id}>
+
+              {/* Compact tab strip */}
+              <div
+                className={`flex gap-1 overflow-x-auto no-scrollbar rounded-[10px] p-1 ${
+                  isAppShell ? "bg-white/[0.04]" : "bg-slate-100"
+                }`}
+                role="tablist"
+              >
+                {PAY_TABS.map((t) => {
+                  const on = payTab === t.id;
+                  return (
                     <button
+                      key={t.id}
+                      role="tab"
+                      aria-selected={on}
+                      onClick={() => setPayTab(t.id)}
+                      className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-[8px] text-[11px] font-bold transition-colors ${
+                        on
+                          ? "bg-[#E5484D] text-white shadow-sm"
+                          : isAppShell
+                            ? "text-slate-300 hover:bg-white/5"
+                            : "text-slate-600 hover:bg-white"
+                      }`}
+                    >
+                      <t.Icon className="w-3.5 h-3.5" />
+                      {t.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Rails inside the selected tab */}
+              <div className="space-y-2">
+                {tabOptions.map((o) => {
+                  const on = !o.soon && optionKey === o.key;
+                  return (
+                    <button
+                      key={o.key}
                       onClick={() => {
-                        if (m.disabled) return;
-                        setMethod(m.id);
-                        if (hasGateways) setCardOpen(active ? !cardOpen : true);
+                        if (o.soon) return;
+                        setOptionKey(o.key);
+                        setMethod(o.method);
+                        setGateway(o.gateway);
                       }}
-                      disabled={m.disabled}
-                      aria-disabled={m.disabled}
-                      aria-expanded={hasGateways ? expanded : undefined}
-                      title={
-                        m.disabled
-                          ? "Unavailable for this purchase."
-                          : undefined
-                      }
-                      className={`w-full text-left rounded-[10px] border p-4 flex items-center gap-4 transition-all ${
-                        m.disabled
+                      disabled={o.soon}
+                      aria-disabled={o.soon}
+                      className={`w-full text-left rounded-[10px] border px-3 py-2.5 flex items-center gap-3 transition-all ${
+                        o.soon
                           ? isAppShell
-                            ? "bg-white/[0.01] border-white/5 opacity-40 cursor-not-allowed"
-                            : "bg-slate-50 border-slate-200 opacity-50 cursor-not-allowed"
-                          : active
+                            ? "bg-white/[0.01] border-white/5 opacity-45 cursor-not-allowed"
+                            : "bg-slate-50 border-slate-200 opacity-60 cursor-not-allowed"
+                          : on
                             ? "bg-[#E5484D]/10 border-[#E5484D]/50"
                             : isAppShell
                               ? "bg-white/[0.03] border-white/5 hover:border-white/10"
                               : "bg-white border-slate-200 hover:border-slate-300 shadow-sm"
                       }`}
                     >
-                      <span
-                        className={`w-10 h-10 rounded-[10px] flex items-center justify-center ${active && !m.disabled ? "bg-[#E5484D]/20" : isAppShell ? "bg-white/5" : "bg-slate-100"}`}
-                      >
-                        <Icon
-                          className={`w-5 h-5 ${active && !m.disabled ? (isAppShell ? "text-[#E5484D]" : "text-[#E5484D]") : isAppShell ? "text-slate-300" : "text-slate-500"}`}
-                        />
-                      </span>
                       <span className="flex-1 min-w-0">
-                        <span className={`block text-sm font-semibold ${isAppShell ? "text-white" : "text-slate-900"}`}>
-                          {m.label}
-                          {m.disabled && (
-                            <span className="ml-2 text-[10px] font-bold uppercase tracking-wider text-slate-500 md:text-slate-500">
-                              Unavailable here
+                        <span
+                          className={`block text-sm font-semibold truncate ${isAppShell ? "text-white" : "text-slate-900"}`}
+                        >
+                          {o.label}
+                          {o.soon && (
+                            <span className="ml-2 text-[9px] font-bold uppercase tracking-wider text-slate-500">
+                              Coming soon
+                            </span>
+                          )}
+                          {o.usd && !o.soon && (
+                            <span className="ml-2 text-[9px] font-bold uppercase tracking-wider text-[#E5484D]">
+                              USD
                             </span>
                           )}
                         </span>
-                        <span className={`block text-xs ${isAppShell ? "text-slate-500" : "text-slate-600"}`}>
-                          {hasGateways && active
-                            ? `via ${gateways.find((g) => g.id === gateway)?.label ?? m.hint}`
-                            : m.hint}
+                        <span
+                          className={`block text-[11px] truncate ${isAppShell ? "text-slate-500" : "text-slate-600"}`}
+                        >
+                          {o.key === "wallet" && balanceUSD !== null
+                            ? `Balance ${fmtLocal(balanceUSD, homeCurrency)}`
+                            : o.hint}
                         </span>
                       </span>
-                      {walletTag && (
-                        <span className={`text-[11px] font-mono ${isAppShell ? "text-slate-400" : "text-slate-600"}`}>
-                          {fmtLocal(balanceUSD ?? 0, homeCurrency)}
-                        </span>
-                      )}
-                      {hasGateways && !m.disabled && (
-                        <ChevronDown
-                          className={`w-4 h-4 text-slate-400 transition-transform ${expanded ? "rotate-180" : ""}`}
-                        />
-                      )}
+                      {on && <Check className="w-4 h-4 text-[#E5484D] shrink-0" />}
                     </button>
+                  );
+                })}
+              </div>
 
-                    {expanded && (
-                      <div className="mt-2 ml-4 pl-4 border-l border-white/10 md:border-slate-200 space-y-2">
-                        <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500 md:text-slate-500">
-                          Choose payment provider
-                        </div>
-                        {gateways.map((g) => {
-                          const on = gateway === g.id;
-                          const isDisabled = g.disabled;
-                          return (
-                            <button
-                              key={g.id}
-                              onClick={() => !isDisabled && setGateway(g.id)}
-                              disabled={isDisabled}
-                              className={`w-full text-left rounded-[10px] border p-3 flex items-center gap-3 transition-all ${
-                                isDisabled
-                                  ? "opacity-50 cursor-not-allowed grayscale bg-white/[0.01] border-white/5"
-                                  : on
-                                    ? "bg-[#E5484D]/10 border-[#E5484D]/50"
-                                    : isAppShell
-                                      ? "bg-white/[0.03] border-white/5 hover:border-white/10"
-                                      : "bg-white border-slate-200 hover:border-slate-300 shadow-sm"
-                              }`}
-                            >
-                              <g.Icon
-                                className={`w-4 h-4 shrink-0 ${on ? "text-[#E5484D]" : "text-slate-400"}`}
-                              />
-                              <span className="flex-1 min-w-0">
-                                <span
-                                  className={`block text-sm font-semibold ${isAppShell ? "text-white" : "text-slate-900"}`}
-                                >
-                                  {g.label}
-                                  {g.id === recommended && !isDisabled && (
-                                    <span className="ml-2 text-[9px] font-bold uppercase tracking-wider text-[#E5484D]">
-                                      Recommended
-                                    </span>
-                                  )}
-                                </span>
-                                <span
-                                  className={`block text-[11px] ${isAppShell ? "text-slate-500" : "text-slate-600"}`}
-                                >
-                                  {g.hint}
-                                </span>
-                              </span>
-                              {on && !isDisabled && <Check className="w-4 h-4 text-[#E5484D] shrink-0" />}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+              {usdRail && (
+                <p
+                  className={`text-[11px] ${isAppShell ? "text-slate-400" : "text-slate-600"}`}
+                >
+                  This payment is settled in US dollars — send{" "}
+                  <span className="font-bold">{formatMoney(totalUSD, "USD")}</span>, then upload your
+                  receipt. Our team verifies it and releases your order.
+                </p>
+              )}
+
 
               {insufficient && (
                 <div
@@ -1171,7 +1145,7 @@ function CheckoutPage() {
                   }`}
                 >
                   <span>Total</span>
-                  <span>{fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}</span>
+                  <span>{payTotalLabel}</span>
                 </div>
               </div>
 
@@ -1179,9 +1153,7 @@ function CheckoutPage() {
                 <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#0A0A0B]/80 backdrop-blur-xl border-t border-white/5 p-4 flex flex-col gap-3 pb-safe">
                   <div className="flex justify-between items-center px-1">
                     <span className="text-xs text-slate-400">Total to pay</span>
-                    <span className="text-lg font-black text-white">
-                      {fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}
-                    </span>
+                    <span className="text-lg font-black text-white">{payTotalLabel}</span>
                   </div>
                   <button
                     onClick={pay}
@@ -1193,13 +1165,13 @@ function CheckoutPage() {
                         <Loader2 className="w-4 h-4 animate-spin" /> Processing…
                       </>
                     ) : method === "wallet" ? (
-                      `Pay ${fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}`
+                      `Pay ${payTotalLabel}`
                     ) : gateway === "minipay" ? (
-                      `Pay with MiniPay`
+                      `Pay with MiniPay · ${payTotalLabel}`
                     ) : gateway === "binance" ? (
-                      `Pay with Binance`
+                      `Pay with Binance · ${payTotalLabel}`
                     ) : (
-                      `Pay with Paystack`
+                      `Pay with Paystack · ${payTotalLabel}`
                     )}
                   </button>
                   <div className="text-[10px] text-slate-500 flex items-center justify-center gap-1 opacity-60">
@@ -1219,12 +1191,12 @@ function CheckoutPage() {
                         <Loader2 className="w-4 h-4 animate-spin" /> Processing…
                       </>
                     ) : method === "wallet" ? (
-                      `Pay ${fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}`
+                      `Pay ${payTotalLabel}`
                     ) : gateway === "minipay" || gateway === "binance" ? (
-                      `Pay with ${gateway === "minipay" ? "MiniPay" : "Binance"} · ${fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}`
+                      `Pay with ${activeOption?.label ?? (gateway === "minipay" ? "MiniPay" : "Binance")} · ${payTotalLabel}`
                     ) : (
                       <span className="inline-flex items-center gap-2">
-                        Pay with Paystack · {fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}
+                        Pay with Paystack · {payTotalLabel}
                       </span>
                     )}
                   </button>
@@ -1338,7 +1310,7 @@ function CheckoutPage() {
           purpose="order"
           targetId={product.id}
           quantity={qty}
-          currency={homeCurrency}
+          currency={usdRail ? "USD" : homeCurrency}
           onClose={() => setMinipayOpen(false)}
         />
       )}
