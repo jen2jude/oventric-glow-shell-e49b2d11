@@ -215,24 +215,21 @@ function optionsForTab(tab: PayTabId, country: string | null): PayOption[] {
     return list;
   }
   if (tab === "crypto") {
+    const crypto = (key: string, hint: string): PayOption => ({
+      key,
+      label: CRYPTO_DESTINATIONS[key]!.label,
+      hint,
+      method: "card",
+      gateway: "binance",
+      usd: true,
+    });
     return [
-      {
-        key: "binance",
-        label: "Binance Pay",
-        hint: "Send USDT to our Binance ID, upload the receipt",
-        method: "card",
-        gateway: "binance",
-        usd: true,
-      },
-      {
-        key: "bybit",
-        label: "Bybit Pay",
-        hint: "Account details coming soon",
-        method: "card",
-        gateway: "binance",
-        usd: true,
-        soon: true,
-      },
+      crypto("binance", "Send to our Binance User ID, upload the receipt"),
+      crypto("bybit", "Send to our Bybit User ID, upload the receipt"),
+      crypto("usdt-trc20", "TRON network — send USDT to our TRC20 wallet"),
+      crypto("usdt-bep20", "BNB Smart Chain — send USDT to our BEP20 wallet"),
+      crypto("usdc-bep20", "BNB Smart Chain — send USDC to our BEP20 wallet"),
+      crypto("usdc-solana", "Solana network — send USDC to our SPL wallet"),
     ];
   }
   if (tab === "virtual") {
