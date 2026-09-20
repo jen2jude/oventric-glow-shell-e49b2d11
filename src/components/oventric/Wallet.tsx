@@ -142,8 +142,8 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
 
   const subWallets = [
     { label: "Cashback", value: fmt(cashbackUSD * rate, cur), sub: "Available at checkout", icon: Sparkles, tone: "bg-wallet-crimson-soft text-wallet-crimson", to: "/wallet/ledger" as const },
-    { label: "Escrow", value: fmt(locked, cur), sub: "Protected until completion", icon: Lock, tone: "bg-wallet-info-soft text-wallet-info", to: "/wallet/ledger" as const },
-    { label: "Seller earnings", value: fmt(available, cur), sub: "From marketplace sales", icon: WalletIcon, tone: "bg-wallet-positive-soft text-wallet-positive", to: "/wallet/history" as const },
+    { label: "Escrow", value: fmt(locked, cur), sub: "Protected until completion", icon: Lock, tone: "bg-wallet-crimson-soft text-wallet-crimson", to: "/wallet/ledger" as const },
+    { label: "Seller earnings", value: fmt(available, cur), sub: "From marketplace sales", icon: WalletIcon, tone: "bg-wallet-crimson-soft text-wallet-crimson", to: "/wallet/history" as const },
   ];
   const walletNav = [
     { label: "Home", section: "Home", icon: Home },
@@ -183,7 +183,7 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
       <MegaMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
       <NotificationsDrawer open={notifOpen} onClose={() => setNotifOpen(false)} />
 
-      <main className="wallet-main mx-auto grid w-full max-w-[1360px] gap-5 px-4 py-6 sm:px-6 md:grid-cols-[150px_minmax(0,1fr)_190px] md:px-5 md:py-7 xl:grid-cols-[180px_minmax(0,1fr)_240px] xl:gap-6 xl:px-8">
+      <main className="wallet-main mx-auto grid w-full max-w-[1320px] gap-4 px-4 py-5 sm:px-6 md:grid-cols-[140px_minmax(0,1fr)_180px] md:px-5 md:py-6 lg:grid-cols-[160px_minmax(0,1fr)_210px] xl:grid-cols-[180px_minmax(0,1fr)_240px] xl:gap-5 xl:px-7">
         <aside className="wallet-reference-nav hidden md:flex md:flex-col">
           <nav className="space-y-1">
             {walletNav.map((item) => (
@@ -192,7 +192,7 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
               </Button>
             ))}
           </nav>
-          <div className="mt-auto rounded-[10px] bg-wallet-warm p-4 text-center">
+          <div className="mt-auto rounded-[10px] border border-wallet-crimson-line bg-wallet-panel p-4 text-center shadow-wallet-card">
             <span className="mx-auto grid h-10 w-10 place-items-center rounded-full bg-wallet-gift text-wallet-rich"><WalletIcon /></span>
             <p className="mt-3 text-sm font-bold text-wallet-copy">Shop, Earn, Grow</p>
             <p className="mt-1 text-[10px] text-wallet-copy-muted">Your wallet powers a bigger you.</p>
@@ -201,7 +201,7 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
         </aside>
 
         <div className="wallet-center min-w-0">
-        <div className="wallet-page-heading mb-4 flex items-start justify-between gap-4">
+        <div className="wallet-page-heading mb-3 flex items-start justify-between gap-4">
           <div>
             <h1 className="font-wallet-display text-3xl font-bold text-wallet-copy sm:text-4xl">Wallet</h1>
             <p className="mt-1 text-sm text-wallet-copy-muted">Manage your balance, transactions and payouts all in one place.</p>
@@ -213,18 +213,18 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
           <Button variant="outline" onClick={() => openGate("funding")} className="mb-5 h-auto w-full justify-start border-wallet-crimson-line bg-wallet-crimson-soft px-4 py-3 text-left text-sm font-semibold text-wallet-crimson hover:bg-wallet-crimson-soft">Sign in to view your wallet balance and activity</Button>
         )}
 
-        <div className="wallet-hero-grid grid gap-3 lg:grid-cols-[minmax(0,1.65fr)_minmax(190px,1fr)]">
-          <section className="wallet-balance-card relative overflow-hidden rounded-[10px] bg-wallet-rich px-5 py-6 text-wallet-on-rich sm:px-7 sm:py-7">
+        <div className="wallet-hero-grid grid gap-3 lg:grid-cols-[minmax(0,1.7fr)_minmax(190px,1fr)]">
+          <section className="wallet-balance-card relative overflow-hidden rounded-[10px] bg-wallet-rich px-5 py-5 text-wallet-on-rich sm:px-6 sm:py-6">
             <div aria-hidden="true" className="wallet-balance-glow wallet-balance-glow-one" />
             <div aria-hidden="true" className="wallet-balance-glow wallet-balance-glow-two" />
             <div className="relative z-10">
               <div className="flex items-center gap-2 text-sm font-medium text-wallet-on-rich-muted">
                  Available balance <span className="rounded-md bg-wallet-rich-muted px-2 py-1 text-[10px] font-semibold text-wallet-on-rich">{cur}</span>
               </div>
-              <div className="mt-3 font-wallet-display text-4xl font-bold tabular-nums sm:text-5xl">{mask(fmt(main, cur))}</div>
+              <div className="mt-3 font-wallet-display text-4xl font-bold tabular-nums sm:text-[2.65rem]">{mask(fmt(main, cur))}</div>
               <div className="mt-2 flex items-center gap-1.5 text-xs text-wallet-on-rich-muted">≈ {mask(`$${usdEquiv.toFixed(2)}`)} USD</div>
             </div>
-              <div className="wallet-balance-split relative z-10 mt-6 grid grid-cols-3 divide-x divide-wallet-rich-line border-t border-wallet-rich-line pt-4">
+               <div className="wallet-balance-split relative z-10 mt-5 grid grid-cols-3 divide-x divide-wallet-rich-line border-t border-wallet-rich-line pt-4">
               <div className="pr-3"><p className="text-sm font-semibold tabular-nums">{mask(fmt(locked, cur))}</p><p className="mt-1 text-[10px] text-wallet-on-rich-muted">Pending balance</p></div>
               <div className="px-3"><p className="text-sm font-semibold tabular-nums">{mask(fmt(totalEarned, cur))}</p><p className="mt-1 text-[10px] text-wallet-on-rich-muted">Total earned</p></div>
               <div className="pl-3"><p className="text-sm font-semibold tabular-nums">{mask(fmt(totalWithdrawn, cur))}</p><p className="mt-1 text-[10px] text-wallet-on-rich-muted">Total withdrawn</p></div>
@@ -250,7 +250,7 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
           </section>
         </div>
 
-        <section className="wallet-shop-banner my-4 flex items-center justify-between gap-4 rounded-[10px] border border-wallet-warm-line bg-wallet-warm px-4 py-3 sm:px-5">
+        <section className="wallet-shop-banner my-3 flex items-center justify-between gap-4 rounded-[10px] border border-wallet-warm-line bg-wallet-panel px-4 py-3 shadow-wallet-card sm:px-5">
           <div className="flex min-w-0 items-center gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-wallet-gift text-wallet-rich"><Gift /></span><p className="text-xs font-medium text-wallet-copy sm:text-sm">Use your wallet to pay for digital products and enjoy a faster checkout.</p></div>
           <Button asChild className="shrink-0 bg-wallet-rich text-wallet-on-rich shadow-none hover:bg-wallet-rich-strong"><Link to="/marketplace">Shop now <ChevronRight /></Link></Button>
         </section>
@@ -264,7 +264,7 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
           </div>
         </section>
 
-        <div className="pt-3">
+        <div className="pt-2">
           <section className="overflow-hidden rounded-[10px] border border-wallet-line bg-wallet-panel shadow-wallet-card">
             <div className="flex items-center justify-between px-4 py-4 sm:px-5">
               <div><h2 className="font-wallet-display text-lg font-bold text-wallet-copy">Recent transactions</h2></div>
@@ -282,12 +282,12 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
           <section className="rounded-[10px] border border-wallet-line bg-wallet-panel p-4 shadow-wallet-card">
             <div className="flex items-center justify-between"><h2 className="text-sm font-bold text-wallet-copy">Quick stats</h2><span className="text-[9px] text-wallet-copy-faint">All time</span></div>
             <div className="mt-4 space-y-4">
-              {[{ label: "Sales earnings", value: salesEarned, icon: Store, tone: "bg-wallet-info-soft text-wallet-info" }, { label: "Cashback earned", value: cashbackUSD * rate, icon: Sparkles, tone: "bg-wallet-warning-soft text-wallet-warning" }, { label: "Referral rewards", value: referralEarned, icon: Award, tone: "bg-wallet-warm text-wallet-rich" }, { label: "Withdrawals", value: totalWithdrawn, icon: ArrowUp, tone: "bg-wallet-crimson-soft text-wallet-crimson" }].map((stat) => <div key={stat.label} className="flex items-center gap-3"><span className={`grid h-8 w-8 shrink-0 place-items-center rounded-[10px] ${stat.tone}`}><stat.icon className="h-4 w-4" /></span><div><p className="text-sm font-bold tabular-nums text-wallet-copy">{mask(fmt(stat.value, cur))}</p><p className="text-[10px] text-wallet-copy-muted">{stat.label}</p></div></div>)}
+              {[{ label: "Sales earnings", value: salesEarned, icon: Store }, { label: "Cashback earned", value: cashbackUSD * rate, icon: Sparkles }, { label: "Referral rewards", value: referralEarned, icon: Award }, { label: "Withdrawals", value: totalWithdrawn, icon: ArrowUp }].map((stat) => <div key={stat.label} className="flex items-center gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-wallet-crimson-soft text-wallet-crimson"><stat.icon className="h-4 w-4" /></span><div><p className="text-sm font-bold tabular-nums text-wallet-copy">{mask(fmt(stat.value, cur))}</p><p className="text-[10px] text-wallet-copy-muted">{stat.label}</p></div></div>)}
             </div>
           </section>
           <section className="rounded-[10px] border border-wallet-line bg-wallet-panel p-4 shadow-wallet-card">
-            <h2 className="flex items-center gap-2 text-sm font-bold text-wallet-copy"><CircleDollarSign className="text-wallet-warning" /> Wallet tips</h2>
-            <ul className="mt-3 space-y-2 text-[10px] text-wallet-copy-muted"><li className="flex gap-2"><ShieldCheck className="h-3.5 w-3.5 shrink-0 text-wallet-positive" />Use your wallet for faster checkout.</li><li className="flex gap-2"><Clock3 className="h-3.5 w-3.5 shrink-0 text-wallet-warning" />Escrow stays protected until completion.</li><li className="flex gap-2"><Sparkles className="h-3.5 w-3.5 shrink-0 text-wallet-crimson" />Earn cashback on eligible purchases.</li></ul>
+            <h2 className="flex items-center gap-2 text-sm font-bold text-wallet-copy"><CircleDollarSign className="text-wallet-crimson" /> Wallet tips</h2>
+            <ul className="mt-3 space-y-2 text-[10px] text-wallet-copy-muted"><li className="flex gap-2"><ShieldCheck className="h-3.5 w-3.5 shrink-0 text-wallet-crimson" />Use your wallet for faster checkout.</li><li className="flex gap-2"><Clock3 className="h-3.5 w-3.5 shrink-0 text-wallet-crimson" />Escrow stays protected until completion.</li><li className="flex gap-2"><Sparkles className="h-3.5 w-3.5 shrink-0 text-wallet-crimson" />Earn cashback on eligible purchases.</li></ul>
           </section>
           <section className="rounded-[10px] border border-wallet-line bg-wallet-panel p-4 shadow-wallet-card">
             <div className="mb-5"><p className="text-[10px] font-semibold uppercase text-wallet-crimson">Cashback planner</p><h2 className="mt-1 font-wallet-display text-base font-bold text-wallet-copy">Estimate your earnings</h2></div>
