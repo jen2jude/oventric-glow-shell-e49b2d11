@@ -70,6 +70,16 @@
   --color-wallet-warning-soft: var(--wallet-warning-soft);
   --color-wallet-info: var(--wallet-info);
   --color-wallet-info-soft: var(--wallet-info-soft);
+  --color-wallet-rich: var(--wallet-rich);
+  --color-wallet-rich-strong: var(--wallet-rich-strong);
+  --color-wallet-rich-muted: var(--wallet-rich-muted);
+  --color-wallet-rich-line: var(--wallet-rich-line);
+  --color-wallet-on-rich: var(--wallet-on-rich);
+  --color-wallet-on-rich-muted: var(--wallet-on-rich-muted);
+  --color-wallet-warm: var(--wallet-warm);
+  --color-wallet-warm-line: var(--wallet-warm-line);
+  --color-wallet-gift: var(--wallet-gift);
+  --shadow-wallet-card: var(--wallet-card-shadow);
   --color-ledger-positive: var(--ledger-positive);
   --color-ledger-positive-soft: var(--ledger-positive-soft);
   --color-ledger-info: var(--ledger-info);
@@ -1085,6 +1095,16 @@ body {
   --wallet-warning-soft: oklch(0.94 0.06 78);
   --wallet-info: oklch(0.5 0.13 245);
   --wallet-info-soft: oklch(0.94 0.04 245);
+  --wallet-rich: oklch(0.37 0.11 45);
+  --wallet-rich-strong: oklch(0.31 0.1 43);
+  --wallet-rich-muted: oklch(1 0 0 / 13%);
+  --wallet-rich-line: oklch(1 0 0 / 17%);
+  --wallet-on-rich: oklch(0.99 0.005 80);
+  --wallet-on-rich-muted: oklch(0.91 0.025 72);
+  --wallet-warm: oklch(0.975 0.025 75);
+  --wallet-warm-line: oklch(0.91 0.045 68);
+  --wallet-gift: oklch(0.91 0.09 74);
+  --wallet-card-shadow: 0 12px 30px -24px oklch(0.24 0.03 55 / 30%);
 
   /* Create chooser: premium dark to match the app shell. */
   --create-surface: oklch(0.16 0.008 260);

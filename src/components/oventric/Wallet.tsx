@@ -9,11 +9,15 @@ import {
   ArrowUp,
   Award,
   Bell,
+  CircleDollarSign,
   ChevronLeft,
   ChevronRight,
+  Clock3,
   Download,
   Eye,
   EyeOff,
+  Gift,
+  History,
   Info,
   Lock,
   Menu,
@@ -117,9 +121,9 @@ export function Wallet() {
   };
 
   const actions = [
-    { label: "Add funds", description: "Fund your balance", icon: Plus, primary: true, onClick: () => requireAuth(() => setAddFundsOpen(true)) },
-    { label: "Withdraw", description: "Move money out", icon: ArrowUp, onClick: () => requireAuth(() => setPayoutOpen(true)) },
-    { label: "Request", description: "Request a payment", icon: ArrowDown, onClick: () => requireAuth(() => toast.info("Payment requests are coming soon")) },
+    { label: "Add funds", icon: Plus, primary: true, onClick: () => requireAuth(() => setAddFundsOpen(true)) },
+    { label: "Withdraw", icon: ArrowUp, onClick: () => requireAuth(() => setPayoutOpen(true)) },
+    { label: "Request", icon: ArrowDown, onClick: () => requireAuth(() => toast.info("Payment requests are coming soon")) },
   ];
 
   const subWallets = [
@@ -146,85 +150,91 @@ export function Wallet() {
       <MegaMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
       <NotificationsDrawer open={notifOpen} onClose={() => setNotifOpen(false)} />
 
-      <main className="wallet-main mx-auto w-full max-w-[1360px] px-4 py-8 sm:px-6 md:px-10 md:py-14 xl:px-14">
-        <div className="wallet-page-heading mb-10 flex flex-col gap-6 border-b border-wallet-line pb-8 lg:flex-row lg:items-end lg:justify-between">
+      <main className="wallet-main mx-auto w-full max-w-[1240px] px-4 py-6 sm:px-6 md:px-8 md:py-8 xl:px-10">
+        <div className="wallet-page-heading mb-5 flex items-start justify-between gap-4">
           <div>
-            <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-wallet-crimson">
-              <ShieldCheck className="h-4 w-4" /> Protected wallet
-            </div>
-            <h1 className="font-wallet-display text-3xl font-semibold text-wallet-copy sm:text-5xl">Your wallet</h1>
-            <p className="mt-3 text-sm text-wallet-copy-muted sm:text-base">Balances, earnings and recent activity in {cur}.</p>
+            <h1 className="font-wallet-display text-3xl font-bold text-wallet-copy sm:text-4xl">Wallet</h1>
+            <p className="mt-1 text-sm text-wallet-copy-muted">Manage your balance, transactions and payouts all in one place.</p>
           </div>
-          <div className="wallet-heading-action grid grid-cols-2 gap-2 sm:flex">
-            <Button onClick={() => requireAuth(() => setAddFundsOpen(true))} className="h-11 bg-wallet-crimson px-5 text-wallet-on-crimson shadow-none hover:bg-wallet-crimson-strong"><Plus /> Add funds</Button>
-          </div>
+          <Button variant="outline" className="wallet-how-button h-9 border-wallet-line bg-wallet-panel text-xs text-wallet-copy hover:bg-wallet-muted" onClick={() => toast.info("Your available balance can be spent or withdrawn. Escrow is released after order completion.")}><Info /> How it works?</Button>
         </div>
 
         {!isAuthenticated && checked && (
-          <button onClick={() => openGate("funding")} className="mb-6 w-full rounded-[10px] border border-wallet-crimson-line bg-wallet-crimson-soft px-4 py-3 text-left text-sm font-semibold text-wallet-crimson">
-            Sign in to view your wallet balance and activity
-          </button>
+          <Button variant="outline" onClick={() => openGate("funding")} className="mb-5 h-auto w-full justify-start border-wallet-crimson-line bg-wallet-crimson-soft px-4 py-3 text-left text-sm font-semibold text-wallet-crimson hover:bg-wallet-crimson-soft">Sign in to view your wallet balance and activity</Button>
         )}
 
-        <div className="wallet-mobile-composition">
-        <section className="wallet-balance-card relative overflow-hidden border-y border-wallet-line bg-wallet-panel px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+        <div className="wallet-hero-grid grid gap-3 lg:grid-cols-[minmax(0,1.6fr)_minmax(320px,1fr)]">
+          <section className="wallet-balance-card relative overflow-hidden rounded-[10px] bg-wallet-rich px-5 py-6 text-wallet-on-rich sm:px-7 sm:py-7">
             <div aria-hidden="true" className="wallet-balance-glow wallet-balance-glow-one" />
             <div aria-hidden="true" className="wallet-balance-glow wallet-balance-glow-two" />
-            <div className="relative z-10 max-w-4xl">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-wallet-copy-muted">
-                 Available balance <span className="rounded-md bg-wallet-muted px-2 py-1 text-[10px] text-wallet-copy">{cur}</span>
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 text-sm font-medium text-wallet-on-rich-muted">
+                 Available balance <span className="rounded-md bg-wallet-rich-muted px-2 py-1 text-[10px] font-semibold text-wallet-on-rich">{cur}</span>
               </div>
-              <div className="mt-4 font-wallet-display text-4xl font-semibold tabular-nums text-wallet-copy sm:text-6xl lg:text-7xl">{mask(fmt(main, cur))}</div>
-              <div className="mt-3 flex items-center gap-1.5 text-sm text-wallet-copy-muted">≈ {mask(`$${usdEquiv.toFixed(2)}`)} USD <Info className="h-3.5 w-3.5" /></div>
+              <div className="mt-3 font-wallet-display text-4xl font-bold tabular-nums sm:text-5xl">{mask(fmt(main, cur))}</div>
+              <div className="mt-2 flex items-center gap-1.5 text-xs text-wallet-on-rich-muted">≈ {mask(`$${usdEquiv.toFixed(2)}`)} USD</div>
             </div>
-            <div className="wallet-balance-split relative z-10 mt-10 grid max-w-2xl grid-cols-2 gap-8 border-t border-wallet-line pt-6">
-              <div><p className="text-xs text-wallet-copy-muted">Available</p><p className="mt-1 text-lg font-semibold tabular-nums text-wallet-copy">{mask(fmt(available, cur))}</p></div>
-              <div><p className="text-xs text-wallet-copy-muted">In escrow</p><p className="mt-1 text-lg font-semibold tabular-nums text-wallet-copy">{mask(fmt(locked, cur))}</p></div>
+            <div className="wallet-balance-split relative z-10 mt-6 grid grid-cols-3 divide-x divide-wallet-rich-line border-t border-wallet-rich-line pt-4">
+              <div className="pr-3"><p className="text-sm font-semibold tabular-nums">{mask(fmt(locked, cur))}</p><p className="mt-1 text-[10px] text-wallet-on-rich-muted">In escrow</p></div>
+              <div className="px-3"><p className="text-sm font-semibold tabular-nums">{mask(fmt(cashbackUSD * rate, cur))}</p><p className="mt-1 text-[10px] text-wallet-on-rich-muted">Cashback</p></div>
+              <div className="pl-3"><p className="text-sm font-semibold tabular-nums">{mask(fmt(available, cur))}</p><p className="mt-1 text-[10px] text-wallet-on-rich-muted">Spendable</p></div>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => requireAuth(toggleBalancesHidden)} aria-label={hide ? "Show balances" : "Hide balances"} className="absolute right-4 top-4 z-20 border border-wallet-line bg-wallet-muted text-wallet-copy-muted hover:text-wallet-copy"><Eye className={hide ? "hidden" : "block"} /><EyeOff className={hide ? "block" : "hidden"} /></Button>
-        </section>
+            <Button variant="ghost" size="icon" onClick={() => requireAuth(toggleBalancesHidden)} aria-label={hide ? "Show balances" : "Hide balances"} className="absolute right-4 top-4 z-20 text-wallet-on-rich-muted hover:bg-wallet-rich-muted hover:text-wallet-on-rich"><Eye className={hide ? "hidden" : "block"} /><EyeOff className={hide ? "block" : "hidden"} /></Button>
+          </section>
 
-          <section className="wallet-actions-section border-b border-wallet-line py-8">
-            <div className="wallet-actions-heading mb-5"><h2 className="font-wallet-display text-xl font-semibold text-wallet-copy">Move your money</h2><p className="mt-1 text-sm text-wallet-copy-muted">Manage your funds securely.</p></div>
-            <div className="wallet-actions-grid grid grid-cols-2 gap-px overflow-hidden rounded-[10px] border border-wallet-line bg-wallet-line md:grid-cols-4">
+          <section className="wallet-actions-section">
+            <div className="wallet-actions-grid grid h-full grid-cols-2 gap-3">
               {actions.map((action) => (
-                <Button key={action.label} variant="ghost" onClick={action.onClick} className={`wallet-action-button h-auto min-h-28 flex-col items-start gap-3 rounded-none border-0 p-5 text-left ${action.primary ? "wallet-action-primary bg-wallet-crimson-soft text-wallet-copy hover:bg-wallet-crimson-soft" : "bg-wallet-panel text-wallet-copy hover:bg-wallet-panel-raised hover:text-wallet-copy"}`}>
-                  <span className="wallet-action-icon"><action.icon className={action.primary ? "text-wallet-crimson" : "text-wallet-copy-muted"} /></span>
-                  <span><span className="block text-sm font-semibold">{action.label}</span><span className="mt-0.5 block text-[11px] font-normal text-wallet-copy-muted">{action.description}</span></span>
+                <Button key={action.label} variant="ghost" onClick={action.onClick} className={`wallet-action-button h-auto min-h-24 flex-col gap-2 rounded-[10px] border border-wallet-line bg-wallet-panel p-3 text-wallet-copy shadow-wallet-card hover:bg-wallet-panel-raised hover:text-wallet-copy ${action.primary ? "wallet-action-primary" : ""}`}>
+                  <span className="wallet-action-icon"><action.icon className="text-wallet-rich" /></span>
+                  <span className="text-xs font-semibold">{action.label}</span>
                 </Button>
               ))}
+              <Button asChild variant="ghost" className="wallet-action-button h-auto min-h-24 flex-col gap-2 rounded-[10px] border border-wallet-line bg-wallet-panel p-3 text-wallet-copy shadow-wallet-card hover:bg-wallet-panel-raised hover:text-wallet-copy">
+                <Link to="/wallet/ledger"><span className="wallet-action-icon"><History className="text-wallet-rich" /></span><span className="text-xs font-semibold">Transaction history</span></Link>
+              </Button>
             </div>
           </section>
         </div>
 
-        <section className="wallet-breakdown-section py-10">
-          <div className="mb-6 flex items-end justify-between"><div><h2 className="font-wallet-display text-2xl font-semibold text-wallet-copy">Balance breakdown</h2><p className="mt-2 text-sm text-wallet-copy-muted">How your Oventric funds are distributed.</p></div></div>
-          <div className="wallet-breakdown-grid grid grid-cols-1 border-y border-wallet-line sm:grid-cols-2 xl:grid-cols-4 xl:divide-x xl:divide-wallet-line">
+        <section className="wallet-shop-banner my-4 flex items-center justify-between gap-4 rounded-[10px] border border-wallet-warm-line bg-wallet-warm px-4 py-3 sm:px-5">
+          <div className="flex min-w-0 items-center gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-wallet-gift text-wallet-rich"><Gift /></span><p className="text-xs font-medium text-wallet-copy sm:text-sm">Use your wallet to pay for digital products and enjoy a faster checkout.</p></div>
+          <Button asChild className="shrink-0 bg-wallet-rich text-wallet-on-rich shadow-none hover:bg-wallet-rich-strong"><Link to="/marketplace">Shop now <ChevronRight /></Link></Button>
+        </section>
+
+        <section className="wallet-breakdown-section py-4">
+          <div className="wallet-breakdown-grid grid grid-cols-1 gap-3 sm:grid-cols-3">
             {subWallets.map((wallet) => {
-              const content = <><div className="flex items-start justify-between"><span className={`flex h-9 w-9 items-center justify-center rounded-[10px] ${wallet.tone}`}><wallet.icon className="h-4 w-4" /></span><ChevronRight className="h-4 w-4 text-wallet-copy-faint" /></div><p className="mt-5 text-xs text-wallet-copy-muted">{wallet.label}</p><p className="mt-1 font-wallet-display text-xl font-semibold tabular-nums text-wallet-copy">{mask(wallet.value)}</p><p className="mt-1 text-[11px] text-wallet-copy-faint">{wallet.sub}</p></>;
-              return isAuthenticated ? <Link key={wallet.label} to={wallet.to} className="wallet-breakdown-card border-b border-wallet-line bg-wallet-panel p-5 transition-colors hover:bg-wallet-panel-raised sm:nth-[3]:border-b-0 sm:nth-[4]:border-b-0 xl:border-b-0 xl:px-7">{content}</Link> : <button key={wallet.label} onClick={() => openGate("funding")} className="wallet-breakdown-card border-b border-wallet-line bg-wallet-panel p-5 text-left opacity-75 transition-opacity hover:opacity-100 sm:nth-[3]:border-b-0 sm:nth-[4]:border-b-0 xl:border-b-0 xl:px-7">{content}</button>;
+              const content = <><div className="flex items-center justify-between"><span className={`flex h-9 w-9 items-center justify-center rounded-[10px] ${wallet.tone}`}><wallet.icon className="h-4 w-4" /></span><ChevronRight className="h-4 w-4 text-wallet-copy-faint" /></div><p className="mt-3 text-[11px] text-wallet-copy-muted">{wallet.label}</p><p className="mt-1 font-wallet-display text-lg font-bold tabular-nums text-wallet-copy">{mask(wallet.value)}</p><p className="mt-1 text-[10px] text-wallet-copy-faint">{wallet.sub}</p></>;
+              return isAuthenticated ? <Link key={wallet.label} to={wallet.to} className="wallet-breakdown-card rounded-[10px] border border-wallet-line bg-wallet-panel p-4 shadow-wallet-card transition-colors hover:bg-wallet-panel-raised">{content}</Link> : <Button key={wallet.label} variant="ghost" onClick={() => openGate("funding")} className="wallet-breakdown-card h-auto items-stretch rounded-[10px] border border-wallet-line bg-wallet-panel p-4 text-left opacity-75 shadow-wallet-card hover:bg-wallet-panel-raised">{content}</Button>;
             })}
           </div>
         </section>
 
-        <div className="grid grid-cols-1 gap-10 border-t border-wallet-line pt-10 xl:grid-cols-12">
-          <section className="overflow-hidden xl:col-span-8">
-            <div className="flex items-center justify-between border-b border-wallet-line py-4">
-              <div><h2 className="font-wallet-display text-2xl font-semibold text-wallet-copy">Recent activity</h2><p className="mt-1 text-sm text-wallet-copy-muted">Your latest wallet movements.</p></div>
+        <div className="grid grid-cols-1 gap-4 pt-4 xl:grid-cols-12">
+          <section className="overflow-hidden rounded-[10px] border border-wallet-line bg-wallet-panel shadow-wallet-card xl:col-span-8">
+            <div className="flex items-center justify-between px-4 py-4 sm:px-5">
+              <div><h2 className="font-wallet-display text-lg font-bold text-wallet-copy">Recent transactions</h2></div>
               {isAuthenticated ? <Link to="/wallet/ledger" className="text-sm font-semibold text-wallet-crimson hover:text-wallet-crimson-strong">View all</Link> : <button onClick={() => openGate("funding")} className="text-sm font-semibold text-wallet-crimson">View all</button>}
             </div>
-            <div className="hidden grid-cols-[minmax(0,1.5fr)_0.8fr_1fr] border-b border-wallet-line bg-wallet-panel-raised px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-wallet-copy-faint sm:grid"><span>Transaction</span><span>Date</span><span className="text-right">Amount</span></div>
+            <div className="hidden grid-cols-[minmax(0,1.5fr)_0.8fr_1fr] border-y border-wallet-line bg-wallet-panel-raised px-5 py-2.5 text-[10px] font-semibold uppercase text-wallet-copy-faint sm:grid"><span>Description</span><span>Date</span><span className="text-right">Amount</span></div>
             {txLoading ? <div className="p-10 text-center text-sm text-wallet-copy-muted">Loading activity…</div> : !isAuthenticated ? <div className="p-10 text-center"><p className="text-sm text-wallet-copy-muted">Sign in to see your recent wallet activity.</p><Button variant="ghost" onClick={() => openGate("funding")} className="mt-2 text-wallet-crimson hover:bg-wallet-crimson-soft hover:text-wallet-crimson">Sign in to view</Button></div> : recentTx.length === 0 ? <div className="p-10 text-center text-sm text-wallet-copy-muted">No transactions yet.</div> : <div className="divide-y divide-wallet-line">{recentTx.map((transaction) => { const style = txStyle(transaction.type, transaction.inflow); return <div key={transaction.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-4 sm:grid-cols-[minmax(0,1.5fr)_0.8fr_1fr]"><div className="flex min-w-0 items-center gap-3"><span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] ${style.tone}`}><style.icon className="h-4 w-4" /></span><div className="min-w-0"><p className="truncate text-sm font-semibold text-wallet-copy">{walletTxLabel(transaction.type)}</p><p className="mt-0.5 text-xs capitalize text-wallet-copy-faint">{transaction.status}</p></div></div><p className="hidden text-xs text-wallet-copy-muted sm:block">{new Date(transaction.occurredAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</p><div className="text-right"><p className={`text-sm font-semibold tabular-nums ${transaction.inflow ? "text-wallet-positive" : "text-wallet-copy"}`}>{transaction.inflow ? "+ " : "- "}{mask(fmt(transaction.amount, transaction.currency))}</p><p className="mt-0.5 text-xs text-wallet-copy-faint sm:hidden">{new Date(transaction.occurredAt).toLocaleDateString()}</p></div></div>; })}</div>}
             {isAuthenticated && totalTxPages > 1 && <div className="flex items-center justify-end gap-3 border-t border-wallet-line px-5 py-3"><Button variant="ghost" size="icon" disabled={currentPage === 0} onClick={() => setTxPage((page) => Math.max(0, page - 1))} aria-label="Previous page" className="text-wallet-copy-muted hover:bg-wallet-muted hover:text-wallet-copy"><ChevronLeft /></Button><span className="text-xs tabular-nums text-wallet-copy-muted">{currentPage + 1} / {totalTxPages}</span><Button variant="ghost" size="icon" disabled={currentPage >= totalTxPages - 1} onClick={() => setTxPage((page) => Math.min(totalTxPages - 1, page + 1))} aria-label="Next page" className="text-wallet-copy-muted hover:bg-wallet-muted hover:text-wallet-copy"><ChevronRight /></Button></div>}
           </section>
 
-          <section className="self-start border-l-2 border-wallet-crimson bg-wallet-panel-raised p-6 xl:col-span-4 xl:p-8">
-            <div className="mb-6"><p className="text-xs font-semibold uppercase tracking-[0.1em] text-wallet-crimson">Cashback planner</p><h2 className="mt-2 font-wallet-display text-lg font-semibold text-wallet-copy">Estimate your earnings</h2><p className="mt-1 text-xs leading-5 text-wallet-copy-muted">See how spending volume may affect estimated annual cashback.</p></div>
+          <aside className="space-y-4 xl:col-span-4">
+          <section className="rounded-[10px] border border-wallet-line bg-wallet-panel p-5 shadow-wallet-card">
+            <div className="mb-5"><p className="text-[10px] font-semibold uppercase text-wallet-crimson">Cashback planner</p><h2 className="mt-1 font-wallet-display text-base font-bold text-wallet-copy">Estimate your earnings</h2></div>
             <div className="flex items-end justify-between gap-3"><label htmlFor="wallet-spend" className="text-xs text-wallet-copy-muted">Monthly volume</label><span className="font-wallet-display text-lg font-semibold tabular-nums text-wallet-copy">{fmt(spend, cur)}</span></div>
             <input id="wallet-spend" type="range" min={0} max={Math.round(tierMid * 10)} step={Math.max(1, Math.round(tierMid / 100))} value={spend} onChange={(event) => setSpend(Number(event.target.value))} className="mt-4 h-1.5 w-full cursor-pointer appearance-none rounded-full bg-wallet-muted accent-wallet-crimson" />
             <div className="mt-5 grid grid-cols-3 gap-2">{tiers.map((item) => { const active = item.key === tier?.key; return <div key={item.key} className={`rounded-[10px] border p-2.5 text-center ${active ? "border-wallet-crimson-line bg-wallet-crimson-soft" : "border-wallet-line bg-wallet-panel-raised"}`}><p className="text-xs font-semibold text-wallet-copy">{item.label}</p><p className="mt-1 text-[10px] text-wallet-copy-faint">{item.pct}%</p></div>; })}</div>
             <div className="mt-5 rounded-[10px] border border-wallet-crimson-line bg-wallet-crimson-soft p-5"><p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-wallet-copy-muted">Estimated annual cashback</p><p className="mt-2 font-wallet-display text-3xl font-semibold tabular-nums text-wallet-copy">{mask(fmt(annual, cur))}</p><p className="mt-2 text-xs text-wallet-copy-muted">At the {tier?.label ?? "Baseline"} estimate</p></div>
           </section>
+          <section className="rounded-[10px] border border-wallet-line bg-wallet-panel p-5 shadow-wallet-card">
+            <h2 className="flex items-center gap-2 font-wallet-display text-sm font-bold text-wallet-copy"><CircleDollarSign className="text-wallet-warning" /> Wallet tips</h2>
+            <ul className="mt-3 space-y-2 text-xs text-wallet-copy-muted"><li className="flex gap-2"><ShieldCheck className="h-4 w-4 shrink-0 text-wallet-positive" />Use your wallet for faster checkout.</li><li className="flex gap-2"><Clock3 className="h-4 w-4 shrink-0 text-wallet-warning" />Escrow stays protected until completion.</li><li className="flex gap-2"><Sparkles className="h-4 w-4 shrink-0 text-wallet-crimson" />Earn cashback on eligible purchases.</li></ul>
+          </section>
+          </aside>
         </div>
       </main>
 
