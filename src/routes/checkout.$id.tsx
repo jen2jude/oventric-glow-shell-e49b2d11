@@ -522,6 +522,12 @@ function CheckoutPage() {
 
   const pay = async () => {
     if (!product || submitting) return;
+    if (isOwnListing) {
+      toast.error("This is your own listing", {
+        description: "You can't buy a product you're selling.",
+      });
+      return;
+    }
     if (isService && !briefValid) {
       toast.error("Tell the seller about your project", {
         description: "Fill in the short project brief so they can start straight away.",
