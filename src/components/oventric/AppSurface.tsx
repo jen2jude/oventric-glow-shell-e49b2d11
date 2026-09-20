@@ -358,7 +358,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         description="Install the Oventric app to top up, withdraw, track earnings and manage cashback."
         from="wallet"
       >
-        <Wallet />
+        <Wallet onSelect={setActive} />
       </AppOnlyGate>
     ) : active === "Marketplace" ? (
       <Marketplace />
@@ -430,10 +430,10 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         <div
           className={`flex flex-1 min-h-0 ${desktopLanding && active === "Marketplace" && !isDesktop ? "pt-0" : ""}`}
         >
-          {!isDesktop && !desktopLanding && (
+          {!isDesktop && !desktopLanding && liveSection(active) !== "Wallet" && (
             <Sidebar onCreate={handleCreate} active={active} onSelect={setActive} />
           )}
-          {isDesktop && !desktopLanding && !isMessages && <DesktopAppSidebar onSelect={setActive} />}
+          {isDesktop && !desktopLanding && !isMessages && liveSection(active) !== "Wallet" && <DesktopAppSidebar onSelect={setActive} />}
 
           <main
             id={desktopLanding ? "desktop-home-scroll" : undefined}
