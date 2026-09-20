@@ -1177,7 +1177,7 @@ function CheckoutPage() {
                   </div>
                   <button
                     onClick={pay}
-                    disabled={submitting || insufficient || (needsDelivery && !deliveryValid)}
+                    disabled={submitting || isOwnListing || insufficient || (needsDelivery && !deliveryValid)}
                     className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-[10px] bg-[#E5484D] hover:bg-[#d13a3f] text-white font-black text-sm transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_8px_30px_rgb(229,72,77,0.2)]"
                   >
                     {submitting ? (
