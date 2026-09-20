@@ -245,10 +245,11 @@ export const getCourse = createServerFn({ method: "POST" })
     if (!data.id) throw new Error("Course id required");
     const sb = serverPublicClient();
     
-    // Use select("*") to be safe against schema drifts
+    // Explicit column list: the quizzes column (answer keys) is revoked from
+    // public roles, so select("*") would fail with a permission error.
     const { data: row, error } = await sb
       .from("courses")
-      .select("*")
+      .select(COURSE_COLS)
       .eq("id", data.id)
       .maybeSingle();
     
