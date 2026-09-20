@@ -112,16 +112,27 @@ export const getWalletBalances = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<WalletBalancesDTO> => {
     const { supabase, userId } = context;
-    const { data, error } = await supabase
-      .from("wallets")
-      .select("currency, available_balance, escrow_balance, accumulated_cashback")
-      .eq("user_id", userId);
-    if (error) throw new Error(error.message);
+    const [walletRes, pendingRes] = await Promise.all([
+      supabase
+        .from("wallets")
+        .select("currency, available_balance, escrow_balance, accumulated_cashback")
+        .eq("user_id", userId),
+      // Sales money that is paid but still inside the order escrow clock is
+      // booked as a PENDING inflow ledger row; it only flips to success when
+      // the escrow releases. Surface it so "In escrow" is never a false zero.
+      supabase
+        .from("wallet_transactions")
+        .select("amount, currency")
+        .eq("user_id", userId)
+        .eq("inflow", true)
+        .eq("status", "pending"),
+    ]);
+    if (walletRes.error) throw new Error(walletRes.error.message);
 
     const balances: Record<string, number> = zeroAmounts();
     const escrow: Record<string, number> = zeroAmounts();
     let cashback = 0;
-    for (const r of (data ?? []) as Array<Record<string, unknown>>) {
+    for (const r of (walletRes.data ?? []) as Array<Record<string, unknown>>) {
       const c = r.currency as WalletCurrency;
       if (c in balances) {
         balances[c] = Number(r.available_balance ?? 0);
@@ -129,8 +140,13 @@ export const getWalletBalances = createServerFn({ method: "GET" })
         cashback += Number(r.accumulated_cashback ?? 0);
       }
     }
+    for (const r of (pendingRes.data ?? []) as Array<{ amount: number; currency: string }>) {
+      const c = r.currency as WalletCurrency;
+      if (c in escrow) escrow[c] = escrow[c] + Number(r.amount ?? 0);
+    }
     return { balances, escrow, cashback };
   });
+
 
 export interface WalletEarningsDTO {
   cashbackUSD: number;
