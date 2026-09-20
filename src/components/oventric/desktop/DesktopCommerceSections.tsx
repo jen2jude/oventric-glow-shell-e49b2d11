@@ -19,6 +19,7 @@ import {
   MtnMomoMark,
   BankTransferMark,
 } from "@/components/oventric/desktop/PaymentLogos";
+import { CashbackBadge } from "@/components/oventric/CashbackBadge";
 
 /* ------------------------------------------------------------------ */
 /* Trade securely banner                                               */
@@ -126,6 +127,7 @@ function ProductCard({ p }: { p: ProductDTO }) {
           <div className="h-full w-full bg-gradient-to-br from-slate-800 to-slate-950" />
         )}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
+        <CashbackBadge percentage={p.cashbackPct} className="absolute left-2 top-2" />
       </div>
       <div className="flex items-start gap-2 p-3">
         <Package className="mt-0.5 h-4 w-4 shrink-0 text-crimson" strokeWidth={2.5} />

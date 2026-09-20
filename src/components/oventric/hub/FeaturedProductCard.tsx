@@ -3,6 +3,7 @@ import { Star, ShoppingCart } from "lucide-react";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { computeDisplayPrice } from "@/lib/fx-display";
 import type { ProductDTO } from "@/lib/marketplace.functions";
+import { CashbackBadge } from "@/components/oventric/CashbackBadge";
 
 function reviewCount(id: string): string {
   let h = 0;
@@ -51,6 +52,7 @@ export function FeaturedProductCard({ product }: { product: ProductDTO }) {
         >
           {badgeText}
         </span>
+        <CashbackBadge percentage={product.cashbackPct} className="absolute bottom-1.5 left-1.5 z-10" />
       </Link>
 
       <div className="p-2 space-y-1.5">
