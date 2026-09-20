@@ -236,13 +236,12 @@ function optionsForTab(tab: PayTabId, country: string | null): PayOption[] {
   if (tab === "virtual") {
     return [
       {
-        key: "grey",
-        label: "Grey",
-        hint: "Account details coming soon",
+        key: "grey-usd",
+        label: "Grey USD",
+        hint: "US dollar bank transfer — manual confirmation",
         method: "bank_transfer",
         gateway: "minipay",
         usd: true,
-        soon: true,
       },
       {
         key: "eversend",
