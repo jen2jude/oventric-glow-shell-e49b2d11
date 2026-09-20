@@ -20,6 +20,7 @@ import { ProfileSetupModalHost } from "@/lib/onboarding/ProfileSetupModal";
 import { KycGateProvider } from "@/lib/kyc-gate/KycGate";
 import { ThemeProvider } from "@/lib/theme/ThemeProvider";
 import { ReactivationGate } from "@/components/oventric/ReactivationGate";
+import { VisitorTracker } from "@/components/oventric/VisitorTracker";
 import { GlobalMobileNav } from "@/components/oventric/GlobalMobileNav";
 import { Toaster } from "@/components/ui/sonner";
 import { ProfileSettingsLauncher } from "@/components/oventric/ProfileDropdown";
@@ -428,6 +429,7 @@ function RootComponent() {
               <ProfileSettingsLauncher />
 
               <ReactivationGate />
+              <VisitorTracker />
               {!isAppShell ? null : <GlobalMobileNav />}
               <Toaster position="top-center" richColors closeButton />
               <LiveNotificationToasts />

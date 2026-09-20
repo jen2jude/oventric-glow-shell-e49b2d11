@@ -50,6 +50,7 @@ import { Route as OrderIdRouteImport } from './routes/order.$id'
 import { Route as CheckoutIdRouteImport } from './routes/checkout.$id'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdsManagerIdRouteImport } from './routes/ads-manager.$id'
+import { Route as AdminVisitorsRouteImport } from './routes/admin.visitors'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminToolsRouteImport } from './routes/admin.tools'
 import { Route as AdminSystemWalletsRouteImport } from './routes/admin.system-wallets'
@@ -88,6 +89,7 @@ import { Route as AdminAdInquiriesRouteImport } from './routes/admin.ad-inquirie
 import { Route as DotwellKnownAssetlinksDotjsonRouteImport } from './routes/[.]well-known.assetlinks[.]json'
 import { Route as DotwellKnownAppleAppSiteAssociationRouteImport } from './routes/[.]well-known.apple-app-site-association'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
+import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack-webhook'
 import { Route as ApiPublicPaymentReturnRouteImport } from './routes/api/public/payment-return'
 import { Route as ApiPublicFlutterwaveWebhookRouteImport } from './routes/api/public/flutterwave-webhook'
@@ -308,6 +310,11 @@ const AdsManagerIdRoute = AdsManagerIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AdsManagerRoute,
 } as any)
+const AdminVisitorsRoute = AdminVisitorsRouteImport.update({
+  id: '/visitors',
+  path: '/visitors',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -501,6 +508,11 @@ const AdminBlogIndexRoute = AdminBlogIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminBlogRoute,
 } as any)
+const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
+  id: '/api/public/track',
+  path: '/api/public/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicPaystackWebhookRoute =
   ApiPublicPaystackWebhookRouteImport.update({
     id: '/api/public/paystack-webhook',
@@ -643,6 +655,7 @@ export interface FileRoutesByFullPath {
   '/admin/system-wallets': typeof AdminSystemWalletsRoute
   '/admin/tools': typeof AdminToolsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/visitors': typeof AdminVisitorsRoute
   '/ads-manager/$id': typeof AdsManagerIdRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/checkout/$id': typeof CheckoutIdRoute
@@ -662,6 +675,7 @@ export interface FileRoutesByFullPath {
   '/api/public/flutterwave-webhook': typeof ApiPublicFlutterwaveWebhookRoute
   '/api/public/payment-return': typeof ApiPublicPaymentReturnRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
+  '/api/public/track': typeof ApiPublicTrackRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/api/public/hooks/auto-release-orders': typeof ApiPublicHooksAutoReleaseOrdersRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -735,6 +749,7 @@ export interface FileRoutesByTo {
   '/admin/system-wallets': typeof AdminSystemWalletsRoute
   '/admin/tools': typeof AdminToolsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/visitors': typeof AdminVisitorsRoute
   '/ads-manager/$id': typeof AdsManagerIdRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/checkout/$id': typeof CheckoutIdRoute
@@ -754,6 +769,7 @@ export interface FileRoutesByTo {
   '/api/public/flutterwave-webhook': typeof ApiPublicFlutterwaveWebhookRoute
   '/api/public/payment-return': typeof ApiPublicPaymentReturnRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
+  '/api/public/track': typeof ApiPublicTrackRoute
   '/admin/blog': typeof AdminBlogIndexRoute
   '/api/public/hooks/auto-release-orders': typeof ApiPublicHooksAutoReleaseOrdersRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -831,6 +847,7 @@ export interface FileRoutesById {
   '/admin/system-wallets': typeof AdminSystemWalletsRoute
   '/admin/tools': typeof AdminToolsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/visitors': typeof AdminVisitorsRoute
   '/ads-manager/$id': typeof AdsManagerIdRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/checkout/$id': typeof CheckoutIdRoute
@@ -850,6 +867,7 @@ export interface FileRoutesById {
   '/api/public/flutterwave-webhook': typeof ApiPublicFlutterwaveWebhookRoute
   '/api/public/payment-return': typeof ApiPublicPaymentReturnRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
+  '/api/public/track': typeof ApiPublicTrackRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/api/public/hooks/auto-release-orders': typeof ApiPublicHooksAutoReleaseOrdersRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -928,6 +946,7 @@ export interface FileRouteTypes {
     | '/admin/system-wallets'
     | '/admin/tools'
     | '/admin/users'
+    | '/admin/visitors'
     | '/ads-manager/$id'
     | '/blog/$slug'
     | '/checkout/$id'
@@ -947,6 +966,7 @@ export interface FileRouteTypes {
     | '/api/public/flutterwave-webhook'
     | '/api/public/payment-return'
     | '/api/public/paystack-webhook'
+    | '/api/public/track'
     | '/admin/blog/'
     | '/api/public/hooks/auto-release-orders'
     | '/api/public/hooks/purge-deleted-accounts'
@@ -1020,6 +1040,7 @@ export interface FileRouteTypes {
     | '/admin/system-wallets'
     | '/admin/tools'
     | '/admin/users'
+    | '/admin/visitors'
     | '/ads-manager/$id'
     | '/blog/$slug'
     | '/checkout/$id'
@@ -1039,6 +1060,7 @@ export interface FileRouteTypes {
     | '/api/public/flutterwave-webhook'
     | '/api/public/payment-return'
     | '/api/public/paystack-webhook'
+    | '/api/public/track'
     | '/admin/blog'
     | '/api/public/hooks/auto-release-orders'
     | '/api/public/hooks/purge-deleted-accounts'
@@ -1115,6 +1137,7 @@ export interface FileRouteTypes {
     | '/admin/system-wallets'
     | '/admin/tools'
     | '/admin/users'
+    | '/admin/visitors'
     | '/ads-manager/$id'
     | '/blog/$slug'
     | '/checkout/$id'
@@ -1134,6 +1157,7 @@ export interface FileRouteTypes {
     | '/api/public/flutterwave-webhook'
     | '/api/public/payment-return'
     | '/api/public/paystack-webhook'
+    | '/api/public/track'
     | '/admin/blog/'
     | '/api/public/hooks/auto-release-orders'
     | '/api/public/hooks/purge-deleted-accounts'
@@ -1189,6 +1213,7 @@ export interface RootRouteChildren {
   ApiPublicFlutterwaveWebhookRoute: typeof ApiPublicFlutterwaveWebhookRoute
   ApiPublicPaymentReturnRoute: typeof ApiPublicPaymentReturnRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
+  ApiPublicTrackRoute: typeof ApiPublicTrackRoute
   ApiPublicHooksAutoReleaseOrdersRoute: typeof ApiPublicHooksAutoReleaseOrdersRoute
   ApiPublicHooksPurgeDeletedAccountsRoute: typeof ApiPublicHooksPurgeDeletedAccountsRoute
   ApiPublicHooksPushDispatchRoute: typeof ApiPublicHooksPushDispatchRoute
@@ -1488,6 +1513,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdsManagerIdRouteImport
       parentRoute: typeof AdsManagerRoute
     }
+    '/admin/visitors': {
+      id: '/admin/visitors'
+      path: '/visitors'
+      fullPath: '/admin/visitors'
+      preLoaderRoute: typeof AdminVisitorsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/users': {
       id: '/admin/users'
       path: '/users'
@@ -1754,6 +1786,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBlogIndexRouteImport
       parentRoute: typeof AdminBlogRoute
     }
+    '/api/public/track': {
+      id: '/api/public/track'
+      path: '/api/public/track'
+      fullPath: '/api/public/track'
+      preLoaderRoute: typeof ApiPublicTrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/paystack-webhook': {
       id: '/api/public/paystack-webhook'
       path: '/api/public/paystack-webhook'
@@ -1905,6 +1944,7 @@ interface AdminRouteChildren {
   AdminSystemWalletsRoute: typeof AdminSystemWalletsRoute
   AdminToolsRoute: typeof AdminToolsRoute
   AdminUsersRoute: typeof AdminUsersRoute
+  AdminVisitorsRoute: typeof AdminVisitorsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -1944,6 +1984,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSystemWalletsRoute: AdminSystemWalletsRoute,
   AdminToolsRoute: AdminToolsRoute,
   AdminUsersRoute: AdminUsersRoute,
+  AdminVisitorsRoute: AdminVisitorsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
@@ -2032,6 +2073,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicFlutterwaveWebhookRoute: ApiPublicFlutterwaveWebhookRoute,
   ApiPublicPaymentReturnRoute: ApiPublicPaymentReturnRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
+  ApiPublicTrackRoute: ApiPublicTrackRoute,
   ApiPublicHooksAutoReleaseOrdersRoute: ApiPublicHooksAutoReleaseOrdersRoute,
   ApiPublicHooksPurgeDeletedAccountsRoute:
     ApiPublicHooksPurgeDeletedAccountsRoute,
