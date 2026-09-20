@@ -95,7 +95,7 @@ export function WalletCreditSplash({ enabled }: { enabled: boolean }) {
         <div className="mt-5 space-y-1">
           {[...totals.entries()].map(([currency, amount]) => (
             <p key={currency} className="text-3xl font-extrabold tracking-tight text-primary">
-              +{formatMoney(amount, currency as MoneyCurrency)}
+              +{formatMoney(amount, currency as Currency)}
             </p>
           ))}
         </div>
@@ -111,7 +111,7 @@ export function WalletCreditSplash({ enabled }: { enabled: boolean }) {
                   {walletTxLabel(item.type)}
                 </span>
                 <span className="shrink-0 text-xs font-semibold text-foreground">
-                  +{formatMoney(item.amount, item.currency as MoneyCurrency)}
+                  +{formatMoney(item.amount, item.currency as Currency)}
                 </span>
               </li>
             ))}
