@@ -45,6 +45,7 @@ import { SiteFooterAuto } from "@/components/oventric/desktop/SiteFooterAuto";
 import { SiteNavbar } from "@/components/oventric/desktop/SiteNavbar";
 import { MarketplaceHeader } from "@/components/oventric/desktop/MarketplaceHeader";
 import { WebMobileFooterNav } from "@/components/oventric/home/WebMobileFooterNav";
+import { CashbackSpotlight } from "@/components/oventric/CashbackSpotlight";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { AppOnlyGate } from "@/lib/app-gate";
 
@@ -483,6 +484,8 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
           />
         )}
       </Suspense>
+
+      <CashbackSpotlight active={active === "Home" || active === "Marketplace"} />
 
 
     </div>
