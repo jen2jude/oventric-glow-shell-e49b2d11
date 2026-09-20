@@ -34,6 +34,7 @@ import { SellerVerificationModal } from "@/components/oventric/shop/SellerVerifi
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { computeDisplayPrice } from "@/lib/fx-display";
 import { supabase } from "@/integrations/supabase/client";
+import { CashbackBadge } from "@/components/oventric/CashbackBadge";
 
 type ShopTab = "shop" | "collections" | "services" | "about";
 
@@ -735,7 +736,10 @@ function ProductCard({
       params={{ id: item.id }}
       className={web ? "storefront-product group overflow-hidden rounded-lg bg-card" : "w-[46%] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141417] sm:w-[28%] md:web-card"}
     >
-      <Cover url={item.coverUrl} className="aspect-square w-full" />
+      <div className="relative">
+        <Cover url={item.coverUrl} className="aspect-square w-full" />
+        <CashbackBadge percentage={item.cashbackPct} className="absolute left-2 top-2" />
+      </div>
       <div className="p-2.5">
         <div className="line-clamp-2 text-xs font-bold leading-snug">{item.title}</div>
         <div className="mt-1 flex items-center justify-between gap-2">
@@ -781,7 +785,10 @@ function Grid({
           params={{ id: p.id }}
           className={web ? "storefront-product group overflow-hidden rounded-lg bg-card" : "overflow-hidden rounded-2xl border border-white/10 bg-[#141417] transition-transform hover:-translate-y-0.5 md:web-card md:hover:translate-y-0"}
         >
-          <Cover url={p.coverUrl} className="aspect-square w-full" />
+          <div className="relative">
+            <Cover url={p.coverUrl} className="aspect-square w-full" />
+            <CashbackBadge percentage={p.cashbackPct} className="absolute left-2 top-2" />
+          </div>
           <div className="p-2.5">
             <div className="line-clamp-2 text-xs font-bold leading-snug">{p.title}</div>
             <div className="mt-1 flex items-center justify-between gap-2">

@@ -2,6 +2,7 @@ import { Star, ShoppingCart, BadgeCheck } from "lucide-react";
 import type { ProductDTO } from "@/lib/marketplace.functions";
 import { computeDisplayPrice } from "@/lib/fx-display";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
+import { CashbackBadge } from "@/components/oventric/CashbackBadge";
 
 export function usePrice() {
   const { baseCurrency } = useOnboarding();
@@ -29,8 +30,9 @@ export function TileCard({ product, onClick }: { product: ProductDTO; onClick: (
   const price = usePrice();
   return (
     <button type="button" onClick={onClick} className="w-[142px] shrink-0 text-left">
-      <div className="aspect-square w-full overflow-hidden rounded-[10px] bg-[#161618] ring-1 ring-white/[0.04]">
+      <div className="relative aspect-square w-full overflow-hidden rounded-[10px] bg-[#161618] ring-1 ring-white/[0.04]">
         <Cover src={product.coverUrl} alt={product.name} className="h-full w-full" />
+        <CashbackBadge percentage={product.cashbackPct} className="absolute left-2 top-2" />
       </div>
       <p className="mt-2.5 line-clamp-1 text-[13.5px] font-bold tracking-tight text-white">
         {product.name}
@@ -55,8 +57,9 @@ export function RowCard({ product, onClick }: { product: ProductDTO; onClick: ()
       onClick={onClick}
       className="flex w-full items-center gap-3.5 rounded-[10px] bg-[#131316] p-3 text-left ring-1 ring-white/[0.04]"
     >
-      <div className="h-[72px] w-[72px] shrink-0 overflow-hidden rounded-[10px] bg-[#1A1A1E]">
+      <div className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-[10px] bg-[#1A1A1E]">
         <Cover src={product.coverUrl} alt={product.name} className="h-full w-full" />
+        <CashbackBadge percentage={product.cashbackPct} className="absolute bottom-1 left-1 px-1.5 text-[8px]" />
       </div>
       <div className="min-w-0 flex-1">
         <p className="line-clamp-1 text-[14.5px] font-bold text-white">{product.name}</p>
@@ -84,8 +87,9 @@ export function GridCard({ product, onClick }: { product: ProductDTO; onClick: (
   const price = usePrice();
   return (
     <button type="button" onClick={onClick} className="w-full text-left">
-      <div className="aspect-square w-full overflow-hidden rounded-[10px] bg-[#161618] ring-1 ring-white/[0.05]">
+      <div className="relative aspect-square w-full overflow-hidden rounded-[10px] bg-[#161618] ring-1 ring-white/[0.05]">
         <Cover src={product.coverUrl} alt={product.name} className="h-full w-full" />
+        <CashbackBadge percentage={product.cashbackPct} className="absolute left-2 top-2" />
       </div>
       <p className="mt-3 line-clamp-1 text-[14.5px] font-bold tracking-tight text-white">
         {product.name}

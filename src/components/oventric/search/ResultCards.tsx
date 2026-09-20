@@ -12,6 +12,7 @@ import {
   Briefcase
 } from "lucide-react";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
+import { CashbackBadge } from "@/components/oventric/CashbackBadge";
 import { 
   SearchResultPeer, 
   SearchResultProduct, 
@@ -104,6 +105,7 @@ export function SearchProductCard({ product }: { product: SearchResultProduct })
                 <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-black text-white">
                     {product.category}
                 </div>
+                <CashbackBadge percentage={product.cashbackPct} className="absolute bottom-2 left-2" />
             </div>
             <div className="p-3">
                 <p className="line-clamp-2 text-[13px] font-bold text-white leading-tight h-8">{product.title}</p>

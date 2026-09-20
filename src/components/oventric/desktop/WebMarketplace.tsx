@@ -21,6 +21,7 @@ import {
   type CategoryNode,
 } from "@/lib/marketplace.functions";
 import type { SellerLite } from "@/components/oventric/marketplace-discovery/cards";
+import { CashbackBadge } from "@/components/oventric/CashbackBadge";
 
 type Kind = "all" | "digital";
 type SortKey = "popular" | "newest" | "price_asc" | "price_desc" | "top_rated";
@@ -548,6 +549,7 @@ function WebProductCard({
             Featured
           </span>
         )}
+        <CashbackBadge percentage={product.cashbackPct} className="absolute bottom-2 left-2" />
       </div>
       <div className="flex flex-1 flex-col p-3.5">
         <p className="line-clamp-2 text-[13.5px] font-bold leading-snug text-slate-900">
@@ -578,7 +580,7 @@ function SellerIdentity({ seller, vendor }: { seller?: SellerLite; vendor: strin
 }
 
 function SellerProductCard({ product, seller, price, onClick }: { product: ProductDTO; seller?: SellerLite; price: string; onClick: () => void }) {
-  return <button type="button" onClick={onClick} className="group w-[78vw] max-w-[310px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-border bg-card text-left transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg sm:w-auto sm:max-w-none"><SellerIdentity seller={seller} vendor={product.vendor} /><div className="mx-3 aspect-video overflow-hidden rounded-[8px] bg-muted">{product.coverUrl && <img src={product.coverUrl} alt={product.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />}</div><div className="p-4"><p className="line-clamp-2 min-h-10 text-[13.5px] font-bold leading-snug">{product.name}</p><div className="mt-4 flex items-center justify-between border-t border-border pt-3"><div><span className="block text-[9px] font-bold uppercase text-muted-foreground">Price</span><span className="text-[17px] font-extrabold text-primary">{price}</span></div><span className="grid h-9 w-9 place-items-center rounded-[8px] bg-muted text-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground"><ArrowRight className="h-4 w-4" /></span></div></div></button>;
+  return <button type="button" onClick={onClick} className="group w-[78vw] max-w-[310px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-border bg-card text-left transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg sm:w-auto sm:max-w-none"><SellerIdentity seller={seller} vendor={product.vendor} /><div className="relative mx-3 aspect-video overflow-hidden rounded-[8px] bg-muted">{product.coverUrl && <img src={product.coverUrl} alt={product.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />}<CashbackBadge percentage={product.cashbackPct} className="absolute bottom-2 left-2" /></div><div className="p-4"><p className="line-clamp-2 min-h-10 text-[13.5px] font-bold leading-snug">{product.name}</p><div className="mt-4 flex items-center justify-between border-t border-border pt-3"><div><span className="block text-[9px] font-bold uppercase text-muted-foreground">Price</span><span className="text-[17px] font-extrabold text-primary">{price}</span></div><span className="grid h-9 w-9 place-items-center rounded-[8px] bg-muted text-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground"><ArrowRight className="h-4 w-4" /></span></div></div></button>;
 }
 
 function SellerCard({ seller, onClick }: { seller: SellerLite; onClick: () => void }) {

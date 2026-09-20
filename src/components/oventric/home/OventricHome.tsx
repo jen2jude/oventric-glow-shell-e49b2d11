@@ -42,6 +42,7 @@ import { listPosts, type FeedPost } from "@/lib/posts.functions";
 import { readRecentProductIds } from "@/lib/recent-products";
 import { visualForCategory } from "@/components/oventric/marketplace-discovery/utils";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
+import { CashbackBadge } from "@/components/oventric/CashbackBadge";
 import heroImage from "@/assets/home-hero.jpg";
 import heroVideo from "@/assets/oventric-hero-loop.mp4.asset.json";
 import heroVideoWebm from "@/assets/oventric-hero-loop.webm.asset.json";
@@ -784,6 +785,7 @@ function ProductCard({
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : null}
+        <CashbackBadge percentage={product.cashbackPct} className="absolute left-2 top-2" />
       </Link>
 
       <div className={`flex flex-1 flex-col ${compact ? "gap-1 p-2" : "gap-2 p-3"}`}>

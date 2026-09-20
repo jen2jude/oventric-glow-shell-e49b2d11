@@ -31,6 +31,7 @@ import { searchGlobal, type SearchResults } from "@/lib/search.functions";
 import { visualForCategory } from "@/components/oventric/marketplace-discovery/utils";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { DiscoveryPanel } from "@/components/oventric/DiscoveryPanel";
+import { CashbackBadge } from "@/components/oventric/CashbackBadge";
 
 type CategoryNode = { id: string; slug: string; name: string };
 
@@ -603,6 +604,7 @@ function ProductCard({ product, currency }: { product: ProductDTO; currency: str
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : null}
+        <CashbackBadge percentage={product.cashbackPct} className="absolute left-2 top-2" />
       </Link>
 
       <div className="flex flex-1 flex-col gap-2 p-3">

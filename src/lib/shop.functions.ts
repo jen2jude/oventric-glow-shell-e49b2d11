@@ -39,6 +39,7 @@ export interface ShopRailItem {
     source?: string;
     fetched_at?: string;
   } | null;
+  cashbackPct?: number;
 }
 
 export interface ShopDiscovery {
@@ -187,7 +188,7 @@ export const getShopDiscovery = createServerFn({ method: "GET" })
 
     const productQuery = sb
       .from("products")
-      .select("id, slug, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, vendor, seller_id, status, rating")
+      .select("id, slug, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, vendor, seller_id, status, rating, cashback_pct")
       .eq("status", "active")
       .neq("seller_id", data.sellerId)
       .limit(18);
@@ -218,7 +219,7 @@ export const getShopDiscovery = createServerFn({ method: "GET" })
     if (data.category && pRows.length < 6) {
       const { data: fallback } = await sb
         .from("products")
-        .select("id, slug, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, vendor, seller_id, status, rating")
+        .select("id, slug, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, vendor, seller_id, status, rating, cashback_pct")
         .eq("status", "active")
         .neq("seller_id", data.sellerId)
         .limit(18);
@@ -253,6 +254,7 @@ export const getShopDiscovery = createServerFn({ method: "GET" })
       originalCurrency: (p['original_currency'] as string) ?? null,
       originalAmount: p['original_amount'] != null ? Number(p['original_amount']) : null,
       fxSnapshot: (p['fx_snapshot'] as never) ?? null,
+      cashbackPct: Math.max(0, Math.min(50, Number(p['cashback_pct'] ?? 0))),
       meta: (p['category'] as string) ?? null,
     }));
 
