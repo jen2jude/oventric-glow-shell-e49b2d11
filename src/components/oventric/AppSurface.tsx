@@ -430,7 +430,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         <div
           className={`flex flex-1 min-h-0 ${desktopLanding && active === "Marketplace" && !isDesktop ? "pt-0" : ""}`}
         >
-          {!isDesktop && !desktopLanding && (
+          {!isDesktop && !desktopLanding && liveSection(active) !== "Wallet" && (
             <Sidebar onCreate={handleCreate} active={active} onSelect={setActive} />
           )}
           {isDesktop && !desktopLanding && !isMessages && liveSection(active) !== "Wallet" && <DesktopAppSidebar onSelect={setActive} />}
