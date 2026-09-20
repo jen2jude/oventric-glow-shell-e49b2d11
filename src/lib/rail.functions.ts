@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { imageStorage } from "@/lib/storage/images.server";
 
 function serverPublicClient() {
   const url = process.env.SUPABASE_URL;
@@ -19,7 +20,7 @@ async function signAvatar(
 ): Promise<(string | null)[]> {
   const unique = Array.from(new Set(paths.filter((p): p is string => !!p)));
   if (unique.length === 0) return paths.map(() => null);
-  const { data } = await sb.storage.from("avatars").createSignedUrls(unique, 60 * 60 * 24 * 7);
+  const { data } = await (await imageStorage()).from("avatars").createSignedUrls(unique, 60 * 60 * 24 * 7);
   const map = new Map<string, string>();
   (data ?? []).forEach((r) => { if (r.path && r.signedUrl) map.set(r.path, r.signedUrl); });
   return paths.map((p) => (p ? map.get(p) ?? null : null));

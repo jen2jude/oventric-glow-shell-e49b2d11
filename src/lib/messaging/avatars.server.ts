@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { imageStorage } from "@/lib/storage/images.server";
 
 /**
  * Batch-sign avatar storage paths into usable image URLs.
@@ -11,8 +12,7 @@ export async function signAvatars(
   const map = new Map<string, string>();
   const unique = Array.from(new Set(paths.filter((p): p is string => !!p)));
   if (!unique.length) return map;
-  const { data: signed } = await supabase.storage
-    .from("avatars")
+  const { data: signed } = await (await imageStorage()).from("avatars")
     .createSignedUrls(unique, 60 * 60 * 6);
   (signed ?? []).forEach((s) => {
     if (s.path && s.signedUrl) map.set(s.path, s.signedUrl);

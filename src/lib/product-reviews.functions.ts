@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
+import { imageStorage } from "@/lib/storage/images.server";
 
 export interface ProductReview {
   id: string;
@@ -67,7 +68,7 @@ async function summarize(
   const unique = Array.from(new Set(paths.filter((p): p is string => !!p)));
   const signed = new Map<string, string>();
   if (unique.length > 0) {
-    const { data: urls } = await sb.storage.from("avatars").createSignedUrls(unique, 60 * 60 * 24 * 7);
+    const { data: urls } = await (await imageStorage()).from("avatars").createSignedUrls(unique, 60 * 60 * 24 * 7);
     (urls ?? []).forEach((u) => { if (u.path && u.signedUrl) signed.set(u.path, u.signedUrl); });
   }
 

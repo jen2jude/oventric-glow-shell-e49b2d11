@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { imageStorage } from "@/lib/storage/images.server";
 
 export type StoryItem = {
   id: string;
@@ -124,8 +125,7 @@ export const listStories = createServerFn({ method: "GET" })
     const avatarPaths = (profiles ?? []).map((p: any) => p.avatar_path).filter(Boolean);
     const avatarByPath = new Map<string, string>();
     if (avatarPaths.length) {
-      const { data: signed } = await supabase.storage
-        .from("avatars")
+      const { data: signed } = await (await imageStorage()).from("avatars")
         .createSignedUrls(avatarPaths, 60 * 60 * 6);
       (signed ?? []).forEach((s: any) => {
         if (s.path && s.signedUrl) avatarByPath.set(s.path, s.signedUrl);
@@ -315,8 +315,7 @@ export const listReels = createServerFn({ method: "POST" })
     const avatarByPath = new Map<string, string>();
     const avatarPaths = (profiles ?? []).map((p: any) => p.avatar_path).filter(Boolean);
     if (avatarPaths.length) {
-      const { data: signed } = await supabase.storage
-        .from("avatars")
+      const { data: signed } = await (await imageStorage()).from("avatars")
         .createSignedUrls(avatarPaths, 60 * 60 * 6);
       (signed ?? []).forEach((s: any) => {
         if (s.path && s.signedUrl) avatarByPath.set(s.path, s.signedUrl);

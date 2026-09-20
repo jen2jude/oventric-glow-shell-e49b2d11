@@ -5,6 +5,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
 import { dbCurrency } from "@/lib/currency/africa";
 import { fallbackRateTable } from "@/lib/currency/africa";
+import { imageStorage } from "@/lib/storage/images.server";
 
 export type ProductCategory = string;
 /** Oventric is digital-only; physical goods are no longer supported. */
@@ -164,7 +165,7 @@ async function signCovers(
 ): Promise<(string | null)[]> {
   const unique = Array.from(new Set(paths.filter((p): p is string => !!p)));
   if (unique.length === 0) return paths.map(() => null);
-  const { data } = await sb.storage.from("product-covers").createSignedUrls(unique, 60 * 60 * 24 * 7);
+  const { data } = await (await imageStorage()).from("product-covers").createSignedUrls(unique, 60 * 60 * 24 * 7);
   const map = new Map<string, string>();
   (data ?? []).forEach((r) => { if (r.path && r.signedUrl) map.set(r.path, r.signedUrl); });
   return paths.map((p) => (p ? map.get(p) ?? null : null));
@@ -221,7 +222,7 @@ async function signImagePaths(
   paths: string[],
 ): Promise<string[]> {
   if (paths.length === 0) return [];
-  const { data } = await sb.storage.from("product-covers").createSignedUrls(paths, 60 * 60 * 24 * 7);
+  const { data } = await (await imageStorage()).from("product-covers").createSignedUrls(paths, 60 * 60 * 24 * 7);
   const map = new Map<string, string>();
   (data ?? []).forEach((r) => { if (r.path && r.signedUrl) map.set(r.path, r.signedUrl); });
   return paths.map((p) => map.get(p) ?? "").filter(Boolean);
@@ -507,8 +508,7 @@ export const createProduct = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     let coverUrl: string | null = null;
     if (cover) {
-      const { data: signed } = await context.supabase.storage
-        .from("product-covers")
+      const { data: signed } = await (await imageStorage()).from("product-covers")
         .createSignedUrl(cover, 60 * 60 * 24 * 7);
       coverUrl = signed?.signedUrl ?? null;
     }
@@ -537,16 +537,14 @@ export const listMyProducts = createServerFn({ method: "GET" })
       const cover = (r.cover_path as string) ?? null;
       let coverUrl: string | null = null;
       if (cover) {
-        const { data: sig } = await context.supabase.storage
-          .from("product-covers")
+        const { data: sig } = await (await imageStorage()).from("product-covers")
           .createSignedUrl(cover, 60 * 60 * 24);
         coverUrl = sig?.signedUrl ?? null;
       }
       const paths = Array.isArray(r.image_paths) ? (r.image_paths as string[]) : [];
       const imageUrls: string[] = [];
       for (const p of paths) {
-        const { data: sig } = await context.supabase.storage
-          .from("product-covers")
+        const { data: sig } = await (await imageStorage()).from("product-covers")
           .createSignedUrl(p, 60 * 60 * 24);
         imageUrls.push(sig?.signedUrl ?? "");
       }
@@ -1366,8 +1364,7 @@ export const listMyPurchases = createServerFn({ method: "GET" })
       const coverPath = (p.cover_path as string) ?? null;
       let coverUrl: string | null = null;
       if (coverPath) {
-        const { data: sig } = await context.supabase.storage
-          .from("product-covers")
+        const { data: sig } = await (await imageStorage()).from("product-covers")
           .createSignedUrl(coverPath, 60 * 60 * 24);
         coverUrl = sig?.signedUrl ?? null;
       }

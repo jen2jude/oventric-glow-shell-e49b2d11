@@ -160,6 +160,7 @@ async function resolveProfileImageUrl(
 }
 
 import { normaliseTools, normaliseSkillLevels } from "./profiles/tools";
+import { imageStorage } from "@/lib/storage/images.server";
 
 export interface SocialLinks {
   website?: string;
@@ -542,8 +543,7 @@ export const getMyFullProfile = createServerFn({ method: "GET" })
     if (!row) return { profile: null };
     let avatarUrl: string | null = null;
     if (row.avatar_path) {
-      const { data: signed } = await supabase.storage
-        .from("avatars")
+      const { data: signed } = await (await imageStorage()).from("avatars")
         .createSignedUrl(row.avatar_path, 60 * 60 * 24 * 7);
       avatarUrl = signed?.signedUrl ?? null;
     }

@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { imageStorage } from "@/lib/storage/images.server";
 
 export type FollowStatus = "none" | "requested" | "following" | "follows_you" | "mutual";
 
@@ -30,7 +31,7 @@ export interface SuggestedPerson extends PersonSummary {
 async function signAvatarPaths(supabase: any, paths: (string | null | undefined)[]): Promise<Map<string, string>> {
   const unique = Array.from(new Set(paths.filter((p): p is string => !!p)));
   if (unique.length === 0) return new Map();
-  const { data } = await supabase.storage.from("avatars").createSignedUrls(unique, 60 * 60 * 24 * 7);
+  const { data } = await (await imageStorage()).from("avatars").createSignedUrls(unique, 60 * 60 * 24 * 7);
   const map = new Map<string, string>();
   (data ?? []).forEach((r: any, i: number) => {
     if (r?.signedUrl) map.set(unique[i], r.signedUrl);
