@@ -268,8 +268,8 @@ async function markTopupFailed(reference: string, meta: Record<string, unknown>)
 /**
  * Guard: what the provider says was paid must match the charge we created.
  *
- * References created before `charge_amount` existed carry no expectation and
- * are settled on the provider's confirmation alone.
+ * Fails closed for gateway references (OV…): if the metadata carries no
+ * authoritative charge amount, the payment is not settled at all.
  */
 function assertPaidMatchesCharge(
   reference: string,
