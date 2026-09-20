@@ -97,7 +97,7 @@ export const getAdminActivityCounts = createServerFn({ method: "GET" })
     add("/admin/refunds", exactCount(db.from("orders").select("id", { count: "exact", head: true }).gt("refunded_at", since("/admin/refunds"))));
     add("/admin/disputes", exactCount(db.from("order_disputes").select("id", { count: "exact", head: true }).eq("status", "open")));
     add("/admin/cashback-wallet", exactCount(db.from("wallet_transactions").select("id", { count: "exact", head: true }).eq("type", "Cashback Earned").gt("occurred_at", since("/admin/cashback-wallet"))));
-    add("/admin/reconciliation", exactCount(db.from("wallet_transactions").select("id", { count: "exact", head: true }).eq("status", "failed").gt("updated_at", since("/admin/reconciliation"))));
+    add("/admin/reconciliation", exactCount(db.from("wallet_transactions").select("id", { count: "exact", head: true }).eq("status", "failed").gt("occurred_at", since("/admin/reconciliation"))));
     add("/admin/referrals", exactCount(db.from("referrals").select("invitee_id", { count: "exact", head: true }).gt("created_at", since("/admin/referrals"))));
     add("/admin/reports", exactCount(db.from("post_reports").select("id", { count: "exact", head: true }).eq("status", "pending")));
     add("/admin/reviews", exactCount(db.from("product_reviews").select("id", { count: "exact", head: true }).gt("created_at", since("/admin/reviews"))));
