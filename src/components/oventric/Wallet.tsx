@@ -136,14 +136,14 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
   };
 
   const actions = [
-    { label: "Add funds", icon: Plus, primary: true, onClick: () => requireAuth(() => setAddFundsOpen(true)) },
-    { label: "Withdraw", icon: ArrowUp, onClick: () => requireAuth(() => setPayoutOpen(true)) },
+    { label: "Add funds", icon: Plus, tone: "bg-wallet-positive-soft text-wallet-positive", onClick: () => requireAuth(() => setAddFundsOpen(true)) },
+    { label: "Withdraw", icon: ArrowUp, tone: "bg-wallet-info-soft text-wallet-info", onClick: () => requireAuth(() => setPayoutOpen(true)) },
   ];
 
   const subWallets = [
-    { label: "Cashback", value: fmt(cashbackUSD * rate, cur), sub: "Available at checkout", icon: Sparkles, tone: "bg-wallet-crimson-soft text-wallet-crimson", to: "/wallet/ledger" as const },
-    { label: "Escrow", value: fmt(locked, cur), sub: "Protected until completion", icon: Lock, tone: "bg-wallet-crimson-soft text-wallet-crimson", to: "/wallet/ledger" as const },
-    { label: "Seller earnings", value: fmt(available, cur), sub: "From marketplace sales", icon: WalletIcon, tone: "bg-wallet-crimson-soft text-wallet-crimson", to: "/wallet/history" as const },
+    { label: "Cashback", value: fmt(cashbackUSD * rate, cur), sub: "Available at checkout", icon: Sparkles, tone: "bg-wallet-violet-soft text-wallet-violet", to: "/wallet/ledger" as const },
+    { label: "Escrow", value: fmt(locked, cur), sub: "Protected until completion", icon: Lock, tone: "bg-wallet-warning-soft text-wallet-warning", to: "/wallet/ledger" as const },
+    { label: "Seller earnings", value: fmt(available, cur), sub: "From marketplace sales", icon: WalletIcon, tone: "bg-wallet-positive-soft text-wallet-positive", to: "/wallet/history" as const },
   ];
   const walletNav = [
     { label: "Home", section: "Home", icon: Home },
@@ -187,16 +187,16 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
         <aside className="wallet-reference-nav hidden md:flex md:flex-col">
           <nav className="space-y-1">
             {walletNav.map((item) => (
-              <Button key={item.label} variant="ghost" onClick={() => onSelect?.(item.section)} className={`h-10 w-full justify-start gap-3 px-3 text-xs ${item.section === "Wallet" ? "bg-wallet-rich text-wallet-on-rich hover:bg-wallet-rich-strong hover:text-wallet-on-rich" : "text-wallet-copy hover:bg-wallet-muted"}`}>
+              <Button key={item.label} variant="ghost" onClick={() => onSelect?.(item.section)} className={`h-10 w-full justify-start gap-3 px-3 text-xs ${item.section === "Wallet" ? "bg-wallet-copy text-wallet-panel hover:bg-wallet-copy hover:text-wallet-panel" : "text-wallet-copy hover:bg-wallet-muted"}`}>
                 <item.icon className="h-4 w-4" /> {item.label}
               </Button>
             ))}
           </nav>
-          <div className="mt-auto rounded-[10px] border border-wallet-crimson-line bg-wallet-panel p-4 text-center shadow-wallet-card">
-            <span className="mx-auto grid h-10 w-10 place-items-center rounded-full bg-wallet-gift text-wallet-rich"><WalletIcon /></span>
+          <div className="mt-auto rounded-[10px] border border-wallet-line bg-wallet-panel p-4 text-center shadow-wallet-card">
+            <span className="wallet-icon-halo mx-auto grid h-10 w-10 place-items-center rounded-[10px] bg-wallet-violet-soft text-wallet-violet"><WalletIcon /></span>
             <p className="mt-3 text-sm font-bold text-wallet-copy">Shop, Earn, Grow</p>
             <p className="mt-1 text-[10px] text-wallet-copy-muted">Your wallet powers a bigger you.</p>
-            <Button asChild className="mt-3 h-8 w-full bg-wallet-rich text-[10px] text-wallet-on-rich hover:bg-wallet-rich-strong"><Link to="/marketplace">Start shopping</Link></Button>
+            <Button asChild className="mt-3 h-8 w-full bg-wallet-copy text-[10px] text-wallet-panel hover:bg-wallet-copy"><Link to="/marketplace">Start shopping</Link></Button>
           </div>
         </aside>
 
@@ -235,24 +235,24 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
           <section className="wallet-actions-section">
             <div className="wallet-actions-grid grid h-full grid-cols-2 gap-3">
               {actions.slice(0, 2).map((action) => (
-                <Button key={action.label} variant="ghost" onClick={action.onClick} className={`wallet-action-button h-auto min-h-24 flex-col gap-2 rounded-[10px] border border-wallet-line bg-wallet-panel p-3 text-wallet-copy shadow-wallet-card hover:bg-wallet-panel-raised hover:text-wallet-copy ${action.primary ? "wallet-action-primary" : ""}`}>
-                  <span className="wallet-action-icon"><action.icon className="text-wallet-rich" /></span>
+                <Button key={action.label} variant="ghost" onClick={action.onClick} className="wallet-action-button h-auto min-h-24 flex-col gap-2 rounded-[10px] border border-wallet-line bg-wallet-panel p-3 text-wallet-copy shadow-wallet-card hover:bg-wallet-panel-raised hover:text-wallet-copy">
+                  <span className={`wallet-action-icon wallet-icon-halo ${action.tone}`}><action.icon /></span>
                   <span className="text-xs font-semibold">{action.label}</span>
                 </Button>
               ))}
               <Button asChild variant="ghost" className="wallet-action-button h-auto min-h-24 flex-col gap-2 rounded-[10px] border border-wallet-line bg-wallet-panel p-3 text-wallet-copy shadow-wallet-card hover:bg-wallet-panel-raised hover:text-wallet-copy">
-                <Link to="/wallet/ledger"><span className="wallet-action-icon"><History className="text-wallet-rich" /></span><span className="text-xs font-semibold">Transaction history</span></Link>
+                <Link to="/wallet/ledger"><span className="wallet-action-icon wallet-icon-halo bg-wallet-violet-soft text-wallet-violet"><History /></span><span className="text-xs font-semibold">Transaction history</span></Link>
               </Button>
               <Button variant="ghost" onClick={() => requireAuth(() => toast.info("Payment methods are managed during checkout"))} className="wallet-action-button h-auto min-h-24 flex-col gap-2 rounded-[10px] border border-wallet-line bg-wallet-panel p-3 text-wallet-copy shadow-wallet-card hover:bg-wallet-panel-raised hover:text-wallet-copy">
-                <span className="wallet-action-icon"><CircleDollarSign className="text-wallet-rich" /></span><span className="text-xs font-semibold">Payment methods</span>
+                <span className="wallet-action-icon wallet-icon-halo bg-wallet-warning-soft text-wallet-warning"><CircleDollarSign /></span><span className="text-xs font-semibold">Payment methods</span>
               </Button>
             </div>
           </section>
         </div>
 
         <section className="wallet-shop-banner my-3 flex items-center justify-between gap-4 rounded-[10px] border border-wallet-warm-line bg-wallet-panel px-4 py-3 shadow-wallet-card sm:px-5">
-          <div className="flex min-w-0 items-center gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-wallet-gift text-wallet-rich"><Gift /></span><p className="text-xs font-medium text-wallet-copy sm:text-sm">Use your wallet to pay for digital products and enjoy a faster checkout.</p></div>
-          <Button asChild className="shrink-0 bg-wallet-rich text-wallet-on-rich shadow-none hover:bg-wallet-rich-strong"><Link to="/marketplace">Shop now <ChevronRight /></Link></Button>
+          <div className="flex min-w-0 items-center gap-3"><span className="wallet-icon-halo grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-wallet-warning-soft text-wallet-warning"><Gift /></span><p className="text-xs font-medium text-wallet-copy sm:text-sm">Use your wallet to pay for digital products and enjoy a faster checkout.</p></div>
+          <Button asChild className="shrink-0 bg-wallet-copy text-wallet-panel shadow-none hover:bg-wallet-copy"><Link to="/marketplace">Shop now <ChevronRight /></Link></Button>
         </section>
 
         <section className="wallet-breakdown-section py-3 md:hidden">
@@ -282,12 +282,17 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
           <section className="rounded-[10px] border border-wallet-line bg-wallet-panel p-4 shadow-wallet-card">
             <div className="flex items-center justify-between"><h2 className="text-sm font-bold text-wallet-copy">Quick stats</h2><span className="text-[9px] text-wallet-copy-faint">All time</span></div>
             <div className="mt-4 space-y-4">
-              {[{ label: "Sales earnings", value: salesEarned, icon: Store }, { label: "Cashback earned", value: cashbackUSD * rate, icon: Sparkles }, { label: "Referral rewards", value: referralEarned, icon: Award }, { label: "Withdrawals", value: totalWithdrawn, icon: ArrowUp }].map((stat) => <div key={stat.label} className="flex items-center gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-wallet-crimson-soft text-wallet-crimson"><stat.icon className="h-4 w-4" /></span><div><p className="text-sm font-bold tabular-nums text-wallet-copy">{mask(fmt(stat.value, cur))}</p><p className="text-[10px] text-wallet-copy-muted">{stat.label}</p></div></div>)}
+              {[
+                { label: "Sales earnings", value: salesEarned, icon: Store, tone: "bg-wallet-positive-soft text-wallet-positive" },
+                { label: "Cashback earned", value: cashbackUSD * rate, icon: Sparkles, tone: "bg-wallet-violet-soft text-wallet-violet" },
+                { label: "Referral rewards", value: referralEarned, icon: Award, tone: "bg-wallet-warning-soft text-wallet-warning" },
+                { label: "Withdrawals", value: totalWithdrawn, icon: ArrowUp, tone: "bg-wallet-info-soft text-wallet-info" },
+              ].map((stat) => <div key={stat.label} className="flex items-center gap-3"><span className={`wallet-icon-halo grid h-8 w-8 shrink-0 place-items-center rounded-[10px] ${stat.tone}`}><stat.icon className="h-4 w-4" /></span><div><p className="text-sm font-bold tabular-nums text-wallet-copy">{mask(fmt(stat.value, cur))}</p><p className="text-[10px] text-wallet-copy-muted">{stat.label}</p></div></div>)}
             </div>
           </section>
           <section className="rounded-[10px] border border-wallet-line bg-wallet-panel p-4 shadow-wallet-card">
-            <h2 className="flex items-center gap-2 text-sm font-bold text-wallet-copy"><CircleDollarSign className="text-wallet-crimson" /> Wallet tips</h2>
-            <ul className="mt-3 space-y-2 text-[10px] text-wallet-copy-muted"><li className="flex gap-2"><ShieldCheck className="h-3.5 w-3.5 shrink-0 text-wallet-crimson" />Use your wallet for faster checkout.</li><li className="flex gap-2"><Clock3 className="h-3.5 w-3.5 shrink-0 text-wallet-crimson" />Escrow stays protected until completion.</li><li className="flex gap-2"><Sparkles className="h-3.5 w-3.5 shrink-0 text-wallet-crimson" />Earn cashback on eligible purchases.</li></ul>
+            <h2 className="flex items-center gap-2 text-sm font-bold text-wallet-copy"><CircleDollarSign className="text-wallet-info" /> Wallet tips</h2>
+            <ul className="mt-3 space-y-2 text-[10px] text-wallet-copy-muted"><li className="flex gap-2"><ShieldCheck className="h-3.5 w-3.5 shrink-0 text-wallet-positive" />Use your wallet for faster checkout.</li><li className="flex gap-2"><Clock3 className="h-3.5 w-3.5 shrink-0 text-wallet-warning" />Escrow stays protected until completion.</li><li className="flex gap-2"><Sparkles className="h-3.5 w-3.5 shrink-0 text-wallet-violet" />Earn cashback on eligible purchases.</li></ul>
           </section>
           <section className="rounded-[10px] border border-wallet-line bg-wallet-panel p-4 shadow-wallet-card">
             <div className="mb-5"><p className="text-[10px] font-semibold uppercase text-wallet-crimson">Cashback planner</p><h2 className="mt-1 font-wallet-display text-base font-bold text-wallet-copy">Estimate your earnings</h2></div>

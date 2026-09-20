@@ -70,6 +70,8 @@
   --color-wallet-warning-soft: var(--wallet-warning-soft);
   --color-wallet-info: var(--wallet-info);
   --color-wallet-info-soft: var(--wallet-info-soft);
+  --color-wallet-violet: var(--wallet-violet);
+  --color-wallet-violet-soft: var(--wallet-violet-soft);
   --color-wallet-rich: var(--wallet-rich);
   --color-wallet-rich-strong: var(--wallet-rich-strong);
   --color-wallet-rich-muted: var(--wallet-rich-muted);
@@ -1095,16 +1097,18 @@ body {
   --wallet-warning-soft: oklch(0.94 0.06 78);
   --wallet-info: oklch(0.5 0.13 245);
   --wallet-info-soft: oklch(0.94 0.04 245);
-  --wallet-rich: oklch(0.58 0.22 22);
-  --wallet-rich-strong: oklch(0.52 0.23 22);
+  --wallet-violet: oklch(0.53 0.16 300);
+  --wallet-violet-soft: oklch(0.95 0.035 300);
+  --wallet-rich: oklch(0.27 0.025 260);
+  --wallet-rich-strong: oklch(0.22 0.022 260);
   --wallet-rich-muted: oklch(1 0 0 / 13%);
   --wallet-rich-line: oklch(1 0 0 / 17%);
   --wallet-on-rich: oklch(0.99 0 0);
   --wallet-on-rich-muted: oklch(0.94 0.02 20);
   --wallet-warm: oklch(0.985 0.008 20);
-  --wallet-warm-line: oklch(0.65 0.2 22 / 28%);
-  --wallet-gift: oklch(0.65 0.2 22 / 12%);
-  --wallet-card-shadow: 0 12px 30px -24px oklch(0.28 0.08 20 / 24%);
+  --wallet-warm-line: oklch(0.86 0.025 78);
+  --wallet-gift: oklch(0.95 0.05 78);
+  --wallet-card-shadow: 0 12px 30px -24px oklch(0.28 0.025 260 / 18%);
 
   /* Create chooser: premium dark to match the app shell. */
   --create-surface: oklch(0.16 0.008 260);
@@ -4099,9 +4103,9 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
     --wallet-warning-soft: oklch(0.95 0.05 78);
     --wallet-info: oklch(0.5 0.13 245);
     --wallet-info-soft: oklch(0.95 0.035 245);
-    background:
-      linear-gradient(145deg, var(--wallet-crimson-soft), transparent 26rem),
-      var(--wallet-canvas);
+    --wallet-violet: oklch(0.53 0.16 300);
+    --wallet-violet-soft: oklch(0.95 0.035 300);
+    background: var(--wallet-canvas);
   }
 
   .wallet-shell > header {
@@ -4143,10 +4147,12 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
 
   .wallet-balance-card {
     isolation: isolate;
-    border: 0;
+    border: 1px solid var(--wallet-line);
     background:
-      linear-gradient(125deg, var(--wallet-crimson-strong), transparent 72%),
+      radial-gradient(circle at 88% 5%, color-mix(in oklab, var(--wallet-violet) 24%, transparent), transparent 34%),
+      radial-gradient(circle at 8% 100%, color-mix(in oklab, var(--wallet-info) 20%, transparent), transparent 36%),
       var(--wallet-rich);
+    box-shadow: 0 18px 42px -30px color-mix(in oklab, var(--wallet-rich) 62%, transparent);
   }
 
   .wallet-balance-card::after {
@@ -4164,8 +4170,8 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
     z-index: -1;
     height: 1px;
     transform: rotate(-10deg);
-    background: linear-gradient(90deg, transparent, var(--wallet-crimson), transparent);
-    box-shadow: 0 0 28px 7px var(--wallet-crimson-soft);
+    background: linear-gradient(90deg, transparent, var(--wallet-info), transparent);
+    box-shadow: 0 0 28px 7px var(--wallet-info-soft);
   }
 
   .wallet-balance-glow-one {
@@ -4218,37 +4224,33 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
     text-align: center;
   }
 
-  .wallet-actions-grid .wallet-action-primary {
-    border-color: var(--wallet-crimson-line);
-    background: var(--wallet-crimson);
-    color: var(--wallet-on-crimson);
-  }
-
-  .wallet-actions-grid .wallet-action-primary:hover {
-    background: var(--wallet-crimson-strong);
-  }
-
-  .wallet-action-primary .text-wallet-crimson,
-  .wallet-action-primary .text-wallet-copy-muted,
-  .wallet-action-primary .text-wallet-rich {
-    color: var(--wallet-on-crimson);
-  }
-
-  .wallet-action-primary .text-wallet-copy-muted {
-    color: color-mix(in oklab, var(--wallet-on-crimson) 76%, transparent);
-  }
-
   .wallet-action-icon {
     display: grid;
     width: 2rem;
     height: 2rem;
     place-items: center;
     border-radius: 10px;
-    background: color-mix(in oklab, var(--wallet-copy) 8%, transparent);
+    position: relative;
+    overflow: hidden;
   }
 
-  .wallet-action-primary .wallet-action-icon {
-    background: color-mix(in oklab, var(--wallet-on-crimson) 16%, transparent);
+  .wallet-icon-halo::before {
+    position: absolute;
+    top: -1.2rem;
+    left: 50%;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 999px;
+    background: currentColor;
+    opacity: 0.1;
+    filter: blur(10px);
+    transform: translateX(-50%);
+    content: "";
+    pointer-events: none;
+  }
+
+  .wallet-icon-halo > svg {
+    position: relative;
   }
 
   .wallet-breakdown-section {
