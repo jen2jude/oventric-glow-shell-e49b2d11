@@ -216,7 +216,10 @@ export function MiniPayPanel({
               ) : destination ? (
                 <>
                   <Row label={destination.addressLabel} value={destination.address} onCopy={copy} />
-                  {destination.network && (
+                  {destination.extraRows?.map((r) => (
+                    <Row key={r.label} label={r.label} value={r.value} onCopy={copy} />
+                  ))}
+                  {destination.network && !destination.extraRows && (
                     <p className="text-[11px] text-amber-300/90">
                       Send only on <span className="font-bold">{destination.network}</span>. Funds
                       sent on another network cannot be recovered.
