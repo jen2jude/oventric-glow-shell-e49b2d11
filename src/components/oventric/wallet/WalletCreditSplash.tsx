@@ -7,7 +7,8 @@ import {
   markWalletCreditsSeen,
   type WalletCreditSplashItem,
 } from "@/lib/wallet.functions";
-import { formatMoney, type MoneyCurrency } from "@/lib/fx-display";
+import { formatMoney } from "@/lib/fx-display";
+import type { Currency } from "@/lib/onboarding/OnboardingContext";
 import { walletTxLabel } from "@/lib/wallet-tx-labels";
 import { Button } from "@/components/ui/button";
 
