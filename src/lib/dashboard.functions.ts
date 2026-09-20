@@ -164,7 +164,7 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
       wallet: {
         currency: homeCurrency,
         available: Number(home?.available_balance ?? 0),
-        escrow: Number(home?.escrow_balance ?? 0),
+        escrow: Number(home?.escrow_balance ?? 0) + pendingEscrowHome,
       },
       purchases: {
         total: orderRows.filter((o) => o.status === "paid").length,
