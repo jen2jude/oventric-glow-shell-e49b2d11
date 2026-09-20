@@ -183,7 +183,15 @@ function ThreadRow({
   );
 }
 
-function MessageBubble({ msg, mine }: { msg: DMRow; mine: boolean }) {
+function MessageBubble({
+  msg,
+  mine,
+  attachmentUrl,
+}: {
+  msg: DMRow;
+  mine: boolean;
+  attachmentUrl?: string | null;
+}) {
   return (
     <Message from={mine ? "user" : "assistant"} className="max-w-[78%]">
       <MessageContent
