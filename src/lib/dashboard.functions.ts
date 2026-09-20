@@ -120,6 +120,17 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
 
     const walletRows = (wallets.data ?? []) as Array<{ currency: string; available_balance: number; escrow_balance: number }>;
     const home = walletRows.find((w) => w.currency === homeCurrency) ?? null;
+    // Sales still inside the escrow clock sit as pending inflow ledger rows.
+    const { data: pendingInflow } = await sb
+      .from("wallet_transactions")
+      .select("amount, currency")
+      .eq("user_id", me)
+      .eq("inflow", true)
+      .eq("status", "pending");
+    const pendingEscrowHome = ((pendingInflow ?? []) as Array<{ amount: number; currency: string }>)
+      .filter((r) => r.currency === homeCurrency)
+      .reduce((s, r) => s + Number(r.amount ?? 0), 0);
+
 
     const orderRows = (ordersRes.data ?? []) as Array<{
       status: string;
@@ -153,7 +164,7 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
       wallet: {
         currency: homeCurrency,
         available: Number(home?.available_balance ?? 0),
-        escrow: Number(home?.escrow_balance ?? 0),
+        escrow: Number(home?.escrow_balance ?? 0) + pendingEscrowHome,
       },
       purchases: {
         total: orderRows.filter((o) => o.status === "paid").length,
@@ -556,7 +567,18 @@ export const getMyWalletSummary = createServerFn({ method: "POST" })
     const homeRow = rows.find((r) => r.currency === homeCurrency) ?? null;
 
     const mainBalance = Number(homeRow?.available_balance ?? 0);
-    const escrow = Number(homeRow?.escrow_balance ?? 0);
+    // Pending inflow rows are sales held by the escrow clock — part of escrow.
+    const { data: pendingInflow } = await sb
+      .from("wallet_transactions")
+      .select("amount, currency")
+      .eq("user_id", me)
+      .eq("inflow", true)
+      .eq("status", "pending");
+    const pendingEscrowHome = ((pendingInflow ?? []) as Array<{ amount: number; currency: string }>)
+      .filter((r) => r.currency === homeCurrency)
+      .reduce((s, r) => s + Number(r.amount ?? 0), 0);
+    const escrow = Number(homeRow?.escrow_balance ?? 0) + pendingEscrowHome;
+
     // Cashback is stored in USD platform-wide; convert to home currency.
     const cashbackUSD = rows.reduce((s, r) => s + Number(r.accumulated_cashback || 0), 0);
     const cashback = cashbackUSD * fxRate;
