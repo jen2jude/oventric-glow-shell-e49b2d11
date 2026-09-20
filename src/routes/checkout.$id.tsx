@@ -1145,7 +1145,7 @@ function CheckoutPage() {
                   }`}
                 >
                   <span>Total</span>
-                  <span>{fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}</span>
+                  <span>{payTotalLabel}</span>
                 </div>
               </div>
 
@@ -1153,9 +1153,7 @@ function CheckoutPage() {
                 <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#0A0A0B]/80 backdrop-blur-xl border-t border-white/5 p-4 flex flex-col gap-3 pb-safe">
                   <div className="flex justify-between items-center px-1">
                     <span className="text-xs text-slate-400">Total to pay</span>
-                    <span className="text-lg font-black text-white">
-                      {fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}
-                    </span>
+                    <span className="text-lg font-black text-white">{payTotalLabel}</span>
                   </div>
                   <button
                     onClick={pay}
@@ -1167,13 +1165,13 @@ function CheckoutPage() {
                         <Loader2 className="w-4 h-4 animate-spin" /> Processing…
                       </>
                     ) : method === "wallet" ? (
-                      `Pay ${fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}`
+                      `Pay ${payTotalLabel}`
                     ) : gateway === "minipay" ? (
-                      `Pay with MiniPay`
+                      `Pay with MiniPay · ${payTotalLabel}`
                     ) : gateway === "binance" ? (
-                      `Pay with Binance`
+                      `Pay with Binance · ${payTotalLabel}`
                     ) : (
-                      `Pay with Paystack`
+                      `Pay with Paystack · ${payTotalLabel}`
                     )}
                   </button>
                   <div className="text-[10px] text-slate-500 flex items-center justify-center gap-1 opacity-60">
@@ -1193,12 +1191,12 @@ function CheckoutPage() {
                         <Loader2 className="w-4 h-4 animate-spin" /> Processing…
                       </>
                     ) : method === "wallet" ? (
-                      `Pay ${fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}`
+                      `Pay ${payTotalLabel}`
                     ) : gateway === "minipay" || gateway === "binance" ? (
-                      `Pay with ${gateway === "minipay" ? "MiniPay" : "Binance"} · ${fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}`
+                      `Pay with ${activeOption?.label ?? (gateway === "minipay" ? "MiniPay" : "Binance")} · ${payTotalLabel}`
                     ) : (
                       <span className="inline-flex items-center gap-2">
-                        Pay with Paystack · {fmtPrice(totalUSD, homeCurrency, product, totalLocalExact)}
+                        Pay with Paystack · {payTotalLabel}
                       </span>
                     )}
                   </button>
@@ -1312,7 +1310,7 @@ function CheckoutPage() {
           purpose="order"
           targetId={product.id}
           quantity={qty}
-          currency={homeCurrency}
+          currency={usdRail ? "USD" : homeCurrency}
           onClose={() => setMinipayOpen(false)}
         />
       )}
