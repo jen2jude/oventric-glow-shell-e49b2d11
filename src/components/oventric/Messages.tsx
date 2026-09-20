@@ -1226,10 +1226,31 @@ export function Messages({
                    placeholder="Write a message…"
                    className="min-h-16 text-sm"
                  />
-                 <PromptInputFooter className="justify-end px-2 pb-2">
+                 <PromptInputFooter className="justify-between px-2 pb-2">
+                   <input
+                     ref={fileInputRef}
+                     type="file"
+                     accept="image/*,video/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip"
+                     className="hidden"
+                     onChange={(e) => void onPickFile(e.target.files?.[0])}
+                   />
+                   <Button
+                     type="button"
+                     variant="ghost"
+                     size="icon"
+                     aria-label="Attach a photo, video or file"
+                     title="Attach a photo, video or file"
+                     disabled={sending || !!attachment}
+                     onClick={() => fileInputRef.current?.click()}
+                     className="size-9 rounded-[10px] text-muted-foreground hover:text-foreground"
+                   >
+                     <Paperclip />
+                   </Button>
                    <PromptInputSubmit
                      status={sending ? "submitted" : undefined}
-                     disabled={!draft.trim() || sending}
+                     disabled={
+                       (!draft.trim() && !attachment?.path) || sending || !!attachment?.uploading
+                     }
                      aria-label="Send message"
                      className="size-9 rounded-[10px]"
                    >
