@@ -209,7 +209,34 @@ function MessageBubble({
         {extractProductId(msg.body) && (
           <ProductBubbleCard productId={extractProductId(msg.body)!} mine={mine} />
         )}
-        {msg.media_path && <div className="mt-1 text-[11px] italic opacity-80">📎 attachment</div>}
+        {msg.media_path && (
+          <div className="mt-1.5">
+            {msg.media_type?.startsWith("image/") && attachmentUrl ? (
+              <a href={attachmentUrl} target="_blank" rel="noreferrer">
+                <img
+                  loading="lazy"
+                  decoding="async"
+                  src={attachmentUrl}
+                  alt="attachment"
+                  className="max-h-56 rounded-[10px] border border-border/60"
+                />
+              </a>
+            ) : attachmentUrl ? (
+              <a
+                href={attachmentUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-[11px] underline underline-offset-2 opacity-90"
+              >
+                <FileText className="w-3.5 h-3.5" /> Open attachment
+              </a>
+            ) : (
+              <div className="inline-flex items-center gap-1.5 text-[11px] italic opacity-80">
+                <FileText className="w-3.5 h-3.5" /> Attachment
+              </div>
+            )}
+          </div>
+        )}
         <div
           className={`text-[10px] mt-1 flex items-center gap-1 ${mine ? "text-primary-foreground/75 justify-end" : "text-muted-foreground"}`}
         >
