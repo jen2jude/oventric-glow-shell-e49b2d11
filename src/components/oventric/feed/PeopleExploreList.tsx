@@ -15,6 +15,7 @@ interface PeopleExploreItemProps {
 }
 
 export function PeopleExploreItem({
+  userId,
   name,
   username,
   description,
