@@ -318,6 +318,7 @@ function CheckoutPage() {
 
   const [product, setProduct] = useState<ProductDTO | null>(null);
   const [loadErr, setLoadErr] = useState<string | null>(null);
+  const [viewerId, setViewerId] = useState<string | null>(null);
   const [balanceUSD, setBalanceUSD] = useState<number | null>(null);
   const [cashbackUSD, setCashbackUSD] = useState<number>(0);
   const [useCashback, setUseCashback] = useState(false);
