@@ -4145,16 +4145,15 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
     isolation: isolate;
     border: 0;
     background:
-      linear-gradient(125deg, var(--wallet-crimson-soft), transparent 48%),
-      linear-gradient(315deg, var(--wallet-info-soft), transparent 54%),
-      var(--wallet-hero);
+      linear-gradient(125deg, color-mix(in oklab, var(--wallet-rich) 82%, var(--wallet-warning)), transparent 72%),
+      var(--wallet-rich);
   }
 
   .wallet-balance-card::after {
     position: absolute;
     inset: 0;
     z-index: -1;
-    background-image: linear-gradient(var(--wallet-line) 1px, transparent 1px), linear-gradient(90deg, var(--wallet-line) 1px, transparent 1px);
+    background-image: linear-gradient(var(--wallet-rich-line) 1px, transparent 1px), linear-gradient(90deg, var(--wallet-rich-line) 1px, transparent 1px);
     background-size: 28px 28px;
     content: "";
     mask-image: linear-gradient(to bottom, black, transparent 78%);
@@ -4187,7 +4186,7 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
   .wallet-balance-split {
     gap: 1rem;
     margin-top: 2rem;
-    border-color: var(--wallet-line);
+    border-color: var(--wallet-rich-line);
     padding-top: 1rem;
   }
 
@@ -4202,7 +4201,7 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
   }
 
   .wallet-actions-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.5rem;
     overflow: visible;
     border: 0;
@@ -4230,7 +4229,8 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
   }
 
   .wallet-action-primary .text-wallet-crimson,
-  .wallet-action-primary .text-wallet-copy-muted {
+  .wallet-action-primary .text-wallet-copy-muted,
+  .wallet-action-primary .text-wallet-rich {
     color: var(--wallet-on-crimson);
   }
 
