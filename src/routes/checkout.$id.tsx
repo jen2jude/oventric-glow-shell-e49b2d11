@@ -155,7 +155,7 @@ const PAY_TABS: { id: PayTabId; label: string; Icon: typeof CreditCard }[] = [
   { id: "bank", label: "Bank / MoMo", Icon: Building2 },
   { id: "crypto", label: "Crypto", Icon: Bitcoin },
   { id: "virtual", label: "Virtual banks", Icon: Landmark },
-  { id: "wallet", label: "Wallet", Icon: Wallet },
+  { id: "wallet", label: "Wallet", Icon: WalletIcon },
 ];
 
 function optionsForTab(tab: PayTabId, country: string | null): PayOption[] {
