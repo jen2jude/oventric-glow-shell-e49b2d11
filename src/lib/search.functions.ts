@@ -151,13 +151,10 @@ export const searchGlobal = createServerFn({ method: "GET" })
         .select("user_id, slug, display_name, username, avatar_path, reputation_stars, bio")
         .or(`display_name.ilike.${like},username.ilike.${like},slug.ilike.${like}`)
         .limit(8),
-      sb
-        .from("bounties")
-        .select("id, title, price_usd, cover_path, category")
-        .eq("status", "active")
-        .or(`title.ilike.${like},category.ilike.${like}`)
-        .order("price_usd", { ascending: false })
-        .limit(8),
+      // Bounties are a paused legacy feature: the table is no longer readable
+      // by public visitors, so search never queries it.
+      Promise.resolve({ data: [] as Array<{ id: string; title: string; price_usd: number | null; cover_path: string | null; category: string | null }> }),
+
       sb
         .from("products")
         .select("id, name, category, price_usd, cover_path, vendor, seller_id, kind, cashback_pct")
