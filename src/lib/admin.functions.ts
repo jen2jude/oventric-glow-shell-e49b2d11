@@ -943,8 +943,16 @@ export const adminCreditWallet = createServerFn({ method: "POST" })
     const dupe = await sb.from("wallet_transactions").select("id").eq("tx_hash", txHash).maybeSingle();
     if (dupe.data) throw new Error("This payment reference was already credited");
 
-    const { data: prof } = await sb.from("profiles").select("country, full_name").eq("user_id", data.userId).maybeSingle();
-    const homeCurrency = currencyForCountry((prof?.country as string | null) ?? null);
+    const { data: prof, error: profErr } = await sb
+      .from("profiles")
+      .select("country")
+      .eq("user_id", data.userId)
+      .maybeSingle();
+    // Never silently fall back to USD: a failed/missing profile read would
+    // otherwise credit a Nigerian user $0.04 instead of ₦50.
+    if (profErr) throw new Error(`Could not read this user's profile: ${profErr.message}`);
+    if (!prof) throw new Error("This user has no profile, so their home currency is unknown");
+    const homeCurrency = currencyForCountry((prof.country as string | null) ?? null);
 
     const fx = await resolveFxRates();
     const rateFrom = data.currency === "USD" ? 1 : Number(fx.rates?.[data.currency] ?? 0);
