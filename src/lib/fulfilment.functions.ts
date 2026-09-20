@@ -274,7 +274,7 @@ export const markOrderDelivered = createServerFn({ method: "POST" })
 
     const now = new Date();
     const autoAt = new Date(now.getTime() + CONFIRM_WINDOW_HOURS * 3600 * 1000).toISOString();
-    await sb
+    const { error: updErr } = await sb
       .from("orders")
       .update({
         status: "delivered",
@@ -285,6 +285,9 @@ export const markOrderDelivered = createServerFn({ method: "POST" })
         auto_refund_at: null,
       })
       .eq("id", data.orderId);
+    // Never report a delivery we failed to persist — the seller's button would
+    // flip back and the buyer's confirmation clock would never start.
+    if (updErr) throw new Error(updErr.message);
 
     const name = (o.products?.name as string) ?? "your order";
     // Deliver the hand-off inside the platform chat so the trade stays on
