@@ -1329,6 +1329,7 @@ export type Database = {
       coupons: {
         Row: {
           active: boolean
+          category_slug: string | null
           code: string
           created_at: string
           discount_pct: number
@@ -1343,6 +1344,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          category_slug?: string | null
           code: string
           created_at?: string
           discount_pct: number
@@ -1357,6 +1359,7 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          category_slug?: string | null
           code?: string
           created_at?: string
           discount_pct?: number

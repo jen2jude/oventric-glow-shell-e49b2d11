@@ -232,6 +232,13 @@
       "when": 1789902395261,
       "tag": "0032_bind_image_bucket_reads_to_owner",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1789922072465,
+      "tag": "0033_add_coupon_category_scope",
+      "breakpoints": true
     }
   ]
 }
