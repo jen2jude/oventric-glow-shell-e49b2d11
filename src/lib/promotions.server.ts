@@ -45,7 +45,7 @@ export async function validateCouponServer(
 
   const { data: c } = await reader
     .from("coupons")
-    .select("code, discount_pct, active, starts_at, expires_at, seller_id, product_id, min_purchase_usd, max_uses, per_user_limit, used_count")
+    .select("code, discount_pct, active, starts_at, expires_at, seller_id, product_id, category_slug, min_purchase_usd, max_uses, per_user_limit, used_count")
     .eq("code", code)
     .maybeSingle();
 
@@ -64,6 +64,23 @@ export async function validateCouponServer(
   }
   if (c.seller_id && ctx.sellerId && String(c.seller_id) !== String(ctx.sellerId)) {
     return { valid: false, reason: "This coupon does not apply to this seller" };
+  }
+  // Category-scoped coupon: the product's category must match (server-side,
+  // never trusting a client-supplied category).
+  if (c.category_slug) {
+    if (!ctx.productId) {
+      return { valid: false, reason: "This coupon only applies to certain products" };
+    }
+    const { data: prod } = await reader
+      .from("products")
+      .select("category")
+      .eq("id", ctx.productId)
+      .maybeSingle();
+    const prodCat = String(prod?.category ?? "").trim().toLowerCase();
+    const wantCat = String(c.category_slug).trim().toLowerCase();
+    if (prodCat !== wantCat) {
+      return { valid: false, reason: "This coupon does not apply to this product category" };
+    }
   }
   const minUSD = Number(c.min_purchase_usd ?? 0);
   if (minUSD > 0 && ctx.grossUSD < minUSD) {
