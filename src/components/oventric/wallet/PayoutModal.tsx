@@ -250,9 +250,13 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
         await payoutFn({ data: { recipientId: activeRecipient.id, amount } });
         setDone(`${money(net, sym)} will be sent to ${activeRecipient.account_name}.`);
       }
-      const freshBalances = await balancesFn();
-      setBalances(freshBalances.balances, freshBalances.escrow, freshBalances.cashback);
-      await Promise.all([
+      try {
+        const freshBalances = await balancesFn();
+        setBalances(freshBalances.balances, freshBalances.escrow, freshBalances.cashback);
+      } catch {
+        // The withdrawal is already recorded; query invalidation remains the fallback refresh.
+      }
+      void Promise.all([
         qc.invalidateQueries({ queryKey: ["wallet-balances"] }),
         qc.invalidateQueries({ queryKey: ["wallet-recent-tx"] }),
       ]);
