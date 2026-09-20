@@ -402,7 +402,7 @@ export function Feed() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
   const commerceCards = useFeedCommerceCards(isAppShell && feedTab === "foryou");
-  const { peers: suggestedPeers } = useFeedDiscovery(showSuggestedPeople);
+  const { peers: suggestedPeers } = useFeedDiscovery(isAppShell && feedTab === "foryou");
 
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   // Seed from the session cache so returning to the feed paints instantly.

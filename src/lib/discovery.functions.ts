@@ -253,7 +253,7 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
         hasActiveShop: activeShopSellerIds.has(x.p.user_id as string),
       };
     };
-    const peers: DiscoveryPeer[] = topScored.map(toPeer);
+    const peers: DiscoveryPeer[] = combined.map(toPeer);
     const topPeersAny: DiscoveryPeer[] = anyScored.map(toPeer);
 
     // ---- Bounties (top 5 by escrow) ----
