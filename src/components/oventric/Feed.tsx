@@ -402,7 +402,7 @@ export function Feed() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
   const commerceCards = useFeedCommerceCards(isAppShell && feedTab === "foryou");
-  const { peers: suggestedPeers } = useFeedDiscovery(isAppShell && feedTab === "foryou");
+  const { peers: suggestedPeers } = useFeedDiscovery(true);
 
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   // Seed from the session cache so returning to the feed paints instantly.
@@ -1363,6 +1363,15 @@ export function Feed() {
 
         {!isAppShell && <WebReelsRail meId={meId} />}
 
+        {!isAppShell && (
+          <PeopleSuggestionsRail
+            people={suggestedPeers.filter(
+              (person) => person.id !== meId && !followingIds?.has(person.id),
+            )}
+            appShell={false}
+          />
+        )}
+
         <AdSlot placement="feed" variant="banner" />
 
 
@@ -1610,7 +1619,7 @@ export function Feed() {
                 const c = commerceCards[commerceIdx++];
                 items.push(<FeedCommerceCard key={`commerce-${c.kind}-${c.id}`} item={c} />);
               }
-              if ((i + 1) % 12 === 0 && availableSuggestions.length > 0) {
+              if (isAppShell && (i + 1) % 12 === 0 && availableSuggestions.length > 0) {
                 const offset = (peopleRailIdx * 4) % availableSuggestions.length;
                 const rotated = [
                   ...availableSuggestions.slice(offset),
