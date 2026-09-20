@@ -35,6 +35,7 @@ import { initPayment, getPaymentOptions } from "@/lib/payments.functions";
 import { getServicePackages, type ServicePackage } from "@/lib/services.functions";
 import { ServiceBriefForm, BRIEF_FIELDS, type BriefState } from "@/components/oventric/services/ServiceBriefForm";
 import { MiniPayPanel } from "@/components/oventric/MiniPayPanel";
+import { CRYPTO_DESTINATIONS } from "@/lib/payments/active-rails";
 import { usdRate, convertViaSnapshot, formatMoney } from "@/lib/fx-display";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { useIsAppShell } from "@/hooks/use-launch-context";
