@@ -77,8 +77,10 @@ export const getAdminActivityCounts = createServerFn({ method: "GET" })
 
     const tasks: Array<Promise<[AdminActivitySection, number]>> = [];
     const add = (section: AdminActivitySection, promise: Promise<number>) => {
-      if (allowed(section)) tasks.push(promise.then((count) => [section, count]));
+      // One failing queue must never blank out every other badge.
+      if (allowed(section)) tasks.push(promise.then((count) => [section, count] as [AdminActivitySection, number]).catch(() => [section, 0] as [AdminActivitySection, number]));
     };
+
 
     add("/admin/users", exactCount(db.from("profiles").select("user_id", { count: "exact", head: true }).gt("created_at", since("/admin/users")).is("deleted_at", null)));
     add("/admin/sellers", exactCount(db.from("profiles").select("user_id", { count: "exact", head: true }).gt("updated_at", since("/admin/sellers")).not("shop_name", "is", null).is("deleted_at", null)));
