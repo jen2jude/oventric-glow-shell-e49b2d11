@@ -7,4 +7,4 @@
 - [x] Profile overview — side-by-side Shop and Services, then earnings and full Newsfeed-style recent posts.
 - [x] Newsfeed mobile/tablet header — remove Stories, add compact logo/actions header with scroll-direction collapse.
 - [x] Newsfeed cadence — slimmer People suggestions, Shop the Feed rails, and horizontal multi-product tags.
-- [ ] Newsfeed navigation refresh — search icon, category-style content tabs, personalized/following/shop views.
+- [x] Newsfeed navigation refresh — search icon, category-style content tabs, personalized/following/shop views.
