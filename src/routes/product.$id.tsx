@@ -416,7 +416,13 @@ function ProductPage() {
             <div className={`flex flex-col ${isAppShell ? "gap-0" : "gap-8"}`}>
               <div className={isAppShell ? "px-0 pt-0" : ""}>
                 {(() => {
-                  const gallery = product.coverUrl ? [product.coverUrl] : [];
+                  const gallery = Array.from(
+                    new Set(
+                      [product.coverUrl, ...(product.imageUrls ?? [])].filter(
+                        (u): u is string => Boolean(u),
+                      ),
+                    ),
+                  );
                   const cur = gallery[activeImage] ?? gallery[0];
                   return (
                     <>
