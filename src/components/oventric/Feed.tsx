@@ -29,6 +29,7 @@ import {
   ShoppingBag,
   ArrowUp,
   BadgeCheck,
+  Plus,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
@@ -87,6 +88,8 @@ import {
 } from "@/components/oventric/feed/FeedCommerceCard";
 import { ProductAttachmentCard } from "@/components/oventric/feed/ProductAttachmentCard";
 import { PeopleSuggestionsRail } from "@/components/oventric/feed/PeopleSuggestionsRail";
+import { ShopSections } from "@/components/oventric/feed/ShopSections";
+import { CreatePanel } from "@/components/oventric/CreatePanel";
 import { useFeedDiscovery } from "@/components/oventric/feed/useFeedDiscovery";
 
 
@@ -384,6 +387,7 @@ export function Feed() {
   const [meInitials, setMeInitials] = useState<string>("Me");
   const [feedTab, setFeedTab] = useState<FeedTab>("foryou");
   const [searchOpen, setSearchOpen] = useState(false);
+  const [sellPanelOpen, setSellPanelOpen] = useState(false);
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
   const [followerIds, setFollowerIds] = useState<Set<string> | null>(null);
   const {
@@ -1532,7 +1536,10 @@ export function Feed() {
               <p className="mt-3 text-sm font-bold text-slate-900">Loading shops…</p>
             </div>
           ) : shopFeedProducts.length > 0 ? (
-            <ShopTheFeedRail products={shopFeedProducts} appShell={false} />
+            <div className="space-y-4">
+              <ShopTheFeedRail products={shopFeedProducts} appShell={false} />
+              <ShopSections products={shopFeedProducts} />
+            </div>
           ) : (
             <div className="rounded-[10px] border border-amber-100 bg-amber-50/60 p-10 text-center">
               <ShoppingBag className="mx-auto h-7 w-7 text-amber-600" />
@@ -1622,8 +1629,8 @@ export function Feed() {
             const items: React.ReactNode[] = [];
             let peopleRailIdx = 0;
             let shopRailIdx = 0;
+            // "For You" is now the everything view: people + shop rails woven in.
             const interleaveForYou = feedTab === "foryou" && !isFiltering;
-            const interleaveAll = feedTab === "all" && !isFiltering;
             const pushPeopleRail = () => {
               if (availableSuggestions.length === 0) return;
               const offset = (peopleRailIdx * 4) % availableSuggestions.length;
@@ -1656,14 +1663,11 @@ export function Feed() {
               );
               shopRailIdx += 1;
             };
-            if (interleaveAll) pushPeopleRail();
+            if (interleaveForYou) pushPeopleRail();
             visible.forEach((post, i) => {
               items.push(renderPost(post));
               const count = i + 1;
               if (interleaveForYou) {
-                if (count === 3 || (count >= 13 && (count - 13) % 10 === 0)) pushShopRail();
-              }
-              if (interleaveAll) {
                 if (count === 3 || (count >= 13 && (count - 13) % 10 === 0)) pushShopRail();
                 if (count >= 8 && (count - 8) % 10 === 0) pushPeopleRail();
               }
@@ -2417,6 +2421,27 @@ export function Feed() {
             </div>
           </div>
         </div>
+      )}
+      {(feedTab === "creators" || feedTab === "shops") && (
+        <button
+          type="button"
+          aria-label={feedTab === "shops" ? "Publish a product" : "Add creator content"}
+          onClick={() =>
+            require(
+              feedTab === "shops" ? 2 : 1,
+              () => (feedTab === "shops" ? setSellPanelOpen(true) : setComposerOpen(true)),
+              "seller",
+            )
+          }
+          className={`fixed bottom-24 right-5 z-[70] grid h-14 w-14 place-items-center rounded-full text-white shadow-xl transition-transform active:scale-95 md:bottom-10 md:right-10 ${
+            feedTab === "shops" ? "bg-amber-500 hover:bg-amber-600" : "bg-emerald-600 hover:bg-emerald-700"
+          }`}
+        >
+          <Plus className="h-6 w-6" strokeWidth={2.6} />
+        </button>
+      )}
+      {sellPanelOpen && (
+        <CreatePanel open initialChoice="sell" onClose={() => setSellPanelOpen(false)} />
       )}
     </div>
   );

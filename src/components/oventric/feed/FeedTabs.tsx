@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
-import { BadgeCheck, LayoutGrid, Sparkles, Store, UsersRound } from "lucide-react";
+import { BadgeCheck, Sparkles, Store, UsersRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export type FeedTab = "foryou" | "following" | "creators" | "shops" | "all";
+export type FeedTab = "foryou" | "following" | "creators" | "shops";
 
 const TABS = [
   {
@@ -32,13 +32,6 @@ const TABS = [
     icon: Store,
     active: "border-amber-200 bg-amber-50 text-amber-700",
     idle: "border-amber-100 bg-amber-50/55 text-amber-600",
-  },
-  {
-    key: "all",
-    label: "All",
-    icon: LayoutGrid,
-    active: "border-teal-200 bg-teal-50 text-teal-700",
-    idle: "border-teal-100 bg-teal-50/55 text-teal-600",
   },
 ] satisfies Array<{
   key: FeedTab;
