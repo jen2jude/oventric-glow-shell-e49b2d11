@@ -208,15 +208,6 @@ async function buildFeedPosts(
       const url = stableImageUrl("post-media", p);
       if (url) posterByVideoPath.set(p.replace(/\.poster\.jpg$/, ""), url);
     }
-    if (false) {
-      const posters: { path?: string; signedUrl?: string }[] = [];
-      (posters ?? []).forEach((s) => {
-        if (s.path && s.signedUrl && !(s as any).error) {
-          const videoPath = s.path.replace(/\.poster\.jpg$/, "");
-          posterByVideoPath.set(videoPath, s.signedUrl);
-        }
-      });
-    }
   }
 
   const circleIds = Array.from(new Set(rows.map((r) => r.circle_id).filter((x): x is string => !!x)));

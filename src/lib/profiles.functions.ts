@@ -4,8 +4,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 
-import type {
 import { isStableBucket, stableImageUrl, stableImageUrls } from "@/lib/storage/stable-image";
+import type {
   ProfileArticle,
   ProfileBounty,
   ProfileGroup,
