@@ -387,6 +387,7 @@ export function Feed() {
   const [meInitials, setMeInitials] = useState<string>("Me");
   const [feedTab, setFeedTab] = useState<FeedTab>("foryou");
   const [searchOpen, setSearchOpen] = useState(false);
+  const [sellPanelOpen, setSellPanelOpen] = useState(false);
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
   const [followerIds, setFollowerIds] = useState<Set<string> | null>(null);
   const {
