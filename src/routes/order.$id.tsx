@@ -105,6 +105,8 @@ function OrderPage() {
     ? order.displayTotal * (FX_FROM_USD[homeCurrency] / FX_FROM_USD[order.displayCurrency])
     : 0;
   const href = downloadUrl ?? order?.externalUrl ?? null;
+  const isFree = Boolean(order) && Number(order?.totalUSD ?? 0) <= 0;
+
 
   return (
     <div className="web-order min-h-screen bg-[#F7F8FA] text-slate-700 overflow-x-hidden">
