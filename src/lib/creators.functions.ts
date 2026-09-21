@@ -181,10 +181,12 @@ export const recordCreatorPostView = createServerFn({ method: "POST" })
       post_id: data.postId,
       session_key: data.sessionKey,
     });
-    if (error && error.code !== "23505") {
+    if (error) {
+      if (error.code === "23505") return { ok: true, recorded: false };
       console.error("[recordCreatorPostView]", error);
+      return { ok: false, recorded: false };
     }
-    return { ok: true };
+    return { ok: true, recorded: true };
   });
 
 const PublishInput = z.object({

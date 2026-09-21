@@ -200,7 +200,7 @@ function AssetCta({ asset }: { asset: NonNullable<CreatorPostDTO["asset"]> }) {
   );
 }
 
-function CreatorCard({ post }: { post: CreatorPostDTO }) {
+function CreatorCard({ post, onRecordedView }: { post: CreatorPostDTO; onRecordedView: (postId: string) => void }) {
   const recordView = useServerFn(recordCreatorPostView);
 
   useEffect(() => {
@@ -214,11 +214,15 @@ function CreatorCard({ post }: { post: CreatorPostDTO }) {
     const viewedKey = `oventric_creator_viewed_${post.id}`;
     if (window.sessionStorage.getItem(viewedKey)) return;
     const timer = window.setTimeout(() => {
-      window.sessionStorage.setItem(viewedKey, "1");
-      void recordView({ data: { postId: post.id, sessionKey } });
+      void recordView({ data: { postId: post.id, sessionKey } }).then((result) => {
+        if (result.recorded) {
+          window.sessionStorage.setItem(viewedKey, "1");
+          onRecordedView(post.id);
+        }
+      });
     }, 1200);
     return () => window.clearTimeout(timer);
-  }, [post.id, recordView]);
+  }, [onRecordedView, post.id, recordView]);
 
   return (
     <article className="grid grid-cols-[40px_minmax(0,1fr)] gap-3 border-b border-slate-100 bg-white px-4 py-3 transition-colors hover:bg-slate-50">
@@ -339,6 +343,11 @@ export function CreatorFeed({ reloadKey }: { reloadKey: number }) {
   }, [posts]);
 
   const visible = field === "all" ? posts : posts.filter((p) => p.fields.includes(field));
+  const handleRecordedView = (postId: string) => {
+    setPosts((current) =>
+      current.map((post) => (post.id === postId ? { ...post, viewCount: post.viewCount + 1 } : post)),
+    );
+  };
 
   if (loading) {
     return (
@@ -380,7 +389,7 @@ export function CreatorFeed({ reloadKey }: { reloadKey: number }) {
         </div>
       )}
       {visible.map((p) => (
-        <CreatorCard key={p.id} post={p} />
+        <CreatorCard key={p.id} post={p} onRecordedView={handleRecordedView} />
       ))}
     </div>
   );
