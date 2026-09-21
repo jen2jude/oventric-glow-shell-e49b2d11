@@ -111,6 +111,26 @@ export function ProfileSkillsTab({
         )}
       </section>
 
+      {workLinks.length > 0 && (
+        <section className="rounded-3xl border border-white/8 bg-[#111114] p-5 md:border-slate-200 md:bg-white">
+          <h2 className="text-sm font-black text-white md:text-slate-900">Work &amp; portfolio</h2>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {workLinks.map((l) => (
+              <a
+                key={l}
+                href={l.startsWith("http") ? l : `https://${l}`}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="max-w-full truncate rounded-full border border-white/15 px-3 py-1.5 text-xs font-bold text-white md:border-slate-300 md:text-slate-700"
+              >
+                {l.replace(/^https?:\/\//, "")}
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+
       {/* Tools */}
       <section className="rounded-3xl border border-white/8 bg-[#111114] p-5 md:border-slate-200 md:bg-white">
         <div className="flex items-center gap-2">
