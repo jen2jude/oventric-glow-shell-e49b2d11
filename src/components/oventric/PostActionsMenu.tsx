@@ -10,6 +10,7 @@ import {
   Link2,
   X,
   Trash2,
+  Pencil,
   UserPlus,
   UserMinus,
   Ban,
