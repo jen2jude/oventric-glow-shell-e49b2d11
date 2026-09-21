@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, Bell, MessageSquare, UserPlus } from "lucide-react";
+import { ArrowLeft, Bell, MessageSquare, Search, UserPlus } from "lucide-react";
 import logoDark from "@/assets/oventric-logo-dark.png";
 import { CountBadge } from "@/components/oventric/CountBadge";
 import { ProfileDropdown } from "@/components/oventric/ProfileDropdown";
@@ -15,6 +15,7 @@ import { useChromeHidden } from "@/hooks/use-chrome-hide";
 type Props = {
   /** Opens the shared messages drawer owned by the page shell. */
   onOpenMessages: () => void;
+  onOpenSearch: () => void;
 };
 
 /**
@@ -22,7 +23,7 @@ type Props = {
  * Gives quick access to notifications, chats and follow requests without
  * the app-shell header.
  */
-export function FeedSocialBar({ onOpenMessages }: Props) {
+export function FeedSocialBar({ onOpenMessages, onOpenSearch }: Props) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [reqOpen, setReqOpen] = useState(false);
   const chromeHidden = useChromeHidden();
@@ -73,6 +74,15 @@ export function FeedSocialBar({ onOpenMessages }: Props) {
         <div className="flex shrink-0 items-center gap-2 md:gap-3">
           <button
             type="button"
+            onClick={onOpenSearch}
+            aria-label="Search"
+            title="Search"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] border border-home-line bg-sky-50 text-sky-600 shadow-sm transition-transform active:scale-95 md:h-11 md:w-11"
+          >
+            <Search className="h-[19px] w-[19px]" strokeWidth={1.9} />
+          </button>
+          <button
+            type="button"
             onClick={() => setNotifOpen(true)}
             aria-label="Notifications"
             title="Notifications"
@@ -110,10 +120,8 @@ export function FeedSocialBar({ onOpenMessages }: Props) {
           <ArrowLeft className="h-4 w-4" />
           Back to Home
         </Link>
-        <h1 className="shrink-0 rounded-full bg-[#E5484D] px-4 py-1.5 text-sm font-medium text-white">
-          Newsfeed
-        </h1>
         <span aria-hidden className="mx-1 h-4 w-px shrink-0 bg-slate-200" />
+        <Item icon={Search} label="Search" onClick={onOpenSearch} />
         <Item
           icon={Bell}
           label="Notifications"
