@@ -2471,7 +2471,7 @@ export function Feed() {
         open={creatorPublishOpen}
         onClose={() => setCreatorPublishOpen(false)}
         onPublished={() => setCreatorReloadKey((k) => k + 1)}
-      />)
+      />
     </div>
   );
 }
