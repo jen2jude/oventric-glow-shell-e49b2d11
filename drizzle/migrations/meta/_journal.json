@@ -246,6 +246,13 @@
       "when": 1789943922762,
       "tag": "0034_fix_order_status_and_notification_kinds",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1789979063164,
+      "tag": "0035_restrict_buyer_and_recipient_update_columns",
+      "breakpoints": true
     }
   ]
 }
