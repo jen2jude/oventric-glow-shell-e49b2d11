@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
 import { X, Loader2, UserPlus, User as UserIcon } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
   listIncomingFollowRequests,
@@ -83,11 +84,16 @@ export function FollowRequestsDrawer({ open, onClose }: Props) {
   const act = async (
     requesterId: string,
     fn: (input: { data: { requesterId: string } }) => Promise<unknown>,
+    accepted: boolean,
+    name: string,
   ) => {
     setBusy(requesterId);
     try {
       await fn({ data: { requesterId } });
       setRows((rs) => (rs ?? []).filter((r) => r.requesterId !== requesterId));
+      toast.success(accepted ? `${name} now follows you` : `Request from ${name} declined`);
+      // Let follower / following counters refresh straight away.
+      window.dispatchEvent(new CustomEvent("oventric:follow-graph-changed"));
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Action failed");
     } finally {
@@ -204,7 +210,7 @@ export function FollowRequestsDrawer({ open, onClose }: Props) {
 
                 <div className="flex items-center gap-2 shrink-0">
                   <button
-                    onClick={() => act(r.requesterId, acceptFn)}
+                    onClick={() => act(r.requesterId, acceptFn, true, r.requesterName)}
                     disabled={busy === r.requesterId}
                     className="h-10 sm:h-11 px-4 sm:px-6 inline-flex items-center justify-center gap-1.5 bg-[#E5484D] hover:bg-[#d13f44] text-white text-sm font-bold rounded-2xl transition-all active:scale-95 shadow-lg shadow-red-900/10 disabled:opacity-60"
                     aria-label={`Accept ${r.requesterName}`}
@@ -216,7 +222,7 @@ export function FollowRequestsDrawer({ open, onClose }: Props) {
                     )}
                   </button>
                   <button
-                    onClick={() => act(r.requesterId, declineFn)}
+                    onClick={() => act(r.requesterId, declineFn, false, r.requesterName)}
                     disabled={busy === r.requesterId}
                     className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-2xl transition-all active:scale-95 disabled:opacity-60"
                     aria-label={`Decline ${r.requesterName}`}

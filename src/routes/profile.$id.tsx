@@ -578,6 +578,14 @@ function ProfilePage() {
     };
   }, [meId]);
 
+  // Accepting / declining a request changes the follow graph — refresh counters at once.
+  useEffect(() => {
+    const onChange = () => reloadSocialCounts();
+    window.addEventListener("oventric:follow-graph-changed", onChange);
+    return () => window.removeEventListener("oventric:follow-graph-changed", onChange);
+  }, [reloadSocialCounts]);
+
+
   const isUuidId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
   const isOwnProfile = !!(meId && (meId === id || (realProfile && meId === realProfile.userId)));
   // Adaptive ecosystem sections: a person's profile only shows the surfaces
@@ -1441,6 +1449,30 @@ function ProfilePage() {
                   </span>
                   <ChevronRight className="h-4 w-4 shrink-0 text-slate-500" />
                 </button>
+
+                {/* Follow requests — visible entry so requests can be accepted or declined */}
+                {isOwnProfile && pendingFollowReqCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setFollowRequestsOpen(true)}
+                    className="mt-3 flex w-full items-center gap-3 rounded-2xl border border-[#E5484D]/40 bg-[#E5484D]/10 px-4 py-3 text-left hover:bg-[#E5484D]/15 md:rounded-[10px]"
+                  >
+                    <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#E5484D] text-white">
+                      <UserPlus className="h-4 w-4" />
+                      <span className="absolute -right-0.5 -top-0.5 size-2.5 animate-pulse rounded-full bg-emerald-400 ring-2 ring-[#E5484D]/30" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-black text-white md:text-slate-900">
+                        {pendingFollowReqCount} follow{" "}
+                        {pendingFollowReqCount === 1 ? "request" : "requests"}
+                      </span>
+                      <span className="block text-[11px] font-semibold text-slate-500">
+                        Tap to accept or decline
+                      </span>
+                    </span>
+                    <ChevronRight className="h-4 w-4 shrink-0 text-[#E5484D]" />
+                  </button>
+                )}
 
 
 
