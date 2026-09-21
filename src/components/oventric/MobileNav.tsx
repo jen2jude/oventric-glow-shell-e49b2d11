@@ -1,4 +1,4 @@
-import { Home, Compass, Wallet, Plus, ShoppingBag } from "lucide-react";
+import { Home, Compass, Newspaper, Plus, ShoppingBag } from "lucide-react";
 import { CountBadge } from "@/components/oventric/CountBadge";
 import { haptic } from "@/lib/haptics";
 import { useChatOpen } from "@/hooks/use-chat-open";
@@ -11,7 +11,7 @@ const left = [
 ];
 const right = [
   { icon: ShoppingBag, label: "Market" },
-  { icon: Wallet, label: "Wallet" },
+  { icon: Newspaper, label: "Feed" },
 ];
 
 export type MobileNavCounts = Partial<
