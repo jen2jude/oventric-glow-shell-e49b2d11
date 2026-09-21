@@ -214,6 +214,28 @@ async function fetchShopNames(
   return map;
 }
 
+/**
+ * profiles.banned_at is not publicly readable, so public-facing seller lists
+ * fetch moderation flags through the privileged server client and drop
+ * banned accounts. Fails open only by omitting the filter on error.
+ */
+async function filterOutBannedProfiles<T extends { user_id: string }>(rows: T[]): Promise<T[]> {
+  if (!rows.length) return rows;
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: flags } = await supabaseAdmin
+      .from("profiles")
+      .select("user_id, banned_at")
+      .in("user_id", rows.map((r) => r.user_id));
+    const banned = new Set(
+      (flags ?? []).filter((f: any) => !!f.banned_at).map((f: any) => f.user_id as string),
+    );
+    return rows.filter((r) => !banned.has(r.user_id));
+  } catch {
+    return rows;
+  }
+}
+
 const PRODUCT_COLS = "id, slug, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, created_at, kind, status, reject_reason, condition, brand, location, negotiable, delivery, image_paths, requires_manual_delivery, in_stock, stock_quantity, cashback_pct, basic_info, activation_guide";
 const PRODUCT_COLS_OWNER = "id, slug, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, created_at, kind, status, reject_reason, condition, brand, location, negotiable, delivery, image_paths, requires_manual_delivery, in_stock, stock_quantity, cashback_pct, seller_phone, whatsapp_number, social_link, basic_info, activation_guide";
 
