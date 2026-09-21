@@ -42,7 +42,7 @@ function Module({
   children: React.ReactNode;
 }) {
   return (
-    <section className="mt-5 md:mb-5 md:mt-0 md:inline-block md:w-full md:break-inside-avoid md:rounded-[10px] md:border md:border-slate-200 md:bg-white md:p-5">
+    <section className="mt-5 md:mt-0 md:rounded-[10px] md:border md:border-slate-200 md:bg-white md:p-5">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <h2 className="truncate text-[11px] font-black uppercase tracking-[0.14em] text-slate-400 md:text-slate-500">
           {title}
@@ -184,7 +184,7 @@ export function ProfileOverview({
   const interests = realProfile?.interests ?? [];
 
   return (
-    <div data-testid="profile-overview" className="space-y-6 pb-2 md:columns-2 md:gap-5 md:space-y-0">
+    <div data-testid="profile-overview" className="space-y-5 pb-2">
       {interests.length > 0 && (
         <Module title="What I'm into">
           <div className="-mx-1 flex flex-wrap gap-2 px-1">
