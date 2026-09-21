@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
 import { parseVideoEmbed } from "./video-embed";
+import { stableImageUrl, stableImageUrls } from "@/lib/storage/stable-image";
 
 export const CREATOR_FIELDS = [
   "Graphic Designer",
@@ -330,11 +331,9 @@ export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
     }
     const signed = new Map<string, string>();
     const all = [...mediaPaths, ...posterPaths];
-    if (all.length > 0) {
-      const { data: urls } = await storage.from("post-media").createSignedUrls(all, 60 * 60 * 6);
-      (urls ?? []).forEach((u) => {
-        if (u.signedUrl && u.path) signed.set(u.path, u.signedUrl);
-      });
+    for (const p of all) {
+      const url = stableImageUrl("post-media", p);
+      if (url) signed.set(p, url);
     }
 
     const avatarPaths = Array.from(
@@ -345,11 +344,9 @@ export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
       ),
     );
     const signedAvatars = new Map<string, string>();
-    if (avatarPaths.length > 0) {
-      const { data: urls } = await storage.from("avatars").createSignedUrls(avatarPaths, 60 * 60 * 6);
-      (urls ?? []).forEach((u) => {
-        if (u.signedUrl && u.path) signedAvatars.set(u.path, u.signedUrl);
-      });
+    for (const p of avatarPaths) {
+      const url = stableImageUrl("avatars", p);
+      if (url) signedAvatars.set(p, url);
     }
 
     return rows.map((r) => {

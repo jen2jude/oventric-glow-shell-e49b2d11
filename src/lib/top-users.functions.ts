@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { stableImageUrl, stableImageUrls } from "@/lib/storage/stable-image";
 
 export interface TopUser {
   userId: string;
@@ -24,19 +25,7 @@ export const getTopUsers = createServerFn({ method: "GET" })
 
     const users = await Promise.all((data || []).map(async (row) => {
       let avatarUrl = null;
-      if (row.avatar_path) {
-        // Try to get a long-lived signed URL (1 week) since this is a leaderboard
-        const { data: signed } = await supabaseAdmin.storage
-          .from("avatars")
-          .createSignedUrl(row.avatar_path, 60 * 60 * 24 * 7);
-        avatarUrl = signed?.signedUrl || null;
-
-        // Fallback to public URL if signing failed (e.g. bucket settings)
-        if (!avatarUrl) {
-          const { data: pub } = supabaseAdmin.storage.from("avatars").getPublicUrl(row.avatar_path);
-          avatarUrl = pub.publicUrl || null;
-        }
-      }
+      if (row.avatar_path) avatarUrl = stableImageUrl("avatars", row.avatar_path);
       return {
         userId: row.user_id,
         displayName: row.display_name || row.slug,
