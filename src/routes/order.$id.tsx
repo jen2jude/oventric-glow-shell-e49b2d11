@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   Download,
   ExternalLink,
+  Gift,
   Loader2,
   ArrowLeft,
   Mail,
@@ -14,6 +15,7 @@ import {
   RefreshCcw,
   Lock,
 } from "lucide-react";
+
 import { Header } from "@/components/oventric/Header";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { getOrderWithDownload, FX_FROM_USD, type OrderDTO } from "@/lib/marketplace.functions";
@@ -103,6 +105,8 @@ function OrderPage() {
     ? order.displayTotal * (FX_FROM_USD[homeCurrency] / FX_FROM_USD[order.displayCurrency])
     : 0;
   const href = downloadUrl ?? order?.externalUrl ?? null;
+  const isFree = Boolean(order) && Number(order?.totalUSD ?? 0) <= 0;
+
 
   return (
     <div className="web-order min-h-screen bg-[#F7F8FA] text-slate-700 overflow-x-hidden">
@@ -167,14 +171,26 @@ function OrderPage() {
         {order && (
           <>
             <div className="text-center mb-8">
-              <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center mx-auto mb-4">
-                <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+              <div
+                className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
+                  isFree
+                    ? "bg-violet-50 border border-violet-100"
+                    : "bg-emerald-50 border border-emerald-100"
+                }`}
+              >
+                {isFree ? (
+                  <Gift className="w-8 h-8 text-violet-600" />
+                ) : (
+                  <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+                )}
               </div>
               <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2 font-wallet-display">
-                Thank you for your purchase
+                {isFree ? "Your free download" : "Thank you for your purchase"}
               </h1>
               <p className="text-sm text-slate-600">
-                A receipt has been sent to your email.
+                {isFree
+                  ? "No payment needed — it's saved to your dashboard so you can grab it again any time."
+                  : "A receipt has been sent to your email."}
               </p>
             </div>
 
@@ -192,34 +208,47 @@ function OrderPage() {
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <div className="text-slate-900 font-bold text-lg">
-                    {fmt(displayAmount, homeCurrency)}
-                  </div>
-                  <div className="text-[10px] text-slate-500 font-mono uppercase">
-                    {order.paymentMethod.replace("_", " ")}
-                  </div>
+                  {isFree ? (
+                    <span className="inline-flex items-center rounded-full bg-violet-50 border border-violet-200 px-3 py-1 text-xs font-bold uppercase tracking-wide text-violet-700">
+                      Free
+                    </span>
+                  ) : (
+                    <>
+                      <div className="text-slate-900 font-bold text-lg">
+                        {fmt(displayAmount, homeCurrency)}
+                      </div>
+                      <div className="text-[10px] text-slate-500 font-mono uppercase">
+                        {order.paymentMethod.replace("_", " ")}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 
               <div className="border-t border-slate-100 pt-4 space-y-2 text-sm text-slate-600">
                 <div className="flex justify-between">
-                  <span>Order ID</span>
+                  <span>{isFree ? "Reference" : "Order ID"}</span>
                   <span className="font-mono text-slate-800">{order.id.slice(0, 8)}…</span>
                 </div>
+                {!isFree && (
+                  <div className="flex justify-between">
+                    <span>Status</span>
+                    <span className="text-emerald-600 font-semibold uppercase">{order.status}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
-                  <span>Status</span>
-                  <span className="text-emerald-600 font-semibold uppercase">{order.status}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Placed</span>
+                  <span>{isFree ? "Downloaded" : "Placed"}</span>
                   <span>{new Date(order.createdAt).toLocaleString()}</span>
                 </div>
               </div>
             </div>
 
-            <div className="mb-5">
-              <OrderFulfilmentRoadmap orderId={order.id} />
-            </div>
+            {!(isFree && !order.requiresManualDelivery) && (
+              <div className="mb-5">
+                <OrderFulfilmentRoadmap orderId={order.id} />
+              </div>
+            )}
+
 
             {order.requiresManualDelivery ? (
               <div className="bg-white border border-amber-200 rounded-[10px] p-5 shadow-sm">
