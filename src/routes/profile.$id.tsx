@@ -1068,7 +1068,7 @@ function ProfilePage() {
 
   return (
     <div
-      className={`profile-render-safe relative min-h-screen overflow-x-hidden bg-[#121214] md:bg-slate-50 text-slate-200 md:text-slate-700 md:h-screen md:overflow-hidden ${!isAppShellView ? "oventric-web" : ""}`}
+      className={`profile-render-safe profile-dashboard relative min-h-screen overflow-x-hidden text-foreground md:h-screen md:overflow-hidden ${!isAppShellView ? "oventric-web" : ""}`}
     >
       <div className="pointer-events-none fixed top-0 inset-x-0 h-[2px] z-50  hidden md:block" />
       <div className="pointer-events-none fixed bottom-0 inset-x-0 h-[2px] z-50  hidden md:block" />
@@ -1078,7 +1078,7 @@ function ProfilePage() {
       <div className="flex min-h-screen flex-col md:h-full md:min-h-0">
         <Header forceSiteNavbar={!isAppShellView} />
         <main ref={mainRef} className="flex-1 min-w-0 pb-20 md:overflow-y-auto md:pb-0">
-          <div className="mx-auto w-full max-w-7xl px-4 py-6 md:px-8 md:py-8 lg:px-10">
+          <div className="profile-dashboard-shell mx-auto w-full max-w-7xl px-4 py-5 md:px-8 md:py-8 lg:px-10">
             {/* Hero — the whole mobile profile surface is intentionally plain:
                  no animated gradients, filters, backdrop blur, blend modes,
                  compositor promotion, or clipped gradient layers. Those effects
@@ -1132,7 +1132,7 @@ function ProfilePage() {
 
             <section
               data-testid="profile-banner"
-              className="profile-card-safe profile-standard-header mb-6 md:overflow-hidden md:rounded-[10px] md:border md:border-slate-200 md:bg-white md:shadow-sm"
+              className="profile-card-safe profile-standard-header profile-identity-card mb-6 overflow-hidden"
             >
               {/* Cover image — full-bleed hero */}
               <div className="profile-cover-safe relative -mx-4 -mt-6 h-56 overflow-hidden border-b border-white/10 bg-[#18181d] sm:h-64 md:mx-0 md:mt-0 md:h-60 md:rounded-none md:border-0 md:border-b md:border-slate-200 md:bg-slate-100 lg:h-64">
@@ -1193,8 +1193,8 @@ function ProfilePage() {
               </div>
 
               {/* Identity — avatar overlaps the cover from the left, app-style */}
-               <div className="-mt-12 px-1 md:-mt-14 md:px-8 md:pb-7">
-                <div className="grid grid-cols-[auto_minmax(0,1fr)] items-end gap-3">
+               <div className="profile-dashboard-body -mt-12 px-1 md:-mt-14 md:px-8 md:pb-7">
+                <div className="profile-identity-top grid grid-cols-[auto_minmax(0,1fr)] items-end gap-3">
                   <div className="relative shrink-0">
                      <div className="profile-avatar-safe flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-[#E5484D] text-3xl font-black text-white ring-[3px] ring-[#E5484D]/70 outline outline-4 outline-[#121214] sm:h-28 sm:w-28 md:h-32 md:w-32 md:rounded-[10px] md:ring-0 md:outline-white lg:h-36 lg:w-36">
                       {displayAvatar ? (
@@ -1305,7 +1305,7 @@ function ProfilePage() {
                 </div>
 
                 {/* Name + role */}
-                <div className="mt-3">
+                <div className="profile-identity-copy mt-3">
                   <div className="flex min-w-0 items-center gap-2">
                     <h1 className="truncate text-2xl sm:text-3xl font-black leading-tight text-white md:text-slate-900">
                       {displayName}
@@ -1343,7 +1343,7 @@ function ProfilePage() {
                 </div>
 
                 {displayBio && (
-                  <p className="profile-mid-safe mt-2.5 line-clamp-3 text-sm leading-relaxed text-slate-300 md:text-slate-600">
+                  <p className="profile-mid-safe profile-bio-summary mt-2.5 line-clamp-3 text-sm leading-relaxed text-slate-600">
                     {displayBio}
                   </p>
                 )}
@@ -1351,7 +1351,7 @@ function ProfilePage() {
                 {(realProfile?.country?.trim() ||
                   realProfile?.address?.trim() ||
                   realProfile?.socialLinks?.website) && (
-                  <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400 md:text-slate-500">
+                  <div className="profile-meta mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
                     {(realProfile?.country?.trim() || realProfile?.address?.trim()) && (
                       <span className="inline-flex items-center gap-1.5">
                         <MapPin className="h-3.5 w-3.5" />
@@ -1386,7 +1386,7 @@ function ProfilePage() {
                 )}
 
                 {/* Stat strip */}
-                <div className="mt-4 grid grid-cols-4 divide-x divide-white/8 rounded-2xl border border-white/10 bg-[#141418] md:mt-6 md:divide-x md:divide-slate-100 md:rounded-[10px] md:border-slate-200 md:bg-slate-50">
+                <div className="profile-metrics mt-4 grid grid-cols-4">
                   <button
                     type="button"
                     onClick={() => openRelationships("followers")}
@@ -1433,7 +1433,7 @@ function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => openRelationships("all")}
-                  className="mt-3 flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-[#141418] px-4 py-3 text-left hover:bg-[#1A1A1F] md:rounded-[10px] md:border-slate-200 md:bg-white md:hover:bg-slate-50"
+                  className="profile-connections-card mt-3 flex w-full items-center gap-3 px-4 py-3 text-left"
                 >
                   <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#E5484D]/15 text-[#E5484D]">
                     <Users className="h-4 w-4" />
@@ -1455,7 +1455,7 @@ function ProfilePage() {
                   <button
                     type="button"
                     onClick={() => setFollowRequestsOpen(true)}
-                    className="mt-3 flex w-full items-center gap-3 rounded-2xl border border-[#E5484D]/40 bg-[#E5484D]/10 px-4 py-3 text-left hover:bg-[#E5484D]/15 md:rounded-[10px]"
+                    className="profile-requests-card mt-3 flex w-full items-center gap-3 px-4 py-3 text-left"
                   >
                     <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#E5484D] text-white">
                       <UserPlus className="h-4 w-4" />
@@ -1478,7 +1478,7 @@ function ProfilePage() {
 
                 {/* Primary actions */}
                 {!isOwnProfile && !identityMissing && realProfile?.userId && (
-                  <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto_auto] items-start gap-2 md:flex md:justify-end">
+                   <div className="profile-primary-actions mt-3 grid grid-cols-[minmax(0,1fr)_auto_auto] items-start gap-2 md:flex md:justify-end">
                     <FollowButton
                       targetId={realProfile.userId}
                       className="h-11 w-full justify-center rounded-[10px] border-transparent! bg-[#E5484D]! px-5 py-0 text-sm font-black text-white! hover:bg-[#C43D42]! md:w-44"
@@ -1503,7 +1503,7 @@ function ProfilePage() {
                   </div>
                 )}
                 {isOwnProfile && (
-                  <div className="mt-3 grid grid-cols-2 items-center gap-2 md:flex md:justify-end">
+                  <div className="profile-primary-actions mt-3 grid grid-cols-2 items-center gap-2 md:flex md:justify-end">
                     <Button
                       onClick={() => setEditProfileOpen(true)}
                       className="h-11 rounded-[10px] bg-[#E5484D] px-5 text-sm font-black text-white hover:bg-[#C43D42] md:w-44"
@@ -1522,7 +1522,7 @@ function ProfilePage() {
 
                 {/* About card */}
                 {displayBio && (
-                    <div className="mt-4 rounded-2xl border border-white/10 bg-[#141418] p-4 md:rounded-[10px] md:border-slate-200 md:bg-slate-50">
+                    <div className="profile-about-card mt-4 p-5">
                     <h2 className="text-sm font-black text-white md:text-slate-900">
                       About {displayName.split(" ")[0]}
                     </h2>
@@ -1554,7 +1554,7 @@ function ProfilePage() {
 
                 {/* What I'm into */}
                 {((realProfile?.interests && realProfile.interests.length > 0) || isOwnProfile) && (
-                  <div className="mt-4">
+                   <div className="profile-interests-card mt-4 p-5">
                     <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
                       <h2 className="truncate text-sm font-black text-white md:text-slate-900">
                         What I&apos;m into
@@ -1592,7 +1592,7 @@ function ProfilePage() {
                 )}
 
                 {realProfile?.socialLinks && Object.keys(realProfile.socialLinks).length > 0 && (
-                  <div className="mt-4">
+                   <div className="profile-social-card mt-4 p-5">
                     <h2 className="text-sm font-black text-white md:text-slate-900">Find me on</h2>
                     <div className="-mx-1 mt-2 flex flex-wrap items-center gap-2 px-1">
                       {Object.entries(realProfile.socialLinks).map(([key, url]) => (
@@ -1613,7 +1613,7 @@ function ProfilePage() {
 
                 {/* Skills */}
                 {((realProfile?.skills && realProfile.skills.length > 0) || isOwnProfile) && (
-                  <div className="mt-4">
+                   <div className="profile-skills-card mt-4 p-5">
                     <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
                       <h2 className="truncate text-sm font-black text-white md:text-slate-900">
                         Skills
@@ -1657,7 +1657,7 @@ function ProfilePage() {
               ref={tabsNavRef}
               data-testid="profile-tabs"
 
-              className="mt-5 flex items-center gap-1 overflow-x-auto no-scrollbar border-b border-white/10 md:sticky md:top-0 md:z-20 md:mt-8 md:rounded-t-[10px] md:border md:border-slate-200 md:bg-white md:px-5 md:shadow-sm"
+              className="profile-tabs mt-5 flex items-center gap-1 overflow-x-auto no-scrollbar md:sticky md:top-0 md:z-20 md:mt-8 md:px-5"
             >
               <button
                 key="overview"
@@ -1812,7 +1812,7 @@ function ProfilePage() {
             )}
 
             {/* Tab content */}
-            <section data-testid="profile-tab-content" className="mt-5 space-y-3 md:mt-0 md:min-h-72 md:rounded-b-[10px] md:border md:border-t-0 md:border-slate-200 md:bg-white md:p-6 md:shadow-sm lg:p-8">
+            <section data-testid="profile-tab-content" className="profile-tab-panel mt-5 space-y-3 md:mt-0 md:min-h-72 md:p-6 lg:p-8">
               {aboutMode ? (
                 <ProfileAboutTab
                   idOrSlug={id}
