@@ -92,7 +92,7 @@ export function FeedSocialBar({ onOpenMessages }: Props) {
             <CountBadge count={messages} ariaLabel={`${messages} unread chats`} />
           </button>
           <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] border border-home-line bg-create-sell-soft shadow-sm md:h-11 md:w-11">
-            <ProfileDropdown />
+            <ProfileDropdown trigger="mega" />
           </div>
         </div>
       </header>
