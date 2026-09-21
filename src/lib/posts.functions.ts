@@ -886,8 +886,7 @@ export const deletePost = createServerFn({ method: "POST" })
     return { id: data.id };
   });
 
-/** Authors may edit their own post's caption within 10 minutes of posting. */
-export const EDIT_WINDOW_MS = 10 * 60 * 1000;
+import { EDIT_WINDOW_MS } from "./post-edit";
 
 export const updatePostText = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
