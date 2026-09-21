@@ -1792,13 +1792,15 @@ export const getTopSellers = createServerFn({ method: "GET" })
     const { data: sellerRows } = await sb
       .from("profiles")
       .select(
-        "user_id, slug, display_name, username, avatar_path, cover_path, verification_tier, bio, profile_completed_at, banned_at, deleted_at",
+        "user_id, slug, display_name, username, avatar_path, cover_path, verification_tier, bio, profile_completed_at, deleted_at",
       )
       .in("user_id", sellerIds);
 
     // Only onboarded, active accounts with published listings count as sellers.
-    const rows = (sellerRows ?? []).filter(
-      (s: any) => !!s.profile_completed_at && !s.banned_at && !s.deleted_at,
+    // banned_at is not publicly readable, so moderation flags come from the
+    // privileged server client.
+    const rows = await filterOutBannedProfiles(
+      (sellerRows ?? []).filter((s: any) => !!s.profile_completed_at && !s.deleted_at),
     );
 
     // "Verified" means an admin-approved seller verification request exists.
