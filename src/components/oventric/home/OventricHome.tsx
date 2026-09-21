@@ -667,9 +667,9 @@ function SellerCountryFlag({ country }: { country: string | null }) {
     <span
       title={meta.name}
       aria-label={meta.name}
-      className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full border-2 border-home-surface bg-home-surface text-base shadow-home-soft"
+      className="absolute right-3 top-3 grid h-8 w-8 place-items-center overflow-hidden rounded-full border-2 border-home-surface bg-home-surface shadow-home-soft"
     >
-      {meta.flag}
+      <span className={`fi fi-${code.toLowerCase()} h-full w-full bg-cover bg-center`} aria-hidden="true" />
     </span>
   );
 }
