@@ -1560,43 +1560,48 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
     const sb = serverPublicClient();
     const withKind = (q: any) => q;
 
-    // 1. Featured Products (promoted or top rated)
-    const { data: featuredRows } = await withKind(
-      sb
-        .from("products")
-        .select(PRODUCT_COLS)
-        .eq("status", "active")
-        .eq("promoted", true)
-        .order("rating", { ascending: false })
-        .limit(6),
-    );
-
-    // 2. Trending (most reviews/high rating)
-    const { data: trendingRows } = await withKind(
-      sb
-        .from("products")
-        .select(PRODUCT_COLS)
-        .eq("status", "active")
-        .order("reviews", { ascending: false, nullsFirst: false })
-        .limit(10),
-    );
-
-    // 3. New Arrivals
-    const { data: newRows } = await withKind(
-      sb
-        .from("products")
-        .select(PRODUCT_COLS)
-        .eq("status", "active")
-        .order("created_at", { ascending: false })
-        .limit(10),
-    );
-
-    // 4. Sellers (profiles that actually have active products)
-    const { data: sellerIdRows } = await sb
-      .from("products")
-      .select("seller_id")
-      .eq("status", "active")
-      .limit(500);
+    // These five reads are independent, so they run in parallel instead of
+    // stacking five sequential round-trips before the page can render.
+    const [
+      { data: featuredRows },
+      { data: trendingRows },
+      { data: newRows },
+      { data: sellerIdRows },
+      { data: catCountRows },
+    ] = await Promise.all([
+      // 1. Featured Products (promoted or top rated)
+      withKind(
+        sb
+          .from("products")
+          .select(PRODUCT_COLS)
+          .eq("status", "active")
+          .eq("promoted", true)
+          .order("rating", { ascending: false })
+          .limit(6),
+      ),
+      // 2. Trending (most reviews/high rating)
+      withKind(
+        sb
+          .from("products")
+          .select(PRODUCT_COLS)
+          .eq("status", "active")
+          .order("reviews", { ascending: false, nullsFirst: false })
+          .limit(10),
+      ),
+      // 3. New Arrivals
+      withKind(
+        sb
+          .from("products")
+          .select(PRODUCT_COLS)
+          .eq("status", "active")
+          .order("created_at", { ascending: false })
+          .limit(10),
+      ),
+      // 4. Sellers (profiles that actually have active products)
+      sb.from("products").select("seller_id").eq("status", "active").limit(500),
+      // 5. Live category counts (products.category stores the category slug)
+      sb.from("products").select("category").eq("status", "active").limit(1000),
+    ]);
     const sellerCounts = new Map<string, number>();
     (sellerIdRows ?? []).forEach((r) => {
       const id = r.seller_id as string;
