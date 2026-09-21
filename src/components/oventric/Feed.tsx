@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import { EDIT_WINDOW_MS } from "@/lib/post-edit";
 import {
   Paperclip,
   MessageSquare,
@@ -55,7 +56,6 @@ import {
   createPost as createPostFn,
   deletePost as deletePostFn,
   updatePostText as updatePostTextFn,
-  EDIT_WINDOW_MS,
   setReaction as setReactionFn,
   type FeedPost,
   type ReactionType,
