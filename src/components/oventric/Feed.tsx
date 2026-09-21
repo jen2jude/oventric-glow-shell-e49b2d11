@@ -53,6 +53,8 @@ import {
   listPosts as listPostsFn,
   createPost as createPostFn,
   deletePost as deletePostFn,
+  updatePostText as updatePostTextFn,
+  EDIT_WINDOW_MS,
   setReaction as setReactionFn,
   type FeedPost,
   type ReactionType,
