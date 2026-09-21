@@ -8,3 +8,4 @@
 - [x] Newsfeed mobile/tablet header — remove Stories, add compact logo/actions header with scroll-direction collapse.
 - [x] Newsfeed cadence — slimmer People suggestions, Shop the Feed rails, and horizontal multi-product tags.
 - [x] Newsfeed navigation refresh — search icon, category-style content tabs, personalized/following/shop views.
+- [x] Creators feed — X-style timeline with compact asset actions and direct free downloads.
