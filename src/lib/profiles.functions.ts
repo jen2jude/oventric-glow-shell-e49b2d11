@@ -204,6 +204,14 @@ export function normaliseSocialLinks(raw: unknown): SocialLinks {
   return out;
 }
 
+/** Pulls the optional creator work/portfolio links off the profile JSON. */
+function readWorkLinks(raw: unknown): string[] {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return [];
+  const v = (raw as Record<string, unknown>)["work_links"];
+  if (!Array.isArray(v)) return [];
+  return v.filter((x): x is string => typeof x === "string" && x.trim().length > 0).slice(0, 3);
+}
+
 /** Normalises an unknown value into a clean, de-duped skills/tags list. */
 export function normaliseSkills(raw: unknown): string[] {
   if (!Array.isArray(raw)) return [];
@@ -263,7 +271,7 @@ export const getProfileByIdOrSlug = createServerFn({ method: "GET" })
     const query = supabaseAdmin
       .from("profiles")
       .select(
-        "user_id, slug, display_name, username, bio, avatar_path, cover_path, social_links, skills, interests, skill_levels, tools, verification_tier, reputation_stars, country, address, address_public, date_of_birth, dob_public, created_at",
+        "user_id, slug, display_name, username, bio, avatar_path, cover_path, social_links, skills, interests, skill_levels, tools, creator_profile, verification_tier, reputation_stars, country, address, address_public, date_of_birth, dob_public, created_at",
       )
       .limit(1);
 
@@ -300,6 +308,7 @@ export const getProfileByIdOrSlug = createServerFn({ method: "GET" })
         interests: normaliseSkills((row as { interests?: unknown }).interests),
         skillLevels: normaliseSkillLevels((row as { skill_levels?: unknown }).skill_levels),
         tools: normaliseTools((row as { tools?: unknown }).tools),
+        workLinks: readWorkLinks((row as { creator_profile?: unknown }).creator_profile),
         verificationTier: row.verification_tier,
         reputationStars: Number(row.reputation_stars ?? 0),
         country: (row as { country?: string | null }).country ?? null,
