@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { EcosystemCounts } from "./ecosystem/sections";
 import { imageStorage } from "@/lib/storage/images.server";
+import { stableImageUrl, stableImageUrls } from "@/lib/storage/stable-image";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -80,12 +81,7 @@ export const getProfileEcosystem = createServerFn({ method: "GET" })
 
     let avatarUrl: string | null = null;
     if (typeof prof.avatar_path === "string" && prof.avatar_path) {
-      const { data: signed } = await (await imageStorage()).from("avatars")
-        .createSignedUrl(prof.avatar_path, 60 * 60 * 24 * 7);
-      avatarUrl =
-        signed?.signedUrl ??
-        (await imageStorage()).from("avatars").getPublicUrl(prof.avatar_path).data.publicUrl ??
-        null;
+      avatarUrl = stableImageUrl("avatars", prof.avatar_path);
     }
 
     return {

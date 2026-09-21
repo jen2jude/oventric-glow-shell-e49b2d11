@@ -4,6 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 
+import { isStableBucket, stableImageUrl, stableImageUrls } from "@/lib/storage/stable-image";
 import type {
   ProfileArticle,
   ProfileBounty,
@@ -153,6 +154,8 @@ async function resolveProfileImageUrl(
   path: string | null,
 ): Promise<string | null> {
   if (!path) return null;
+  const stable = stableImageUrl(bucket, path);
+  if (stable) return stable;
 
   const storage = await imageStorage();
   const { data: signed, error } = await storage
@@ -560,11 +563,7 @@ export const getMyFullProfile = createServerFn({ method: "GET" })
     }
     if (!row) return { profile: null };
     let avatarUrl: string | null = null;
-    if (row.avatar_path) {
-      const { data: signed } = await (await imageStorage()).from("avatars")
-        .createSignedUrl(row.avatar_path, 60 * 60 * 24 * 7);
-      avatarUrl = signed?.signedUrl ?? null;
-    }
+    if (row.avatar_path) avatarUrl = stableImageUrl("avatars", row.avatar_path);
     const { data: userRes } = await supabase.auth.getUser();
     const email = userRes?.user?.email ?? null;
     return {
@@ -750,6 +749,7 @@ async function signPaths(
   bucket: string,
   paths: (string | null)[],
 ): Promise<(string | null)[]> {
+  if (isStableBucket(bucket)) return stableImageUrls(bucket, paths);
   const unique = Array.from(new Set(paths.filter((p): p is string => !!p)));
   if (unique.length === 0) return paths.map(() => null);
   const storage = await imageStorage();
@@ -812,18 +812,9 @@ export const getLiveProfileTab = createServerFn({ method: "GET" })
         if (r.media_path) mediaPaths.add(r.media_path as string);
       }
       const signedMedia = new Map<string, string>();
-      if (mediaPaths.size > 0) {
-        try {
-          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-          const { data: signed } = await supabaseAdmin.storage
-            .from("post-media")
-            .createSignedUrls(Array.from(mediaPaths), 60 * 60 * 6);
-          (signed ?? []).forEach((s: any) => {
-            if (s?.path && s?.signedUrl) signedMedia.set(s.path, s.signedUrl);
-          });
-        } catch {
-          /* media stays unsigned; the card falls back to a text-only post */
-        }
+      for (const p of mediaPaths) {
+        const url = stableImageUrl("post-media", p);
+        if (url) signedMedia.set(p, url);
       }
 
       let items: ProfilePost[] = (rows ?? []).map((r: any) => {

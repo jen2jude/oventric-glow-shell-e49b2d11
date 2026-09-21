@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
+import { isStableBucket, stableImageUrl, stableImageUrls } from "@/lib/storage/stable-image";
 
 export interface SearchResultPeer {
   kind: "peer";
@@ -122,6 +123,7 @@ async function signBucket(
   paths: (string | null | undefined)[],
 ): Promise<(string | null)[]> {
   const clean = paths.map((p) => (typeof p === "string" && p ? p : null));
+  if (isStableBucket(bucket)) return stableImageUrls(bucket, clean);
   const unique = Array.from(new Set(clean.filter((p): p is string => !!p)));
   if (unique.length === 0) return clean.map(() => null);
   const { data } = await sb.storage.from(bucket).createSignedUrls(unique, 60 * 60 * 24 * 7);

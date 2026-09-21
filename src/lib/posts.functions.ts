@@ -5,6 +5,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
 import { imageStorage } from "@/lib/storage/images.server";
+import { isStableBucket, stableImageUrl, stableImageUrls } from "@/lib/storage/stable-image";
 
 export type ReactionType = "love" | "like" | "dislike" | "laugh" | "crown";
 export const REACTION_TYPES: ReactionType[] = ["love", "like", "dislike", "laugh", "crown"];
@@ -177,9 +178,9 @@ async function buildFeedPosts(
     new Set(((profiles ?? []).map((p) => p.avatar_path).filter((p): p is string => !!p))),
   );
   const avatarByPath = new Map<string, string>();
-  if (avatarPaths.length) {
-    const { data: signed } = await (await imageStorage()).from("avatars").createSignedUrls(avatarPaths, 60 * 60 * 6);
-    (signed ?? []).forEach((s) => { if (s.path && s.signedUrl) avatarByPath.set(s.path, s.signedUrl); });
+  for (const p of avatarPaths) {
+    const url = stableImageUrl("avatars", p);
+    if (url) avatarByPath.set(p, url);
   }
 
   const allMediaPaths = new Set<string>();
@@ -199,21 +200,13 @@ async function buildFeedPosts(
   const signedByPath = new Map<string, string>();
   const posterByVideoPath = new Map<string, string>();
   if (allMediaPaths.size > 0) {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: signed } = await supabaseAdmin.storage
-      .from("post-media")
-      .createSignedUrls(Array.from(allMediaPaths), 60 * 60 * 6);
-    (signed ?? []).forEach((s) => { if (s.path && s.signedUrl) signedByPath.set(s.path, s.signedUrl); });
-    if (posterCandidates.size > 0) {
-      const { data: posters } = await supabaseAdmin.storage
-        .from("post-media")
-        .createSignedUrls(Array.from(posterCandidates), 60 * 60 * 6);
-      (posters ?? []).forEach((s) => {
-        if (s.path && s.signedUrl && !(s as any).error) {
-          const videoPath = s.path.replace(/\.poster\.jpg$/, "");
-          posterByVideoPath.set(videoPath, s.signedUrl);
-        }
-      });
+    for (const p of allMediaPaths) {
+      const url = stableImageUrl("post-media", p);
+      if (url) signedByPath.set(p, url);
+    }
+    for (const p of posterCandidates) {
+      const url = stableImageUrl("post-media", p);
+      if (url) posterByVideoPath.set(p.replace(/\.poster\.jpg$/, ""), url);
     }
   }
 
@@ -331,12 +324,9 @@ async function buildFeedPosts(
         new Set(products.map((p) => p.cover_path).filter(Boolean)),
       ) as string[];
       const coverByPath = new Map<string, string>();
-      if (coverPaths.length) {
-        const { data: signedC } = await (await imageStorage()).from("product-covers")
-          .createSignedUrls(coverPaths, 60 * 60 * 24 * 7);
-        (signedC ?? []).forEach((s) => {
-          if (s.path && s.signedUrl) coverByPath.set(s.path, s.signedUrl);
-        });
+      for (const p of coverPaths) {
+        const url = stableImageUrl("product-covers", p);
+        if (url) coverByPath.set(p, url);
       }
 
       const attachmentByProductId = new Map<string, ProductAttachment>();
