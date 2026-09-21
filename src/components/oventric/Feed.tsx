@@ -79,7 +79,6 @@ import { useScrollHideChrome, useChromeHidden } from "@/hooks/use-chrome-hide";
 import { listFollowing } from "@/lib/follows.functions";
 import { FeedDiscoverExplore } from "@/components/oventric/feed/FeedDiscoverExplore";
 import { ReelsRail, useReels } from "@/components/oventric/feed/ReelsShelf";
-import { WebStoriesRail } from "@/components/oventric/feed/WebStoriesRail";
 import {
   FeedCommerceCard,
   useFeedCommerceCards,
@@ -1256,10 +1255,7 @@ export function Feed() {
             meSlug={meSlug}
           />
         ) : (
-          <>
-            <WebStoriesRail meAvatarUrl={meAvatarUrl} meInitials={meInitials} />
-            <FeedSocialBar onOpenMessages={() => window.dispatchEvent(new CustomEvent("oventric:open-messages"))} />
-          </>
+          <FeedSocialBar onOpenMessages={() => window.dispatchEvent(new CustomEvent("oventric:open-messages"))} />
         )}
         {/* Composer — hidden in Discover / Following because those tabs are view-only */}
         {!(feedTab === "discover" || feedTab === "following") && (

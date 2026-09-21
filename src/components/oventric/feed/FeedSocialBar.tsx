@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, Bell, MessageSquare, UserPlus } from "lucide-react";
+import logoDark from "@/assets/oventric-logo-dark.png";
 import { CountBadge } from "@/components/oventric/CountBadge";
+import { ProfileDropdown } from "@/components/oventric/ProfileDropdown";
 import {
   NotificationsDrawer,
   useUnreadNotificationsCount,
@@ -55,8 +57,48 @@ export function FeedSocialBar({ onOpenMessages }: Props) {
 
   return (
     <>
+      <header
+        className={`home-pop sticky top-0 z-40 -mx-4 -mt-6 grid h-[66px] grid-cols-[minmax(0,1fr)_auto] items-center border-b border-home-line bg-home-surface/95 px-4 shadow-home-soft backdrop-blur-xl transition-all duration-300 ease-out md:-mx-6 md:-mt-10 md:h-[72px] md:px-6 lg:hidden ${
+          chromeHidden ? "pointer-events-none -translate-y-full opacity-0" : "translate-y-0 opacity-100"
+        }`}
+      >
+        <Link to="/" aria-label="Oventric home" className="flex min-w-0 items-center">
+          <img
+            src={logoDark}
+            alt="Oventric"
+            className="h-8 w-auto max-w-[132px] object-contain object-left md:h-9 md:max-w-[154px]"
+          />
+        </Link>
+
+        <div className="flex shrink-0 items-center gap-2 md:gap-3">
+          <button
+            type="button"
+            onClick={() => setNotifOpen(true)}
+            aria-label="Notifications"
+            title="Notifications"
+            className="relative grid h-10 w-10 shrink-0 place-items-center rounded-[10px] border border-home-line bg-create-bounty-soft text-create-bounty shadow-sm transition-transform active:scale-95 md:h-11 md:w-11"
+          >
+            <Bell className="h-[19px] w-[19px]" strokeWidth={1.9} />
+            <CountBadge count={unreadNotifs} ariaLabel={`${unreadNotifs} new notifications`} />
+          </button>
+          <button
+            type="button"
+            onClick={onOpenMessages}
+            aria-label="Chats"
+            title="Chats"
+            className="relative grid h-10 w-10 shrink-0 place-items-center rounded-[10px] border border-home-line bg-create-course-soft text-create-course shadow-sm transition-transform active:scale-95 md:h-11 md:w-11"
+          >
+            <MessageSquare className="h-[19px] w-[19px]" strokeWidth={1.9} />
+            <CountBadge count={messages} ariaLabel={`${messages} unread chats`} />
+          </button>
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] border border-home-line bg-create-sell-soft shadow-sm md:h-11 md:w-11">
+            <ProfileDropdown />
+          </div>
+        </div>
+      </header>
+
       <nav
-        className={`sticky top-0 z-40 flex w-fit max-w-full self-start items-center gap-1 overflow-x-auto rounded-full border border-slate-200 bg-white/95 p-1.5 shadow-sm backdrop-blur-md no-scrollbar transition-all duration-300 ease-out ${
+        className={`sticky top-0 z-40 hidden w-fit max-w-full self-start items-center gap-1 overflow-x-auto rounded-full border border-slate-200 bg-white/95 p-1.5 shadow-sm backdrop-blur-md no-scrollbar transition-all duration-300 ease-out lg:flex ${
           chromeHidden ? "-translate-y-[120%] opacity-0 pointer-events-none" : "translate-y-0 opacity-100"
         }`}
       >
