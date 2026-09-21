@@ -1719,7 +1719,9 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
 export interface TopSellerDTO {
   id: string;
   name: string;
+  username: string;
   slug: string;
+  country: string | null;
   bio: string;
   avatarUrl: string | null;
   coverUrl: string | null;
@@ -1796,11 +1798,27 @@ export const getTopSellers = createServerFn({ method: "GET" })
       )
       .in("user_id", sellerIds);
 
-    // Only onboarded, active accounts with published listings count as sellers.
-    // banned_at is not publicly readable, so moderation flags come from the
-    // privileged server client.
-    const rows = await filterOutBannedProfiles(
-      (sellerRows ?? []).filter((s: any) => !!s.profile_completed_at && !s.deleted_at),
+    // Country and moderation flags are private profile fields, so resolve both
+    // on the server without widening public profile access.
+    const privateProfiles = new Map<string, { bannedAt: string | null; country: string | null }>();
+    {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: privateRows } = await supabaseAdmin
+        .from("profiles")
+        .select("user_id, banned_at, country")
+        .in("user_id", sellerIds);
+      (privateRows ?? []).forEach((profile: any) => {
+        privateProfiles.set(profile.user_id as string, {
+          bannedAt: (profile.banned_at as string | null) ?? null,
+          country: (profile.country as string | null) ?? null,
+        });
+      });
+    }
+    const rows = (sellerRows ?? []).filter(
+      (seller: any) =>
+        !!seller.profile_completed_at &&
+        !seller.deleted_at &&
+        !privateProfiles.get(seller.user_id as string)?.bannedAt,
     );
 
     // "Verified" means an admin-approved seller verification request exists.
@@ -1834,7 +1852,9 @@ export const getTopSellers = createServerFn({ method: "GET" })
       return {
         id,
         name: (s.display_name || s.username || s.slug) as string,
+        username: (s.username || s.slug || "seller") as string,
         slug: s.slug as string,
+        country: privateProfiles.get(id)?.country ?? null,
         bio: (s.bio as string) ?? "",
         avatarUrl: avatars[i] ?? null,
         coverUrl: covers[i] ?? null,

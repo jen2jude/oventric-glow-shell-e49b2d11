@@ -41,6 +41,7 @@ import { getHomeStats, type HomeStatsDTO } from "@/lib/home-stats.functions";
 import { listPosts, type FeedPost } from "@/lib/posts.functions";
 import { readRecentProductIds } from "@/lib/recent-products";
 import { visualForCategory } from "@/components/oventric/marketplace-discovery/utils";
+import { COUNTRY_META, normalizeCountryCode } from "@/lib/currency/africa";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { CashbackBadge } from "@/components/oventric/CashbackBadge";
 import heroImage from "@/assets/home-hero.jpg";
@@ -452,28 +453,42 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         {/* -------------------------------------------------------- top sellers */}
         <SectionHead
           title="Top Sellers"
+          subtitle="Global creators making waves"
           action={{ label: "View all", onClick: () => navigate({ to: "/sellers" }) }}
         />
-        <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5 lg:gap-4">
-          {sellers.map((s) => (
+        <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5">
+          {sellers.map((s, index) => (
             <Link
               key={s.id}
               to="/shop/$id"
               params={{ id: s.slug || s.id }}
-              className="flex w-[104px] shrink-0 flex-col items-center gap-2 rounded-[14px] border-slate-200/80 bg-transparent p-0 text-center transition-all sm:w-auto sm:shrink sm:border sm:bg-white sm:p-5 sm:hover:-translate-y-0.5 sm:hover:shadow-[0_12px_30px_-20px_rgba(15,23,42,0.5)]"
+              className="group w-[168px] shrink-0 snap-start sm:w-auto sm:shrink"
             >
-              <div className="h-16 w-16 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
-                <AvatarImage src={s.avatarUrl} alt={s.name} />
+              <div className="relative aspect-[3/4] overflow-hidden rounded-[10px] bg-muted shadow-home-soft ring-1 ring-home-line transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
+                <AvatarImage
+                  src={s.avatarUrl}
+                  alt={s.name}
+                  className="transition-transform duration-500 group-hover:scale-105"
+                />
+                <span className="absolute left-3 top-3 grid h-7 min-w-7 place-items-center rounded-full border-2 border-home-surface bg-home-surface px-1 text-[11px] font-extrabold text-home-ink shadow-home-soft">
+                  {index + 1}
+                </span>
+                <SellerCountryFlag country={s.country} />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/90 via-foreground/45 to-transparent px-3 pb-3 pt-12 text-primary-foreground">
+                  <p className="flex min-w-0 items-center gap-1 text-sm font-extrabold leading-tight">
+                    <span className="truncate">{s.name}</span>
+                    {s.verified && <BadgeCheck className="h-4 w-4 shrink-0 text-primary" />}
+                  </p>
+                  <p className="mt-1 truncate text-[11px] font-semibold text-primary-foreground/75">
+                    @{s.username}
+                  </p>
+                </div>
               </div>
-              <p className="flex max-w-full items-center gap-1 text-sm font-bold text-slate-900">
-                <span className="truncate">{s.name}</span>
-                {s.verified && <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-[#2F5FD0]" />}
-              </p>
-              <p className="text-xs text-slate-500">{s.productsCount} products</p>
-              <p className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700">
-                <Star className="h-3.5 w-3.5 fill-[#F5A524] text-[#F5A524]" />
-                {s.rating ? s.rating.toFixed(1) : "New"}
-              </p>
+              <div className="grid grid-cols-3 gap-1 px-1 pt-3 text-center">
+                <SellerStat icon={<Star className="h-3 w-3 fill-current text-seller-rating" />} value={s.rating ? s.rating.toFixed(1) : "New"} label="Rating" />
+                <SellerStat icon={<ShoppingCart className="h-3 w-3" />} value={String(s.productsCount)} label="Products" />
+                <SellerStat icon={<Banknote className="h-3 w-3" />} value={String(s.salesCount)} label="Sales" />
+              </div>
             </Link>
           ))}
           {sellers.length === 0 && <EmptyNote>No sellers to show yet.</EmptyNote>}
@@ -641,6 +656,33 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
 
       <HomeFooter />
     </div>
+  );
+}
+
+function SellerCountryFlag({ country }: { country: string | null }) {
+  const code = normalizeCountryCode(country);
+  const meta = code ? COUNTRY_META[code] : undefined;
+  if (!meta) return null;
+  return (
+    <span
+      title={meta.name}
+      aria-label={meta.name}
+      className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full border-2 border-home-surface bg-home-surface text-base shadow-home-soft"
+    >
+      {meta.flag}
+    </span>
+  );
+}
+
+function SellerStat({ icon, value, label }: { icon: React.ReactNode; value: string; label: string }) {
+  return (
+    <span className="min-w-0 text-home-copy">
+      <span className="flex items-center justify-center gap-1 text-[11px] font-extrabold text-home-ink">
+        {icon}
+        <span className="truncate">{value}</span>
+      </span>
+      <span className="mt-0.5 block truncate text-[9px] font-semibold text-home-muted">{label}</span>
+    </span>
   );
 }
 
