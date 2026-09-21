@@ -177,7 +177,7 @@ function AssetCta({ asset }: { asset: NonNullable<CreatorPostDTO["asset"]> }) {
 
 function CreatorCard({ post }: { post: CreatorPostDTO }) {
   return (
-    <article className="grid grid-cols-[40px_minmax(0,1fr)] gap-3 border-b border-border bg-background px-4 py-3 transition-colors hover:bg-muted/30">
+    <article className="grid grid-cols-[40px_minmax(0,1fr)] gap-3 border-b border-slate-100 bg-white px-4 py-3 transition-colors hover:bg-slate-50">
       <div>
         <Link
           to="/profile/$id"
