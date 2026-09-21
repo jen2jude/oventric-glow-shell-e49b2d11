@@ -1,9 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, Bell, MessageSquare, Search, Plus } from "lucide-react";
+import { ArrowLeft, Bell, MessageSquare, Search } from "lucide-react";
 import logoFull from "@/assets/oventric-full-transparent.png";
-import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { ProfileDropdown } from "@/components/oventric/ProfileDropdown";
 
 import { CountBadge } from "@/components/oventric/CountBadge";
@@ -14,10 +12,6 @@ import {
 import { MessagesDrawer } from "@/components/oventric/MessagesDrawer";
 import { useChromeHidden } from "@/hooks/use-chrome-hide";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
-import { getTopUsers, type TopUser } from "@/lib/top-users.functions";
-import { MAX_STORY_FILES, useStoryRail } from "@/components/oventric/feed/useStories";
-import { StoryViewerModal } from "@/components/oventric/feed/StoryViewerModal";
-import { StoryTrimmerModal } from "@/components/oventric/feed/StoryTrimmerModal";
 
 
 
@@ -29,76 +23,28 @@ const TABS: { key: FeedTab; label: string }[] = [
   { key: "discover", label: "Discover" },
 ];
 
-/** Ring gradients cycled across story avatars so the rail feels alive. */
-const RINGS = [
-  "from-[#FF3EB5] via-[#A7FF16] to-[#FF3EB5]",
-  "from-[#A7FF16] via-[#FF3EB5] to-[#FF7ACD]",
-  "from-[#FF7ACD] via-[#FF3EB5] to-[#A7FF16]",
-  "from-[#A7FF16] via-[#86E600] to-[#FF3EB5]",
-];
-
 type Props = {
   tab: FeedTab;
   onTabChange: (t: FeedTab) => void;
   searchOpen: boolean;
   onToggleSearch: () => void;
-  meAvatarUrl: string | null;
-  meInitials: string;
-  meSlug: string | null;
 };
 
 /**
  * App-shell newsfeed chrome: brand header, For you / Following / Discover
- * tabs and the stories rail. Mirrors the premium dark reference design.
+ * tabs. Stories have been retired from the Newsfeed.
  */
 export function FeedAppChrome({
   tab,
   onTabChange,
   searchOpen,
   onToggleSearch,
-  meAvatarUrl,
-  meInitials,
-  meSlug,
 }: Props) {
   const chromeHidden = useChromeHidden();
   const [notifOpen, setNotifOpen] = useState(false);
   const [msgOpen, setMsgOpen] = useState(false);
-  const [people, setPeople] = useState<TopUser[]>([]);
-  const [viewerAt, setViewerAt] = useState<number | null>(null);
-  const fileRef = useRef<HTMLInputElement | null>(null);
-
-  const {
-    groups: storyGroups,
-    uploading,
-    progress,
-    upload,
-    refresh,
-    trimRequest,
-    trimWorking,
-    trimProgress,
-    cancelTrim,
-    confirmTrim,
-  } = useStoryRail(true);
-
-  const myGroup = storyGroups.find((g) => g.isMe) ?? null;
-  const openViewer = (index: number) => setViewerAt(index >= 0 ? index : 0);
-
   const unreadNotifs = useUnreadNotificationsCount();
   const { messages } = useUnreadCounts();
-  const loadTopUsers = useServerFn(getTopUsers);
-
-
-  useEffect(() => {
-    let cancelled = false;
-    loadTopUsers()
-      .then((r) => {
-        if (!cancelled) setPeople(r.users ?? []);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [loadTopUsers]);
 
   return (
     <div

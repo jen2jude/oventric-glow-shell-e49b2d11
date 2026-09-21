@@ -1250,9 +1250,6 @@ export function Feed() {
             onTabChange={setFeedTab}
             searchOpen={searchOpen}
             onToggleSearch={() => setSearchOpen((v) => !v)}
-            meAvatarUrl={meAvatarUrl}
-            meInitials={meInitials}
-            meSlug={meSlug}
           />
         ) : (
           <FeedSocialBar onOpenMessages={() => window.dispatchEvent(new CustomEvent("oventric:open-messages"))} />
