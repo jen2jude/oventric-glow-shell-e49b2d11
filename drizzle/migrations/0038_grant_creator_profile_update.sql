@@ -1,0 +1,1 @@
+GRANT UPDATE (creator_profile) ON public.profiles TO authenticated;
