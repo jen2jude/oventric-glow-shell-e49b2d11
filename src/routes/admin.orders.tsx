@@ -186,9 +186,17 @@ function AdminOrdersPage() {
                     {new Date(o.createdAt).toLocaleString()}
                   </div>
                   <div className="min-w-0">
-                    <div className="text-white truncate">{o.productName ?? "—"}</div>
+                    <div className="text-white truncate flex items-center gap-2">
+                      <span className="truncate">{o.productName ?? "—"}</span>
+                      {Number(o.totalUsd ?? 0) <= 0 && (
+                        <span className="shrink-0 rounded-full bg-violet-500/15 border border-violet-400/40 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-violet-200">
+                          Free
+                        </span>
+                      )}
+                    </div>
                     <div className="text-[11px] text-slate-500 font-mono truncate">
-                      {o.reference ?? o.id.slice(0, 8)} · {o.paymentMethod ?? "—"}
+                      {o.reference ?? o.id.slice(0, 8)} ·{" "}
+                      {Number(o.totalUsd ?? 0) <= 0 ? "no payment" : (o.paymentMethod ?? "—")}
                     </div>
                   </div>
                   <div className="min-w-0 text-xs text-slate-400 truncate">
@@ -204,8 +212,17 @@ function AdminOrdersPage() {
                       <div className="text-[10px] text-slate-500">{o.escrowStatus}</div>
                     )}
                   </div>
-                  <div className="text-right text-white font-bold">{money(o.totalUsd)}</div>
-                  <div className="text-right text-slate-300">{money(o.sellerShareUsd)}</div>
+                  <div className="text-right text-white font-bold">
+                    {Number(o.totalUsd ?? 0) <= 0 ? (
+                      <span className="text-violet-200">Free</span>
+                    ) : (
+                      money(o.totalUsd)
+                    )}
+                  </div>
+                  <div className="text-right text-slate-300">
+                    {Number(o.totalUsd ?? 0) <= 0 ? "—" : money(o.sellerShareUsd)}
+                  </div>
+
                 </button>
               ))}
             </div>
