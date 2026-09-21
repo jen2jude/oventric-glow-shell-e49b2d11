@@ -2,8 +2,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { BadgeCheck, Download, MessageCircle, Play, Send, ShoppingBag } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import { listCreatorFeed, type CreatorPostDTO } from "@/lib/creators.functions";
 import { computeDisplayPrice } from "@/lib/fx-display";
+import { createOrder, getOrderWithDownload } from "@/lib/marketplace.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 
 
@@ -83,16 +87,17 @@ function PreviewVideo({ src, poster }: { src: string; poster: string | null }) {
 /** Buy / download call-to-action for a showcase item that has a listed asset. */
 function AssetCta({ asset }: { asset: NonNullable<CreatorPostDTO["asset"]> }) {
   const { baseCurrency } = useOnboarding();
+  const createFreeOrder = useServerFn(createOrder);
+  const loadDownload = useServerFn(getOrderWithDownload);
+  const [downloading, setDownloading] = useState(false);
   if (!asset.available) {
     return (
-      <div className="mx-4 mb-3 rounded-[10px] border border-slate-200 bg-slate-50 px-3 py-2.5 text-[12px] font-bold text-slate-500">
+      <div className="mb-3 inline-flex rounded-full border border-border bg-muted px-3 py-1.5 text-[11px] font-bold text-muted-foreground">
         Asset pending review
       </div>
     );
   }
-  const price = asset.isFree
-    ? "Free"
-    : computeDisplayPrice(
+  const price = computeDisplayPrice(
         {
           price_usd: asset.priceUsd,
           original_currency: asset.originalCurrency,
@@ -102,19 +107,70 @@ function AssetCta({ asset }: { asset: NonNullable<CreatorPostDTO["asset"]> }) {
         baseCurrency,
       ).formatted;
 
-  return (
+  const downloadAsset = async () => {
+    if (downloading) return;
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) {
+      toast.error("Sign in to download this asset");
+      return;
+    }
+    setDownloading(true);
+    try {
+      const result = await createFreeOrder({
+        data: {
+          productId: asset.productId,
+          quantity: 1,
+          displayCurrency: baseCurrency,
+          paymentMethod: "wallet",
+          couponCode: null,
+          deliveryEmail: null,
+          deliveryWhatsapp: null,
+          applyCashbackUSD: 0,
+        },
+      });
+      const downloadable = await loadDownload({ data: { orderId: result.order.id } });
+      const href = downloadable.downloadUrl ?? downloadable.order.externalUrl;
+      if (!href) throw new Error("This download is not available yet");
+
+      const anchor = document.createElement("a");
+      anchor.href = href;
+      anchor.download = "";
+      anchor.target = "_blank";
+      anchor.rel = "noopener noreferrer";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      toast.success("Download started", {
+        description: "This asset is saved in your dashboard for later.",
+      });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Couldn't start the download");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  return asset.isFree ? (
+    <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      disabled={downloading}
+      onClick={downloadAsset}
+      className="mb-3 h-8 rounded-full border-emerald-200 bg-emerald-50 px-3 text-[11px] font-black text-emerald-700 shadow-none hover:bg-emerald-100 hover:text-emerald-800"
+    >
+      <Download className="h-3.5 w-3.5" />
+      {downloading ? "Starting…" : "Download this asset"}
+    </Button>
+  ) : (
     <Link
       to="/product/$id"
       params={{ id: asset.productId }}
-      className={`mx-4 mb-3 flex items-center justify-between gap-3 rounded-[10px] px-3.5 py-3 text-white transition-transform active:scale-[0.99] ${
-        asset.isFree ? "bg-emerald-600" : "bg-[#E5484D]"
-      }`}
+      className="mb-3 inline-flex h-8 items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 text-[11px] font-black text-rose-700 transition-colors hover:bg-rose-100"
     >
-      <span className="flex items-center gap-2 text-sm font-black">
-        {asset.isFree ? <Download className="h-4 w-4" /> : <ShoppingBag className="h-4 w-4" />}
-        {asset.isFree ? "Download asset" : "Buy asset"}
-      </span>
-      <span className="text-sm font-black">{price}</span>
+      <ShoppingBag className="h-3.5 w-3.5" />
+      <span>Buy</span>
+      <span className="border-l border-rose-200 pl-2 text-[10px]">{price}</span>
     </Link>
   );
 }
@@ -123,53 +179,61 @@ function CreatorCard({ post, index }: { post: CreatorPostDTO; index: number }) {
 
   const tint = TINTS[index % TINTS.length];
   return (
-    <article className="overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-sm">
-      <div className="flex items-center gap-3 px-4 py-3">
+    <article className="grid grid-cols-[40px_minmax(0,1fr)] gap-3 border-b border-border bg-background px-4 py-3 transition-colors hover:bg-muted/30">
+      <div>
         <Link
           to="/profile/$id"
           params={{ id: post.author.slug ?? post.author.userId }}
-          className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-slate-200"
+          className="block h-10 w-10 shrink-0 overflow-hidden rounded-full bg-muted"
         >
           {post.author.avatarUrl && (
             <img src={post.author.avatarUrl} alt="" className="h-full w-full object-cover" />
           )}
         </Link>
-        <div className="min-w-0 flex-1">
+      </div>
+      <div className="min-w-0">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+          <div className="flex min-w-0 items-baseline gap-1.5">
           <Link
             to="/profile/$id"
             params={{ id: post.author.slug ?? post.author.userId }}
-            className="block truncate text-sm font-black text-slate-900"
+              className="truncate text-sm font-black text-foreground"
           >
             {post.author.name}
           </Link>
-          <p className="truncate text-[11px] text-slate-500">{post.fields.join(" · ") || "Creator"}</p>
-        </div>
-        <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-extrabold ${tint}`}>
-          CREATOR
-        </span>
-      </div>
-
-      <div className="px-4 pb-3">
-        <p className="text-[15px] font-black leading-snug text-slate-950">{post.title}</p>
-        {post.caption && <p className="mt-1 text-[13px] leading-relaxed text-slate-600">{post.caption}</p>}
-      </div>
-
-      {post.asset && <AssetCta asset={post.asset} />}
-
-
-      {post.media.length > 0 &&
-        (post.media[0].type === "video" ? (
-          <PreviewVideo src={post.media[0].url} poster={post.media[0].posterUrl} />
-        ) : (
-          <div className={`grid gap-0.5 ${post.media.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
-            {post.media.slice(0, 4).map((m) => (
-              <img key={m.url} src={m.url} alt="" loading="lazy" className="h-full max-h-[60vh] w-full object-cover" />
-            ))}
+            <span className="shrink-0 text-[11px] text-muted-foreground">
+              · {new Intl.RelativeTimeFormat("en", { numeric: "auto" }).format(
+                -Math.max(1, Math.round((Date.now() - new Date(post.createdAt).getTime()) / 86400000)),
+                "day",
+              )}
+            </span>
           </div>
-        ))}
+          <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[9px] font-extrabold ${tint}`}>
+            CREATOR
+          </span>
+        </div>
+        <p className="truncate text-[11px] text-muted-foreground">{post.fields.join(" · ") || "Creator"}</p>
+        <p className="mt-2 text-[15px] font-black leading-snug text-foreground">{post.title}</p>
+        {post.caption && <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{post.caption}</p>}
 
-      {post.externalEmbedUrl && (
-        <div className="aspect-video w-full bg-black">
+        {post.media.length > 0 && (
+          <div className="mt-3 overflow-hidden rounded-[10px] border border-border">
+            {post.media[0].type === "video" ? (
+              <PreviewVideo src={post.media[0].url} poster={post.media[0].posterUrl} />
+            ) : (
+              <div className={`grid gap-0.5 ${post.media.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
+                {post.media.slice(0, 4).map((m) => (
+                  <img key={m.url} src={m.url} alt="" loading="lazy" className="h-full max-h-[60vh] w-full object-cover" />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="mt-3">{post.asset && <AssetCta asset={post.asset} />}</div>
+
+        {post.externalEmbedUrl && (
+          <div className="mt-3 aspect-video w-full overflow-hidden rounded-[10px] border border-border bg-foreground">
           <iframe
             src={post.externalEmbedUrl}
             title={post.title}
@@ -182,7 +246,7 @@ function CreatorCard({ post, index }: { post: CreatorPostDTO; index: number }) {
       )}
 
       {(post.communityLink || (post.externalUrl && !post.externalEmbedUrl)) && (
-        <div className="flex flex-wrap gap-2 px-4 py-3">
+          <div className="flex flex-wrap gap-2 pt-1">
           {post.communityLink && (
             <a
               href={post.communityLink}
@@ -203,8 +267,9 @@ function CreatorCard({ post, index }: { post: CreatorPostDTO; index: number }) {
               <MessageCircle className="h-3.5 w-3.5" /> Watch full video
             </a>
           )}
-        </div>
+          </div>
       )}
+      </div>
     </article>
   );
 }
@@ -256,20 +321,22 @@ export function CreatorFeed({ reloadKey }: { reloadKey: number }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="overflow-hidden border-y border-border bg-background sm:rounded-[10px] sm:border-x">
       {fields.length > 0 && (
-        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="sticky top-0 z-10 flex gap-2 overflow-x-auto border-b border-border bg-background/95 px-3 py-2 backdrop-blur [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {["all", ...fields].map((f, i) => (
-            <button
+            <Button
               key={f}
               type="button"
+              variant="outline"
+              size="sm"
               onClick={() => setField(f)}
-              className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-bold transition-colors ${
-                field === f ? "border-emerald-500 bg-emerald-500 text-white" : TINTS[i % TINTS.length]
+              className={`h-8 shrink-0 rounded-full px-3 text-xs font-bold shadow-none ${
+                field === f ? "border-emerald-500 bg-emerald-500 text-primary-foreground hover:bg-emerald-600" : TINTS[i % TINTS.length]
               }`}
             >
               {f === "all" ? "All" : f}
-            </button>
+            </Button>
           ))}
         </div>
       )}
