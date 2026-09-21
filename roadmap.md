@@ -6,3 +6,4 @@
 - [x] Suggested people rails — horizontal profile, shop, and follow cards in Newsfeed and Discovery.
 - [x] Profile overview — side-by-side Shop and Services, then earnings and full Newsfeed-style recent posts.
 - [x] Newsfeed mobile/tablet header — remove Stories, add compact logo/actions header with scroll-direction collapse.
+- [ ] Newsfeed cadence — slimmer People suggestions, Shop the Feed rails, and horizontal multi-product tags.
