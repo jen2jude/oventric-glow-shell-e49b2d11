@@ -44,23 +44,25 @@ export function PeopleSuggestionsRail({
             key={person.id}
             className={
               appShell
-                ? "w-[190px] shrink-0 snap-start rounded-[10px] border border-white/[0.07] bg-[#18191B] p-3"
-                : "w-[190px] shrink-0 snap-start rounded-[10px] border border-slate-200 bg-slate-50 p-3"
+                ? "w-[236px] shrink-0 snap-start rounded-[10px] border border-white/[0.07] bg-[#18191B] p-2.5"
+                : "w-[236px] shrink-0 snap-start rounded-[10px] border border-slate-200 bg-slate-50 p-2.5"
             }
           >
             <Link
               to="/profile/$id"
               params={{ id: person.slug }}
-              className="group flex min-w-0 flex-col items-center text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="group grid min-w-0 grid-cols-[54px_minmax(0,1fr)] items-center gap-2.5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <span className={appShell ? "h-16 w-16 overflow-hidden rounded-full ring-2 ring-white/10" : "h-16 w-16 overflow-hidden rounded-full ring-2 ring-slate-200"}>
+              <span className={appShell ? "h-[54px] w-[54px] shrink-0 overflow-hidden rounded-[10px] ring-1 ring-white/10" : "h-[54px] w-[54px] shrink-0 overflow-hidden rounded-[10px] ring-1 ring-slate-200"}>
                 <AvatarImage src={person.avatarUrl} alt={person.name} initials={person.initials} />
               </span>
-              <span className={appShell ? "mt-2 w-full truncate text-[13px] font-bold text-white group-active:text-[#E5484D]" : "mt-2 w-full truncate text-[13px] font-bold text-slate-900 group-hover:text-primary"}>
-                {person.name}
-              </span>
-              <span className={appShell ? "mt-0.5 w-full truncate text-[11px] text-white/40" : "mt-0.5 w-full truncate text-[11px] text-slate-500"}>
-                @{person.slug}
+              <span className="min-w-0">
+                <span className={appShell ? "block w-full truncate text-[13px] font-bold leading-tight text-white group-active:text-[#E5484D]" : "block w-full truncate text-[13px] font-bold leading-tight text-slate-900 group-hover:text-primary"}>
+                  {person.name}
+                </span>
+                <span className={appShell ? "mt-1 block w-full truncate text-[11px] text-white/40" : "mt-1 block w-full truncate text-[11px] text-slate-500"}>
+                  @{person.username || person.slug}
+                </span>
               </span>
             </Link>
 
@@ -84,7 +86,7 @@ export function PeopleSuggestionsRail({
               <FollowButton
                 targetId={person.id}
                 compact
-                className="h-8 min-w-0 rounded-md px-2 py-0 text-[11px] [&_svg]:h-3.5 [&_svg]:w-3.5"
+                className="h-8 min-w-0 rounded-md px-2 py-0 text-[11px] text-white [&_svg]:h-3.5 [&_svg]:w-3.5"
               />
             </div>
           </article>

@@ -2,15 +2,19 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 
-/** Batch-fetch seller shop names so product cards show the storefront name, not the social profile name. */
-async function fetchShopNames(sb: any, sellerIds: string[]): Promise<Map<string, string>> {
+/** Batch-fetch seller shop identity so product cards show the storefront name and link to the store. */
+async function fetchShopProfiles(sb: any, sellerIds: string[]): Promise<Map<string, { shopName: string; slug: string | null }>> {
   const ids = Array.from(new Set(sellerIds.filter(Boolean)));
-  const map = new Map<string, string>();
+  const map = new Map<string, { shopName: string; slug: string | null }>();
   if (!ids.length) return map;
-  const { data } = await sb.from("profiles").select("user_id, shop_name").in("user_id", ids);
+  const { data } = await sb.from("profiles").select("user_id, shop_name, display_name, username, slug").in("user_id", ids);
   (data ?? []).forEach((p: any) => {
-    const name = typeof p?.shop_name === "string" ? p.shop_name.trim() : "";
-    if (name) map.set(p.user_id as string, name);
+    const shopName =
+      (typeof p?.shop_name === "string" && p.shop_name.trim()) ||
+      (typeof p?.display_name === "string" && p.display_name.trim()) ||
+      (typeof p?.username === "string" && p.username.trim()) ||
+      "";
+    if (shopName) map.set(p.user_id as string, { shopName, slug: (p.slug as string | null) ?? null });
   });
   return map;
 }
@@ -18,6 +22,7 @@ async function fetchShopNames(sb: any, sellerIds: string[]): Promise<Map<string,
 export interface DiscoveryPeer {
   id: string;
   slug: string;
+  username: string | null;
   name: string;
   initials: string;
   stars: number;
@@ -42,6 +47,7 @@ export interface DiscoveryProduct {
   coverUrl: string | null;
   hue: string;
   vendor: string;
+  sellerSlug: string | null;
   originalCurrency: string;
   originalAmount: number;
   fxSnapshot: { base: string; rates: Record<string, number> } | null;
@@ -138,10 +144,11 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
       sb
         .from("products")
         .select("id, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, hue, vendor, seller_id, promoted, reviews, rating")
+        .eq("status", "active")
         .order("promoted", { ascending: false })
         .order("reviews", { ascending: false })
         .order("rating", { ascending: false })
-        .limit(30),
+        .limit(60),
       sb
         .from("ad_campaigns")
         .select("id, advertiser, title, header, body, cta_label, cta_url, tier, media_url, media_path, placements, status, start_at, end_at")
@@ -245,6 +252,7 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
       return {
         id: x.p.user_id as string,
         slug: x.p.slug as string,
+          username: (x.p.username as string | null) ?? null,
         name,
         initials: initialsFor(name),
         stars: x.stars,
@@ -271,7 +279,7 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
     // ---- Products (10 trending, randomized between visits) ----
     const pRows = productsRes.data ?? [];
     const pCovers = await signBucket(sb, "product-covers", pRows.map((p) => p.cover_path));
-    const shopNames = await fetchShopNames(sb, pRows.map((p) => p.seller_id as string));
+    const shopProfiles = await fetchShopProfiles(sb, pRows.map((p) => p.seller_id as string));
     const productsAll: DiscoveryProduct[] = pRows.map((p, i) => ({
       id: p.id as string,
       title: p.name as string,
@@ -279,12 +287,13 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
       priceUsd: Number(p.price_usd ?? 0),
       coverUrl: pCovers[i],
       hue: (p.hue as string) ?? "from-emerald-500 to-teal-600",
-      vendor: shopNames.get(p.seller_id as string) ?? ((p.vendor as string) ?? ""),
+      vendor: shopProfiles.get(p.seller_id as string)?.shopName ?? ((p.vendor as string) ?? ""),
+      sellerSlug: shopProfiles.get(p.seller_id as string)?.slug ?? null,
       originalCurrency: (p.original_currency as string) ?? "USD",
       originalAmount: Number(p.original_amount ?? p.price_usd ?? 0),
       fxSnapshot: (p.fx_snapshot as DiscoveryProduct["fxSnapshot"]) ?? null,
     }));
-    const products = shuffle(productsAll).slice(0, 10);
+    const products = shuffle(productsAll).slice(0, 30);
 
     // ---- Sponsored (filter by placement + active window, randomize) ----
     const now = Date.now();
@@ -425,7 +434,7 @@ export const getAcademyRecommendations = createServerFn({ method: "GET" }).handl
     // ---- Products (top rated / most reviewed) ----
     const pRows = prodRes.data ?? [];
     const pCovers = await signBucket(sb, "product-covers", pRows.map((p: any) => p.cover_path));
-    const shopNames = await fetchShopNames(sb, pRows.map((p: any) => p.seller_id as string));
+    const shopProfiles = await fetchShopProfiles(sb, pRows.map((p: any) => p.seller_id as string));
     const productsAll: DiscoveryProduct[] = pRows.map((p: any, i: number) => ({
       id: p.id,
       title: p.name,
@@ -433,7 +442,8 @@ export const getAcademyRecommendations = createServerFn({ method: "GET" }).handl
       priceUsd: Number(p.price_usd ?? 0),
       coverUrl: pCovers[i],
       hue: p.hue ?? "from-emerald-500 to-teal-600",
-      vendor: shopNames.get(p.seller_id as string) ?? (p.vendor ?? ""),
+      vendor: shopProfiles.get(p.seller_id as string)?.shopName ?? (p.vendor ?? ""),
+      sellerSlug: shopProfiles.get(p.seller_id as string)?.slug ?? null,
       originalCurrency: p.original_currency ?? "USD",
       originalAmount: Number(p.original_amount ?? p.price_usd ?? 0),
       fxSnapshot: (p.fx_snapshot as DiscoveryProduct["fxSnapshot"]) ?? null,

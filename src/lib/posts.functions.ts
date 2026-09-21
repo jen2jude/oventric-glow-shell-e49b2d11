@@ -18,6 +18,7 @@ export interface MentionRef {
 export interface MediaTag {
   productId: string;
   productName: string;
+  vendorSlug: string | null;
   mediaIndex: number;
   x?: number;
   y?: number;
@@ -167,7 +168,7 @@ async function buildFeedPosts(
     sb.from("profiles").select("user_id, display_name, username, slug, avatar_path").in("user_id", allProfileIds),
     sb.from("post_likes").select("post_id, user_id, reaction" as any).in("post_id", postIds),
     sb.from("post_comments").select("post_id").in("post_id", postIds),
-    sb.from("post_media_tags").select("id, post_id, product_id, media_index, x_percent, y_percent, products(name)").in("post_id", postIds),
+    sb.from("post_media_tags").select("id, post_id, product_id, media_index, x_percent, y_percent, products(name, seller_id)").in("post_id", postIds),
     sb.from("post_product_attachments").select("post_id, product_id").in("post_id", postIds),
   ]);
 
@@ -264,11 +265,26 @@ async function buildFeedPosts(
     if (userId && row.user_id === userId) viewerReactionByPost.set(row.post_id, kind);
   });
   const tagsByPost = new Map<string, MediaTag[]>();
+  const tagSellerIds = Array.from(
+    new Set((tagRows ?? []).map((t: any) => t.products?.seller_id).filter(Boolean)),
+  ) as string[];
+  const tagVendorSlugById = new Map<string, string | null>();
+  if (tagSellerIds.length > 0) {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: tagVendors } = await supabaseAdmin
+      .from("profiles")
+      .select("user_id, slug")
+      .in("user_id", tagSellerIds);
+    (tagVendors ?? []).forEach((v: any) => {
+      tagVendorSlugById.set(v.user_id as string, (v.slug as string | null) ?? null);
+    });
+  }
   (tagRows ?? []).forEach((t: any) => {
     const list = tagsByPost.get(t.post_id) ?? [];
     list.push({
       productId: t.product_id,
       productName: t.products?.name ?? "Product",
+      vendorSlug: tagVendorSlugById.get(t.products?.seller_id as string) ?? null,
       mediaIndex: t.media_index,
       x: t.x_percent ? Number(t.x_percent) : undefined,
       y: t.y_percent ? Number(t.y_percent) : undefined,
