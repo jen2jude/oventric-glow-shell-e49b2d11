@@ -237,12 +237,39 @@ export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
     const { data: rows, error } = await sb
       .from("creator_posts")
       .select(
-        "id, author_id, title, caption, media_paths, media_type, community_link, external_url, external_provider, fields, created_at",
+        "id, author_id, title, caption, media_paths, media_type, community_link, external_url, external_provider, product_id, fields, created_at",
       )
       .eq("status", "published")
       .order("created_at", { ascending: false })
       .limit(40);
     if (error || !rows || rows.length === 0) return [];
+
+    // Linked assets: only active (approved) listings are publicly readable, so
+    // anything missing here is still in review.
+    const productIds = Array.from(
+      new Set(rows.map((r) => r.product_id).filter((id): id is string => !!id)),
+    );
+    const assets = new Map<string, CreatorAssetDTO>();
+    if (productIds.length > 0) {
+      const { data: prods } = await sb
+        .from("products")
+        .select("id, price_usd, original_currency, original_amount, fx_snapshot")
+        .in("id", productIds)
+        .eq("status", "active");
+      (prods ?? []).forEach((p) => {
+        const priceUsd = Number(p.price_usd) || 0;
+        assets.set(p.id, {
+          productId: p.id,
+          available: true,
+          isFree: priceUsd <= 0,
+          priceUsd,
+          originalCurrency: (p.original_currency as string) ?? null,
+          originalAmount: p.original_amount === null ? null : Number(p.original_amount),
+          fxSnapshot: (p.fx_snapshot as { base: string; rates: Record<string, number> } | null) ?? null,
+        });
+      });
+    }
+
 
     const authorIds = Array.from(new Set(rows.map((r) => r.author_id)));
     const { data: profiles } = await sb
