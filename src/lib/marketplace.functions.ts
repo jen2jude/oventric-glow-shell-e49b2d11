@@ -1662,26 +1662,33 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
       return dto;
     };
 
-    const sellerAvatars = await signBucket(sb, "avatars", (sellerRows ?? []).map((s: any) => s.avatar_path ?? null));
-    const sellerCovers = await signBucket(sb, "profile-covers", (sellerRows ?? []).map((s: any) => s.cover_path ?? null));
+    const sellerUserIds = (sellerRows ?? []).map((s: any) => s.user_id as string);
 
-    const sellers = await Promise.all((sellerRows ?? []).map(async (s: any, i: number) => {
-      const { count: followers } = await sb
-        .from("follows")
-        .select("follower_id", { count: "exact", head: true })
-        .eq("followee_id", s.user_id);
-      return {
-        id: s.user_id as string,
-        name: (s.display_name || s.username || s.slug) as string,
-        slug: s.slug as string,
-        bio: (s.bio as string) ?? "",
-        avatarUrl: sellerAvatars[i] ?? null,
-        coverUrl: sellerCovers[i] ?? null,
-        verified: verifiedSellerIds.has(s.user_id as string),
-        rating: Number(s.reputation_stars ?? 0),
-        followersCount: followers ?? 0,
-        productsCount: sellerCounts.get(s.user_id as string) ?? 0,
-      };
+    // One grouped follower read instead of a count query per seller.
+    const [sellerAvatars, sellerCovers, followerRowsRes] = await Promise.all([
+      signBucket(sb, "avatars", (sellerRows ?? []).map((s: any) => s.avatar_path ?? null)),
+      signBucket(sb, "profile-covers", (sellerRows ?? []).map((s: any) => s.cover_path ?? null)),
+      sellerUserIds.length
+        ? sb.from("follows").select("followee_id").in("followee_id", sellerUserIds).limit(5000)
+        : Promise.resolve({ data: [] as any[] }),
+    ]);
+    const followerCounts = new Map<string, number>();
+    ((followerRowsRes as any)?.data ?? []).forEach((r: any) => {
+      const id = r.followee_id as string;
+      followerCounts.set(id, (followerCounts.get(id) ?? 0) + 1);
+    });
+
+    const sellers = (sellerRows ?? []).map((s: any, i: number) => ({
+      id: s.user_id as string,
+      name: (s.display_name || s.username || s.slug) as string,
+      slug: s.slug as string,
+      bio: (s.bio as string) ?? "",
+      avatarUrl: sellerAvatars[i] ?? null,
+      coverUrl: sellerCovers[i] ?? null,
+      verified: verifiedSellerIds.has(s.user_id as string),
+      rating: Number(s.reputation_stars ?? 0),
+      followersCount: followerCounts.get(s.user_id as string) ?? 0,
+      productsCount: sellerCounts.get(s.user_id as string) ?? 0,
     }));
 
     sellers.sort((a, b) => b.productsCount - a.productsCount);
