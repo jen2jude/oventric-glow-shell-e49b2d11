@@ -2459,6 +2459,19 @@ export function Feed() {
       {sellPanelOpen && (
         <CreatePanel open initialChoice="sell" onClose={() => setSellPanelOpen(false)} />
       )}
+      <CreatorOnboardingModal
+        open={creatorOnboardOpen}
+        onClose={() => setCreatorOnboardOpen(false)}
+        onDone={() => {
+          setCreatorOnboardOpen(false);
+          setCreatorPublishOpen(true);
+        }}
+      />
+      <CreatorPublishModal
+        open={creatorPublishOpen}
+        onClose={() => setCreatorPublishOpen(false)}
+        onPublished={() => setCreatorReloadKey((k) => k + 1)}
+      />)
     </div>
   );
 }
