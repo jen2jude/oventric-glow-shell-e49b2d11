@@ -1620,6 +1620,38 @@ export type Database = {
         }
         Relationships: []
       }
+      creator_post_views: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          session_key: string | null
+          viewer_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          session_key?: string | null
+          viewer_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          session_key?: string | null
+          viewer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_post_views_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "creator_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       creator_posts: {
         Row: {
           author_id: string
@@ -1636,6 +1668,7 @@ export type Database = {
           status: string
           title: string
           updated_at: string
+          view_count: number
         }
         Insert: {
           author_id: string
@@ -1652,6 +1685,7 @@ export type Database = {
           status?: string
           title: string
           updated_at?: string
+          view_count?: number
         }
         Update: {
           author_id?: string
@@ -1668,6 +1702,7 @@ export type Database = {
           status?: string
           title?: string
           updated_at?: string
+          view_count?: number
         }
         Relationships: [
           {

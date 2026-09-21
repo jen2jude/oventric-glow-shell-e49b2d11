@@ -1,15 +1,38 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { BadgeCheck, Download, MessageCircle, Play, Send, ShoppingBag } from "lucide-react";
+import { BadgeCheck, Download, Eye, MessageCircle, Play, Send, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { listCreatorFeed, type CreatorPostDTO } from "@/lib/creators.functions";
+import { listCreatorFeed, recordCreatorPostView, type CreatorPostDTO } from "@/lib/creators.functions";
 import { computeDisplayPrice } from "@/lib/fx-display";
 import { createOrder, getOrderWithDownload } from "@/lib/marketplace.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 
+
+function compactNumber(value: number) {
+  return new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(value);
+}
+
+function relativeTime(value: string) {
+  const created = new Date(value).getTime();
+  const diffMs = Date.now() - created;
+  if (!Number.isFinite(created)) return "now";
+  if (diffMs < 45_000) return "now";
+  const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+  const minutes = Math.floor(diffMs / 60_000);
+  if (minutes < 60) return rtf.format(-minutes, "minute");
+  const hours = Math.floor(diffMs / 3_600_000);
+  if (hours < 24) return rtf.format(-hours, "hour");
+  const days = Math.floor(diffMs / 86_400_000);
+  if (days < 7) return rtf.format(-days, "day");
+  const weeks = Math.floor(days / 7);
+  if (weeks < 5) return rtf.format(-weeks, "week");
+  const months = Math.floor(days / 30);
+  if (months < 12) return rtf.format(-months, "month");
+  return rtf.format(-Math.floor(days / 365), "year");
+}
 
 const TINTS = [
   "border-sky-100 bg-sky-50/70 text-sky-700",
@@ -159,6 +182,7 @@ function AssetCta({ asset }: { asset: NonNullable<CreatorPostDTO["asset"]> }) {
       onClick={downloadAsset}
       className="mb-3 h-8 rounded-full border-emerald-200 bg-emerald-50 px-3 text-[11px] font-black text-emerald-700 shadow-none hover:bg-emerald-100 hover:text-emerald-800"
     >
+      <span className="text-[10px] font-black">{compactNumber(asset.downloadCount)}</span>
       <Download className="h-3.5 w-3.5" />
       {downloading ? "Starting…" : "Download this asset"}
     </Button>
@@ -168,6 +192,7 @@ function AssetCta({ asset }: { asset: NonNullable<CreatorPostDTO["asset"]> }) {
       params={{ id: asset.productId }}
       className="mb-3 inline-flex h-8 items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 text-[11px] font-black text-rose-700 transition-colors hover:bg-rose-100"
     >
+      <span className="text-[10px] font-black">{compactNumber(asset.downloadCount)}</span>
       <ShoppingBag className="h-3.5 w-3.5" />
       <span>Buy</span>
       <span className="border-l border-rose-200 pl-2 text-[10px]">{price}</span>
@@ -175,9 +200,50 @@ function AssetCta({ asset }: { asset: NonNullable<CreatorPostDTO["asset"]> }) {
   );
 }
 
-function CreatorCard({ post }: { post: CreatorPostDTO }) {
+function CreatorCard({ post, onRecordedView }: { post: CreatorPostDTO; onRecordedView: (postId: string) => void }) {
+  const recordView = useServerFn(recordCreatorPostView);
+  const articleRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const article = articleRef.current;
+    if (!article) return;
+    const key = "oventric_creator_view_session";
+    let sessionKey = window.localStorage.getItem(key);
+    if (!sessionKey) {
+      sessionKey = window.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      window.localStorage.setItem(key, sessionKey);
+    }
+    const viewedKey = `oventric_creator_viewed_${post.id}`;
+    if (window.sessionStorage.getItem(viewedKey)) return;
+    let timer: number | undefined;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) {
+          if (timer) window.clearTimeout(timer);
+          return;
+        }
+        timer = window.setTimeout(() => {
+          void recordView({ data: { postId: post.id, sessionKey } }).then((result) => {
+            if (result.recorded) {
+              window.sessionStorage.setItem(viewedKey, "1");
+              onRecordedView(post.id);
+            }
+          });
+          observer.disconnect();
+        }, 1200);
+      },
+      { threshold: 0.65 },
+    );
+    observer.observe(article);
+    return () => {
+      observer.disconnect();
+      if (timer) window.clearTimeout(timer);
+    };
+  }, [onRecordedView, post.id, recordView]);
+
   return (
-    <article className="grid grid-cols-[40px_minmax(0,1fr)] gap-3 border-b border-slate-100 bg-white px-4 py-3 transition-colors hover:bg-slate-50">
+    <article ref={articleRef} className="grid grid-cols-[40px_minmax(0,1fr)] gap-3 border-b border-slate-100 bg-white px-4 py-3 transition-colors hover:bg-slate-50">
       <div>
         <Link
           to="/profile/$id"
@@ -199,15 +265,15 @@ function CreatorCard({ post }: { post: CreatorPostDTO }) {
             {post.author.name}
           </Link>
           <span className="shrink-0 text-[11px] text-slate-400">
-            · {new Intl.RelativeTimeFormat("en", { numeric: "auto" }).format(
-              -Math.max(1, Math.round((Date.now() - new Date(post.createdAt).getTime()) / 86400000)),
-              "day",
-            )}
+            · {relativeTime(post.createdAt)}
           </span>
         </div>
-        {post.fields.length > 0 && (
-          <p className="truncate text-[11px] text-slate-500">{post.fields.join(" · ")}</p>
-        )}
+        <div className="mt-0.5 flex items-center gap-2 text-[11px] text-slate-500">
+          {post.fields.length > 0 && <span className="truncate">{post.fields.join(" · ")}</span>}
+          <span className="inline-flex shrink-0 items-center gap-1 text-slate-400">
+            <Eye className="h-3.5 w-3.5" /> {compactNumber(post.viewCount)}
+          </span>
+        </div>
         <p className="mt-2 text-[15px] font-black leading-snug text-slate-900">{post.title}</p>
         {post.caption && <p className="mt-1 text-[13px] leading-relaxed text-slate-500">{post.caption}</p>}
 
@@ -295,6 +361,11 @@ export function CreatorFeed({ reloadKey }: { reloadKey: number }) {
   }, [posts]);
 
   const visible = field === "all" ? posts : posts.filter((p) => p.fields.includes(field));
+  const handleRecordedView = useCallback((postId: string) => {
+    setPosts((current) =>
+      current.map((post) => (post.id === postId ? { ...post, viewCount: post.viewCount + 1 } : post)),
+    );
+  }, []);
 
   if (loading) {
     return (
@@ -336,7 +407,7 @@ export function CreatorFeed({ reloadKey }: { reloadKey: number }) {
         </div>
       )}
       {visible.map((p) => (
-        <CreatorCard key={p.id} post={p} />
+        <CreatorCard key={p.id} post={p} onRecordedView={handleRecordedView} />
       ))}
     </div>
   );
