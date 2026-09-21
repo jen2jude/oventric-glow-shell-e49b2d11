@@ -125,6 +125,7 @@ export const getWalletBalances = createServerFn({ method: "GET" })
         .select("amount, currency")
         .eq("user_id", userId)
         .eq("inflow", true)
+        .eq("type", "Marketplace Sale")
         .eq("status", "pending"),
     ]);
     if (walletRes.error) throw new Error(walletRes.error.message);
