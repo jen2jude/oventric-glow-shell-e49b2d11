@@ -333,8 +333,8 @@ export function CreatorFeed({ reloadKey }: { reloadKey: number }) {
           ))}
         </div>
       )}
-      {visible.map((p, i) => (
-        <CreatorCard key={p.id} post={p} index={i} />
+      {visible.map((p) => (
+        <CreatorCard key={p.id} post={p} />
       ))}
     </div>
   );
