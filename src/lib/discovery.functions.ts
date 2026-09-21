@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
+import { isStableBucket, stableImageUrl, stableImageUrls } from "@/lib/storage/stable-image";
 
 /** Batch-fetch seller shop identity so product cards show the storefront name and link to the store. */
 async function fetchShopProfiles(sb: any, sellerIds: string[]): Promise<Map<string, { shopName: string; slug: string | null }>> {
@@ -114,6 +115,7 @@ async function signBucket(
   paths: (string | null | undefined)[],
 ): Promise<(string | null)[]> {
   const clean = paths.map((p) => (typeof p === "string" && p ? p : null));
+  if (isStableBucket(bucket)) return stableImageUrls(bucket, clean);
   const unique = Array.from(
     new Set(clean.filter((p): p is string => !!p && !/^https?:\/\//i.test(p))),
   );

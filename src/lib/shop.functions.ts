@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { isStableBucket, stableImageUrl, stableImageUrls } from "@/lib/storage/stable-image";
 
 // ---------------------------------------------------------------------------
 // Seller shop branding + shop-page discovery rails.
@@ -76,6 +77,7 @@ async function sign(
   paths: (string | null | undefined)[],
 ): Promise<(string | null)[]> {
   const clean = paths.map((p) => (typeof p === "string" && p ? p : null));
+  if (isStableBucket(bucket)) return stableImageUrls(bucket, clean);
   const unique = Array.from(new Set(clean.filter((p): p is string => !!p)));
   if (unique.length === 0) return clean.map(() => null);
   const { data } = await sb.storage.from(bucket).createSignedUrls(unique, 60 * 60 * 24 * 7);
