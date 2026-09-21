@@ -446,6 +446,8 @@ export function Feed() {
   const [savingEdit, setSavingEdit] = useState(false);
 
   const [reportOpen, setReportOpen] = useState<string | null>(null);
+  const [editingPost, setEditingPost] = useState<{ id: string; text: string } | null>(null);
+  const [editSaving, setEditSaving] = useState(false);
   const [reported, setReported] = useState<Map<string, ReportDetails>>(() => {
     if (typeof window === "undefined") return new Map();
     try {
