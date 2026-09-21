@@ -54,7 +54,7 @@ function PreviewVideo({ src, poster }: { src: string; poster: string | null }) {
   }, [full]);
 
   return (
-    <div className="relative">
+    <div className="relative bg-white">
       <video
         ref={ref}
         src={src}
