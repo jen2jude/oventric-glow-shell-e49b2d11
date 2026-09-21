@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { BadgeCheck, Download, Eye, MessageCircle, Play, Send, ShoppingBag } from "lucide-react";
@@ -361,11 +361,11 @@ export function CreatorFeed({ reloadKey }: { reloadKey: number }) {
   }, [posts]);
 
   const visible = field === "all" ? posts : posts.filter((p) => p.fields.includes(field));
-  const handleRecordedView = (postId: string) => {
+  const handleRecordedView = useCallback((postId: string) => {
     setPosts((current) =>
       current.map((post) => (post.id === postId ? { ...post, viewCount: post.viewCount + 1 } : post)),
     );
-  };
+  }, []);
 
   if (loading) {
     return (
