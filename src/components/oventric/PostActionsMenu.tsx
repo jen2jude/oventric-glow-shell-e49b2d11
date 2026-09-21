@@ -91,6 +91,8 @@ export function PostActionsMenu({
   onReport,
   isOwn = false,
   onDelete,
+  onEdit,
+  canEdit = false,
   authorId,
   authorName,
   isFollowing = false,
@@ -102,6 +104,8 @@ export function PostActionsMenu({
   onReport: () => void;
   isOwn?: boolean;
   onDelete?: () => void;
+  onEdit?: () => void;
+  canEdit?: boolean;
   authorId?: string;
   authorName?: string;
   isFollowing?: boolean;
