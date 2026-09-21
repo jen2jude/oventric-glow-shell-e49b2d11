@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Flame, ShoppingBag, PlayCircle, Search } from "lucide-react";
+import { Flame, ShoppingBag, Search } from "lucide-react";
 import { navigateSection } from "@/components/oventric/DiscoveryPanel";
 import { useFeedDiscovery } from "@/components/oventric/feed/useFeedDiscovery";
-import { ReelsRail, useReels } from "@/components/oventric/feed/ReelsShelf";
 import type { FeedPost } from "@/lib/posts.functions";
 import { ExploreHeader, type ExploreTab } from "./ExploreHeader";
 import { PeopleExploreList } from "./PeopleExploreList";
@@ -80,7 +79,6 @@ export function FeedDiscoverExplore({
 }) {
   const { peers, products, bounties, courses, circles, loading } = useFeedDiscovery(true);
   const { baseCurrency } = useOnboarding();
-  const reels = useReels(true, undefined, 24);
   const [activeTab, setActiveTab] = useState<ExploreTab | "Discovery">("Discovery");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -166,13 +164,6 @@ export function FeedDiscoverExplore({
 
   return (
     <div className="space-y-6">
-      {reels && reels.length > 0 && (
-        <Section icon={PlayCircle} title="Reels">
-          <ReelsRail reels={reels} />
-        </Section>
-      )}
-
-
       <PeopleSuggestionsRail people={suggestedPeople} title="People you may know" />
 
       {trending.length > 0 && (
