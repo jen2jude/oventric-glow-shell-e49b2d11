@@ -194,11 +194,11 @@ function CreatorCard({ post }: { post: CreatorPostDTO }) {
           <Link
             to="/profile/$id"
             params={{ id: post.author.slug ?? post.author.userId }}
-            className="truncate text-sm font-black text-foreground"
+            className="truncate text-sm font-black text-slate-900"
           >
             {post.author.name}
           </Link>
-          <span className="shrink-0 text-[11px] text-muted-foreground">
+          <span className="shrink-0 text-[11px] text-slate-400">
             · {new Intl.RelativeTimeFormat("en", { numeric: "auto" }).format(
               -Math.max(1, Math.round((Date.now() - new Date(post.createdAt).getTime()) / 86400000)),
               "day",
@@ -208,8 +208,8 @@ function CreatorCard({ post }: { post: CreatorPostDTO }) {
         {post.fields.length > 0 && (
           <p className="truncate text-[11px] text-slate-500">{post.fields.join(" · ")}</p>
         )}
-        <p className="mt-2 text-[15px] font-black leading-snug text-foreground">{post.title}</p>
-        {post.caption && <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{post.caption}</p>}
+        <p className="mt-2 text-[15px] font-black leading-snug text-slate-900">{post.title}</p>
+        {post.caption && <p className="mt-1 text-[13px] leading-relaxed text-slate-500">{post.caption}</p>}
 
         {post.media.length > 0 && (
           <div className="mt-3 overflow-hidden rounded-[10px] border border-border">
