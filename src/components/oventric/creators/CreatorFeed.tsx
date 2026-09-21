@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { BadgeCheck, MessageCircle, Play, Send } from "lucide-react";
+import { BadgeCheck, Download, MessageCircle, Play, Send, ShoppingBag } from "lucide-react";
 import { listCreatorFeed, type CreatorPostDTO } from "@/lib/creators.functions";
+import { computeDisplayPrice } from "@/lib/fx-display";
+import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
+
 
 const TINTS = [
   "border-sky-100 bg-sky-50/70 text-sky-700",
