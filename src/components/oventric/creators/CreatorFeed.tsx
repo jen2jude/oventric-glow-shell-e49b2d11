@@ -216,7 +216,7 @@ function CreatorCard({ post, onRecordedView }: { post: CreatorPostDTO; onRecorde
     }
     const viewedKey = `oventric_creator_viewed_${post.id}`;
     if (window.sessionStorage.getItem(viewedKey)) return;
-    let timer: ReturnType<typeof setTimeout> | undefined;
+    let timer: number | undefined;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) {
