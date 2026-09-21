@@ -33,13 +33,20 @@ export function FollowRequestsDrawer({ open, onClose }: Props) {
 
   const load = useCallback(() => {
     setErr(null);
-    listFn()
-      .then((r) => setRows(r))
-      .catch((e) => {
+    void (async () => {
+      const { data: s } = await supabase.auth.getSession();
+      if (!s.session) {
+        setRows([]);
+        return;
+      }
+      try {
+        setRows(await listFn());
+      } catch (e) {
         console.error("[FollowRequestsDrawer] load", e);
         setErr(e instanceof Error ? e.message : "Failed to load requests");
         setRows([]);
-      });
+      }
+    })();
   }, [listFn]);
 
   useEffect(() => {

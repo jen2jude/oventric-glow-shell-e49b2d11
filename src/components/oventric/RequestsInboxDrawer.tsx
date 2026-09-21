@@ -29,13 +29,20 @@ export function RequestsInboxDrawer({ open, onClose }: Props) {
 
   const loadFollow = useCallback(() => {
     setErr(null);
-    listFollow()
-      .then((r) => setFollowRows(r))
-      .catch((e) => {
+    void (async () => {
+      const { data: s } = await supabase.auth.getSession();
+      if (!s.session) {
+        setFollowRows([]);
+        return;
+      }
+      try {
+        setFollowRows(await listFollow());
+      } catch (e) {
         console.error("[RequestsInboxDrawer] follow load", e);
         setErr(e instanceof Error ? e.message : "Failed to load follow requests");
         setFollowRows([]);
-      });
+      }
+    })();
   }, [listFollow]);
 
   useEffect(() => {
