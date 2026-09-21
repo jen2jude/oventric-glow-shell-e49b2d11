@@ -383,7 +383,11 @@ export function Feed() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
   const [followerIds, setFollowerIds] = useState<Set<string> | null>(null);
-  const { peers: suggestedPeers, products: shopFeedProducts } = useFeedDiscovery(true);
+  const {
+    peers: suggestedPeers,
+    products: shopFeedProducts,
+    loading: discoveryLoading,
+  } = useFeedDiscovery(true);
 
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   // Seed from the session cache so returning to the feed paints instantly.
@@ -1306,7 +1310,7 @@ export function Feed() {
         )}
 
         {searchOpen && (
-          <div className="fixed inset-0 z-[60] overflow-y-auto bg-background px-4 pt-20">
+          <div className="fixed inset-0 z-[60] overflow-y-auto bg-home-bg px-4 pt-20">
             <div className="mx-auto max-w-[760px]">
               <FeedSearchBar
                 showFilters={false}
@@ -1500,7 +1504,19 @@ export function Feed() {
             <p className="mt-3 text-sm font-bold text-slate-900">No creators content found</p>
           </div>
         ) : feedTab === "shops" ? (
-          <ShopTheFeedRail products={shopFeedProducts} appShell={false} />
+          discoveryLoading ? (
+            <div className="rounded-[10px] border border-amber-100 bg-amber-50/60 p-10 text-center" aria-busy="true">
+              <ShoppingBag className="mx-auto h-7 w-7 animate-pulse text-amber-600" />
+              <p className="mt-3 text-sm font-bold text-slate-900">Loading shops…</p>
+            </div>
+          ) : shopFeedProducts.length > 0 ? (
+            <ShopTheFeedRail products={shopFeedProducts} appShell={false} />
+          ) : (
+            <div className="rounded-[10px] border border-amber-100 bg-amber-50/60 p-10 text-center">
+              <ShoppingBag className="mx-auto h-7 w-7 text-amber-600" />
+              <p className="mt-3 text-sm font-bold text-slate-900">No shop products found</p>
+            </div>
+          )
         ) : postsLoading ? (
           <div className="space-y-4" aria-busy="true" aria-label="Loading feed">
             {[0, 1, 2].map((i) => (
