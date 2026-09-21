@@ -1639,12 +1639,6 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
       (vRows ?? []).forEach((v: any) => verifiedSellerIds.add(v.user_id as string));
     }
 
-    // 5. Live category counts (products.category stores the category slug)
-    const { data: catCountRows } = await sb
-      .from("products")
-      .select("category")
-      .eq("status", "active")
-      .limit(1000);
     const categoryCounts: Record<string, number> = {};
     (catCountRows ?? []).forEach((r) => {
       const c = (r.category as string) ?? "";
