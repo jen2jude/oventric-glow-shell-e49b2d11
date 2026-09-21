@@ -114,6 +114,9 @@ function CreatorCard({ post, index }: { post: CreatorPostDTO; index: number }) {
         {post.caption && <p className="mt-1 text-[13px] leading-relaxed text-slate-600">{post.caption}</p>}
       </div>
 
+      {post.asset && <AssetCta asset={post.asset} />}
+
+
       {post.media.length > 0 &&
         (post.media[0].type === "video" ? (
           <PreviewVideo src={post.media[0].url} poster={post.media[0].posterUrl} />
