@@ -2420,6 +2420,27 @@ export function Feed() {
           </div>
         </div>
       )}
+      {(feedTab === "creators" || feedTab === "shops") && (
+        <button
+          type="button"
+          aria-label={feedTab === "shops" ? "Publish a product" : "Add creator content"}
+          onClick={() =>
+            require(
+              feedTab === "shops" ? 2 : 1,
+              () => (feedTab === "shops" ? setSellPanelOpen(true) : setComposerOpen(true)),
+              "seller",
+            )
+          }
+          className={`fixed bottom-24 right-5 z-[70] grid h-14 w-14 place-items-center rounded-full text-white shadow-xl transition-transform active:scale-95 md:bottom-10 md:right-10 ${
+            feedTab === "shops" ? "bg-amber-500 hover:bg-amber-600" : "bg-emerald-600 hover:bg-emerald-700"
+          }`}
+        >
+          <Plus className="h-6 w-6" strokeWidth={2.6} />
+        </button>
+      )}
+      {sellPanelOpen && (
+        <CreatePanel open initialChoice="sell" onClose={() => setSellPanelOpen(false)} />
+      )}
     </div>
   );
 }
