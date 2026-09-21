@@ -1309,7 +1309,7 @@ export function Feed() {
           <div className="fixed inset-0 z-[60] overflow-y-auto bg-background px-4 pt-20">
             <div className="mx-auto max-w-[760px]">
               <FeedSearchBar
-                appShell
+                showFilters={false}
                 q={query}
                 onQueryChange={setQuery}
                 category={category}

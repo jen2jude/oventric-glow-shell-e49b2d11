@@ -11,6 +11,7 @@ import {
 import { RequestsInboxDrawer } from "@/components/oventric/RequestsInboxDrawer";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
 import { useChromeHidden } from "@/hooks/use-chrome-hide";
+import { Button } from "@/components/ui/button";
 
 type Props = {
   /** Opens the shared messages drawer owned by the page shell. */
@@ -72,15 +73,17 @@ export function FeedSocialBar({ onOpenMessages, onOpenSearch }: Props) {
         </Link>
 
         <div className="flex shrink-0 items-center gap-2 md:gap-3">
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="icon"
             onClick={onOpenSearch}
             aria-label="Search"
             title="Search"
             className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] border border-home-line bg-sky-50 text-sky-600 shadow-sm transition-transform active:scale-95 md:h-11 md:w-11"
           >
             <Search className="h-[19px] w-[19px]" strokeWidth={1.9} />
-          </button>
+          </Button>
           <button
             type="button"
             onClick={() => setNotifOpen(true)}
