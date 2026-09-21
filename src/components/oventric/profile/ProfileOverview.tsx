@@ -67,7 +67,7 @@ function Module({
 /** Horizontal, snap-scrolling rail — the mobile-native way to preview a set. */
 function Rail({ children }: { children: React.ReactNode }) {
   return (
-    <div className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-1 no-scrollbar md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 lg:grid-cols-3">
+    <div className="-mx-1 flex snap-x snap-mandatory gap-2 overflow-x-auto px-1 pb-1 no-scrollbar md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 lg:grid-cols-4">
       {children}
     </div>
   );
@@ -153,7 +153,7 @@ export function ProfileOverview({
       search={itemSearch as never}
       className="group w-[46%] min-w-[150px] max-w-[200px] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141418] md:w-auto md:min-w-0 md:max-w-none md:rounded-[10px] md:border-slate-200 md:bg-slate-50"
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-neutral-900 md:bg-slate-100">
+      <div className="relative aspect-[16/10] overflow-hidden bg-neutral-900 md:bg-slate-100">
         {l.coverUrl ? (
           <img loading="lazy" decoding="async"
             src={l.coverUrl}
@@ -162,18 +162,18 @@ export function ProfileOverview({
           />
         ) : (
           <span className="flex h-full w-full items-center justify-center">
-            <ShoppingBag className="h-7 w-7 text-white/25 md:text-slate-400" />
+            <ShoppingBag className="h-6 w-6 text-white/25 md:text-slate-400" />
           </span>
         )}
       </div>
-      <div className="p-2.5">
-        <p className="line-clamp-2 text-[13px] font-bold leading-snug text-white md:text-slate-900">
+      <div className="p-2">
+        <p className="line-clamp-1 text-[12px] font-bold leading-snug text-white md:text-slate-900">
           {l.title}
         </p>
-        <p className="mt-1 text-xs font-black text-[#E5484D]">
+        <p className="mt-0.5 text-[11px] font-black text-[#E5484D]">
           {free && l.priceUsd <= 0 ? "Free" : price(l.priceUsd)}
         </p>
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">{label}</p>
+        <p className="text-[9px] font-semibold uppercase tracking-wider text-slate-500">{label}</p>
       </div>
     </Link>
   );
