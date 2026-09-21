@@ -316,9 +316,9 @@ export function CreatorFeed({ reloadKey }: { reloadKey: number }) {
   }
 
   return (
-    <div className="overflow-hidden border-y border-border bg-background sm:rounded-[10px] sm:border-x">
+    <div className="overflow-hidden border-y border-slate-100 bg-white sm:rounded-[10px] sm:border-x">
       {fields.length > 0 && (
-        <div className="sticky top-0 z-10 flex gap-2 overflow-x-auto border-b border-border bg-background/95 px-3 py-2 backdrop-blur [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="sticky top-0 z-10 flex gap-2 overflow-x-auto border-b border-slate-100 bg-white/95 px-3 py-2 backdrop-blur [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {["all", ...fields].map((f, i) => (
             <Button
               key={f}
