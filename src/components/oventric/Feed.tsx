@@ -1333,15 +1333,6 @@ export function Feed() {
           />
         )}
 
-        {!isAppShell && false && (
-          <PeopleSuggestionsRail
-            people={suggestedPeers.filter(
-              (person) => person.id !== meId && !followingIds?.has(person.id),
-            )}
-            appShell={false}
-          />
-        )}
-
         <AdSlot placement="feed" variant="banner" />
 
 
