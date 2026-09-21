@@ -1768,6 +1768,11 @@ export function Feed() {
                           onReport={() => openReport(post.id)}
                           isOwn={meId === post.author_id}
                           onDelete={() => handleDeletePost(post.id)}
+                          canEdit={
+                            meId === post.author_id &&
+                            Date.now() - new Date(post.created_at).getTime() < EDIT_WINDOW_MS
+                          }
+                          onEdit={() => setEditingPost({ id: post.id, text: post.text ?? "" })}
                           authorId={post.author_id}
                           authorName={post.author_name}
                           isFollowing={!!followingIds?.has(post.author_id)}
