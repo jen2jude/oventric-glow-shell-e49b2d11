@@ -214,6 +214,28 @@ async function fetchShopNames(
   return map;
 }
 
+/**
+ * profiles.banned_at is not publicly readable, so public-facing seller lists
+ * fetch moderation flags through the privileged server client and drop
+ * banned accounts. Fails open only by omitting the filter on error.
+ */
+async function filterOutBannedProfiles<T extends { user_id: string }>(rows: T[]): Promise<T[]> {
+  if (!rows.length) return rows;
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: flags } = await supabaseAdmin
+      .from("profiles")
+      .select("user_id, banned_at")
+      .in("user_id", rows.map((r) => r.user_id));
+    const banned = new Set(
+      (flags ?? []).filter((f: any) => !!f.banned_at).map((f: any) => f.user_id as string),
+    );
+    return rows.filter((r) => !banned.has(r.user_id));
+  } catch {
+    return rows;
+  }
+}
+
 const PRODUCT_COLS = "id, slug, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, created_at, kind, status, reject_reason, condition, brand, location, negotiable, delivery, image_paths, requires_manual_delivery, in_stock, stock_quantity, cashback_pct, basic_info, activation_guide";
 const PRODUCT_COLS_OWNER = "id, slug, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, created_at, kind, status, reject_reason, condition, brand, location, negotiable, delivery, image_paths, requires_manual_delivery, in_stock, stock_quantity, cashback_pct, seller_phone, whatsapp_number, social_link, basic_info, activation_guide";
 
@@ -1606,14 +1628,16 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
       ? await sb
           .from("profiles")
           .select(
-            "user_id, slug, display_name, username, avatar_path, cover_path, verification_tier, reputation_stars, bio, profile_completed_at, banned_at, deleted_at",
+            "user_id, slug, display_name, username, avatar_path, cover_path, verification_tier, reputation_stars, bio, profile_completed_at, deleted_at",
           )
           .in("user_id", sellerIds)
       : { data: [] as any[] };
 
     // Only onboarded, active accounts with published listings are sellers.
-    const sellerRows = (sellerRowsRaw ?? []).filter(
-      (s: any) => !!s.profile_completed_at && !s.banned_at && !s.deleted_at,
+    // banned_at is not publicly readable, so moderation flags come from the
+    // privileged server client.
+    const sellerRows = await filterOutBannedProfiles(
+      (sellerRowsRaw ?? []).filter((s: any) => !!s.profile_completed_at && !s.deleted_at),
     );
 
     // "Verified" requires an admin-approved seller verification request.
@@ -1768,13 +1792,15 @@ export const getTopSellers = createServerFn({ method: "GET" })
     const { data: sellerRows } = await sb
       .from("profiles")
       .select(
-        "user_id, slug, display_name, username, avatar_path, cover_path, verification_tier, bio, profile_completed_at, banned_at, deleted_at",
+        "user_id, slug, display_name, username, avatar_path, cover_path, verification_tier, bio, profile_completed_at, deleted_at",
       )
       .in("user_id", sellerIds);
 
     // Only onboarded, active accounts with published listings count as sellers.
-    const rows = (sellerRows ?? []).filter(
-      (s: any) => !!s.profile_completed_at && !s.banned_at && !s.deleted_at,
+    // banned_at is not publicly readable, so moderation flags come from the
+    // privileged server client.
+    const rows = await filterOutBannedProfiles(
+      (sellerRows ?? []).filter((s: any) => !!s.profile_completed_at && !s.deleted_at),
     );
 
     // "Verified" means an admin-approved seller verification request exists.
