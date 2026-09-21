@@ -589,11 +589,11 @@ function CheckoutPage() {
           productId: product.id,
           quantity: qty,
           displayCurrency: homeCurrency,
-          paymentMethod: method,
-          couponCode: coupon?.code ?? null,
-          deliveryEmail: needsDelivery ? deliveryEmail.trim() : null,
+          paymentMethod: "wallet",
+          couponCode: isFree ? null : (coupon?.code ?? null),
+          deliveryEmail: deliveryEmail.trim() ? deliveryEmail.trim() : null,
           deliveryWhatsapp: null,
-          applyCashbackUSD: cashbackApplyUSD,
+          applyCashbackUSD: isFree ? 0 : cashbackApplyUSD,
         },
       });
 
@@ -612,7 +612,11 @@ function CheckoutPage() {
         });
         return;
       }
-      if (res.cashbackUSD && res.cashbackUSD > 0) {
+      if (isFree) {
+        toast.success("Your free download is ready", {
+          description: "It's saved in your dashboard so you can download it again any time.",
+        });
+      } else if (res.cashbackUSD && res.cashbackUSD > 0) {
         toast.success("Payment successful", {
           description: `${fmt(res.cashbackUSD, homeCurrency)} cashback credited to your wallet.`,
         });
@@ -621,7 +625,9 @@ function CheckoutPage() {
       }
       navigate({ to: "/order/$id", params: { id: res.order.id } });
     } catch (e) {
-      toast.error("Payment failed", { description: e instanceof Error ? e.message : "Try again." });
+      toast.error(isFree ? "Download failed" : "Payment failed", {
+        description: e instanceof Error ? e.message : "Try again.",
+      });
     } finally {
       setSubmitting(false);
     }
