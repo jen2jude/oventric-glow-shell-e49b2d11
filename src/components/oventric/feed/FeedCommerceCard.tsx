@@ -76,40 +76,57 @@ export function ShopTheFeedRail({
           }
         }}
       >
-        {visibleProducts.map(({ product, repeat }, index) => (
-          <Link
-            key={`${product.id}-${repeat}-${index}`}
-            to="/product/$id"
-            params={{ id: product.id }}
-            className={
-              appShell
-                ? "w-[150px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-white/[0.07] bg-[#18191B] active:scale-[0.98]"
-                : "w-[150px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-slate-200 bg-slate-50 active:scale-[0.98]"
-            }
-          >
-            <div className="relative h-28 w-full overflow-hidden bg-slate-900">
-              {product.coverUrl ? (
-                <img loading="lazy" decoding="async" src={product.coverUrl} alt="" className="h-full w-full object-cover" />
-              ) : (
-                <div className={`h-full w-full bg-gradient-to-br ${product.hue}`} />
-              )}
-              <span className="absolute left-2 top-2 max-w-[calc(100%-16px)] truncate rounded-full bg-black/65 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur">
-                {product.category}
-              </span>
-            </div>
-            <div className="p-2.5">
-              <p className={appShell ? "line-clamp-2 text-[12.5px] font-bold leading-snug text-white" : "line-clamp-2 text-[12.5px] font-bold leading-snug text-slate-950"}>
-                {product.title}
-              </p>
-              <p className={appShell ? "mt-1 truncate text-[10.5px] text-white/45" : "mt-1 truncate text-[10.5px] text-slate-500"}>
-                {product.vendor}
-              </p>
-              <p className="mt-1 text-[12px] font-black text-[#E5484D]">
-                {productPrice(product, baseCurrency)}
-              </p>
-            </div>
-          </Link>
-        ))}
+        {visibleProducts.map(({ product, repeat }, index) => {
+          const body = (
+            <>
+              <div className="relative h-28 w-full overflow-hidden bg-slate-900">
+                {product.coverUrl ? (
+                  <img loading="lazy" decoding="async" src={product.coverUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <div className={`h-full w-full bg-gradient-to-br ${product.hue}`} />
+                )}
+                <span className="absolute left-2 top-2 max-w-[calc(100%-16px)] truncate rounded-full bg-black/65 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur">
+                  {product.category}
+                </span>
+              </div>
+              <div className="p-2.5">
+                <p className={appShell ? "line-clamp-2 text-[12.5px] font-bold leading-snug text-white" : "line-clamp-2 text-[12.5px] font-bold leading-snug text-slate-950"}>
+                  {product.title}
+                </p>
+                <p className={appShell ? "mt-1 truncate text-[10.5px] text-white/45" : "mt-1 truncate text-[10.5px] text-slate-500"}>
+                  {product.vendor}
+                </p>
+                <p className="mt-1 text-[12px] font-black text-[#E5484D]">
+                  {productPrice(product, baseCurrency)}
+                </p>
+              </div>
+            </>
+          );
+          const cardClass = appShell
+            ? "w-[150px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-white/[0.07] bg-[#18191B] active:scale-[0.98]"
+            : "w-[150px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-slate-200 bg-slate-50 active:scale-[0.98]";
+
+          return product.sellerSlug ? (
+            <Link
+              key={`${product.id}-${repeat}-${index}`}
+              to="/shop/$id"
+              params={{ id: product.sellerSlug }}
+              search={{ productId: product.id }}
+              className={cardClass}
+            >
+              {body}
+            </Link>
+          ) : (
+            <Link
+              key={`${product.id}-${repeat}-${index}`}
+              to="/product/$id"
+              params={{ id: product.id }}
+              className={cardClass}
+            >
+              {body}
+            </Link>
+          );
+        })}
       </div>
     </section>
   );
