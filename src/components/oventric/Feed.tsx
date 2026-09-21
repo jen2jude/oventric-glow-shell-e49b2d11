@@ -86,7 +86,7 @@ import {
   ShopTheFeedRail,
 } from "@/components/oventric/feed/FeedCommerceCard";
 import { ProductAttachmentCard } from "@/components/oventric/feed/ProductAttachmentCard";
-import { ProductAttachmentCard } from "@/components/oventric/feed/ProductAttachmentCard";
+import { PeopleSuggestionsRail } from "@/components/oventric/feed/PeopleSuggestionsRail";
 import { ShopSections } from "@/components/oventric/feed/ShopSections";
 import { CreatePanel } from "@/components/oventric/CreatePanel";
 import { useFeedDiscovery } from "@/components/oventric/feed/useFeedDiscovery";
