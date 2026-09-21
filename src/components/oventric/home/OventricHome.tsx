@@ -661,7 +661,8 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
 
 function SellerCountryFlag({ country }: { country: string | null }) {
   const code = normalizeCountryCode(country);
-  const meta = code ? COUNTRY_META[code] : undefined;
+  if (!code) return null;
+  const meta = COUNTRY_META[code];
   if (!meta) return null;
   return (
     <span
