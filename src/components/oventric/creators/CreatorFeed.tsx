@@ -212,7 +212,7 @@ function CreatorCard({ post }: { post: CreatorPostDTO }) {
         {post.caption && <p className="mt-1 text-[13px] leading-relaxed text-slate-500">{post.caption}</p>}
 
         {post.media.length > 0 && (
-          <div className="mt-3 overflow-hidden rounded-[10px] border border-border">
+          <div className="mt-3 overflow-hidden rounded-[10px] border border-slate-100">
             {post.media[0].type === "video" ? (
               <PreviewVideo src={post.media[0].url} poster={post.media[0].posterUrl} />
             ) : (
