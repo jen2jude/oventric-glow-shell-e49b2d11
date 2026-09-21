@@ -1175,7 +1175,7 @@ export function Messages({
               {attachment && (
                 <div className="mb-2 flex items-center gap-2 rounded-[10px] border border-border bg-muted/50 px-2.5 py-2">
                   {attachment.previewUrl ? (
-                    <img
+                    <img loading="lazy" decoding="async"
                       src={attachment.previewUrl}
                       alt=""
                       className="size-10 rounded-[8px] object-cover border border-border"

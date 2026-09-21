@@ -221,7 +221,7 @@ function AdInquiriesPage() {
                       rel="noopener noreferrer"
                       className="block aspect-square rounded-[10px] overflow-hidden bg-black"
                     >
-                      <img src={u} alt="" className="w-full h-full object-cover" />
+                      <img loading="lazy" decoding="async" src={u} alt="" className="w-full h-full object-cover" />
                     </a>
                   ))}
                 </div>

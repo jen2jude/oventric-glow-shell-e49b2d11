@@ -485,7 +485,7 @@ function PostScreen() {
                   className="max-h-[70vh] w-full object-cover"
                 />
               ) : (
-                <img
+                <img loading="lazy" decoding="async"
                   src={post.media[0].url}
                   alt=""
                   className="max-h-[70vh] w-full object-cover"
@@ -507,7 +507,7 @@ function PostScreen() {
                         <Play className="pointer-events-none absolute inset-0 m-auto h-10 w-10 opacity-0" />
                       </>
                     ) : (
-                      <img src={m.url} alt="" className="aspect-square w-full object-cover" />
+                      <img loading="lazy" decoding="async" src={m.url} alt="" className="aspect-square w-full object-cover" />
                     )}
                   </div>
                 ))}

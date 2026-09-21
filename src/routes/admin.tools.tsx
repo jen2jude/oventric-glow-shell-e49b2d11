@@ -214,7 +214,7 @@ function AdminToolsPage() {
               <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
                 <div className="flex min-w-0 items-center gap-2">
                   {category.imageUrl && (
-                    <img
+                    <img loading="lazy" decoding="async"
                       src={category.imageUrl}
                       alt=""
                       className="h-6 w-6 shrink-0 rounded object-contain"
@@ -254,7 +254,7 @@ function AdminToolsPage() {
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
                     {t.imageUrl ? (
-                      <img src={t.imageUrl} alt="" className="h-8 w-8 object-contain" />
+                      <img loading="lazy" decoding="async" src={t.imageUrl} alt="" className="h-8 w-8 object-contain" />
                     ) : (
                       <Wrench className="h-8 w-8 text-slate-400" />
                     )}

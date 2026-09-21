@@ -1560,43 +1560,48 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
     const sb = serverPublicClient();
     const withKind = (q: any) => q;
 
-    // 1. Featured Products (promoted or top rated)
-    const { data: featuredRows } = await withKind(
-      sb
-        .from("products")
-        .select(PRODUCT_COLS)
-        .eq("status", "active")
-        .eq("promoted", true)
-        .order("rating", { ascending: false })
-        .limit(6),
-    );
-
-    // 2. Trending (most reviews/high rating)
-    const { data: trendingRows } = await withKind(
-      sb
-        .from("products")
-        .select(PRODUCT_COLS)
-        .eq("status", "active")
-        .order("reviews", { ascending: false, nullsFirst: false })
-        .limit(10),
-    );
-
-    // 3. New Arrivals
-    const { data: newRows } = await withKind(
-      sb
-        .from("products")
-        .select(PRODUCT_COLS)
-        .eq("status", "active")
-        .order("created_at", { ascending: false })
-        .limit(10),
-    );
-
-    // 4. Sellers (profiles that actually have active products)
-    const { data: sellerIdRows } = await sb
-      .from("products")
-      .select("seller_id")
-      .eq("status", "active")
-      .limit(500);
+    // These five reads are independent, so they run in parallel instead of
+    // stacking five sequential round-trips before the page can render.
+    const [
+      { data: featuredRows },
+      { data: trendingRows },
+      { data: newRows },
+      { data: sellerIdRows },
+      { data: catCountRows },
+    ] = await Promise.all([
+      // 1. Featured Products (promoted or top rated)
+      withKind(
+        sb
+          .from("products")
+          .select(PRODUCT_COLS)
+          .eq("status", "active")
+          .eq("promoted", true)
+          .order("rating", { ascending: false })
+          .limit(6),
+      ),
+      // 2. Trending (most reviews/high rating)
+      withKind(
+        sb
+          .from("products")
+          .select(PRODUCT_COLS)
+          .eq("status", "active")
+          .order("reviews", { ascending: false, nullsFirst: false })
+          .limit(10),
+      ),
+      // 3. New Arrivals
+      withKind(
+        sb
+          .from("products")
+          .select(PRODUCT_COLS)
+          .eq("status", "active")
+          .order("created_at", { ascending: false })
+          .limit(10),
+      ),
+      // 4. Sellers (profiles that actually have active products)
+      sb.from("products").select("seller_id").eq("status", "active").limit(500),
+      // 5. Live category counts (products.category stores the category slug)
+      sb.from("products").select("category").eq("status", "active").limit(1000),
+    ]);
     const sellerCounts = new Map<string, number>();
     (sellerIdRows ?? []).forEach((r) => {
       const id = r.seller_id as string;
@@ -1634,12 +1639,6 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
       (vRows ?? []).forEach((v: any) => verifiedSellerIds.add(v.user_id as string));
     }
 
-    // 5. Live category counts (products.category stores the category slug)
-    const { data: catCountRows } = await sb
-      .from("products")
-      .select("category")
-      .eq("status", "active")
-      .limit(1000);
     const categoryCounts: Record<string, number> = {};
     (catCountRows ?? []).forEach((r) => {
       const c = (r.category as string) ?? "";
@@ -1663,26 +1662,33 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
       return dto;
     };
 
-    const sellerAvatars = await signBucket(sb, "avatars", (sellerRows ?? []).map((s: any) => s.avatar_path ?? null));
-    const sellerCovers = await signBucket(sb, "profile-covers", (sellerRows ?? []).map((s: any) => s.cover_path ?? null));
+    const sellerUserIds = (sellerRows ?? []).map((s: any) => s.user_id as string);
 
-    const sellers = await Promise.all((sellerRows ?? []).map(async (s: any, i: number) => {
-      const { count: followers } = await sb
-        .from("follows")
-        .select("follower_id", { count: "exact", head: true })
-        .eq("followee_id", s.user_id);
-      return {
-        id: s.user_id as string,
-        name: (s.display_name || s.username || s.slug) as string,
-        slug: s.slug as string,
-        bio: (s.bio as string) ?? "",
-        avatarUrl: sellerAvatars[i] ?? null,
-        coverUrl: sellerCovers[i] ?? null,
-        verified: verifiedSellerIds.has(s.user_id as string),
-        rating: Number(s.reputation_stars ?? 0),
-        followersCount: followers ?? 0,
-        productsCount: sellerCounts.get(s.user_id as string) ?? 0,
-      };
+    // One grouped follower read instead of a count query per seller.
+    const [sellerAvatars, sellerCovers, followerRowsRes] = await Promise.all([
+      signBucket(sb, "avatars", (sellerRows ?? []).map((s: any) => s.avatar_path ?? null)),
+      signBucket(sb, "profile-covers", (sellerRows ?? []).map((s: any) => s.cover_path ?? null)),
+      sellerUserIds.length
+        ? sb.from("follows").select("followee_id").in("followee_id", sellerUserIds).limit(5000)
+        : Promise.resolve({ data: [] as any[] }),
+    ]);
+    const followerCounts = new Map<string, number>();
+    ((followerRowsRes as any)?.data ?? []).forEach((r: any) => {
+      const id = r.followee_id as string;
+      followerCounts.set(id, (followerCounts.get(id) ?? 0) + 1);
+    });
+
+    const sellers = (sellerRows ?? []).map((s: any, i: number) => ({
+      id: s.user_id as string,
+      name: (s.display_name || s.username || s.slug) as string,
+      slug: s.slug as string,
+      bio: (s.bio as string) ?? "",
+      avatarUrl: sellerAvatars[i] ?? null,
+      coverUrl: sellerCovers[i] ?? null,
+      verified: verifiedSellerIds.has(s.user_id as string),
+      rating: Number(s.reputation_stars ?? 0),
+      followersCount: followerCounts.get(s.user_id as string) ?? 0,
+      productsCount: sellerCounts.get(s.user_id as string) ?? 0,
     }));
 
     sellers.sort((a, b) => b.productsCount - a.productsCount);
@@ -1737,65 +1743,65 @@ export const getTopSellers = createServerFn({ method: "GET" })
     const sellerIds = Array.from(productsBySeller.keys()).slice(0, 200);
     if (sellerIds.length === 0) return [];
 
-    // Paid sales per seller (best-effort).
-    const salesBySeller = new Map<string, number>();
-    try {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const { data: orderRows } = await supabaseAdmin
+    const productIds = Array.from(sellerByProduct.keys()).slice(0, 1000);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Every one of these reads is independent, so they go out together instead
+    // of one after another.
+    const [orderRes, reviewRes, sellerRes, privateRes, verifiedRes, followRes] = await Promise.all([
+      supabaseAdmin
         .from("orders")
         .select("product_id, quantity, status")
         .in("status", ["paid", "delivered", "completed", "released"])
-        .limit(5000);
-      (orderRows ?? []).forEach((o: any) => {
-        const sid = sellerByProduct.get(o.product_id as string);
-        if (!sid) return;
-        salesBySeller.set(sid, (salesBySeller.get(sid) ?? 0) + Number(o.quantity ?? 1));
-      });
-    } catch {
-      /* best-effort */
-    }
+        .limit(5000),
+      productIds.length
+        ? sb.from("product_reviews").select("product_id, rating").in("product_id", productIds).limit(5000)
+        : Promise.resolve({ data: [] as any[] }),
+      sb
+        .from("profiles")
+        .select(
+          "user_id, slug, display_name, username, avatar_path, cover_path, verification_tier, bio, profile_completed_at, deleted_at",
+        )
+        .in("user_id", sellerIds),
+      supabaseAdmin.from("profiles").select("user_id, banned_at, country").in("user_id", sellerIds),
+      supabaseAdmin
+        .from("seller_verification_requests")
+        .select("user_id")
+        .eq("status", "approved")
+        .in("user_id", sellerIds),
+      sb.from("follows").select("followee_id").in("followee_id", sellerIds).limit(10000),
+    ]);
+
+    // Paid sales per seller (best-effort).
+    const salesBySeller = new Map<string, number>();
+    ((orderRes as any)?.data ?? []).forEach((o: any) => {
+      const sid = sellerByProduct.get(o.product_id as string);
+      if (!sid) return;
+      salesBySeller.set(sid, (salesBySeller.get(sid) ?? 0) + Number(o.quantity ?? 1));
+    });
 
     // Live ratings from product reviews.
     const ratingSum = new Map<string, number>();
     const ratingCount = new Map<string, number>();
-    const productIds = Array.from(sellerByProduct.keys()).slice(0, 1000);
-    if (productIds.length > 0) {
-      const { data: reviewRows } = await sb
-        .from("product_reviews")
-        .select("product_id, rating")
-        .in("product_id", productIds)
-        .limit(5000);
-      (reviewRows ?? []).forEach((r: any) => {
-        const sid = sellerByProduct.get(r.product_id as string);
-        if (!sid) return;
-        ratingSum.set(sid, (ratingSum.get(sid) ?? 0) + Number(r.rating ?? 0));
-        ratingCount.set(sid, (ratingCount.get(sid) ?? 0) + 1);
-      });
-    }
+    ((reviewRes as any)?.data ?? []).forEach((r: any) => {
+      const sid = sellerByProduct.get(r.product_id as string);
+      if (!sid) return;
+      ratingSum.set(sid, (ratingSum.get(sid) ?? 0) + Number(r.rating ?? 0));
+      ratingCount.set(sid, (ratingCount.get(sid) ?? 0) + 1);
+    });
 
-    const { data: sellerRows } = await sb
-      .from("profiles")
-      .select(
-        "user_id, slug, display_name, username, avatar_path, cover_path, verification_tier, bio, profile_completed_at, deleted_at",
-      )
-      .in("user_id", sellerIds);
+    const sellerRows = (sellerRes as any)?.data ?? [];
 
     // Country and moderation flags are private profile fields, so resolve both
     // on the server without widening public profile access.
     const privateProfiles = new Map<string, { bannedAt: string | null; country: string | null }>();
-    {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const { data: privateRows } = await supabaseAdmin
-        .from("profiles")
-        .select("user_id, banned_at, country")
-        .in("user_id", sellerIds);
-      (privateRows ?? []).forEach((profile: any) => {
-        privateProfiles.set(profile.user_id as string, {
-          bannedAt: (profile.banned_at as string | null) ?? null,
-          country: (profile.country as string | null) ?? null,
-        });
+    ((privateRes as any)?.data ?? []).forEach((profile: any) => {
+      privateProfiles.set(profile.user_id as string, {
+        bannedAt: (profile.banned_at as string | null) ?? null,
+        country: (profile.country as string | null) ?? null,
       });
-    }
+    });
+
     const rows = (sellerRows ?? []).filter(
       (seller: any) =>
         !!seller.profile_completed_at &&
@@ -1805,25 +1811,15 @@ export const getTopSellers = createServerFn({ method: "GET" })
 
     // "Verified" means an admin-approved seller verification request exists.
     const verifiedIds = new Set<string>();
-    {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const { data: vRows } = await supabaseAdmin
-        .from("seller_verification_requests")
-        .select("user_id")
-        .eq("status", "approved")
-        .in("user_id", rows.map((s: any) => s.user_id as string));
-      (vRows ?? []).forEach((v: any) => verifiedIds.add(v.user_id as string));
-    }
-    const avatars = await signBucket(sb, "avatars", rows.map((s: any) => s.avatar_path ?? null));
-    const covers = await signBucket(sb, "profile-covers", rows.map((s: any) => s.cover_path ?? null));
+    ((verifiedRes as any)?.data ?? []).forEach((v: any) => verifiedIds.add(v.user_id as string));
+
+    const [avatars, covers] = await Promise.all([
+      signBucket(sb, "avatars", rows.map((s: any) => s.avatar_path ?? null)),
+      signBucket(sb, "profile-covers", rows.map((s: any) => s.cover_path ?? null)),
+    ]);
 
     const followers = new Map<string, number>();
-    const { data: followRows } = await sb
-      .from("follows")
-      .select("followee_id")
-      .in("followee_id", sellerIds)
-      .limit(10000);
-    (followRows ?? []).forEach((f: any) => {
+    ((followRes as any)?.data ?? []).forEach((f: any) => {
       const id = f.followee_id as string;
       followers.set(id, (followers.get(id) ?? 0) + 1);
     });

@@ -163,7 +163,7 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
         <Button variant="ghost" size="icon" aria-label="Menu" onClick={() => setMenuOpen(true)} className="text-wallet-copy-muted hover:bg-wallet-muted hover:text-wallet-copy">
           <Menu />
         </Button>
-        <Link to="/" aria-label="Oventric home"><img src={logo} alt="Oventric" className="h-6 w-auto" /></Link>
+        <Link to="/" aria-label="Oventric home"><img loading="lazy" decoding="async" src={logo} alt="Oventric" className="h-6 w-auto" /></Link>
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" aria-label="Notifications" onClick={() => isAuthenticated ? setNotifOpen(true) : openGate("funding")} className="relative text-wallet-copy-muted hover:bg-wallet-muted hover:text-wallet-copy">
             <Bell />
@@ -172,7 +172,7 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
         </div>
       </header>
       <header className="wallet-desktop-header hidden h-[72px] items-center border-b border-wallet-line bg-wallet-panel px-6 md:flex">
-        <Link to="/" aria-label="Oventric home" className="w-[150px] shrink-0"><img src={logo} alt="Oventric" className="h-8 w-auto" /></Link>
+        <Link to="/" aria-label="Oventric home" className="w-[150px] shrink-0"><img loading="lazy" decoding="async" src={logo} alt="Oventric" className="h-8 w-auto" /></Link>
         <div className="mx-auto flex h-10 w-full max-w-xl items-center gap-3 rounded-full bg-wallet-panel-raised px-4 text-wallet-copy-muted"><Search className="h-4 w-4" /><span className="text-xs">Search for products, creators, shops...</span></div>
         <div className="ml-5 flex w-[150px] shrink-0 justify-end gap-2">
           <Button variant="ghost" size="icon" aria-label="Notifications" onClick={() => isAuthenticated ? setNotifOpen(true) : openGate("funding")} className="text-wallet-copy hover:bg-wallet-muted"><Bell /></Button>

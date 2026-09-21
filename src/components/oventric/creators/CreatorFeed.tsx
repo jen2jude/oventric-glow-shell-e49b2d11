@@ -251,7 +251,7 @@ function CreatorCard({ post, onRecordedView }: { post: CreatorPostDTO; onRecorde
           className="block h-10 w-10 shrink-0 overflow-hidden rounded-full bg-muted"
         >
           {post.author.avatarUrl && (
-            <img src={post.author.avatarUrl} alt="" className="h-full w-full object-cover" />
+            <img loading="lazy" decoding="async" src={post.author.avatarUrl} alt="" className="h-full w-full object-cover" />
           )}
         </Link>
       </div>

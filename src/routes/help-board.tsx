@@ -194,7 +194,7 @@ function HelpBoardPage() {
             </div>
             <div className="relative min-h-64 overflow-hidden bg-help-teal-soft lg:min-h-full">
               <div className="absolute inset-x-6 bottom-0 top-5 rounded-t-[10px] bg-help-surface/60" />
-              <img src={supportHeadset.url} alt="Oventric support headset" className="absolute inset-0 h-full w-full object-contain p-8 lg:p-10" />
+              <img loading="lazy" decoding="async" src={supportHeadset.url} alt="Oventric support headset" className="absolute inset-0 h-full w-full object-contain p-8 lg:p-10" />
               <div className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-[10px] border border-help-line bg-help-surface/90 p-3 shadow-help-card backdrop-blur-sm">
                 <span className="grid size-10 place-items-center rounded-[10px] bg-help-teal text-primary-foreground"><HeartHandshake /></span>
                 <div><p className="text-sm font-bold">Human support</p><p className="text-xs text-help-copy">Clear, practical help from our team</p></div>

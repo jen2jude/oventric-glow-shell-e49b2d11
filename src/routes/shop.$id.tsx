@@ -353,7 +353,7 @@ function ShopPage() {
         {/* Cover */}
         <div className={`relative w-full overflow-hidden ${isAppShell ? "h-48 sm:h-64" : "storefront-cover h-48 rounded-lg sm:h-64 lg:h-72"}`}>
           {shop?.coverUrl ? (
-            <img src={shop.coverUrl} alt="" className="h-full w-full object-cover" />
+            <img loading="lazy" decoding="async" src={shop.coverUrl} alt="" className="h-full w-full object-cover" />
           ) : (
             <div className={isAppShell ? "h-full w-full bg-[#1A1A1F]" : "h-full w-full bg-muted"} />
           )}
@@ -368,7 +368,7 @@ function ShopPage() {
         <div className={isAppShell ? "-mt-12" : "storefront-content relative -mt-10 px-1 sm:-mt-14 sm:px-8"}>
           <div className={`relative overflow-hidden border bg-card ${isAppShell ? "h-24 w-24 rounded-2xl border-white/10" : "storefront-logo h-24 w-24 rounded-full border-4 border-background shadow-sm sm:h-32 sm:w-32"}`}>
             {shop?.logoUrl ? (
-              <img src={shop.logoUrl} alt="" className="h-full w-full object-cover" />
+              <img loading="lazy" decoding="async" src={shop.logoUrl} alt="" className="h-full w-full object-cover" />
             ) : (
               <div className="grid h-full w-full place-items-center text-2xl font-black text-muted-foreground">
                 {name.charAt(0).toUpperCase()}

@@ -312,7 +312,7 @@ export function CreatorPublishModal({
                     {a.kind === "video" ? (
                       <video src={a.url} className="h-full w-full object-cover" muted playsInline />
                     ) : (
-                      <img src={a.url} alt="" className="h-full w-full object-cover" />
+                      <img loading="lazy" decoding="async" src={a.url} alt="" className="h-full w-full object-cover" />
                     )}
                     <button
                       type="button"
