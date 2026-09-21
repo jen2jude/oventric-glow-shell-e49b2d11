@@ -234,9 +234,12 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
 
     // Only top-tier peers (>= 4.0 stars), highest first — used by the legacy
     // sticky-peers widget.
+    const hasAvatarPath = (p: { avatar_path?: string | null }) =>
+      typeof p.avatar_path === "string" && p.avatar_path.trim().length > 0;
+
     const topScored = scored
       .filter((x) => x.stars >= 4.0)
-      .sort((a, b) => b.stars - a.stars)
+      .sort((a, b) => Number(hasAvatarPath(b.p)) - Number(hasAvatarPath(a.p)) || b.stars - a.stars)
       .slice(0, 10);
 
     const activeShopSellerIds = new Set(
@@ -245,7 +248,7 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
 
     // Suggestions include up to ten active profiles, ordered by reputation.
     const anyScored = scored
-      .sort((a, b) => b.stars - a.stars)
+      .sort((a, b) => Number(hasAvatarPath(b.p)) - Number(hasAvatarPath(a.p)) || b.stars - a.stars)
       .slice(0, 10);
 
     const combined = Array.from(
@@ -269,8 +272,10 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
         hasActiveShop: activeShopSellerIds.has(x.p.user_id as string),
       };
     };
-    const peers: DiscoveryPeer[] = combined.map(toPeer);
-    const topPeersAny: DiscoveryPeer[] = anyScored.map(toPeer);
+    const avatarFirst = (a: DiscoveryPeer, b: DiscoveryPeer) =>
+      Number(Boolean(b.avatarUrl)) - Number(Boolean(a.avatarUrl)) || b.stars - a.stars;
+    const peers: DiscoveryPeer[] = combined.map(toPeer).sort(avatarFirst);
+    const topPeersAny: DiscoveryPeer[] = anyScored.map(toPeer).sort(avatarFirst);
 
     // ---- Bounties (top 5 by escrow) ----
     const bRows = bountiesRes.data ?? [];
