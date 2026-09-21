@@ -2210,6 +2210,48 @@ export function Feed() {
           }
           onReported={markReported}
         />
+        {editingPost && (
+          <div className="fixed inset-0 z-[1100] grid place-items-center p-4">
+            <div
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+              onClick={() => (editSaving ? null : setEditingPost(null))}
+              aria-hidden
+            />
+            <div className="relative w-full max-w-md rounded-[20px] border border-slate-200 bg-white p-5 shadow-[0_20px_60px_-10px_rgba(15,23,42,0.25)]">
+              <h3 className="mb-1 font-wallet-display text-[17px] font-bold text-slate-900">Edit post</h3>
+              <p className="mb-3 text-[12px] text-slate-500">
+                You can edit a post within 10 minutes of sharing it.
+              </p>
+              <textarea
+                value={editingPost.text}
+                onChange={(e) =>
+                  setEditingPost((prev) => (prev ? { ...prev, text: e.target.value } : prev))
+                }
+                rows={5}
+                maxLength={4000}
+                className="w-full resize-none rounded-[10px] border border-slate-200 bg-slate-50 p-3 text-[15px] text-slate-900 outline-none focus:border-[#E5484D]"
+              />
+              <div className="mt-4 flex justify-end gap-2">
+                <button
+                  type="button"
+                  disabled={editSaving}
+                  onClick={() => setEditingPost(null)}
+                  className="rounded-[10px] px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={editSaving}
+                  onClick={() => void handleSaveEdit()}
+                  className="rounded-[10px] bg-[#E5484D] px-4 py-2 text-sm font-semibold text-white hover:brightness-95 disabled:opacity-50"
+                >
+                  {editSaving ? "Saving…" : "Save changes"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <aside className="hidden min-w-0 lg:block lg:sticky lg:top-24">
         <h2 className="mb-4 font-wallet-display text-lg font-bold text-slate-900">
