@@ -350,6 +350,19 @@ export function PostActionsMenu({
               {sheetItem(Link2, "Copy link", "copy_link")}
               {sheetItem(Flag, "Report this", "report", undefined, true)}
 
+              {isOwn && canEdit && onEdit && (
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    onEdit();
+                  }}
+                  className="w-full flex items-center gap-4 px-5 py-3.5 text-left text-[15px] text-slate-900 active:bg-slate-100"
+                >
+                  <Pencil className="w-5 h-5 text-slate-500" /> Edit post
+                </button>
+              )}
+
+
               {isOwn && onDelete && (
                 <button
                   onClick={() => {
