@@ -898,6 +898,8 @@ function CheckoutPage() {
                   </div>
                 </div>
               )}
+              </>)}
+
 
               {isService && (
                 <>
