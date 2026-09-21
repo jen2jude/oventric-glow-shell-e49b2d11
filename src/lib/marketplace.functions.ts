@@ -246,10 +246,7 @@ async function signImagePaths(
   paths: string[],
 ): Promise<string[]> {
   if (paths.length === 0) return [];
-  const { data } = await (await imageStorage()).from("product-covers").createSignedUrls(paths, 60 * 60 * 24 * 7);
-  const map = new Map<string, string>();
-  (data ?? []).forEach((r) => { if (r.path && r.signedUrl) map.set(r.path, r.signedUrl); });
-  return paths.map((p) => map.get(p) ?? "").filter(Boolean);
+  return paths.map((p) => stableImageUrl("product-covers", p) ?? "").filter(Boolean);
 }
 
 /** Public catalog. Anyone (including anon) can list. RLS filters to status='active'. */
@@ -531,11 +528,7 @@ export const createProduct = createServerFn({ method: "POST" })
 
     if (error) throw new Error(error.message);
     let coverUrl: string | null = null;
-    if (cover) {
-      const { data: signed } = await (await imageStorage()).from("product-covers")
-        .createSignedUrl(cover, 60 * 60 * 24 * 7);
-      coverUrl = signed?.signedUrl ?? null;
-    }
+    if (cover) coverUrl = stableImageUrl("product-covers", cover);
     return mapProduct(row as Record<string, unknown>, coverUrl);
   });
 
@@ -560,18 +553,9 @@ export const listMyProducts = createServerFn({ method: "GET" })
     for (const r of rows) {
       const cover = (r.cover_path as string) ?? null;
       let coverUrl: string | null = null;
-      if (cover) {
-        const { data: sig } = await (await imageStorage()).from("product-covers")
-          .createSignedUrl(cover, 60 * 60 * 24);
-        coverUrl = sig?.signedUrl ?? null;
-      }
+      if (cover) coverUrl = stableImageUrl("product-covers", cover);
       const paths = Array.isArray(r.image_paths) ? (r.image_paths as string[]) : [];
-      const imageUrls: string[] = [];
-      for (const p of paths) {
-        const { data: sig } = await (await imageStorage()).from("product-covers")
-          .createSignedUrl(p, 60 * 60 * 24);
-        imageUrls.push(sig?.signedUrl ?? "");
-      }
+      const imageUrls = paths.map((p) => stableImageUrl("product-covers", p) ?? "");
       out.push(mapProduct(r, coverUrl, imageUrls));
     }
     return out;
@@ -1425,11 +1409,7 @@ export const listMyPurchases = createServerFn({ method: "GET" })
       const p = (r.products ?? {}) as Record<string, unknown>;
       const coverPath = (p.cover_path as string) ?? null;
       let coverUrl: string | null = null;
-      if (coverPath) {
-        const { data: sig } = await (await imageStorage()).from("product-covers")
-          .createSignedUrl(coverPath, 60 * 60 * 24);
-        coverUrl = sig?.signedUrl ?? null;
-      }
+      if (coverPath) coverUrl = stableImageUrl("product-covers", coverPath);
       out.push({
         orderId: r.id as string,
         productId: r.product_id as string,
