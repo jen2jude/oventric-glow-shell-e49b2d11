@@ -132,7 +132,6 @@ import { EditProfileModal } from "@/components/oventric/EditProfileModal";
 import { CircleRequestsDrawer } from "@/components/oventric/CircleRequestsDrawer";
 import { FollowRequestsDrawer } from "@/components/oventric/FollowRequestsDrawer";
 import { ProfileMessageModal } from "@/components/oventric/messaging/ProfileMessageModal";
-import { EarningsBreakdown } from "@/components/oventric/profile/EarningsBreakdown";
 import {
   ConnectionsDialog,
   type ConnectionsTab,
@@ -1827,6 +1826,7 @@ function ProfilePage() {
                     ecosystemSections.map((sct) => [sct.key, sct.count ?? 0]),
                   )}
                   isOwner={isOwnProfile}
+                  viewerId={meId ?? null}
                   price={price}
                   itemSearch={itemSearch}
                   onOpenSection={(key) => {
@@ -2114,8 +2114,6 @@ function ProfilePage() {
               />
             )}
 
-
-            <EarningsBreakdown isOwner={isOwnProfile} />
 
           </div>
         </main>

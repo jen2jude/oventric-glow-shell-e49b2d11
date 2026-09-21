@@ -2,16 +2,17 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, MessageCircle, ShoppingBag, Users, Wrench } from "lucide-react";
+import { ArrowRight, ShoppingBag, Users, Wrench } from "lucide-react";
 import { getLiveProfileTab, type RealProfileView } from "@/lib/profiles.functions";
 import type {
   ProfileGroup,
   ProfileListing,
-  ProfilePost,
 } from "@/lib/profiles/mockProfiles";
 import type { EcosystemSectionKey } from "@/lib/ecosystem/sections";
+import { ProfilePostsFeed } from "./ProfilePostsFeed";
+import { EarningsBreakdown } from "./EarningsBreakdown";
 
-type PreviewKey = "marketplace" | "services" | "courses" | "posts" | "groups";
+type PreviewKey = "marketplace" | "services" | "courses" | "groups";
 
 interface Props {
   /** Slug or user id used for data fetching. */
@@ -22,6 +23,7 @@ interface Props {
   /** Section -> item count, so empty modules never render. */
   counts: Partial<Record<EcosystemSectionKey, number>>;
   isOwner: boolean;
+  viewerId: string | null;
   price: (usd: number) => string;
   itemSearch: Record<string, unknown>;
   onOpenSection: (key: string) => void;
@@ -94,6 +96,7 @@ export function ProfileOverview({
   name,
   counts,
   isOwner,
+  viewerId,
   price,
   itemSearch,
   onOpenSection,
@@ -111,7 +114,6 @@ export function ProfileOverview({
     const keys: PreviewKey[] = [];
     if ((counts.marketplace ?? 0) > 0) keys.push("marketplace");
     if ((counts.services ?? 0) > 0) keys.push("services");
-    if ((counts.posts ?? 0) > 0) keys.push("posts");
     if ((counts.groups ?? 0) > 0) keys.push("groups");
     return keys;
   }, [counts]);
@@ -178,7 +180,6 @@ export function ProfileOverview({
 
   const shop = (data.marketplace ?? []) as ProfileListing[];
   const services = (data.services ?? []) as ProfileListing[];
-  const posts = (data.posts ?? []) as ProfilePost[];
   const groups = (data.groups ?? []) as ProfileGroup[];
 
   const interests = realProfile?.interests ?? [];
@@ -196,6 +197,7 @@ export function ProfileOverview({
       )}
 
 
+      <div className="grid items-stretch gap-5 lg:grid-cols-2">
       {shop.length > 0 && (
         <Module
           title={`From ${name.split(" ")[0] || name}'s shop`}
@@ -215,36 +217,23 @@ export function ProfileOverview({
           <Rail>{services.slice(0, 6).map((l) => listingCard(l, "listing", "Service"))}</Rail>
         </Module>
       )}
+      </div>
 
       {/* Courses are a paused (non-MVP) section and are not rendered. */}
 
 
 
-      {posts.length > 0 && (
-        <Module title="Recent posts" action="View posts" onAction={() => onOpenSection("posts")}>
-          <div className="space-y-2">
-            {posts.slice(0, 3).map((p) => (
-              <Link
-                key={p.id}
-                to="/profile/$id/item/$kind/$itemId"
-                params={{ id: profileId, kind: "post", itemId: p.id }}
-                search={itemSearch as never}
-                className="flex items-start gap-3 rounded-2xl border border-white/10 bg-[#141418] p-3 md:rounded-[10px] md:border-slate-200 md:bg-slate-50"
-              >
-                <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-white/[0.06] md:bg-slate-100">
-                  <MessageCircle className="h-4 w-4 text-[#E5484D]" />
-                </span>
-                <span className="min-w-0">
-                  <span className="line-clamp-2 block text-sm text-slate-200 md:text-slate-700">
-                    {p.content}
-                  </span>
-                  <span className="mt-1 block text-[11px] text-slate-500">
-                    {p.timeAgo} · {p.likes} reactions · {p.comments} comments
-                  </span>
-                </span>
-              </Link>
-            ))}
-          </div>
+      <EarningsBreakdown isOwner={isOwner} />
+
+      {realProfile?.userId && (counts.posts ?? 0) > 0 && (
+        <Module title="Recent social media posts" action="View posts" onAction={() => onOpenSection("posts")}>
+          <ProfilePostsFeed
+            wallUserId={realProfile.userId}
+            wallOwnerName={name}
+            viewerId={viewerId}
+            showComposer={false}
+            limit={3}
+          />
         </Module>
       )}
 
