@@ -1815,7 +1815,6 @@ function ProfilePage() {
                   idOrSlug={id}
                   name={displayName}
                   isOwner={isOwnProfile}
-                  viewerId={meId ?? null}
                   price={price}
                 />
               ) : overviewMode && !photosMode ? (
@@ -1827,6 +1826,7 @@ function ProfilePage() {
                     ecosystemSections.map((sct) => [sct.key, sct.count ?? 0]),
                   )}
                   isOwner={isOwnProfile}
+                  viewerId={meId ?? null}
                   price={price}
                   itemSearch={itemSearch}
                   onOpenSection={(key) => {
