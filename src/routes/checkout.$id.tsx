@@ -1247,12 +1247,17 @@ function CheckoutPage() {
                 <>
                   <button
                     onClick={pay}
-                    disabled={submitting || isOwnListing || insufficient || (needsDelivery && !deliveryValid)}
+                    disabled={submitting || isOwnListing || (!isFree && insufficient) || (needsDelivery && !deliveryValid)}
                     className="w-full mt-4 inline-flex items-center justify-center gap-2 py-3 rounded-[10px] bg-[#E5484D] hover:bg-[#d13a3f] text-white font-black text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {submitting ? (
                       <>
-                        <Loader2 className="w-4 h-4 animate-spin" /> Processing…
+                        <Loader2 className="w-4 h-4 animate-spin" />{" "}
+                        {isFree ? "Preparing download…" : "Processing…"}
+                      </>
+                    ) : isFree ? (
+                      <>
+                        <Download className="w-4 h-4" /> Download now
                       </>
                     ) : method === "wallet" ? (
                       `Pay ${payTotalLabel}`
