@@ -109,19 +109,27 @@ function serverPublicClient() {
 }
 
 async function signBucket(
-  sb: ReturnType<typeof serverPublicClient>,
+  _sb: ReturnType<typeof serverPublicClient>,
   bucket: string,
   paths: (string | null | undefined)[],
 ): Promise<(string | null)[]> {
   const clean = paths.map((p) => (typeof p === "string" && p ? p : null));
-  const unique = Array.from(new Set(clean.filter((p): p is string => !!p)));
-  if (unique.length === 0) return clean.map(() => null);
-  const { data } = await sb.storage.from(bucket).createSignedUrls(unique, 60 * 60 * 24 * 7);
+  const unique = Array.from(
+    new Set(clean.filter((p): p is string => !!p && !/^https?:\/\//i.test(p))),
+  );
+  if (unique.length === 0) return clean.map((p) => (p && /^https?:\/\//i.test(p) ? p : null));
+  const { imageStorage } = await import("@/lib/storage/images.server");
+  const storage = await imageStorage();
+  const { data } = await storage.from(bucket).createSignedUrls(unique, 60 * 60 * 24 * 7);
   const map = new Map<string, string>();
   (data ?? []).forEach((r) => {
     if (r.path && r.signedUrl) map.set(r.path, r.signedUrl);
   });
-  return clean.map((p) => (p ? (map.get(p) ?? null) : null));
+  return clean.map((p) => {
+    if (!p) return null;
+    if (/^https?:\/\//i.test(p)) return p;
+    return map.get(p) ?? null;
+  });
 }
 
 export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
@@ -226,9 +234,12 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
 
     // Only top-tier peers (>= 4.0 stars), highest first — used by the legacy
     // sticky-peers widget.
+    const hasAvatarPath = (p: { avatar_path?: string | null }) =>
+      typeof p.avatar_path === "string" && p.avatar_path.trim().length > 0;
+
     const topScored = scored
       .filter((x) => x.stars >= 4.0)
-      .sort((a, b) => b.stars - a.stars)
+      .sort((a, b) => Number(hasAvatarPath(b.p)) - Number(hasAvatarPath(a.p)) || b.stars - a.stars)
       .slice(0, 10);
 
     const activeShopSellerIds = new Set(
@@ -237,7 +248,7 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
 
     // Suggestions include up to ten active profiles, ordered by reputation.
     const anyScored = scored
-      .sort((a, b) => b.stars - a.stars)
+      .sort((a, b) => Number(hasAvatarPath(b.p)) - Number(hasAvatarPath(a.p)) || b.stars - a.stars)
       .slice(0, 10);
 
     const combined = Array.from(
@@ -261,8 +272,10 @@ export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
         hasActiveShop: activeShopSellerIds.has(x.p.user_id as string),
       };
     };
-    const peers: DiscoveryPeer[] = combined.map(toPeer);
-    const topPeersAny: DiscoveryPeer[] = anyScored.map(toPeer);
+    const avatarFirst = (a: DiscoveryPeer, b: DiscoveryPeer) =>
+      Number(Boolean(b.avatarUrl)) - Number(Boolean(a.avatarUrl)) || b.stars - a.stars;
+    const peers: DiscoveryPeer[] = combined.map(toPeer).sort(avatarFirst);
+    const topPeersAny: DiscoveryPeer[] = anyScored.map(toPeer).sort(avatarFirst);
 
     // ---- Bounties (top 5 by escrow) ----
     const bRows = bountiesRes.data ?? [];
