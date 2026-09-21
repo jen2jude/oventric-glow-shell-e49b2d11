@@ -228,7 +228,7 @@ function CreatorCard({ post }: { post: CreatorPostDTO }) {
         <div className="mt-3">{post.asset && <AssetCta asset={post.asset} />}</div>
 
         {post.externalEmbedUrl && (
-        <div className="mt-3 aspect-video w-full overflow-hidden rounded-[10px] border border-border bg-background">
+        <div className="mt-3 aspect-video w-full overflow-hidden rounded-[10px] border border-slate-100 bg-white">
           <iframe
             src={post.externalEmbedUrl}
             title={post.title}
