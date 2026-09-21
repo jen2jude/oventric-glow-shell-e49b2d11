@@ -1622,8 +1622,8 @@ export function Feed() {
             const items: React.ReactNode[] = [];
             let peopleRailIdx = 0;
             let shopRailIdx = 0;
+            // "For You" is now the everything view: people + shop rails woven in.
             const interleaveForYou = feedTab === "foryou" && !isFiltering;
-            const interleaveAll = feedTab === "all" && !isFiltering;
             const pushPeopleRail = () => {
               if (availableSuggestions.length === 0) return;
               const offset = (peopleRailIdx * 4) % availableSuggestions.length;
