@@ -41,6 +41,7 @@ export interface CreatorAssetDTO {
   originalCurrency: string | null;
   originalAmount: number | null;
   fxSnapshot: { base: string; rates: Record<string, number> } | null;
+  downloadCount: number;
 }
 
 export interface CreatorPostDTO {
@@ -54,6 +55,7 @@ export interface CreatorPostDTO {
   externalProvider: string | null;
   fields: string[];
   createdAt: string;
+  viewCount: number;
   asset: CreatorAssetDTO | null;
   author: {
     userId: string;
@@ -165,6 +167,26 @@ export const saveCreatorOnboarding = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+const ViewInput = z.object({
+  postId: z.string().uuid(),
+  sessionKey: z.string().trim().min(12).max(100),
+});
+
+/** Records one real view per browser/session for a published creator post. */
+export const recordCreatorPostView = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => ViewInput.parse(input ?? {}))
+  .handler(async ({ data }) => {
+    const sb = publicClient();
+    const { error } = await sb.from("creator_post_views").insert({
+      post_id: data.postId,
+      session_key: data.sessionKey,
+    });
+    if (error && error.code !== "23505") {
+      console.error("[recordCreatorPostView]", error);
+    }
+    return { ok: true };
+  });
+
 const PublishInput = z.object({
   title: z.string().trim().min(2).max(120),
   caption: z.string().trim().max(2000).optional(),
@@ -237,7 +259,7 @@ export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
     const { data: rows, error } = await sb
       .from("creator_posts")
       .select(
-        "id, author_id, title, caption, media_paths, media_type, community_link, external_url, external_provider, product_id, fields, created_at",
+        "id, author_id, title, caption, media_paths, media_type, community_link, external_url, external_provider, product_id, fields, created_at, view_count",
       )
       .eq("status", "published")
       .order("created_at", { ascending: false })
@@ -250,7 +272,19 @@ export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
       new Set(rows.map((r) => r.product_id).filter((id): id is string => !!id)),
     );
     const assets = new Map<string, CreatorAssetDTO>();
+    const downloadCounts = new Map<string, number>();
     if (productIds.length > 0) {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: orders } = await supabaseAdmin
+        .from("orders")
+        .select("product_id")
+        .in("product_id", productIds)
+        .eq("status", "paid");
+      (orders ?? []).forEach((o) => {
+        if (!o.product_id) return;
+        downloadCounts.set(o.product_id, (downloadCounts.get(o.product_id) ?? 0) + 1);
+      });
+
       const { data: prods } = await sb
         .from("products")
         .select("id, price_usd, original_currency, original_amount, fx_snapshot")
@@ -348,6 +382,7 @@ export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
         externalProvider: r.external_provider,
         fields: r.fields ?? [],
         createdAt: r.created_at,
+        viewCount: Number(r.view_count ?? 0),
         asset: r.product_id
           ? (assets.get(r.product_id) ?? {
               productId: r.product_id,
@@ -357,6 +392,7 @@ export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
               originalCurrency: null,
               originalAmount: null,
               fxSnapshot: null,
+              downloadCount: downloadCounts.get(r.product_id) ?? 0,
             })
           : null,
 
