@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ShoppingBag, Star, CheckCircle2 } from "lucide-react";
+import { ShoppingBag, CheckCircle2 } from "lucide-react";
 import type { ProductAttachment } from "@/lib/posts.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { computeDisplayPrice } from "@/lib/fx-display";

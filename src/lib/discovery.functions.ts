@@ -5,7 +5,7 @@ import type { Database } from "@/integrations/supabase/types";
 /** Batch-fetch seller shop identity so product cards show the storefront name and link to the store. */
 async function fetchShopProfiles(sb: any, sellerIds: string[]): Promise<Map<string, { shopName: string; slug: string | null }>> {
   const ids = Array.from(new Set(sellerIds.filter(Boolean)));
-  const map = new Map<string, string>();
+  const map = new Map<string, { shopName: string; slug: string | null }>();
   if (!ids.length) return map;
   const { data } = await sb.from("profiles").select("user_id, shop_name, display_name, username, slug").in("user_id", ids);
   (data ?? []).forEach((p: any) => {
