@@ -177,7 +177,7 @@ export function MiniPayPanel({
           {payment && !done && (
             <>
               <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 text-center">
-                {rail === "minipay" && (
+                {rail === "minipay" && !destination && (
                   <div className="flex justify-center mb-4">
                     <div className="relative p-2 bg-white rounded-xl">
                       <img loading="lazy" decoding="async"
@@ -208,7 +208,7 @@ export function MiniPayPanel({
                 </p>
               </div>
 
-              {rail === "minipay" ? (
+              {rail === "minipay" && !destination ? (
                 <>
                   <Row label="MiniPay Account Number" value="+234 803 434 7661" onCopy={copy} />
                   <Row label="MiniPay handle" value={instructions.handle ?? "oventric"} onCopy={copy} />

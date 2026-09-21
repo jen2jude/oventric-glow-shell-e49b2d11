@@ -126,10 +126,12 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
       .select("amount, currency")
       .eq("user_id", me)
       .eq("inflow", true)
+      .eq("type", "Marketplace Sale")
       .eq("status", "pending");
     const pendingEscrowHome = ((pendingInflow ?? []) as Array<{ amount: number; currency: string }>)
       .filter((r) => r.currency === homeCurrency)
       .reduce((s, r) => s + Number(r.amount ?? 0), 0);
+
 
 
     const orderRows = (ordersRes.data ?? []) as Array<{
@@ -573,6 +575,7 @@ export const getMyWalletSummary = createServerFn({ method: "POST" })
       .select("amount, currency")
       .eq("user_id", me)
       .eq("inflow", true)
+      .eq("type", "Marketplace Sale")
       .eq("status", "pending");
     const pendingEscrowHome = ((pendingInflow ?? []) as Array<{ amount: number; currency: string }>)
       .filter((r) => r.currency === homeCurrency)
