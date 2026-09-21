@@ -396,7 +396,6 @@ export function Feed() {
   const [meLastName, setMeLastName] = useState<string>("");
   const [meAvatarUrl, setMeAvatarUrl] = useState<string | null>(null);
   const [meInitials, setMeInitials] = useState<string>("Me");
-  const [meSlug, setMeSlug] = useState<string | null>(null);
   const [feedTab, setFeedTab] = useState<FeedTab>("foryou");
   const [searchOpen, setSearchOpen] = useState(false);
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
@@ -581,11 +580,9 @@ export function Feed() {
       try {
         const { data: prof } = await supabase
           .from("profiles")
-          .select("display_name, username, avatar_path, slug")
+          .select("display_name, username, avatar_path")
           .eq("user_id", uid)
           .maybeSingle();
-        if (prof?.slug) setMeSlug(prof.slug);
-
         const name = (prof?.display_name || prof?.username || "").trim();
         if (name) {
           const parts = name.split(/\s+/);
