@@ -1233,6 +1233,35 @@ export const createOrder = createServerFn({ method: "POST" })
       });
     }
 
+    // Free downloads: no payment, no wallet movement, no escrow money. Tell
+    // both sides plainly so nobody waits for a payout that will never exist.
+    if (totalUSD <= 0) {
+      try {
+        await supabaseAdmin.from("notifications").insert([
+          {
+            user_id: userId,
+            kind: "free_download",
+            title: `Free download ready — "${product.name}"`,
+            body: `This product is free, so no payment was taken. It's saved in your dashboard for re-download any time.`,
+            link: `/order/${oRow.id as string}`,
+            from_user_id: product.sellerId,
+          },
+          {
+            user_id: product.sellerId,
+            kind: "free_download",
+            title: `Free download — "${product.name}"`,
+            body: `Someone downloaded your free product. No payment is involved, so nothing is added to your wallet.`,
+            link: `/dashboard?tab=sales`,
+            from_user_id: userId,
+          },
+        ]);
+      } catch (err) {
+        console.error("[createOrder] free download notify failed", err);
+      }
+    }
+
+
+
 
     return {
       order: {
