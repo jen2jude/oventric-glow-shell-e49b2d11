@@ -300,6 +300,7 @@ export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
           originalCurrency: (p.original_currency as string) ?? null,
           originalAmount: p.original_amount === null ? null : Number(p.original_amount),
           fxSnapshot: (p.fx_snapshot as { base: string; rates: Record<string, number> } | null) ?? null,
+          downloadCount: downloadCounts.get(p.id) ?? 0,
         });
       });
     }
