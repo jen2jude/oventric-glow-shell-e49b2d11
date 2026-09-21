@@ -235,6 +235,9 @@ export interface RealProfileView {
   interests: string[];
   skillLevels: Record<string, number>;
   tools: string[];
+  /** Optional creator showcase links ("Work & portfolio"). */
+  workLinks: string[];
+
 
   verificationTier: string;
   reputationStars: number;
