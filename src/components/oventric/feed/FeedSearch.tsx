@@ -45,6 +45,7 @@ export function FeedSearchBar({
   onCategoryChange,
   resultCount,
   appShell = false,
+  showFilters = true,
 }: {
   q: string;
   onQueryChange: (v: string) => void;
@@ -53,6 +54,7 @@ export function FeedSearchBar({
   resultCount?: number | null;
   /** Native app shell: chrome-less, hairline-bordered treatment. */
   appShell?: boolean;
+  showFilters?: boolean;
 }) {
   return (
     <div className={appShell ? "px-0 pt-1 pb-0" : "space-y-3"}>
@@ -89,7 +91,7 @@ export function FeedSearchBar({
         )}
       </div>
 
-      {!appShell && (
+      {!appShell && showFilters && (
         <div
           role="tablist"
           aria-label="Feed filters"

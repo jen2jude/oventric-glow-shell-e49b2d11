@@ -13,19 +13,7 @@ import { MessagesDrawer } from "@/components/oventric/MessagesDrawer";
 import { useChromeHidden } from "@/hooks/use-chrome-hide";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
 
-
-
-export type FeedTab = "foryou" | "following" | "discover";
-
-const TABS: { key: FeedTab; label: string }[] = [
-  { key: "foryou", label: "For you" },
-  { key: "following", label: "Following" },
-  { key: "discover", label: "Discover" },
-];
-
 type Props = {
-  tab: FeedTab;
-  onTabChange: (t: FeedTab) => void;
   searchOpen: boolean;
   onToggleSearch: () => void;
 };
@@ -35,8 +23,6 @@ type Props = {
  * tabs. Stories have been retired from the Newsfeed.
  */
 export function FeedAppChrome({
-  tab,
-  onTabChange,
   searchOpen,
   onToggleSearch,
 }: Props) {
@@ -103,32 +89,6 @@ export function FeedAppChrome({
         </div>
         </div>
       </div>
-
-
-
-
-      {/* Tabs */}
-      <div className="flex justify-center overflow-x-auto border-b border-white/[0.06] bg-[#070A08] no-scrollbar scroll-smooth">
-        {TABS.map((t) => {
-          const active = t.key === tab;
-          return (
-            <button
-              key={t.key}
-              onClick={() => onTabChange(t.key)}
-              className="relative shrink-0 px-6 py-3 text-[14px] font-bold transition-colors"
-            >
-              <span className={active ? "text-white" : "text-white/40 hover:text-white/70"}>
-                {t.label}
-              </span>
-              {active && (
-                <div className="absolute bottom-0 left-1/2 h-[3px] w-8 -translate-x-1/2 rounded-full bg-[#FF3EB5]" />
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-
       <div className="h-px w-full bg-white/[0.07]" />
 
       <NotificationsDrawer open={notifOpen} onClose={() => setNotifOpen(false)} />

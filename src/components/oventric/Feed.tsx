@@ -26,6 +26,7 @@ import {
   Eye,
   ShoppingBag,
   ArrowUp,
+  BadgeCheck,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
@@ -73,11 +74,11 @@ import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { PostActionsMenu, shareUrl, getHiddenPosts } from "@/components/oventric/PostActionsMenu";
 import { ShareSheet } from "@/components/oventric/ShareSheet";
 import { PostComposerModal } from "@/components/oventric/PostComposerModal";
-import { FeedAppChrome, type FeedTab } from "@/components/oventric/feed/FeedAppChrome";
+import { FeedAppChrome } from "@/components/oventric/feed/FeedAppChrome";
 import { FeedSocialBar } from "@/components/oventric/feed/FeedSocialBar";
+import { FeedTabs, type FeedTab } from "@/components/oventric/feed/FeedTabs";
 import { useScrollHideChrome, useChromeHidden } from "@/hooks/use-chrome-hide";
-import { listFollowing } from "@/lib/follows.functions";
-import { FeedDiscoverExplore } from "@/components/oventric/feed/FeedDiscoverExplore";
+import { listFollowers, listFollowing } from "@/lib/follows.functions";
 import {
   ShopTheFeedRail,
 } from "@/components/oventric/feed/FeedCommerceCard";
@@ -89,7 +90,6 @@ import { useFeedDiscovery } from "@/components/oventric/feed/useFeedDiscovery";
 import {
   FeedSearchBar,
   FeedGlobalResults,
-  GLOBAL_CATEGORIES,
   type FeedCategory,
 } from "@/components/oventric/feed/FeedSearch";
 
@@ -382,7 +382,12 @@ export function Feed() {
   const [feedTab, setFeedTab] = useState<FeedTab>("foryou");
   const [searchOpen, setSearchOpen] = useState(false);
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
-  const { peers: suggestedPeers, products: shopFeedProducts } = useFeedDiscovery(true);
+  const [followerIds, setFollowerIds] = useState<Set<string> | null>(null);
+  const {
+    peers: suggestedPeers,
+    products: shopFeedProducts,
+    loading: discoveryLoading,
+  } = useFeedDiscovery(true);
 
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   // Seed from the session cache so returning to the feed paints instantly.
@@ -592,21 +597,29 @@ export function Feed() {
     })();
   }, []);
 
-  // Following set — powers the "Following" / "Discover" tabs.
+  // Both sides of the user's network power the Following tab.
   const loadFollowing = useServerFn(listFollowing);
+  const loadFollowers = useServerFn(listFollowers);
   useEffect(() => {
     if (!meId) return;
     let cancelled = false;
-    loadFollowing({ data: { userId: meId } })
-      .then((rows) => {
+    Promise.all([
+      loadFollowing({ data: { userId: meId } }),
+      loadFollowers({ data: { userId: meId } }),
+    ])
+      .then(([following, followers]) => {
         if (cancelled) return;
-        setFollowingIds(new Set((rows ?? []).map((r: any) => r.userId ?? r.user_id ?? r.id)));
+        setFollowingIds(new Set((following ?? []).map((r: any) => r.userId ?? r.user_id ?? r.id)));
+        setFollowerIds(new Set((followers ?? []).map((r: any) => r.userId ?? r.user_id ?? r.id)));
       })
-      .catch(() => setFollowingIds(new Set()));
+      .catch(() => {
+        setFollowingIds(new Set());
+        setFollowerIds(new Set());
+      });
     return () => {
       cancelled = true;
     };
-  }, [meId, loadFollowing]);
+  }, [meId, loadFollowers, loadFollowing]);
 
 
   // Rotate composer placeholder every 3s
@@ -1137,40 +1150,50 @@ export function Feed() {
     }
   };
 
-  const isGlobalCategory = GLOBAL_CATEGORIES.includes(category);
-  const showPostList = !isGlobalCategory;
   const filteredPosts = useMemo(() => {
     const term = debouncedQuery.toLowerCase();
-    return posts.filter((p) => {
+    const visible = posts.filter((p) => {
       if (hiddenPosts.has(p.id)) return false;
-      if (isAppShell && feedTab === "following") {
-        if (!followingIds || !followingIds.has(p.author_id)) return false;
+      if (feedTab === "following") {
+        const inNetwork = followingIds?.has(p.author_id) || followerIds?.has(p.author_id);
+        if (!inNetwork) return false;
       }
-      if (isAppShell && feedTab === "discover") {
-        if (p.author_id === meId) return false;
-        if (followingIds && followingIds.has(p.author_id)) return false;
-      }
-      const hasMedia = p.media.length > 0 || !!p.media_url;
-      if (category === "media" && !hasMedia) return false;
-      if (category === "posts" && hasMedia) return false;
       if (!term) return true;
       return (
         p.text.toLowerCase().includes(term) ||
         p.author_name.toLowerCase().includes(term)
       );
     });
+
+    if (feedTab !== "foryou" || term) return visible;
+    const affinityByAuthor = new Map<string, number>();
+    visible.forEach((post) => {
+      const interaction = (post.viewer_reaction ? 4 : 0) + (post.viewer_saved ? 3 : 0);
+      affinityByAuthor.set(post.author_id, (affinityByAuthor.get(post.author_id) ?? 0) + interaction);
+    });
+    return visible
+      .map((post, index) => ({
+        post,
+        index,
+        score:
+          (affinityByAuthor.get(post.author_id) ?? 0) * 5 +
+          post.likes_count * 2 +
+          post.comments_count * 3 +
+          post.reposts_count * 3 +
+          post.views_count * 0.05,
+      }))
+      .sort((a, b) => b.score - a.score || a.index - b.index)
+      .map(({ post }) => post);
   }, [
     posts,
     hiddenPosts,
-    category,
     debouncedQuery,
-    isAppShell,
     feedTab,
     followingIds,
-    meId,
+    followerIds,
   ]);
 
-  const isFiltering = debouncedQuery.length > 0 || category !== "all";
+  const isFiltering = debouncedQuery.length > 0;
 
   // App-shell chrome (feed header + bottom nav) collapses while scrolling down.
   const feedRootRef = useRef<HTMLDivElement>(null);
@@ -1225,16 +1248,16 @@ export function Feed() {
       <div className="flex w-full min-w-0 flex-col gap-3">
         {isAppShell ? (
           <FeedAppChrome
-            tab={feedTab}
-            onTabChange={setFeedTab}
             searchOpen={searchOpen}
             onToggleSearch={() => setSearchOpen((v) => !v)}
           />
         ) : (
-          <FeedSocialBar onOpenMessages={() => window.dispatchEvent(new CustomEvent("oventric:open-messages"))} />
+          <FeedSocialBar
+            onOpenMessages={() => window.dispatchEvent(new CustomEvent("oventric:open-messages"))}
+            onOpenSearch={() => setSearchOpen(true)}
+          />
         )}
-        {/* Composer — hidden in Discover / Following because those tabs are view-only */}
-        {!(feedTab === "discover" || feedTab === "following") && (
+        {!(feedTab === "creators" || feedTab === "shops") && (
           <button
             id="oventric-composer"
             type="button"
@@ -1286,25 +1309,37 @@ export function Feed() {
           </button>
         )}
 
-        {isAppShell && searchOpen && (
-          <div className="fixed inset-0 z-40 bg-[#0A0A0B] overflow-y-auto pt-16 -mx-4">
-            <div className="px-4">
+        {searchOpen && (
+          <div className="fixed inset-0 z-[60] overflow-y-auto bg-home-bg px-4 pt-20">
+            <div className="mx-auto max-w-[760px]">
               <FeedSearchBar
-                appShell
+                showFilters={false}
                 q={query}
                 onQueryChange={setQuery}
                 category={category}
                 onCategoryChange={setCategory}
                 resultCount={
-                  showPostList && (debouncedQuery || category !== "all") ? filteredPosts.length : null
+                  debouncedQuery ? filteredPosts.length : null
                 }
               />
             </div>
+            <button
+              type="button"
+              onClick={() => {
+                setSearchOpen(false);
+                setQuery("");
+                setDebouncedQuery("");
+              }}
+              aria-label="Close search"
+              className="fixed right-4 top-4 z-[65] grid h-10 w-10 place-items-center rounded-[10px] border border-border bg-card text-foreground shadow-sm"
+            >
+              <X className="h-5 w-5" />
+            </button>
           </div>
         )}
 
 
-        {(debouncedQuery.length >= 1 || isGlobalCategory) && (
+        {searchOpen && debouncedQuery.length >= 1 && (
           <div className="fixed inset-0 z-[41] bg-[#0A0A0B] overflow-y-auto -mx-4">
             <FeedGlobalResults q={debouncedQuery} category={category} />
             <button
@@ -1319,25 +1354,13 @@ export function Feed() {
           </div>
         )}
 
-        {/* Web visitors get a persistent search + category filter; the app shell
-            surfaces the same control behind its search toggle above. */}
-        {!isAppShell && (
-          <FeedSearchBar
-            q={query}
-            onQueryChange={setQuery}
-            category={category}
-            onCategoryChange={setCategory}
-            resultCount={
-              showPostList && (debouncedQuery || category !== "all") ? filteredPosts.length : null
-            }
-          />
-        )}
+        <FeedTabs tab={feedTab} onTabChange={setFeedTab} />
 
         <AdSlot placement="feed" variant="banner" />
 
 
         {/* Optimistic posts — painted instantly while the server call runs */}
-        {showPostList && pendingPosts.length > 0 && (
+        {feedTab !== "creators" && feedTab !== "shops" && pendingPosts.length > 0 && (
           <div className="space-y-4">
             {pendingPosts.map((p) => (
               <article
@@ -1475,7 +1498,26 @@ export function Feed() {
         )}
 
         {/* Posts (live) */}
-        {!showPostList ? null : postsLoading ? (
+        {feedTab === "creators" ? (
+          <div className="rounded-[10px] border border-emerald-100 bg-emerald-50/60 p-10 text-center">
+            <BadgeCheck className="mx-auto h-7 w-7 text-emerald-600" />
+            <p className="mt-3 text-sm font-bold text-slate-900">No creators content found</p>
+          </div>
+        ) : feedTab === "shops" ? (
+          discoveryLoading ? (
+            <div className="rounded-[10px] border border-amber-100 bg-amber-50/60 p-10 text-center" aria-busy="true">
+              <ShoppingBag className="mx-auto h-7 w-7 animate-pulse text-amber-600" />
+              <p className="mt-3 text-sm font-bold text-slate-900">Loading shops…</p>
+            </div>
+          ) : shopFeedProducts.length > 0 ? (
+            <ShopTheFeedRail products={shopFeedProducts} appShell={false} />
+          ) : (
+            <div className="rounded-[10px] border border-amber-100 bg-amber-50/60 p-10 text-center">
+              <ShoppingBag className="mx-auto h-7 w-7 text-amber-600" />
+              <p className="mt-3 text-sm font-bold text-slate-900">No shop products found</p>
+            </div>
+          )
+        ) : postsLoading ? (
           <div className="space-y-4" aria-busy="true" aria-label="Loading feed">
             {[0, 1, 2].map((i) => (
               <div
@@ -1511,7 +1553,7 @@ export function Feed() {
             </p>
             <p className="mt-1 text-xs text-red-300/80">{postsError}</p>
           </div>
-        ) : filteredPosts.length === 0 && !(isAppShell && (feedTab === "discover" || feedTab === "following")) ? (
+        ) : filteredPosts.length === 0 ? (
           isFiltering ? (
             <div className="bg-white shadow-sm border border-slate-200 rounded-[10px] p-8 text-center">
               <p className="text-sm font-semibold text-slate-900">
@@ -1524,7 +1566,6 @@ export function Feed() {
                 type="button"
                 onClick={() => {
                   setQuery("");
-                  setCategory("all");
                 }}
                 className="mt-3 inline-flex items-center rounded-[10px] bg-[#E5484D] px-3 py-1.5 text-xs font-semibold text-black hover:bg-[#E5484D] transition-colors"
               >
@@ -1537,13 +1578,13 @@ export function Feed() {
                 <MessageSquare className="w-5 h-5 text-[#E5484D] md:text-[#E5484D]" />
               </div>
               <p className="text-sm font-semibold text-slate-900">
-                {isAppShell && feedTab === "following"
-                  ? "Nothing from the people you follow"
+                {feedTab === "following"
+                  ? "Nothing from your network yet"
                   : "The feed is quiet right now"}
               </p>
               <p className="mt-1 text-xs text-slate-400 md:text-slate-600 max-w-sm mx-auto">
-                {isAppShell && feedTab === "following"
-                  ? "Follow more creators to fill this tab — head to Discover to find people worth following."
+                {feedTab === "following"
+                  ? "Posts from people you follow and people who follow you will appear here."
                   : "No posts have been shared yet. Kick things off — share an update, ship a build log, or ask the network a question."}
               </p>
 
@@ -1552,16 +1593,6 @@ export function Feed() {
         ) : (
           (() => {
             const shareOrigin = typeof window !== "undefined" ? window.location.origin : "";
-            if (isAppShell && feedTab === "discover") {
-              return (
-                <FeedDiscoverExplore
-                  posts={filteredPosts}
-                  renderPost={renderPost}
-                  viewerId={meId}
-                  followingIds={followingIds}
-                />
-              );
-            }
             const visible = filteredPosts;
             const availableSuggestions = suggestedPeers.filter(
               (person) => person.id !== meId && !followingIds?.has(person.id),
@@ -1569,7 +1600,8 @@ export function Feed() {
             const items: React.ReactNode[] = [];
             let peopleRailIdx = 0;
             let shopRailIdx = 0;
-            const interleaveSections = feedTab === "foryou" && !isFiltering;
+            const interleaveForYou = feedTab === "foryou" && !isFiltering;
+            const interleaveAll = feedTab === "all" && !isFiltering;
             const pushPeopleRail = () => {
               if (availableSuggestions.length === 0) return;
               const offset = (peopleRailIdx * 4) % availableSuggestions.length;
@@ -1602,11 +1634,14 @@ export function Feed() {
               );
               shopRailIdx += 1;
             };
-            if (interleaveSections) pushPeopleRail();
+            if (interleaveAll) pushPeopleRail();
             visible.forEach((post, i) => {
               items.push(renderPost(post));
               const count = i + 1;
-              if (interleaveSections) {
+              if (interleaveForYou) {
+                if (count === 3 || (count >= 13 && (count - 13) % 10 === 0)) pushShopRail();
+              }
+              if (interleaveAll) {
                 if (count === 3 || (count >= 13 && (count - 13) % 10 === 0)) pushShopRail();
                 if (count >= 8 && (count - 8) % 10 === 0) pushPeopleRail();
               }
