@@ -1134,23 +1134,20 @@ function ProfilePage() {
               data-testid="profile-banner"
               className="profile-card-safe profile-standard-header profile-identity-card mb-6 overflow-hidden"
             >
-              {/* Cover image — full-bleed hero */}
-              <div className="profile-cover-safe relative -mx-4 -mt-6 h-56 overflow-hidden border-b border-white/10 bg-[#18181d] sm:h-64 md:mx-0 md:mt-0 md:h-60 md:rounded-none md:border-0 md:border-b md:border-slate-200 md:bg-slate-100 lg:h-64">
-                {displayCover ? (
-                  <ResponsiveImage
-                    src={displayCover}
-                    alt={`${displayName} cover`}
-                    sizes="(min-width: 768px) 768px, 100vw"
-                    className="block h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-[linear-gradient(135deg,#1b1b20_0%,#26161a_55%,#3a1218_100%)]" />
-                )}
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-[#121214] via-[#121214]/60 to-transparent" />
-                <div
-                  className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-1/2 web-dark-band md:block"
-                  style={{ maskImage: "linear-gradient(to top, black, transparent)", WebkitMaskImage: "linear-gradient(to top, black, transparent)", opacity: 0.85 }}
-                />
+              {/* Inset tinted cover frame */}
+              <div className="profile-cover-safe relative h-52 p-3 pb-0 sm:h-60 md:h-64">
+                <div className="profile-cover-frame group relative h-full w-full overflow-hidden">
+                  {displayCover ? (
+                    <ResponsiveImage
+                      src={displayCover}
+                      alt={`${displayName} cover`}
+                      sizes="(min-width: 768px) 1100px, 100vw"
+                      className="profile-cover-image block h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="profile-cover-placeholder h-full w-full" />
+                  )}
+                  <div className="profile-cover-tint pointer-events-none absolute inset-0" />
 
                  <Button
                    variant="ghost"
@@ -1167,14 +1164,14 @@ function ProfilePage() {
                   <ArrowLeft className="h-5 w-5" />
                  </Button>
 
-                {isOwnProfile && (
+                  {isOwnProfile && (
                    <Button
                      variant="ghost"
                     type="button"
                     onClick={() => coverInputRef.current?.click()}
                     disabled={uploading === "cover"}
                     aria-label="Change cover image"
-                     className="absolute right-3 top-3 h-10 rounded-[10px] border border-white/15 bg-black/45 px-3 text-xs font-bold text-white shadow-sm hover:bg-black/65 hover:text-white"
+                     className="profile-cover-action absolute right-3 top-3 h-10 rounded-[10px] px-3 text-xs font-bold"
                   >
                     {uploading === "cover" ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -1189,20 +1186,21 @@ function ProfilePage() {
                           : "Add cover"}
                     </span>
                    </Button>
-                )}
+                  )}
+                </div>
               </div>
 
-              {/* Identity — avatar overlaps the cover from the left, app-style */}
-               <div className="profile-dashboard-body -mt-12 px-1 md:-mt-14 md:px-8 md:pb-7">
+              {/* Identity — framed portrait overlaps the inset cover */}
+               <div className="profile-dashboard-body profile-identity-overlap -mt-12 px-5 pb-6 sm:-mt-16 sm:px-8 md:-mt-20 md:pb-8">
                 <div className="profile-identity-top grid grid-cols-[auto_minmax(0,1fr)] items-end gap-3">
-                  <div className="relative shrink-0">
-                     <div className="profile-avatar-safe flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-[#E5484D] text-3xl font-black text-white ring-[3px] ring-[#E5484D]/70 outline outline-4 outline-[#121214] sm:h-28 sm:w-28 md:h-32 md:w-32 md:rounded-[10px] md:ring-0 md:outline-white lg:h-36 lg:w-36">
+                  <div className="profile-avatar-wrap relative shrink-0">
+                     <div className="profile-avatar-safe flex h-28 w-28 items-center justify-center overflow-hidden text-3xl font-black sm:h-36 sm:w-36 md:h-40 md:w-40">
                       {displayAvatar ? (
                         <ResponsiveImage
                           src={displayAvatar}
                           alt={`${displayName} avatar`}
                           sizes="128px"
-                          className="block w-full h-full rounded-full object-cover"
+                          className="block h-full w-full object-cover"
                         />
                       ) : (
                         displayInitials
@@ -1210,12 +1208,12 @@ function ProfilePage() {
                     </div>
                     {isViewedUserOnline && (
                       <span
-                        className="absolute top-1 left-1 h-4 w-4 rounded-full bg-emerald-400 border-[3px] border-[#121214]"
+                        className="profile-online-dot absolute bottom-2 left-2 h-5 w-5 rounded-full"
                         aria-label="Online now"
                       />
                     )}
                     <span
-                      className="absolute bottom-0.5 right-0.5 grid h-7 w-7 place-items-center rounded-full bg-[#2f6fed] border-[3px] border-[#121214]"
+                       className="profile-tier-dot absolute bottom-1 right-1 grid h-8 w-8 place-items-center rounded-full"
                       aria-label={displayTierLabel}
                     >
                       <Check className="h-3.5 w-3.5 text-white" strokeWidth={3.5} />
@@ -1228,7 +1226,7 @@ function ProfilePage() {
                         onClick={() => avatarInputRef.current?.click()}
                         disabled={uploading === "avatar"}
                         aria-label="Change profile picture"
-                         className="absolute -right-1 -top-1 h-8 w-8 rounded-[10px] border border-white/20 bg-black/70 text-white hover:bg-black hover:text-white"
+                         className="profile-avatar-action absolute -right-1 -top-1 h-9 w-9 rounded-[10px] text-white"
                       >
                         {uploading === "avatar" ? (
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1240,7 +1238,7 @@ function ProfilePage() {
                   </div>
 
                   {/* Quick actions, bottom-aligned against the cover edge */}
-                   <div className="flex items-center justify-end gap-2 pb-1">
+                   <div className="profile-cover-controls flex items-center justify-end gap-2 pb-1">
                     {!isOwnProfile && realProfile?.userId && (
                        <Button
                          variant="outline"
