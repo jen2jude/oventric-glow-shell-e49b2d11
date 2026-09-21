@@ -1532,7 +1532,10 @@ export function Feed() {
               <p className="mt-3 text-sm font-bold text-slate-900">Loading shops…</p>
             </div>
           ) : shopFeedProducts.length > 0 ? (
-            <ShopTheFeedRail products={shopFeedProducts} appShell={false} />
+            <div className="space-y-4">
+              <ShopTheFeedRail products={shopFeedProducts} appShell={false} />
+              <ShopSections products={shopFeedProducts} />
+            </div>
           ) : (
             <div className="rounded-[10px] border border-amber-100 bg-amber-50/60 p-10 text-center">
               <ShoppingBag className="mx-auto h-7 w-7 text-amber-600" />
