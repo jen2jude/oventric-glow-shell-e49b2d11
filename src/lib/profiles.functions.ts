@@ -142,20 +142,26 @@ async function createServerPublicClient(): Promise<SupabaseClient<Database>> {
   });
 }
 
+/**
+ * Profile imagery lives in private, owner-bound buckets, so signing must be
+ * done with the privileged storage client — the publishable/anon client can
+ * only sign its own files and would otherwise return broken URLs.
+ */
 async function resolveProfileImageUrl(
-  supabase: SupabaseClient<Database>,
+  _supabase: SupabaseClient<Database> | null,
   bucket: "avatars" | "profile-covers",
   path: string | null,
 ): Promise<string | null> {
   if (!path) return null;
 
-  const { data: signed, error } = await supabase.storage
+  const storage = await imageStorage();
+  const { data: signed, error } = await storage
     .from(bucket)
     .createSignedUrl(path, 60 * 60 * 24 * 7);
   if (signed?.signedUrl) return signed.signedUrl;
 
   if (error) console.error(`[profiles] ${bucket} signed URL failed`, error);
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+  const { data } = storage.from(bucket).getPublicUrl(path);
   return data.publicUrl || null;
 }
 
@@ -728,13 +734,14 @@ async function resolveUserId(
 }
 
 async function signPaths(
-  supabase: any,
+  _supabase: any,
   bucket: string,
   paths: (string | null)[],
 ): Promise<(string | null)[]> {
   const unique = Array.from(new Set(paths.filter((p): p is string => !!p)));
   if (unique.length === 0) return paths.map(() => null);
-  const { data } = await supabase.storage.from(bucket).createSignedUrls(unique, 60 * 60 * 24 * 7);
+  const storage = await imageStorage();
+  const { data } = await storage.from(bucket).createSignedUrls(unique, 60 * 60 * 24 * 7);
   const map = new Map<string, string>();
   for (const r of (data ?? []) as { path?: string; signedUrl?: string }[]) {
     if (r.path && r.signedUrl) map.set(r.path, r.signedUrl);
