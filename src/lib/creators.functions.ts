@@ -172,6 +172,8 @@ const PublishInput = z.object({
   mediaType: z.enum(["image", "video"]).optional(),
   communityLink: z.string().trim().max(300).optional(),
   externalUrl: z.string().trim().max(500).optional(),
+  /** Marketplace product created by the same creator, sold as an instant download. */
+  productId: z.string().uuid().optional(),
 });
 
 /** Publishes a creator showcase item. */
@@ -189,6 +191,20 @@ export const publishCreatorPost = createServerFn({ method: "POST" })
       .maybeSingle();
     const fields = readCreatorProfile((prof as { creator_profile?: unknown } | null)?.creator_profile).fields;
 
+    // Only the creator's own listing may be attached — never a product id a
+    // client hands us for someone else's asset.
+    let productId: string | null = null;
+    if (data.productId) {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: prod } = await supabaseAdmin
+        .from("products")
+        .select("id, seller_id")
+        .eq("id", data.productId)
+        .maybeSingle();
+      if (!prod || prod.seller_id !== userId) throw new Error("That asset isn't yours");
+      productId = prod.id;
+    }
+
     const { data: row, error } = await supabase
       .from("creator_posts")
       .insert({
@@ -200,6 +216,7 @@ export const publishCreatorPost = createServerFn({ method: "POST" })
         community_link: data.communityLink || null,
         external_url: embed?.url ?? null,
         external_provider: embed?.provider ?? null,
+        product_id: productId,
         fields,
         status: "published",
       })
@@ -211,6 +228,7 @@ export const publishCreatorPost = createServerFn({ method: "POST" })
     }
     return { id: (row as { id: string } | null)?.id ?? null };
   });
+
 
 /** Public creator showcase feed. */
 export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
