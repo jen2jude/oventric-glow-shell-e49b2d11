@@ -502,8 +502,11 @@ function CheckoutPage() {
   // A seller can never buy their own listing (the server rejects it too).
   const isOwnListing = Boolean(product && viewerId && product.sellerId === viewerId);
 
+  /** Free listings skip payment entirely — the buyer just downloads. */
+  const isFree = Boolean(product) && unitUSD <= 0;
+
   const isDigital = product?.kind === "digital";
-  const needsDelivery = Boolean(isDigital);
+  const needsDelivery = Boolean(isDigital) && !isFree;
   const deliveryValid = !needsDelivery || /^\S+@\S+\.\S+$/.test(deliveryEmail.trim());
   const isService = product?.kind === "service";
   const briefValid =
