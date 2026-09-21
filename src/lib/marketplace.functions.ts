@@ -1743,65 +1743,65 @@ export const getTopSellers = createServerFn({ method: "GET" })
     const sellerIds = Array.from(productsBySeller.keys()).slice(0, 200);
     if (sellerIds.length === 0) return [];
 
-    // Paid sales per seller (best-effort).
-    const salesBySeller = new Map<string, number>();
-    try {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const { data: orderRows } = await supabaseAdmin
+    const productIds = Array.from(sellerByProduct.keys()).slice(0, 1000);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Every one of these reads is independent, so they go out together instead
+    // of one after another.
+    const [orderRes, reviewRes, sellerRes, privateRes, verifiedRes, followRes] = await Promise.all([
+      supabaseAdmin
         .from("orders")
         .select("product_id, quantity, status")
         .in("status", ["paid", "delivered", "completed", "released"])
-        .limit(5000);
-      (orderRows ?? []).forEach((o: any) => {
-        const sid = sellerByProduct.get(o.product_id as string);
-        if (!sid) return;
-        salesBySeller.set(sid, (salesBySeller.get(sid) ?? 0) + Number(o.quantity ?? 1));
-      });
-    } catch {
-      /* best-effort */
-    }
+        .limit(5000),
+      productIds.length
+        ? sb.from("product_reviews").select("product_id, rating").in("product_id", productIds).limit(5000)
+        : Promise.resolve({ data: [] as any[] }),
+      sb
+        .from("profiles")
+        .select(
+          "user_id, slug, display_name, username, avatar_path, cover_path, verification_tier, bio, profile_completed_at, deleted_at",
+        )
+        .in("user_id", sellerIds),
+      supabaseAdmin.from("profiles").select("user_id, banned_at, country").in("user_id", sellerIds),
+      supabaseAdmin
+        .from("seller_verification_requests")
+        .select("user_id")
+        .eq("status", "approved")
+        .in("user_id", sellerIds),
+      sb.from("follows").select("followee_id").in("followee_id", sellerIds).limit(10000),
+    ]);
+
+    // Paid sales per seller (best-effort).
+    const salesBySeller = new Map<string, number>();
+    ((orderRes as any)?.data ?? []).forEach((o: any) => {
+      const sid = sellerByProduct.get(o.product_id as string);
+      if (!sid) return;
+      salesBySeller.set(sid, (salesBySeller.get(sid) ?? 0) + Number(o.quantity ?? 1));
+    });
 
     // Live ratings from product reviews.
     const ratingSum = new Map<string, number>();
     const ratingCount = new Map<string, number>();
-    const productIds = Array.from(sellerByProduct.keys()).slice(0, 1000);
-    if (productIds.length > 0) {
-      const { data: reviewRows } = await sb
-        .from("product_reviews")
-        .select("product_id, rating")
-        .in("product_id", productIds)
-        .limit(5000);
-      (reviewRows ?? []).forEach((r: any) => {
-        const sid = sellerByProduct.get(r.product_id as string);
-        if (!sid) return;
-        ratingSum.set(sid, (ratingSum.get(sid) ?? 0) + Number(r.rating ?? 0));
-        ratingCount.set(sid, (ratingCount.get(sid) ?? 0) + 1);
-      });
-    }
+    ((reviewRes as any)?.data ?? []).forEach((r: any) => {
+      const sid = sellerByProduct.get(r.product_id as string);
+      if (!sid) return;
+      ratingSum.set(sid, (ratingSum.get(sid) ?? 0) + Number(r.rating ?? 0));
+      ratingCount.set(sid, (ratingCount.get(sid) ?? 0) + 1);
+    });
 
-    const { data: sellerRows } = await sb
-      .from("profiles")
-      .select(
-        "user_id, slug, display_name, username, avatar_path, cover_path, verification_tier, bio, profile_completed_at, deleted_at",
-      )
-      .in("user_id", sellerIds);
+    const sellerRows = (sellerRes as any)?.data ?? [];
 
     // Country and moderation flags are private profile fields, so resolve both
     // on the server without widening public profile access.
     const privateProfiles = new Map<string, { bannedAt: string | null; country: string | null }>();
-    {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const { data: privateRows } = await supabaseAdmin
-        .from("profiles")
-        .select("user_id, banned_at, country")
-        .in("user_id", sellerIds);
-      (privateRows ?? []).forEach((profile: any) => {
-        privateProfiles.set(profile.user_id as string, {
-          bannedAt: (profile.banned_at as string | null) ?? null,
-          country: (profile.country as string | null) ?? null,
-        });
+    ((privateRes as any)?.data ?? []).forEach((profile: any) => {
+      privateProfiles.set(profile.user_id as string, {
+        bannedAt: (profile.banned_at as string | null) ?? null,
+        country: (profile.country as string | null) ?? null,
       });
-    }
+    });
+
     const rows = (sellerRows ?? []).filter(
       (seller: any) =>
         !!seller.profile_completed_at &&
@@ -1811,25 +1811,15 @@ export const getTopSellers = createServerFn({ method: "GET" })
 
     // "Verified" means an admin-approved seller verification request exists.
     const verifiedIds = new Set<string>();
-    {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const { data: vRows } = await supabaseAdmin
-        .from("seller_verification_requests")
-        .select("user_id")
-        .eq("status", "approved")
-        .in("user_id", rows.map((s: any) => s.user_id as string));
-      (vRows ?? []).forEach((v: any) => verifiedIds.add(v.user_id as string));
-    }
-    const avatars = await signBucket(sb, "avatars", rows.map((s: any) => s.avatar_path ?? null));
-    const covers = await signBucket(sb, "profile-covers", rows.map((s: any) => s.cover_path ?? null));
+    ((verifiedRes as any)?.data ?? []).forEach((v: any) => verifiedIds.add(v.user_id as string));
+
+    const [avatars, covers] = await Promise.all([
+      signBucket(sb, "avatars", rows.map((s: any) => s.avatar_path ?? null)),
+      signBucket(sb, "profile-covers", rows.map((s: any) => s.cover_path ?? null)),
+    ]);
 
     const followers = new Map<string, number>();
-    const { data: followRows } = await sb
-      .from("follows")
-      .select("followee_id")
-      .in("followee_id", sellerIds)
-      .limit(10000);
-    (followRows ?? []).forEach((f: any) => {
+    ((followRes as any)?.data ?? []).forEach((f: any) => {
       const id = f.followee_id as string;
       followers.set(id, (followers.get(id) ?? 0) + 1);
     });
