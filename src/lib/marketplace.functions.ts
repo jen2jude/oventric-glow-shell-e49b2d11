@@ -6,6 +6,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { dbCurrency } from "@/lib/currency/africa";
 import { fallbackRateTable } from "@/lib/currency/africa";
 import { imageStorage } from "@/lib/storage/images.server";
+import { isStableBucket, stableImageUrl, stableImageUrls } from "@/lib/storage/stable-image";
 
 export type ProductCategory = string;
 /** Oventric is digital-only; physical goods are no longer supported. */
