@@ -281,7 +281,16 @@ function AdminOrdersPage() {
                   )}
                 </div>
 
+                {Number(detail.data.totalUsd ?? 0) <= 0 && (
+                  <div className="rounded-xl border border-violet-400/40 bg-violet-500/10 p-3 text-xs text-violet-100">
+                    <strong className="font-bold">Free download — no payment.</strong> Nothing was
+                    charged, no wallet was funded or debited, no escrow is held and no seller payout
+                    or platform revenue applies to this order.
+                  </div>
+                )}
+
                 <Group title="Parties">
+
                   <Row k="Buyer" v={detail.data.buyerName ?? detail.data.buyerId} />
                   <Row k="Seller" v={detail.data.sellerName ?? detail.data.sellerId ?? "—"} />
                   <Row k="Category" v={detail.data.productCategory ?? "—"} />
