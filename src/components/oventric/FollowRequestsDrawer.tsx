@@ -83,11 +83,16 @@ export function FollowRequestsDrawer({ open, onClose }: Props) {
   const act = async (
     requesterId: string,
     fn: (input: { data: { requesterId: string } }) => Promise<unknown>,
+    accepted: boolean,
+    name: string,
   ) => {
     setBusy(requesterId);
     try {
       await fn({ data: { requesterId } });
       setRows((rs) => (rs ?? []).filter((r) => r.requesterId !== requesterId));
+      toast.success(accepted ? `${name} now follows you` : `Request from ${name} declined`);
+      // Let follower / following counters refresh straight away.
+      window.dispatchEvent(new CustomEvent("oventric:follow-graph-changed"));
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Action failed");
     } finally {
