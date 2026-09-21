@@ -1,9 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, Bell, MessageSquare, Search, Plus } from "lucide-react";
+import { ArrowLeft, Bell, MessageSquare, Search } from "lucide-react";
 import logoFull from "@/assets/oventric-full-transparent.png";
-import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { ProfileDropdown } from "@/components/oventric/ProfileDropdown";
 
 import { CountBadge } from "@/components/oventric/CountBadge";
@@ -14,10 +12,6 @@ import {
 import { MessagesDrawer } from "@/components/oventric/MessagesDrawer";
 import { useChromeHidden } from "@/hooks/use-chrome-hide";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
-import { getTopUsers, type TopUser } from "@/lib/top-users.functions";
-import { MAX_STORY_FILES, useStoryRail } from "@/components/oventric/feed/useStories";
-import { StoryViewerModal } from "@/components/oventric/feed/StoryViewerModal";
-import { StoryTrimmerModal } from "@/components/oventric/feed/StoryTrimmerModal";
 
 
 
@@ -29,76 +23,28 @@ const TABS: { key: FeedTab; label: string }[] = [
   { key: "discover", label: "Discover" },
 ];
 
-/** Ring gradients cycled across story avatars so the rail feels alive. */
-const RINGS = [
-  "from-[#FF3EB5] via-[#A7FF16] to-[#FF3EB5]",
-  "from-[#A7FF16] via-[#FF3EB5] to-[#FF7ACD]",
-  "from-[#FF7ACD] via-[#FF3EB5] to-[#A7FF16]",
-  "from-[#A7FF16] via-[#86E600] to-[#FF3EB5]",
-];
-
 type Props = {
   tab: FeedTab;
   onTabChange: (t: FeedTab) => void;
   searchOpen: boolean;
   onToggleSearch: () => void;
-  meAvatarUrl: string | null;
-  meInitials: string;
-  meSlug: string | null;
 };
 
 /**
  * App-shell newsfeed chrome: brand header, For you / Following / Discover
- * tabs and the stories rail. Mirrors the premium dark reference design.
+ * tabs. Stories have been retired from the Newsfeed.
  */
 export function FeedAppChrome({
   tab,
   onTabChange,
   searchOpen,
   onToggleSearch,
-  meAvatarUrl,
-  meInitials,
-  meSlug,
 }: Props) {
   const chromeHidden = useChromeHidden();
   const [notifOpen, setNotifOpen] = useState(false);
   const [msgOpen, setMsgOpen] = useState(false);
-  const [people, setPeople] = useState<TopUser[]>([]);
-  const [viewerAt, setViewerAt] = useState<number | null>(null);
-  const fileRef = useRef<HTMLInputElement | null>(null);
-
-  const {
-    groups: storyGroups,
-    uploading,
-    progress,
-    upload,
-    refresh,
-    trimRequest,
-    trimWorking,
-    trimProgress,
-    cancelTrim,
-    confirmTrim,
-  } = useStoryRail(true);
-
-  const myGroup = storyGroups.find((g) => g.isMe) ?? null;
-  const openViewer = (index: number) => setViewerAt(index >= 0 ? index : 0);
-
   const unreadNotifs = useUnreadNotificationsCount();
   const { messages } = useUnreadCounts();
-  const loadTopUsers = useServerFn(getTopUsers);
-
-
-  useEffect(() => {
-    let cancelled = false;
-    loadTopUsers()
-      .then((r) => {
-        if (!cancelled) setPeople(r.users ?? []);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [loadTopUsers]);
 
   return (
     <div
@@ -181,149 +127,6 @@ export function FeedAppChrome({
           );
         })}
       </div>
-
-
-      {/* Stories rail */}
-       <div className="flex gap-4 overflow-x-auto px-4 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:px-5">
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*,video/*"
-          multiple
-          className="hidden"
-          onChange={(e) => {
-            const files = Array.from(e.target.files ?? []).slice(0, MAX_STORY_FILES);
-            e.target.value = "";
-            if (files.length) void upload(files);
-          }}
-        />
-        {/* Add Story — always the first circle, purely an uploader */}
-        <button
-          type="button"
-          onClick={() => !uploading && fileRef.current?.click()}
-          className="flex w-[62px] shrink-0 flex-col items-center gap-1.5 active:scale-95 transition-transform"
-        >
-          <span className="relative block h-[58px] w-[58px]">
-            {uploading && (
-              <span
-                className="absolute inset-0 animate-spin rounded-full"
-                style={{
-                  background: `conic-gradient(#FF3EB5 ${Math.round(progress * 360)}deg, rgba(255,255,255,0.12) 0deg)`,
-                  animationDuration: "1.4s",
-                }}
-              />
-            )}
-            <span
-              className={`absolute inset-0 overflow-hidden rounded-full bg-[#1B1D1F] ring-1 ring-white/10 ${
-                uploading ? "m-[3px] border-2 border-[#070A08]" : ""
-              }`}
-            >
-              <AvatarImage src={meAvatarUrl} alt="Add story" initials={meInitials} />
-            </span>
-            {!uploading && (
-              <span className="absolute -bottom-0.5 -right-0.5 z-10 grid h-[22px] w-[22px] place-items-center rounded-full border-2 border-[#070A08] bg-[#A7FF16]">
-                <Plus className="h-3 w-3 text-[#070A08]" strokeWidth={3} />
-              </span>
-            )}
-          </span>
-          <span className="w-full truncate text-center text-[11px] font-medium text-white/70">
-            {uploading ? "Uploading…" : "Add Story"}
-          </span>
-        </button>
-
-        {/* My published story lives in its own circle right after the uploader */}
-        {myGroup && (
-          <button
-            type="button"
-            onClick={() => openViewer(storyGroups.indexOf(myGroup))}
-            className="flex w-[62px] shrink-0 flex-col items-center gap-1.5 active:scale-95 transition-transform"
-          >
-            <span
-              className={`grid h-[58px] w-[58px] place-items-center rounded-full p-[2px] ${
-                 myGroup.allViewed ? "bg-white/15" : `bg-gradient-to-tr ${RINGS[0]}`
-              }`}
-            >
-              <span className="block h-full w-full overflow-hidden rounded-full border-2 border-[#070A08] bg-[#1B1D1F]">
-                <AvatarImage src={myGroup.avatarUrl} alt={myGroup.displayName} />
-              </span>
-            </span>
-            <span className="w-full truncate text-center text-[11px] font-medium text-white/70">
-              Your story
-            </span>
-          </button>
-        )}
-
-        {storyGroups
-          .filter((g) => !g.isMe)
-          .map((g, i) => (
-            <button
-              key={g.userId}
-              type="button"
-              onClick={() => openViewer(storyGroups.indexOf(g))}
-              className="flex w-[62px] shrink-0 flex-col items-center gap-1.5 active:scale-95 transition-transform"
-            >
-              <span
-                className={`grid h-[58px] w-[58px] place-items-center rounded-full p-[2px] ${
-                  g.allViewed
-                    ? "bg-white/15"
-                    : `bg-gradient-to-tr ${RINGS[(i + 1) % RINGS.length]}`
-                }`}
-              >
-                <span className="block h-full w-full overflow-hidden rounded-full border-2 border-[#070A08] bg-[#1B1D1F]">
-                  <AvatarImage src={g.avatarUrl} alt={g.displayName} />
-                </span>
-              </span>
-              <span className="w-full truncate text-center text-[11px] font-medium text-white/70">
-                {g.displayName.split(" ")[0]}
-              </span>
-            </button>
-          ))}
-
-
-        {people
-          .filter((u) => !storyGroups.some((g) => g.userId === u.userId))
-          .map((u, i) => (
-            <Link
-              key={u.userId}
-              to="/profile/$id"
-              params={{ id: u.slug }}
-              className="flex w-[62px] shrink-0 flex-col items-center gap-1.5 active:scale-95 transition-transform"
-            >
-              <span
-                className={`grid h-[58px] w-[58px] place-items-center rounded-full bg-gradient-to-tr p-[2px] ${
-                  RINGS[i % RINGS.length]
-                }`}
-              >
-                <span className="block h-full w-full overflow-hidden rounded-full border-2 border-[#070A08] bg-[#1B1D1F]">
-                  <AvatarImage src={u.avatarUrl} alt={u.displayName} />
-                </span>
-              </span>
-              <span className="w-full truncate text-center text-[11px] font-medium text-white/70">
-                {u.displayName.split(" ")[0]}
-              </span>
-            </Link>
-          ))}
-      </div>
-      {viewerAt !== null && (
-        <StoryViewerModal
-          groups={storyGroups}
-          startIndex={viewerAt}
-          onClose={() => {
-            setViewerAt(null);
-            void refresh();
-          }}
-        />
-      )}
-      {trimRequest && (
-        <StoryTrimmerModal
-          file={trimRequest.file}
-          duration={trimRequest.duration}
-          working={trimWorking}
-          progress={trimProgress}
-          onCancel={cancelTrim}
-          onConfirm={(s) => void confirmTrim(s)}
-        />
-      )}
 
 
       <div className="h-px w-full bg-white/[0.07]" />

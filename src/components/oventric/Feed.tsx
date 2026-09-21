@@ -79,7 +79,6 @@ import { useScrollHideChrome, useChromeHidden } from "@/hooks/use-chrome-hide";
 import { listFollowing } from "@/lib/follows.functions";
 import { FeedDiscoverExplore } from "@/components/oventric/feed/FeedDiscoverExplore";
 import { ReelsRail, useReels } from "@/components/oventric/feed/ReelsShelf";
-import { WebStoriesRail } from "@/components/oventric/feed/WebStoriesRail";
 import {
   FeedCommerceCard,
   useFeedCommerceCards,
@@ -397,7 +396,6 @@ export function Feed() {
   const [meLastName, setMeLastName] = useState<string>("");
   const [meAvatarUrl, setMeAvatarUrl] = useState<string | null>(null);
   const [meInitials, setMeInitials] = useState<string>("Me");
-  const [meSlug, setMeSlug] = useState<string | null>(null);
   const [feedTab, setFeedTab] = useState<FeedTab>("foryou");
   const [searchOpen, setSearchOpen] = useState(false);
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
@@ -582,11 +580,9 @@ export function Feed() {
       try {
         const { data: prof } = await supabase
           .from("profiles")
-          .select("display_name, username, avatar_path, slug")
+          .select("display_name, username, avatar_path")
           .eq("user_id", uid)
           .maybeSingle();
-        if (prof?.slug) setMeSlug(prof.slug);
-
         const name = (prof?.display_name || prof?.username || "").trim();
         if (name) {
           const parts = name.split(/\s+/);
@@ -1251,15 +1247,9 @@ export function Feed() {
             onTabChange={setFeedTab}
             searchOpen={searchOpen}
             onToggleSearch={() => setSearchOpen((v) => !v)}
-            meAvatarUrl={meAvatarUrl}
-            meInitials={meInitials}
-            meSlug={meSlug}
           />
         ) : (
-          <>
-            <WebStoriesRail meAvatarUrl={meAvatarUrl} meInitials={meInitials} />
-            <FeedSocialBar onOpenMessages={() => window.dispatchEvent(new CustomEvent("oventric:open-messages"))} />
-          </>
+          <FeedSocialBar onOpenMessages={() => window.dispatchEvent(new CustomEvent("oventric:open-messages"))} />
         )}
         {/* Composer — hidden in Discover / Following because those tabs are view-only */}
         {!(feedTab === "discover" || feedTab === "following") && (

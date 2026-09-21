@@ -5,3 +5,4 @@
 - [x] Admin activity alerts — complete route coverage, per-admin unread counts, sidebar/overview glow, and seen-state handling.
 - [x] Suggested people rails — horizontal profile, shop, and follow cards in Newsfeed and Discovery.
 - [x] Profile overview — side-by-side Shop and Services, then earnings and full Newsfeed-style recent posts.
+- [x] Newsfeed mobile/tablet header — remove Stories, add compact logo/actions header with scroll-direction collapse.
