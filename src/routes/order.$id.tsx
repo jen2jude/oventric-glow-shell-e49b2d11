@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   Download,
   ExternalLink,
+  Gift,
   Loader2,
   ArrowLeft,
   Mail,
@@ -14,6 +15,7 @@ import {
   RefreshCcw,
   Lock,
 } from "lucide-react";
+
 import { Header } from "@/components/oventric/Header";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { getOrderWithDownload, FX_FROM_USD, type OrderDTO } from "@/lib/marketplace.functions";
