@@ -32,6 +32,17 @@ export interface CreatorMedia {
   posterUrl: string | null;
 }
 
+export interface CreatorAssetDTO {
+  productId: string;
+  /** Null when the linked product is still in review (not publicly readable yet). */
+  available: boolean;
+  isFree: boolean;
+  priceUsd: number;
+  originalCurrency: string | null;
+  originalAmount: number | null;
+  fxSnapshot: unknown;
+}
+
 export interface CreatorPostDTO {
   id: string;
   title: string;
@@ -43,6 +54,7 @@ export interface CreatorPostDTO {
   externalProvider: string | null;
   fields: string[];
   createdAt: string;
+  asset: CreatorAssetDTO | null;
   author: {
     userId: string;
     name: string;
@@ -50,6 +62,7 @@ export interface CreatorPostDTO {
     avatarUrl: string | null;
   };
 }
+
 
 function publicClient() {
   const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
