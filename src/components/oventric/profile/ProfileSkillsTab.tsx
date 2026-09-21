@@ -17,12 +17,14 @@ export function ProfileSkillsTab({
   skills,
   skillLevels,
   tools,
+  workLinks = [],
 }: {
   name: string;
   isOwner: boolean;
   skills: string[];
   skillLevels: Record<string, number>;
   tools: string[];
+  workLinks?: string[];
 }) {
   const [editing, setEditing] = useState(false);
   const [localSkills, setLocalSkills] = useState<string[]>(skills);
