@@ -109,19 +109,27 @@ function serverPublicClient() {
 }
 
 async function signBucket(
-  sb: ReturnType<typeof serverPublicClient>,
+  _sb: ReturnType<typeof serverPublicClient>,
   bucket: string,
   paths: (string | null | undefined)[],
 ): Promise<(string | null)[]> {
   const clean = paths.map((p) => (typeof p === "string" && p ? p : null));
-  const unique = Array.from(new Set(clean.filter((p): p is string => !!p)));
-  if (unique.length === 0) return clean.map(() => null);
-  const { data } = await sb.storage.from(bucket).createSignedUrls(unique, 60 * 60 * 24 * 7);
+  const unique = Array.from(
+    new Set(clean.filter((p): p is string => !!p && !/^https?:\/\//i.test(p))),
+  );
+  if (unique.length === 0) return clean.map((p) => (p && /^https?:\/\//i.test(p) ? p : null));
+  const { imageStorage } = await import("@/lib/storage/images.server");
+  const storage = await imageStorage();
+  const { data } = await storage.from(bucket).createSignedUrls(unique, 60 * 60 * 24 * 7);
   const map = new Map<string, string>();
   (data ?? []).forEach((r) => {
     if (r.path && r.signedUrl) map.set(r.path, r.signedUrl);
   });
-  return clean.map((p) => (p ? (map.get(p) ?? null) : null));
+  return clean.map((p) => {
+    if (!p) return null;
+    if (/^https?:\/\//i.test(p)) return p;
+    return map.get(p) ?? null;
+  });
 }
 
 export const getDiscoveryFeed = createServerFn({ method: "GET" }).handler(
