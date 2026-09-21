@@ -23,6 +23,7 @@ interface Props {
   /** Section -> item count, so empty modules never render. */
   counts: Partial<Record<EcosystemSectionKey, number>>;
   isOwner: boolean;
+  viewerId: string | null;
   price: (usd: number) => string;
   itemSearch: Record<string, unknown>;
   onOpenSection: (key: string) => void;
@@ -95,6 +96,7 @@ export function ProfileOverview({
   name,
   counts,
   isOwner,
+  viewerId,
   price,
   itemSearch,
   onOpenSection,
@@ -195,7 +197,7 @@ export function ProfileOverview({
       )}
 
 
-      <div className="grid items-start gap-5 lg:grid-cols-2">
+      <div className="grid items-stretch gap-5 lg:grid-cols-2">
       {shop.length > 0 && (
         <Module
           title={`From ${name.split(" ")[0] || name}'s shop`}
@@ -228,7 +230,7 @@ export function ProfileOverview({
           <ProfilePostsFeed
             wallUserId={realProfile.userId}
             wallOwnerName={name}
-            viewerId={realProfile.viewerId ?? null}
+            viewerId={viewerId}
             showComposer={false}
             limit={3}
           />

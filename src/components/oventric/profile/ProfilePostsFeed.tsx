@@ -264,6 +264,24 @@ export function ProfilePostsFeed({
                   </div>
                 )}
 
+                {p.mentions.length > 0 && (
+                  <div className="px-4 pt-2 text-xs text-slate-500">
+                    With{" "}
+                    {p.mentions.map((mention, index) => (
+                      <span key={mention.user_id}>
+                        {index > 0 ? ", " : ""}
+                        <Link
+                          to="/profile/$id"
+                          params={{ id: mention.slug || mention.user_id }}
+                          className="font-semibold text-[#E5484D] hover:underline"
+                        >
+                          {mention.name}
+                        </Link>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
                 {images.length > 0 && (
                   <div
                     className={`grid gap-1.5 px-4 pt-3 md:gap-2 ${
@@ -311,6 +329,40 @@ export function ProfilePostsFeed({
                     {p.product_attachments.map((pa) => (
                       <ProductAttachmentCard key={pa.id} product={pa} />
                     ))}
+                  </div>
+                )}
+
+                {p.repost_of && (
+                  <div className="mx-4 mt-3 rounded-[10px] border border-white/10 p-3 md:border-slate-200">
+                    <div className="flex items-center gap-2">
+                      <span className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                        <AvatarImage
+                          src={p.repost_of.author_avatar_url}
+                          alt={p.repost_of.author_name}
+                          initials={p.repost_of.initials}
+                        />
+                      </span>
+                      <span className="min-w-0 truncate text-xs font-bold text-white md:text-slate-900">
+                        {p.repost_of.author_name}
+                      </span>
+                    </div>
+                    {p.repost_of.text && (
+                      <TruncatedText
+                        text={p.repost_of.text}
+                        lines={3}
+                        className="mt-2 text-sm leading-relaxed text-slate-300 md:text-slate-700"
+                      />
+                    )}
+                  </div>
+                )}
+
+                {(p.likes_count > 0 || p.comments_count > 0 || p.reposts_count > 0 || p.views_count > 0) && (
+                  <div className="mx-4 mt-3 flex items-center justify-between border-b border-white/10 pb-2 text-[11px] text-slate-500 md:border-slate-100">
+                    <span>{p.likes_count} reaction{p.likes_count === 1 ? "" : "s"}</span>
+                    <span>
+                      {p.comments_count} comment{p.comments_count === 1 ? "" : "s"}
+                      {p.reposts_count > 0 ? ` · ${p.reposts_count} repost${p.reposts_count === 1 ? "" : "s"}` : ""}
+                    </span>
                   </div>
                 )}
 
