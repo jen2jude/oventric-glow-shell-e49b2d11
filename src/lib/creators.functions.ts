@@ -40,7 +40,7 @@ export interface CreatorAssetDTO {
   priceUsd: number;
   originalCurrency: string | null;
   originalAmount: number | null;
-  fxSnapshot: unknown;
+  fxSnapshot: { base: string; rates: Record<string, number> } | null;
 }
 
 export interface CreatorPostDTO {
