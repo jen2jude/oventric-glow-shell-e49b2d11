@@ -1035,7 +1035,7 @@ function ProductPreviewModal({ product, onClose }: { product: Row; onClose: () =
                   onClick={() => setActive(i)}
                   className={`shrink-0 w-16 h-16 rounded-[10px] overflow-hidden border-2 ${i === active ? "border-emerald-500" : "border-white/10"}`}
                 >
-                  <img src={u} alt="" className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" src={u} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

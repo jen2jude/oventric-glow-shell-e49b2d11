@@ -329,7 +329,7 @@ function BlogEditorPage() {
       const { url } = await uploadFileToBucket(f);
       exec(
         "insertHTML",
-        `<p><img src="${url}" alt="" data-resizable="true" style="width:100%;max-width:100%;border-radius:8px;cursor:pointer" /></p>`,
+        `<p><img loading="lazy" decoding="async" src="${url}" alt="" data-resizable="true" style="width:100%;max-width:100%;border-radius:8px;cursor:pointer" /></p>`,
       );
     } catch (err) {
       alert((err as Error).message);
@@ -494,7 +494,7 @@ function BlogEditorPage() {
                 By You · {new Date().toLocaleDateString()}
               </div>
               {coverUrl && (
-                <img
+                <img loading="lazy" decoding="async"
                   src={coverUrl}
                   alt=""
                   className="w-full mt-6 rounded-xl border border-white/10 aspect-video object-cover"

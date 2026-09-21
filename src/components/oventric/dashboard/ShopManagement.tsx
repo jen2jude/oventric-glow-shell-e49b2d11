@@ -145,7 +145,7 @@ export function ShopManagement() {
         <div className="bg-[#141418] border border-white/10 rounded-2xl overflow-hidden">
           <div className="h-32 bg-gradient-to-r from-[#E5484D]/20 to-purple-500/20 relative">
              {coverPreview ? (
-               <img decoding="async" src={coverPreview} alt="Shop cover" className="absolute inset-0 h-full w-full object-cover" />
+               <img loading="lazy" decoding="async" decoding="async" src={coverPreview} alt="Shop cover" className="absolute inset-0 h-full w-full object-cover" />
              ) : null}
              <div className="absolute inset-0 flex items-center justify-center">
                <button
@@ -180,7 +180,7 @@ export function ShopManagement() {
                 className="relative w-20 h-20 rounded-2xl bg-[#141418] border-4 border-[#141418] shadow-xl overflow-hidden flex items-center justify-center group cursor-pointer disabled:opacity-60"
               >
                 {logoPreview ? (
-                  <img decoding="async" src={logoPreview} alt="Shop logo" className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" decoding="async" src={logoPreview} alt="Shop logo" className="w-full h-full object-cover" />
                 ) : (
                   <Store className="w-8 h-8 text-slate-700" />
                 )}

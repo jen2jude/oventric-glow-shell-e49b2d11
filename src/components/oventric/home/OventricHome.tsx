@@ -261,7 +261,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
       {/* ---------------------------------------------------------- hero */}
       <section className="home-pop-hero relative w-full overflow-hidden bg-home-surface">
         <div className="absolute inset-0">
-          <img
+          <img loading="lazy" decoding="async"
             src={heroImage}
             alt="A creator working on digital products"
             width={1600}

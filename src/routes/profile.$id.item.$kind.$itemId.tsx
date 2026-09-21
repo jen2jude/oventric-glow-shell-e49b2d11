@@ -400,7 +400,7 @@ function ItemDetail() {
       {/* Author strip */}
       <Link to="/profile/$id" params={{ id }} className="flex items-center gap-3 mb-4 group">
         {realProfile?.avatarUrl ? (
-          <img
+          <img loading="lazy" decoding="async"
             src={realProfile.avatarUrl}
             alt={displayName}
             className="w-10 h-10 rounded-full object-cover shrink-0"

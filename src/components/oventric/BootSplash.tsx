@@ -134,7 +134,7 @@ export function BootSplash() {
       style={{ opacity: fading ? 0 : 1 }}
     >
         <div className="flex flex-col items-center gap-4">
-          <img
+          <img loading="lazy" decoding="async"
             src={logoFull}
             alt="Oventric"
             className="h-10 w-auto select-none sm:h-12"

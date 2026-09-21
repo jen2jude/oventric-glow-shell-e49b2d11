@@ -274,7 +274,7 @@ export function ExplorePage({ onSelect }: { onSelect: (section: "Marketplace") =
       <div className="mx-auto w-full max-w-[1280px] px-4 pb-16 pt-5 sm:px-6 lg:pt-8">
         {/* ------------------------------------------------------------ hero */}
         <section className="relative isolate overflow-hidden rounded-[18px] border border-slate-200/80 px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-20">
-          <img
+          <img loading="lazy" decoding="async"
             src={exploreHeroBg}
             alt=""
             className="absolute inset-0 -z-20 h-full w-full object-cover"

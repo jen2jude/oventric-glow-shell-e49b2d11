@@ -891,7 +891,7 @@ function CreativesTab({
             className="relative bg-[#141418] border border-white/10 rounded-[10px] overflow-hidden group"
           >
             {c.kind === "image" ? (
-              <img src={c.url} alt="" className="w-full aspect-square object-cover" />
+              <img loading="lazy" decoding="async" src={c.url} alt="" className="w-full aspect-square object-cover" />
             ) : (
               <video src={c.url} className="w-full aspect-square object-cover" muted playsInline />
             )}

@@ -116,7 +116,7 @@ function AdminDisputesPage() {
               <div className="flex gap-2 flex-wrap mb-2">
                 {d.imageUrls.map((u) => (
                   <a key={u} href={u} target="_blank" rel="noreferrer">
-                    <img
+                    <img loading="lazy" decoding="async"
                       src={u}
                       alt="Dispute evidence"
                       className="w-20 h-20 object-cover rounded border border-white/10"

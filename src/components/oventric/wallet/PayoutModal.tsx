@@ -295,7 +295,7 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
                 {money(available, sym)}
               </div>
             </div>
-            <img src={wallet3d.url} alt="" className="w-20 h-20 object-contain -mt-2 -mr-1" />
+            <img loading="lazy" decoding="async" src={wallet3d.url} alt="" className="w-20 h-20 object-contain -mt-2 -mr-1" />
           </div>
           <div className="mt-4 grid grid-cols-2 gap-3 rounded-[10px] border border-white/8 bg-white/[0.03] p-3">
             <div>

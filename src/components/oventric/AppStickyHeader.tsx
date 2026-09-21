@@ -29,7 +29,7 @@ export function AppStickyHeader({ right }: { right?: ReactNode }) {
           <Menu className="w-6 h-6" />
         </button>
         <Link to="/" className="flex items-center">
-          <img src={logoFull} alt="Oventric" className="h-6 w-auto" />
+          <img loading="lazy" decoding="async" src={logoFull} alt="Oventric" className="h-6 w-auto" />
         </Link>
         <div className="flex items-center gap-4">
           <button

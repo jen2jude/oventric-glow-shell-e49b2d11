@@ -111,7 +111,7 @@ export function PublicInfoLayout({
                   </p>
                 </div>
                 <div className="relative min-h-56 overflow-hidden border-t border-border bg-muted lg:min-h-full lg:border-l lg:border-t-0">
-                  <img
+                  <img loading="lazy" decoding="async"
                     src={image}
                     alt={imageAlt}
                     width={1408}

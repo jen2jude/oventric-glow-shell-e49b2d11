@@ -42,7 +42,7 @@ export function QrCode({
   }
 
   return (
-    <img
+    <img loading="lazy" decoding="async"
       src={src}
       alt="QR code to install the Oventric app"
       width={size}

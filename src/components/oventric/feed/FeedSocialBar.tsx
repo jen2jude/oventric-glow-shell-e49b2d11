@@ -65,7 +65,7 @@ export function FeedSocialBar({ onOpenMessages, onOpenSearch }: Props) {
         }`}
       >
         <Link to="/" aria-label="Oventric home" className="flex min-w-0 items-center">
-          <img
+          <img loading="lazy" decoding="async"
             src={logoDark}
             alt="Oventric"
             className="h-8 w-auto max-w-[132px] object-contain object-left md:h-9 md:max-w-[154px]"
