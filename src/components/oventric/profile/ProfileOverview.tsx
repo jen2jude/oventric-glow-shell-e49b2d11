@@ -184,7 +184,7 @@ export function ProfileOverview({
   const interests = realProfile?.interests ?? [];
 
   return (
-    <div data-testid="profile-overview" className="space-y-6 pb-2 md:grid md:grid-cols-2 md:items-start md:gap-5 md:space-y-0 lg:grid-cols-2">
+    <div data-testid="profile-overview" className="space-y-5 pb-2">
       {interests.length > 0 && (
         <Module title="What I'm into">
           <div className="-mx-1 flex flex-wrap gap-2 px-1">
