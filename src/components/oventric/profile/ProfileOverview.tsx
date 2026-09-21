@@ -67,7 +67,7 @@ function Module({
 /** Horizontal, snap-scrolling rail — the mobile-native way to preview a set. */
 function Rail({ children }: { children: React.ReactNode }) {
   return (
-    <div className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-1 no-scrollbar md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 lg:grid-cols-3">
+    <div className="-mx-1 flex snap-x snap-mandatory gap-2 overflow-x-auto px-1 pb-1 no-scrollbar md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 lg:grid-cols-4">
       {children}
     </div>
   );
