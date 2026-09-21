@@ -306,14 +306,10 @@ export function PostComposerModal({
   const removeMention = (id: string) => setMentions((prev) => prev.filter((m) => m.userId !== id));
 
   const addProductTag = (p: any) => {
-    // If we're opening from "Add to Post" (Product action), we treat it as an attachment
-    // If we were implementation image tagging, it would go to taggedProducts.
-    // For this STAGE 2 requirement, "When the user selects Product: Open a product selector... Allow selection."
-    // and "When a product is attached to a post, render a clean mini product card."
+    // Product attachments can be multi-selected; media remains a separate static attachment rail.
     if (!attachedProducts.find(x => x.id === p.id)) {
       setAttachedProducts(prev => [...prev, { id: p.id, name: p.name, price: p.priceUsd, coverUrl: p.coverUrl }]);
     }
-    setProductPickerOpen(false);
     setProductQuery("");
   };
 
@@ -745,6 +741,22 @@ export function PostComposerModal({
                 <X className="w-4 h-4" />
               </button>
             </div>
+            {attachedProducts.length > 0 && (
+              <div className="border-b border-slate-200 px-3 py-2">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="min-w-0 truncate text-[11px] font-semibold text-slate-500">
+                    {attachedProducts.length} product{attachedProducts.length === 1 ? "" : "s"} selected
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setProductPickerOpen(false)}
+                    className="shrink-0 rounded-[8px] bg-[#E5484D] px-3 py-1.5 text-[11px] font-bold text-white"
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            )}
             <div className="max-h-80 overflow-auto py-1">
               {productLoading && (
                 <div className="flex items-center justify-center py-6 text-slate-500 text-xs gap-2">
@@ -756,11 +768,13 @@ export function PostComposerModal({
                   {productQuery.trim().length > 0 ? "No products found" : "Type to search your products"}
                 </div>
               )}
-              {productResults.map((p) => (
+              {productResults.map((p) => {
+                const selected = attachedProducts.some((item) => item.id === p.id);
+                return (
                 <button
                   key={p.id}
                   onClick={() => addProductTag(p)}
-                  className="w-full flex items-center gap-3 px-3 py-3 hover:bg-slate-50 text-left"
+                  className={`w-full flex items-center gap-3 px-3 py-3 text-left ${selected ? "bg-rose-50" : "hover:bg-slate-50"}`}
                 >
                   <span className="w-9 h-9 rounded-[10px] overflow-hidden bg-slate-100 flex items-center justify-center">
                     {p.coverUrl ? (
@@ -775,8 +789,10 @@ export function PostComposerModal({
                       {p.vendor} · ${p.priceUsd}
                     </span>
                   </span>
+                  {selected && <Check className="h-4 w-4 shrink-0 text-[#E5484D]" />}
                 </button>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
