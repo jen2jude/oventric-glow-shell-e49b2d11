@@ -180,7 +180,8 @@ async function signBucket(
   const unique = Array.from(new Set(paths.filter((p): p is string => !!p && !/^https?:\/\//i.test(p))));
   const map = new Map<string, string>();
   if (unique.length > 0) {
-    const { data } = await sb.storage.from(bucket).createSignedUrls(unique, 60 * 60 * 24 * 7);
+    const storage = await imageStorage();
+    const { data } = await storage.from(bucket).createSignedUrls(unique, 60 * 60 * 24 * 7);
     (data ?? []).forEach((r) => { if (r.path && r.signedUrl) map.set(r.path, r.signedUrl); });
     for (const p of unique) {
       if (!map.has(p)) {
