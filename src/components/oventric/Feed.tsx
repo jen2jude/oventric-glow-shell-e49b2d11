@@ -1656,14 +1656,11 @@ export function Feed() {
               );
               shopRailIdx += 1;
             };
-            if (interleaveAll) pushPeopleRail();
+            if (interleaveForYou) pushPeopleRail();
             visible.forEach((post, i) => {
               items.push(renderPost(post));
               const count = i + 1;
               if (interleaveForYou) {
-                if (count === 3 || (count >= 13 && (count - 13) % 10 === 0)) pushShopRail();
-              }
-              if (interleaveAll) {
                 if (count === 3 || (count >= 13 && (count - 13) % 10 === 0)) pushShopRail();
                 if (count >= 8 && (count - 8) % 10 === 0) pushPeopleRail();
               }
