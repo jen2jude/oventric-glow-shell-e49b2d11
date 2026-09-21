@@ -1,11 +1,11 @@
-import { Compass, Home, ShoppingBag, Wallet } from "lucide-react";
+import { Compass, Home, Newspaper, ShoppingBag } from "lucide-react";
 import { haptic } from "@/lib/haptics";
 
 const ITEMS = [
   { label: "Home", section: "Home", Icon: Home },
   { label: "Explore", section: "Explore", Icon: Compass },
   { label: "Marketplace", section: "Marketplace", Icon: ShoppingBag },
-  { label: "Wallet", section: "Wallet", Icon: Wallet },
+  { label: "Feed", section: "Feed", Icon: Newspaper },
 ] as const;
 
 export function WebMobileFooterNav({
