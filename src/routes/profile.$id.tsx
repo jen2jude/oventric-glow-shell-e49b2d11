@@ -132,7 +132,6 @@ import { EditProfileModal } from "@/components/oventric/EditProfileModal";
 import { CircleRequestsDrawer } from "@/components/oventric/CircleRequestsDrawer";
 import { FollowRequestsDrawer } from "@/components/oventric/FollowRequestsDrawer";
 import { ProfileMessageModal } from "@/components/oventric/messaging/ProfileMessageModal";
-import { EarningsBreakdown } from "@/components/oventric/profile/EarningsBreakdown";
 import {
   ConnectionsDialog,
   type ConnectionsTab,
@@ -2114,8 +2113,6 @@ function ProfilePage() {
               />
             )}
 
-
-            <EarningsBreakdown isOwner={isOwnProfile} />
 
           </div>
         </main>

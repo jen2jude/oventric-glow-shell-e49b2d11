@@ -5,7 +5,6 @@ import {
   Image as ImageIcon,
   Loader2,
   MessageCircle,
-  MoreHorizontal,
   PenSquare,
   Share2,
 } from "lucide-react";
@@ -28,18 +27,17 @@ import {
 import { TruncatedText } from "@/components/oventric/feed/TruncatedText";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { ProductAttachmentCard } from "@/components/oventric/feed/ProductAttachmentCard";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { PostActionsMenu, shareUrl } from "@/components/oventric/PostActionsMenu";
+import { ReportModal } from "@/components/oventric/ReportModal";
+import { ImageLightbox } from "@/components/oventric/feed/ImageLightbox";
 
 interface Props {
   /** Owner of the wall being viewed. */
   wallUserId: string;
   wallOwnerName: string;
   viewerId: string | null;
+  showComposer?: boolean;
+  limit?: number;
 }
 
 function timeAgo(iso: string) {
@@ -58,7 +56,13 @@ function timeAgo(iso: string) {
  * The profile "Posts" tab: one live wall feed with a newsfeed-style composer
  * on top. Reactions, comments and sharing use the same wiring as the wall.
  */
-export function ProfilePostsFeed({ wallUserId, wallOwnerName, viewerId }: Props) {
+export function ProfilePostsFeed({
+  wallUserId,
+  wallOwnerName,
+  viewerId,
+  showComposer = true,
+  limit,
+}: Props) {
   const listWall = useServerFn(listWallPostsFn);
   const react = useServerFn(setReactionFn);
   const del = useServerFn(deletePostFn);
@@ -68,6 +72,8 @@ export function ProfilePostsFeed({ wallUserId, wallOwnerName, viewerId }: Props)
   const [composerOpen, setComposerOpen] = useState(false);
   const [commentsFor, setCommentsFor] = useState<FeedPost | null>(null);
   const [pickerFor, setPickerFor] = useState<string | null>(null);
+  const [reportFor, setReportFor] = useState<string | null>(null);
+  const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null);
   const [meAvatarUrl, setMeAvatarUrl] = useState<string | null>(null);
   const [meInitials, setMeInitials] = useState("Me");
 
@@ -167,23 +173,12 @@ export function ProfilePostsFeed({ wallUserId, wallOwnerName, viewerId }: Props)
     }
   };
 
-  const onShare = async (post: FeedPost) => {
-    const url = `${window.location.origin}/profile/${wallUserId}/item/post/${post.id}`;
-    try {
-      if (navigator.share) await navigator.share({ title: post.author_name, url });
-      else {
-        await navigator.clipboard.writeText(url);
-        toast.success("Link copied");
-      }
-    } catch {
-      /* dismissed */
-    }
-  };
+  const visiblePosts = typeof limit === "number" ? posts?.slice(0, limit) : posts;
 
   return (
     <div className="pb-2">
       {/* Composer trigger — avatar, prompt, media shortcut */}
-      <div className="mb-4 flex items-center gap-3 rounded-2xl border border-white/10 bg-[#141418] p-3 md:rounded-[10px] md:border-slate-200 md:bg-slate-50">
+      {showComposer && <div className="mb-4 flex items-center gap-3 rounded-2xl border border-white/10 bg-[#141418] p-3 md:rounded-[10px] md:border-slate-200 md:bg-slate-50">
         <span className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-neutral-800 md:bg-slate-200">
           <AvatarImage src={meAvatarUrl} alt="Your profile" initials={meInitials} />
         </span>
@@ -208,16 +203,18 @@ export function ProfilePostsFeed({ wallUserId, wallOwnerName, viewerId }: Props)
         >
           <ImageIcon className="h-6 w-6" strokeWidth={1.5} />
         </button>
-      </div>
+      </div>}
 
       {loading ? (
         <div className="flex items-center justify-center py-10 text-sm text-slate-500">
           <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading posts…
         </div>
-      ) : posts && posts.length > 0 ? (
+      ) : visiblePosts && visiblePosts.length > 0 ? (
         <div className="space-y-3">
-          {posts.map((p) => {
+          {visiblePosts.map((p) => {
             const meta = p.viewer_reaction ? REACTION_META[p.viewer_reaction] : null;
+            const shareHref = `${typeof window !== "undefined" ? window.location.origin : ""}/profile/${wallUserId}/item/post/${p.id}`;
+            const images = p.media.filter((item) => item.type === "image");
             return (
               <article
                 key={p.id}
@@ -245,24 +242,16 @@ export function ProfilePostsFeed({ wallUserId, wallOwnerName, viewerId }: Props)
                     </Link>
                     <p className="text-[11px] text-slate-500">{timeAgo(p.created_at)}</p>
                   </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger
-                      className="shrink-0 rounded-full p-1.5 text-slate-400 hover:bg-white/5 hover:text-white md:hover:bg-slate-100 md:hover:text-slate-900"
-                      aria-label="Post options"
-                    >
-                      <MoreHorizontal className="h-5 w-5" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="z-[120]">
-                      <DropdownMenuItem onClick={() => void onShare(p)}>
-                        Copy / share link
-                      </DropdownMenuItem>
-                      {p.author_id === viewerId && (
-                        <DropdownMenuItem onClick={() => void onDelete(p)}>
-                          Delete post
-                        </DropdownMenuItem>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <PostActionsMenu
+                    postId={p.id}
+                    shareTitle={`${p.author_name} on Oventric`}
+                    shareHref={shareHref}
+                    onReport={() => setReportFor(p.id)}
+                    isOwn={p.author_id === viewerId}
+                    onDelete={() => void onDelete(p)}
+                    authorId={p.author_id}
+                    authorName={p.author_name}
+                  />
                 </header>
 
                 {p.text && (
@@ -275,34 +264,47 @@ export function ProfilePostsFeed({ wallUserId, wallOwnerName, viewerId }: Props)
                   </div>
                 )}
 
-                {p.media.length > 0 && (
+                {images.length > 0 && (
                   <div
                     className={`grid gap-1.5 px-4 pt-3 md:gap-2 ${
-                      p.media.length === 1 ? "grid-cols-1" : "grid-cols-2"
+                      images.length === 1 ? "grid-cols-1" : "grid-cols-2"
                     }`}
                   >
-                    {p.media.slice(0, 4).map((m, i) => (
-                      <div key={i} className="overflow-hidden rounded-xl bg-black/40">
-                        {m.type === "video" ? (
-                          <video
-                            src={`${m.url}#t=0.1`}
-                            poster={m.poster_url || undefined}
-                            preload="metadata"
-                            controls
-                            playsInline
-                            className="max-h-[420px] w-full object-cover"
-                          />
-                        ) : (
-                          <img loading="lazy" decoding="async"
-                            src={m.url}
-                            alt=""
-                            className="max-h-[420px] w-full object-cover"
-                          />
+                    {images.slice(0, 4).map((m, i) => (
+                      <button
+                        type="button"
+                        key={`${m.url}-${i}`}
+                        onClick={() => setLightbox({ images: images.map((item) => item.url), index: i })}
+                        className="relative overflow-hidden rounded-xl bg-black/40 text-left"
+                        aria-label={`Open image ${i + 1} of ${images.length}`}
+                      >
+                        <img loading="lazy" decoding="async"
+                          src={m.url}
+                          alt=""
+                          className={`w-full object-cover ${images.length === 1 ? "max-h-[520px]" : "aspect-square"}`}
+                        />
+                        {images.length > 4 && i === 3 && (
+                          <span className="absolute inset-0 grid place-items-center bg-black/55 text-xl font-bold text-white">
+                            +{images.length - 4}
+                          </span>
                         )}
-                      </div>
+                      </button>
                     ))}
                   </div>
                 )}
+
+                {p.media.filter((item) => item.type === "video").map((m, i) => (
+                  <div key={`${m.url}-${i}`} className="px-4 pt-3">
+                    <video
+                      src={`${m.url}#t=0.1`}
+                      poster={m.poster_url || undefined}
+                      preload={m.poster_url ? "none" : "metadata"}
+                      controls
+                      playsInline
+                      className="max-h-[520px] w-full rounded-xl bg-black object-cover"
+                    />
+                  </div>
+                ))}
 
                 {p.product_attachments && p.product_attachments.length > 0 && (
                   <div className="px-4">
@@ -348,7 +350,7 @@ export function ProfilePostsFeed({ wallUserId, wallOwnerName, viewerId }: Props)
                   </button>
                   <button
                     type="button"
-                    onClick={() => void onShare(p)}
+                    onClick={() => void shareUrl(shareHref, `${p.author_name} on Oventric`)}
                     className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-400 hover:text-white md:hover:text-slate-900"
                   >
                     <Share2 className="h-5 w-5" aria-hidden />
@@ -364,7 +366,7 @@ export function ProfilePostsFeed({ wallUserId, wallOwnerName, viewerId }: Props)
           <p className="text-sm text-slate-400 md:text-slate-500">
             {isSelf ? "Your wall is empty. Drop the first post." : `${wallOwnerName}'s wall is empty.`}
           </p>
-          {viewerId && (
+          {showComposer && viewerId && (
             <button
               type="button"
               onClick={() => setComposerOpen(true)}
@@ -394,6 +396,20 @@ export function ProfilePostsFeed({ wallUserId, wallOwnerName, viewerId }: Props)
             setCommentsFor(null);
             void load();
           }}
+        />
+      )}
+      <ReportModal
+        open={!!reportFor}
+        onClose={() => setReportFor(null)}
+        target="post"
+        targetId={reportFor ?? undefined}
+        targetKind="post"
+      />
+      {lightbox && (
+        <ImageLightbox
+          images={lightbox.images}
+          startIndex={lightbox.index}
+          onClose={() => setLightbox(null)}
         />
       )}
     </div>
