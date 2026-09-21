@@ -32,6 +32,17 @@ export interface CreatorMedia {
   posterUrl: string | null;
 }
 
+export interface CreatorAssetDTO {
+  productId: string;
+  /** Null when the linked product is still in review (not publicly readable yet). */
+  available: boolean;
+  isFree: boolean;
+  priceUsd: number;
+  originalCurrency: string | null;
+  originalAmount: number | null;
+  fxSnapshot: { base: string; rates: Record<string, number> } | null;
+}
+
 export interface CreatorPostDTO {
   id: string;
   title: string;
@@ -43,6 +54,7 @@ export interface CreatorPostDTO {
   externalProvider: string | null;
   fields: string[];
   createdAt: string;
+  asset: CreatorAssetDTO | null;
   author: {
     userId: string;
     name: string;
@@ -50,6 +62,7 @@ export interface CreatorPostDTO {
     avatarUrl: string | null;
   };
 }
+
 
 function publicClient() {
   const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
@@ -159,6 +172,8 @@ const PublishInput = z.object({
   mediaType: z.enum(["image", "video"]).optional(),
   communityLink: z.string().trim().max(300).optional(),
   externalUrl: z.string().trim().max(500).optional(),
+  /** Marketplace product created by the same creator, sold as an instant download. */
+  productId: z.string().uuid().optional(),
 });
 
 /** Publishes a creator showcase item. */
@@ -176,6 +191,20 @@ export const publishCreatorPost = createServerFn({ method: "POST" })
       .maybeSingle();
     const fields = readCreatorProfile((prof as { creator_profile?: unknown } | null)?.creator_profile).fields;
 
+    // Only the creator's own listing may be attached — never a product id a
+    // client hands us for someone else's asset.
+    let productId: string | null = null;
+    if (data.productId) {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: prod } = await supabaseAdmin
+        .from("products")
+        .select("id, seller_id")
+        .eq("id", data.productId)
+        .maybeSingle();
+      if (!prod || prod.seller_id !== userId) throw new Error("That asset isn't yours");
+      productId = prod.id;
+    }
+
     const { data: row, error } = await supabase
       .from("creator_posts")
       .insert({
@@ -187,6 +216,7 @@ export const publishCreatorPost = createServerFn({ method: "POST" })
         community_link: data.communityLink || null,
         external_url: embed?.url ?? null,
         external_provider: embed?.provider ?? null,
+        product_id: productId,
         fields,
         status: "published",
       })
@@ -199,6 +229,7 @@ export const publishCreatorPost = createServerFn({ method: "POST" })
     return { id: (row as { id: string } | null)?.id ?? null };
   });
 
+
 /** Public creator showcase feed. */
 export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
   async (): Promise<CreatorPostDTO[]> => {
@@ -206,12 +237,39 @@ export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
     const { data: rows, error } = await sb
       .from("creator_posts")
       .select(
-        "id, author_id, title, caption, media_paths, media_type, community_link, external_url, external_provider, fields, created_at",
+        "id, author_id, title, caption, media_paths, media_type, community_link, external_url, external_provider, product_id, fields, created_at",
       )
       .eq("status", "published")
       .order("created_at", { ascending: false })
       .limit(40);
     if (error || !rows || rows.length === 0) return [];
+
+    // Linked assets: only active (approved) listings are publicly readable, so
+    // anything missing here is still in review.
+    const productIds = Array.from(
+      new Set(rows.map((r) => r.product_id).filter((id): id is string => !!id)),
+    );
+    const assets = new Map<string, CreatorAssetDTO>();
+    if (productIds.length > 0) {
+      const { data: prods } = await sb
+        .from("products")
+        .select("id, price_usd, original_currency, original_amount, fx_snapshot")
+        .in("id", productIds)
+        .eq("status", "active");
+      (prods ?? []).forEach((p) => {
+        const priceUsd = Number(p.price_usd) || 0;
+        assets.set(p.id, {
+          productId: p.id,
+          available: true,
+          isFree: priceUsd <= 0,
+          priceUsd,
+          originalCurrency: (p.original_currency as string) ?? null,
+          originalAmount: p.original_amount === null ? null : Number(p.original_amount),
+          fxSnapshot: (p.fx_snapshot as { base: string; rates: Record<string, number> } | null) ?? null,
+        });
+      });
+    }
+
 
     const authorIds = Array.from(new Set(rows.map((r) => r.author_id)));
     const { data: profiles } = await sb
@@ -290,6 +348,18 @@ export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
         externalProvider: r.external_provider,
         fields: r.fields ?? [],
         createdAt: r.created_at,
+        asset: r.product_id
+          ? (assets.get(r.product_id) ?? {
+              productId: r.product_id,
+              available: false,
+              isFree: false,
+              priceUsd: 0,
+              originalCurrency: null,
+              originalAmount: null,
+              fxSnapshot: null,
+            })
+          : null,
+
         author: {
           userId: r.author_id,
           name: prof?.display_name ?? "Creator",

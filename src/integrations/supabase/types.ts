@@ -1632,6 +1632,7 @@ export type Database = {
           id: string
           media_paths: string[]
           media_type: string | null
+          product_id: string | null
           status: string
           title: string
           updated_at: string
@@ -1647,6 +1648,7 @@ export type Database = {
           id?: string
           media_paths?: string[]
           media_type?: string | null
+          product_id?: string | null
           status?: string
           title: string
           updated_at?: string
@@ -1662,11 +1664,20 @@ export type Database = {
           id?: string
           media_paths?: string[]
           media_type?: string | null
+          product_id?: string | null
           status?: string
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "creator_posts_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       crypto_deposits: {
         Row: {

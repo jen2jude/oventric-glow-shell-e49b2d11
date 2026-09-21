@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { BadgeCheck, MessageCircle, Play, Send } from "lucide-react";
+import { BadgeCheck, Download, MessageCircle, Play, Send, ShoppingBag } from "lucide-react";
 import { listCreatorFeed, type CreatorPostDTO } from "@/lib/creators.functions";
+import { computeDisplayPrice } from "@/lib/fx-display";
+import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
+
 
 const TINTS = [
   "border-sky-100 bg-sky-50/70 text-sky-700",
@@ -77,7 +80,47 @@ function PreviewVideo({ src, poster }: { src: string; poster: string | null }) {
   );
 }
 
+/** Buy / download call-to-action for a showcase item that has a listed asset. */
+function AssetCta({ asset }: { asset: NonNullable<CreatorPostDTO["asset"]> }) {
+  const { baseCurrency } = useOnboarding();
+  if (!asset.available) {
+    return (
+      <div className="mx-4 mb-3 rounded-[10px] border border-slate-200 bg-slate-50 px-3 py-2.5 text-[12px] font-bold text-slate-500">
+        Asset pending review
+      </div>
+    );
+  }
+  const price = asset.isFree
+    ? "Free"
+    : computeDisplayPrice(
+        {
+          price_usd: asset.priceUsd,
+          original_currency: asset.originalCurrency,
+          original_amount: asset.originalAmount,
+          fx_snapshot: asset.fxSnapshot,
+        },
+        baseCurrency,
+      ).formatted;
+
+  return (
+    <Link
+      to="/product/$id"
+      params={{ id: asset.productId }}
+      className={`mx-4 mb-3 flex items-center justify-between gap-3 rounded-[10px] px-3.5 py-3 text-white transition-transform active:scale-[0.99] ${
+        asset.isFree ? "bg-emerald-600" : "bg-[#E5484D]"
+      }`}
+    >
+      <span className="flex items-center gap-2 text-sm font-black">
+        {asset.isFree ? <Download className="h-4 w-4" /> : <ShoppingBag className="h-4 w-4" />}
+        {asset.isFree ? "Download asset" : "Buy asset"}
+      </span>
+      <span className="text-sm font-black">{price}</span>
+    </Link>
+  );
+}
+
 function CreatorCard({ post, index }: { post: CreatorPostDTO; index: number }) {
+
   const tint = TINTS[index % TINTS.length];
   return (
     <article className="overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-sm">
@@ -110,6 +153,9 @@ function CreatorCard({ post, index }: { post: CreatorPostDTO; index: number }) {
         <p className="text-[15px] font-black leading-snug text-slate-950">{post.title}</p>
         {post.caption && <p className="mt-1 text-[13px] leading-relaxed text-slate-600">{post.caption}</p>}
       </div>
+
+      {post.asset && <AssetCta asset={post.asset} />}
+
 
       {post.media.length > 0 &&
         (post.media[0].type === "video" ? (
