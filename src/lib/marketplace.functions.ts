@@ -1139,13 +1139,17 @@ export const createOrder = createServerFn({ method: "POST" })
     }
 
     // Credit the admin marketplace revenue wallet via SECURITY DEFINER helper.
-    await supabaseAdmin.rpc("system_wallet_credit", {
-      _kind: "marketplace",
-      _amount: platformCutUSD,
-      _source: "marketplace_order",
-      _ref: oRow.id as string,
-      _meta: { order_id: oRow.id, product_id: product.id, buyer_id: userId, seller_id: product.sellerId, cashback_usd: cashbackUSD, gateway_fee_usd: gatewayFeeUSD, payment_method: data.paymentMethod, escrow: holdEscrow, seller_cut_local: sellerCutLocal, seller_cut_currency: sellerCurrency },
-    });
+    // Free downloads move no money at all, so no revenue entry is written.
+    if (platformCutUSD > 0) {
+      await supabaseAdmin.rpc("system_wallet_credit", {
+        _kind: "marketplace",
+        _amount: platformCutUSD,
+        _source: "marketplace_order",
+        _ref: oRow.id as string,
+        _meta: { order_id: oRow.id, product_id: product.id, buyer_id: userId, seller_id: product.sellerId, cashback_usd: cashbackUSD, gateway_fee_usd: gatewayFeeUSD, payment_method: data.paymentMethod, escrow: holdEscrow, seller_cut_local: sellerCutLocal, seller_cut_currency: sellerCurrency },
+      });
+    }
+
 
 
     // Seller-funded, product-level cashback → buyer's SPEND-ONLY Cashback
