@@ -163,20 +163,20 @@ async function signCovers(
   sb: ReturnType<typeof serverPublicClient>,
   paths: (string | null)[],
 ): Promise<(string | null)[]> {
-  const unique = Array.from(new Set(paths.filter((p): p is string => !!p)));
-  if (unique.length === 0) return paths.map(() => null);
-  const { data } = await (await imageStorage()).from("product-covers").createSignedUrls(unique, 60 * 60 * 24 * 7);
-  const map = new Map<string, string>();
-  (data ?? []).forEach((r) => { if (r.path && r.signedUrl) map.set(r.path, r.signedUrl); });
-  return paths.map((p) => (p ? map.get(p) ?? null : null));
+  return signBucket(sb, "product-covers", paths);
 }
 
-/** Sign paths from any bucket; passes through absolute URLs and falls back to public URLs. */
+/**
+ * Resolve storage paths to image URLs. Public buckets use the permanent
+ * `/api/public/img/...` address so browsers cache the bytes across pages;
+ * anything else falls back to a signed URL.
+ */
 async function signBucket(
   sb: ReturnType<typeof serverPublicClient>,
   bucket: string,
   paths: (string | null)[],
 ): Promise<(string | null)[]> {
+  if (isStableBucket(bucket)) return stableImageUrls(bucket, paths);
   const unique = Array.from(new Set(paths.filter((p): p is string => !!p && !/^https?:\/\//i.test(p))));
   const map = new Map<string, string>();
   if (unique.length > 0) {
