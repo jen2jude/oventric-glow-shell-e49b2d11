@@ -187,6 +187,27 @@ export const acceptFollowRequest = createServerFn({ method: "POST" })
       throw new Error("Failed to accept");
     }
     await context.supabase.from("follow_requests").delete().eq("id", req.id);
+
+    // Tell the requester their request was accepted.
+    try {
+      const { data: meProfile } = await context.supabase
+        .from("profiles")
+        .select("display_name, username, slug")
+        .eq("user_id", me)
+        .maybeSingle();
+      const name = meProfile?.display_name || meProfile?.username || "Someone";
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      await (supabaseAdmin as any).from("notifications").insert({
+        user_id: data.requesterId,
+        from_user_id: me,
+        kind: "follow_accepted",
+        title: `${name} accepted your follow request`,
+        body: `You're now following ${name}.`,
+        link: meProfile?.slug ? `/profile/${meProfile.slug}` : null,
+      });
+    } catch (nErr) {
+      console.error("[acceptFollowRequest] notify", nErr);
+    }
     return { ok: true };
   });
 
