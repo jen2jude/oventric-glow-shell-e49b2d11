@@ -78,7 +78,6 @@ import { FeedSocialBar } from "@/components/oventric/feed/FeedSocialBar";
 import { useScrollHideChrome, useChromeHidden } from "@/hooks/use-chrome-hide";
 import { listFollowing } from "@/lib/follows.functions";
 import { FeedDiscoverExplore } from "@/components/oventric/feed/FeedDiscoverExplore";
-import { ReelsRail, useReels } from "@/components/oventric/feed/ReelsShelf";
 import {
   FeedCommerceCard,
   useFeedCommerceCards,
@@ -371,21 +370,6 @@ interface PendingPost {
   text: string;
   media: { url: string; kind: "image" | "video" }[];
   error?: string;
-}
-
-/** Reels rail for the browser/marketing feed — mirrors the app Discover shelf. */
-function WebReelsRail({ meId }: { meId: string | null }) {
-  const reels = useReels(true, undefined, 18);
-  if (!reels || reels.length === 0) return null;
-  return (
-    <section className="oventric-web">
-      <div className="mb-2 flex items-baseline justify-between">
-        <h2 className="text-base font-black text-slate-900">Reels</h2>
-        <span className="text-[11px] text-slate-500">Short videos from creators</span>
-      </div>
-      <ReelsRail reels={reels} meId={meId} />
-    </section>
-  );
 }
 
 export function Feed() {
@@ -1350,8 +1334,6 @@ export function Feed() {
             }
           />
         )}
-
-        {!isAppShell && <WebReelsRail meId={meId} />}
 
         {!isAppShell && (
           <PeopleSuggestionsRail
