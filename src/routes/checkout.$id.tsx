@@ -17,6 +17,7 @@ import {
   TicketPercent,
   Bitcoin,
   Landmark,
+  Download,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -502,8 +503,11 @@ function CheckoutPage() {
   // A seller can never buy their own listing (the server rejects it too).
   const isOwnListing = Boolean(product && viewerId && product.sellerId === viewerId);
 
+  /** Free listings skip payment entirely — the buyer just downloads. */
+  const isFree = Boolean(product) && unitUSD <= 0;
+
   const isDigital = product?.kind === "digital";
-  const needsDelivery = Boolean(isDigital);
+  const needsDelivery = Boolean(isDigital) && !isFree;
   const deliveryValid = !needsDelivery || /^\S+@\S+\.\S+$/.test(deliveryEmail.trim());
   const isService = product?.kind === "service";
   const briefValid =
@@ -542,7 +546,7 @@ function CheckoutPage() {
     }
     // MiniPay and Binance are manual (proof-of-transfer) rails — open the panel
     // instead of charging. Only Oventric finance can confirm those payments.
-    if (method !== "wallet" && (gateway === "minipay" || gateway === "binance")) {
+    if (!isFree && method !== "wallet" && (gateway === "minipay" || gateway === "binance")) {
       setMinipayOpen(true);
       return;
     }
@@ -550,7 +554,8 @@ function CheckoutPage() {
     setShortfallUSD(null);
     try {
       // Non-wallet methods: initialize the selected gateway and redirect to its secure checkout.
-      if (method !== "wallet") {
+      // Free listings never touch a payment rail — the server settles them at zero.
+      if (!isFree && method !== "wallet") {
         const channel: "card" | "bank_transfer" | "mobile_money" | undefined =
           method === "card"
             ? "card"
@@ -584,11 +589,11 @@ function CheckoutPage() {
           productId: product.id,
           quantity: qty,
           displayCurrency: homeCurrency,
-          paymentMethod: method,
-          couponCode: coupon?.code ?? null,
-          deliveryEmail: needsDelivery ? deliveryEmail.trim() : null,
+          paymentMethod: "wallet",
+          couponCode: isFree ? null : (coupon?.code ?? null),
+          deliveryEmail: deliveryEmail.trim() ? deliveryEmail.trim() : null,
           deliveryWhatsapp: null,
-          applyCashbackUSD: cashbackApplyUSD,
+          applyCashbackUSD: isFree ? 0 : cashbackApplyUSD,
         },
       });
 
@@ -607,7 +612,11 @@ function CheckoutPage() {
         });
         return;
       }
-      if (res.cashbackUSD && res.cashbackUSD > 0) {
+      if (isFree) {
+        toast.success("Your free download is ready", {
+          description: "It's saved in your dashboard so you can download it again any time.",
+        });
+      } else if (res.cashbackUSD && res.cashbackUSD > 0) {
         toast.success("Payment successful", {
           description: `${fmt(res.cashbackUSD, homeCurrency)} cashback credited to your wallet.`,
         });
@@ -616,7 +625,9 @@ function CheckoutPage() {
       }
       navigate({ to: "/order/$id", params: { id: res.order.id } });
     } catch (e) {
-      toast.error("Payment failed", { description: e instanceof Error ? e.message : "Try again." });
+      toast.error(isFree ? "Download failed" : "Payment failed", {
+        description: e instanceof Error ? e.message : "Try again.",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -731,9 +742,29 @@ function CheckoutPage() {
                   </div>
                 </div>
               )}
+              {isFree ? (
+                <div
+                  className={`rounded-[10px] border p-4 ${
+                    isAppShell
+                      ? "border-emerald-400/20 bg-emerald-400/5"
+                      : "border-emerald-200 bg-emerald-50"
+                  }`}
+                >
+                  <div className="text-xs font-bold uppercase tracking-widest text-emerald-700 mb-1">
+                    Free download
+                  </div>
+                  <p className={`text-[12px] ${isAppShell ? "text-slate-300" : "text-emerald-900"}`}>
+                    This product is free — no payment needed. Tap download and it&apos;s saved to
+                    your dashboard so you can get it again any time.
+                  </p>
+                </div>
+              ) : (
               <h2 className={`text-xs font-bold uppercase tracking-widest mb-2 ${isAppShell ? "text-slate-400" : "text-slate-600"}`}>
                 Select Payment Method
               </h2>
+              )}
+              {!isFree && (<>
+
 
               {/* Compact tab strip */}
               <div
@@ -878,6 +909,8 @@ function CheckoutPage() {
                   </div>
                 </div>
               )}
+              </>)}
+
 
               {isService && (
                 <>
@@ -1185,17 +1218,22 @@ function CheckoutPage() {
               {isAppShell ? (
                 <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#0A0A0B]/80 backdrop-blur-xl border-t border-white/5 p-4 flex flex-col gap-3 pb-safe">
                   <div className="flex justify-between items-center px-1">
-                    <span className="text-xs text-slate-400">Total to pay</span>
-                    <span className="text-lg font-black text-white">{payTotalLabel}</span>
+                    <span className="text-xs text-slate-400">{isFree ? "Price" : "Total to pay"}</span>
+                    <span className="text-lg font-black text-white">{isFree ? "Free" : payTotalLabel}</span>
                   </div>
                   <button
                     onClick={pay}
-                    disabled={submitting || isOwnListing || insufficient || (needsDelivery && !deliveryValid)}
+                    disabled={submitting || isOwnListing || (!isFree && insufficient) || (needsDelivery && !deliveryValid)}
                     className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-[10px] bg-[#E5484D] hover:bg-[#d13a3f] text-white font-black text-sm transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_8px_30px_rgb(229,72,77,0.2)]"
                   >
                     {submitting ? (
                       <>
-                        <Loader2 className="w-4 h-4 animate-spin" /> Processing…
+                        <Loader2 className="w-4 h-4 animate-spin" />{" "}
+                        {isFree ? "Preparing download…" : "Processing…"}
+                      </>
+                    ) : isFree ? (
+                      <>
+                        <Download className="w-4 h-4" /> Download now
                       </>
                     ) : method === "wallet" ? (
                       `Pay ${payTotalLabel}`
@@ -1216,12 +1254,17 @@ function CheckoutPage() {
                 <>
                   <button
                     onClick={pay}
-                    disabled={submitting || isOwnListing || insufficient || (needsDelivery && !deliveryValid)}
+                    disabled={submitting || isOwnListing || (!isFree && insufficient) || (needsDelivery && !deliveryValid)}
                     className="w-full mt-4 inline-flex items-center justify-center gap-2 py-3 rounded-[10px] bg-[#E5484D] hover:bg-[#d13a3f] text-white font-black text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {submitting ? (
                       <>
-                        <Loader2 className="w-4 h-4 animate-spin" /> Processing…
+                        <Loader2 className="w-4 h-4 animate-spin" />{" "}
+                        {isFree ? "Preparing download…" : "Processing…"}
+                      </>
+                    ) : isFree ? (
+                      <>
+                        <Download className="w-4 h-4" /> Download now
                       </>
                     ) : method === "wallet" ? (
                       `Pay ${payTotalLabel}`

@@ -1064,17 +1064,20 @@ export const createOrder = createServerFn({ method: "POST" })
       throw new Error(oErr.message);
     }
 
-    // Ledger entry for buyer.
-    await supabaseAdmin.from("wallet_transactions").insert({
-      user_id: userId,
-      tx_hash: `0x${Math.random().toString(16).slice(2, 6).toUpperCase()}-${Date.now().toString(16).toUpperCase()}`,
-      type: "Marketplace Purchase",
-      amount: displayTotal,
-      currency: dbCurrency(data.displayCurrency),
-      inflow: false,
-      status: "success",
-      occurred_at: new Date().toISOString(),
-    });
+    // Ledger entry for buyer. Free (zero-priced) downloads move no money, so
+    // they never create a ledger row.
+    if (displayTotal > 0) {
+      await supabaseAdmin.from("wallet_transactions").insert({
+        user_id: userId,
+        tx_hash: `0x${Math.random().toString(16).slice(2, 6).toUpperCase()}-${Date.now().toString(16).toUpperCase()}`,
+        type: "Marketplace Purchase",
+        amount: displayTotal,
+        currency: dbCurrency(data.displayCurrency),
+        inflow: false,
+        status: "success",
+        occurred_at: new Date().toISOString(),
+      });
+    }
 
     // Buyer pays the exact sticker price. Wallet payments settle internally
     // with no gateway fee, so seller/platform split the full paid amount.
@@ -1115,23 +1118,25 @@ export const createOrder = createServerFn({ method: "POST" })
         : sellerCutUSD * FX_FROM_USD[sellerCurrency];
     const sellerCutLocal = Number(sellerCutLocalRaw.toFixed(sellerCurrency === "USD" ? 2 : 0));
 
-    if (!holdEscrow) {
+    if (!holdEscrow && sellerCutLocal > 0) {
       await supabaseAdmin.rpc("wallet_credit_currency", {
         _user_id: product.sellerId,
         _amount: sellerCutLocal,
         _currency: sellerCurrency,
       });
     }
-    await supabaseAdmin.from("wallet_transactions").insert({
-      user_id: product.sellerId,
-      tx_hash: `${oRow.id}-S`,
-      type: "Marketplace Sale",
-      amount: sellerCutLocal,
-      currency: dbCurrency(sellerCurrency),
-      inflow: true,
-      status: holdEscrow ? "pending" : "success",
-      occurred_at: new Date().toISOString(),
-    });
+    if (sellerCutLocal > 0) {
+      await supabaseAdmin.from("wallet_transactions").insert({
+        user_id: product.sellerId,
+        tx_hash: `${oRow.id}-S`,
+        type: "Marketplace Sale",
+        amount: sellerCutLocal,
+        currency: dbCurrency(sellerCurrency),
+        inflow: true,
+        status: holdEscrow ? "pending" : "success",
+        occurred_at: new Date().toISOString(),
+      });
+    }
 
     // Credit the admin marketplace revenue wallet via SECURITY DEFINER helper.
     await supabaseAdmin.rpc("system_wallet_credit", {
