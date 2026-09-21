@@ -546,7 +546,7 @@ function CheckoutPage() {
     }
     // MiniPay and Binance are manual (proof-of-transfer) rails — open the panel
     // instead of charging. Only Oventric finance can confirm those payments.
-    if (method !== "wallet" && (gateway === "minipay" || gateway === "binance")) {
+    if (!isFree && method !== "wallet" && (gateway === "minipay" || gateway === "binance")) {
       setMinipayOpen(true);
       return;
     }
@@ -554,7 +554,8 @@ function CheckoutPage() {
     setShortfallUSD(null);
     try {
       // Non-wallet methods: initialize the selected gateway and redirect to its secure checkout.
-      if (method !== "wallet") {
+      // Free listings never touch a payment rail — the server settles them at zero.
+      if (!isFree && method !== "wallet") {
         const channel: "card" | "bank_transfer" | "mobile_money" | undefined =
           method === "card"
             ? "card"
