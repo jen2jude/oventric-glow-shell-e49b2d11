@@ -1533,10 +1533,7 @@ export function Feed() {
 
         {/* Posts (live) */}
         {feedTab === "creators" ? (
-          <div className="rounded-[10px] border border-emerald-100 bg-emerald-50/60 p-10 text-center">
-            <BadgeCheck className="mx-auto h-7 w-7 text-emerald-600" />
-            <p className="mt-3 text-sm font-bold text-slate-900">No creators content found</p>
-          </div>
+          <CreatorFeed reloadKey={creatorReloadKey} />
         ) : feedTab === "shops" ? (
           discoveryLoading ? (
             <div className="rounded-[10px] border border-amber-100 bg-amber-50/60 p-10 text-center" aria-busy="true">
@@ -2437,7 +2434,18 @@ export function Feed() {
           onClick={() =>
             require(
               feedTab === "shops" ? 2 : 1,
-              () => (feedTab === "shops" ? setSellPanelOpen(true) : setComposerOpen(true)),
+              () => {
+                if (feedTab === "shops") {
+                  setSellPanelOpen(true);
+                  return;
+                }
+                // Creators: first-timers do the short setup, then publish.
+                void loadCreatorProfile()
+                  .then((p) =>
+                    p.isCreator ? setCreatorPublishOpen(true) : setCreatorOnboardOpen(true),
+                  )
+                  .catch(() => setCreatorOnboardOpen(true));
+              },
               "seller",
             )
           }
