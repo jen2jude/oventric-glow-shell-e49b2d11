@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
-import { BadgeCheck, LayoutGrid, Sparkles, Store, UsersRound } from "lucide-react";
+import { BadgeCheck, Sparkles, Store, UsersRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export type FeedTab = "foryou" | "following" | "creators" | "shops" | "all";
+export type FeedTab = "foryou" | "following" | "creators" | "shops";
 
 const TABS = [
   {
