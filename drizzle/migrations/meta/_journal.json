@@ -274,6 +274,13 @@
       "when": 1790005791819,
       "tag": "0038_grant_creator_profile_update",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1790007211124,
+      "tag": "0039_creator_posts_product_link",
+      "breakpoints": true
     }
   ]
 }
