@@ -281,6 +281,13 @@
       "when": 1790007211124,
       "tag": "0039_creator_posts_product_link",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1790011852635,
+      "tag": "0040_creator_post_real_counters",
+      "breakpoints": true
     }
   ]
 }
