@@ -17,6 +17,7 @@ import {
   TicketPercent,
   Bitcoin,
   Landmark,
+  Download,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
