@@ -63,7 +63,7 @@ function PreviewVideo({ src, poster }: { src: string; poster: string | null }) {
         loop={!full}
         playsInline
         controls={full}
-        className="max-h-[70vh] w-full bg-background object-contain"
+        className="max-h-[70vh] w-full bg-white object-contain"
         onClick={() => {
           if (full) return;
           setFull(true);
