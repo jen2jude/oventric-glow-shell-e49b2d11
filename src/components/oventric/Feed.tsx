@@ -79,8 +79,7 @@ import { useScrollHideChrome, useChromeHidden } from "@/hooks/use-chrome-hide";
 import { listFollowing } from "@/lib/follows.functions";
 import { FeedDiscoverExplore } from "@/components/oventric/feed/FeedDiscoverExplore";
 import {
-  FeedCommerceCard,
-  useFeedCommerceCards,
+  ShopTheFeedRail,
 } from "@/components/oventric/feed/FeedCommerceCard";
 import { ProductAttachmentCard } from "@/components/oventric/feed/ProductAttachmentCard";
 import { PeopleSuggestionsRail } from "@/components/oventric/feed/PeopleSuggestionsRail";
@@ -383,8 +382,7 @@ export function Feed() {
   const [feedTab, setFeedTab] = useState<FeedTab>("foryou");
   const [searchOpen, setSearchOpen] = useState(false);
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
-  const commerceCards = useFeedCommerceCards(isAppShell && feedTab === "foryou");
-  const { peers: suggestedPeers } = useFeedDiscovery(true);
+  const { peers: suggestedPeers, products: shopFeedProducts } = useFeedDiscovery(true);
 
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   // Seed from the session cache so returning to the feed paints instantly.
@@ -1335,7 +1333,7 @@ export function Feed() {
           />
         )}
 
-        {!isAppShell && (
+        {!isAppShell && false && (
           <PeopleSuggestionsRail
             people={suggestedPeers.filter(
               (person) => person.id !== meId && !followingIds?.has(person.id),
@@ -1578,33 +1576,48 @@ export function Feed() {
               (person) => person.id !== meId && !followingIds?.has(person.id),
             );
             const items: React.ReactNode[] = [];
-            let commerceIdx = 0;
             let peopleRailIdx = 0;
+            let shopRailIdx = 0;
+            const interleaveSections = feedTab === "foryou" && !isFiltering;
+            const pushPeopleRail = () => {
+              if (availableSuggestions.length === 0) return;
+              const offset = (peopleRailIdx * 4) % availableSuggestions.length;
+              const rotated = [
+                ...availableSuggestions.slice(offset),
+                ...availableSuggestions.slice(0, offset),
+              ].slice(0, 10);
+              items.push(
+                <PeopleSuggestionsRail
+                  key={`people-suggestions-${peopleRailIdx}`}
+                  people={rotated}
+                  appShell={isAppShell}
+                />,
+              );
+              peopleRailIdx += 1;
+            };
+            const pushShopRail = () => {
+              if (shopFeedProducts.length === 0) return;
+              const offset = (shopRailIdx * 7) % shopFeedProducts.length;
+              const rotated = [
+                ...shopFeedProducts.slice(offset),
+                ...shopFeedProducts.slice(0, offset),
+              ];
+              items.push(
+                <ShopTheFeedRail
+                  key={`shop-the-feed-${shopRailIdx}`}
+                  products={rotated}
+                  appShell={isAppShell}
+                />,
+              );
+              shopRailIdx += 1;
+            };
+            if (interleaveSections) pushPeopleRail();
             visible.forEach((post, i) => {
               items.push(renderPost(post));
-              if (
-                isAppShell &&
-                feedTab === "foryou" &&
-                (i + 1) % 4 === 0 &&
-                commerceCards[commerceIdx]
-              ) {
-                const c = commerceCards[commerceIdx++];
-                items.push(<FeedCommerceCard key={`commerce-${c.kind}-${c.id}`} item={c} />);
-              }
-              if (isAppShell && (i + 1) % 12 === 0 && availableSuggestions.length > 0) {
-                const offset = (peopleRailIdx * 4) % availableSuggestions.length;
-                const rotated = [
-                  ...availableSuggestions.slice(offset),
-                  ...availableSuggestions.slice(0, offset),
-                ].slice(0, 10);
-                items.push(
-                  <PeopleSuggestionsRail
-                    key={`people-suggestions-${peopleRailIdx}`}
-                    people={rotated}
-                    appShell={isAppShell}
-                  />,
-                );
-                peopleRailIdx += 1;
+              const count = i + 1;
+              if (interleaveSections) {
+                if (count === 3 || (count >= 13 && (count - 13) % 10 === 0)) pushShopRail();
+                if (count >= 8 && (count - 8) % 10 === 0) pushPeopleRail();
               }
             });
             return items;
@@ -1756,13 +1769,18 @@ export function Feed() {
                     )}
                   </div>
 
-                  {post.product_attachments?.map((pa) => (
-                    <ProductAttachmentCard 
-                      key={pa.id} 
-                      product={pa} 
-                      isAppShell={isAppShell} 
-                    />
-                  ))}
+                  {post.product_attachments && post.product_attachments.length > 0 && (
+                    <div className={`mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${isAppShell ? "mx-4 md:mx-0" : ""}`}>
+                      {post.product_attachments.map((pa) => (
+                        <ProductAttachmentCard 
+                          key={pa.id} 
+                          product={pa} 
+                          isAppShell={false}
+                          className={`!mt-0 shrink-0 snap-start ${post.product_attachments && post.product_attachments.length > 1 ? "w-[84%] max-w-[340px]" : "w-full"}`}
+                        />
+                      ))}
+                    </div>
+                  )}
 
 
 
@@ -1802,23 +1820,44 @@ export function Feed() {
                                   alt={`Post attachment ${i + 1}`}
                                   className={`${count === 1 ? "max-h-[520px] w-full" : "absolute inset-0 w-full h-full"} object-cover`}
                                 />
-                                {url && post.media[i]?.tags?.map((tag) => (
-                                  <Link
-                                    key={tag.productId}
-                                    to="/product/$id"
-                                    params={{ id: tag.productId }}
-                                    className="absolute z-10 p-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-white shadow-lg flex items-center gap-1.5 active:scale-90 transition-transform"
-                                    style={{
-                                      left: tag.x ? `${tag.x}%` : '50%',
-                                      top: tag.y ? `${tag.y}%` : '50%',
-                                      transform: 'translate(-50%, -50%)',
-                                    }}
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    <ShoppingBag className="w-3 h-3 text-amber-400" />
-                                    <span className="text-[10px] font-bold pr-1">{tag.productName}</span>
-                                  </Link>
-                                ))}
+                                {url && post.media[i]?.tags?.map((tag) => {
+                                  const tagBody = (
+                                    <>
+                                      <ShoppingBag className="w-3 h-3 text-amber-400" />
+                                      <span className="text-[10px] font-bold pr-1">{tag.productName}</span>
+                                    </>
+                                  );
+                                  const tagClass = "absolute z-10 p-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-white shadow-lg flex items-center gap-1.5 active:scale-90 transition-transform";
+                                  const tagStyle = {
+                                    left: tag.x ? `${tag.x}%` : '50%',
+                                    top: tag.y ? `${tag.y}%` : '50%',
+                                    transform: 'translate(-50%, -50%)',
+                                  };
+                                  return tag.vendorSlug ? (
+                                    <Link
+                                      key={tag.productId}
+                                      to="/shop/$id"
+                                      params={{ id: tag.vendorSlug }}
+                                      search={{ productId: tag.productId }}
+                                      className={tagClass}
+                                      style={tagStyle}
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      {tagBody}
+                                    </Link>
+                                  ) : (
+                                    <Link
+                                      key={tag.productId}
+                                      to="/product/$id"
+                                      params={{ id: tag.productId }}
+                                      className={tagClass}
+                                      style={tagStyle}
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      {tagBody}
+                                    </Link>
+                                  );
+                                })}
                                 {isLastTile && count > 4 && (
                                   <div className="absolute inset-0 bg-black/55 flex items-center justify-center text-white text-xl font-semibold">
                                     +{count - 4}
