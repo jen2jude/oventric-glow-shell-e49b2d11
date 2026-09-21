@@ -205,7 +205,9 @@ function CreatorCard({ post }: { post: CreatorPostDTO }) {
             )}
           </span>
         </div>
-        <p className="truncate text-[11px] text-muted-foreground">{post.fields.join(" · ") || "Creator"}</p>
+        {post.fields.length > 0 && (
+          <p className="truncate text-[11px] text-slate-500">{post.fields.join(" · ")}</p>
+        )}
         <p className="mt-2 text-[15px] font-black leading-snug text-foreground">{post.title}</p>
         {post.caption && <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{post.caption}</p>}
 
