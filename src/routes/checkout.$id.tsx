@@ -731,9 +731,29 @@ function CheckoutPage() {
                   </div>
                 </div>
               )}
+              {isFree ? (
+                <div
+                  className={`rounded-[10px] border p-4 ${
+                    isAppShell
+                      ? "border-emerald-400/20 bg-emerald-400/5"
+                      : "border-emerald-200 bg-emerald-50"
+                  }`}
+                >
+                  <div className="text-xs font-bold uppercase tracking-widest text-emerald-700 mb-1">
+                    Free download
+                  </div>
+                  <p className={`text-[12px] ${isAppShell ? "text-slate-300" : "text-emerald-900"}`}>
+                    This product is free — no payment needed. Tap download and it&apos;s saved to
+                    your dashboard so you can get it again any time.
+                  </p>
+                </div>
+              ) : (
               <h2 className={`text-xs font-bold uppercase tracking-widest mb-2 ${isAppShell ? "text-slate-400" : "text-slate-600"}`}>
                 Select Payment Method
               </h2>
+              )}
+              {!isFree && (<>
+
 
               {/* Compact tab strip */}
               <div
