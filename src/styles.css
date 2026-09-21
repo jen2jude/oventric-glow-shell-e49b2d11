@@ -149,6 +149,20 @@
   --color-help-gold-soft: var(--help-gold-soft);
   --color-help-violet-soft: var(--help-violet-soft);
   --shadow-help-card: var(--help-card-shadow);
+  --color-profile-canvas: var(--profile-canvas);
+  --color-profile-surface: var(--profile-surface);
+  --color-profile-ink: var(--profile-ink);
+  --color-profile-copy: var(--profile-copy);
+  --color-profile-line: var(--profile-line);
+  --color-profile-crimson: var(--profile-crimson);
+  --color-profile-crimson-soft: var(--profile-crimson-soft);
+  --color-profile-gold: var(--profile-gold);
+  --color-profile-gold-soft: var(--profile-gold-soft);
+  --color-profile-green: var(--profile-green);
+  --color-profile-green-soft: var(--profile-green-soft);
+  --color-profile-blue: var(--profile-blue);
+  --color-profile-blue-soft: var(--profile-blue-soft);
+  --shadow-profile-card: var(--profile-card-shadow);
 }
 
 :root {
@@ -935,7 +949,7 @@
 }
 
 @utility social-feed-shell {
-  font-family: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   color: oklch(0.98 0 0);
   --feed-canvas: oklch(0.12 0.01 145);
   --feed-surface: oklch(0.19 0.01 260);
@@ -971,7 +985,7 @@ html.oventric-app .social-feed-shell {
 }
 
 html.oventric-app .social-feed-shell :is(h1, h2, h3, [role="dialog"] h2, [role="dialog"] h3) {
-  font-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   letter-spacing: 0;
 }
 
@@ -4364,4 +4378,273 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
   .wallet-party-sheen,
   .wallet-party-hue { animation: none; }
   .wallet-confetti-piece { display: none; }
+}
+
+/* Profile dashboard — Tinted Bento direction. */
+.profile-dashboard {
+  color-scheme: light;
+  --profile-canvas: oklch(0.982 0.004 250);
+  --profile-surface: oklch(1 0 0);
+  --profile-ink: oklch(0.2 0.012 260);
+  --profile-copy: oklch(0.5 0.02 260);
+  --profile-line: oklch(0.92 0.012 260);
+  --profile-crimson: oklch(0.61 0.2 22);
+  --profile-crimson-soft: oklch(0.96 0.025 22);
+  --profile-gold: oklch(0.72 0.14 85);
+  --profile-gold-soft: oklch(0.965 0.042 88);
+  --profile-green: oklch(0.55 0.12 155);
+  --profile-green-soft: oklch(0.96 0.034 155);
+  --profile-blue: oklch(0.57 0.13 248);
+  --profile-blue-soft: oklch(0.96 0.03 248);
+  --profile-card-shadow: 0 18px 45px -34px oklch(0.22 0.02 260 / 32%);
+  background: var(--profile-canvas);
+  color: var(--profile-copy);
+  font-family: "Figtree", ui-sans-serif, system-ui, sans-serif;
+}
+
+.profile-dashboard :is(h1, h2, h3) {
+  color: var(--profile-ink);
+  font-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0;
+}
+
+.profile-identity-card {
+  border: 1px solid var(--profile-line);
+  border-radius: 10px;
+  background: var(--profile-surface);
+  box-shadow: var(--profile-card-shadow);
+}
+
+.profile-dashboard .profile-cover-safe {
+  background-color: var(--profile-ink);
+}
+
+.profile-dashboard .profile-dashboard-body {
+  position: relative;
+  background: var(--profile-surface);
+}
+
+.profile-dashboard .profile-avatar-safe {
+  outline-color: var(--profile-surface);
+  border-radius: 10px;
+}
+
+.profile-dashboard .profile-identity-top,
+.profile-dashboard .profile-identity-copy {
+  min-width: 0;
+}
+
+.profile-dashboard .profile-bio-summary {
+  color: var(--profile-copy);
+}
+
+.profile-dashboard .profile-metrics,
+.profile-dashboard .profile-connections-card,
+.profile-dashboard .profile-requests-card,
+.profile-dashboard .profile-about-card,
+.profile-dashboard .profile-interests-card,
+.profile-dashboard .profile-social-card,
+.profile-dashboard .profile-skills-card {
+  border: 1px solid var(--profile-line);
+  border-radius: 10px;
+  transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.profile-dashboard .profile-metrics {
+  overflow: hidden;
+  border-color: color-mix(in oklab, var(--profile-green) 17%, var(--profile-line));
+  background: var(--profile-green-soft);
+}
+
+.profile-dashboard .profile-metrics > * {
+  border-color: color-mix(in oklab, var(--profile-green) 16%, transparent);
+}
+
+.profile-dashboard .profile-metrics span:first-child {
+  color: var(--profile-ink);
+}
+
+.profile-dashboard .profile-connections-card {
+  border-color: color-mix(in oklab, var(--profile-crimson) 17%, var(--profile-line));
+  background: var(--profile-crimson-soft);
+}
+
+.profile-dashboard .profile-connections-card:hover,
+.profile-dashboard .profile-requests-card:hover {
+  border-color: color-mix(in oklab, var(--profile-crimson) 42%, var(--profile-line));
+}
+
+.profile-dashboard .profile-requests-card {
+  border-color: color-mix(in oklab, var(--profile-crimson) 38%, var(--profile-line));
+  background: color-mix(in oklab, var(--profile-crimson-soft) 84%, var(--profile-surface));
+}
+
+.profile-dashboard .profile-about-card {
+  border-color: color-mix(in oklab, var(--profile-blue) 17%, var(--profile-line));
+  background: var(--profile-blue-soft);
+}
+
+.profile-dashboard .profile-interests-card {
+  border-color: color-mix(in oklab, var(--profile-gold) 19%, var(--profile-line));
+  background: var(--profile-gold-soft);
+}
+
+.profile-dashboard .profile-social-card {
+  border-color: color-mix(in oklab, var(--profile-crimson) 15%, var(--profile-line));
+  background: var(--profile-crimson-soft);
+}
+
+.profile-dashboard .profile-skills-card {
+  border-color: color-mix(in oklab, var(--profile-green) 17%, var(--profile-line));
+  background: var(--profile-green-soft);
+}
+
+.profile-dashboard .profile-tabs {
+  border: 1px solid var(--profile-line);
+  border-radius: 10px 10px 0 0;
+  background: var(--profile-surface);
+  box-shadow: var(--profile-card-shadow);
+}
+
+.profile-dashboard .profile-tab-panel {
+  border: 1px solid var(--profile-line);
+  border-radius: 0 0 10px 10px;
+  background: var(--profile-surface);
+  box-shadow: var(--profile-card-shadow);
+}
+
+@media (min-width: 768px) {
+  .profile-dashboard .profile-dashboard-body {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1rem;
+    padding-top: 0;
+  }
+
+  .profile-dashboard .profile-identity-top,
+  .profile-dashboard .profile-identity-copy,
+  .profile-dashboard .profile-primary-actions {
+    grid-column: 1 / -1;
+  }
+
+  .profile-dashboard .profile-metrics,
+  .profile-dashboard .profile-connections-card,
+  .profile-dashboard .profile-requests-card {
+    grid-column: span 4;
+    margin-top: 0;
+  }
+
+  .profile-dashboard .profile-about-card,
+  .profile-dashboard .profile-interests-card {
+    grid-column: span 6;
+    margin-top: 0;
+  }
+
+  .profile-dashboard .profile-social-card {
+    grid-column: span 4;
+    margin-top: 0;
+  }
+
+  .profile-dashboard .profile-skills-card {
+    grid-column: span 8;
+    margin-top: 0;
+  }
+
+  .profile-dashboard .profile-primary-actions {
+    margin-top: 0;
+  }
+
+  .profile-dashboard .profile-metrics:hover,
+  .profile-dashboard .profile-about-card:hover,
+  .profile-dashboard .profile-interests-card:hover,
+  .profile-dashboard .profile-social-card:hover,
+  .profile-dashboard .profile-skills-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--profile-card-shadow);
+  }
+}
+
+@media (max-width: 767px) {
+  .profile-dashboard,
+  .profile-dashboard main > *,
+  .profile-dashboard [data-testid="profile-banner"] {
+    background-color: var(--profile-canvas) !important;
+    color: var(--profile-copy) !important;
+  }
+
+  .profile-dashboard .profile-identity-card,
+  .profile-dashboard .profile-dashboard-body,
+  .profile-dashboard .profile-tabs,
+  .profile-dashboard .profile-tab-panel {
+    background-color: var(--profile-surface) !important;
+  }
+
+  .profile-dashboard .profile-cover-safe {
+    background-color: var(--profile-ink) !important;
+  }
+
+  .profile-dashboard .profile-cover-safe img {
+    border-radius: 0 !important;
+  }
+
+  .profile-dashboard :is(h1, h2, h3),
+  .profile-dashboard [class*="text-white"] {
+    color: var(--profile-ink) !important;
+  }
+
+  .profile-dashboard .profile-cover-safe button,
+  .profile-dashboard .profile-cover-safe button * {
+    background-color: color-mix(in oklab, var(--profile-ink) 78%, transparent) !important;
+    border-color: color-mix(in oklab, var(--profile-surface) 18%, transparent) !important;
+    color: var(--profile-surface) !important;
+  }
+
+  .profile-dashboard button,
+  .profile-dashboard a {
+    border-radius: 8px !important;
+  }
+
+  .profile-dashboard .profile-metrics {
+    background-color: var(--profile-green-soft) !important;
+  }
+
+  .profile-dashboard .profile-connections-card,
+  .profile-dashboard .profile-requests-card,
+  .profile-dashboard .profile-social-card {
+    background-color: var(--profile-crimson-soft) !important;
+  }
+
+  .profile-dashboard .profile-about-card {
+    background-color: var(--profile-blue-soft) !important;
+  }
+
+  .profile-dashboard .profile-interests-card {
+    background-color: var(--profile-gold-soft) !important;
+  }
+
+  .profile-dashboard .profile-skills-card {
+    background-color: var(--profile-green-soft) !important;
+  }
+
+  .profile-dashboard .profile-tabs {
+    border-radius: 10px !important;
+    padding: 0.35rem;
+  }
+
+  .profile-dashboard .profile-tab-panel {
+    border-radius: 10px !important;
+    padding: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-dashboard .profile-metrics,
+  .profile-dashboard .profile-connections-card,
+  .profile-dashboard .profile-requests-card,
+  .profile-dashboard .profile-about-card,
+  .profile-dashboard .profile-interests-card,
+  .profile-dashboard .profile-social-card,
+  .profile-dashboard .profile-skills-card {
+    transition: none;
+  }
 }
