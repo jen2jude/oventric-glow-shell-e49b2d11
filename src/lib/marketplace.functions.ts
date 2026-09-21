@@ -1606,14 +1606,16 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
       ? await sb
           .from("profiles")
           .select(
-            "user_id, slug, display_name, username, avatar_path, cover_path, verification_tier, reputation_stars, bio, profile_completed_at, banned_at, deleted_at",
+            "user_id, slug, display_name, username, avatar_path, cover_path, verification_tier, reputation_stars, bio, profile_completed_at, deleted_at",
           )
           .in("user_id", sellerIds)
       : { data: [] as any[] };
 
     // Only onboarded, active accounts with published listings are sellers.
-    const sellerRows = (sellerRowsRaw ?? []).filter(
-      (s: any) => !!s.profile_completed_at && !s.banned_at && !s.deleted_at,
+    // banned_at is not publicly readable, so moderation flags come from the
+    // privileged server client.
+    const sellerRows = await filterOutBannedProfiles(
+      (sellerRowsRaw ?? []).filter((s: any) => !!s.profile_completed_at && !s.deleted_at),
     );
 
     // "Verified" requires an admin-approved seller verification request.
