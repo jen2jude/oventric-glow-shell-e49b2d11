@@ -270,7 +270,7 @@ export function CreatorOnboardingModal({
                 onClick={submit}
                 className="h-12 w-full rounded-[10px] bg-emerald-600 text-base font-black text-white hover:bg-emerald-700"
               >
-                {saving ? "Saving…" : "Finish & start posting"}
+                {saving ? "Saving…" : "Finish & Start Creating"}
               </Button>
             )}
           </div>
