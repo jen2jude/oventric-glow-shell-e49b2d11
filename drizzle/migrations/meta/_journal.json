@@ -288,6 +288,13 @@
       "when": 1790011852635,
       "tag": "0040_creator_post_real_counters",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1790031891489,
+      "tag": "0041_tighten_email_and_cover_policies",
+      "breakpoints": true
     }
   ]
 }
