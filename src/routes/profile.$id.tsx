@@ -578,6 +578,14 @@ function ProfilePage() {
     };
   }, [meId]);
 
+  // Accepting / declining a request changes the follow graph — refresh counters at once.
+  useEffect(() => {
+    const onChange = () => reloadSocialCounts();
+    window.addEventListener("oventric:follow-graph-changed", onChange);
+    return () => window.removeEventListener("oventric:follow-graph-changed", onChange);
+  }, [reloadSocialCounts]);
+
+
   const isUuidId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
   const isOwnProfile = !!(meId && (meId === id || (realProfile && meId === realProfile.userId)));
   // Adaptive ecosystem sections: a person's profile only shows the surfaces
