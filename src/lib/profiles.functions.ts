@@ -734,13 +734,14 @@ async function resolveUserId(
 }
 
 async function signPaths(
-  supabase: any,
+  _supabase: any,
   bucket: string,
   paths: (string | null)[],
 ): Promise<(string | null)[]> {
   const unique = Array.from(new Set(paths.filter((p): p is string => !!p)));
   if (unique.length === 0) return paths.map(() => null);
-  const { data } = await supabase.storage.from(bucket).createSignedUrls(unique, 60 * 60 * 24 * 7);
+  const storage = await imageStorage();
+  const { data } = await storage.from(bucket).createSignedUrls(unique, 60 * 60 * 24 * 7);
   const map = new Map<string, string>();
   for (const r of (data ?? []) as { path?: string; signedUrl?: string }[]) {
     if (r.path && r.signedUrl) map.set(r.path, r.signedUrl);
