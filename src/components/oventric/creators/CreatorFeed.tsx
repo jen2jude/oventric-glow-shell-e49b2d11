@@ -54,7 +54,7 @@ function PreviewVideo({ src, poster }: { src: string; poster: string | null }) {
   }, [full]);
 
   return (
-    <div className="relative">
+    <div className="relative bg-white">
       <video
         ref={ref}
         src={src}
@@ -63,7 +63,7 @@ function PreviewVideo({ src, poster }: { src: string; poster: string | null }) {
         loop={!full}
         playsInline
         controls={full}
-        className="max-h-[70vh] w-full bg-black object-contain"
+        className="max-h-[70vh] w-full bg-white object-contain"
         onClick={() => {
           if (full) return;
           setFull(true);
@@ -175,11 +175,9 @@ function AssetCta({ asset }: { asset: NonNullable<CreatorPostDTO["asset"]> }) {
   );
 }
 
-function CreatorCard({ post, index }: { post: CreatorPostDTO; index: number }) {
-
-  const tint = TINTS[index % TINTS.length];
+function CreatorCard({ post }: { post: CreatorPostDTO }) {
   return (
-    <article className="grid grid-cols-[40px_minmax(0,1fr)] gap-3 border-b border-border bg-background px-4 py-3 transition-colors hover:bg-muted/30">
+    <article className="grid grid-cols-[40px_minmax(0,1fr)] gap-3 border-b border-slate-100 bg-white px-4 py-3 transition-colors hover:bg-slate-50">
       <div>
         <Link
           to="/profile/$id"
@@ -192,32 +190,29 @@ function CreatorCard({ post, index }: { post: CreatorPostDTO; index: number }) {
         </Link>
       </div>
       <div className="min-w-0">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
-          <div className="flex min-w-0 items-baseline gap-1.5">
+        <div className="flex min-w-0 items-baseline gap-1.5">
           <Link
             to="/profile/$id"
             params={{ id: post.author.slug ?? post.author.userId }}
-              className="truncate text-sm font-black text-foreground"
+            className="truncate text-sm font-black text-slate-900"
           >
             {post.author.name}
           </Link>
-            <span className="shrink-0 text-[11px] text-muted-foreground">
-              · {new Intl.RelativeTimeFormat("en", { numeric: "auto" }).format(
-                -Math.max(1, Math.round((Date.now() - new Date(post.createdAt).getTime()) / 86400000)),
-                "day",
-              )}
-            </span>
-          </div>
-          <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[9px] font-extrabold ${tint}`}>
-            CREATOR
+          <span className="shrink-0 text-[11px] text-slate-400">
+            · {new Intl.RelativeTimeFormat("en", { numeric: "auto" }).format(
+              -Math.max(1, Math.round((Date.now() - new Date(post.createdAt).getTime()) / 86400000)),
+              "day",
+            )}
           </span>
         </div>
-        <p className="truncate text-[11px] text-muted-foreground">{post.fields.join(" · ") || "Creator"}</p>
-        <p className="mt-2 text-[15px] font-black leading-snug text-foreground">{post.title}</p>
-        {post.caption && <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{post.caption}</p>}
+        {post.fields.length > 0 && (
+          <p className="truncate text-[11px] text-slate-500">{post.fields.join(" · ")}</p>
+        )}
+        <p className="mt-2 text-[15px] font-black leading-snug text-slate-900">{post.title}</p>
+        {post.caption && <p className="mt-1 text-[13px] leading-relaxed text-slate-500">{post.caption}</p>}
 
         {post.media.length > 0 && (
-          <div className="mt-3 overflow-hidden rounded-[10px] border border-border">
+          <div className="mt-3 overflow-hidden rounded-[10px] border border-slate-100">
             {post.media[0].type === "video" ? (
               <PreviewVideo src={post.media[0].url} poster={post.media[0].posterUrl} />
             ) : (
@@ -233,7 +228,7 @@ function CreatorCard({ post, index }: { post: CreatorPostDTO; index: number }) {
         <div className="mt-3">{post.asset && <AssetCta asset={post.asset} />}</div>
 
         {post.externalEmbedUrl && (
-          <div className="mt-3 aspect-video w-full overflow-hidden rounded-[10px] border border-border bg-foreground">
+        <div className="mt-3 aspect-video w-full overflow-hidden rounded-[10px] border border-slate-100 bg-white">
           <iframe
             src={post.externalEmbedUrl}
             title={post.title}
@@ -321,9 +316,9 @@ export function CreatorFeed({ reloadKey }: { reloadKey: number }) {
   }
 
   return (
-    <div className="overflow-hidden border-y border-border bg-background sm:rounded-[10px] sm:border-x">
+    <div className="overflow-hidden border-y border-slate-100 bg-white sm:rounded-[10px] sm:border-x">
       {fields.length > 0 && (
-        <div className="sticky top-0 z-10 flex gap-2 overflow-x-auto border-b border-border bg-background/95 px-3 py-2 backdrop-blur [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="sticky top-0 z-10 flex gap-2 overflow-x-auto border-b border-slate-100 bg-white/95 px-3 py-2 backdrop-blur [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {["all", ...fields].map((f, i) => (
             <Button
               key={f}
@@ -340,8 +335,8 @@ export function CreatorFeed({ reloadKey }: { reloadKey: number }) {
           ))}
         </div>
       )}
-      {visible.map((p, i) => (
-        <CreatorCard key={p.id} post={p} index={i} />
+      {visible.map((p) => (
+        <CreatorCard key={p.id} post={p} />
       ))}
     </div>
   );
