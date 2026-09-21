@@ -1858,6 +1858,7 @@ function ProfilePage() {
                   skills={realProfile?.skills ?? []}
                   skillLevels={realProfile?.skillLevels ?? {}}
                   tools={realProfile?.tools ?? []}
+                  workLinks={realProfile?.workLinks ?? []}
                 />
               ) : tab === "posts" && realProfile?.userId ? (
                 <ProfilePostsFeed
