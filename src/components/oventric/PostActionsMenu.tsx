@@ -285,6 +285,17 @@ export function PostActionsMenu({
             </>
           )}
           <div className="h-px bg-slate-100 my-1" />
+          {isOwn && canEdit && onEdit && (
+            <button
+              onClick={() => {
+                setOpen(false);
+                onEdit();
+              }}
+              className="w-full flex items-center gap-2.5 px-3 py-3 text-left text-sm text-slate-700 hover:bg-slate-100 rounded-[10px]"
+            >
+              <Pencil className="w-4 h-4" /> Edit post
+            </button>
+          )}
           {item(Flag, "Report", "report", true)}
           {isOwn && onDelete && (
             <button
