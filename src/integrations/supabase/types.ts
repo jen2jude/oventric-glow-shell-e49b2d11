@@ -1620,6 +1620,54 @@ export type Database = {
         }
         Relationships: []
       }
+      creator_posts: {
+        Row: {
+          author_id: string
+          caption: string | null
+          community_link: string | null
+          created_at: string
+          external_provider: string | null
+          external_url: string | null
+          fields: string[]
+          id: string
+          media_paths: string[]
+          media_type: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          caption?: string | null
+          community_link?: string | null
+          created_at?: string
+          external_provider?: string | null
+          external_url?: string | null
+          fields?: string[]
+          id?: string
+          media_paths?: string[]
+          media_type?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          caption?: string | null
+          community_link?: string | null
+          created_at?: string
+          external_provider?: string | null
+          external_url?: string | null
+          fields?: string[]
+          id?: string
+          media_paths?: string[]
+          media_type?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       crypto_deposits: {
         Row: {
           amount: number
@@ -3154,6 +3202,7 @@ export type Database = {
           country: string | null
           cover_path: string | null
           created_at: string
+          creator_profile: Json
           date_of_birth: string | null
           deleted_at: string | null
           deletion_liveness_path: string | null
@@ -3199,6 +3248,7 @@ export type Database = {
           country?: string | null
           cover_path?: string | null
           created_at?: string
+          creator_profile?: Json
           date_of_birth?: string | null
           deleted_at?: string | null
           deletion_liveness_path?: string | null
@@ -3244,6 +3294,7 @@ export type Database = {
           country?: string | null
           cover_path?: string | null
           created_at?: string
+          creator_profile?: Json
           date_of_birth?: string | null
           deleted_at?: string | null
           deletion_liveness_path?: string | null
