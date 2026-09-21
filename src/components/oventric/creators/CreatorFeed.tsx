@@ -202,9 +202,12 @@ function AssetCta({ asset }: { asset: NonNullable<CreatorPostDTO["asset"]> }) {
 
 function CreatorCard({ post, onRecordedView }: { post: CreatorPostDTO; onRecordedView: (postId: string) => void }) {
   const recordView = useServerFn(recordCreatorPostView);
+  const articleRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    const article = articleRef.current;
+    if (!article) return;
     const key = "oventric_creator_view_session";
     let sessionKey = window.localStorage.getItem(key);
     if (!sessionKey) {
@@ -213,19 +216,34 @@ function CreatorCard({ post, onRecordedView }: { post: CreatorPostDTO; onRecorde
     }
     const viewedKey = `oventric_creator_viewed_${post.id}`;
     if (window.sessionStorage.getItem(viewedKey)) return;
-    const timer = window.setTimeout(() => {
-      void recordView({ data: { postId: post.id, sessionKey } }).then((result) => {
-        if (result.recorded) {
-          window.sessionStorage.setItem(viewedKey, "1");
-          onRecordedView(post.id);
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) {
+          if (timer) window.clearTimeout(timer);
+          return;
         }
-      });
-    }, 1200);
-    return () => window.clearTimeout(timer);
+        timer = window.setTimeout(() => {
+          void recordView({ data: { postId: post.id, sessionKey } }).then((result) => {
+            if (result.recorded) {
+              window.sessionStorage.setItem(viewedKey, "1");
+              onRecordedView(post.id);
+            }
+          });
+          observer.disconnect();
+        }, 1200);
+      },
+      { threshold: 0.65 },
+    );
+    observer.observe(article);
+    return () => {
+      observer.disconnect();
+      if (timer) window.clearTimeout(timer);
+    };
   }, [onRecordedView, post.id, recordView]);
 
   return (
-    <article className="grid grid-cols-[40px_minmax(0,1fr)] gap-3 border-b border-slate-100 bg-white px-4 py-3 transition-colors hover:bg-slate-50">
+    <article ref={articleRef} className="grid grid-cols-[40px_minmax(0,1fr)] gap-3 border-b border-slate-100 bg-white px-4 py-3 transition-colors hover:bg-slate-50">
       <div>
         <Link
           to="/profile/$id"
