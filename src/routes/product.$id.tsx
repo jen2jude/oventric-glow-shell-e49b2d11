@@ -320,6 +320,8 @@ function ProductPage() {
   }, [product?.kind, product?.id, loadPackages]);
 
   const outOfStock = product?.inStock === false;
+  /** Free listings are downloaded, not bought. */
+  const isFree = Boolean(product) && Number(product?.priceUSD ?? 0) <= 0;
 
   const startCheckout = () => {
     if (product?.inStock === false) return;
@@ -773,7 +775,7 @@ function ProductPage() {
                         className={`flex-[1.5] inline-flex items-center justify-center gap-2 py-3 text-[13px] rounded-[10px] font-black transition-colors ${outOfStock ? "bg-white/[0.06] text-white/40 cursor-not-allowed" : "bg-[#E5484D] hover:bg-[#d13a3f] text-white"}`}
                       >
                         <ShoppingCart className="w-4 h-4" />
-                        <span>{outOfStock ? "Out of Stock" : "Buy Now"}</span>
+                        <span>{outOfStock ? "Out of Stock" : isFree ? "Download" : "Buy Now"}</span>
                       </button>
                     </div>
                   </div>
@@ -792,7 +794,7 @@ function ProductPage() {
                           onClick={startCheckout}
                           className="w-full inline-flex items-center justify-center gap-2 py-3 text-sm rounded-[10px] font-black bg-crimson hover:bg-crimson/90 text-white transition-colors"
                         >
-                          <ShoppingCart className="w-4 h-4" /> Buy Now
+                          <ShoppingCart className="w-4 h-4" /> {isFree ? "Download" : "Buy Now"}
                         </button>
                         <div className="flex items-center gap-2">
                           <button
