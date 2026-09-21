@@ -957,6 +957,22 @@ export function Feed() {
     }, "interaction");
   };
 
+  const handleSaveEdit = async () => {
+    if (!editingPost) return;
+    const { id, text } = editingPost;
+    setEditSaving(true);
+    try {
+      await updatePostText({ data: { id, text: text.trim() } });
+      setPosts((prev) => prev.map((p) => (p.id === id ? { ...p, text: text.trim() } : p)));
+      setEditingPost(null);
+      toast.success("Post updated");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't update this post");
+    } finally {
+      setEditSaving(false);
+    }
+  };
+
   const handleDeletePost = async (id: string) => {
     if (typeof window !== "undefined" && !window.confirm("Delete this post?")) return;
     const snapshot = posts;
