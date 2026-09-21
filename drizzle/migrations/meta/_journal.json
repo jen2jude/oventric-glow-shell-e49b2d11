@@ -253,6 +253,13 @@
       "when": 1789979063164,
       "tag": "0035_restrict_buyer_and_recipient_update_columns",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1789991697321,
+      "tag": "0036_restrict_wall_post_audience",
+      "breakpoints": true
     }
   ]
 }
