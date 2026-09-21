@@ -886,6 +886,41 @@ export const deletePost = createServerFn({ method: "POST" })
     return { id: data.id };
   });
 
+/** Authors may edit their own post's caption within 10 minutes of posting. */
+export const EDIT_WINDOW_MS = 10 * 60 * 1000;
+
+export const updatePostText = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ id: z.string().uuid(), text: z.string().trim().max(4000) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { data: existing, error: readErr } = await context.supabase
+      .from("posts")
+      .select("id, author_id, created_at, media_path, media_paths")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (readErr || !existing) throw new Error("Post not found");
+    if ((existing as any).author_id !== context.userId) throw new Error("You can only edit your own post");
+    const age = Date.now() - new Date((existing as any).created_at).getTime();
+    if (age > EDIT_WINDOW_MS) throw new Error("The 10 minute edit window for this post has passed");
+
+    const hasMedia =
+      !!(existing as any).media_path || (((existing as any).media_paths as string[] | null)?.length ?? 0) > 0;
+    if (!data.text && !hasMedia) throw new Error("Post can't be empty");
+
+    const { error } = await (context.supabase as any)
+      .from("posts")
+      .update({ text: data.text, updated_at: new Date().toISOString() })
+      .eq("id", data.id)
+      .eq("author_id", context.userId);
+    if (error) {
+      console.error("[updatePostText] failed", error);
+      throw new Error("Failed to update post");
+    }
+    return { id: data.id, text: data.text };
+  });
+
 // Set (or clear) the viewer's reaction on a post. Passing null removes it.
 export const setReaction = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
