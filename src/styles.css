@@ -4416,7 +4416,54 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
 }
 
 .profile-dashboard .profile-cover-safe {
-  background-color: var(--profile-ink);
+  background-color: var(--profile-surface);
+}
+
+.profile-dashboard .profile-cover-frame {
+  border: 1px solid color-mix(in oklab, var(--profile-blue) 16%, var(--profile-line));
+  border-radius: 10px;
+  background: var(--profile-blue-soft);
+}
+
+.profile-dashboard .profile-cover-placeholder {
+  background:
+    radial-gradient(circle at 17% 26%, color-mix(in oklab, var(--profile-blue) 26%, transparent), transparent 35%),
+    radial-gradient(circle at 80% 72%, color-mix(in oklab, var(--profile-crimson) 19%, transparent), transparent 37%),
+    linear-gradient(135deg, var(--profile-blue-soft), var(--profile-gold-soft) 52%, var(--profile-crimson-soft));
+}
+
+.profile-dashboard .profile-cover-image {
+  transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.profile-dashboard .profile-cover-frame:hover .profile-cover-image {
+  transform: scale(1.018);
+}
+
+.profile-dashboard .profile-cover-tint {
+  background: linear-gradient(to top, color-mix(in oklab, var(--profile-ink) 28%, transparent), transparent 58%);
+}
+
+.profile-dashboard .profile-cover-action,
+.profile-dashboard .profile-cover-safe > .profile-cover-frame > button:first-of-type {
+  border: 1px solid color-mix(in oklab, var(--profile-surface) 55%, transparent);
+  background: color-mix(in oklab, var(--profile-surface) 78%, transparent);
+  box-shadow: 0 8px 22px -14px oklch(0.2 0.02 260 / 48%);
+  color: var(--profile-ink);
+  backdrop-filter: blur(12px);
+}
+
+.profile-dashboard .profile-cover-action:hover {
+  background: var(--profile-surface);
+  color: var(--profile-ink);
+}
+
+.profile-dashboard .profile-avatar-wrap {
+  padding: 0.375rem;
+  border: 1px solid var(--profile-line);
+  border-radius: 10px;
+  background: var(--profile-surface);
+  box-shadow: 0 20px 34px -23px oklch(0.2 0.02 260 / 42%);
 }
 
 .profile-dashboard .profile-dashboard-body {
@@ -4425,8 +4472,34 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
 }
 
 .profile-dashboard .profile-avatar-safe {
-  outline-color: var(--profile-surface);
   border-radius: 10px;
+  background: var(--profile-crimson);
+  color: var(--profile-surface);
+  outline: none;
+}
+
+.profile-dashboard .profile-avatar-safe img {
+  border-radius: 7px;
+}
+
+.profile-dashboard .profile-online-dot {
+  border: 4px solid var(--profile-surface);
+  background: var(--profile-green);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--profile-green) 25%, transparent);
+}
+
+.profile-dashboard .profile-tier-dot {
+  border: 3px solid var(--profile-surface);
+  background: var(--profile-blue);
+}
+
+.profile-dashboard .profile-avatar-action {
+  border: 3px solid var(--profile-surface);
+  background: var(--profile-ink);
+}
+
+.profile-dashboard .profile-avatar-action:hover {
+  background: var(--profile-crimson);
 }
 
 .profile-dashboard .profile-identity-top,
@@ -4580,11 +4653,14 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
   }
 
   .profile-dashboard .profile-cover-safe {
-    background-color: var(--profile-ink) !important;
+    margin-inline: 0 !important;
+    overflow: visible !important;
+    background-color: var(--profile-surface) !important;
   }
 
+  .profile-dashboard .profile-cover-frame,
   .profile-dashboard .profile-cover-safe img {
-    border-radius: 0 !important;
+    border-radius: 10px !important;
   }
 
   .profile-dashboard :is(h1, h2, h3),
@@ -4592,11 +4668,36 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
     color: var(--profile-ink) !important;
   }
 
-  .profile-dashboard .profile-cover-safe button,
+  .profile-dashboard .profile-cover-safe button {
+    background-color: color-mix(in oklab, var(--profile-surface) 84%, transparent) !important;
+    border-color: color-mix(in oklab, var(--profile-surface) 64%, transparent) !important;
+    color: var(--profile-ink) !important;
+  }
+
   .profile-dashboard .profile-cover-safe button * {
-    background-color: color-mix(in oklab, var(--profile-ink) 78%, transparent) !important;
-    border-color: color-mix(in oklab, var(--profile-surface) 18%, transparent) !important;
+    background-color: transparent !important;
+    color: inherit !important;
+  }
+
+  .profile-dashboard .profile-avatar-wrap {
+    background-color: var(--profile-surface) !important;
+  }
+
+  .profile-dashboard .profile-avatar-safe {
+    background-color: var(--profile-crimson) !important;
     color: var(--profile-surface) !important;
+  }
+
+  .profile-dashboard .profile-avatar-action,
+  .profile-dashboard .profile-avatar-action * {
+    background-color: var(--profile-ink) !important;
+    color: var(--profile-surface) !important;
+  }
+
+  .profile-dashboard .profile-cover-controls button,
+  .profile-dashboard .profile-cover-controls button * {
+    background-color: var(--profile-surface) !important;
+    color: var(--profile-ink) !important;
   }
 
   .profile-dashboard button,
@@ -4645,6 +4746,10 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
   .profile-dashboard .profile-interests-card,
   .profile-dashboard .profile-social-card,
   .profile-dashboard .profile-skills-card {
+    transition: none;
+  }
+
+  .profile-dashboard .profile-cover-image {
     transition: none;
   }
 }
