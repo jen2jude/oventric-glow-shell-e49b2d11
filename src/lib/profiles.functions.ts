@@ -142,20 +142,26 @@ async function createServerPublicClient(): Promise<SupabaseClient<Database>> {
   });
 }
 
+/**
+ * Profile imagery lives in private, owner-bound buckets, so signing must be
+ * done with the privileged storage client — the publishable/anon client can
+ * only sign its own files and would otherwise return broken URLs.
+ */
 async function resolveProfileImageUrl(
-  supabase: SupabaseClient<Database>,
+  _supabase: SupabaseClient<Database> | null,
   bucket: "avatars" | "profile-covers",
   path: string | null,
 ): Promise<string | null> {
   if (!path) return null;
 
-  const { data: signed, error } = await supabase.storage
+  const storage = await imageStorage();
+  const { data: signed, error } = await storage
     .from(bucket)
     .createSignedUrl(path, 60 * 60 * 24 * 7);
   if (signed?.signedUrl) return signed.signedUrl;
 
   if (error) console.error(`[profiles] ${bucket} signed URL failed`, error);
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+  const { data } = storage.from(bucket).getPublicUrl(path);
   return data.publicUrl || null;
 }
 
