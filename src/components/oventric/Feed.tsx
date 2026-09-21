@@ -90,6 +90,10 @@ import { ProductAttachmentCard } from "@/components/oventric/feed/ProductAttachm
 import { PeopleSuggestionsRail } from "@/components/oventric/feed/PeopleSuggestionsRail";
 import { ShopSections } from "@/components/oventric/feed/ShopSections";
 import { CreatePanel } from "@/components/oventric/CreatePanel";
+import { CreatorFeed } from "@/components/oventric/creators/CreatorFeed";
+import { CreatorOnboardingModal } from "@/components/oventric/creators/CreatorOnboardingModal";
+import { CreatorPublishModal } from "@/components/oventric/creators/CreatorPublishModal";
+import { getMyCreatorProfile } from "@/lib/creators.functions";
 import { useFeedDiscovery } from "@/components/oventric/feed/useFeedDiscovery";
 
 
@@ -388,6 +392,10 @@ export function Feed() {
   const [feedTab, setFeedTab] = useState<FeedTab>("foryou");
   const [searchOpen, setSearchOpen] = useState(false);
   const [sellPanelOpen, setSellPanelOpen] = useState(false);
+  const [creatorOnboardOpen, setCreatorOnboardOpen] = useState(false);
+  const [creatorPublishOpen, setCreatorPublishOpen] = useState(false);
+  const [creatorReloadKey, setCreatorReloadKey] = useState(0);
+  const loadCreatorProfile = useServerFn(getMyCreatorProfile);
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
   const [followerIds, setFollowerIds] = useState<Set<string> | null>(null);
   const {
@@ -1525,10 +1533,7 @@ export function Feed() {
 
         {/* Posts (live) */}
         {feedTab === "creators" ? (
-          <div className="rounded-[10px] border border-emerald-100 bg-emerald-50/60 p-10 text-center">
-            <BadgeCheck className="mx-auto h-7 w-7 text-emerald-600" />
-            <p className="mt-3 text-sm font-bold text-slate-900">No creators content found</p>
-          </div>
+          <CreatorFeed reloadKey={creatorReloadKey} />
         ) : feedTab === "shops" ? (
           discoveryLoading ? (
             <div className="rounded-[10px] border border-amber-100 bg-amber-50/60 p-10 text-center" aria-busy="true">
@@ -2429,7 +2434,18 @@ export function Feed() {
           onClick={() =>
             require(
               feedTab === "shops" ? 2 : 1,
-              () => (feedTab === "shops" ? setSellPanelOpen(true) : setComposerOpen(true)),
+              () => {
+                if (feedTab === "shops") {
+                  setSellPanelOpen(true);
+                  return;
+                }
+                // Creators: first-timers do the short setup, then publish.
+                void loadCreatorProfile()
+                  .then((p) =>
+                    p.isCreator ? setCreatorPublishOpen(true) : setCreatorOnboardOpen(true),
+                  )
+                  .catch(() => setCreatorOnboardOpen(true));
+              },
               "seller",
             )
           }
@@ -2443,6 +2459,19 @@ export function Feed() {
       {sellPanelOpen && (
         <CreatePanel open initialChoice="sell" onClose={() => setSellPanelOpen(false)} />
       )}
+      <CreatorOnboardingModal
+        open={creatorOnboardOpen}
+        onClose={() => setCreatorOnboardOpen(false)}
+        onDone={() => {
+          setCreatorOnboardOpen(false);
+          setCreatorPublishOpen(true);
+        }}
+      />
+      <CreatorPublishModal
+        open={creatorPublishOpen}
+        onClose={() => setCreatorPublishOpen(false)}
+        onPublished={() => setCreatorReloadKey((k) => k + 1)}
+      />
     </div>
   );
 }
