@@ -90,6 +90,10 @@ import { ProductAttachmentCard } from "@/components/oventric/feed/ProductAttachm
 import { PeopleSuggestionsRail } from "@/components/oventric/feed/PeopleSuggestionsRail";
 import { ShopSections } from "@/components/oventric/feed/ShopSections";
 import { CreatePanel } from "@/components/oventric/CreatePanel";
+import { CreatorFeed } from "@/components/oventric/creators/CreatorFeed";
+import { CreatorOnboardingModal } from "@/components/oventric/creators/CreatorOnboardingModal";
+import { CreatorPublishModal } from "@/components/oventric/creators/CreatorPublishModal";
+import { getMyCreatorProfile } from "@/lib/creators.functions";
 import { useFeedDiscovery } from "@/components/oventric/feed/useFeedDiscovery";
 
 
@@ -388,6 +392,10 @@ export function Feed() {
   const [feedTab, setFeedTab] = useState<FeedTab>("foryou");
   const [searchOpen, setSearchOpen] = useState(false);
   const [sellPanelOpen, setSellPanelOpen] = useState(false);
+  const [creatorOnboardOpen, setCreatorOnboardOpen] = useState(false);
+  const [creatorPublishOpen, setCreatorPublishOpen] = useState(false);
+  const [creatorReloadKey, setCreatorReloadKey] = useState(0);
+  const loadCreatorProfile = useServerFn(getMyCreatorProfile);
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
   const [followerIds, setFollowerIds] = useState<Set<string> | null>(null);
   const {
