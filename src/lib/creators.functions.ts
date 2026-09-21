@@ -348,6 +348,18 @@ export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
         externalProvider: r.external_provider,
         fields: r.fields ?? [],
         createdAt: r.created_at,
+        asset: r.product_id
+          ? (assets.get(r.product_id) ?? {
+              productId: r.product_id,
+              available: false,
+              isFree: false,
+              priceUsd: 0,
+              originalCurrency: null,
+              originalAmount: null,
+              fxSnapshot: null,
+            })
+          : null,
+
         author: {
           userId: r.author_id,
           name: prof?.display_name ?? "Creator",
