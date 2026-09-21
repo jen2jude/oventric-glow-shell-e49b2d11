@@ -63,7 +63,7 @@ function PreviewVideo({ src, poster }: { src: string; poster: string | null }) {
         loop={!full}
         playsInline
         controls={full}
-        className="max-h-[70vh] w-full bg-black object-contain"
+        className="max-h-[70vh] w-full bg-background object-contain"
         onClick={() => {
           if (full) return;
           setFull(true);
@@ -175,9 +175,7 @@ function AssetCta({ asset }: { asset: NonNullable<CreatorPostDTO["asset"]> }) {
   );
 }
 
-function CreatorCard({ post, index }: { post: CreatorPostDTO; index: number }) {
-
-  const tint = TINTS[index % TINTS.length];
+function CreatorCard({ post }: { post: CreatorPostDTO }) {
   return (
     <article className="grid grid-cols-[40px_minmax(0,1fr)] gap-3 border-b border-border bg-background px-4 py-3 transition-colors hover:bg-muted/30">
       <div>
@@ -192,24 +190,19 @@ function CreatorCard({ post, index }: { post: CreatorPostDTO; index: number }) {
         </Link>
       </div>
       <div className="min-w-0">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
-          <div className="flex min-w-0 items-baseline gap-1.5">
+        <div className="flex min-w-0 items-baseline gap-1.5">
           <Link
             to="/profile/$id"
             params={{ id: post.author.slug ?? post.author.userId }}
-              className="truncate text-sm font-black text-foreground"
+            className="truncate text-sm font-black text-foreground"
           >
             {post.author.name}
           </Link>
-            <span className="shrink-0 text-[11px] text-muted-foreground">
-              · {new Intl.RelativeTimeFormat("en", { numeric: "auto" }).format(
-                -Math.max(1, Math.round((Date.now() - new Date(post.createdAt).getTime()) / 86400000)),
-                "day",
-              )}
-            </span>
-          </div>
-          <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[9px] font-extrabold ${tint}`}>
-            CREATOR
+          <span className="shrink-0 text-[11px] text-muted-foreground">
+            · {new Intl.RelativeTimeFormat("en", { numeric: "auto" }).format(
+              -Math.max(1, Math.round((Date.now() - new Date(post.createdAt).getTime()) / 86400000)),
+              "day",
+            )}
           </span>
         </div>
         <p className="truncate text-[11px] text-muted-foreground">{post.fields.join(" · ") || "Creator"}</p>
@@ -233,7 +226,7 @@ function CreatorCard({ post, index }: { post: CreatorPostDTO; index: number }) {
         <div className="mt-3">{post.asset && <AssetCta asset={post.asset} />}</div>
 
         {post.externalEmbedUrl && (
-          <div className="mt-3 aspect-video w-full overflow-hidden rounded-[10px] border border-border bg-foreground">
+        <div className="mt-3 aspect-video w-full overflow-hidden rounded-[10px] border border-border bg-background">
           <iframe
             src={post.externalEmbedUrl}
             title={post.title}
