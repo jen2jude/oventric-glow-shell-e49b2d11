@@ -1400,7 +1400,9 @@ export function Feed() {
           </div>
         )}
 
-        <FeedTabs tab={feedTab} onTabChange={setFeedTab} />
+            <FeedTabs tab={feedTab} onTabChange={setFeedTab} />
+          </div>
+        </div>
 
         <AdSlot placement="feed" variant="banner" />
 
