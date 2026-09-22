@@ -30,7 +30,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         try {
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
           const [products, sellers] = await Promise.all([
-            supabaseAdmin.from("products").select("slug, status").eq("status", "active").limit(5000),
+            supabaseAdmin.from("products").select("slug, status").eq("status", "active").eq("creator_asset", false).limit(5000),
             supabaseAdmin.from("profiles").select("slug, shop_name").not("slug", "is", null).limit(2000),
           ]);
           for (const row of products.data ?? []) {

@@ -848,7 +848,9 @@ export const getLiveProfileTab = createServerFn({ method: "GET" })
           "id, name, category, price_usd, original_currency, original_amount, fx_snapshot, created_at, cover_path, image_paths, rating, description, promoted, cashback_pct",
           { count: "exact" },
         )
-        .eq("seller_id", userId);
+        .eq("seller_id", userId)
+        // Creator showcase assets belong to the Creators tab, not the storefront.
+        .eq("creator_asset", false);
       q = data.tab === "services" ? q.eq("kind", "service") : q.neq("kind", "service");
 
       if (data.q) q = q.ilike("name", `%${data.q}%`);

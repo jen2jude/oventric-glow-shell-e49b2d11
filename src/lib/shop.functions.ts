@@ -192,6 +192,7 @@ export const getShopDiscovery = createServerFn({ method: "GET" })
       .from("products")
       .select("id, slug, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, vendor, seller_id, status, rating, cashback_pct")
       .eq("status", "active")
+      .eq("creator_asset", false)
       .neq("seller_id", data.sellerId)
       .limit(18);
 
@@ -220,6 +221,7 @@ export const getShopDiscovery = createServerFn({ method: "GET" })
         .from("products")
         .select("id, slug, name, category, price_usd, original_currency, original_amount, fx_snapshot, cover_path, vendor, seller_id, status, rating, cashback_pct")
         .eq("status", "active")
+        .eq("creator_asset", false)
         .neq("seller_id", data.sellerId)
         .limit(18);
       const seen = new Set(pRows.map((p) => p['id'] as string));
