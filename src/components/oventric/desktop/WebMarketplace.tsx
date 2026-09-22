@@ -53,7 +53,8 @@ interface Discovery {
  */
 export function WebMarketplace() {
   const navigate = useNavigate();
-  const { baseCurrency } = useOnboarding();
+  const { baseCurrency, require } = useOnboarding();
+  const [sellPanelOpen, setSellPanelOpen] = useState(false);
 
   const loadDiscovery = useServerFn(getMarketplaceDiscovery);
   const loadProducts = useServerFn(listProducts);
