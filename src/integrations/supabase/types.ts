@@ -3247,6 +3247,7 @@ export type Database = {
         Row: {
           address: string | null
           address_public: boolean
+          alt_phone: string | null
           avatar_path: string | null
           banned_at: string | null
           bio: string | null
@@ -3289,10 +3290,12 @@ export type Database = {
           user_id: string
           username: string | null
           verification_tier: string
+          whatsapp_phone: string | null
         }
         Insert: {
           address?: string | null
           address_public?: boolean
+          alt_phone?: string | null
           avatar_path?: string | null
           banned_at?: string | null
           bio?: string | null
@@ -3335,10 +3338,12 @@ export type Database = {
           user_id: string
           username?: string | null
           verification_tier?: string
+          whatsapp_phone?: string | null
         }
         Update: {
           address?: string | null
           address_public?: boolean
+          alt_phone?: string | null
           avatar_path?: string | null
           banned_at?: string | null
           bio?: string | null
@@ -3381,6 +3386,7 @@ export type Database = {
           user_id?: string
           username?: string | null
           verification_tier?: string
+          whatsapp_phone?: string | null
         }
         Relationships: []
       }

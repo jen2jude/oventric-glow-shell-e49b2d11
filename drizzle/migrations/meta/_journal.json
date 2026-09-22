@@ -316,6 +316,13 @@
       "when": 1790067644881,
       "tag": "0044_seller_reply_to_product_reviews",
       "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1790075753489,
+      "tag": "0045_add_seller_contact_numbers",
+      "breakpoints": true
     }
   ]
 }
