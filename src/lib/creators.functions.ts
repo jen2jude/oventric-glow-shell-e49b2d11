@@ -63,6 +63,7 @@ export interface CreatorPostDTO {
     name: string;
     slug: string | null;
     avatarUrl: string | null;
+    workLinks: string[];
   };
 }
 
