@@ -6,9 +6,27 @@ import { Button } from "@/components/ui/button";
 const DISMISSED_AT_KEY = "oventric:cashback-spotlight-dismissed-at";
 const REPEAT_AFTER_MS = 24 * 60 * 60 * 1000;
 const APPEAR_AFTER_MS = 2400;
+const COUNT_STEPS = [2.5, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
 
 export function CashbackSpotlight({ active }: { active: boolean }) {
   const [visible, setVisible] = useState(false);
+  const [percent, setPercent] = useState(COUNT_STEPS[0]);
+
+  useEffect(() => {
+    if (!visible) return;
+    let step = 0;
+    setPercent(COUNT_STEPS[0]);
+    const timer = window.setInterval(() => {
+      step += 1;
+      if (step >= COUNT_STEPS.length - 1) {
+        setPercent(COUNT_STEPS[COUNT_STEPS.length - 1]);
+        window.clearInterval(timer);
+      } else {
+        setPercent(COUNT_STEPS[step]);
+      }
+    }, 320);
+    return () => window.clearInterval(timer);
+  }, [visible]);
 
   useEffect(() => {
     if (!active) {
