@@ -2188,7 +2188,38 @@ export function Feed() {
           })()
         )}
 
-        {/* Mock marketplace, sponsored, and bounty cards removed. */}
+        {commentError && (
+          <div className="text-[11px] text-red-400 md:text-red-600 -mt-2">{commentError}</div>
+        )}
+
+        {/* Mock marketplace, sponsored, and bounty cards removed — live data lives in the DiscoveryPanel and dedicated routes. */}
+
+        <RepostDialog
+          open={!!repostTarget}
+          post={repostTarget}
+          onClose={() => setRepostTarget(null)}
+          onDone={() => void refreshPosts()}
+        />
+        <ReportModal
+          open={!!reportOpen}
+          onClose={() => setReportOpen(null)}
+          target={
+            reportOpen?.startsWith("bounty")
+              ? "bounty"
+              : reportOpen?.startsWith("listing")
+                ? "listing"
+                : "post"
+          }
+          targetId={reportOpen ?? undefined}
+          targetKind={
+            reportOpen?.startsWith("bounty")
+              ? "bounty"
+              : reportOpen?.startsWith("listing")
+                ? "listing"
+                : "post"
+          }
+          onReported={markReported}
+        />
 
         {editingPost && (
           <div className="fixed inset-0 z-[1100] grid place-items-center p-4">
