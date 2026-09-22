@@ -100,6 +100,7 @@ function ProductRating({
     void (async () => {
       const { data } = await supabase.auth.getUser();
       const uid = data.user?.id ?? null;
+      if (!cancelled) setViewerId(uid);
       try {
         const r = await fetchRating({ data: { productId, userId: uid } });
         if (!cancelled) {
