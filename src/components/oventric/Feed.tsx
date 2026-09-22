@@ -1279,7 +1279,7 @@ export function Feed() {
           Back to top
         </button>
       )}
-      <div className="mx-auto grid w-full max-w-[1320px] min-w-0 gap-5 lg:grid-cols-[minmax(0,1fr)_260px] min-[1180px]:grid-cols-[200px_minmax(0,1fr)_240px] lg:items-start">
+      <div className="mx-auto grid w-full max-w-[1400px] min-w-0 gap-5 lg:grid-cols-[minmax(0,1fr)_220px] min-[1180px]:grid-cols-[180px_minmax(0,1fr)_200px] lg:items-start">
       <aside className="hidden min-w-0 min-[1180px]:sticky min-[1180px]:top-6 min-[1180px]:block">
         <FeedSidebarModules
           modules="profile"
