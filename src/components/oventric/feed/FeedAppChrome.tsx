@@ -25,7 +25,6 @@ export function FeedAppChrome({
   searchOpen,
   onToggleSearch,
 }: Props) {
-  const chromeHidden = useChromeHidden();
   const [notifOpen, setNotifOpen] = useState(false);
   const [msgOpen, setMsgOpen] = useState(false);
   const unreadNotifs = useUnreadNotificationsCount();
