@@ -79,6 +79,7 @@ import { ShareSheet } from "@/components/oventric/ShareSheet";
 import { PostComposerModal } from "@/components/oventric/PostComposerModal";
 import { FeedAppChrome } from "@/components/oventric/feed/FeedAppChrome";
 import { FeedSocialBar } from "@/components/oventric/feed/FeedSocialBar";
+import { DiscoveryPanel } from "@/components/oventric/DiscoveryPanel";
 import { FeedTabs, type FeedTab } from "@/components/oventric/feed/FeedTabs";
 import { useScrollHideChrome, useChromeHidden } from "@/hooks/use-chrome-hide";
 import { listFollowers, listFollowing } from "@/lib/follows.functions";
@@ -1277,7 +1278,8 @@ export function Feed() {
           Back to top
         </button>
       )}
-      <div className="mx-auto w-full min-w-0 max-w-2xl">
+      <div className="mx-auto w-full min-w-0 max-w-2xl lg:grid lg:max-w-5xl lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start lg:gap-6">
+        <div className="min-w-0">
         {isAppShell ? (
           <FeedAppChrome
             searchOpen={searchOpen}
@@ -2263,6 +2265,10 @@ export function Feed() {
             </div>
           </div>
         )}
+        </div>
+        <aside className="hidden min-w-0 lg:sticky lg:top-6 lg:block lg:max-h-[calc(100dvh-3rem)] lg:overflow-y-auto lg:overscroll-contain">
+          <DiscoveryPanel />
+        </aside>
       </div>
 
       {lightbox && (
