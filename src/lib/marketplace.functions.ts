@@ -526,6 +526,7 @@ export const createProduct = createServerFn({ method: "POST" })
         activation_guide: data.activationGuide,
         promoted: false,
         kind: "digital",
+        creator_asset: data.creatorAsset,
         status: initialStatus,
       })
       .select("id, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, image_paths, created_at, updated_at, kind, status, reject_reason, requires_manual_delivery, in_stock, stock_quantity, basic_info, activation_guide")
