@@ -450,7 +450,10 @@ export const createProduct = createServerFn({ method: "POST" })
     fxSnapshot?: { base: string; rates: Record<string, number>; source?: string; fetched_at?: string } | null;
     /** Seller-funded cashback rate (%) for this product — paid out of the seller's 80%. */
     cashbackPct?: number | null;
+    /** Downloadable asset attached to a Creators showcase — never listed in the marketplace. */
+    creatorAsset?: boolean;
   }) => ({
+    creatorAsset: Boolean(input.creatorAsset),
     name: String(input.name ?? "").trim(),
     category: input.category,
     subcategory: input.subcategory ? String(input.subcategory).trim() : null,
