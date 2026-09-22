@@ -1598,17 +1598,20 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
           .limit(10),
       ),
       // 4. Sellers (profiles that actually have active products)
-      sb.from("products").select("seller_id").eq("status", "active").limit(500),
+      sb.from("products").select("id, seller_id").eq("status", "active").limit(500),
       // 5. Live category counts (products.category stores the category slug)
       sb.from("products").select("category").eq("status", "active").limit(1000),
     ]);
-    const sellerCounts = new Map<string, number>();
+    const productsBySeller = new Map<string, string[]>();
+    const sellerByProduct = new Map<string, string>();
     (sellerIdRows ?? []).forEach((r) => {
-      const id = r.seller_id as string;
-      sellerCounts.set(id, (sellerCounts.get(id) ?? 0) + 1);
+      const sid = r.seller_id as string;
+      if (!sid) return;
+      sellerByProduct.set(r.id as string, sid);
+      productsBySeller.set(sid, [...(productsBySeller.get(sid) ?? []), r.id as string]);
     });
-    const sellerIds = Array.from(sellerCounts.keys())
-      .sort((a, b) => (sellerCounts.get(b) ?? 0) - (sellerCounts.get(a) ?? 0))
+    const sellerIds = Array.from(productsBySeller.keys())
+      .sort((a, b) => (productsBySeller.get(b) ?? []).length - (productsBySeller.get(a) ?? []).length)
       .slice(0, 12);
 
     const { data: sellerRowsRaw } = sellerIds.length
