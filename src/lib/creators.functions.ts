@@ -102,7 +102,10 @@ function readCreatorProfile(raw: unknown): CreatorProfileDTO {
 export const getMyCreatorProfile = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<CreatorProfileDTO> => {
-    const { data } = await context.supabase
+    // Own-row read only: the profiles table isn't readable by the signed-in
+    // role, so a scoped admin read is what keeps returning creators as creators.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
       .from("profiles")
       .select("creator_profile, tools")
       .eq("user_id", context.userId)
@@ -110,8 +113,18 @@ export const getMyCreatorProfile = createServerFn({ method: "GET" })
     const dto = readCreatorProfile((data as { creator_profile?: unknown } | null)?.creator_profile);
     const tools = (data as { tools?: unknown } | null)?.tools;
     dto.tools = Array.isArray(tools) ? tools.filter((t): t is string => typeof t === "string") : [];
+    if (!dto.isCreator) {
+      // Anyone who already published a showcase is a creator, even if the
+      // questionnaire row was never written.
+      const { count } = await supabaseAdmin
+        .from("creator_posts")
+        .select("id", { count: "exact", head: true })
+        .eq("author_id", context.userId);
+      if ((count ?? 0) > 0) dto.isCreator = true;
+    }
     return dto;
   });
+
 
 const OnboardingInput = z.object({
   fields: z.array(z.string().trim().min(1).max(40)).min(1).max(10),
@@ -124,12 +137,15 @@ export const saveCreatorOnboarding = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => OnboardingInput.parse(input ?? {}))
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
+    const { userId } = context;
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const supabase = supabaseAdmin;
     const { data: row } = await supabase
       .from("profiles")
       .select("skills, skill_levels")
       .eq("user_id", userId)
       .maybeSingle();
+
 
     const existingSkills = Array.isArray((row as { skills?: unknown } | null)?.skills)
       ? ((row as { skills: unknown[] }).skills.filter((s): s is string => typeof s === "string"))
@@ -210,11 +226,15 @@ export const publishCreatorPost = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const embed = data.externalUrl ? parseVideoEmbed(data.externalUrl) : null;
 
-    const { data: prof } = await supabase
+    const { supabaseAdmin: adminForProfile } = await import(
+      "@/integrations/supabase/client.server"
+    );
+    const { data: prof } = await adminForProfile
       .from("profiles")
       .select("creator_profile")
       .eq("user_id", userId)
       .maybeSingle();
+
     const fields = readCreatorProfile((prof as { creator_profile?: unknown } | null)?.creator_profile).fields;
 
     // Only the creator's own listing may be attached — never a product id a
