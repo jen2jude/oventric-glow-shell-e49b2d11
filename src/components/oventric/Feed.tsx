@@ -2191,7 +2191,7 @@ export function Feed() {
           <div className="text-[11px] text-red-400 md:text-red-600 -mt-2">{commentError}</div>
         )}
 
-        {/* Mock marketplace, sponsored, and bounty cards removed — live data lives in the DiscoveryPanel and dedicated routes. */}
+        {/* Mock marketplace, sponsored, and bounty cards removed. */}
 
         <RepostDialog
           open={!!repostTarget}
