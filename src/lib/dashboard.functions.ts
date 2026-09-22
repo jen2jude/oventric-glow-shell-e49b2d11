@@ -517,7 +517,7 @@ export interface DashboardWalletSummary {
   cashback: number;           // accumulated cashback in home currency
   escrow: number;             // escrow balance in home currency
   fxRate: number;             // 1 USD -> home currency
-  recent: Array<{ id: string; type: string; amount: number; currency: string; inflow: boolean; status: string; occurredAt: string; amountHome: number }>;
+  recent: Array<{ id: string; type: string; amount: number; currency: string; inflow: boolean; status: string; statusLabel: string; occurredAt: string; amountHome: number }>;
   recentTotal: number;
   page: number;
   pageSize: number;
@@ -543,7 +543,7 @@ export const getMyWalletSummary = createServerFn({ method: "POST" })
       sb.from("wallets").select("currency, available_balance, escrow_balance, accumulated_cashback").eq("user_id", me),
       sb
         .from("wallet_transactions")
-        .select("id, type, amount, currency, inflow, status, occurred_at", { count: "exact" })
+        .select("id, tx_hash, type, amount, currency, inflow, status, occurred_at", { count: "exact" })
         .eq("user_id", me)
         .order("occurred_at", { ascending: false })
         .range(from, to),
