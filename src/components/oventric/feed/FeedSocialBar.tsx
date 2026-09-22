@@ -58,7 +58,7 @@ export function FeedSocialBar({ onOpenMessages, onOpenSearch }: Props) {
   return (
     <>
       <header
-        className="home-pop z-40 -mx-4 -mt-6 grid h-[66px] grid-cols-[minmax(0,1fr)_auto] items-center border-b border-home-line bg-home-surface/95 px-4 shadow-home-soft backdrop-blur-xl md:-mx-6 md:-mt-10 md:h-[72px] md:px-6 lg:hidden"
+        className="home-pop sticky top-0 z-40 -mx-4 -mt-6 grid h-[66px] grid-cols-[minmax(0,1fr)_auto] items-center border-b border-home-line bg-home-surface/95 px-4 shadow-home-soft backdrop-blur-xl md:-mx-6 md:-mt-10 md:h-[72px] md:px-6 lg:hidden"
       >
         <Link to="/" aria-label="Oventric home" className="flex min-w-0 items-center">
           <img loading="lazy" decoding="async"
@@ -107,7 +107,7 @@ export function FeedSocialBar({ onOpenMessages, onOpenSearch }: Props) {
       </header>
 
       <nav
-        className="z-40 hidden w-fit max-w-full items-center gap-1 overflow-x-auto rounded-full border border-slate-200 bg-white/95 p-1.5 shadow-sm backdrop-blur-md no-scrollbar lg:flex"
+        className="z-40 hidden w-fit max-w-full items-center gap-1 overflow-x-auto rounded-full border border-slate-200 bg-white/95 p-1.5 shadow-sm backdrop-blur-md no-scrollbar lg:sticky lg:top-3 lg:flex"
       >
         <Link
           to="/"
