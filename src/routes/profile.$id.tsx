@@ -6,6 +6,8 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfileEcosystem } from "@/lib/ecosystem/useProfileEcosystem";
+import { skillHue } from "@/lib/profiles/skill-visual";
+import { cn } from "@/lib/utils";
 
 import {
   getCircleStatus,
@@ -1612,7 +1614,7 @@ function ProfilePage() {
                 {((realProfile?.skills && realProfile.skills.length > 0) || isOwnProfile) && (
                    <div className="profile-skills-card mt-4 p-5">
                     <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-                      <h2 className="truncate text-sm font-black text-white md:text-slate-900">
+                      <h2 className="truncate text-sm font-black text-slate-900">
                         Skills
                       </h2>
                       {isOwnProfile && (
@@ -1626,19 +1628,25 @@ function ProfilePage() {
                       )}
                     </div>
                     <div className="-mx-1 mt-2 flex flex-wrap gap-2 px-1">
-                      {(realProfile?.skills ?? []).map((s) => (
-                        <span
-                          key={s}
-                          className="inline-flex items-center rounded-full border border-[#E5484D]/30 bg-[#E5484D]/12 px-3 py-1.5 text-xs font-bold text-[#E5484D]"
-                        >
-                          {s}
-                        </span>
-                      ))}
+                      {(realProfile?.skills ?? []).map((s) => {
+                        const hue = skillHue(s);
+                        return (
+                          <span
+                            key={s}
+                            className={cn(
+                              "inline-flex items-center rounded-full bg-gradient-to-r px-3 py-1.5 text-xs font-bold text-white shadow-sm",
+                              hue,
+                            )}
+                          >
+                            {s}
+                          </span>
+                        );
+                      })}
                       {isOwnProfile && (realProfile?.skills?.length ?? 0) === 0 && (
                         <button
                           type="button"
                           onClick={() => setEditProfileOpen(true)}
-                          className="inline-flex items-center rounded-full border border-dashed border-[#E5484D]/60 bg-[#1A1A1F] px-3 py-1.5 text-xs font-bold text-[#E5484D] hover:bg-[#232329] md:bg-white"
+                          className="inline-flex items-center rounded-full border border-dashed border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-600 hover:border-slate-400 hover:bg-slate-50"
                         >
                           + Add skills
                         </button>
