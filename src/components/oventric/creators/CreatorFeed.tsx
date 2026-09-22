@@ -265,6 +265,12 @@ function LinkDock({ post }: { post: CreatorPostDTO }) {
 function CreatorCard({ post, onRecordedView }: { post: CreatorPostDTO; onRecordedView: (postId: string) => void }) {
   const recordView = useServerFn(recordCreatorPostView);
   const articleRef = useRef<HTMLElement>(null);
+  const initials = post.author.name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -310,15 +316,23 @@ function CreatorCard({ post, onRecordedView }: { post: CreatorPostDTO; onRecorde
         <Link
           to="/profile/$id"
           params={{ id: post.author.slug ?? post.author.userId }}
-          className="block h-10 w-10 shrink-0 overflow-hidden rounded-full bg-muted"
+          className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full border border-slate-200 bg-slate-100 text-xs font-black text-slate-500"
         >
-          {post.author.avatarUrl && (
-            <img loading="lazy" decoding="async" src={post.author.avatarUrl} alt="" className="h-full w-full object-cover" />
+          {post.author.avatarUrl ? (
+            <img
+              loading="lazy"
+              decoding="async"
+              src={post.author.avatarUrl}
+              alt={`${post.author.name}'s profile`}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <span aria-hidden="true">{initials || "C"}</span>
           )}
         </Link>
       </div>
       <div className="min-w-0">
-        <div className="flex min-w-0 items-baseline gap-1.5">
+        <div className="flex min-w-0 items-center gap-1.5">
           <Link
             to="/profile/$id"
             params={{ id: post.author.slug ?? post.author.userId }}
@@ -326,6 +340,9 @@ function CreatorCard({ post, onRecordedView }: { post: CreatorPostDTO; onRecorde
           >
             {post.author.name}
           </Link>
+          <span className="shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[9px] font-black uppercase text-emerald-700">
+            Creator
+          </span>
           <span className="shrink-0 text-[11px] text-slate-400">
             · {relativeTime(post.createdAt)}
           </span>
