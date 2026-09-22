@@ -81,6 +81,8 @@ async function summarize(
     rating: Number(r.rating),
     comment: r.comment,
     createdAt: r.created_at,
+    sellerReply: r.seller_reply ?? null,
+    sellerReplyAt: r.seller_reply_at ?? null,
     userId: r.user_id,
     user: {
       fullName: r.profiles?.display_name ?? r.profiles?.username ?? "User",
