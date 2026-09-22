@@ -26,7 +26,6 @@ type Props = {
 export function FeedSocialBar({ onOpenMessages, onOpenSearch }: Props) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [reqOpen, setReqOpen] = useState(false);
-  const chromeHidden = useChromeHidden();
 
   const unreadNotifs = useUnreadNotificationsCount();
   const { messages } = useUnreadCounts();
