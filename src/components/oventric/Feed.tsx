@@ -30,6 +30,8 @@ import {
   ArrowUp,
   BadgeCheck,
   Plus,
+  Heart,
+  Bookmark,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
@@ -57,6 +59,7 @@ import {
   deletePost as deletePostFn,
   updatePostText as updatePostTextFn,
   setReaction as setReactionFn,
+  setPostSaved as setPostSavedFn,
   type FeedPost,
   type ReactionType,
 } from "@/lib/posts.functions";
