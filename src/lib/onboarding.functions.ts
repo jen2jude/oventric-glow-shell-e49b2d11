@@ -149,9 +149,10 @@ const CompleteProfileInput = z.object({
   // bucket (USD baseline).
   country: z.string().trim().min(2).max(60),
   address: z.string().trim().min(4).max(240).optional(),
-  // WhatsApp number is mandatory: admin/support use it to reach sellers about
-  // deliveries when they are offline.
-  phone: z.string().trim().min(6).max(24),
+  // WhatsApp number: required by the Stage 2 commerce form (support use it to
+  // reach sellers about deliveries), optional here so the lighter profile
+  // setup flow — which never collects a number — keeps working.
+  phone: z.string().trim().min(6).max(24).optional(),
   altPhone: z.string().trim().min(6).max(24).optional(),
 });
 
