@@ -208,6 +208,61 @@ function ProductRating({
                 <p className={`mt-2 text-sm leading-relaxed ${isAppShell ? "text-slate-300" : "text-slate-600"}`}>
                   {r.comment}
                 </p>
+
+                {r.sellerReply ? (
+                  <div className={`mt-3 rounded-[10px] border-l-2 border-crimson pl-3 py-2 ${isAppShell ? "bg-white/[0.04]" : "bg-white"}`}>
+                    <div className={`text-[11px] font-bold ${isAppShell ? "text-slate-200" : "text-slate-700"}`}>
+                      Seller response
+                      {r.sellerReplyAt && (
+                        <span className={`ml-2 font-normal ${isAppShell ? "text-slate-500" : "text-slate-400"}`}>
+                          {new Date(r.sellerReplyAt).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                    <p className={`mt-1 text-sm leading-relaxed ${isAppShell ? "text-slate-300" : "text-slate-600"}`}>
+                      {r.sellerReply}
+                    </p>
+                  </div>
+                ) : null}
+
+                {isSeller && (
+                  replyOpen === r.id ? (
+                    <div className="mt-3 space-y-2">
+                      <textarea
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                        rows={3}
+                        placeholder="Write your response to this buyer…"
+                        className={`w-full rounded-[10px] border p-2 text-sm outline-none ${isAppShell ? "border-white/10 bg-black/30 text-slate-200" : "border-slate-200 bg-white text-slate-800"}`}
+                      />
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          disabled={replySaving || !replyText.trim()}
+                          onClick={() => submitReply(r.id)}
+                          className="rounded-[10px] bg-crimson px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50"
+                        >
+                          {replySaving ? "Posting…" : "Post reply"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setReplyOpen(null); setReplyText(""); }}
+                          className={`text-xs font-semibold ${isAppShell ? "text-slate-400" : "text-slate-500"}`}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => { setReplyOpen(r.id); setReplyText(r.sellerReply ?? ""); }}
+                      className="mt-2 text-xs font-bold text-crimson"
+                    >
+                      {r.sellerReply ? "Edit response" : "Reply"}
+                    </button>
+                  )
+                )}
               </div>
             ))}
         </div>
