@@ -1585,6 +1585,7 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
           .from("products")
           .select(PRODUCT_COLS)
           .eq("status", "active")
+          .eq("creator_asset", false)
           .eq("promoted", true)
           .order("rating", { ascending: false })
           .limit(6),
@@ -1595,6 +1596,7 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
           .from("products")
           .select(PRODUCT_COLS)
           .eq("status", "active")
+          .eq("creator_asset", false)
           .order("reviews", { ascending: false, nullsFirst: false })
           .limit(10),
       ),
@@ -1604,13 +1606,14 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
           .from("products")
           .select(PRODUCT_COLS)
           .eq("status", "active")
+          .eq("creator_asset", false)
           .order("created_at", { ascending: false })
           .limit(10),
       ),
       // 4. Sellers (profiles that actually have active products)
-      sb.from("products").select("id, seller_id").eq("status", "active").limit(500),
+      sb.from("products").select("id, seller_id").eq("status", "active").eq("creator_asset", false).limit(500),
       // 5. Live category counts (products.category stores the category slug)
-      sb.from("products").select("category").eq("status", "active").limit(1000),
+      sb.from("products").select("category").eq("status", "active").eq("creator_asset", false).limit(1000),
     ]);
     const productsBySeller = new Map<string, string[]>();
     const sellerByProduct = new Map<string, string>();
@@ -1763,6 +1766,7 @@ export const getTopSellers = createServerFn({ method: "GET" })
       .from("products")
       .select("id, seller_id")
       .eq("status", "active")
+      .eq("creator_asset", false)
       .limit(2000);
 
     const productsBySeller = new Map<string, string[]>();
