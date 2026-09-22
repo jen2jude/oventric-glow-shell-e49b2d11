@@ -505,6 +505,17 @@ function AppMarketplace() {
         />
       )}
 
+      <button
+        type="button"
+        aria-label="Publish a product"
+        onClick={() => require(2, () => setSellPanelOpen(true), "seller")}
+        className="fixed bottom-24 right-5 z-[70] grid h-14 w-14 place-items-center rounded-full bg-amber-500 text-white shadow-xl transition-transform hover:bg-amber-600 active:scale-95 md:bottom-10 md:right-10"
+      >
+        <Plus className="h-6 w-6" strokeWidth={2.6} />
+      </button>
+      {sellPanelOpen && (
+        <CreatePanel open initialChoice="sell" onClose={() => setSellPanelOpen(false)} />
+      )}
     </div>
   );
 }
