@@ -82,6 +82,8 @@ export function ProfileCollectionsTab({
         )}
       </div>
 
+      {isOwner && <SavedPostsStrip />}
+
       {boards.length === 0 ? (
         <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-8 text-center">
           <Layers className="mx-auto h-6 w-6 text-slate-500" />
