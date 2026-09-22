@@ -519,6 +519,7 @@ export function Feed() {
   const deletePost = useServerFn(deletePostFn);
   const updatePostText = useServerFn(updatePostTextFn);
   const setReaction = useServerFn(setReactionFn);
+  const setPostSaved = useServerFn(setPostSavedFn);
   const listComments = useServerFn(listCommentsFn);
   const addComment = useServerFn(addCommentFn);
   const updateComment = useServerFn(updateCommentFn);
