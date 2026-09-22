@@ -26,6 +26,8 @@ export interface WalletTxDTO {
   currency: WalletCurrency;
   inflow: boolean;
   status: WalletTxStatus;
+  /** Human-facing status, e.g. a payout that is approved and awaiting transfer reads "processing". */
+  statusLabel: string;
   occurredAt: string;
 }
 
