@@ -223,7 +223,7 @@ export const getOnboardingStatus = createServerFn({ method: "GET" })
     const { data, error } = await supabaseAdmin
       .from("profiles")
       .select(
-        "display_name, country, phone, profile_completed_at, kyc_completed_at, kyc_selfie_path, kyc_id_path, verification_tier",
+        "display_name, country, phone, whatsapp_phone, alt_phone, profile_completed_at, kyc_completed_at, kyc_selfie_path, kyc_id_path, verification_tier",
       )
       .eq("user_id", userId)
       .maybeSingle();
