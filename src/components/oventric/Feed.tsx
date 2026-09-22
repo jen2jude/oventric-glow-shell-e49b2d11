@@ -1943,7 +1943,7 @@ export function Feed() {
                     })()}
                   {post.media_url && post.media_type === "video" && (
                     <div
-                      className={`relative mt-3 ${isAppShell ? "pb-4 md:px-0 md:pb-0" : ""}`}
+                      className={`relative mt-3 ${isAppShell ? "pb-4 md:px-0 md:pb-0" : "-mx-4 md:-mx-6"}`}
                     >
                       <button
                         type="button"
