@@ -1598,17 +1598,20 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
           .limit(10),
       ),
       // 4. Sellers (profiles that actually have active products)
-      sb.from("products").select("seller_id").eq("status", "active").limit(500),
+      sb.from("products").select("id, seller_id").eq("status", "active").limit(500),
       // 5. Live category counts (products.category stores the category slug)
       sb.from("products").select("category").eq("status", "active").limit(1000),
     ]);
-    const sellerCounts = new Map<string, number>();
+    const productsBySeller = new Map<string, string[]>();
+    const sellerByProduct = new Map<string, string>();
     (sellerIdRows ?? []).forEach((r) => {
-      const id = r.seller_id as string;
-      sellerCounts.set(id, (sellerCounts.get(id) ?? 0) + 1);
+      const sid = r.seller_id as string;
+      if (!sid) return;
+      sellerByProduct.set(r.id as string, sid);
+      productsBySeller.set(sid, [...(productsBySeller.get(sid) ?? []), r.id as string]);
     });
-    const sellerIds = Array.from(sellerCounts.keys())
-      .sort((a, b) => (sellerCounts.get(b) ?? 0) - (sellerCounts.get(a) ?? 0))
+    const sellerIds = Array.from(productsBySeller.keys())
+      .sort((a, b) => (productsBySeller.get(b) ?? []).length - (productsBySeller.get(a) ?? []).length)
       .slice(0, 12);
 
     const { data: sellerRowsRaw } = sellerIds.length
@@ -1663,19 +1666,36 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
     };
 
     const sellerUserIds = (sellerRows ?? []).map((s: any) => s.user_id as string);
+    const productIds = Array.from(sellerByProduct.keys()).slice(0, 500);
 
-    // One grouped follower read instead of a count query per seller.
-    const [sellerAvatars, sellerCovers, followerRowsRes] = await Promise.all([
+    // One grouped follower read instead of a count query per seller, plus paid
+    // sales so the home rail and marketplace discovery rank sellers the same way.
+    const [sellerAvatars, sellerCovers, followerRowsRes, orderRes] = await Promise.all([
       signBucket(sb, "avatars", (sellerRows ?? []).map((s: any) => s.avatar_path ?? null)),
       signBucket(sb, "profile-covers", (sellerRows ?? []).map((s: any) => s.cover_path ?? null)),
       sellerUserIds.length
         ? sb.from("follows").select("followee_id").in("followee_id", sellerUserIds).limit(5000)
+        : Promise.resolve({ data: [] as any[] }),
+      productIds.length
+        ? sb
+            .from("orders")
+            .select("product_id, quantity")
+            .in("status", ["paid", "delivered", "completed", "released"])
+            .in("product_id", productIds)
+            .limit(5000)
         : Promise.resolve({ data: [] as any[] }),
     ]);
     const followerCounts = new Map<string, number>();
     ((followerRowsRes as any)?.data ?? []).forEach((r: any) => {
       const id = r.followee_id as string;
       followerCounts.set(id, (followerCounts.get(id) ?? 0) + 1);
+    });
+
+    const salesBySeller = new Map<string, number>();
+    ((orderRes as any)?.data ?? []).forEach((o: any) => {
+      const sid = sellerByProduct.get(o.product_id as string);
+      if (!sid) return;
+      salesBySeller.set(sid, (salesBySeller.get(sid) ?? 0) + Number(o.quantity ?? 1));
     });
 
     const sellers = (sellerRows ?? []).map((s: any, i: number) => ({
@@ -1688,10 +1708,13 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
       verified: verifiedSellerIds.has(s.user_id as string),
       rating: Number(s.reputation_stars ?? 0),
       followersCount: followerCounts.get(s.user_id as string) ?? 0,
-      productsCount: sellerCounts.get(s.user_id as string) ?? 0,
+      productsCount: (productsBySeller.get(s.user_id as string) ?? []).length,
+      salesCount: salesBySeller.get(s.user_id as string) ?? 0,
     }));
 
-    sellers.sort((a, b) => b.productsCount - a.productsCount);
+    sellers.sort(
+      (a, b) => b.salesCount - a.salesCount || b.productsCount - a.productsCount || b.followersCount - a.followersCount,
+    );
 
     return {
       featured: (featuredRows ?? []).map(mapRow),
