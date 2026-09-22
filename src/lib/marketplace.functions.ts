@@ -1231,6 +1231,7 @@ export const createOrder = createServerFn({ method: "POST" })
         sender_id: userId,
         recipient_id: product.sellerId,
         order_id: oRow.id as string,
+        is_system: true,
         body: dmBody,
       });
       await supabaseAdmin.from("notifications").insert({
