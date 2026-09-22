@@ -9,7 +9,9 @@ import {
   BadgeCheck,
   Store,
   ArrowRight,
+  Plus,
 } from "lucide-react";
+import { CreatePanel } from "@/components/oventric/CreatePanel";
 import { Button } from "@/components/ui/button";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { computeDisplayPrice, formatMoney } from "@/lib/fx-display";
@@ -51,7 +53,8 @@ interface Discovery {
  */
 export function WebMarketplace() {
   const navigate = useNavigate();
-  const { baseCurrency } = useOnboarding();
+  const { baseCurrency, require } = useOnboarding();
+  const [sellPanelOpen, setSellPanelOpen] = useState(false);
 
   const loadDiscovery = useServerFn(getMarketplaceDiscovery);
   const loadProducts = useServerFn(listProducts);
@@ -504,6 +507,18 @@ export function WebMarketplace() {
             </button>
           </div>
         </div>
+      )}
+
+      <button
+        type="button"
+        aria-label="Publish a product"
+        onClick={() => require(2, () => setSellPanelOpen(true), "seller")}
+        className="fixed bottom-24 right-5 z-[70] grid h-14 w-14 place-items-center rounded-full bg-amber-500 text-white shadow-xl transition-transform hover:bg-amber-600 active:scale-95 md:bottom-10 md:right-10"
+      >
+        <Plus className="h-6 w-6" strokeWidth={2.6} />
+      </button>
+      {sellPanelOpen && (
+        <CreatePanel open initialChoice="sell" onClose={() => setSellPanelOpen(false)} />
       )}
     </div>
   );

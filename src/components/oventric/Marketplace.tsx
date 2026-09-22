@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { readCache, writeCache } from "@/lib/swr-cache";
-import { ChevronLeft, ChevronRight, LayoutGrid, Search, SlidersHorizontal, ShoppingBag, GraduationCap, ArrowLeft } from "lucide-react";
+import { ChevronLeft, ChevronRight, LayoutGrid, Search, SlidersHorizontal, ShoppingBag, GraduationCap, ArrowLeft, Plus } from "lucide-react";
+import { CreatePanel } from "@/components/oventric/CreatePanel";
 import { useDominantColor } from "@/hooks/use-dominant-color";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
@@ -66,6 +67,7 @@ function AppMarketplace() {
   const [loading, setLoading] = useState(true);
   const [showCategories, setShowCategories] = useState(false);
   const [showTopSellers, setShowTopSellers] = useState(false);
+  const [sellPanelOpen, setSellPanelOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<CategoryNode | null>(null);
   const topRef = useRef<HTMLDivElement>(null);
 
@@ -505,6 +507,17 @@ function AppMarketplace() {
         />
       )}
 
+      <button
+        type="button"
+        aria-label="Publish a product"
+        onClick={() => require(2, () => setSellPanelOpen(true), "seller")}
+        className="fixed bottom-24 right-5 z-[70] grid h-14 w-14 place-items-center rounded-full bg-amber-500 text-white shadow-xl transition-transform hover:bg-amber-600 active:scale-95 md:bottom-10 md:right-10"
+      >
+        <Plus className="h-6 w-6" strokeWidth={2.6} />
+      </button>
+      {sellPanelOpen && (
+        <CreatePanel open initialChoice="sell" onClose={() => setSellPanelOpen(false)} />
+      )}
     </div>
   );
 }
