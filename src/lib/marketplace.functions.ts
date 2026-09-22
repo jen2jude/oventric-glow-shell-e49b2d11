@@ -405,6 +405,7 @@ export const getRecentProducts = createServerFn({ method: "POST" })
       .in("id", data.ids)
       .eq("status", "active")
       .eq("in_stock", true)
+      .eq("creator_asset", false)
       .in("kind", ["digital", "service"]);
     if (error) throw new Error(error.message);
     const products = (rows ?? []) as Record<string, unknown>[];
