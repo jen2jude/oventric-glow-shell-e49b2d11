@@ -10,6 +10,8 @@ import {
   saveCollection,
   type CollectionDTO,
 } from "@/lib/collections.functions";
+import { listSavedPosts } from "@/lib/posts.functions";
+import { Link } from "@tanstack/react-router";
 
 const ACCENT = "#E5484D";
 
@@ -453,5 +455,71 @@ function BoardEditor({
         </button>
       </div>
     </Sheet>
+  );
+}
+
+/** Owner-only strip of posts bookmarked from the newsfeed. */
+function SavedPostsStrip() {
+  const load = useServerFn(listSavedPosts);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      try {
+        const res: any = await load();
+        if (alive) setPosts(res?.posts ?? []);
+      } catch (e) {
+        console.error("[collections] saved posts", e);
+        if (alive) setPosts([]);
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [load]);
+
+  if (loading || posts.length === 0) return null;
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+      <div className="flex items-center gap-2">
+        <Bookmark className="h-4 w-4" style={{ color: ACCENT }} />
+        <h4 className="text-sm font-black text-slate-900">Saved posts</h4>
+        <span className="text-[11px] text-slate-500">{posts.length}</span>
+      </div>
+      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+        {posts.slice(0, 12).map((p) => {
+          const cover = p.media?.[0]?.url ?? p.media_url ?? null;
+          return (
+            <Link
+              key={p.id}
+              to="/post/$id"
+              params={{ id: p.id }}
+              className="flex items-center gap-3 rounded-[10px] border border-slate-200 p-2 transition hover:border-slate-300 hover:bg-slate-50"
+            >
+              <div className="h-12 w-12 shrink-0 overflow-hidden rounded-[8px] bg-slate-100">
+                {cover ? (
+                  <img
+                    loading="lazy"
+                    decoding="async"
+                    src={cover}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                ) : null}
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-[12px] font-bold text-slate-900">{p.author_name}</p>
+                <p className="line-clamp-2 text-[11px] text-slate-600">{p.text || "Media post"}</p>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+    </div>
   );
 }
