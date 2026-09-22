@@ -257,6 +257,8 @@ export const listProducts = createServerFn({ method: "GET" })
       .from("products")
       .select(PRODUCT_COLS)
       .eq("status", "active")
+      // Creator showcase assets live in the Creators tab only.
+      .eq("creator_asset", false)
       .order("promoted", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(400);
