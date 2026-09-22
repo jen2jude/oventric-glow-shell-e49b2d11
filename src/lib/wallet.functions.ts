@@ -26,6 +26,8 @@ export interface WalletTxDTO {
   currency: WalletCurrency;
   inflow: boolean;
   status: WalletTxStatus;
+  /** Human-facing status, e.g. a payout that is approved and awaiting transfer reads "processing". */
+  statusLabel: string;
   occurredAt: string;
 }
 
@@ -83,16 +85,43 @@ export const listWalletTransactions = createServerFn({ method: "POST" })
     const { data: rows, count, error } = await q.range(from, to);
     if (error) throw new Error(error.message);
 
-    const items: WalletTxDTO[] = (rows ?? []).map((r) => ({
-      id: r.id as string,
-      txHash: r.tx_hash as string,
-      type: r.type as WalletTxType,
-      amount: Number(r.amount),
-      currency: r.currency as WalletCurrency,
-      inflow: r.inflow as boolean,
-      status: r.status as WalletTxStatus,
-      occurredAt: r.occurred_at as string,
-    }));
+    // A withdrawal sits at "pending" until the transfer is marked paid. Once an admin has
+    // approved it, show the clearer "processing" wording instead of a bare "pending".
+    const payoutPrefixes = (rows ?? [])
+      .filter((r) => r.type === "Payout Withdrawal" && r.status === "pending")
+      .map((r) => String(r.tx_hash ?? "").replace(/^PYT-/, ""))
+      .filter(Boolean);
+
+    const approvedPrefixes = new Set<string>();
+    if (payoutPrefixes.length) {
+      const { data: reqs } = await supabase
+        .from("payout_requests")
+        .select("id, status")
+        .eq("user_id", userId)
+        .eq("status", "approved");
+      for (const req of reqs ?? []) {
+        const prefix = String(req.id).slice(0, 8);
+        if (payoutPrefixes.includes(prefix)) approvedPrefixes.add(prefix);
+      }
+    }
+
+    const items: WalletTxDTO[] = (rows ?? []).map((r) => {
+      const status = r.status as WalletTxStatus;
+      const prefix = String(r.tx_hash ?? "").replace(/^PYT-/, "");
+      const isApprovedPayout =
+        r.type === "Payout Withdrawal" && status === "pending" && approvedPrefixes.has(prefix);
+      return {
+        id: r.id as string,
+        txHash: r.tx_hash as string,
+        type: r.type as WalletTxType,
+        amount: Number(r.amount),
+        currency: r.currency as WalletCurrency,
+        inflow: r.inflow as boolean,
+        status,
+        statusLabel: isApprovedPayout ? "processing" : status,
+        occurredAt: r.occurred_at as string,
+      };
+    });
 
     return {
       items,
