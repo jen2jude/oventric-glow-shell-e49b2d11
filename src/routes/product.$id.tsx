@@ -120,7 +120,7 @@ function ProductRating({
   const shown = hover ?? mine ?? Math.round(average);
 
   return (
-    <div className="mb-5">
+    <div id="reviews" className="mb-5 scroll-mt-24">
       <div className="flex items-center gap-1 text-sm text-amber-400">
         <Star className="w-4 h-4 fill-current" />
         <span className={`font-semibold ${isAppShell ? "text-amber-400" : "text-slate-900"}`}>{average.toFixed(1)}</span>
@@ -148,6 +148,46 @@ function ProductRating({
           {mine ? `You rated ${mine}★ — tap to change` : "Tap to rate this product"}
         </span>
       </div>
+
+      {reviews.filter((r) => (r.comment ?? "").trim()).length > 0 && (
+        <div className="mt-4 space-y-3">
+          {reviews
+            .filter((r) => (r.comment ?? "").trim())
+            .slice(0, 8)
+            .map((r) => (
+              <div
+                key={r.id}
+                className={`rounded-[10px] border p-3 ${isAppShell ? "border-white/10 bg-white/[0.03]" : "border-slate-200 bg-slate-50"}`}
+              >
+                <div className="flex items-center gap-2">
+                  {r.user.avatarUrl ? (
+                    <img
+                      loading="lazy"
+                      decoding="async"
+                      src={r.user.avatarUrl}
+                      alt={r.user.fullName ?? "Buyer"}
+                      className="h-7 w-7 rounded-full object-cover"
+                    />
+                  ) : (
+                    <span className={`grid h-7 w-7 place-items-center rounded-full text-[11px] font-bold ${isAppShell ? "bg-white/10 text-slate-300" : "bg-slate-200 text-slate-600"}`}>
+                      {(r.user.fullName ?? "U").slice(0, 1).toUpperCase()}
+                    </span>
+                  )}
+                  <span className={`text-xs font-semibold ${isAppShell ? "text-slate-200" : "text-slate-800"}`}>
+                    {r.user.fullName ?? "Buyer"}
+                  </span>
+                  <span className="text-xs font-semibold text-amber-400">{r.rating}★</span>
+                  <span className={`ml-auto text-[11px] ${isAppShell ? "text-slate-500" : "text-slate-400"}`}>
+                    {new Date(r.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+                <p className={`mt-2 text-sm leading-relaxed ${isAppShell ? "text-slate-300" : "text-slate-600"}`}>
+                  {r.comment}
+                </p>
+              </div>
+            ))}
+        </div>
+      )}
     </div>
   );
 }
