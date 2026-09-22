@@ -107,9 +107,7 @@ export function FeedSocialBar({ onOpenMessages, onOpenSearch }: Props) {
       </header>
 
       <nav
-        className={`sticky top-0 z-40 hidden w-fit max-w-full self-start items-center gap-1 overflow-x-auto rounded-full border border-slate-200 bg-white/95 p-1.5 shadow-sm backdrop-blur-md no-scrollbar transition-all duration-300 ease-out lg:flex ${
-          chromeHidden ? "-translate-y-[120%] opacity-0 pointer-events-none" : "translate-y-0 opacity-100"
-        }`}
+        className="z-40 hidden w-fit max-w-full items-center gap-1 overflow-x-auto rounded-full border border-slate-200 bg-white/95 p-1.5 shadow-sm backdrop-blur-md no-scrollbar lg:flex"
       >
         <Link
           to="/"
