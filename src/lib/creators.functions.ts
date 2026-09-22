@@ -102,7 +102,10 @@ function readCreatorProfile(raw: unknown): CreatorProfileDTO {
 export const getMyCreatorProfile = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<CreatorProfileDTO> => {
-    const { data } = await context.supabase
+    // Own-row read only: the profiles table isn't readable by the signed-in
+    // role, so a scoped admin read is what keeps returning creators as creators.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
       .from("profiles")
       .select("creator_profile, tools")
       .eq("user_id", context.userId)
@@ -110,8 +113,18 @@ export const getMyCreatorProfile = createServerFn({ method: "GET" })
     const dto = readCreatorProfile((data as { creator_profile?: unknown } | null)?.creator_profile);
     const tools = (data as { tools?: unknown } | null)?.tools;
     dto.tools = Array.isArray(tools) ? tools.filter((t): t is string => typeof t === "string") : [];
+    if (!dto.isCreator) {
+      // Anyone who already published a showcase is a creator, even if the
+      // questionnaire row was never written.
+      const { count } = await supabaseAdmin
+        .from("creator_posts")
+        .select("id", { count: "exact", head: true })
+        .eq("author_id", context.userId);
+      if ((count ?? 0) > 0) dto.isCreator = true;
+    }
     return dto;
   });
+
 
 const OnboardingInput = z.object({
   fields: z.array(z.string().trim().min(1).max(40)).min(1).max(10),
