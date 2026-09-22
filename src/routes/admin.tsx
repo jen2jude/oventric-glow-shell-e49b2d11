@@ -32,6 +32,7 @@ import {
   Tag,
   ChevronLeft,
   BarChart3,
+  Receipt,
 } from "lucide-react";
 
 import { canAccessSection, type ManagementRole } from "@/lib/admin-roles";
