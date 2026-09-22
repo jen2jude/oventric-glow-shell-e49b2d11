@@ -1279,8 +1279,8 @@ export function Feed() {
           Back to top
         </button>
       )}
-      <div className="mx-auto grid w-full max-w-[1400px] min-w-0 gap-5 lg:grid-cols-[minmax(0,1fr)_220px] min-[1180px]:grid-cols-[180px_minmax(0,1fr)_200px] lg:items-start">
-      <aside className="hidden min-w-0 min-[1180px]:sticky min-[1180px]:top-6 min-[1180px]:block">
+      <div className="mx-auto grid w-full min-w-0 gap-4 px-4 md:px-5 lg:gap-5 lg:grid-cols-[minmax(0,1fr)_200px] xl:grid-cols-[180px_minmax(0,1fr)_180px] min-[1400px]:grid-cols-[200px_minmax(0,1fr)_200px] lg:items-start">
+      <aside className="hidden min-w-0 xl:sticky xl:top-6 xl:block">
         <FeedSidebarModules
           modules="profile"
           onCreatePost={() => require(1, () => setComposerOpen(true), "seller")}
