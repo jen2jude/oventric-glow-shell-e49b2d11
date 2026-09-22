@@ -272,12 +272,18 @@ function SuggestedCreators() {
 }
 
 /** Desktop-only feed sidebar stack: you, what's hot, who to follow. */
-export function FeedSidebarModules({ onCreatePost }: { onCreatePost?: () => void }) {
+export function FeedSidebarModules({
+  onCreatePost,
+  modules = "all",
+}: {
+  onCreatePost?: () => void;
+  modules?: "all" | "profile" | "discovery";
+}) {
   return (
     <div className="space-y-4">
-      <MeCard onCreatePost={onCreatePost} />
-      <TrendingToday />
-      <SuggestedCreators />
+      {modules !== "discovery" ? <MeCard onCreatePost={onCreatePost} /> : null}
+      {modules !== "profile" ? <TrendingToday /> : null}
+      {modules !== "profile" ? <SuggestedCreators /> : null}
     </div>
   );
 }

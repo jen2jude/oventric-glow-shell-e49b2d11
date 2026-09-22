@@ -1279,7 +1279,13 @@ export function Feed() {
           Back to top
         </button>
       )}
-      <div className="mx-auto grid w-full max-w-[1120px] min-w-0 gap-8 lg:grid-cols-[minmax(0,760px)_320px] lg:items-start">
+      <div className="mx-auto grid w-full max-w-[1200px] min-w-0 gap-5 lg:grid-cols-[minmax(0,1fr)_300px] min-[1180px]:grid-cols-[220px_minmax(0,1fr)_280px] lg:items-start">
+      <aside className="hidden min-w-0 min-[1180px]:sticky min-[1180px]:top-6 min-[1180px]:block">
+        <FeedSidebarModules
+          modules="profile"
+          onCreatePost={() => require(1, () => setComposerOpen(true), "seller")}
+        />
+      </aside>
       <div className="flex w-full min-w-0 flex-col gap-3">
         {isAppShell ? (
           <FeedAppChrome
@@ -2263,8 +2269,14 @@ export function Feed() {
           </div>
         )}
       </div>
-      <aside className="hidden min-w-0 space-y-6 lg:block lg:sticky lg:top-24">
-        <FeedSidebarModules onCreatePost={() => require(1, () => setComposerOpen(true), "seller")} />
+      <aside className="hidden min-w-0 space-y-6 lg:sticky lg:top-6 lg:block lg:max-h-[calc(100dvh-3rem)] lg:overflow-y-auto lg:overscroll-contain lg:pr-1 min-[1180px]:col-start-3">
+        <div className="min-[1180px]:hidden">
+          <FeedSidebarModules
+            modules="profile"
+            onCreatePost={() => require(1, () => setComposerOpen(true), "seller")}
+        />
+        </div>
+        <FeedSidebarModules modules="discovery" />
         <div>
           <h2 className="mb-4 font-wallet-display text-lg font-bold text-slate-900">
             Community
