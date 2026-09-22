@@ -95,7 +95,11 @@ export function CashbackSpotlight({ active }: { active: boolean }) {
 
             <p className="text-sm font-semibold text-rose-300">Your next find can pay you back</p>
             <h2 id="cashback-spotlight-title" className="mt-2 text-[32px] font-black leading-[1.05] tracking-normal text-white">
-              Get up to <span className="text-rose-400">50% cashback</span>
+              Get up to{" "}
+              <span className="inline-block min-w-[3.2ch] text-rose-400 tabular-nums" aria-live="polite">
+                {percent}%
+              </span>{" "}
+              cashback
             </h2>
             <p className="mt-3 max-w-[300px] text-sm leading-6 text-slate-300">
               On eligible digital asset purchases from participating Oventric sellers.
