@@ -211,7 +211,7 @@ function Stage2({ onClose }: { onClose: () => void }) {
         onChange={(e) => setAddress(e.target.value)}
       />
 
-      <label className={labelCls + " mt-4"}>Phone Number</label>
+      <label className={labelCls + " mt-4"}>WhatsApp Number (required)</label>
       <input
         className={inputCls}
         type="tel"
@@ -222,6 +222,22 @@ function Stage2({ onClose }: { onClose: () => void }) {
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
       />
+      <p className="text-[11px] text-slate-400 mt-1.5">
+        Include your country code. We use WhatsApp to reach you about deliveries and payouts.
+      </p>
+
+      <label className={labelCls + " mt-4"}>Second Number (optional)</label>
+      <input
+        className={inputCls}
+        type="tel"
+        autoComplete="tel"
+        placeholder={
+          country ? `${COUNTRY_META[country]?.dial ?? "+"} 700 000 0000` : "+1 555 987 6543"
+        }
+        value={altPhone}
+        onChange={(e) => setAltPhone(e.target.value)}
+      />
+
 
       {error && (
         <div className="mt-3 rounded-[10px] border border-rose-500/40 bg-rose-500/10 text-rose-200 text-xs px-3 py-2">
