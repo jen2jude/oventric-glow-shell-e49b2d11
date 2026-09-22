@@ -115,18 +115,22 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       // ladder; otherwise the OTP modal opens and the pending callback
       // re-enters this branch after SIGNED_IN.
       ensureUserAuthenticated(() => {
-        if (state.tier >= minTier || minTier <= 1) {
+        // Commerce actions (tier 2+, e.g. publishing a product) always need a
+        // reachable WhatsApp number on file — Stage 2 is compulsory before
+        // selling, even for older accounts that completed the rest.
+        const missingPhone = minTier >= 2 && !state.phone.trim();
+        if (!missingPhone && (state.tier >= minTier || minTier <= 1)) {
           onSuccess?.();
           return;
         }
         // Stage 1 (email verification) is fully owned by the AuthGate — the
         // progressive Stage 1 modal is removed. Open at Stage 2 or later.
-        const nextStage = Math.max(state.tier + 1, 2) as Stage;
+        const nextStage = missingPhone ? 2 : (Math.max(state.tier + 1, 2) as Stage);
         setPending({ minTier, cb: onSuccess });
         setOpenStage(nextStage);
       }, authContext);
     },
-    [state.tier, ensureUserAuthenticated],
+    [state.tier, state.phone, ensureUserAuthenticated],
   );
 
   const advanceTo = useCallback((t: Tier, patch?: Partial<OnboardingState>) => {

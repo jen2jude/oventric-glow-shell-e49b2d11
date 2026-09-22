@@ -82,6 +82,7 @@ function Stage2({ onClose }: { onClose: () => void }) {
   const {
     advanceTo,
     setBaseCurrency,
+    tier,
     fullName: existingName,
     country: existingCountry,
     phone: existingPhone,
@@ -92,6 +93,7 @@ function Stage2({ onClose }: { onClose: () => void }) {
   const [countryOther, setCountryOther] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState(existingPhone || "");
+  const [altPhone, setAltPhone] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -103,6 +105,7 @@ function Stage2({ onClose }: { onClose: () => void }) {
     (country !== "OTHER" || countryOther.trim().length >= 2) &&
     address.trim().length >= 4 &&
     phone.trim().length >= 6 &&
+    (altPhone.trim().length === 0 || altPhone.trim().length >= 6) &&
     !saving;
 
   const submit = async () => {
@@ -117,11 +120,12 @@ function Stage2({ onClose }: { onClose: () => void }) {
           country: countryValue,
           address: address.trim(),
           phone: phone.trim(),
+          ...(altPhone.trim() ? { altPhone: altPhone.trim() } : {}),
         },
       });
       const nextCurrency = countryToCurrency(country);
       setBaseCurrency(nextCurrency);
-      advanceTo(2, {
+      advanceTo(Math.max(tier, 2) as typeof tier, {
         fullName: name.trim(),
         country,
         phone: phone.trim(),
@@ -207,7 +211,7 @@ function Stage2({ onClose }: { onClose: () => void }) {
         onChange={(e) => setAddress(e.target.value)}
       />
 
-      <label className={labelCls + " mt-4"}>Phone Number</label>
+      <label className={labelCls + " mt-4"}>WhatsApp Number (required)</label>
       <input
         className={inputCls}
         type="tel"
@@ -218,6 +222,22 @@ function Stage2({ onClose }: { onClose: () => void }) {
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
       />
+      <p className="text-[11px] text-slate-400 mt-1.5">
+        Include your country code. We use WhatsApp to reach you about deliveries and payouts.
+      </p>
+
+      <label className={labelCls + " mt-4"}>Second Number (optional)</label>
+      <input
+        className={inputCls}
+        type="tel"
+        autoComplete="tel"
+        placeholder={
+          country ? `${COUNTRY_META[country]?.dial ?? "+"} 700 000 0000` : "+1 555 987 6543"
+        }
+        value={altPhone}
+        onChange={(e) => setAltPhone(e.target.value)}
+      />
+
 
       {error && (
         <div className="mt-3 rounded-[10px] border border-rose-500/40 bg-rose-500/10 text-rose-200 text-xs px-3 py-2">

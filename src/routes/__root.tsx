@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { OnboardingProvider } from "@/lib/onboarding/OnboardingContext";
 import { StageModals } from "@/components/oventric/onboarding/StageModals";
+import { PhoneReminder } from "@/components/oventric/onboarding/PhoneReminder";
 import { AuthSeeder } from "@/components/oventric/AuthSeeder";
 import { AuthGateProvider } from "@/lib/auth-gate/AuthGateProvider";
 
@@ -425,6 +426,7 @@ function RootComponent() {
               {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
               <Outlet />
               <StageModals />
+              <PhoneReminder />
               <ProfileSetupModalHost />
               <ProfileSettingsLauncher />
 

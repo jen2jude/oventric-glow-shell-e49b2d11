@@ -149,7 +149,11 @@ const CompleteProfileInput = z.object({
   // bucket (USD baseline).
   country: z.string().trim().min(2).max(60),
   address: z.string().trim().min(4).max(240).optional(),
+  // WhatsApp number: required by the Stage 2 commerce form (support use it to
+  // reach sellers about deliveries), optional here so the lighter profile
+  // setup flow — which never collects a number — keeps working.
   phone: z.string().trim().min(6).max(24).optional(),
+  altPhone: z.string().trim().min(6).max(24).optional(),
 });
 
 /**
@@ -170,6 +174,8 @@ export const completeProfile = createServerFn({ method: "POST" })
       profile_completed_at: string;
       address?: string;
       phone?: string;
+      whatsapp_phone?: string;
+      alt_phone?: string | null;
     } = {
       display_name: data.fullName,
       country: data.country,
@@ -177,7 +183,11 @@ export const completeProfile = createServerFn({ method: "POST" })
       profile_completed_at: new Date().toISOString(),
     };
     if (data.address) patch.address = data.address;
-    if (data.phone) patch.phone = data.phone;
+    if (data.phone) {
+      patch.phone = data.phone;
+      patch.whatsapp_phone = data.phone;
+      patch.alt_phone = data.altPhone ?? null;
+    }
     // verification_tier / profile_completed_at are not browser-writable columns;
     // they are set here only after the authenticated caller has been verified,
     // and always scoped to that caller's own row.
@@ -216,7 +226,7 @@ export const getOnboardingStatus = createServerFn({ method: "GET" })
     const { data, error } = await supabaseAdmin
       .from("profiles")
       .select(
-        "display_name, country, phone, profile_completed_at, kyc_completed_at, kyc_selfie_path, kyc_id_path, verification_tier",
+        "display_name, country, phone, whatsapp_phone, alt_phone, profile_completed_at, kyc_completed_at, kyc_selfie_path, kyc_id_path, verification_tier",
       )
       .eq("user_id", userId)
       .maybeSingle();
@@ -229,11 +239,44 @@ export const getOnboardingStatus = createServerFn({ method: "GET" })
       kycCompleted: !!data?.kyc_completed_at,
       displayName: data?.display_name ?? null,
       country: data?.country ?? null,
-      phone: data?.phone ?? null,
+      phone: data?.whatsapp_phone ?? data?.phone ?? null,
+      whatsappPhone: data?.whatsapp_phone ?? data?.phone ?? null,
+      altPhone: data?.alt_phone ?? null,
       kycSelfiePath: data?.kyc_selfie_path ?? null,
       kycIdPath: (data as { kyc_id_path?: string | null } | null)?.kyc_id_path ?? null,
       verificationTier: (data as { verification_tier?: string } | null)?.verification_tier ?? "TIER_0",
     };
+  });
+
+const ContactNumbersInput = z.object({
+  phone: z.string().trim().min(6, "Enter your WhatsApp number").max(24),
+  altPhone: z.string().trim().min(6).max(24).optional(),
+});
+
+/**
+ * Saves the seller's WhatsApp (required) and optional second contact number.
+ * Used by the reminder prompt shown to existing sellers who have no number on
+ * file, so support can reach them about deliveries when they are offline.
+ */
+export const saveContactNumbers = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => ContactNumbersInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { userId } = context;
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update({
+        phone: data.phone,
+        whatsapp_phone: data.phone,
+        alt_phone: data.altPhone ?? null,
+      })
+      .eq("user_id", userId);
+    if (error) {
+      console.error("[saveContactNumbers] update failed", error);
+      throw new Error("Failed to save your number");
+    }
+    return { ok: true, phone: data.phone };
   });
 
 
