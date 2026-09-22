@@ -9,7 +9,9 @@ import {
   BadgeCheck,
   Store,
   ArrowRight,
+  Plus,
 } from "lucide-react";
+import { CreatePanel } from "@/components/oventric/CreatePanel";
 import { Button } from "@/components/ui/button";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { computeDisplayPrice, formatMoney } from "@/lib/fx-display";
