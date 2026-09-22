@@ -389,6 +389,7 @@ export async function settleOrder(
         sender_id: pRow.seller_id as string,
         recipient_id: buyerId,
         order_id: orderId,
+        is_system: true,
         body:
           `✅ Payment confirmed — "${productName}"\n\n` +
           `Thank you! Your payment is confirmed and safely held in escrow. The seller has been notified and will deliver as soon as possible.\n\n` +
