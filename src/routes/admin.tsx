@@ -32,6 +32,7 @@ import {
   Tag,
   ChevronLeft,
   BarChart3,
+  Receipt,
 } from "lucide-react";
 
 import { canAccessSection, type ManagementRole } from "@/lib/admin-roles";
@@ -118,6 +119,12 @@ const NAV: NavItem[] = [
   },
 
   { to: "/admin/payments", label: "Payments", icon: CreditCard, group: "Money" },
+  {
+    to: "/admin/manual-payments",
+    label: "Manual Payments",
+    icon: Receipt,
+    group: "Money",
+  },
   { to: "/admin/ledger", label: "Wallet / Ledger", icon: Wallet, group: "Money" },
   { to: "/admin/system-wallets", label: "Platform Revenue", icon: Landmark, group: "Money" },
   { to: "/admin/payouts", label: "Payouts", icon: Banknote, group: "Money" },

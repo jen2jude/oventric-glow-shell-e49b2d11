@@ -49,6 +49,9 @@ export const SECTION_ACCESS: Record<string, ManagementRole[]> = {
   // Money — read-only financial visibility for finance; every mutation on
   // these pages still runs through the existing super-admin-only backend paths.
   "/admin/payments": ["admin", "finance"],
+  // Manual (MiniPay / Binance) payment review — approve & settle is super-admin
+  // only server-side; finance may view the queue.
+  "/admin/manual-payments": ["admin", "finance"],
   "/admin/ledger": ["admin", "finance"],
   "/admin/system-wallets": ["admin", "finance"],
   "/admin/payouts": ["admin", "finance"],
