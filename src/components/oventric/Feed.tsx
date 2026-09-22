@@ -1697,7 +1697,7 @@ export function Feed() {
                   className={`scroll-mt-24 md:scroll-mt-28 [transition:border-color_400ms_ease,box-shadow_400ms_ease,opacity_300ms_ease] ${
                     isAppShell
                       ? "md:bg-white md:shadow-sm border bg-[#141416] rounded-none -mx-4 p-0 overflow-hidden border-x-0 md:mx-0 md:p-5 md:rounded-xl md:border-x"
-                       : "bg-white py-5 md:py-6 border-b border-slate-100 last:border-b-0"
+                       : "bg-white px-4 md:px-6 py-5 md:py-6 border-b border-slate-100 last:border-b-0"
                   } ${isReported ? "opacity-70" : ""} ${
                     isNew
                       ? isAppShell
@@ -1836,7 +1836,7 @@ export function Feed() {
                   </div>
 
                   {post.product_attachments && post.product_attachments.length > 0 && (
-                    <div className={`mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${isAppShell ? "mx-4 md:mx-0" : ""}`}>
+                    <div className={`mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${isAppShell ? "mx-4 md:mx-0" : "-mx-4 md:-mx-6 px-4 md:px-6"}`}>
                       {post.product_attachments.map((pa) => (
                         <ProductAttachmentCard 
                           key={pa.id} 
@@ -1864,7 +1864,7 @@ export function Feed() {
                           className={`relative mt-3 ${
                             isAppShell
                               ? layout.wrapperClass.replace("gap-1", "gap-[2px]")
-                              : layout.wrapperClass
+                              : `${layout.wrapperClass} -mx-4 md:-mx-6`
                           } overflow-hidden ${
                             isAppShell
                               ? "mb-4 rounded-none border-y border-white/[0.06] md:mx-0 md:mb-0 md:rounded-[10px]"
@@ -1943,7 +1943,7 @@ export function Feed() {
                     })()}
                   {post.media_url && post.media_type === "video" && (
                     <div
-                      className={`relative mt-3 ${isAppShell ? "pb-4 md:px-0 md:pb-0" : ""}`}
+                      className={`relative mt-3 ${isAppShell ? "pb-4 md:px-0 md:pb-0" : "-mx-4 md:-mx-6"}`}
                     >
                       <button
                         type="button"
