@@ -1192,7 +1192,7 @@ function WalletPane({
                         {r.type}
                       </div>
                       <div className="text-[11px] text-slate-500 mt-0.5">
-                        {new Date(r.occurredAt).toLocaleString()} · {r.status}
+                        {new Date(r.occurredAt).toLocaleString()} · {r.statusLabel ?? r.status}
                       </div>
                     </div>
                   </div>
