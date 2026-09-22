@@ -2267,9 +2267,9 @@ export function Feed() {
           </div>
         )}
         </div>
-        <aside className="hidden min-w-0 lg:sticky lg:top-6 lg:block">
+        <aside className="hidden min-w-0 lg:sticky lg:top-6 lg:block lg:max-h-[calc(100dvh-3rem)] lg:overflow-y-auto lg:overscroll-contain">
           <FeedSidebarModules modules="profile" onCreatePost={() => require(1, () => setComposerOpen(true), "seller")} />
-          <div className="mt-4 lg:max-h-[calc(100dvh-26rem)] lg:min-h-40 lg:overflow-y-auto lg:overscroll-contain">
+          <div className="mt-4">
             <DiscoveryPanel />
           </div>
         </aside>
