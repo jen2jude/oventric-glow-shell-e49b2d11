@@ -137,12 +137,15 @@ export const saveCreatorOnboarding = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => OnboardingInput.parse(input ?? {}))
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
+    const { userId } = context;
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const supabase = supabaseAdmin;
     const { data: row } = await supabase
       .from("profiles")
       .select("skills, skill_levels")
       .eq("user_id", userId)
       .maybeSingle();
+
 
     const existingSkills = Array.isArray((row as { skills?: unknown } | null)?.skills)
       ? ((row as { skills: unknown[] }).skills.filter((s): s is string => typeof s === "string"))
