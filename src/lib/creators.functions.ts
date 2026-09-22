@@ -63,6 +63,7 @@ export interface CreatorPostDTO {
     name: string;
     slug: string | null;
     avatarUrl: string | null;
+    workLinks: string[];
   };
 }
 
@@ -312,7 +313,7 @@ export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
     const authorIds = Array.from(new Set(rows.map((r) => r.author_id)));
     const { data: profiles } = await sb
       .from("profiles")
-      .select("user_id, display_name, slug, avatar_path")
+      .select("user_id, display_name, slug, avatar_path, creator_profile")
       .in("user_id", authorIds);
     const byAuthor = new Map((profiles ?? []).map((p) => [p.user_id, p]));
 
@@ -401,6 +402,7 @@ export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
           name: prof?.display_name ?? "Creator",
           slug: prof?.slug ?? null,
           avatarUrl: avatar,
+          workLinks: readCreatorProfile((prof as { creator_profile?: unknown } | undefined)?.creator_profile).workLinks,
         },
       } satisfies CreatorPostDTO;
     });
