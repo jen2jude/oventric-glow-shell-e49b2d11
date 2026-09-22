@@ -3073,6 +3073,8 @@ export type Database = {
           id: string
           product_id: string
           rating: number
+          seller_reply: string | null
+          seller_reply_at: string | null
           updated_at: string
           user_id: string
         }
@@ -3082,6 +3084,8 @@ export type Database = {
           id?: string
           product_id: string
           rating: number
+          seller_reply?: string | null
+          seller_reply_at?: string | null
           updated_at?: string
           user_id: string
         }
@@ -3091,6 +3095,8 @@ export type Database = {
           id?: string
           product_id?: string
           rating?: number
+          seller_reply?: string | null
+          seller_reply_at?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -4490,6 +4496,10 @@ export type Database = {
         }[]
       }
       record_liveness_attestation: { Args: never; Returns: string }
+      reply_to_product_review: {
+        Args: { _reply: string; _review_id: string }
+        Returns: undefined
+      }
       submit_ad_lead: {
         Args: {
           _campaign_id: string
