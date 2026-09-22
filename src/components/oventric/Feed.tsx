@@ -1864,7 +1864,7 @@ export function Feed() {
                           className={`relative mt-3 ${
                             isAppShell
                               ? layout.wrapperClass.replace("gap-1", "gap-[2px]")
-                              : layout.wrapperClass
+                              : `${layout.wrapperClass} -mx-4 md:-mx-6`
                           } overflow-hidden ${
                             isAppShell
                               ? "mb-4 rounded-none border-y border-white/[0.06] md:mx-0 md:mb-0 md:rounded-[10px]"
