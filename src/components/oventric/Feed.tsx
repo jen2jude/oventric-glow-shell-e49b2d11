@@ -80,6 +80,7 @@ import { PostComposerModal } from "@/components/oventric/PostComposerModal";
 import { FeedAppChrome } from "@/components/oventric/feed/FeedAppChrome";
 import { FeedSocialBar } from "@/components/oventric/feed/FeedSocialBar";
 import { DiscoveryPanel } from "@/components/oventric/DiscoveryPanel";
+import { FeedSidebarModules } from "@/components/oventric/FeedSidebarModules";
 import { FeedTabs, type FeedTab } from "@/components/oventric/feed/FeedTabs";
 import { useScrollHideChrome, useChromeHidden } from "@/hooks/use-chrome-hide";
 import { listFollowers, listFollowing } from "@/lib/follows.functions";
@@ -2266,7 +2267,8 @@ export function Feed() {
           </div>
         )}
         </div>
-        <aside className="hidden min-w-0 lg:sticky lg:top-6 lg:block lg:max-h-[calc(100dvh-3rem)] lg:overflow-y-auto lg:overscroll-contain">
+        <aside className="hidden min-w-0 space-y-4 lg:sticky lg:top-6 lg:block lg:max-h-[calc(100dvh-3rem)] lg:overflow-y-auto lg:overscroll-contain">
+          <FeedSidebarModules modules="profile" onCreatePost={() => require(1, () => setComposerOpen(true), "seller")} />
           <DiscoveryPanel />
         </aside>
       </div>
