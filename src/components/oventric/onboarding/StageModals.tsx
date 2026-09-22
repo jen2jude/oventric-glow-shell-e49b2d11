@@ -82,6 +82,7 @@ function Stage2({ onClose }: { onClose: () => void }) {
   const {
     advanceTo,
     setBaseCurrency,
+    tier,
     fullName: existingName,
     country: existingCountry,
     phone: existingPhone,
@@ -92,6 +93,7 @@ function Stage2({ onClose }: { onClose: () => void }) {
   const [countryOther, setCountryOther] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState(existingPhone || "");
+  const [altPhone, setAltPhone] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -103,6 +105,7 @@ function Stage2({ onClose }: { onClose: () => void }) {
     (country !== "OTHER" || countryOther.trim().length >= 2) &&
     address.trim().length >= 4 &&
     phone.trim().length >= 6 &&
+    (altPhone.trim().length === 0 || altPhone.trim().length >= 6) &&
     !saving;
 
   const submit = async () => {
@@ -117,11 +120,12 @@ function Stage2({ onClose }: { onClose: () => void }) {
           country: countryValue,
           address: address.trim(),
           phone: phone.trim(),
+          ...(altPhone.trim() ? { altPhone: altPhone.trim() } : {}),
         },
       });
       const nextCurrency = countryToCurrency(country);
       setBaseCurrency(nextCurrency);
-      advanceTo(2, {
+      advanceTo(Math.max(tier, 2) as typeof tier, {
         fullName: name.trim(),
         country,
         phone: phone.trim(),
