@@ -645,6 +645,7 @@ function ProductPage() {
                   initialAverage={product.rating}
                   initialCount={product.reviews}
                   isAppShell={isAppShell}
+                  sellerId={product.sellerId}
                 />
               </div>
 
