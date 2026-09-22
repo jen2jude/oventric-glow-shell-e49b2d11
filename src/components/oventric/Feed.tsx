@@ -1836,7 +1836,7 @@ export function Feed() {
                   </div>
 
                   {post.product_attachments && post.product_attachments.length > 0 && (
-                    <div className={`mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${isAppShell ? "mx-4 md:mx-0" : ""}`}>
+                    <div className={`mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${isAppShell ? "mx-4 md:mx-0" : "-mx-4 md:-mx-6 px-4 md:px-6"}`}>
                       {post.product_attachments.map((pa) => (
                         <ProductAttachmentCard 
                           key={pa.id} 
