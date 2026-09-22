@@ -68,6 +68,9 @@ function ProductRating({
   const [mine, setMine] = useState<number | null>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+  const [reviews, setReviews] = useState<
+    { id: string; rating: number; comment: string | null; createdAt: string; user: { fullName: string | null; avatarUrl: string | null } }[]
+  >([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -80,6 +83,7 @@ function ProductRating({
           setAverage(r.average);
           setCount(r.count);
           setMine(r.myRating);
+          setReviews(r.reviews ?? []);
         }
       } catch {
         /* keep server-rendered values */
@@ -89,6 +93,14 @@ function ProductRating({
       cancelled = true;
     };
   }, [productId, fetchRating]);
+
+  // A seller arriving from a review notification lands straight on the reviews.
+  useEffect(() => {
+    if (typeof window === "undefined" || window.location.hash !== "#reviews") return;
+    if (reviews.length === 0) return;
+    const el = document.getElementById("reviews");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [reviews.length]);
 
   const rate = (stars: number) => {
     require(1, () => {
