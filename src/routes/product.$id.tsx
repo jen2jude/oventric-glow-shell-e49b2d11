@@ -54,13 +54,13 @@ function ProductRating({
   initialAverage,
   initialCount,
   isAppShell,
-  isSeller,
+  sellerId,
 }: {
   productId: string;
   initialAverage: number;
   initialCount: number;
   isAppShell: boolean;
-  isSeller: boolean;
+  sellerId: string;
 }) {
   const { require } = useOnboarding();
   const fetchRating = useServerFn(getProductRating);
