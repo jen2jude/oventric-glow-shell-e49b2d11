@@ -183,9 +183,11 @@ export const completeProfile = createServerFn({ method: "POST" })
       profile_completed_at: new Date().toISOString(),
     };
     if (data.address) patch.address = data.address;
-    patch.phone = data.phone;
-    patch.whatsapp_phone = data.phone;
-    patch.alt_phone = data.altPhone ?? null;
+    if (data.phone) {
+      patch.phone = data.phone;
+      patch.whatsapp_phone = data.phone;
+      patch.alt_phone = data.altPhone ?? null;
+    }
     // verification_tier / profile_completed_at are not browser-writable columns;
     // they are set here only after the authenticated caller has been verified,
     // and always scoped to that caller's own row.
