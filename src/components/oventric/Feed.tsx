@@ -2199,27 +2199,6 @@ export function Feed() {
           onClose={() => setRepostTarget(null)}
           onDone={() => void refreshPosts()}
         />
-        <ReportModal
-
-          open={!!reportOpen}
-          onClose={() => setReportOpen(null)}
-          target={
-            reportOpen?.startsWith("bounty")
-              ? "bounty"
-              : reportOpen?.startsWith("listing")
-                ? "listing"
-                : "post"
-          }
-          targetId={reportOpen ?? undefined}
-          targetKind={
-            reportOpen?.startsWith("bounty")
-              ? "bounty"
-              : reportOpen?.startsWith("listing")
-                ? "listing"
-                : "post"
-          }
-          onReported={markReported}
-        />
         {editingPost && (
           <div className="fixed inset-0 z-[1100] grid place-items-center p-4">
             <div
