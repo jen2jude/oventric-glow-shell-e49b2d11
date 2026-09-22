@@ -517,7 +517,7 @@ export interface DashboardWalletSummary {
   cashback: number;           // accumulated cashback in home currency
   escrow: number;             // escrow balance in home currency
   fxRate: number;             // 1 USD -> home currency
-  recent: Array<{ id: string; type: string; amount: number; currency: string; inflow: boolean; status: string; occurredAt: string; amountHome: number }>;
+  recent: Array<{ id: string; type: string; amount: number; currency: string; inflow: boolean; status: string; statusLabel: string; occurredAt: string; amountHome: number }>;
   recentTotal: number;
   page: number;
   pageSize: number;
@@ -543,7 +543,7 @@ export const getMyWalletSummary = createServerFn({ method: "POST" })
       sb.from("wallets").select("currency, available_balance, escrow_balance, accumulated_cashback").eq("user_id", me),
       sb
         .from("wallet_transactions")
-        .select("id, type, amount, currency, inflow, status, occurred_at", { count: "exact" })
+        .select("id, tx_hash, type, amount, currency, inflow, status, occurred_at", { count: "exact" })
         .eq("user_id", me)
         .order("occurred_at", { ascending: false })
         .range(from, to),
@@ -589,10 +589,21 @@ export const getMyWalletSummary = createServerFn({ method: "POST" })
 
     const round = (n: number) => (homeCurrency === "USD" ? Number(n.toFixed(2)) : Number(n.toFixed(0)));
 
-    const recent = ((txRes.data ?? []) as Array<{ id: string; type: string; amount: number; currency: string; inflow: boolean; status: string; occurred_at: string }>).map((r) => {
+    // A withdrawal sits at "pending" until the transfer is marked paid. Once an admin has
+    // approved it, show the clearer "processing" wording instead of a bare "pending".
+    const approvedPayoutPrefixes = new Set(
+      ((poRes.data ?? []) as Array<{ id: string; status: string }>)
+        .filter((p) => p.status === "approved")
+        .map((p) => String(p.id).slice(0, 8)),
+    );
+    const recent = ((txRes.data ?? []) as Array<{ id: string; tx_hash: string | null; type: string; amount: number; currency: string; inflow: boolean; status: string; occurred_at: string }>).map((r) => {
       const cur = r.currency as HomeCurrency;
       const usd = cur === "USD" ? Number(r.amount) : Number(r.amount) / (rates[cur] ?? 1);
       const amountHome = homeCurrency === "USD" ? usd : usd * fxRate;
+      const isApprovedPayout =
+        r.type === "Payout Withdrawal" &&
+        r.status === "pending" &&
+        approvedPayoutPrefixes.has(String(r.tx_hash ?? "").replace(/^PYT-/, ""));
       return {
         id: r.id,
         type: r.type,
@@ -600,6 +611,7 @@ export const getMyWalletSummary = createServerFn({ method: "POST" })
         currency: r.currency,
         inflow: r.inflow,
         status: r.status,
+        statusLabel: isApprovedPayout ? "processing" : r.status,
         occurredAt: r.occurred_at,
         amountHome: round(amountHome),
       };

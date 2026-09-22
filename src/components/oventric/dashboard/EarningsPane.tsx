@@ -82,7 +82,7 @@ export function EarningsPane() {
                 <div className="min-w-0">
                   <div className="text-sm font-bold text-white truncate">{tx.type}</div>
                   <div className="text-[10px] text-slate-500 flex items-center gap-2">
-                    {new Date(tx.occurredAt).toLocaleDateString()} · {tx.status}
+                    {new Date(tx.occurredAt).toLocaleDateString()} · {tx.statusLabel}
                   </div>
                 </div>
               </div>
