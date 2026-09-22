@@ -1,0 +1,1 @@
+GRANT SELECT (creator_asset) ON public.products TO anon, authenticated;
