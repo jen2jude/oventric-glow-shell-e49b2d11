@@ -42,6 +42,7 @@ import { RepostDialog } from "@/components/oventric/feed/RepostDialog";
 import { AdSlot } from "@/components/oventric/ads/AdSlot";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { DiscoveryPanel } from "@/components/oventric/DiscoveryPanel";
+import { FeedSidebarModules } from "@/components/oventric/FeedSidebarModules";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -2262,11 +2263,14 @@ export function Feed() {
           </div>
         )}
       </div>
-      <aside className="hidden min-w-0 lg:block lg:sticky lg:top-24">
-        <h2 className="mb-4 font-wallet-display text-lg font-bold text-slate-900">
-          Community
-        </h2>
-        <DiscoveryPanel asPage />
+      <aside className="hidden min-w-0 space-y-6 lg:block lg:sticky lg:top-24">
+        <FeedSidebarModules onCreatePost={() => require(1, () => setComposerOpen(true), "seller")} />
+        <div>
+          <h2 className="mb-4 font-wallet-display text-lg font-bold text-slate-900">
+            Community
+          </h2>
+          <DiscoveryPanel asPage />
+        </div>
       </aside>
       </div>
 
