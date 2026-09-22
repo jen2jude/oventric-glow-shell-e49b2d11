@@ -167,6 +167,7 @@ function TrendingToday() {
     staleTime: 5 * 60_000,
   });
   const sellers = (q.data ?? []).slice(0, 4);
+  if (typeof window !== "undefined") console.log("[dbg topsellers]", q.status, q.data?.length, (q.error as Error | null)?.message);
   if (q.isLoading) {
     return (
       <Card title="Trending today" icon={Flame}>
