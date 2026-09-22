@@ -226,11 +226,15 @@ export const publishCreatorPost = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const embed = data.externalUrl ? parseVideoEmbed(data.externalUrl) : null;
 
-    const { data: prof } = await supabase
+    const { supabaseAdmin: adminForProfile } = await import(
+      "@/integrations/supabase/client.server"
+    );
+    const { data: prof } = await adminForProfile
       .from("profiles")
       .select("creator_profile")
       .eq("user_id", userId)
       .maybeSingle();
+
     const fields = readCreatorProfile((prof as { creator_profile?: unknown } | null)?.creator_profile).fields;
 
     // Only the creator's own listing may be attached — never a product id a
