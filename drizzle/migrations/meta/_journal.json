@@ -344,6 +344,13 @@
       "when": 1790093037477,
       "tag": "0048_pin_search_path_email_queue_functions",
       "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1790093237552,
+      "tag": "0049_grant_select_products_creator_asset",
+      "breakpoints": true
     }
   ]
 }
