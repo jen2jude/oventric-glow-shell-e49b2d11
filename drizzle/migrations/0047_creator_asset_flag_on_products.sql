@@ -1,0 +1,3 @@
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS creator_asset BOOLEAN NOT NULL DEFAULT false;
+COMMENT ON COLUMN public.products.creator_asset IS 'True when the listing exists only as a downloadable asset attached to a Creators showcase post; excluded from marketplace browsing, search and discovery.';
+CREATE INDEX IF NOT EXISTS products_creator_asset_idx ON public.products (creator_asset) WHERE creator_asset = true;

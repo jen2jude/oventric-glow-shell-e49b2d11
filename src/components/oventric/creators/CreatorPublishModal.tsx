@@ -235,6 +235,9 @@ export function CreatorPublishModal({
             // Premade assets only — always instant download, never manual.
             requiresManualDelivery: false,
             inStock: true,
+            // Creator asset: downloadable from the Creators tab, never listed
+            // as a marketplace product.
+            creatorAsset: true,
           },
         });
         productId = created.id;

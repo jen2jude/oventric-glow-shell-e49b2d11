@@ -257,6 +257,8 @@ export const listProducts = createServerFn({ method: "GET" })
       .from("products")
       .select(PRODUCT_COLS)
       .eq("status", "active")
+      // Creator showcase assets live in the Creators tab only.
+      .eq("creator_asset", false)
       .order("promoted", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(400);
@@ -403,6 +405,7 @@ export const getRecentProducts = createServerFn({ method: "POST" })
       .in("id", data.ids)
       .eq("status", "active")
       .eq("in_stock", true)
+      .eq("creator_asset", false)
       .in("kind", ["digital", "service"]);
     if (error) throw new Error(error.message);
     const products = (rows ?? []) as Record<string, unknown>[];
@@ -447,7 +450,10 @@ export const createProduct = createServerFn({ method: "POST" })
     fxSnapshot?: { base: string; rates: Record<string, number>; source?: string; fetched_at?: string } | null;
     /** Seller-funded cashback rate (%) for this product — paid out of the seller's 80%. */
     cashbackPct?: number | null;
+    /** Downloadable asset attached to a Creators showcase — never listed in the marketplace. */
+    creatorAsset?: boolean;
   }) => ({
+    creatorAsset: Boolean(input.creatorAsset),
     name: String(input.name ?? "").trim(),
     category: input.category,
     subcategory: input.subcategory ? String(input.subcategory).trim() : null,
@@ -520,6 +526,7 @@ export const createProduct = createServerFn({ method: "POST" })
         activation_guide: data.activationGuide,
         promoted: false,
         kind: "digital",
+        creator_asset: data.creatorAsset,
         status: initialStatus,
       })
       .select("id, seller_id, name, category, subcategory, description, price_usd, original_currency, original_amount, fx_snapshot, hue, vendor, rating, reviews, promoted, external_url, file_path, cover_path, image_paths, created_at, updated_at, kind, status, reject_reason, requires_manual_delivery, in_stock, stock_quantity, basic_info, activation_guide")
@@ -1578,6 +1585,7 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
           .from("products")
           .select(PRODUCT_COLS)
           .eq("status", "active")
+          .eq("creator_asset", false)
           .eq("promoted", true)
           .order("rating", { ascending: false })
           .limit(6),
@@ -1588,6 +1596,7 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
           .from("products")
           .select(PRODUCT_COLS)
           .eq("status", "active")
+          .eq("creator_asset", false)
           .order("reviews", { ascending: false, nullsFirst: false })
           .limit(10),
       ),
@@ -1597,13 +1606,14 @@ export const getMarketplaceDiscovery = createServerFn({ method: "GET" })
           .from("products")
           .select(PRODUCT_COLS)
           .eq("status", "active")
+          .eq("creator_asset", false)
           .order("created_at", { ascending: false })
           .limit(10),
       ),
       // 4. Sellers (profiles that actually have active products)
-      sb.from("products").select("id, seller_id").eq("status", "active").limit(500),
+      sb.from("products").select("id, seller_id").eq("status", "active").eq("creator_asset", false).limit(500),
       // 5. Live category counts (products.category stores the category slug)
-      sb.from("products").select("category").eq("status", "active").limit(1000),
+      sb.from("products").select("category").eq("status", "active").eq("creator_asset", false).limit(1000),
     ]);
     const productsBySeller = new Map<string, string[]>();
     const sellerByProduct = new Map<string, string>();
@@ -1756,6 +1766,7 @@ export const getTopSellers = createServerFn({ method: "GET" })
       .from("products")
       .select("id, seller_id")
       .eq("status", "active")
+      .eq("creator_asset", false)
       .limit(2000);
 
     const productsBySeller = new Map<string, string[]>();

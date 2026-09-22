@@ -330,6 +330,13 @@
       "when": 1790086505535,
       "tag": "0046_system_direct_messages_notifications",
       "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1790090018284,
+      "tag": "0047_creator_asset_flag_on_products",
+      "breakpoints": true
     }
   ]
 }

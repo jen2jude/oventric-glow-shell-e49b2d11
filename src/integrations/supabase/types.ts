@@ -3130,6 +3130,7 @@ export type Database = {
           condition: string | null
           cover_path: string | null
           created_at: string
+          creator_asset: boolean
           delivery: string | null
           description: string
           external_url: string | null
@@ -3171,6 +3172,7 @@ export type Database = {
           condition?: string | null
           cover_path?: string | null
           created_at?: string
+          creator_asset?: boolean
           delivery?: string | null
           description?: string
           external_url?: string | null
@@ -3212,6 +3214,7 @@ export type Database = {
           condition?: string | null
           cover_path?: string | null
           created_at?: string
+          creator_asset?: boolean
           delivery?: string | null
           description?: string
           external_url?: string | null
