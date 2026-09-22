@@ -2159,7 +2159,7 @@ export function Feed() {
                     <button
                       type="button"
                       onClick={() => handleToggleSave(post)}
-                      className="flex items-center gap-1.5 px-2 py-2.5 rounded-[10px] hover:bg-white/5 md:hover:bg-slate-100 hover:text-white md:hover:text-slate-900 transition-colors font-semibold"
+                      className="flex items-center gap-1.5 p-1 hover:text-white md:hover:text-slate-900 transition-colors font-semibold"
                       style={{ color: post.viewer_saved ? (isAppShell ? "#FF3EB5" : "#E5484D") : undefined }}
                       aria-pressed={post.viewer_saved}
                       aria-label={post.viewer_saved ? "Remove bookmark" : "Bookmark post"}
