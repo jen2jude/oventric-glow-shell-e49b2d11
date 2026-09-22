@@ -2083,7 +2083,7 @@ export function Feed() {
 
                   {/* Action bar */}
                   <div
-                    className={`relative flex items-center justify-start gap-3 mt-2 pt-1.5 md:border-slate-200 md:text-slate-600 text-xs ${
+                    className={`relative flex items-center justify-start gap-5 mt-2 pt-1.5 md:border-slate-200 md:text-slate-600 text-xs ${
                       isAppShell
                         ? "border-t border-white/[0.06] px-3 pb-2 text-white/55 md:px-0 md:pb-0"
                          : "border-t border-slate-200 text-slate-600"
@@ -2099,7 +2099,7 @@ export function Feed() {
                             setPickerFor((v) => (v === post.id ? null : post.id));
                           }
                         }}
-                        className="flex items-center gap-1.5 px-2 py-2.5 rounded-[10px] hover:bg-white/5 md:hover:bg-slate-100 transition-colors font-semibold"
+                        className="flex items-center gap-1.5 p-1 transition-colors font-semibold"
                         style={{
                           color: post.viewer_reaction
                             ? REACTION_META[post.viewer_reaction].color
@@ -2128,7 +2128,7 @@ export function Feed() {
                     <button
                       type="button"
                       onClick={() => setCommentsSheetPostId(post.id)}
-                      className="flex items-center gap-1.5 px-2 py-2.5 rounded-[10px] hover:bg-white/5 md:hover:bg-slate-100 hover:text-white md:hover:text-slate-900 transition-colors font-semibold"
+                      className="flex items-center gap-1.5 p-1 hover:text-white md:hover:text-slate-900 transition-colors font-semibold"
                       aria-label="Open comments"
                     >
                       <MessageCircle className="w-[18px] h-[18px]" />
@@ -2139,7 +2139,7 @@ export function Feed() {
                     <button
                       type="button"
                       onClick={() => setRepostTarget(post)}
-                      className="flex items-center gap-1.5 px-2 py-2.5 rounded-[10px] hover:bg-white/5 md:hover:bg-slate-100 hover:text-white md:hover:text-slate-900 transition-colors font-semibold"
+                      className="flex items-center gap-1.5 p-1 hover:text-white md:hover:text-slate-900 transition-colors font-semibold"
                       style={{ color: post.viewer_reposted ? (isAppShell ? "#FF3EB5" : "#E5484D") : undefined }}
                       aria-label="Repost"
                     >
@@ -2151,7 +2151,7 @@ export function Feed() {
                     <button
                       type="button"
                       onClick={() => shareUrl(shareHref, `${post.author_name} on Oventric`)}
-                      className="flex items-center gap-1.5 px-2 py-2.5 rounded-[10px] hover:bg-white/5 md:hover:bg-slate-100 hover:text-white md:hover:text-slate-900 transition-colors font-semibold"
+                      className="flex items-center gap-1.5 p-1 hover:text-white md:hover:text-slate-900 transition-colors font-semibold"
                       aria-label="Share"
                     >
                       <Share2 className="w-[18px] h-[18px]" />
@@ -2159,7 +2159,7 @@ export function Feed() {
                     <button
                       type="button"
                       onClick={() => handleToggleSave(post)}
-                      className="flex items-center gap-1.5 px-2 py-2.5 rounded-[10px] hover:bg-white/5 md:hover:bg-slate-100 hover:text-white md:hover:text-slate-900 transition-colors font-semibold"
+                      className="flex items-center gap-1.5 p-1 hover:text-white md:hover:text-slate-900 transition-colors font-semibold"
                       style={{ color: post.viewer_saved ? (isAppShell ? "#FF3EB5" : "#E5484D") : undefined }}
                       aria-pressed={post.viewer_saved}
                       aria-label={post.viewer_saved ? "Remove bookmark" : "Bookmark post"}
