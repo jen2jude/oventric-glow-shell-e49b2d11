@@ -236,11 +236,44 @@ export const getOnboardingStatus = createServerFn({ method: "GET" })
       kycCompleted: !!data?.kyc_completed_at,
       displayName: data?.display_name ?? null,
       country: data?.country ?? null,
-      phone: data?.phone ?? null,
+      phone: data?.whatsapp_phone ?? data?.phone ?? null,
+      whatsappPhone: data?.whatsapp_phone ?? data?.phone ?? null,
+      altPhone: data?.alt_phone ?? null,
       kycSelfiePath: data?.kyc_selfie_path ?? null,
       kycIdPath: (data as { kyc_id_path?: string | null } | null)?.kyc_id_path ?? null,
       verificationTier: (data as { verification_tier?: string } | null)?.verification_tier ?? "TIER_0",
     };
+  });
+
+const ContactNumbersInput = z.object({
+  phone: z.string().trim().min(6, "Enter your WhatsApp number").max(24),
+  altPhone: z.string().trim().min(6).max(24).optional(),
+});
+
+/**
+ * Saves the seller's WhatsApp (required) and optional second contact number.
+ * Used by the reminder prompt shown to existing sellers who have no number on
+ * file, so support can reach them about deliveries when they are offline.
+ */
+export const saveContactNumbers = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => ContactNumbersInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { userId } = context;
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update({
+        phone: data.phone,
+        whatsapp_phone: data.phone,
+        alt_phone: data.altPhone ?? null,
+      })
+      .eq("user_id", userId);
+    if (error) {
+      console.error("[saveContactNumbers] update failed", error);
+      throw new Error("Failed to save your number");
+    }
+    return { ok: true, phone: data.phone };
   });
 
 
