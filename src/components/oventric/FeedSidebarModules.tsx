@@ -92,12 +92,12 @@ function MeCard({ onCreatePost }: { onCreatePost?: () => void }) {
     <section className="overflow-hidden rounded-[10px] border border-slate-200 bg-white">
       <div className="h-14 bg-gradient-to-r from-[#E5484D] to-[#f08a4b]" />
       <div className="-mt-7 px-4 pb-4">
-        <Link to="/profile/$id" params={{ id: profile.slug }}>
-          <AvatarImage
-            src={profile.avatarUrl}
-            alt={profile.displayName}
-            className="h-14 w-14 rounded-full border-4 border-white object-cover"
-          />
+        <Link
+          to="/profile/$id"
+          params={{ id: profile.slug }}
+          className="block h-14 w-14 overflow-hidden rounded-full border-4 border-white"
+        >
+          <AvatarImage src={profile.avatarUrl} alt={profile.displayName} className="rounded-full" />
         </Link>
         <div className="mt-2 min-w-0">
           <Link
@@ -200,11 +200,9 @@ function TrendingToday() {
               <span className="w-4 shrink-0 text-center text-[12px] font-bold text-slate-400">
                 {i + 1}
               </span>
-              <AvatarImage
-                src={s.avatarUrl}
-                alt={s.name}
-                className="h-9 w-9 shrink-0 rounded-full object-cover"
-              />
+              <span className="block h-9 w-9 shrink-0 overflow-hidden rounded-full">
+                <AvatarImage src={s.avatarUrl} alt={s.name} className="rounded-full" />
+              </span>
               <span className="min-w-0 flex-1">
                 <span className="flex items-center gap-1">
                   <span className="truncate text-[13px] font-semibold text-slate-900">{s.name}</span>
@@ -256,11 +254,9 @@ function SuggestedCreators() {
               params={{ id: c.slug! }}
               className="flex items-center gap-2.5 rounded-[10px] p-1 hover:bg-slate-50"
             >
-              <AvatarImage
-                src={c.avatarUrl}
-                alt={c.name}
-                className="h-9 w-9 shrink-0 rounded-full object-cover"
-              />
+              <span className="block h-9 w-9 shrink-0 overflow-hidden rounded-full">
+                <AvatarImage src={c.avatarUrl} alt={c.name} className="rounded-full" />
+              </span>
               <span className="min-w-0 flex-1 truncate text-[13px] font-semibold text-slate-900">
                 {c.name}
               </span>
