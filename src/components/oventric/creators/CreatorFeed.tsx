@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { BadgeCheck, Download, Eye, MessageCircle, Play, Send, ShoppingBag } from "lucide-react";
+import { ArrowUpRight, BadgeCheck, Download, Eye, Play, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
