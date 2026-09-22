@@ -306,30 +306,7 @@ function CreatorCard({ post, onRecordedView }: { post: CreatorPostDTO; onRecorde
         </div>
       )}
 
-      {(post.communityLink || (post.externalUrl && !post.externalEmbedUrl)) && (
-          <div className="flex flex-wrap gap-2 pt-1">
-          {post.communityLink && (
-            <a
-              href={post.communityLink}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-bold text-sky-700"
-            >
-              <Send className="h-3.5 w-3.5" /> Join the channel
-            </a>
-          )}
-          {post.externalUrl && !post.externalEmbedUrl && (
-            <a
-              href={post.externalUrl}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-bold text-violet-700"
-            >
-              <MessageCircle className="h-3.5 w-3.5" /> Watch full video
-            </a>
-          )}
-          </div>
-      )}
+      <LinkDock post={post} />
       </div>
     </article>
   );
