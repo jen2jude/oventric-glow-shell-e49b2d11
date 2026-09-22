@@ -401,6 +401,7 @@ export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
           name: prof?.display_name ?? "Creator",
           slug: prof?.slug ?? null,
           avatarUrl: avatar,
+          workLinks: readCreatorProfile((prof as { creator_profile?: unknown } | undefined)?.creator_profile).workLinks,
         },
       } satisfies CreatorPostDTO;
     });
