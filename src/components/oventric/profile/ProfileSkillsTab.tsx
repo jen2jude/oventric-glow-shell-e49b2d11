@@ -1,15 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Pencil, Sparkles, Wrench } from "lucide-react";
+import { ExternalLink, Pencil, Sparkles, Wrench } from "lucide-react";
 import { SkillsEditModal, type SkillRow } from "./SkillsEditModal";
 import { getTool, toolIconUrl } from "@/lib/profiles/tools";
+import { skillHue } from "@/lib/profiles/skill-visual";
 import { listToolLibrary, type ToolCategoryDTO, type ToolDTO } from "@/lib/tools.functions";
+import { visualForCategory } from "@/components/oventric/marketplace-discovery/utils";
+import { cn } from "@/lib/utils";
 
 const ACCENT = "#E5484D";
 
 /**
- * Profile "Skills" tab — proficiency bars plus a branded "Tools I Use" grid.
- * Owners can edit both inline; visitors get a read-only view.
+ * Profile "Skills" tab — clean, light cards with category-style gradient
+ * accents so each skill and tool gets its own readable color.
  */
 export function ProfileSkillsTab({
   name,
@@ -59,19 +62,21 @@ export function ProfileSkillsTab({
   const empty = rows.length === 0 && localTools.length === 0;
 
   return (
-    <div className="space-y-6 pb-10">
+    <div className="space-y-5 pb-10">
       {/* Skills */}
-      <section className="rounded-3xl border border-white/8 bg-[#111114] p-5 md:border-slate-200 md:bg-white">
+      <section className="rounded-[10px] border border-slate-200 bg-white p-5">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
           <div className="flex min-w-0 items-center gap-2">
-            <Sparkles className="h-4 w-4 shrink-0" style={{ color: ACCENT }} />
-            <h2 className="truncate text-sm font-black text-white md:text-slate-900">Skills</h2>
+            <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-[#E5484D] to-[#FF7A7E] text-white">
+              <Sparkles className="h-4 w-4" />
+            </div>
+            <h2 className="truncate text-sm font-black text-slate-900">Skills</h2>
           </div>
           {isOwner && (
             <button
               type="button"
               onClick={() => setEditing(true)}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/15 px-3 py-1.5 text-xs font-bold text-white md:border-slate-300 md:text-slate-700"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-slate-300 px-3 py-1.5 text-xs font-bold text-slate-700 hover:border-slate-400 hover:bg-slate-50"
             >
               <Pencil className="h-3.5 w-3.5" /> Edit
             </button>
@@ -79,67 +84,85 @@ export function ProfileSkillsTab({
         </div>
 
         {rows.length === 0 ? (
-          <p className="mt-4 text-sm text-slate-400 md:text-slate-500">
+          <p className="mt-4 text-sm text-slate-500">
             {isOwner
               ? "Add the skills you want to be hired for — each one shows a proficiency bar."
               : `${name} hasn't added skills yet.`}
           </p>
         ) : (
           <div className="mt-5 space-y-4">
-            {rows.map((row) => (
-              <div key={row.name}>
-                <div className="flex items-center justify-between gap-3">
-                  <span className="min-w-0 truncate text-sm font-bold text-white md:text-slate-800">
-                    {row.name}
-                  </span>
-                  <span className="shrink-0 text-xs font-black" style={{ color: ACCENT }}>
-                    {row.level}%
-                  </span>
+            {rows.map((row) => {
+              const hue = skillHue(row.name);
+              return (
+                <div key={row.name}>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="min-w-0 truncate text-sm font-bold text-slate-800">
+                      {row.name}
+                    </span>
+                    <span
+                      className={cn(
+                        "shrink-0 bg-gradient-to-r bg-clip-text text-xs font-black text-transparent",
+                        hue,
+                      )}
+                    >
+                      {row.level}%
+                    </span>
+                  </div>
+                  <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                    <div
+                      className={cn(
+                        "h-full rounded-full transition-[width] duration-700 bg-gradient-to-r",
+                        hue,
+                      )}
+                      style={{ width: `${row.level}%` }}
+                    />
+                  </div>
                 </div>
-                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/8 md:bg-slate-200">
-                  <div
-                    className="h-full rounded-full transition-[width] duration-700"
-                    style={{
-                      width: `${row.level}%`,
-                      background: `linear-gradient(90deg, ${ACCENT}, #FF7A7E)`,
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>
 
       {workLinks.length > 0 && (
-        <section className="rounded-3xl border border-white/8 bg-[#111114] p-5 md:border-slate-200 md:bg-white">
-          <h2 className="text-sm font-black text-white md:text-slate-900">Work &amp; portfolio</h2>
+        <section className="rounded-[10px] border border-slate-200 bg-white p-5">
+          <div className="flex items-center gap-2">
+            <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-[#2F7FE0] to-[#4FA3F5] text-white">
+              <ExternalLink className="h-4 w-4" />
+            </div>
+            <h2 className="text-sm font-black text-slate-900">Work &amp; portfolio</h2>
+          </div>
           <div className="mt-4 flex flex-wrap gap-2">
-            {workLinks.map((l) => (
-              <a
-                key={l}
-                href={l.startsWith("http") ? l : `https://${l}`}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="max-w-full truncate rounded-full border border-white/15 px-3 py-1.5 text-xs font-bold text-white md:border-slate-300 md:text-slate-700"
-              >
-                {l.replace(/^https?:\/\//, "")}
-              </a>
-            ))}
+            {workLinks.map((l) => {
+              const display = l.replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0];
+              return (
+                <a
+                  key={l}
+                  href={l.startsWith("http") ? l : `https://${l}`}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="group inline-flex max-w-full items-center gap-1.5 truncate rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 hover:border-slate-300 hover:bg-white hover:text-slate-900"
+                >
+                  {display}
+                  <ExternalLink className="h-3 w-3 shrink-0 text-slate-400 group-hover:text-slate-600" />
+                </a>
+              );
+            })}
           </div>
         </section>
       )}
 
-
       {/* Tools */}
-      <section className="rounded-3xl border border-white/8 bg-[#111114] p-5 md:border-slate-200 md:bg-white">
+      <section className="rounded-[10px] border border-slate-200 bg-white p-5">
         <div className="flex items-center gap-2">
-          <Wrench className="h-4 w-4 shrink-0" style={{ color: ACCENT }} />
-          <h2 className="truncate text-sm font-black text-white md:text-slate-900">Tools I use</h2>
+          <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-[#7A34D4] to-[#9B5CF0] text-white">
+            <Wrench className="h-4 w-4" />
+          </div>
+          <h2 className="truncate text-sm font-black text-slate-900">Tools I use</h2>
         </div>
 
         {localTools.length === 0 ? (
-          <p className="mt-4 text-sm text-slate-400 md:text-slate-500">
+          <p className="mt-4 text-sm text-slate-500">
             {isOwner
               ? "Pick the tools you work in from the Oventric tools library."
               : "No tools listed yet."}
@@ -149,17 +172,21 @@ export function ProfileSkillsTab({
             {localTools.map((id) => {
               const t = toolBySlug.get(id);
               const label = t?.name ?? getTool(id).label;
+              const { Icon, hue } = visualForCategory(t?.categorySlug ?? "", t?.name ?? label);
               return (
                 <div
                   key={id}
-                  className="flex flex-col items-center gap-2 rounded-2xl border border-white/8 bg-[#17171C] p-4 md:border-slate-200 md:bg-slate-50"
+                  className="flex flex-col items-center gap-2 rounded-[10px] border border-slate-200 bg-slate-50 p-4 text-center transition hover:border-slate-300 hover:bg-white"
                 >
-                  <img loading="lazy" decoding="async"
-                    src={t?.imageUrl ?? toolIconUrl(id)}
-                    alt={label}
-                    className="h-8 w-8 object-contain"
-                  />
-                  <span className="line-clamp-1 text-[11px] font-bold text-slate-300 md:text-slate-600">
+                  <div
+                    className={cn(
+                      "grid h-10 w-10 shrink-0 place-items-center rounded-[10px] bg-gradient-to-br text-white shadow-sm",
+                      hue,
+                    )}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <span className="line-clamp-1 text-[11px] font-bold text-slate-700">
                     {label}
                   </span>
                 </div>
@@ -173,8 +200,7 @@ export function ProfileSkillsTab({
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="w-full rounded-2xl py-3 text-sm font-black text-white"
-          style={{ background: ACCENT }}
+          className="w-full rounded-[10px] bg-gradient-to-r from-[#E5484D] to-[#FF7A7E] py-3 text-sm font-black text-white shadow-sm hover:shadow"
         >
           Add skills &amp; tools
         </button>
