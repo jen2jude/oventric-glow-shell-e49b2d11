@@ -976,6 +976,25 @@ export function Feed() {
     }, "interaction");
   };
 
+  const handleToggleSave = (post: FeedPost) => {
+    require(1, async () => {
+      const next = !post.viewer_saved;
+      setPosts((prev) =>
+        prev.map((p) => (p.id === post.id ? { ...p, viewer_saved: next } : p)),
+      );
+      try {
+        await setPostSaved({ data: { postId: post.id, saved: next } });
+        toast.success(next ? "Saved to your collection" : "Removed from your collection");
+      } catch (e) {
+        console.error(e);
+        setPosts((prev) =>
+          prev.map((p) => (p.id === post.id ? { ...p, viewer_saved: !next } : p)),
+        );
+        toast.error("Could not update your saved posts");
+      }
+    }, "interaction");
+  };
+
   const handleSaveEdit = async () => {
     if (!editingPost) return;
     const { id, text } = editingPost;
