@@ -374,6 +374,7 @@ export async function settleOrder(
         sender_id: buyerId,
         recipient_id: pRow.seller_id as string,
         order_id: orderId,
+        is_system: true,
         body:
           `📦 Payment confirmed — "${productName}" (Qty ${qty})\n\n` +
           `Oventric has verified this payment and it is held in escrow. Please deliver as soon as possible — ` +

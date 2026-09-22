@@ -305,6 +305,7 @@ export const markOrderDelivered = createServerFn({ method: "POST" })
           recipient_id: o.buyer_id,
           body: chatBody,
           order_id: data.orderId,
+          is_system: true,
         },
       ]);
     } catch (e) {
