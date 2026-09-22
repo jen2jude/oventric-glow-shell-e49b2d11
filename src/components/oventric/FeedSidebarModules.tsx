@@ -238,7 +238,7 @@ function SuggestedCreators() {
   const creators = (q.data ?? [])
     .map((p) => p.author)
     .filter((a) => {
-      if (!a?.userId || !a.slug || seen.has(a.userId)) return false;
+      if (!a?.userId || !a.slug || !a.name?.trim() || seen.has(a.userId)) return false;
       seen.add(a.userId);
       return true;
     })
