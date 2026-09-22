@@ -1201,20 +1201,22 @@ export const createOrder = createServerFn({ method: "POST" })
       const origin = process.env.VITE_SITE_URL || "https://oventric.com";
       const productLink = `${origin}/product/${product.id}`;
 
-      // Automatic Buyer to Seller message
+      // Automatic order announcement (system message, shown as an Oventric update)
       await supabaseAdmin.from("direct_messages").insert({
         sender_id: userId,
         recipient_id: product.sellerId,
         order_id: oRow.id as string,
-        body: `hey i just paid for ${product.name} please deliver as soon as possible. ${productLink}`,
+        is_system: true,
+        body: `🛒 New order — the buyer has paid for "${product.name}". Please deliver as soon as possible. ${productLink}`,
       });
 
-      // Automatic Seller to Buyer reply
+      // Automatic acknowledgement reply to the buyer
       await supabaseAdmin.from("direct_messages").insert({
         sender_id: product.sellerId,
         recipient_id: userId,
         order_id: oRow.id as string,
-        body: `Thank you for your payment!. We are preparing your order and will ship it as soon as possible. Thank you and we will make sure everything goes smoothly. ${productLink}`,
+        is_system: true,
+        body: `✅ Payment received — "${product.name}". The seller has been notified and will deliver shortly. Keep the trade in this chat so escrow can protect both sides. ${productLink}`,
       });
 
       const dmBody =
