@@ -10,7 +10,6 @@ import {
 } from "@/components/oventric/NotificationsDrawer";
 import { RequestsInboxDrawer } from "@/components/oventric/RequestsInboxDrawer";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
-import { useChromeHidden } from "@/hooks/use-chrome-hide";
 import { Button } from "@/components/ui/button";
 
 type Props = {
