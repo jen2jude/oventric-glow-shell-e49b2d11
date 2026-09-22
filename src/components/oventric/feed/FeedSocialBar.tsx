@@ -58,9 +58,7 @@ export function FeedSocialBar({ onOpenMessages, onOpenSearch }: Props) {
   return (
     <>
       <header
-        className={`home-pop sticky top-0 z-40 -mx-4 -mt-6 grid h-[66px] grid-cols-[minmax(0,1fr)_auto] items-center border-b border-home-line bg-home-surface/95 px-4 shadow-home-soft backdrop-blur-xl transition-all duration-300 ease-out md:-mx-6 md:-mt-10 md:h-[72px] md:px-6 lg:hidden ${
-          chromeHidden ? "pointer-events-none -translate-y-full opacity-0" : "translate-y-0 opacity-100"
-        }`}
+        className="home-pop z-40 -mx-4 -mt-6 grid h-[66px] grid-cols-[minmax(0,1fr)_auto] items-center border-b border-home-line bg-home-surface/95 px-4 shadow-home-soft backdrop-blur-xl md:-mx-6 md:-mt-10 md:h-[72px] md:px-6 lg:hidden"
       >
         <Link to="/" aria-label="Oventric home" className="flex min-w-0 items-center">
           <img loading="lazy" decoding="async"
