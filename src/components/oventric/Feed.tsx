@@ -1287,17 +1287,22 @@ export function Feed() {
         />
       </aside>
       <div className="flex w-full min-w-0 flex-col gap-3">
-        {isAppShell ? (
-          <FeedAppChrome
-            searchOpen={searchOpen}
-            onToggleSearch={() => setSearchOpen((v) => !v)}
-          />
-        ) : (
-          <FeedSocialBar
-            onOpenMessages={() => window.dispatchEvent(new CustomEvent("oventric:open-messages"))}
-            onOpenSearch={() => setSearchOpen(true)}
-          />
-        )}
+        <div className={isAppShell
+          ? "sticky top-0 z-40 -mx-4 md:mx-0 md:rounded-[10px] overflow-hidden border-b border-white/10 bg-[#070A08]/95 backdrop-blur-xl"
+          : "sticky top-0 z-40 -mx-4 -mt-6 md:-mx-6 md:-mt-10 border-b border-slate-200 bg-[#F9FAFB]/95 backdrop-blur-xl"
+        }>
+          {isAppShell ? (
+            <FeedAppChrome
+              searchOpen={searchOpen}
+              onToggleSearch={() => setSearchOpen((v) => !v)}
+            />
+          ) : (
+            <FeedSocialBar
+              onOpenMessages={() => window.dispatchEvent(new CustomEvent("oventric:open-messages"))}
+              onOpenSearch={() => setSearchOpen(true)}
+            />
+          )}
+          <div className={isAppShell ? "px-4 pb-2 md:px-5" : "px-4 pb-2 md:px-6"}>
         {!(feedTab === "creators" || feedTab === "shops") && (
           <button
             id="oventric-composer"
@@ -1395,7 +1400,9 @@ export function Feed() {
           </div>
         )}
 
-        <FeedTabs tab={feedTab} onTabChange={setFeedTab} />
+            <FeedTabs tab={feedTab} onTabChange={setFeedTab} />
+          </div>
+        </div>
 
         <AdSlot placement="feed" variant="banner" />
 

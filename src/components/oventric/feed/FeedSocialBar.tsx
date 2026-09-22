@@ -10,7 +10,6 @@ import {
 } from "@/components/oventric/NotificationsDrawer";
 import { RequestsInboxDrawer } from "@/components/oventric/RequestsInboxDrawer";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
-import { useChromeHidden } from "@/hooks/use-chrome-hide";
 import { Button } from "@/components/ui/button";
 
 type Props = {
@@ -27,7 +26,6 @@ type Props = {
 export function FeedSocialBar({ onOpenMessages, onOpenSearch }: Props) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [reqOpen, setReqOpen] = useState(false);
-  const chromeHidden = useChromeHidden();
 
   const unreadNotifs = useUnreadNotificationsCount();
   const { messages } = useUnreadCounts();
@@ -60,9 +58,7 @@ export function FeedSocialBar({ onOpenMessages, onOpenSearch }: Props) {
   return (
     <>
       <header
-        className={`home-pop sticky top-0 z-40 -mx-4 -mt-6 grid h-[66px] grid-cols-[minmax(0,1fr)_auto] items-center border-b border-home-line bg-home-surface/95 px-4 shadow-home-soft backdrop-blur-xl transition-all duration-300 ease-out md:-mx-6 md:-mt-10 md:h-[72px] md:px-6 lg:hidden ${
-          chromeHidden ? "pointer-events-none -translate-y-full opacity-0" : "translate-y-0 opacity-100"
-        }`}
+        className="home-pop z-40 -mx-4 -mt-6 grid h-[66px] grid-cols-[minmax(0,1fr)_auto] items-center border-b border-home-line bg-home-surface/95 px-4 shadow-home-soft backdrop-blur-xl md:-mx-6 md:-mt-10 md:h-[72px] md:px-6 lg:hidden"
       >
         <Link to="/" aria-label="Oventric home" className="flex min-w-0 items-center">
           <img loading="lazy" decoding="async"
@@ -111,9 +107,7 @@ export function FeedSocialBar({ onOpenMessages, onOpenSearch }: Props) {
       </header>
 
       <nav
-        className={`sticky top-0 z-40 hidden w-fit max-w-full self-start items-center gap-1 overflow-x-auto rounded-full border border-slate-200 bg-white/95 p-1.5 shadow-sm backdrop-blur-md no-scrollbar transition-all duration-300 ease-out lg:flex ${
-          chromeHidden ? "-translate-y-[120%] opacity-0 pointer-events-none" : "translate-y-0 opacity-100"
-        }`}
+        className="z-40 hidden w-fit max-w-full items-center gap-1 overflow-x-auto rounded-full border border-slate-200 bg-white/95 p-1.5 shadow-sm backdrop-blur-md no-scrollbar lg:flex"
       >
         <Link
           to="/"
