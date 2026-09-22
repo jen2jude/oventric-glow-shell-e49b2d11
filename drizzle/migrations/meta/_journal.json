@@ -337,6 +337,13 @@
       "when": 1790090018284,
       "tag": "0047_creator_asset_flag_on_products",
       "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1790093037477,
+      "tag": "0048_pin_search_path_email_queue_functions",
+      "breakpoints": true
     }
   ]
 }
