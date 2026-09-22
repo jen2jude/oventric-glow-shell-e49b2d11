@@ -67,6 +67,7 @@ function AppMarketplace() {
   const [loading, setLoading] = useState(true);
   const [showCategories, setShowCategories] = useState(false);
   const [showTopSellers, setShowTopSellers] = useState(false);
+  const [sellPanelOpen, setSellPanelOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<CategoryNode | null>(null);
   const topRef = useRef<HTMLDivElement>(null);
 
