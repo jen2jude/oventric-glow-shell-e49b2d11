@@ -302,6 +302,13 @@
       "when": 1790064412282,
       "tag": "0042_review_eligibility_settled_orders",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1790065979157,
+      "tag": "0043_notify_seller_on_product_review",
+      "breakpoints": true
     }
   ]
 }
