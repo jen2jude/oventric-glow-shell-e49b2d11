@@ -186,6 +186,16 @@ export function ProductComments({ productId }: { productId: string }) {
               <p className={`text-[13px] ${isAppShell ? "text-white/70" : "text-slate-600"} leading-snug whitespace-pre-wrap`}>
                 {rev.comment}
               </p>
+              {rev.sellerReply && (
+                <div className={`mt-3 border-l-2 border-[#E5484D] pl-3 ${isAppShell ? "" : ""}`}>
+                  <div className={`text-[10px] font-black uppercase tracking-wider ${isAppShell ? "text-white/40" : "text-slate-500"}`}>
+                    Seller response
+                  </div>
+                  <p className={`mt-1 text-[13px] ${isAppShell ? "text-white/70" : "text-slate-600"} leading-snug whitespace-pre-wrap`}>
+                    {rev.sellerReply}
+                  </p>
+                </div>
+              )}
             </div>
           ))
         )}
