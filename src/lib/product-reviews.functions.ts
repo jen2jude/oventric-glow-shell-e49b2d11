@@ -9,6 +9,8 @@ export interface ProductReview {
   rating: number;
   comment: string | null;
   createdAt: string;
+  sellerReply: string | null;
+  sellerReplyAt: string | null;
   userId: string;
   user: {
     fullName: string | null;
@@ -46,6 +48,8 @@ async function summarize(
       rating,
       comment,
       created_at,
+      seller_reply,
+      seller_reply_at,
       profiles:profiles!user_id (
         display_name,
         username,
@@ -77,6 +81,8 @@ async function summarize(
     rating: Number(r.rating),
     comment: r.comment,
     createdAt: r.created_at,
+    sellerReply: r.seller_reply ?? null,
+    sellerReplyAt: r.seller_reply_at ?? null,
     userId: r.user_id,
     user: {
       fullName: r.profiles?.display_name ?? r.profiles?.username ?? "User",

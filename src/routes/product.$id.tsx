@@ -38,7 +38,7 @@ import {
   getProduct,
   type ProductDTO,
 } from "@/lib/marketplace.functions";
-import { getProductRating, rateProduct } from "@/lib/product-reviews.functions";
+import { getProductRating, rateProduct, replyToReview } from "@/lib/product-reviews.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { computeDisplayPrice, formatMoney, usdRate } from "@/lib/fx-display";
 import { getServicePackages, type ServicePackage } from "@/lib/services.functions";
@@ -54,23 +54,44 @@ function ProductRating({
   initialAverage,
   initialCount,
   isAppShell,
+  isSeller,
 }: {
   productId: string;
   initialAverage: number;
   initialCount: number;
   isAppShell: boolean;
+  isSeller: boolean;
 }) {
   const { require } = useOnboarding();
   const fetchRating = useServerFn(getProductRating);
   const submitRating = useServerFn(rateProduct);
+  const sendReply = useServerFn(replyToReview);
   const [average, setAverage] = useState(initialAverage);
   const [count, setCount] = useState(initialCount);
   const [mine, setMine] = useState<number | null>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+  const [replyOpen, setReplyOpen] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState("");
+  const [replySaving, setReplySaving] = useState(false);
   const [reviews, setReviews] = useState<
-    { id: string; rating: number; comment: string | null; createdAt: string; user: { fullName: string | null; avatarUrl: string | null } }[]
+    { id: string; rating: number; comment: string | null; createdAt: string; sellerReply?: string | null; sellerReplyAt?: string | null; user: { fullName: string | null; avatarUrl: string | null } }[]
   >([]);
+
+  const submitReply = (reviewId: string) => {
+    const text = replyText.trim();
+    if (!text) return;
+    setReplySaving(true);
+    sendReply({ data: { reviewId, productId, reply: text } })
+      .then((r) => {
+        setReviews(r.reviews ?? []);
+        setReplyOpen(null);
+        setReplyText("");
+        toast.success("Reply posted");
+      })
+      .catch((e: Error) => toast.error(e.message || "Could not post your reply"))
+      .finally(() => setReplySaving(false));
+  };
 
   useEffect(() => {
     let cancelled = false;
