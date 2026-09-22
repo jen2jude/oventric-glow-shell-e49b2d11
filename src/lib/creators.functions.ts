@@ -4,7 +4,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
 import { parseVideoEmbed } from "./video-embed";
-import { stableImageUrl, stableImageUrls } from "@/lib/storage/stable-image";
+import { stableImageUrl } from "@/lib/storage/stable-image";
 
 export const CREATOR_FIELDS = [
   "Graphic Designer",
@@ -331,14 +331,14 @@ export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
 
 
     const authorIds = Array.from(new Set(rows.map((r) => r.author_id)));
-    const { data: profiles } = await sb
+    // Read only the public creator identity fields needed by the feed. The
+    // profiles table's browser-facing policy intentionally hides private data.
+    const { supabaseAdmin: adminForProfiles } = await import("@/integrations/supabase/client.server");
+    const { data: profiles } = await adminForProfiles
       .from("profiles")
       .select("user_id, display_name, slug, avatar_path, creator_profile")
       .in("user_id", authorIds);
     const byAuthor = new Map((profiles ?? []).map((p) => [p.user_id, p]));
-
-    const { imageStorage } = await import("@/lib/storage/images.server");
-    const storage = await imageStorage();
 
     // Sign media + posters from the shared post-media bucket.
     const mediaPaths = new Set<string>();
