@@ -2187,9 +2187,6 @@ export function Feed() {
             }
           })()
         )}
-        {commentError && (
-          <div className="text-[11px] text-red-400 md:text-red-600 -mt-2">{commentError}</div>
-        )}
 
         {/* Mock marketplace, sponsored, and bounty cards removed. */}
 
