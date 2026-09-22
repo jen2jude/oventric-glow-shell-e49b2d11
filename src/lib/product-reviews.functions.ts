@@ -132,3 +132,18 @@ export const rateProduct = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return summarize(publicClient(), data.productId, context.userId);
   });
+
+/** Seller replies to a buyer's review on their own product. */
+export const replyToReview = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { reviewId: string; productId: string; reply: string }) => d)
+  .handler(async ({ data, context }) => {
+    const reply = (data.reply ?? "").trim();
+    if (!reply) throw new Error("Reply cannot be empty");
+    const { error } = await context.supabase.rpc("reply_to_product_review", {
+      _review_id: data.reviewId,
+      _reply: reply,
+    });
+    if (error) throw new Error(error.message);
+    return summarize(publicClient(), data.productId, context.userId);
+  });
