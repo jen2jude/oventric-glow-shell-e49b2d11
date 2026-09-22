@@ -42,6 +42,7 @@ import { RepostDialog } from "@/components/oventric/feed/RepostDialog";
 import { AdSlot } from "@/components/oventric/ads/AdSlot";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { DiscoveryPanel } from "@/components/oventric/DiscoveryPanel";
+import { FeedSidebarModules } from "@/components/oventric/FeedSidebarModules";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 
 import { supabase } from "@/integrations/supabase/client";
