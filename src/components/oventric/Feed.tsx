@@ -2263,21 +2263,6 @@ export function Feed() {
           </div>
         )}
       </div>
-      <aside className="hidden min-w-0 space-y-6 lg:sticky lg:top-6 lg:block lg:max-h-[calc(100dvh-3rem)] lg:overflow-y-auto lg:overscroll-contain lg:pr-1 xl:col-start-3">
-        <div className="xl:hidden">
-          <FeedSidebarModules
-            modules="profile"
-            onCreatePost={() => require(1, () => setComposerOpen(true), "seller")}
-        />
-        </div>
-        <FeedSidebarModules modules="discovery" />
-        <div>
-          <h2 className="mb-4 font-wallet-display text-lg font-bold text-slate-900">
-            Community
-          </h2>
-          <DiscoveryPanel asPage />
-        </div>
-      </aside>
       </div>
 
       {lightbox && (
