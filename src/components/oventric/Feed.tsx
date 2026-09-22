@@ -1697,7 +1697,7 @@ export function Feed() {
                   className={`scroll-mt-24 md:scroll-mt-28 [transition:border-color_400ms_ease,box-shadow_400ms_ease,opacity_300ms_ease] ${
                     isAppShell
                       ? "md:bg-white md:shadow-sm border bg-[#141416] rounded-none -mx-4 p-0 overflow-hidden border-x-0 md:mx-0 md:p-5 md:rounded-xl md:border-x"
-                       : "bg-white py-5 md:py-6 border-b border-slate-100 last:border-b-0"
+                       : "bg-white px-4 md:px-6 py-5 md:py-6 border-b border-slate-100 last:border-b-0"
                   } ${isReported ? "opacity-70" : ""} ${
                     isNew
                       ? isAppShell
