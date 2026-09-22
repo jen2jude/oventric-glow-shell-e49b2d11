@@ -71,6 +71,7 @@ export async function sendChat(
       recipient_id: recipientId,
       order_id: orderId,
       body,
+      is_system: true,
     });
   } catch (e) {
     console.error("[fulfilment] chat insert failed", e);
