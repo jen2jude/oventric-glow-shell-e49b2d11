@@ -1793,6 +1793,7 @@ export type Database = {
           body: string | null
           created_at: string
           id: string
+          is_system: boolean
           media_path: string | null
           media_type: string | null
           order_id: string | null
@@ -1804,6 +1805,7 @@ export type Database = {
           body?: string | null
           created_at?: string
           id?: string
+          is_system?: boolean
           media_path?: string | null
           media_type?: string | null
           order_id?: string | null
@@ -1815,6 +1817,7 @@ export type Database = {
           body?: string | null
           created_at?: string
           id?: string
+          is_system?: boolean
           media_path?: string | null
           media_type?: string | null
           order_id?: string | null

@@ -323,6 +323,13 @@
       "when": 1790075753489,
       "tag": "0045_add_seller_contact_numbers",
       "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1790086505535,
+      "tag": "0046_system_direct_messages_notifications",
+      "breakpoints": true
     }
   ]
 }
