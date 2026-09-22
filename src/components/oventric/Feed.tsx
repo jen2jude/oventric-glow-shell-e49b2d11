@@ -2193,12 +2193,6 @@ export function Feed() {
 
         {/* Mock marketplace, sponsored, and bounty cards removed. */}
 
-        <RepostDialog
-          open={!!repostTarget}
-          post={repostTarget}
-          onClose={() => setRepostTarget(null)}
-          onDone={() => void refreshPosts()}
-        />
         {editingPost && (
           <div className="fixed inset-0 z-[1100] grid place-items-center p-4">
             <div
