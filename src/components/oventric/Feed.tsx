@@ -41,8 +41,6 @@ import { RepostDialog } from "@/components/oventric/feed/RepostDialog";
 
 import { AdSlot } from "@/components/oventric/ads/AdSlot";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
-import { DiscoveryPanel } from "@/components/oventric/DiscoveryPanel";
-import { FeedSidebarModules } from "@/components/oventric/FeedSidebarModules";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -1279,30 +1277,64 @@ export function Feed() {
           Back to top
         </button>
       )}
-      <div className="mx-auto grid w-full min-w-0 gap-4 px-4 md:px-5 lg:gap-5 lg:grid-cols-[minmax(0,1fr)_200px] xl:grid-cols-[180px_minmax(0,1fr)_180px] min-[1400px]:grid-cols-[200px_minmax(0,1fr)_200px] lg:items-start">
-      <aside className="hidden min-w-0 xl:sticky xl:top-6 xl:block">
-        <FeedSidebarModules
-          modules="profile"
-          onCreatePost={() => require(1, () => setComposerOpen(true), "seller")}
-        />
-      </aside>
-      <div className="flex w-full min-w-0 flex-col gap-3">
-        <div className={isAppShell
-          ? "sticky top-0 z-40 -mx-4 md:mx-0 md:rounded-[10px] overflow-hidden border-b border-white/10 bg-[#070A08]/95 backdrop-blur-xl"
-          : "sticky top-0 z-40 -mx-4 -mt-6 md:-mx-6 md:-mt-10 border-b border-slate-200 bg-[#F9FAFB]/95 backdrop-blur-xl"
-        }>
-          {isAppShell ? (
-            <FeedAppChrome
-              searchOpen={searchOpen}
-              onToggleSearch={() => setSearchOpen((v) => !v)}
-            />
-          ) : (
-            <FeedSocialBar
-              onOpenMessages={() => window.dispatchEvent(new CustomEvent("oventric:open-messages"))}
-              onOpenSearch={() => setSearchOpen(true)}
-            />
-          )}
-          <div className={isAppShell ? "px-4 pb-2 md:px-5" : "px-4 pb-2 md:px-6"}>
+      <div className="mx-auto w-full min-w-0 max-w-2xl">
+        {isAppShell ? (
+          <FeedAppChrome
+            searchOpen={searchOpen}
+            onToggleSearch={() => setSearchOpen((v) => !v)}
+          />
+        ) : (
+          <FeedSocialBar
+            onOpenMessages={() => window.dispatchEvent(new CustomEvent("oventric:open-messages"))}
+            onOpenSearch={() => setSearchOpen(true)}
+          />
+        )}
+
+        {searchOpen && (
+          <div className="fixed inset-0 z-[60] overflow-y-auto bg-home-bg px-4 pt-20">
+            <div className="mx-auto max-w-[760px]">
+              <FeedSearchBar
+                showFilters={false}
+                q={query}
+                onQueryChange={setQuery}
+                category={category}
+                onCategoryChange={setCategory}
+                resultCount={
+                  debouncedQuery ? filteredPosts.length : null
+                }
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setSearchOpen(false);
+                setQuery("");
+                setDebouncedQuery("");
+              }}
+              aria-label="Close search"
+              className="fixed right-4 top-4 z-[65] grid h-10 w-10 place-items-center rounded-[10px] border border-border bg-card text-foreground shadow-sm"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        )}
+
+
+        {searchOpen && debouncedQuery.length >= 1 && (
+          <div className="fixed inset-0 z-[41] bg-[#0A0A0B] overflow-y-auto -mx-4">
+            <FeedGlobalResults q={debouncedQuery} category={category} />
+            <button
+              onClick={() => {
+                setQuery("");
+                setDebouncedQuery("");
+              }}
+              className="fixed top-4 right-4 z-[45] p-2 rounded-full bg-white/5 text-white active:scale-90 transition-transform"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+        )}
+
         {!(feedTab === "creators" || feedTab === "shops") && (
           <button
             id="oventric-composer"
@@ -1355,53 +1387,8 @@ export function Feed() {
           </button>
         )}
 
-        {searchOpen && (
-          <div className="fixed inset-0 z-[60] overflow-y-auto bg-home-bg px-4 pt-20">
-            <div className="mx-auto max-w-[760px]">
-              <FeedSearchBar
-                showFilters={false}
-                q={query}
-                onQueryChange={setQuery}
-                category={category}
-                onCategoryChange={setCategory}
-                resultCount={
-                  debouncedQuery ? filteredPosts.length : null
-                }
-              />
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                setSearchOpen(false);
-                setQuery("");
-                setDebouncedQuery("");
-              }}
-              aria-label="Close search"
-              className="fixed right-4 top-4 z-[65] grid h-10 w-10 place-items-center rounded-[10px] border border-border bg-card text-foreground shadow-sm"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-        )}
-
-
-        {searchOpen && debouncedQuery.length >= 1 && (
-          <div className="fixed inset-0 z-[41] bg-[#0A0A0B] overflow-y-auto -mx-4">
-            <FeedGlobalResults q={debouncedQuery} category={category} />
-            <button
-              onClick={() => {
-                setQuery("");
-                setDebouncedQuery("");
-              }}
-              className="fixed top-4 right-4 z-[45] p-2 rounded-full bg-white/5 text-white active:scale-90 transition-transform"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-        )}
-
-            <FeedTabs tab={feedTab} onTabChange={setFeedTab} />
-          </div>
+        <div className="px-1 pb-2">
+          <FeedTabs tab={feedTab} onTabChange={setFeedTab} />
         </div>
 
         <AdSlot placement="feed" variant="banner" />
@@ -2200,6 +2187,7 @@ export function Feed() {
             }
           })()
         )}
+
         {commentError && (
           <div className="text-[11px] text-red-400 md:text-red-600 -mt-2">{commentError}</div>
         )}
@@ -2213,7 +2201,6 @@ export function Feed() {
           onDone={() => void refreshPosts()}
         />
         <ReportModal
-
           open={!!reportOpen}
           onClose={() => setReportOpen(null)}
           target={
@@ -2233,6 +2220,7 @@ export function Feed() {
           }
           onReported={markReported}
         />
+
         {editingPost && (
           <div className="fixed inset-0 z-[1100] grid place-items-center p-4">
             <div
@@ -2275,22 +2263,6 @@ export function Feed() {
             </div>
           </div>
         )}
-      </div>
-      <aside className="hidden min-w-0 space-y-6 lg:sticky lg:top-6 lg:block lg:max-h-[calc(100dvh-3rem)] lg:overflow-y-auto lg:overscroll-contain lg:pr-1 xl:col-start-3">
-        <div className="xl:hidden">
-          <FeedSidebarModules
-            modules="profile"
-            onCreatePost={() => require(1, () => setComposerOpen(true), "seller")}
-        />
-        </div>
-        <FeedSidebarModules modules="discovery" />
-        <div>
-          <h2 className="mb-4 font-wallet-display text-lg font-bold text-slate-900">
-            Community
-          </h2>
-          <DiscoveryPanel asPage />
-        </div>
-      </aside>
       </div>
 
       {lightbox && (
