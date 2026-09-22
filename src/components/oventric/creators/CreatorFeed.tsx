@@ -200,6 +200,68 @@ function AssetCta({ asset }: { asset: NonNullable<CreatorPostDTO["asset"]> }) {
   );
 }
 
+type DockLink = { href: string; label: string; host: string; tone: string; dot: string };
+
+function hostOf(url: string) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url.replace(/^https?:\/\//, "").split("/")[0] ?? url;
+  }
+}
+
+function describeLink(url: string, fallback: string): DockLink {
+  const host = hostOf(url);
+  const h = host.toLowerCase();
+  const make = (label: string, tone: string, dot: string): DockLink => ({ href: url, label, host, tone, dot });
+  if (h.includes("whatsapp") || h.includes("wa.me")) return make("WhatsApp group", "hover:border-emerald-300 hover:bg-emerald-50/70", "bg-emerald-500");
+  if (h.includes("t.me") || h.includes("telegram")) return make("Telegram channel", "hover:border-sky-300 hover:bg-sky-50/70", "bg-sky-500");
+  if (h.includes("discord")) return make("Discord server", "hover:border-indigo-300 hover:bg-indigo-50/70", "bg-indigo-500");
+  if (h.includes("youtube") || h.includes("youtu.be")) return make("Watch on YouTube", "hover:border-red-300 hover:bg-red-50/70", "bg-red-500");
+  if (h.includes("vimeo")) return make("Watch on Vimeo", "hover:border-cyan-300 hover:bg-cyan-50/70", "bg-cyan-500");
+  if (h.includes("tiktok")) return make("Watch on TikTok", "hover:border-slate-300 hover:bg-slate-50", "bg-slate-900");
+  if (h.includes("instagram")) return make("Instagram", "hover:border-pink-300 hover:bg-pink-50/70", "bg-pink-500");
+  if (h.includes("behance")) return make("Behance", "hover:border-blue-300 hover:bg-blue-50/70", "bg-blue-600");
+  if (h.includes("dribbble")) return make("Dribbble", "hover:border-pink-300 hover:bg-pink-50/70", "bg-pink-400");
+  if (h.includes("github")) return make("GitHub", "hover:border-slate-300 hover:bg-slate-50", "bg-slate-800");
+  return make(fallback, "hover:border-amber-300 hover:bg-amber-50/70", "bg-amber-500");
+}
+
+/** Tappable dock of the creator's community, external-video and portfolio links. */
+function LinkDock({ post }: { post: CreatorPostDTO }) {
+  const links: DockLink[] = [];
+  if (post.communityLink) links.push(describeLink(post.communityLink, "Join the community"));
+  if (post.externalUrl && !post.externalEmbedUrl) links.push(describeLink(post.externalUrl, "Watch full video"));
+  for (const w of post.author.workLinks ?? []) {
+    if (w && !links.some((l) => l.href === w)) links.push(describeLink(w, "View work"));
+  }
+  if (links.length === 0) return null;
+
+  return (
+    <div className="mt-3 rounded-[10px] border border-dashed border-slate-200 bg-slate-50/50 p-2">
+      <p className="px-1 pb-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Connect with the creator</p>
+      <div className="flex gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {links.map((l) => (
+          <a
+            key={l.href}
+            href={l.href}
+            target="_blank"
+            rel="noreferrer noopener"
+            className={`group flex shrink-0 items-center gap-2 rounded-[10px] border border-slate-200 bg-white py-1.5 pl-2.5 pr-2 transition-colors ${l.tone}`}
+          >
+            <span className={`h-2 w-2 shrink-0 rounded-full ${l.dot}`} />
+            <span className="min-w-0 text-left leading-tight">
+              <span className="block truncate text-[12px] font-black text-slate-900">{l.label}</span>
+              <span className="block truncate text-[10px] text-slate-400">{l.host}</span>
+            </span>
+            <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-slate-300 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-slate-500" />
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function CreatorCard({ post, onRecordedView }: { post: CreatorPostDTO; onRecordedView: (postId: string) => void }) {
   const recordView = useServerFn(recordCreatorPostView);
   const articleRef = useRef<HTMLElement>(null);
