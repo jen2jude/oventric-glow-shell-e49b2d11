@@ -440,13 +440,13 @@ function PayoutRow({
                   onClick={onApprove}
                   className="inline-flex items-center gap-1.5 rounded-[10px] bg-sky-500 hover:bg-sky-400 text-black font-bold px-3 py-1.5 text-xs"
                 >
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Approve
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Approve (money not sent yet)
                 </button>
                 <button
                   onClick={onMarkPaid}
                   className="inline-flex items-center gap-1.5 rounded-[10px] bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-3 py-1.5 text-xs"
                 >
-                  <Send className="w-3.5 h-3.5" /> Mark paid
+                  <Send className="w-3.5 h-3.5" /> Mark paid — completes it
                 </button>
                 <button
                   onClick={onReject}
@@ -468,7 +468,7 @@ function PayoutRow({
                   onClick={onMarkPaid}
                   className="inline-flex items-center gap-1.5 rounded-[10px] bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-3 py-1.5 text-xs"
                 >
-                  <Send className="w-3.5 h-3.5" /> Mark paid
+                  <Send className="w-3.5 h-3.5" /> Mark paid — completes it
                 </button>
                 <button
                   onClick={onReject}
