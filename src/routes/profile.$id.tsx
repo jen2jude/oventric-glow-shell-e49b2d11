@@ -1146,20 +1146,24 @@ function ProfilePage() {
                   )}
                   <div className="profile-cover-tint pointer-events-none absolute inset-0" />
 
-                 <Button
-                   variant="ghost"
-                   size="icon"
-                  type="button"
-                  onClick={() => {
-                    if (typeof window !== "undefined" && window.history.length > 1)
-                      window.history.back();
-                    else navigate({ to: "/" });
-                  }}
-                  aria-label="Go back"
-                   className="absolute left-3 top-3 h-10 w-10 rounded-[10px] border border-white/15 bg-black/45 text-white shadow-sm hover:bg-black/65 hover:text-white"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                 </Button>
+                  <Button
+                    variant="ghost"
+                    type="button"
+                    onClick={() => {
+                      if (typeof window !== "undefined" && window.history.length > 1) {
+                        window.history.back();
+                        return;
+                      }
+                      navigate({ to: "/" });
+                    }}
+                    aria-label="Back to previous page"
+                    className="group absolute left-3 top-3 h-10 rounded-full border border-newsfeed-line bg-newsfeed-surface/95 py-2 pl-2.5 pr-4 text-[13px] font-semibold text-newsfeed-ink shadow-sm backdrop-blur-md transition hover:border-newsfeed-violet/40 hover:bg-newsfeed-surface hover:text-newsfeed-ink hover:shadow"
+                  >
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-newsfeed-violet-soft text-newsfeed-violet transition group-hover:-translate-x-0.5">
+                      <ArrowLeft className="h-3.5 w-3.5" />
+                    </span>
+                    Back
+                  </Button>
 
                   {isOwnProfile && (
                    <Button
