@@ -138,9 +138,6 @@ const currencyPoints = [
   "Wallet funds from a refund can be withdrawn using your saved payout method.",
 ];
 
-export default function Placeholder() {
-  return null;
-}
 
 function SectionLabel({ children }: { children: string }) {
   return (
