@@ -4,7 +4,7 @@ import { Download, FileUp, ImagePlus, Link2, Sparkles, X, Zap } from "lucide-rea
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { publishCreatorPost } from "@/lib/creators.functions";
-import { isCommunityLink, parseVideoEmbed } from "@/lib/video-embed";
+import { isCommunityLink } from "@/lib/video-embed";
 import {
   createProduct,
   listMarketplaceCategories,
@@ -22,9 +22,10 @@ interface Attachment {
 }
 
 const MAX_ASSET_MB = 50;
-/** Uploaded showcase clips stay short; longer videos are pasted as links. */
+/** Uploaded showcase clips stay short and light — 30s / 50MB max. */
 const MAX_CLIP_SECONDS = 30;
-const MAX_CLIP_BYTES = 15 * 1024 * 1024;
+const MAX_CLIP_MB = 50;
+const MAX_CLIP_BYTES = MAX_CLIP_MB * 1024 * 1024;
 
 /** Creator showcase publisher: title, caption, media, sellable asset, links. */
 export function CreatorPublishModal({
@@ -48,7 +49,6 @@ export function CreatorPublishModal({
   const [caption, setCaption] = useState("");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [community, setCommunity] = useState("");
-  const [external, setExternal] = useState("");
   const [busy, setBusy] = useState(false);
   const [compressing, setCompressing] = useState(false);
 
@@ -77,7 +77,6 @@ export function CreatorPublishModal({
     setCaption("");
     setAttachments([]);
     setCommunity("");
-    setExternal("");
     setAssetFile(null);
     setAssetLink("");
     setIsFree(true);
@@ -111,7 +110,7 @@ export function CreatorPublishModal({
           const duration = await getVideoDuration(file);
           if (duration > MAX_CLIP_SECONDS + 0.5) {
             toast.error(
-              `Clips here are up to ${MAX_CLIP_SECONDS}s. For a longer video, paste its YouTube, Vimeo, Facebook or Telegram link below — it plays right here without an upload.`,
+              `Clips here are up to ${MAX_CLIP_SECONDS}s and ${MAX_CLIP_MB}MB. Trim or compress your video to fit, then upload again.`,
             );
             continue;
           }
@@ -123,9 +122,9 @@ export function CreatorPublishModal({
             );
             if (compact && compact.size < file.size) file = compact;
           }
-          if (file.size > MAX_CLIP_BYTES * 1.5) {
+          if (file.size > MAX_CLIP_BYTES) {
             toast.error(
-              "That clip is still too heavy. Paste a video link below instead — it streams from the original platform.",
+              `That clip is still over ${MAX_CLIP_MB}MB. Compress it below ${MAX_CLIP_MB}MB and upload again.`,
             );
             continue;
           }
@@ -147,10 +146,6 @@ export function CreatorPublishModal({
     }
     if (community.trim() && !isCommunityLink(community)) {
       toast.error("Community link must be a Telegram or WhatsApp link");
-      return;
-    }
-    if (external.trim() && !parseVideoEmbed(external)) {
-      toast.error("That video link doesn't look right");
       return;
     }
 
@@ -288,7 +283,6 @@ export function CreatorPublishModal({
           mediaPaths,
           mediaType,
           communityLink: community.trim() || undefined,
-          externalUrl: external.trim() || undefined,
           productId,
         },
       });
@@ -366,8 +360,8 @@ export function CreatorPublishModal({
                   {compressing ? "Preparing your clip…" : "Add images or a video"}
                 </span>
                 <span className="px-4 text-center text-[11px] font-semibold text-slate-400">
-                  Clips up to {MAX_CLIP_SECONDS}s. For longer videos, paste the link below — it plays
-                  here and streams from YouTube, Vimeo, Facebook or Telegram.
+                  Videos up to {MAX_CLIP_SECONDS}s and {MAX_CLIP_MB}MB — trim or compress your clip to
+                  fit before uploading.
                 </span>
               </button>
             ) : (
@@ -517,24 +511,6 @@ export function CreatorPublishModal({
               placeholder="Telegram / WhatsApp channel link (optional)"
               className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
             />
-          </div>
-          <div className="space-y-1.5 rounded-[10px] border border-rose-100 bg-rose-50/55 p-3">
-            <div className="flex items-center gap-2">
-              <Link2 className="h-4 w-4 shrink-0 text-rose-500" />
-              <p className="text-xs font-black text-slate-900">Video that plays in the post (optional)</p>
-            </div>
-            <p className="text-[11px] leading-relaxed text-slate-500">
-              Paste a YouTube, Vimeo, Facebook or Telegram video link — it shows and plays inside your post, no upload and no storage used. This is <span className="font-bold text-slate-700">not</span> a download link and not a social page link.
-            </p>
-            <div className="flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2.5 focus-within:border-rose-300">
-              <Link2 className="h-4 w-4 shrink-0 text-rose-500" />
-              <input
-                value={external}
-                onChange={(e) => setExternal(e.target.value)}
-                placeholder="Paste YouTube / Vimeo video link here"
-                className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
-              />
-            </div>
           </div>
         </div>
 
