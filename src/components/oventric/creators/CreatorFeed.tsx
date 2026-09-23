@@ -101,7 +101,7 @@ function PreviewVideo({ src, poster }: { src: string; poster: string | null }) {
         }}
       />
       {!full && (
-        <span className="pointer-events-none absolute bottom-3 left-3 flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-bold text-white">
+        <span className="pointer-events-none absolute bottom-3 left-3 flex items-center gap-1.5 rounded-full bg-foreground/70 px-2.5 py-1 text-[11px] font-bold text-background">
           <Play className="h-3 w-3" /> Tap to play
         </span>
       )}
