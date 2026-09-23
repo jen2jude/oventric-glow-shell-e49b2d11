@@ -4023,6 +4023,70 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
   border-color: var(--newsfeed-line);
   box-shadow: none;
 }
+
+/* About Oventric — immersive editorial structure with the Unified UI palette. */
+.about-editorial {
+  font-family: var(--font-wallet-body);
+}
+.about-editorial h1,
+.about-editorial h2,
+.about-editorial h3,
+.about-editorial .font-wallet-display {
+  font-family: var(--font-wallet-display);
+  letter-spacing: 0;
+}
+.about-hero-shade {
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--newsfeed-ink) 92%, transparent) 0%,
+    color-mix(in oklab, var(--newsfeed-ink) 72%, transparent) 48%,
+    color-mix(in oklab, var(--newsfeed-ink) 18%, transparent) 100%
+  );
+}
+.about-spectrum {
+  background: linear-gradient(
+    90deg,
+    var(--newsfeed-blue),
+    var(--newsfeed-violet),
+    var(--newsfeed-green),
+    var(--newsfeed-gold),
+    var(--newsfeed-coral)
+  );
+}
+.about-ecosystem-line {
+  background: linear-gradient(
+    90deg,
+    var(--newsfeed-blue),
+    var(--newsfeed-violet),
+    var(--newsfeed-green),
+    var(--newsfeed-gold),
+    var(--newsfeed-coral)
+  );
+}
+.about-certificate-panel {
+  background: var(--newsfeed-surface);
+}
+.about-cta {
+  background:
+    linear-gradient(120deg, var(--newsfeed-blue-soft), transparent 42%),
+    linear-gradient(240deg, var(--newsfeed-coral-soft), transparent 44%),
+    var(--newsfeed-surface);
+}
+@media (max-width: 767px) {
+  .about-hero-shade {
+    background: linear-gradient(
+      0deg,
+      color-mix(in oklab, var(--newsfeed-ink) 94%, transparent) 0%,
+      color-mix(in oklab, var(--newsfeed-ink) 52%, transparent) 72%,
+      color-mix(in oklab, var(--newsfeed-ink) 20%, transparent) 100%
+    );
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-editorial * {
+    scroll-behavior: auto !important;
+  }
+}
 @media (min-width: 1024px) {
   .web-feed-timeline {
     border-radius: 10px;
