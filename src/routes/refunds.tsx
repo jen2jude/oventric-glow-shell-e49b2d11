@@ -138,80 +138,102 @@ const currencyPoints = [
   "Wallet funds from a refund can be withdrawn using your saved payout method.",
 ];
 
-
-function SectionLabel({ children }: { children: string }) {
-  return (
-    <p className="text-xs font-bold uppercase tracking-widest text-newsfeed-coral">{children}</p>
-  );
-}
-
 function RefundsPage() {
   return (
     <PublicChrome lightDesktop>
-      <div className="bg-background text-foreground">
-        {/* Hero */}
-        <header className="relative overflow-hidden">
-          <div className="absolute inset-0">
-            <img
-              src={legalImage}
-              alt="Documents on a desk representing Oventric refund and dispute records"
-              className="h-full w-full object-cover"
-              width={1200}
-              height={900}
-              fetchPriority="high"
-            />
-            <div className="absolute inset-0 help-image-shade" />
-          </div>
-          <div className="relative mx-auto max-w-5xl px-5 py-14 sm:px-8 sm:py-20 lg:py-24">
-            <SectionLabel>REFUNDS &amp; DISPUTES</SectionLabel>
-            <h1 className="about-hero-copy mt-4 max-w-3xl font-public-display text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
-              Buyer protection, explained before you ever need it.
-            </h1>
-            <p className="about-hero-copy mt-4 max-w-2xl text-base leading-7 opacity-90 sm:text-lg">
-              This policy applies to every purchase on Oventric — marketplace items, services,
-              Academy courses and bounty escrow. It sets out when refunds apply, how disputes are
-              reviewed, and where your money goes.
-            </p>
-            <div className="mt-7 flex flex-wrap items-center gap-3">
-              <Button asChild size="lg" className="rounded-[10px]">
-                <Link to="/help">
-                  Visit the Help center <ArrowRight className="size-4" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="rounded-[10px] border-white/70 bg-white/10 text-white hover:bg-white/20 hover:text-white"
-              >
-                <Link to="/report-problem">Report a problem</Link>
-              </Button>
+      <div className="help-editorial bg-newsfeed-canvas text-newsfeed-ink">
+        {/* Hero — split layout: light copy panel + image */}
+        <section className="relative overflow-hidden border-b border-newsfeed-line bg-newsfeed-surface">
+          <div className="mx-auto grid min-h-[540px] max-w-7xl lg:grid-cols-[1.02fr_0.98fr]">
+            <div className="flex flex-col justify-center px-5 py-16 sm:px-8 lg:px-10 lg:py-24">
+              <div className="mb-7 h-1 w-36 rounded-full about-spectrum" aria-hidden="true" />
+              <p className="font-wallet-display text-sm font-bold text-newsfeed-coral">
+                REFUNDS &amp; DISPUTES
+              </p>
+              <h1 className="mt-4 max-w-2xl font-wallet-display text-3xl font-extrabold leading-[1.08] sm:text-4xl lg:text-6xl">
+                Buyer protection, explained before you ever need it.
+              </h1>
+              <p className="mt-6 max-w-xl text-base leading-7 text-newsfeed-muted sm:text-lg sm:leading-8">
+                This policy applies to every purchase on Oventric — marketplace items, services,
+                Academy courses and bounty escrow. It sets out when refunds apply, how disputes
+                are reviewed, and where your money goes.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button asChild size="lg">
+                  <Link to="/help">
+                    Visit the Help center <ArrowRight />
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="border-newsfeed-line bg-newsfeed-surface text-newsfeed-ink hover:bg-newsfeed-blue-soft hover:text-newsfeed-blue"
+                >
+                  <Link to="/report-problem">Report a problem</Link>
+                </Button>
+              </div>
+              <div className="mt-7 flex items-start gap-3 text-sm leading-6 text-newsfeed-muted">
+                <span className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-newsfeed-green-soft text-newsfeed-green">
+                  <ShieldCheck className="size-4" />
+                </span>
+                <span>
+                  Payments are held until delivery is confirmed — buyers are protected on every
+                  order.
+                </span>
+              </div>
+            </div>
+            <div className="relative min-h-[350px] overflow-hidden lg:min-h-full">
+              <img
+                src={legalImage}
+                alt="Scales of justice, documents and a shield representing Oventric refund and dispute protection"
+                width={1200}
+                height={900}
+                fetchPriority="high"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <div className="help-image-shade absolute inset-0" aria-hidden="true" />
+              <div className="absolute bottom-5 left-5 right-5 rounded-[10px] border border-newsfeed-surface/70 bg-newsfeed-surface/90 p-4 shadow-newsfeed-panel backdrop-blur-sm sm:bottom-8 sm:left-8 sm:right-auto sm:max-w-xs">
+                <div className="flex items-center gap-3">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-[10px] bg-newsfeed-blue-soft text-newsfeed-blue">
+                    <Scale className="size-5" />
+                  </span>
+                  <div>
+                    <p className="font-wallet-display text-sm font-bold">Fair, recorded decisions</p>
+                    <p className="mt-1 text-xs leading-5 text-newsfeed-muted">
+                      Every dispute decision is documented against the order.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </header>
+        </section>
 
-        <div className="about-spectrum h-1.5 w-full" aria-hidden="true" />
+        <div className="about-spectrum h-1 w-full" aria-hidden="true" />
 
         <div className="mx-auto max-w-5xl px-5 py-12 sm:px-8 sm:py-16 space-y-16">
           {/* Short version */}
           <section>
-            <SectionLabel>THE SHORT VERSION</SectionLabel>
-            <h2 className="mt-3 font-public-display text-2xl font-bold sm:text-3xl">
+            <p className="font-wallet-display text-sm font-bold text-newsfeed-coral">
+              THE SHORT VERSION
+            </p>
+            <h2 className="mt-4 font-wallet-display text-2xl font-bold leading-tight sm:text-3xl lg:text-4xl">
               Four things to know up front
             </h2>
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
               {overviewCards.map((card) => (
                 <div
                   key={card.title}
-                  className={`rounded-[10px] border bg-card p-5 shadow-sm border-t-4 ${card.border}`}
+                  className={`rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-5 shadow-sm border-t-4 ${card.border}`}
                 >
                   <span
                     className={`inline-grid size-10 place-items-center rounded-[10px] ${card.tone}`}
                   >
                     <card.icon className="size-5" />
                   </span>
-                  <h3 className="mt-4 font-public-display text-base font-bold">{card.title}</h3>
-                  <p className="mt-1.5 text-sm leading-6 text-muted-foreground">{card.body}</p>
+                  <h3 className="mt-4 font-wallet-display text-base font-bold">{card.title}</h3>
+                  <p className="mt-1.5 text-sm leading-6 text-newsfeed-muted">{card.body}</p>
                 </div>
               ))}
             </div>
@@ -220,11 +242,13 @@ function RefundsPage() {
           {/* Buyer protection */}
           <section className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
             <div>
-              <SectionLabel>BUYER PROTECTION</SectionLabel>
-              <h2 className="mt-3 font-public-display text-2xl font-bold sm:text-3xl">
+              <p className="font-wallet-display text-sm font-bold text-newsfeed-green">
+                BUYER PROTECTION
+              </p>
+              <h2 className="mt-4 font-wallet-display text-2xl font-bold leading-tight sm:text-3xl lg:text-4xl">
                 How protection works on every order
               </h2>
-              <p className="mt-4 text-sm leading-7 text-muted-foreground">
+              <p className="mt-4 text-sm leading-7 text-newsfeed-muted">
                 Oventric is a digital-only marketplace. Because goods cannot be physically
                 returned, protection is built into how money moves: payment is held, delivery is
                 verified against the record, and disputes are reviewed by people.
@@ -234,12 +258,12 @@ function RefundsPage() {
               {protectionPoints.map((point) => (
                 <li
                   key={point}
-                  className="flex items-start gap-3 rounded-[10px] border border-border bg-card p-4"
+                  className="flex items-start gap-3 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-4"
                 >
                   <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-newsfeed-green-soft text-newsfeed-green">
                     <Check className="size-3.5" />
                   </span>
-                  <span className="text-sm leading-6 text-foreground">{point}</span>
+                  <span className="text-sm leading-6">{point}</span>
                 </li>
               ))}
             </ul>
@@ -248,20 +272,22 @@ function RefundsPage() {
           {/* Digital products */}
           <section className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
             <div className="lg:sticky lg:top-24 self-start">
-              <SectionLabel>DIGITAL PRODUCTS</SectionLabel>
-              <h2 className="mt-3 font-public-display text-2xl font-bold sm:text-3xl">
+              <p className="font-wallet-display text-sm font-bold text-newsfeed-blue">
+                DIGITAL PRODUCTS
+              </p>
+              <h2 className="mt-4 font-wallet-display text-2xl font-bold leading-tight sm:text-3xl lg:text-4xl">
                 Files, licences, accounts and templates
               </h2>
-              <p className="mt-4 text-sm leading-7 text-muted-foreground">
+              <p className="mt-4 text-sm leading-7 text-newsfeed-muted">
                 Digital goods cannot be returned once delivered, so refunds focus on whether you
                 actually received what was described.
               </p>
             </div>
             <div className="space-y-4">
-              <div className="rounded-[10px] border border-newsfeed-green bg-card p-5 border-t-4">
+              <div className="rounded-[10px] border border-newsfeed-line border-t-4 border-t-newsfeed-green bg-newsfeed-surface p-5">
                 <div className="flex items-center gap-2.5">
                   <PackageOpen className="size-5 text-newsfeed-green" />
-                  <h3 className="font-public-display text-base font-bold">
+                  <h3 className="font-wallet-display text-base font-bold">
                     Refundable situations
                   </h3>
                 </div>
@@ -274,18 +300,16 @@ function RefundsPage() {
                   ))}
                 </ul>
               </div>
-              <div className="rounded-[10px] border border-newsfeed-coral bg-card p-5 border-t-4">
+              <div className="rounded-[10px] border border-newsfeed-line border-t-4 border-t-newsfeed-coral bg-newsfeed-surface p-5">
                 <div className="flex items-center gap-2.5">
                   <AlertTriangle className="size-5 text-newsfeed-coral" />
-                  <h3 className="font-public-display text-base font-bold">
-                    Not refundable
-                  </h3>
+                  <h3 className="font-wallet-display text-base font-bold">Not refundable</h3>
                 </div>
                 <ul className="mt-3 space-y-2.5">
                   {digitalNonRefundable.map((item) => (
                     <li
                       key={item}
-                      className="flex items-start gap-2.5 text-sm leading-6 text-muted-foreground"
+                      className="flex items-start gap-2.5 text-sm leading-6 text-newsfeed-muted"
                     >
                       <span className="mt-2 size-1.5 shrink-0 rounded-full bg-newsfeed-coral" />
                       <span>{item}</span>
@@ -299,11 +323,13 @@ function RefundsPage() {
           {/* Services & bounties */}
           <section className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
             <div className="lg:sticky lg:top-24 self-start">
-              <SectionLabel>SERVICES &amp; BOUNTIES</SectionLabel>
-              <h2 className="mt-3 font-public-display text-2xl font-bold sm:text-3xl">
+              <p className="font-wallet-display text-sm font-bold text-newsfeed-violet">
+                SERVICES &amp; BOUNTIES
+              </p>
+              <h2 className="mt-4 font-wallet-display text-2xl font-bold leading-tight sm:text-3xl lg:text-4xl">
                 Escrow protects both sides
               </h2>
-              <p className="mt-4 text-sm leading-7 text-muted-foreground">
+              <p className="mt-4 text-sm leading-7 text-newsfeed-muted">
                 Funds for services and bounties stay in escrow until work is delivered and
                 accepted — so providers are paid for real work, and buyers never pay for silence.
               </p>
@@ -312,26 +338,28 @@ function RefundsPage() {
               {servicePoints.map((point) => (
                 <li
                   key={point}
-                  className="flex items-start gap-3 rounded-[10px] border border-border bg-card p-4"
+                  className="flex items-start gap-3 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-4"
                 >
                   <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-newsfeed-violet-soft text-newsfeed-violet">
                     <HandCoins className="size-3.5" />
                   </span>
-                  <span className="text-sm leading-6 text-foreground">{point}</span>
+                  <span className="text-sm leading-6">{point}</span>
                 </li>
               ))}
             </ul>
           </section>
 
           {/* Courses */}
-          <section className="rounded-[10px] border border-newsfeed-blue border-t-4 bg-card p-6 sm:p-8">
+          <section className="rounded-[10px] border border-newsfeed-line border-t-4 border-t-newsfeed-blue bg-newsfeed-surface p-6 sm:p-8">
             <div className="flex items-center gap-3">
               <span className="grid size-11 place-items-center rounded-[10px] bg-newsfeed-blue-soft text-newsfeed-blue">
                 <GraduationCap className="size-5" />
               </span>
               <div>
-                <SectionLabel>ACADEMY COURSES</SectionLabel>
-                <h2 className="mt-1 font-public-display text-xl font-bold sm:text-2xl">
+                <p className="font-wallet-display text-sm font-bold text-newsfeed-blue">
+                  ACADEMY COURSES
+                </p>
+                <h2 className="mt-1 font-wallet-display text-xl font-bold sm:text-2xl">
                   A fair window to change your mind
                 </h2>
               </div>
@@ -351,21 +379,23 @@ function RefundsPage() {
 
           {/* How to request */}
           <section>
-            <SectionLabel>HOW TO REQUEST A REFUND</SectionLabel>
-            <h2 className="mt-3 font-public-display text-2xl font-bold sm:text-3xl">
+            <p className="font-wallet-display text-sm font-bold text-newsfeed-violet">
+              HOW TO REQUEST A REFUND
+            </p>
+            <h2 className="mt-4 font-wallet-display text-2xl font-bold leading-tight sm:text-3xl lg:text-4xl">
               Four steps, in order
             </h2>
             <ol className="mt-8 grid gap-4 sm:grid-cols-2">
               {refundSteps.map((step, index) => (
                 <li
                   key={step.title}
-                  className="relative rounded-[10px] border border-border bg-card p-5"
+                  className="relative rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-5"
                 >
-                  <span className="grid size-9 place-items-center rounded-full bg-newsfeed-violet-soft font-public-display text-sm font-bold text-newsfeed-violet">
+                  <span className="grid size-9 place-items-center rounded-full bg-newsfeed-violet-soft font-wallet-display text-sm font-bold text-newsfeed-violet">
                     {index + 1}
                   </span>
-                  <h3 className="mt-3 font-public-display text-base font-bold">{step.title}</h3>
-                  <p className="mt-1.5 text-sm leading-6 text-muted-foreground">{step.body}</p>
+                  <h3 className="mt-3 font-wallet-display text-base font-bold">{step.title}</h3>
+                  <p className="mt-1.5 text-sm leading-6 text-newsfeed-muted">{step.body}</p>
                 </li>
               ))}
             </ol>
@@ -373,14 +403,14 @@ function RefundsPage() {
 
           {/* Currency, cashback, chargebacks */}
           <section className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-[10px] border border-newsfeed-gold border-t-4 bg-card p-5">
+            <div className="rounded-[10px] border border-newsfeed-line border-t-4 border-t-newsfeed-gold bg-newsfeed-surface p-5">
               <Banknote className="size-5 text-newsfeed-gold" />
-              <h3 className="mt-3 font-public-display text-base font-bold">Currency &amp; fees</h3>
+              <h3 className="mt-3 font-wallet-display text-base font-bold">Currency &amp; fees</h3>
               <ul className="mt-3 space-y-2.5">
                 {currencyPoints.map((point) => (
                   <li
                     key={point}
-                    className="flex items-start gap-2 text-[13px] leading-5 text-muted-foreground"
+                    className="flex items-start gap-2 text-[13px] leading-5 text-newsfeed-muted"
                   >
                     <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-newsfeed-gold" />
                     <span>{point}</span>
@@ -388,21 +418,21 @@ function RefundsPage() {
                 ))}
               </ul>
             </div>
-            <div className="rounded-[10px] border border-newsfeed-green border-t-4 bg-card p-5">
+            <div className="rounded-[10px] border border-newsfeed-line border-t-4 border-t-newsfeed-green bg-newsfeed-surface p-5">
               <BadgePercent className="size-5 text-newsfeed-green" />
-              <h3 className="mt-3 font-public-display text-base font-bold">
+              <h3 className="mt-3 font-wallet-display text-base font-bold">
                 Cashback &amp; coupons
               </h3>
-              <p className="mt-3 text-[13px] leading-5 text-muted-foreground">
+              <p className="mt-3 text-[13px] leading-5 text-newsfeed-muted">
                 Cashback earned on an order is reversed when that order is refunded. If a coupon
                 was used, no cashback was earned in the first place — coupons and cashback are
                 never combined.
               </p>
             </div>
-            <div className="rounded-[10px] border border-newsfeed-coral border-t-4 bg-card p-5">
+            <div className="rounded-[10px] border border-newsfeed-line border-t-4 border-t-newsfeed-coral bg-newsfeed-surface p-5">
               <Scale className="size-5 text-newsfeed-coral" />
-              <h3 className="mt-3 font-public-display text-base font-bold">Chargebacks</h3>
-              <p className="mt-3 text-[13px] leading-5 text-muted-foreground">
+              <h3 className="mt-3 font-wallet-display text-base font-bold">Chargebacks</h3>
+              <p className="mt-3 text-[13px] leading-5 text-newsfeed-muted">
                 Please raise a dispute with us before contacting your bank. Accounts with
                 fraudulent chargebacks may be suspended and outstanding balances withheld.
               </p>
@@ -410,15 +440,15 @@ function RefundsPage() {
           </section>
 
           {/* Timing note */}
-          <section className="flex items-start gap-4 rounded-[10px] border border-border bg-secondary p-5 sm:p-6">
-            <span className="grid size-11 shrink-0 place-items-center rounded-[10px] bg-newsfeed-blue-soft text-newsfeed-blue">
+          <section className="flex items-start gap-4 rounded-[10px] border border-newsfeed-line bg-newsfeed-blue-soft/50 p-5 sm:p-6">
+            <span className="grid size-11 shrink-0 place-items-center rounded-[10px] bg-newsfeed-surface text-newsfeed-blue">
               <Clock3 className="size-5" />
             </span>
             <div>
-              <h3 className="font-public-display text-base font-bold">
+              <h3 className="font-wallet-display text-base font-bold">
                 How long does a refund take?
               </h3>
-              <p className="mt-1.5 text-sm leading-6 text-muted-foreground">
+              <p className="mt-1.5 text-sm leading-6 text-newsfeed-muted">
                 Once approved, refunds are credited to your Oventric wallet in your home currency
                 within 1–3 business days. From there you can spend the balance on Oventric or
                 withdraw it using your saved payout method.
@@ -427,44 +457,46 @@ function RefundsPage() {
           </section>
 
           {/* CTA */}
-          <section className="help-cta overflow-hidden rounded-[10px] p-7 sm:p-10">
+          <section className="help-cta overflow-hidden rounded-[10px] border border-newsfeed-line p-7 sm:p-10">
             <div className="max-w-2xl">
               <div className="flex items-center gap-2 text-newsfeed-coral">
                 <Headset className="size-4" />
-                <p className="text-xs font-bold uppercase tracking-widest">STILL STUCK?</p>
+                <p className="font-wallet-display text-xs font-bold uppercase tracking-widest">
+                  STILL STUCK?
+                </p>
               </div>
-              <h2 className="mt-3 font-public-display text-2xl font-bold sm:text-3xl">
+              <h2 className="mt-3 font-wallet-display text-2xl font-bold sm:text-3xl">
                 Report the order and we will look at the full record.
               </h2>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">
+              <p className="mt-3 text-sm leading-6 text-newsfeed-muted sm:text-base">
                 Include the order page, what you expected and what arrived. The dispute team
                 reviews the chat, the delivery and the listing before deciding.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Button asChild size="lg" className="rounded-[10px]">
+                <Button asChild size="lg">
                   <Link to="/report-problem">
-                    Report a problem <ArrowRight className="size-4" />
+                    Report a problem <ArrowRight />
                   </Link>
                 </Button>
                 <Button
                   asChild
                   size="lg"
                   variant="outline"
-                  className="rounded-[10px] border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+                  className="border-newsfeed-line bg-newsfeed-surface text-newsfeed-ink hover:bg-newsfeed-blue-soft hover:text-newsfeed-blue"
                 >
                   <Link to="/help">
-                    <MessageCircleMore className="size-4" /> Help center
+                    <MessageCircleMore /> Help center
                   </Link>
                 </Button>
               </div>
-              <p className="mt-5 flex items-center gap-2 text-xs text-muted-foreground">
+              <p className="mt-5 flex items-center gap-2 text-xs text-newsfeed-muted">
                 <ReceiptText className="size-3.5" /> Every decision is recorded against the order
                 and visible in your history.
               </p>
             </div>
           </section>
 
-          <p className="flex items-start gap-2 text-xs leading-5 text-muted-foreground">
+          <p className="flex items-start gap-2 text-xs leading-5 text-newsfeed-muted">
             <ListChecks className="mt-0.5 size-3.5 shrink-0" />
             This policy works together with the Oventric Terms and Privacy Policy. Where a
             listing promises more than this policy, the written listing terms on that order are
