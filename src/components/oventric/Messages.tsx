@@ -243,12 +243,12 @@ function MessageBubble({
           </div>
         )}
         <div
-          className={`text-[10px] mt-1 flex items-center gap-1 ${mine ? "text-chat-on-accent/75 justify-end" : "text-chat-muted"}`}
+          className={`text-[10px] mt-1 flex items-center gap-1 ${mine ? "ml-auto w-fit rounded-md bg-chat-surface/90 px-1.5 py-0.5 text-chat-violet justify-end" : "text-chat-muted"}`}
         >
           <span>{formatTime(msg.created_at)}</span>
           {mine && !msg.id.startsWith("tmp-") && (
             <span
-              className="text-chat-on-accent/75"
+              className="text-chat-violet"
               title={msg.read_at ? `Read ${formatTime(msg.read_at)}` : "Sent"}
               aria-label={msg.read_at ? "Read" : "Sent"}
             >
