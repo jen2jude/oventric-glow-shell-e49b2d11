@@ -385,7 +385,7 @@ interface PendingPost {
   error?: string;
 }
 
-export function Feed() {
+export function Feed({ homepageMenuVisible = false }: { homepageMenuVisible?: boolean } = {}) {
   const { require, tier } = useOnboarding();
   const isAppShell = useIsAppShell();
 
@@ -1309,7 +1309,7 @@ export function Feed() {
             searchOpen={searchOpen}
             onToggleSearch={() => setSearchOpen((v) => !v)}
           />
-        ) : (
+        ) : homepageMenuVisible ? null : (
           <FeedSocialBar
             onOpenMessages={() => window.dispatchEvent(new CustomEvent("oventric:open-messages"))}
             onOpenSearch={() => setSearchOpen(true)}

@@ -384,7 +384,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         <CirclesHub />
       </AppOnlyGate>
     ) : desktopLanding ? (
-      <Feed />
+      <Feed homepageMenuVisible />
     ) : (
       <Feed />
     );
@@ -405,7 +405,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
 
       <div className="flex h-full flex-col">
         {/* Managed Header (Desktop Landing/Browser Context only) */}
-        {desktopLanding && active !== "Feed" ? (
+        {desktopLanding ? (
           active === "Marketplace" ? (
             <MarketplaceHeader
               onSelect={setActive}
