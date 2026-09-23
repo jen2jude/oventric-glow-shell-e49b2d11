@@ -289,6 +289,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
 
         <div className="relative z-10 mx-auto flex w-full max-w-[1280px] flex-col justify-center gap-6 px-4 py-14 sm:px-6 sm:py-20 lg:min-h-[520px] lg:px-8 lg:py-28">
           <div>
+            <span className="home-pop-strip mb-4 block" aria-hidden="true" />
             <h1 className="font-wallet-display text-[26px] font-extrabold leading-[1.05] text-home-ink sm:text-[48px] lg:text-[58px]">
               1st Africa Digital
               <span className="block text-crimson">Marketplace & Community</span>
