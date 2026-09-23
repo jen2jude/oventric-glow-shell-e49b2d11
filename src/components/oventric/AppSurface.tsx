@@ -358,7 +358,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         description="Install the Oventric app to top up, withdraw, track earnings and manage cashback."
         from="wallet"
       >
-        <Wallet onSelect={setActive} />
+        <Wallet />
       </AppOnlyGate>
     ) : active === "Marketplace" ? (
       <Marketplace />
