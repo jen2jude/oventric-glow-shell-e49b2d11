@@ -17,6 +17,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { isSupportedCurrency } from "@/lib/currency/africa";
 import {
   buildManualPayment,
+  clearManualAttempt,
   listManualPayments,
   reviewManualPayment,
   signProofUrl,
