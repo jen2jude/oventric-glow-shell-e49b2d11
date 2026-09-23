@@ -16,7 +16,6 @@ import {
   Lock,
   ReceiptText,
   Sparkles,
-  ShoppingBag,
 } from "lucide-react";
 
 import { Header } from "@/components/oventric/Header";
@@ -220,8 +219,6 @@ function OrderPage() {
                 )}
               </section>
             )}
-            </div>
-
             <section className="mb-5 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-5 shadow-newsfeed-panel">
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div className="min-w-0">
