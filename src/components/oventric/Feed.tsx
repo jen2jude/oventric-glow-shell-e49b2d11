@@ -1717,10 +1717,10 @@ export function Feed() {
                   key={post.id}
                   ref={trackPostView(post.id)}
                   id={`post-${post.id}`}
-                  className={`scroll-mt-24 md:scroll-mt-28 [transition:border-color_400ms_ease,box-shadow_400ms_ease,opacity_300ms_ease] ${
+                 className={`scroll-mt-24 md:scroll-mt-28 [transition:border-color_400ms_ease,box-shadow_400ms_ease,opacity_300ms_ease] ${
                     isAppShell
                       ? "md:bg-white md:shadow-sm border bg-[#141416] rounded-none -mx-4 p-0 overflow-hidden border-x-0 md:mx-0 md:p-5 md:rounded-xl md:border-x"
-                       : "group/post relative bg-newsfeed-surface px-4 py-5 md:px-6 md:py-6 border-b border-newsfeed-line last:border-b-0"
+                       : "group/post relative border-b border-slate-100 bg-white px-4 py-3 transition-colors hover:bg-slate-50 last:border-b-0"
                   } ${isReported ? "opacity-70" : ""} ${
                     isNew
                       ? isAppShell
@@ -1736,14 +1736,13 @@ export function Feed() {
                       : { contentVisibility: "auto", containIntrinsicSize: "1px 600px" }
                   }
                 >
-                   {!isAppShell && <span aria-hidden className="absolute inset-y-0 left-0 w-0.5 bg-newsfeed-blue opacity-0 transition-opacity group-hover/post:opacity-100" />}
                    <header
-                    className={`flex items-center gap-3 mb-3 ${isAppShell ? "px-4 pt-4 md:px-0 md:pt-0" : ""}`}
+                     className={`flex items-center gap-3 mb-3 ${isAppShell ? "px-4 pt-4 md:px-0 md:pt-0" : ""}`}
                   >
                     <Link
                       to="/profile/$id"
                       params={{ id: profileSlug }}
-                      className={`rounded-full overflow-hidden flex items-center justify-center shrink-0 hover:ring-2 transition ${isAppShell ? "w-10 h-10 bg-[#1B1D1F] ring-1 ring-white/10 hover:ring-[#FF3EB5]/60" : "w-11 h-11 md:w-12 md:h-12 bg-slate-200 hover:ring-[#E5484D]/60"}`}
+                       className={`rounded-full overflow-hidden flex items-center justify-center shrink-0 hover:ring-2 transition ${isAppShell ? "w-10 h-10 bg-[#1B1D1F] ring-1 ring-white/10 hover:ring-[#FF3EB5]/60" : "h-10 w-10 border border-slate-200 bg-slate-100 hover:ring-newsfeed-blue/40"}`}
                     >
                       <AvatarImage
                         src={post.author_avatar_url}
@@ -1860,7 +1859,7 @@ export function Feed() {
                   </div>
 
                   {post.product_attachments && post.product_attachments.length > 0 && (
-                    <div className={`mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${isAppShell ? "mx-4 md:mx-0" : "-mx-4 md:-mx-6 px-4 md:px-6"}`}>
+                    <div className={`mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${isAppShell ? "mx-4 md:mx-0" : ""}`}>
                       {post.product_attachments.map((pa) => (
                         <ProductAttachmentCard 
                           key={pa.id} 
@@ -1886,13 +1885,13 @@ export function Feed() {
                       return (
                         <div
                           className={`relative mt-3 ${
-                            isAppShell
-                              ? layout.wrapperClass.replace("gap-1", "gap-[2px]")
-                              : `${layout.wrapperClass} -mx-4 md:-mx-6`
+                             isAppShell
+                               ? layout.wrapperClass.replace("gap-1", "gap-[2px]")
+                               : layout.wrapperClass.replace("gap-1", "gap-0.5")
                           } overflow-hidden ${
                             isAppShell
                               ? "mb-4 rounded-none border-y border-white/[0.06] md:mx-0 md:mb-0 md:rounded-[10px]"
-                              : "w-full"
+                               : "w-full rounded-[10px] border border-slate-100"
                           }`}
                         >
                           {displayed.map((url, i) => {
@@ -1967,15 +1966,15 @@ export function Feed() {
                     })()}
                   {post.media_url && post.media_type === "video" && (
                     <div
-                      className={`relative mt-3 ${isAppShell ? "pb-4 md:px-0 md:pb-0" : "-mx-4 md:-mx-6"}`}
+                     className={`relative mt-3 ${isAppShell ? "pb-4 md:px-0 md:pb-0" : "overflow-hidden rounded-[10px] border border-slate-100"}`}
                     >
                       <button
                         type="button"
                         onClick={() => setVideoStartId(post.id)}
                         className={`relative block w-full aspect-video overflow-hidden group bg-black ${
-                          isAppShell
-                            ? "rounded-none border-y border-white/[0.06]"
-                            : ""
+                           isAppShell
+                             ? "rounded-none border-y border-white/[0.06]"
+                             : "rounded-[10px]"
                         }`}
                         aria-label="Play video"
                       >
