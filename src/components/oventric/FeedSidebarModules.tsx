@@ -12,6 +12,7 @@ import { getWalletBalances } from "@/lib/wallet.functions";
 import { getTopSellers } from "@/lib/marketplace.functions";
 import { listCreatorFeed } from "@/lib/creators.functions";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
+import { Button } from "@/components/ui/button";
 
 function Card({
   title,
@@ -89,8 +90,11 @@ function MeCard({ onCreatePost }: { onCreatePost?: () => void }) {
   const balance = walletQ.data?.balances?.[currency] ?? 0;
 
   return (
-    <section className="overflow-hidden rounded-[10px] border border-slate-200 bg-white">
-      <div className="h-14 bg-gradient-to-r from-[#E5484D] to-[#f08a4b]" />
+    <section className="overflow-hidden rounded-[10px] border border-newsfeed-line bg-newsfeed-surface shadow-newsfeed-panel">
+      <div className="grid h-2 grid-cols-5">
+        <span className="bg-newsfeed-green" /><span className="bg-newsfeed-blue" /><span className="bg-newsfeed-violet" /><span className="bg-newsfeed-gold" /><span className="bg-newsfeed-coral" />
+      </div>
+      <div className="h-12 bg-newsfeed-blue-soft" />
       <div className="-mt-7 px-4 pb-4">
         <Link
           to="/profile/$id"
@@ -130,13 +134,13 @@ function MeCard({ onCreatePost }: { onCreatePost?: () => void }) {
         </div>
 
         {onCreatePost ? (
-          <button
+          <Button
             type="button"
             onClick={onCreatePost}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-[10px] bg-[#E5484D] py-2 text-[13px] font-semibold text-white hover:brightness-95"
+            className="mt-3 h-9 w-full gap-2 rounded-[10px] bg-newsfeed-violet text-newsfeed-on-accent hover:bg-newsfeed-violet/90"
           >
             <PenSquare className="h-4 w-4" /> Create post
-          </button>
+          </Button>
         ) : null}
 
         <div className="mt-2 grid grid-cols-2 gap-2">

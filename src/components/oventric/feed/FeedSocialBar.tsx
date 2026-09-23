@@ -41,18 +41,20 @@ export function FeedSocialBar({ onOpenMessages, onOpenSearch }: Props) {
     count?: number;
     onClick: () => void;
   }) => (
-    <button
+    <Button
       type="button"
+      variant="ghost"
+      size="icon"
       onClick={onClick}
       aria-label={label}
       title={label}
-      className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900 active:scale-95"
+      className="relative h-9 w-9 shrink-0 rounded-[10px] text-newsfeed-muted hover:bg-newsfeed-blue-soft hover:text-newsfeed-blue active:scale-95"
     >
       <span className="relative">
         <Icon className="h-[18px] w-[18px]" />
         <CountBadge count={count ?? 0} ariaLabel={`${count ?? 0} new ${label}`} />
       </span>
-    </button>
+    </Button>
   );
 
   return (
@@ -80,26 +82,30 @@ export function FeedSocialBar({ onOpenMessages, onOpenSearch }: Props) {
           >
             <Search className="h-[19px] w-[19px]" strokeWidth={1.9} />
           </Button>
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="icon"
             onClick={() => setNotifOpen(true)}
             aria-label="Notifications"
             title="Notifications"
-            className="relative grid h-10 w-10 shrink-0 place-items-center rounded-[10px] border border-home-line bg-create-bounty-soft text-create-bounty shadow-sm transition-transform active:scale-95 md:h-11 md:w-11"
+            className="relative h-10 w-10 shrink-0 rounded-[10px] border-newsfeed-line bg-newsfeed-violet-soft text-newsfeed-violet shadow-sm active:scale-95 md:h-11 md:w-11"
           >
             <Bell className="h-[19px] w-[19px]" strokeWidth={1.9} />
             <CountBadge count={unreadNotifs} ariaLabel={`${unreadNotifs} new notifications`} />
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="outline"
+            size="icon"
             onClick={onOpenMessages}
             aria-label="Chats"
             title="Chats"
-            className="relative grid h-10 w-10 shrink-0 place-items-center rounded-[10px] border border-home-line bg-create-course-soft text-create-course shadow-sm transition-transform active:scale-95 md:h-11 md:w-11"
+            className="relative h-10 w-10 shrink-0 rounded-[10px] border-newsfeed-line bg-newsfeed-green-soft text-newsfeed-green shadow-sm active:scale-95 md:h-11 md:w-11"
           >
             <MessageSquare className="h-[19px] w-[19px]" strokeWidth={1.9} />
             <CountBadge count={messages} ariaLabel={`${messages} unread chats`} />
-          </button>
+          </Button>
           <div className="ml-1 shrink-0">
             <ProfileDropdown trigger="mega" />
           </div>
@@ -107,17 +113,17 @@ export function FeedSocialBar({ onOpenMessages, onOpenSearch }: Props) {
       </header>
 
       <nav
-        className="z-40 hidden w-fit max-w-full items-center gap-1 overflow-x-auto rounded-full border border-slate-200 bg-white/95 p-1.5 shadow-sm backdrop-blur-md no-scrollbar lg:sticky lg:top-3 lg:flex"
+        className="z-40 hidden h-14 w-full max-w-full items-center gap-1 overflow-x-auto border-b border-newsfeed-line bg-newsfeed-surface/95 px-3 backdrop-blur-md no-scrollbar lg:sticky lg:top-0 lg:flex"
       >
         <Link
           to="/"
           aria-label="Back to home"
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-slate-50 px-4 py-1.5 text-sm font-medium text-slate-900 transition-colors hover:bg-slate-100"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-[10px] px-2.5 py-2 text-sm font-semibold text-newsfeed-muted transition-colors hover:bg-newsfeed-blue-soft hover:text-newsfeed-blue"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Home
         </Link>
-        <span aria-hidden className="mx-1 h-4 w-px shrink-0 bg-slate-200" />
+        <span className="ml-2 mr-auto font-wallet-display text-base font-bold text-newsfeed-ink">For You</span>
         <Item icon={Search} label="Search" onClick={onOpenSearch} />
         <Item
           icon={Bell}

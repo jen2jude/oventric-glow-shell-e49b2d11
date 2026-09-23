@@ -1271,7 +1271,7 @@ export function Feed() {
       className={
         isAppShell
           ? "social-feed-shell min-h-screen w-full bg-[#070A08] px-4 pb-24 pt-3 md:px-6 md:pb-10"
-          : "oventric-web web-feed min-h-screen w-full bg-[#F9FAFB] px-4 py-6 md:px-6 md:py-10"
+          : "oventric-web web-feed min-h-screen w-full bg-newsfeed-canvas px-0 py-0 sm:px-4 sm:py-5 md:px-6"
       }
     >
       {isAppShell && (
@@ -1302,8 +1302,8 @@ export function Feed() {
           Back to top
         </button>
       )}
-      <div className="mx-auto w-full min-w-0 max-w-2xl lg:grid lg:max-w-5xl lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start lg:gap-6">
-        <div className="min-w-0">
+      <div className="mx-auto w-full min-w-0 max-w-2xl lg:grid lg:max-w-[1120px] lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start lg:gap-5">
+        <div className="web-feed-timeline min-w-0">
         {isAppShell ? (
           <FeedAppChrome
             searchOpen={searchOpen}
@@ -1368,7 +1368,7 @@ export function Feed() {
             onClick={() => require(1, () => setComposerOpen(true), "seller")}
             className={isAppShell
               ? "group flex w-full items-center gap-3 rounded-[22px] border border-white/10 bg-[#1B1D1F] p-4 text-left transition-colors hover:border-[#FF3EB5]/45 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF3EB5]/60"
-              : "group flex w-full items-center gap-3 rounded-[10px] border border-slate-200 bg-white p-4 text-left shadow-sm transition-colors hover:border-slate-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+               : "group flex w-full items-center gap-3 border-b border-newsfeed-line bg-newsfeed-surface px-4 py-4 text-left transition-colors hover:bg-newsfeed-blue-soft/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-newsfeed-violet/30 md:px-5"
             }
           >
             <span
@@ -1382,7 +1382,7 @@ export function Feed() {
             <span
               className={isAppShell
                 ? "min-w-0 flex-1 px-1"
-                : "min-w-0 flex-1 rounded-[10px] bg-slate-50 px-4 py-3"
+                 : "min-w-0 flex-1 px-1 py-2"
               }
             >
               <span
@@ -1402,10 +1402,10 @@ export function Feed() {
               </span>
             ) : (
               <>
-                <span className="shrink-0 rounded-full bg-slate-100 p-2 text-slate-600" aria-hidden>
+                 <span className="shrink-0 rounded-[10px] bg-newsfeed-blue-soft p-2 text-newsfeed-blue" aria-hidden>
                   <ImageIcon className="h-5 w-5" strokeWidth={1.7} />
                 </span>
-                <span className="hidden shrink-0 rounded-[10px] bg-[#E5484D] px-5 py-2 text-sm font-semibold text-white transition-colors group-hover:bg-[#D43D42] sm:inline-block">
+                 <span className="hidden shrink-0 rounded-[10px] bg-newsfeed-violet px-5 py-2 text-sm font-semibold text-newsfeed-on-accent transition-colors group-hover:bg-newsfeed-violet/90 sm:inline-block">
                   Post
                 </span>
               </>
@@ -1413,7 +1413,7 @@ export function Feed() {
           </button>
         )}
 
-        <div className="px-1 pb-2">
+        <div>
           <FeedTabs tab={feedTab} onTabChange={setFeedTab} />
         </div>
 
@@ -1720,7 +1720,7 @@ export function Feed() {
                   className={`scroll-mt-24 md:scroll-mt-28 [transition:border-color_400ms_ease,box-shadow_400ms_ease,opacity_300ms_ease] ${
                     isAppShell
                       ? "md:bg-white md:shadow-sm border bg-[#141416] rounded-none -mx-4 p-0 overflow-hidden border-x-0 md:mx-0 md:p-5 md:rounded-xl md:border-x"
-                       : "bg-white px-4 md:px-6 py-5 md:py-6 border-b border-slate-100 last:border-b-0"
+                       : "group/post relative bg-newsfeed-surface px-4 py-5 md:px-6 md:py-6 border-b border-newsfeed-line last:border-b-0"
                   } ${isReported ? "opacity-70" : ""} ${
                     isNew
                       ? isAppShell
@@ -1736,7 +1736,8 @@ export function Feed() {
                       : { contentVisibility: "auto", containIntrinsicSize: "1px 600px" }
                   }
                 >
-                  <header
+                   {!isAppShell && <span aria-hidden className="absolute inset-y-0 left-0 w-0.5 bg-newsfeed-blue opacity-0 transition-opacity group-hover/post:opacity-100" />}
+                   <header
                     className={`flex items-center gap-3 mb-3 ${isAppShell ? "px-4 pt-4 md:px-0 md:pt-0" : ""}`}
                   >
                     <Link
@@ -1755,7 +1756,7 @@ export function Feed() {
                         <Link
                           to="/profile/$id"
                           params={{ id: profileSlug }}
-                          className={`text-sm transition-colors ${isAppShell ? "font-semibold text-white hover:text-[#FF3EB5]" : "font-wallet-display font-bold text-[15px] text-slate-900 hover:text-[#E5484D]"}`}
+                           className={`text-sm transition-colors ${isAppShell ? "font-semibold text-white hover:text-[#FF3EB5]" : "font-wallet-display font-bold text-[15px] text-newsfeed-ink hover:text-newsfeed-violet"}`}
                         >
                           {post.author_name}
                         </Link>
@@ -2086,7 +2087,7 @@ export function Feed() {
                     className={`relative flex items-center justify-start gap-5 mt-2 pt-1.5 md:border-slate-200 md:text-slate-600 text-xs ${
                       isAppShell
                         ? "border-t border-white/[0.06] px-3 pb-2 text-white/55 md:px-0 md:pb-0"
-                         : "border-t border-slate-200 text-slate-600"
+                          : "border-t border-newsfeed-line text-newsfeed-muted"
                     }`}
                   >
                     <div className="relative">
@@ -2299,7 +2300,7 @@ export function Feed() {
           </div>
         )}
         </div>
-        <aside className="hidden min-w-0 lg:sticky lg:top-6 lg:block lg:max-h-[calc(100dvh-3rem)] lg:overflow-y-auto lg:overscroll-contain">
+        <aside className="web-feed-rail hidden min-w-0 lg:sticky lg:top-5 lg:block lg:max-h-[calc(100dvh-2.5rem)] lg:overflow-y-auto lg:overscroll-contain lg:pr-1">
           <FeedSidebarModules modules="profile" onCreatePost={() => require(1, () => setComposerOpen(true), "seller")} />
           <div className="mt-4">
             <DiscoveryPanel />
