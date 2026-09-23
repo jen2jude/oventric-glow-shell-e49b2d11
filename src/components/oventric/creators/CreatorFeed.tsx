@@ -486,12 +486,35 @@ export function CreatorFeed({ reloadKey }: { reloadKey: number }) {
     return Array.from(set).slice(0, 8);
   }, [posts]);
 
-  const visible = field === "all" ? posts : posts.filter((p) => p.fields.includes(field));
+  const visible = (field === "all" ? posts : posts.filter((p) => p.fields.includes(field))).filter(
+    (p) => !hidden.has(p.id),
+  );
   const handleRecordedView = useCallback((postId: string) => {
     setPosts((current) =>
       current.map((post) => (post.id === postId ? { ...post, viewCount: post.viewCount + 1 } : post)),
     );
   }, []);
+  const handleHide = useCallback((postId: string) => {
+    setHidden((current) => new Set(current).add(postId));
+  }, []);
+  const handleDeleted = useCallback((postId: string) => {
+    setPosts((current) => current.filter((p) => p.id !== postId));
+  }, []);
+  const handleUpdated = useCallback(
+    (
+      postId: string,
+      patch: { title: string; caption: string | null; communityLink: string | null },
+    ) => {
+      setPosts((current) =>
+        current.map((p) =>
+          p.id === postId
+            ? { ...p, title: patch.title, caption: patch.caption, communityLink: patch.communityLink }
+            : p,
+        ),
+      );
+    },
+    [],
+  );
 
   if (loading) {
     return (
