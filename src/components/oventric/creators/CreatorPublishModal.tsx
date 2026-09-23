@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Download, FileUp, ImagePlus, Link2, X, Zap } from "lucide-react";
+import { Download, FileUp, ImagePlus, Link2, Sparkles, X, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { publishCreatorPost } from "@/lib/creators.functions";
@@ -304,16 +304,31 @@ export function CreatorPublishModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-end justify-center bg-black/50 backdrop-blur-[2px] sm:items-center sm:p-6">
-      <div className="flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl bg-white sm:rounded-3xl">
-        <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
-          <p className="text-sm font-black text-slate-900">Showcase your work</p>
-          <button type="button" onClick={onClose} aria-label="Close" className="text-slate-500">
+    <div className="fixed inset-0 z-[120] flex items-start justify-center bg-slate-950/45 p-3 pt-[max(14px,env(safe-area-inset-top))] backdrop-blur-[2px] sm:items-center sm:p-6">
+      <div className="flex max-h-[calc(100dvh-28px)] w-full max-w-lg flex-col overflow-hidden rounded-[18px] border border-white/80 bg-white shadow-2xl sm:max-h-[92vh]">
+        <div className="grid h-1.5 shrink-0 grid-cols-5" aria-hidden="true">
+          <span className="bg-emerald-500" />
+          <span className="bg-sky-500" />
+          <span className="bg-violet-500" />
+          <span className="bg-amber-400" />
+          <span className="bg-rose-500" />
+        </div>
+        <div className="flex items-center justify-between border-b border-slate-100 bg-white px-4 py-3">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-violet-50 text-violet-600">
+              <Sparkles className="h-4.5 w-4.5" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm font-black text-slate-900">Showcase your work</p>
+              <p className="truncate text-[11px] font-semibold text-slate-500">Share the craft behind your creator profile</p>
+            </div>
+          </div>
+          <Button type="button" variant="ghost" size="icon" onClick={onClose} aria-label="Close" className="h-9 w-9 shrink-0 rounded-full text-slate-500 hover:bg-rose-50 hover:text-rose-600">
             <X className="h-5 w-5" />
-          </button>
+          </Button>
         </div>
 
-        <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+        <div className="flex-1 space-y-3 overflow-y-auto overscroll-contain bg-slate-50/40 px-4 py-4 [scroll-behavior:smooth]">
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -328,7 +343,7 @@ export function CreatorPublishModal({
             className="w-full resize-none rounded-[10px] border border-slate-200 px-3 py-3 text-sm text-slate-900 outline-none focus:border-emerald-400"
           />
 
-          <div className="rounded-[10px] border border-dashed border-slate-300 p-3">
+          <div className="rounded-[10px] border border-dashed border-sky-200 bg-sky-50/60 p-3">
             <input
               ref={fileRef}
               type="file"
@@ -342,9 +357,11 @@ export function CreatorPublishModal({
                 type="button"
                 disabled={compressing}
                 onClick={() => fileRef.current?.click()}
-                className="flex w-full flex-col items-center gap-1.5 py-5 text-slate-500 disabled:opacity-60"
+                className="flex w-full flex-col items-center gap-1.5 rounded-[10px] py-5 text-slate-600 transition-colors hover:bg-white/70 disabled:opacity-60"
               >
-                <ImagePlus className="h-6 w-6 text-emerald-600" />
+                <span className="grid h-10 w-10 place-items-center rounded-[10px] bg-sky-100 text-sky-600">
+                  <ImagePlus className="h-5 w-5" />
+                </span>
                 <span className="text-xs font-bold">
                   {compressing ? "Preparing your clip…" : "Add images or a video"}
                 </span>
@@ -492,31 +509,31 @@ export function CreatorPublishModal({
             </p>
           </div>
 
-          <div className="flex items-center gap-2 rounded-[10px] border border-slate-200 px-3 py-2.5">
-            <Link2 className="h-4 w-4 shrink-0 text-sky-600" />
+          <div className="flex items-center gap-2 rounded-[10px] border border-violet-100 bg-violet-50/55 px-3 py-2.5 focus-within:border-violet-300">
+            <Link2 className="h-4 w-4 shrink-0 text-violet-600" />
             <input
               value={community}
               onChange={(e) => setCommunity(e.target.value)}
               placeholder="Telegram / WhatsApp channel link (optional)"
-              className="w-full text-sm outline-none"
+              className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
             />
           </div>
-          <div className="flex items-center gap-2 rounded-[10px] border border-slate-200 px-3 py-2.5">
-            <Link2 className="h-4 w-4 shrink-0 text-violet-600" />
+          <div className="flex items-center gap-2 rounded-[10px] border border-rose-100 bg-rose-50/55 px-3 py-2.5 focus-within:border-rose-300">
+            <Link2 className="h-4 w-4 shrink-0 text-rose-500" />
             <input
               value={external}
               onChange={(e) => setExternal(e.target.value)}
               placeholder="Longer video link — YouTube, Vimeo, Facebook, Telegram (optional)"
-              className="w-full text-sm outline-none"
+              className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
             />
           </div>
         </div>
 
-        <div className="border-t border-slate-100 p-4">
+        <div className="border-t border-slate-100 bg-white p-4 pb-[max(16px,env(safe-area-inset-bottom))]">
           <Button
             disabled={busy}
             onClick={submit}
-            className="h-12 w-full rounded-[10px] bg-emerald-600 text-base font-black text-white hover:bg-emerald-700"
+            className="h-12 w-full rounded-[10px] bg-violet-600 text-base font-black text-white shadow-lg shadow-violet-200/70 hover:bg-violet-700"
           >
             {busy ? "Publishing…" : "Publish"}
           </Button>
