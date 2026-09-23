@@ -138,6 +138,13 @@ export const adminReviewManualPayment = createServerFn({ method: "POST" })
     reviewManualPayment(context.supabase, context.userId, data.id, data.approve, data.reason),
   );
 
+export const adminClearManualAttempt = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string }) => ({ id: String(input?.id ?? "") }))
+  .handler(async ({ data, context }) =>
+    clearManualAttempt(context.supabase, context.userId, data.id),
+  );
+
 export const getManualProofUrl = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { path: string }) => ({ path: String(input?.path ?? "") }))

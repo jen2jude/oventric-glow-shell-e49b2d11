@@ -240,6 +240,31 @@ export async function listManualPayments(
   return rows.map((row) => mapRow({ ...row, profiles: profileByUser.get(String(row.user_id)) ?? null }));
 }
 
+/**
+ * Admin-only cleanup of an abandoned attempt: a pending row that never had a
+ * receipt submitted. Rows with proof are never deletable here — they must go
+ * through review so the audit trail stays intact.
+ */
+export async function clearManualAttempt(supabase: Sb, adminId: string, id: string) {
+  const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: adminId, _role: "admin" });
+  const { data: isFinance } = await supabase.rpc("has_role", { _user_id: adminId, _role: "finance" });
+  if (!isAdmin && !isFinance) throw new Error("Forbidden");
+
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: row, error } = await supabaseAdmin
+    .from("manual_payments")
+    .select("id, status, proof_path")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!row) throw new Error("Attempt not found");
+  if (row.proof_path) throw new Error("Receipt submitted — review it instead of clearing");
+  if (row.status !== "pending") throw new Error("Only pending attempts can be cleared");
+
+  const { error: delError } = await supabaseAdmin.from("manual_payments").delete().eq("id", id);
+  if (delError) throw new Error(delError.message);
+}
+
 export async function signProofUrl(supabase: Sb, path: string): Promise<string | null> {
   if (!path) return null;
   const { data } = await supabase.storage.from("payment-proofs").createSignedUrl(path, 600);
