@@ -3998,6 +3998,38 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
   }
 }
 
+/* Bright Spectrum home hub — same light signature as the newsfeed profile card
+   and the product publish sheet. */
+.hub-bright {
+  font-family: var(--font-wallet-body);
+  background: var(--newsfeed-canvas);
+  color: var(--newsfeed-ink);
+}
+.hub-bright h1,
+.hub-bright h2,
+.hub-bright h3 {
+  font-family: var(--font-wallet-display);
+  letter-spacing: -0.01em;
+}
+.hub-panel {
+  background: var(--newsfeed-surface);
+  border: 1px solid var(--newsfeed-line);
+  border-radius: 10px;
+  box-shadow: var(--newsfeed-panel-shadow);
+}
+.hub-strip {
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--newsfeed-blue),
+    var(--newsfeed-violet),
+    var(--newsfeed-green),
+    var(--newsfeed-gold),
+    var(--newsfeed-coral)
+  );
+}
+
 /* Web-native light create chooser — always light/premium outside the app shell,
    regardless of the global color theme. */
 .create-web {
