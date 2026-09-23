@@ -410,17 +410,8 @@ function CreatorCard({ post, onRecordedView }: { post: CreatorPostDTO; onRecorde
         <div className="mt-3">{post.asset && <AssetCta asset={post.asset} />}</div>
 
         {post.externalEmbedUrl && (
-        <div className="mt-3 aspect-video w-full overflow-hidden rounded-[10px] border border-slate-100 bg-white">
-          <iframe
-            src={post.externalEmbedUrl}
-            title={post.title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"
-            allowFullScreen
-            loading="lazy"
-            className="h-full w-full"
-          />
-        </div>
-      )}
+          <ViewportEmbed src={post.externalEmbedUrl} title={post.title} />
+        )}
 
       <LinkDock post={post} />
       </div>
