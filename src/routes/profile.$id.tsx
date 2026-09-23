@@ -332,8 +332,6 @@ function ProfilePage() {
   const [reportOpen, setReportOpen] = useState(false);
   const [aboutExpanded, setAboutExpanded] = useState(false);
   const [editProfileOpen, setEditProfileOpen] = useState(false);
-  const [joinCircleOpen, setJoinCircleOpen] = useState(false);
-  const [requestsOpen, setRequestsOpen] = useState(false);
   const [followRequestsOpen, setFollowRequestsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [mpLastRefreshed, setMpLastRefreshed] = useState<number | null>(null);
