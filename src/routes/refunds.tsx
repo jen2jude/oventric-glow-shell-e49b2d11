@@ -7,8 +7,6 @@ import {
   Check,
   Clock3,
   FileSearch,
-  GraduationCap,
-  HandCoins,
   Headset,
   ListChecks,
   MessageCircleMore,
@@ -303,63 +301,6 @@ function RefundsPage() {
                   ))}
                 </ul>
               </div>
-            </div>
-          </section>
-
-          {/* Services & bounties */}
-          <section className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-            <div className="lg:sticky lg:top-24 self-start">
-              <p className="font-wallet-display text-sm font-bold text-newsfeed-violet">
-                SERVICES &amp; BOUNTIES
-              </p>
-              <h2 className="mt-4 font-wallet-display text-2xl font-bold leading-tight sm:text-3xl lg:text-4xl">
-                Escrow protects both sides
-              </h2>
-              <p className="mt-4 text-sm leading-7 text-newsfeed-muted">
-                Funds for services and bounties stay in escrow until work is delivered and
-                accepted — so providers are paid for real work, and buyers never pay for silence.
-              </p>
-            </div>
-            <ul className="space-y-3">
-              {servicePoints.map((point) => (
-                <li
-                  key={point}
-                  className="flex items-start gap-3 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-4"
-                >
-                  <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-newsfeed-violet-soft text-newsfeed-violet">
-                    <HandCoins className="size-3.5" />
-                  </span>
-                  <span className="text-sm leading-6">{point}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          {/* Courses */}
-          <section className="rounded-[10px] border border-newsfeed-line border-t-4 border-t-newsfeed-blue bg-newsfeed-surface p-6 sm:p-8">
-            <div className="flex items-center gap-3">
-              <span className="grid size-11 place-items-center rounded-[10px] bg-newsfeed-blue-soft text-newsfeed-blue">
-                <GraduationCap className="size-5" />
-              </span>
-              <div>
-                <p className="font-wallet-display text-sm font-bold text-newsfeed-blue">
-                  ACADEMY COURSES
-                </p>
-                <h2 className="mt-1 font-wallet-display text-xl font-bold sm:text-2xl">
-                  A fair window to change your mind
-                </h2>
-              </div>
-            </div>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              {courseRules.map((rule) => (
-                <div
-                  key={rule}
-                  className="flex items-start gap-3 rounded-[10px] bg-newsfeed-blue-soft/60 p-4"
-                >
-                  <Check className="mt-0.5 size-4 shrink-0 text-newsfeed-blue" />
-                  <span className="text-sm leading-6">{rule}</span>
-                </div>
-              ))}
             </div>
           </section>
 
