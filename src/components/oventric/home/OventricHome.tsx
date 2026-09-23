@@ -831,28 +831,29 @@ function ProductCard({
         <CashbackBadge percentage={product.cashbackPct} className="absolute left-2 top-2" />
       </Link>
 
-      <div className={`flex flex-1 flex-col ${compact ? "gap-1 p-2" : "gap-2 p-3"}`}>
+      <div className={`flex flex-1 flex-col ${compact ? "gap-1 p-2" : "gap-1.5 p-3"}`}>
         <Link to="/product/$id" params={{ id: product.id }} className="min-w-0">
           <h3
-            className={`font-bold leading-snug text-slate-900 transition-colors group-hover:text-crimson ${compact ? "line-clamp-1 text-[12px]" : "line-clamp-2 text-[13px]"}`}
+            className={`font-bold leading-snug text-slate-900 transition-colors group-hover:text-crimson ${compact ? "line-clamp-1 text-[12px]" : "line-clamp-1 text-[13px]"}`}
           >
             {product.name}
           </h3>
         </Link>
 
-        <p className={`truncate text-slate-500 ${compact ? "text-[10px]" : "text-[11px]"}`}>
-          {product.vendor}
-        </p>
+        <div className={`flex items-center justify-between gap-2 ${compact ? "text-[10px]" : "text-[11px]"}`}>
+          <p className="truncate font-medium text-slate-500">
+            {product.vendor}
+          </p>
+          <p className="inline-flex shrink-0 items-center gap-1 font-semibold text-slate-600">
+            <Star className={`fill-[#F5A524] text-[#F5A524] ${compact ? "h-2.5 w-2.5" : "h-3 w-3"}`} />
+            {product.rating ? product.rating.toFixed(1) : "New"}
+            {product.reviews ? (
+              <span className="font-normal text-slate-400">({product.reviews})</span>
+            ) : null}
+          </p>
+        </div>
 
-        <p className={`inline-flex items-center gap-1 font-semibold text-slate-600 ${compact ? "text-[10px]" : "text-[11px]"}`}>
-          <Star className={`fill-[#F5A524] text-[#F5A524] ${compact ? "h-2.5 w-2.5" : "h-3 w-3"}`} />
-          {product.rating ? product.rating.toFixed(1) : "New"}
-          {product.reviews ? (
-            <span className="font-normal text-slate-400">({product.reviews})</span>
-          ) : null}
-        </p>
-
-        <div className="mt-auto flex items-center justify-between gap-2 pt-1">
+        <div className="mt-auto flex items-center justify-between gap-2 pt-0.5">
           <span className={`truncate font-extrabold text-slate-900 ${compact ? "text-xs" : "text-sm"}`}>
             {price}
           </span>
@@ -866,6 +867,7 @@ function ProductCard({
           </Link>
         </div>
       </div>
+
     </div>
   );
 }
