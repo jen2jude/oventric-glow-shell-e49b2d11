@@ -16,6 +16,7 @@ import {
   type ManualRail,
 } from "@/lib/payments/active-rails";
 import minipayQrAsset from "@/assets/minipay-qr.jpg.asset.json";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   /** Manual rail: MiniPay transfer or Binance User ID transfer. */
@@ -84,6 +85,27 @@ export function MiniPayPanel({
   const startedRef = useRef(false);
 
   useEffect(() => {
+    const scrollY = window.scrollY;
+    const previous = {
+      overflow: document.body.style.overflow,
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+    };
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+    return () => {
+      document.body.style.overflow = previous.overflow;
+      document.body.style.position = previous.position;
+      document.body.style.top = previous.top;
+      document.body.style.width = previous.width;
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
+
+  useEffect(() => {
     if (startedRef.current) return;
     startedRef.current = true;
     create({
@@ -146,64 +168,78 @@ export function MiniPayPanel({
   };
 
   return (
-    <div className="modal-light fixed inset-0 z-[120] bg-black/80 flex items-center justify-center p-4">
-      <div className="w-full sm:max-w-md bg-[#141418] border border-white/10 rounded-2xl overflow-hidden max-h-[90vh] flex flex-col shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+    <div className="modal-light fixed inset-0 z-[120] flex items-center justify-center bg-newsfeed-ink/55 p-3 sm:p-4">
+      <div className="relative flex max-h-[calc(100dvh-24px)] w-full flex-col overflow-hidden rounded-[10px] border border-newsfeed-line bg-newsfeed-surface shadow-2xl sm:max-w-md animate-in fade-in zoom-in-95 duration-200">
+        <div aria-hidden="true" className="grid h-1 shrink-0 grid-cols-5">
+          <span className="bg-newsfeed-coral" />
+          <span className="bg-newsfeed-gold" />
+          <span className="bg-newsfeed-green" />
+          <span className="bg-newsfeed-blue" />
+          <span className="bg-newsfeed-violet" />
+        </div>
+        <div className="flex items-center justify-between border-b border-newsfeed-line bg-newsfeed-surface px-4 py-3.5">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <h2 className="text-sm font-black text-white">
+            <span className="grid h-8 w-8 place-items-center rounded-[10px] bg-newsfeed-green-soft text-newsfeed-green">
+              <ShieldCheck className="w-4 h-4" />
+            </span>
+            <h2 className="text-sm font-black text-newsfeed-ink">
               Pay with {destination?.label ?? MANUAL_RAIL_LABEL[rail]}
             </h2>
           </div>
-          <button
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
             onClick={onClose}
-            className="p-1.5 rounded-[10px] hover:bg-white/10 text-slate-400"
+            className="rounded-full border border-newsfeed-line bg-newsfeed-canvas text-newsfeed-ink hover:bg-newsfeed-coral-soft hover:text-newsfeed-coral"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
 
-        <div className="p-4 space-y-4 overflow-y-auto">
+        <div className="space-y-4 overflow-y-auto overscroll-contain p-4 text-newsfeed-ink">
           {loading && (
             <div className="py-10 text-center">
-              <Loader2 className="w-6 h-6 animate-spin text-emerald-400 mx-auto" />
-              <p className="text-xs text-slate-500 mt-3">Preparing your payment instructions…</p>
+              <Loader2 className="mx-auto h-6 w-6 animate-spin text-newsfeed-green" />
+              <p className="mt-3 text-xs text-newsfeed-muted">Preparing your payment instructions…</p>
             </div>
           )}
 
-          {error && <p className="text-sm text-rose-400">{error}</p>}
+          {error && <p className="rounded-[10px] bg-newsfeed-coral-soft p-3 text-sm font-semibold text-newsfeed-coral">{error}</p>}
 
           {payment && !done && (
             <>
-              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 text-center">
+              <div className="rounded-[10px] border border-newsfeed-green/25 bg-newsfeed-green-soft p-4 text-center">
                 {rail === "minipay" && !destination && (
                   <div className="flex justify-center mb-4">
-                    <div className="relative p-2 bg-white rounded-xl">
+                    <div className="relative rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-2 shadow-sm">
                       <img loading="lazy" decoding="async"
                         src={minipayQrAsset.url}
                         alt="MiniPay QR Code"
                         className="w-48 h-48 object-contain"
                       />
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10">
-                        <QrCode className="w-24 h-24 text-black" />
+                         <QrCode className="w-24 h-24 text-newsfeed-ink" />
                       </div>
                     </div>
                   </div>
                 )}
                 
-                <div className="text-[11px] uppercase tracking-wider text-emerald-300/90 font-bold mb-1">
+                <div className="mb-1 text-[11px] font-bold uppercase text-newsfeed-green">
                   Amount to send
                 </div>
-                <button
+                <Button
+                  type="button"
+                  variant="ghost"
                   onClick={() => copy(String(payment.amount))}
-                  className="text-3xl font-black text-white inline-flex items-center gap-2 hover:opacity-90"
+                  className="h-auto px-2 py-1 text-3xl font-black text-newsfeed-ink hover:bg-newsfeed-surface/70"
                   aria-label="Copy amount"
                 >
                   {formatMoney(payment.amount, payment.currency)}
-                  <Copy className="w-4 h-4 text-emerald-300" />
-                </button>
-                <p className="mt-3 text-[10px] text-amber-300/90 font-medium bg-amber-500/10 py-1.5 px-3 rounded-full border border-amber-500/20">
+                  <Copy className="w-4 h-4 text-newsfeed-green" />
+                </Button>
+                <p className="mt-3 rounded-full border border-newsfeed-gold/30 bg-newsfeed-gold-soft px-3 py-1.5 text-[10px] font-bold text-newsfeed-ink">
                   Pay the full amount or your transaction won't be confirmed
                 </p>
               </div>
@@ -220,7 +256,7 @@ export function MiniPayPanel({
                     <Row key={r.label} label={r.label} value={r.value} onCopy={copy} />
                   ))}
                   {destination.network && !destination.extraRows && (
-                    <p className="text-[11px] text-amber-300/90">
+                    <p className="rounded-[10px] bg-newsfeed-gold-soft p-3 text-[11px] font-medium text-newsfeed-ink">
                       Send only on <span className="font-bold">{destination.network}</span>. Funds
                       sent on another network cannot be recovered.
                     </p>
@@ -236,28 +272,30 @@ export function MiniPayPanel({
               <Row label="Order / Payment ID" value={payment.reference} onCopy={copy} />
 
               {instructions.instructions && (
-                <p className="text-xs text-slate-400 leading-relaxed whitespace-pre-line">
+                <p className="whitespace-pre-line text-xs leading-relaxed text-newsfeed-muted">
                   {instructions.instructions}
                 </p>
               )}
 
-              <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-4 space-y-3">
-                <p className="text-xs text-amber-200/90 leading-relaxed">
+              <div className="space-y-3 rounded-[10px] border border-newsfeed-blue/25 bg-newsfeed-blue-soft p-4">
+                <p className="text-xs font-medium leading-relaxed text-newsfeed-ink">
                   This payment is confirmed manually — it is not automatic. After sending, message
                   the seller your Order / Payment ID so your order is confirmed quickly. We already
                   copied the full order details for you.
                 </p>
                 <div className="flex gap-2">
-                  <button
+                  <Button
+                    type="button"
+                    variant="outline"
                     onClick={() => copy(orderSummary || payment.reference)}
-                    className="flex-1 rounded-[10px] bg-white/10 hover:bg-white/15 text-white font-bold text-xs py-2"
+                    className="h-9 flex-1 rounded-[10px] border-newsfeed-blue/30 bg-newsfeed-surface text-xs font-bold text-newsfeed-blue hover:bg-newsfeed-blue-soft"
                   >
                     Copy order details
-                  </button>
+                  </Button>
                   {chatHref && (
                     <a
                       href={chatHref}
-                      className="flex-1 text-center rounded-[10px] bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs py-2"
+                      className="flex h-9 flex-1 items-center justify-center rounded-[10px] bg-newsfeed-blue px-3 text-center text-xs font-bold text-newsfeed-surface transition-opacity hover:opacity-90"
                     >
                       Message seller
                     </a>
@@ -265,8 +303,8 @@ export function MiniPayPanel({
                 </div>
               </div>
 
-              <div className="rounded-xl border border-white/10 bg-[#1E1E24] p-4">
-                <p className="text-xs text-slate-400 mb-3">
+              <div className="rounded-[10px] border border-newsfeed-violet/25 bg-newsfeed-violet-soft p-4">
+                <p className="mb-3 text-xs font-medium text-newsfeed-ink">
                   Send the exact amount, add your transfer details, then upload your receipt.
                 </p>
                 <input
@@ -277,7 +315,7 @@ export function MiniPayPanel({
                       ? "Binance order / transaction ID and sender name"
                       : "Transfer reference and sender name"
                   }
-                  className="mb-3 w-full rounded-[10px] border border-white/10 bg-[#141418] px-3 py-2 text-sm text-white placeholder:text-slate-500"
+                  className="mb-3 w-full rounded-[10px] border border-newsfeed-line bg-newsfeed-surface px-3 py-2.5 text-sm text-newsfeed-ink outline-none placeholder:text-newsfeed-muted focus:border-newsfeed-violet focus:ring-2 focus:ring-newsfeed-violet/15"
                 />
                 <input
                   ref={fileRef}
@@ -286,10 +324,11 @@ export function MiniPayPanel({
                   className="hidden"
                   onChange={(e) => onPick(e.target.files?.[0] ?? null)}
                 />
-                <button
+                <Button
+                  type="button"
                   onClick={() => fileRef.current?.click()}
                   disabled={uploading || payerRef.trim().length < 3}
-                  className="w-full rounded-[10px] bg-emerald-500 hover:bg-emerald-400 disabled:opacity-60 text-black font-bold text-sm py-2.5 flex items-center justify-center gap-2"
+                  className="h-11 w-full rounded-[10px] bg-newsfeed-violet text-sm font-bold text-newsfeed-surface hover:bg-newsfeed-violet/90"
                 >
                   {uploading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -297,28 +336,29 @@ export function MiniPayPanel({
                     <Upload className="w-4 h-4" />
                   )}
                   {uploading ? "Uploading…" : "Upload payment receipt"}
-                </button>
+                </Button>
               </div>
             </>
           )}
 
           {done && (
             <div className="py-8 text-center">
-              <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto mb-3" />
-              <h3 className="text-base font-black text-white">Receipt received</h3>
-              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+              <CheckCircle2 className="mx-auto mb-3 h-10 w-10 text-newsfeed-green" />
+              <h3 className="text-base font-black text-newsfeed-ink">Receipt received</h3>
+              <p className="mt-2 text-xs leading-relaxed text-newsfeed-muted">
                 Oventric finance is verifying your {MANUAL_RAIL_LABEL[rail]} transfer. You&apos;ll get a notification the
                 moment it clears
                 {purpose === "order"
                   ? " and your order goes live."
                   : " and the amount lands in your wallet."}
               </p>
-              <button
+              <Button
+                type="button"
                 onClick={onClose}
-                className="mt-5 w-full rounded-[10px] bg-white/10 hover:bg-white/15 text-white font-bold text-sm py-2.5"
+                className="mt-5 h-11 w-full rounded-[10px] bg-newsfeed-green text-sm font-bold text-newsfeed-surface hover:bg-newsfeed-green/90"
               >
                 Done
-              </button>
+              </Button>
             </div>
           )}
         </div>
@@ -337,20 +377,23 @@ function Row({
   onCopy: (v: string) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-[10px] border border-white/10 bg-[#1E1E24] px-3 py-2">
+    <div className="flex items-center justify-between gap-3 rounded-[10px] border border-newsfeed-line bg-newsfeed-canvas px-3 py-2.5">
       <div className="min-w-0">
-        <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
+        <div className="text-[10px] font-semibold uppercase text-newsfeed-muted">
           {label}
         </div>
-        <div className="text-sm text-white font-mono truncate">{value}</div>
+        <div className="truncate font-mono text-sm font-bold text-newsfeed-ink">{value}</div>
       </div>
-      <button
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-sm"
         onClick={() => onCopy(value)}
-        className="p-1.5 rounded-[10px] hover:bg-white/10 text-slate-400 shrink-0"
+        className="shrink-0 rounded-[10px] text-newsfeed-blue hover:bg-newsfeed-blue-soft hover:text-newsfeed-blue"
         aria-label={`Copy ${label}`}
       >
         <Copy className="w-3.5 h-3.5" />
-      </button>
+      </Button>
     </div>
   );
 }
