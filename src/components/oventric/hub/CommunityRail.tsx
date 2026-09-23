@@ -65,7 +65,7 @@ export function CommunityRail({ onOpenFeed }: { onOpenFeed: () => void }) {
           return (
             <div
               key={post.id}
-              className="shrink-0 w-[280px] snap-start rounded-[16px] border border-white/[0.06] bg-[#141416] p-3.5 space-y-3"
+              className="shrink-0 w-[280px] snap-start rounded-[10px] border border-slate-200 bg-white p-3.5 space-y-3 shadow-[0_10px_30px_-26px_rgba(15,23,42,0.5)]"
             >
               <div className="flex items-center justify-between gap-2">
                 <Link
@@ -73,16 +73,16 @@ export function CommunityRail({ onOpenFeed }: { onOpenFeed: () => void }) {
                   params={{ id: post.author_slug || post.author_id }}
                   className="flex items-center gap-2 min-w-0"
                 >
-                  <div className="w-9 h-9 rounded-full overflow-hidden border border-white/10 shrink-0">
+                  <div className="w-9 h-9 rounded-full overflow-hidden border border-slate-200 bg-slate-100 shrink-0">
                     <AvatarImage src={post.author_avatar_url} alt={post.author_name} />
                   </div>
                   <div className="flex flex-col min-w-0">
                     <div className="flex items-center gap-1 min-w-0">
-                      <span className="text-[12.5px] font-bold text-white truncate hover:text-[#E5484D] transition-colors">
+                      <span className="text-[12.5px] font-bold text-slate-900 truncate hover:text-violet-600 transition-colors">
                         {post.author_name}
                       </span>
                     </div>
-                    <span className="text-[10px] font-medium text-white/30 truncate">
+                    <span className="text-[10px] font-medium text-slate-400 truncate">
                       {timeAgo(post.created_at)}
                     </span>
                   </div>
@@ -110,12 +110,12 @@ export function CommunityRail({ onOpenFeed }: { onOpenFeed: () => void }) {
 
               <button type="button" onClick={onOpenFeed} className="w-full flex items-start gap-3 text-left">
                 {post.text ? (
-                  <p className="flex-1 min-w-0 text-[12.5px] leading-relaxed text-white/80 line-clamp-4">
+                  <p className="flex-1 min-w-0 text-[12.5px] leading-relaxed text-slate-600 line-clamp-4">
                     {post.text}
                   </p>
                 ) : null}
                 {thumb ? (
-                  <span className="shrink-0 w-16 h-16 rounded-[10px] overflow-hidden bg-[#1A1A1F] border border-white/5">
+                  <span className="shrink-0 w-16 h-16 rounded-[10px] overflow-hidden bg-slate-100 border border-slate-200">
                     <img
                       src={thumb}
                       alt=""
@@ -130,20 +130,20 @@ export function CommunityRail({ onOpenFeed }: { onOpenFeed: () => void }) {
               </button>
 
               <div className="flex items-center gap-5 pt-0.5">
-                <div className="flex items-center gap-1.5 text-white/40">
+                <div className="flex items-center gap-1.5 text-slate-500">
                   <Heart
                     className={`w-4 h-4 ${post.viewer_liked ? "fill-[#E5484D] text-[#E5484D]" : ""}`}
                   />
                   <span className="text-[11px] font-bold tabular-nums">{post.likes_count}</span>
                 </div>
-                <div className="flex items-center gap-1.5 text-white/40">
+                <div className="flex items-center gap-1.5 text-slate-500">
                   <MessageCircle className="w-4 h-4" />
                   <span className="text-[11px] font-bold tabular-nums">{post.comments_count}</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => shareUrl(`${origin}/#post-${post.id}`, `${post.author_name} on Oventric`)}
-                  className="text-white/40 hover:text-white transition-colors"
+                  className="text-slate-500 hover:text-violet-600 transition-colors"
                 >
                   <Send className="w-4 h-4" />
                 </button>
