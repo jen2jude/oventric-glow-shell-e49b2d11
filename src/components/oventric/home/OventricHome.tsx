@@ -68,25 +68,25 @@ const TILE_TINTS = [
 const TRUST = [
   {
     Icon: ShieldCheck,
-    tint: "bg-[#E8F8EF] text-[#1F9D62]",
+    tint: "bg-newsfeed-green-soft text-newsfeed-green",
     title: "Secure Payments",
     body: "Powered by Paystack",
   },
   {
     Icon: HeartHandshake,
-    tint: "bg-[#FFEDE4] text-[#D4622A]",
+    tint: "bg-newsfeed-coral-soft text-newsfeed-coral",
     title: "Support Creators",
     body: "Shop with impact",
   },
   {
     Icon: WalletIcon,
-    tint: "bg-[#F3ECFF] text-[#6F42D4]",
+    tint: "bg-newsfeed-violet-soft text-newsfeed-violet",
     title: "Seller Cashback",
     body: "Earn up to 50% cashback on digital product purchases",
   },
   {
     Icon: Globe2,
-    tint: "bg-[#EAF1FF] text-[#2F5FD0]",
+    tint: "bg-newsfeed-blue-soft text-newsfeed-blue",
     title: "Global Community",
     body: "Creators. Buyers. Builders.",
   },
@@ -98,37 +98,37 @@ const HANDWRITTEN = ["Ideas", "Skills", "Products", "Community", "Opportunities"
 const REASONS = [
   {
     Icon: WalletIcon,
-    tint: "bg-[#E8F8EF] text-[#1F9D62]",
+    tint: "bg-newsfeed-green-soft text-newsfeed-green",
     title: "Keep 80% of every sale",
     body: "Oventric takes a flat 20%. No listing fees, no monthly subscription, no hidden cuts.",
   },
   {
     Icon: ShieldCheck,
-    tint: "bg-[#EAF1FF] text-[#2F5FD0]",
+    tint: "bg-newsfeed-blue-soft text-newsfeed-blue",
     title: "Escrow on every order",
     body: "Buyer payments are held until the asset is delivered, then released to the seller.",
   },
   {
     Icon: Download,
-    tint: "bg-[#F3ECFF] text-[#6F42D4]",
+    tint: "bg-newsfeed-violet-soft text-newsfeed-violet",
     title: "Instant digital delivery",
     body: "Files and access links hand over in-app the moment a payment is confirmed.",
   },
   {
     Icon: Banknote,
-    tint: "bg-[#FFF6E2] text-[#C58318]",
+    tint: "bg-newsfeed-gold-soft text-newsfeed-gold",
     title: "Withdraw in your currency",
     body: "Earnings land in your Oventric wallet and cash out to your local bank account.",
   },
   {
     Icon: Clock,
-    tint: "bg-[#FFEDE4] text-[#D4622A]",
+    tint: "bg-newsfeed-coral-soft text-newsfeed-coral",
     title: "Fast, automatic release",
     body: "Completed orders settle automatically — no chasing buyers for confirmation.",
   },
   {
     Icon: Headphones,
-    tint: "bg-[#E3F6F6] text-[#158C8C]",
+    tint: "bg-newsfeed-blue-soft text-newsfeed-blue",
     title: "Support & disputes",
     body: "Raise a dispute on any order and get a mediated resolution from our team.",
   },
