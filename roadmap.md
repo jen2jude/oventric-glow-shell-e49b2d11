@@ -12,3 +12,4 @@
 - [x] Verify creator timestamps and add real view/download counters in the Creators feed.
 - [x] Resume unfinished product listings with private per-seller browser drafts, including images and files.
 - [x] Redesign the About page as a complete Oventric company story, including platform ecosystem, trust model, Nigerian registration, and certificate display.
+- [x] Redesign the Help page as a full Bright Spectrum support journey with practical guides and verified support links.
