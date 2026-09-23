@@ -307,11 +307,6 @@
   );
 }
 
-/* Five-colour rotation so the spectrum reads across every card row. */
-.home-pop-trust-card:nth-child(5n + 5),
-.home-pop-category:nth-child(5n + 5),
-.home-pop-product:nth-child(5n + 5),
-.home-pop-reason:nth-child(5n + 5) { --home-card-accent: var(--home-pop-green); }
 
 .home-pop-hero::before,
 .home-pop-hero::after {
