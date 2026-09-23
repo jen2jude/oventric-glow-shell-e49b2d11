@@ -276,6 +276,113 @@ export const publishCreatorPost = createServerFn({ method: "POST" })
   });
 
 
+const EditInput = z.object({
+  postId: z.string().uuid(),
+  title: z.string().trim().min(2).max(120),
+  caption: z.string().trim().max(2000).optional().nullable(),
+  communityLink: z.string().trim().max(300).optional().nullable(),
+});
+
+/** Owner-only edit of a showcase post's text and community link. */
+export const updateCreatorPost = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => EditInput.parse(input ?? {}))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("creator_posts")
+      .update({
+        title: data.title,
+        caption: data.caption || null,
+        community_link: data.communityLink || null,
+      })
+      .eq("id", data.postId)
+      .eq("author_id", context.userId);
+    if (error) {
+      console.error("[updateCreatorPost]", error);
+      throw new Error("Couldn't save your changes");
+    }
+    return { ok: true };
+  });
+
+/** Owner-only delete of a showcase post. */
+export const deleteCreatorPost = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ postId: z.string().uuid() }).parse(input ?? {}))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("creator_posts")
+      .delete()
+      .eq("id", data.postId)
+      .eq("author_id", context.userId);
+    if (error) {
+      console.error("[deleteCreatorPost]", error);
+      throw new Error("Couldn't delete this post");
+    }
+    return { ok: true };
+  });
+
+const SaveInput = z.object({
+  postId: z.string().uuid(),
+  title: z.string().trim().max(160),
+  imageUrl: z.string().trim().max(1000).optional().nullable(),
+});
+
+/** Saves a showcase post into the signed-in member's "Saved" board. */
+export const saveCreatorPostToCollection = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => SaveInput.parse(input ?? {}))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const url = `/feed?tab=creators&post=${data.postId}`;
+
+    let boardId: string | null = null;
+    const { data: existing } = await supabase
+      .from("collections")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("title", "Saved")
+      .maybeSingle();
+    boardId = (existing as { id: string } | null)?.id ?? null;
+
+    if (!boardId) {
+      const { data: created, error } = await supabase
+        .from("collections")
+        .insert({
+          user_id: userId,
+          title: "Saved",
+          slug: `saved-${Math.random().toString(36).slice(2, 6)}`,
+          is_public: false,
+        })
+        .select("id")
+        .single();
+      if (error) throw new Error("Couldn't create your saved board");
+      boardId = created.id as string;
+    }
+
+    const { data: dupe } = await supabase
+      .from("collection_items")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("collection_id", boardId)
+      .eq("url", url)
+      .maybeSingle();
+    if (dupe) return { ok: true, alreadySaved: true };
+
+    const { error: itemError } = await supabase.from("collection_items").insert({
+      collection_id: boardId,
+      user_id: userId,
+      kind: "link",
+      url,
+      title: data.title,
+      image_url: data.imageUrl || null,
+    });
+    if (itemError) {
+      console.error("[saveCreatorPostToCollection]", itemError);
+      throw new Error("Couldn't save this post");
+    }
+    return { ok: true, alreadySaved: false };
+  });
+
 /** Public creator showcase feed. */
 export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
   async (): Promise<CreatorPostDTO[]> => {

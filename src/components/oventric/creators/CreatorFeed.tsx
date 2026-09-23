@@ -9,6 +9,8 @@ import { listCreatorFeed, recordCreatorPostView, type CreatorPostDTO } from "@/l
 import { computeDisplayPrice } from "@/lib/fx-display";
 import { createOrder, getOrderWithDownload } from "@/lib/marketplace.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
+import { CreatorPostMenu } from "./CreatorPostMenu";
+import { getHiddenPosts } from "@/components/oventric/PostActionsMenu";
 
 
 function compactNumber(value: number) {
@@ -299,7 +301,24 @@ function LinkDock({ post }: { post: CreatorPostDTO }) {
   );
 }
 
-function CreatorCard({ post, onRecordedView }: { post: CreatorPostDTO; onRecordedView: (postId: string) => void }) {
+function CreatorCard({
+  post,
+  onRecordedView,
+  isOwner,
+  onHide,
+  onDeleted,
+  onUpdated,
+}: {
+  post: CreatorPostDTO;
+  onRecordedView: (postId: string) => void;
+  isOwner: boolean;
+  onHide: (postId: string) => void;
+  onDeleted: (postId: string) => void;
+  onUpdated: (
+    postId: string,
+    patch: { title: string; caption: string | null; communityLink: string | null },
+  ) => void;
+}) {
   const recordView = useServerFn(recordCreatorPostView);
   const articleRef = useRef<HTMLElement>(null);
   const initials = post.author.name
@@ -383,6 +402,15 @@ function CreatorCard({ post, onRecordedView }: { post: CreatorPostDTO; onRecorde
           <span className="shrink-0 text-[11px] text-slate-400">
             · {relativeTime(post.createdAt)}
           </span>
+          <div className="ml-auto">
+            <CreatorPostMenu
+              post={post}
+              isOwner={isOwner}
+              onHide={onHide}
+              onDeleted={onDeleted}
+              onUpdated={onUpdated}
+            />
+          </div>
         </div>
         <div className="mt-0.5 flex items-center gap-2 text-[11px] text-slate-500">
           {post.fields.length > 0 && <span className="truncate">{post.fields.join(" · ")}</span>}
@@ -425,6 +453,20 @@ export function CreatorFeed({ reloadKey }: { reloadKey: number }) {
   const [posts, setPosts] = useState<CreatorPostDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [field, setField] = useState<string>("all");
+  const [meId, setMeId] = useState<string | null>(null);
+  const [hidden, setHidden] = useState<Set<string>>(() => new Set());
+
+  useEffect(() => {
+    setHidden(getHiddenPosts());
+    let alive = true;
+    supabase.auth.getUser().then(({ data }) => {
+      if (alive) setMeId(data.user?.id ?? null);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
 
   useEffect(() => {
     let alive = true;
@@ -444,12 +486,35 @@ export function CreatorFeed({ reloadKey }: { reloadKey: number }) {
     return Array.from(set).slice(0, 8);
   }, [posts]);
 
-  const visible = field === "all" ? posts : posts.filter((p) => p.fields.includes(field));
+  const visible = (field === "all" ? posts : posts.filter((p) => p.fields.includes(field))).filter(
+    (p) => !hidden.has(p.id),
+  );
   const handleRecordedView = useCallback((postId: string) => {
     setPosts((current) =>
       current.map((post) => (post.id === postId ? { ...post, viewCount: post.viewCount + 1 } : post)),
     );
   }, []);
+  const handleHide = useCallback((postId: string) => {
+    setHidden((current) => new Set(current).add(postId));
+  }, []);
+  const handleDeleted = useCallback((postId: string) => {
+    setPosts((current) => current.filter((p) => p.id !== postId));
+  }, []);
+  const handleUpdated = useCallback(
+    (
+      postId: string,
+      patch: { title: string; caption: string | null; communityLink: string | null },
+    ) => {
+      setPosts((current) =>
+        current.map((p) =>
+          p.id === postId
+            ? { ...p, title: patch.title, caption: patch.caption, communityLink: patch.communityLink }
+            : p,
+        ),
+      );
+    },
+    [],
+  );
 
   if (loading) {
     return (
@@ -491,7 +556,15 @@ export function CreatorFeed({ reloadKey }: { reloadKey: number }) {
         </div>
       )}
       {visible.map((p) => (
-        <CreatorCard key={p.id} post={p} onRecordedView={handleRecordedView} />
+        <CreatorCard
+          key={p.id}
+          post={p}
+          onRecordedView={handleRecordedView}
+          isOwner={!!meId && meId === p.author.userId}
+          onHide={handleHide}
+          onDeleted={handleDeleted}
+          onUpdated={handleUpdated}
+        />
       ))}
     </div>
   );
