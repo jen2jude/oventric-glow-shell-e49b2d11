@@ -464,7 +464,10 @@ function CreatorPostOverlay({
             <X className="h-5 w-5" />
           </Button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-white pb-[env(safe-area-inset-bottom)]">
+        <div
+          ref={scrollRef}
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-white pb-[env(safe-area-inset-bottom)]"
+        >
           {loading && (
             <div className="grid min-h-64 place-items-center text-center">
               <div><LoaderCircle className="mx-auto h-6 w-6 animate-spin text-violet-600" /><p className="mt-2 text-xs font-bold text-slate-700">Opening post…</p></div>
@@ -475,16 +478,24 @@ function CreatorPostOverlay({
               <div><Bookmark className="mx-auto h-6 w-6 text-rose-500" /><p className="mt-2 text-sm font-black text-slate-950">This creator post is no longer available.</p></div>
             </div>
           )}
-          {post && (
-            <CreatorCard
-              post={post}
-              onRecordedView={() => setPost((current) => current ? { ...current, viewCount: current.viewCount + 1 } : current)}
-              isOwner={meId === post.author.userId}
-              onHide={onClose}
-              onDeleted={onClose}
-              onUpdated={(_, patch) => setPost((current) => current ? { ...current, ...patch } : current)}
-            />
-          )}
+          {posts.map((p) => (
+            <div key={p.id} data-post-id={p.id} className="border-b border-slate-100 last:border-b-0">
+              <CreatorCard
+                post={p}
+                onRecordedView={() =>
+                  setPosts((current) =>
+                    current.map((c) => (c.id === p.id ? { ...c, viewCount: c.viewCount + 1 } : c)),
+                  )
+                }
+                isOwner={meId === p.author.userId}
+                onHide={() => setPosts((current) => current.filter((c) => c.id !== p.id))}
+                onDeleted={() => setPosts((current) => current.filter((c) => c.id !== p.id))}
+                onUpdated={(_, patch) =>
+                  setPosts((current) => current.map((c) => (c.id === p.id ? { ...c, ...patch } : c)))
+                }
+              />
+            </div>
+          ))}
         </div>
       </div>
     </div>,
