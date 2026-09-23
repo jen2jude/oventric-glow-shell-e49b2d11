@@ -213,6 +213,7 @@
   --newsfeed-coral: oklch(0.67 0.2 25);
   --newsfeed-coral-soft: oklch(0.965 0.035 25);
   --newsfeed-panel-shadow: 0 18px 50px -34px color-mix(in oklab, var(--newsfeed-ink) 32%, transparent);
+  --about-on-image: oklch(1 0 0);
   --contact-surface: oklch(1 0 0);
   --contact-ink: oklch(0.22 0.03 258);
   --contact-copy: oklch(0.47 0.025 255);
@@ -4042,6 +4043,11 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
     color-mix(in oklab, var(--newsfeed-ink) 72%, transparent) 48%,
     color-mix(in oklab, var(--newsfeed-ink) 18%, transparent) 100%
   );
+}
+.about-hero-copy,
+.about-hero-copy h1,
+.about-hero-copy p {
+  color: var(--about-on-image);
 }
 .about-spectrum {
   background: linear-gradient(

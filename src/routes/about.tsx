@@ -20,7 +20,6 @@ import {
   Search,
   ShieldCheck,
   ShoppingBag,
-  Sparkles,
   Store,
   Users,
   WalletCards,
@@ -118,15 +117,15 @@ function AboutPage() {
             className="absolute inset-0 h-full w-full object-cover"
           />
           <div className="about-hero-shade absolute inset-0" />
-          <div className="relative mx-auto flex min-h-[680px] max-w-7xl flex-col justify-end px-5 pb-16 pt-24 sm:min-h-[720px] sm:px-8 sm:pb-20 lg:min-h-[760px] lg:px-10 lg:pb-24">
+          <div className="about-hero-copy relative mx-auto flex min-h-[680px] max-w-7xl flex-col justify-end px-5 pb-16 pt-24 sm:min-h-[720px] sm:px-8 sm:pb-20 lg:min-h-[760px] lg:px-10 lg:pb-24">
             <div className="mb-7 h-1 w-36 rounded-full bg-newsfeed-coral" aria-hidden="true" />
-            <p className="font-wallet-display text-sm font-bold uppercase tracking-normal text-primary-foreground">
+            <p className="font-wallet-display text-sm font-bold uppercase tracking-normal">
               Built in Africa. Open to digital ambition everywhere.
             </p>
-            <h1 className="mt-5 max-w-5xl font-wallet-display text-5xl font-extrabold leading-[1.02] text-primary-foreground sm:text-7xl lg:text-8xl">
+            <h1 className="mt-5 max-w-5xl font-wallet-display text-5xl font-extrabold leading-[1.02] sm:text-7xl lg:text-8xl">
               Oventric connects identity, community and digital opportunity.
             </h1>
-            <p className="mt-7 max-w-3xl text-base leading-7 text-primary-foreground sm:text-xl sm:leading-8">
+            <p className="mt-7 max-w-3xl text-base leading-7 sm:text-xl sm:leading-8">
               One dependable place for creators to be seen, sellers to build trusted businesses, buyers to discover useful digital work, and communities to grow around real people.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
