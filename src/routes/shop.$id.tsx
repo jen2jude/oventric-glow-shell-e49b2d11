@@ -1,5 +1,4 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { SiteFooterAuto } from "@/components/oventric/desktop/SiteFooterAuto";
 import { Header } from "@/components/oventric/Header";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -312,7 +311,7 @@ function ShopPage() {
   return (
     <div className={`min-h-screen ${!isAppShell ? "oventric-web web-storefront bg-background text-foreground" : "bg-[#0A0A0B] text-white"}`}>
       {!isAppShell && (
-        <div className="sticky top-0 z-50">
+        <div className="storefront-header sticky top-0 z-50">
           <Header
           onOpenMessages={() => setDmOpen(true)}
           forceSiteNavbar
@@ -337,10 +336,13 @@ function ShopPage() {
         <button
           type="button"
           onClick={handleBack}
-          aria-label="Back"
-          className="grid h-9 w-9 place-items-center rounded-full bg-white/10 hover:bg-white/15"
+          aria-label="Back to previous page"
+          className="group inline-flex h-10 items-center gap-2 rounded-full border border-white/10 bg-white/10 py-2 pl-2.5 pr-4 text-[13px] font-semibold text-white transition hover:border-emerald-400/40 hover:bg-white/15"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-400/15 text-emerald-400 transition group-hover:-translate-x-0.5">
+            <ArrowLeft className="h-3.5 w-3.5" />
+          </span>
+          Back
         </button>
         <div className="min-w-0 flex-1 truncate text-[11px] font-black uppercase tracking-widest text-slate-400">Branded Storefront</div>
         {isOwner && (
@@ -355,6 +357,19 @@ function ShopPage() {
       </div>}
 
       <div className={`mx-auto w-full px-4 pb-20 md:px-8 lg:px-12 ${isAppShell ? "max-w-[720px] md:max-w-[900px] lg:max-w-[1000px]" : "max-w-[1240px] pt-4 md:pt-8"}`}>
+        {!isAppShell && (
+          <button
+            type="button"
+            onClick={handleBack}
+            aria-label="Back to previous page"
+            className="group mb-4 inline-flex h-10 items-center gap-2 rounded-full border border-newsfeed-line bg-newsfeed-surface py-2 pl-2.5 pr-4 text-[13px] font-semibold text-newsfeed-ink shadow-sm transition hover:border-newsfeed-green/40 hover:shadow md:mb-6"
+          >
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-newsfeed-green-soft text-newsfeed-green transition group-hover:-translate-x-0.5">
+              <ArrowLeft className="h-3.5 w-3.5" />
+            </span>
+            Back
+          </button>
+        )}
         {/* Cover */}
         <div className={`relative w-full overflow-hidden ${isAppShell ? "h-48 sm:h-64" : "storefront-cover h-40 rounded-lg sm:h-64 lg:h-72"}`}>
           {shop?.coverUrl ? (
@@ -748,7 +763,6 @@ function ShopPage() {
           defaultCountry={shop.country}
         />
       )}
-      {!isAppShell && <SiteFooterAuto />}
     </div>
   );
 }

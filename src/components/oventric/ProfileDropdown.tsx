@@ -15,6 +15,7 @@ import {
   EyeOff,
   LayoutDashboard,
   User,
+  Store,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
@@ -475,9 +476,25 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
       >
         <span className="grid size-8 shrink-0 place-items-center rounded-[8px] bg-newsfeed-green-soft text-newsfeed-green"><UserCircle2 className="h-4 w-4" aria-hidden /></span>
         <div className="min-w-0">
-          <div className="font-semibold truncate">View My Workspace</div>
+          <div className="font-semibold truncate">Social Profile</div>
           <div className="truncate text-[10px] text-newsfeed-muted">
-            Your /profile aggregator tab view
+            Your public identity and community activity
+          </div>
+        </div>
+      </Link>
+      <Link
+        to="/shop/$id"
+        params={{ id: userId }}
+        role="menuitem"
+        tabIndex={-1}
+        onClick={() => closeMenu(false)}
+        className="flex items-center gap-3 rounded-[10px] px-2 py-3 text-sm text-newsfeed-ink transition-colors hover:bg-newsfeed-gold-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-newsfeed-gold/40"
+      >
+        <span className="grid size-8 shrink-0 place-items-center rounded-[8px] bg-newsfeed-gold-soft text-newsfeed-gold"><Store className="h-4 w-4" aria-hidden /></span>
+        <div className="min-w-0">
+          <div className="font-semibold truncate">Shop Profile</div>
+          <div className="truncate text-[10px] text-newsfeed-muted">
+            Your storefront, products and shop details
           </div>
         </div>
       </Link>
