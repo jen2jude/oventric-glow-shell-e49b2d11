@@ -191,7 +191,7 @@ export function OrderFulfilmentRoadmap({
         </h3>
         <ol className="flex flex-col gap-0">
           <TimelineRow
-            label="Payment held in escrow"
+            label={data.requiresManualDelivery ? "Payment held in escrow" : "Payment confirmed"}
             at={data.paidAt}
             expected={null}
             last={false}
@@ -275,9 +275,18 @@ export function OrderFulfilmentRoadmap({
       )}
 
       <div className="rounded-[10px] border border-emerald-200 bg-emerald-50 px-3 py-3 mb-3 text-[11px] text-emerald-900 leading-relaxed">
-        <strong className="text-emerald-700">Keep this trade on Oventric.</strong> Payments are held
-        in escrow and we can only refund or mediate deals completed in-app. Deliver, chat and
-        confirm here — never on WhatsApp or any other app.
+        {data.requiresManualDelivery ? (
+          <>
+            <strong className="text-emerald-700">Keep this trade on Oventric.</strong> Payment stays
+            protected while delivery is completed here. Deliver, chat and confirm here — never on
+            WhatsApp or any other app.
+          </>
+        ) : (
+          <>
+            <strong className="text-emerald-700">Your purchase is complete.</strong> The download is
+            available from this receipt and My purchases whenever you need a fresh secure link.
+          </>
+        )}
       </div>
 
       {/* Actions */}
