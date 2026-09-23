@@ -224,11 +224,15 @@ export function ImageLightbox(props: GalleryProps | LegacyProps) {
     >
       <button
         type="button"
-        onClick={onClose}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
         aria-label="Close"
-        className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/70 hover:bg-black text-white border border-white/20"
+        className="absolute z-20 p-2.5 rounded-full bg-white text-black shadow-lg hover:bg-white/90 border border-black/10"
+        style={{ top: "calc(env(safe-area-inset-top, 0px) + 16px)", right: "16px" }}
       >
-        <X className="w-5 h-5" />
+        <X className="w-5 h-5" strokeWidth={2.5} />
       </button>
 
       {total > 1 && (
