@@ -9,29 +9,29 @@ const TABS = [
     key: "foryou",
     label: "For You",
     icon: Sparkles,
-    active: "border-sky-200 bg-sky-50 text-sky-700",
-    idle: "border-sky-100 bg-sky-50/55 text-sky-600",
+    active: "text-newsfeed-blue border-newsfeed-blue",
+    idle: "text-newsfeed-muted border-transparent hover:text-newsfeed-blue",
   },
   {
     key: "following",
     label: "Following",
     icon: UsersRound,
-    active: "border-violet-200 bg-violet-50 text-violet-700",
-    idle: "border-violet-100 bg-violet-50/55 text-violet-600",
+    active: "text-newsfeed-violet border-newsfeed-violet",
+    idle: "text-newsfeed-muted border-transparent hover:text-newsfeed-violet",
   },
   {
     key: "creators",
     label: "Creators",
     icon: BadgeCheck,
-    active: "border-emerald-200 bg-emerald-50 text-emerald-700",
-    idle: "border-emerald-100 bg-emerald-50/55 text-emerald-600",
+    active: "text-newsfeed-green border-newsfeed-green",
+    idle: "text-newsfeed-muted border-transparent hover:text-newsfeed-green",
   },
   {
     key: "shops",
     label: "Shops",
     icon: Store,
-    active: "border-amber-200 bg-amber-50 text-amber-700",
-    idle: "border-amber-100 bg-amber-50/55 text-amber-600",
+    active: "text-newsfeed-gold border-newsfeed-gold",
+    idle: "text-newsfeed-muted border-transparent hover:text-newsfeed-gold",
   },
 ] satisfies Array<{
   key: FeedTab;
@@ -54,7 +54,7 @@ export function FeedTabs({ tab, onTabChange }: { tab: FeedTab; onTabChange: (tab
     <nav
       ref={railRef}
       aria-label="Newsfeed views"
-      className="-mx-4 flex snap-x gap-2 overflow-x-auto px-4 py-1 no-scrollbar scroll-smooth md:mx-0 md:px-0"
+      className="flex snap-x overflow-x-auto border-b border-newsfeed-line bg-newsfeed-surface px-2 no-scrollbar scroll-smooth"
     >
       {TABS.map(({ key, label, icon: Icon, active, idle }) => {
         const selected = tab === key;
@@ -62,12 +62,12 @@ export function FeedTabs({ tab, onTabChange }: { tab: FeedTab; onTabChange: (tab
           <Button
             key={key}
             type="button"
-            variant="outline"
+            variant="ghost"
             data-feed-tab={key}
             aria-pressed={selected}
             onClick={() => onTabChange(key)}
-            className={`h-10 shrink-0 snap-start gap-2 rounded-[10px] px-3.5 text-xs font-bold shadow-none transition-all ${
-              selected ? `${active} ring-1 ring-current/10` : `${idle} hover:brightness-95`
+            className={`h-12 flex-1 shrink-0 snap-start gap-2 rounded-none border-x-0 border-t-0 border-b-2 bg-transparent px-3.5 text-xs font-bold shadow-none transition-colors ${
+              selected ? active : idle
             }`}
           >
             <Icon className="h-4 w-4" strokeWidth={2} />

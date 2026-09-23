@@ -115,6 +115,19 @@
   --color-newsfeed-surface: var(--newsfeed-surface);
   --color-newsfeed-accent: var(--newsfeed-accent);
   --color-newsfeed-on-accent: var(--newsfeed-on-accent);
+  --color-newsfeed-line: var(--newsfeed-line);
+  --color-newsfeed-muted: var(--newsfeed-muted);
+  --color-newsfeed-blue: var(--newsfeed-blue);
+  --color-newsfeed-blue-soft: var(--newsfeed-blue-soft);
+  --color-newsfeed-violet: var(--newsfeed-violet);
+  --color-newsfeed-violet-soft: var(--newsfeed-violet-soft);
+  --color-newsfeed-green: var(--newsfeed-green);
+  --color-newsfeed-green-soft: var(--newsfeed-green-soft);
+  --color-newsfeed-gold: var(--newsfeed-gold);
+  --color-newsfeed-gold-soft: var(--newsfeed-gold-soft);
+  --color-newsfeed-coral: var(--newsfeed-coral);
+  --color-newsfeed-coral-soft: var(--newsfeed-coral-soft);
+  --shadow-newsfeed-panel: var(--newsfeed-panel-shadow);
   --color-home-canvas: var(--home-canvas);
   --color-home-surface: var(--home-surface);
   --color-home-ink: var(--home-ink);
@@ -182,11 +195,24 @@
 }
 
 :root {
-  --newsfeed-canvas: oklch(0.955 0.008 250);
+  --newsfeed-canvas: oklch(0.975 0.012 245);
   --newsfeed-ink: oklch(0.21 0.025 260);
   --newsfeed-surface: oklch(1 0 0);
-  --newsfeed-accent: oklch(0.61 0.2 22);
+  --newsfeed-accent: oklch(0.62 0.18 300);
   --newsfeed-on-accent: oklch(1 0 0);
+  --newsfeed-line: oklch(0.92 0.016 250);
+  --newsfeed-muted: oklch(0.52 0.025 255);
+  --newsfeed-blue: oklch(0.65 0.16 245);
+  --newsfeed-blue-soft: oklch(0.965 0.03 245);
+  --newsfeed-violet: oklch(0.62 0.18 300);
+  --newsfeed-violet-soft: oklch(0.965 0.035 300);
+  --newsfeed-green: oklch(0.64 0.17 155);
+  --newsfeed-green-soft: oklch(0.965 0.035 155);
+  --newsfeed-gold: oklch(0.79 0.15 85);
+  --newsfeed-gold-soft: oklch(0.97 0.04 85);
+  --newsfeed-coral: oklch(0.67 0.2 25);
+  --newsfeed-coral-soft: oklch(0.965 0.035 25);
+  --newsfeed-panel-shadow: 0 18px 50px -34px color-mix(in oklab, var(--newsfeed-ink) 32%, transparent);
   --contact-surface: oklch(1 0 0);
   --contact-ink: oklch(0.22 0.03 258);
   --contact-copy: oklch(0.47 0.025 255);
@@ -3929,28 +3955,42 @@ body[data-chat-open="1"] [data-testid="app-tab-bar"] {
 /* App shell: product attachment accents follow the pink feed palette. */
 html.oventric-app .attach-accent { color: #FF3EB5; }
 
-/* ---------------------------------------------------------------------------
-   Refined Crimson Minimalist — web newsfeed skin.
-   Light editorial surface for browser visitors (the dark app shell is excluded).
---------------------------------------------------------------------------- */
+/* Bright Spectrum social hub — X-like density with Oventric category accents. */
 .web-feed {
   font-family: var(--font-wallet-body);
+  color: var(--newsfeed-ink);
 }
 .web-feed h1,
 .web-feed h2,
 .web-feed h3,
 .web-feed .font-wallet-display {
   font-family: var(--font-wallet-display);
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
+}
+.web-feed-timeline {
+  background: var(--newsfeed-surface);
+  border: 1px solid var(--newsfeed-line);
+  box-shadow: var(--newsfeed-panel-shadow);
+}
+.web-feed-rail {
+  scrollbar-width: thin;
+  scrollbar-color: var(--newsfeed-line) transparent;
 }
 .web-feed article {
   transition:
+    background-color 180ms ease,
     border-color 200ms ease,
     box-shadow 200ms ease;
 }
 .web-feed article:hover {
-  border-color: rgb(229 72 77 / 0.25);
-  box-shadow: 0 8px 24px -16px rgb(15 23 42 / 0.35);
+  background: color-mix(in oklab, var(--newsfeed-blue-soft) 42%, white);
+  border-color: var(--newsfeed-line);
+  box-shadow: none;
+}
+@media (min-width: 1024px) {
+  .web-feed-timeline {
+    border-radius: 10px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .web-feed article {
