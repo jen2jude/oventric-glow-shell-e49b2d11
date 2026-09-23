@@ -58,7 +58,7 @@ export function parseVideoEmbed(input: string): VideoEmbed | null {
     return {
       provider: "facebook",
       url: url.toString(),
-      embedUrl: `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url.toString())}&show_text=false`,
+      embedUrl: `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url.toString())}&show_text=false&autoplay=true&mute=1`,
     };
   }
 
