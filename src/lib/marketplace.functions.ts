@@ -391,6 +391,46 @@ export const getProduct = createServerFn({ method: "POST" })
     return dto;
   });
 
+/** Active products from the same marketplace category for product-detail recommendations. */
+export const getRelatedProducts = createServerFn({ method: "POST" })
+  .inputValidator((input: { productId: string; category: string; kind: ProductKind }) => ({
+    productId: String(input?.productId ?? ""),
+    category: String(input?.category ?? "").trim(),
+    kind: input?.kind === "service" ? "service" as const : "digital" as const,
+  }))
+  .handler(async ({ data }) => {
+    if (!data.productId || !data.category) return [] as ProductDTO[];
+    const sb = serverPublicClient();
+    const { data: rows, error } = await sb
+      .from("products")
+      .select(PRODUCT_COLS)
+      .eq("status", "active")
+      .eq("in_stock", true)
+      .eq("creator_asset", false)
+      .eq("kind", data.kind)
+      .eq("category", data.category)
+      .neq("id", data.productId)
+      .order("promoted", { ascending: false })
+      .order("reviews", { ascending: false })
+      .order("rating", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(8);
+    if (error) throw new Error(error.message);
+
+    const products = (rows ?? []) as Record<string, unknown>[];
+    const covers = await signCovers(
+      sb,
+      products.map((row) => (row.cover_path as string) ?? null),
+    );
+    const shopNames = await fetchShopNames(sb, products.map((row) => row.seller_id as string));
+    return products.map((row, index) => {
+      const dto = mapProduct(row, covers[index] ?? null);
+      const shopName = shopNames.get(dto.sellerId);
+      if (shopName) dto.vendor = shopName;
+      return dto;
+    });
+  });
+
 /** Revalidate browser-stored viewing history against the live public catalogue. */
 export const getRecentProducts = createServerFn({ method: "POST" })
   .inputValidator((input: { ids: string[] }) => ({

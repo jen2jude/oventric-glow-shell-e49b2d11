@@ -23,7 +23,6 @@ import {
   Copy,
 } from "lucide-react";
 import { toast } from "sonner";
-import { SiteFooterAuto } from "@/components/oventric/desktop/SiteFooterAuto";
 import { Header } from "@/components/oventric/Header";
 import {
   Accordion,
@@ -36,6 +35,7 @@ import { MobileNav } from "@/components/oventric/MobileNav";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import {
   getProduct,
+  getRelatedProducts,
   type ProductDTO,
 } from "@/lib/marketplace.functions";
 import { getProductRating, rateProduct, replyToReview } from "@/lib/product-reviews.functions";
@@ -378,7 +378,9 @@ function ProductPage() {
   }, [routeSlug, id]);
   const { baseCurrency, require } = useOnboarding();
   const load = useServerFn(getProduct);
+  const loadRelated = useServerFn(getRelatedProducts);
   const [product, setProduct] = useState<ProductDTO | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<ProductDTO[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
   const [contactOpen, setContactOpen] = useState(false);
@@ -431,6 +433,26 @@ function ProductPage() {
       cancelled = true;
     };
   }, [id, load]);
+
+  useEffect(() => {
+    if (!product) {
+      setRelatedProducts([]);
+      return;
+    }
+    let cancelled = false;
+    loadRelated({
+      data: { productId: product.id, category: product.category, kind: product.kind },
+    })
+      .then((items) => {
+        if (!cancelled) setRelatedProducts(items);
+      })
+      .catch(() => {
+        if (!cancelled) setRelatedProducts([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [product?.id, product?.category, product?.kind, loadRelated]);
 
   useEffect(() => {
     if (product?.kind !== "service") {
@@ -1012,10 +1034,90 @@ function ProductPage() {
             <div className={`lg:col-span-2 ${!isAppShell ? "lg:hidden" : "px-4"}`}>
               <ProductComments productId={product.id} />
             </div>
+
+            {relatedProducts.length > 0 && (
+              <section className={`lg:col-span-12 ${isAppShell ? "px-1" : ""}`} aria-labelledby="related-products-title">
+                <div className="mb-4 flex items-end justify-between gap-4 border-t border-newsfeed-line pt-7 sm:pt-9">
+                  <div>
+                    <div className="mb-2 flex h-1.5 w-24 overflow-hidden rounded-full" aria-hidden="true">
+                      <span className="flex-1 bg-newsfeed-coral" />
+                      <span className="flex-1 bg-newsfeed-gold" />
+                      <span className="flex-1 bg-newsfeed-blue" />
+                      <span className="flex-1 bg-newsfeed-violet" />
+                    </div>
+                    <h2 id="related-products-title" className="text-xl font-extrabold text-newsfeed-ink sm:text-2xl">
+                      You might also like
+                    </h2>
+                    <p className="mt-1 text-sm font-medium text-newsfeed-muted">
+                      More from {product.category}
+                    </p>
+                  </div>
+                  <Link
+                    to="/marketplace"
+                    className="shrink-0 text-sm font-bold text-newsfeed-coral hover:underline"
+                  >
+                    Browse all
+                  </Link>
+                </div>
+
+                <div className="flex snap-x gap-3 overflow-x-auto pb-2 scrollbar-none sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-4 lg:gap-4">
+                  {relatedProducts.slice(0, 4).map((related) => {
+                    const display = productDisplay(related, baseCurrency);
+                    return (
+                      <Link
+                        key={related.id}
+                        to="/product/$id"
+                        params={{ id: related.slug ?? related.id }}
+                        search={{ qty: 1 }}
+                        className="group w-[72vw] max-w-[270px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-newsfeed-line bg-newsfeed-surface shadow-sm transition-transform hover:-translate-y-0.5 sm:w-auto sm:max-w-none"
+                      >
+                        <div className="relative aspect-[4/3] overflow-hidden bg-newsfeed-blue-soft">
+                          {related.coverUrl ? (
+                            <ResponsiveImage
+                              src={related.coverUrl}
+                              alt={related.name}
+                              sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 72vw"
+                              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          ) : (
+                            <div className="grid h-full place-items-center">
+                              <ShoppingBag className="h-8 w-8 text-newsfeed-blue/35" />
+                            </div>
+                          )}
+                          {related.promoted && (
+                            <span className="absolute left-2.5 top-2.5 rounded-full bg-newsfeed-gold-soft px-2 py-1 text-[10px] font-extrabold text-newsfeed-ink">
+                              Featured
+                            </span>
+                          )}
+                        </div>
+                        <div className="p-3.5">
+                          <div className="mb-1 flex items-center justify-between gap-2 text-[11px] font-bold text-newsfeed-muted">
+                            <span className="truncate">{related.vendor}</span>
+                            {related.reviews > 0 && (
+                              <span className="flex shrink-0 items-center gap-1 text-newsfeed-ink">
+                                <Star className="h-3.5 w-3.5 fill-newsfeed-gold text-newsfeed-gold" />
+                                {related.rating.toFixed(1)}
+                              </span>
+                            )}
+                          </div>
+                          <h3 className="line-clamp-2 min-h-10 text-sm font-extrabold leading-5 text-newsfeed-ink">
+                            {related.name}
+                          </h3>
+                          <div className="mt-3 text-base font-extrabold text-newsfeed-coral">
+                            {display.value === 0 ? "Free" : display.formatted}
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
           </div>
         )}
       </main>
-      {!isAppShell && <SiteFooterAuto />}
       {product && editOpen && meId === product.sellerId && (
         <EditListingModal
           product={product}
