@@ -548,6 +548,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                     onClick={() => void discardDraft()}
                     disabled={submitting}
                     className="h-9 rounded-[10px] px-2 text-[11px] font-bold text-contact-coral hover:bg-contact-coral/10 hover:text-contact-coral sm:px-3"
+                    aria-label="Discard draft"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">Discard draft</span>
