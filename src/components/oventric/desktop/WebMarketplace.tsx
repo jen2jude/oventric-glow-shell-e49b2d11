@@ -355,17 +355,18 @@ export function WebMarketplace() {
 
   return (
     <div className="web-marketplace min-h-screen bg-background text-foreground">
+      <div className="about-spectrum h-1 w-full" aria-hidden />
       <main className="mx-auto w-full max-w-[1440px] px-4 py-7 sm:px-6 sm:py-10 lg:px-11 lg:py-12">
         <header className="grid gap-6 border-b border-border pb-7 md:grid-cols-[minmax(0,1fr)_minmax(360px,520px)] md:items-end">
           <div className="min-w-0">
-            <span className="text-[11px] font-extrabold uppercase text-primary">Oventric Marketplace</span>
+            <span className="inline-flex rounded-full bg-newsfeed-violet-soft px-3 py-1 text-[11px] font-extrabold uppercase text-newsfeed-violet">Oventric Marketplace</span>
             <h1 className="font-wallet-display mt-2 text-[34px] font-bold leading-tight sm:text-[42px]">Digital products from sellers you can trust.</h1>
             <p className="mt-2 max-w-xl text-[15px] leading-relaxed text-muted-foreground">Discover creator-made tools, software and services, protected by escrow and priced in your currency.</p>
           </div>
           <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
             <div className="relative min-w-0">
-              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search products, sellers or categories" className="h-12 w-full rounded-[10px] border border-input bg-card pl-10 pr-4 text-[14px] outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10" />
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-newsfeed-violet" />
+              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search products, sellers or categories" className="h-12 w-full rounded-[10px] border border-newsfeed-line bg-newsfeed-surface pl-10 pr-4 text-[14px] outline-none placeholder:text-newsfeed-muted focus:border-newsfeed-violet focus:ring-2 focus:ring-newsfeed-violet/10" />
             </div>
             <Button variant="outline" className="h-12 rounded-[10px] px-4 lg:hidden" onClick={() => setFiltersOpen(true)}><SlidersHorizontal /> <span className="hidden sm:inline">Filters</span>{activeFilters > 0 && <span>({activeFilters})</span>}</Button>
           </div>
@@ -379,7 +380,7 @@ export function WebMarketplace() {
         </div>
 
         {sellers.length > 0 && !query.trim() && (
-          <section className="py-8">
+          <section className="marketplace-spectrum-section py-8">
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4">
               <div className="min-w-0"><h2 className="font-wallet-display text-[24px] font-bold">Shop by seller</h2><p className="mt-1 text-[13px] text-muted-foreground">Meet trusted creators and explore their storefronts.</p></div>
               <Button variant="ghost" className="px-2 text-primary" onClick={() => navigate({ to: "/sellers" })}>View all <ArrowRight /></Button>
@@ -391,7 +392,7 @@ export function WebMarketplace() {
         )}
 
         {!loading && movingPool.length > 0 && !query.trim() && (
-          <section className="border-y border-border py-8">
+          <section className="marketplace-spectrum-section border-y border-border py-8">
             <h2 className="font-wallet-display text-[24px] font-bold">Featured digital products</h2>
             <p className="mt-1 text-[13px] text-muted-foreground">Popular picks from Oventric sellers.</p>
             <div className="no-scrollbar -mx-4 mt-5 flex snap-x gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:px-0 lg:grid-cols-4">
@@ -400,7 +401,7 @@ export function WebMarketplace() {
           </section>
         )}
 
-        <section className="pt-8">
+        <section className="marketplace-spectrum-section pt-8">
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 pb-5">
             <div className="min-w-0"><h2 className="font-wallet-display text-[24px] font-bold">Explore the marketplace</h2><p className="mt-1 text-[13px] text-muted-foreground">Compare every available digital product.</p></div>
             <select value={sort} onChange={(event) => setSort(event.target.value as SortKey)} className="h-10 max-w-[150px] rounded-[10px] border border-input bg-card px-3 text-[12px] font-bold outline-none sm:max-w-none">{SORTS.map((option) => <option key={option.key} value={option.key}>{option.label}</option>)}</select>
