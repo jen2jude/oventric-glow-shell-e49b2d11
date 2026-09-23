@@ -150,7 +150,7 @@ export function Wallet() {
     { label: "Home", icon: Home, onClick: () => navigate({ to: "/" }) },
     { label: "Explore", icon: Compass, onClick: () => navigate({ to: "/explore" }) },
     { label: "Marketplace", icon: Store, onClick: () => navigate({ to: "/marketplace" }) },
-    { label: "Feed", icon: Newspaper, onClick: () => navigate({ to: "/feed", search: {} }) },
+    { label: "Feed", icon: Newspaper, onClick: () => navigate({ to: "/feed", search: { post: undefined } }) },
     { label: "Messages", icon: MessageSquare, onClick: () => navigate({ to: "/messages" }) },
     { label: "Wallet", icon: WalletIcon, onClick: () => navigate({ to: "/wallet" }) },
     { label: "Orders", icon: Package, onClick: () => navigate({ to: "/dashboard", search: { tab: "sales" } }) },
