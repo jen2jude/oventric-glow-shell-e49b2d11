@@ -299,7 +299,24 @@ function LinkDock({ post }: { post: CreatorPostDTO }) {
   );
 }
 
-function CreatorCard({ post, onRecordedView }: { post: CreatorPostDTO; onRecordedView: (postId: string) => void }) {
+function CreatorCard({
+  post,
+  onRecordedView,
+  isOwner,
+  onHide,
+  onDeleted,
+  onUpdated,
+}: {
+  post: CreatorPostDTO;
+  onRecordedView: (postId: string) => void;
+  isOwner: boolean;
+  onHide: (postId: string) => void;
+  onDeleted: (postId: string) => void;
+  onUpdated: (
+    postId: string,
+    patch: { title: string; caption: string | null; communityLink: string | null },
+  ) => void;
+}) {
   const recordView = useServerFn(recordCreatorPostView);
   const articleRef = useRef<HTMLElement>(null);
   const initials = post.author.name
