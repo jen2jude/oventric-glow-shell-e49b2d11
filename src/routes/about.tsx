@@ -27,7 +27,8 @@ import {
 import { PublicChrome } from "@/components/oventric/PublicChrome";
 import { Button } from "@/components/ui/button";
 import buildersStudio from "@/assets/about/oventric-builders-studio.jpg";
-import registrationOffice from "@/assets/about/oventric-registration-office.jpg";
+import registrationOffice from "@/assets/about/oventric-registration-office-complete.jpg";
+import certificateAsset from "@/assets/about/oventric-cac-certificate.jpeg.asset.json";
 import marketplaceCreator from "@/assets/how-marketplace-creator.jpg";
 import paidCreator from "@/assets/how-paid-creator.jpg";
 
@@ -284,7 +285,7 @@ function AboutPage() {
 
             <div className="mt-12 grid overflow-hidden rounded-[10px] border border-newsfeed-line bg-newsfeed-canvas shadow-newsfeed-panel lg:grid-cols-[1.18fr_0.82fr]">
               <div className="relative min-h-[420px] overflow-hidden lg:min-h-[570px]">
-                <img loading="lazy" decoding="async" src={registrationOffice} alt="A framed registration display in a modern Oventric office reception" width={1504} height={1104} className="absolute inset-0 h-full w-full object-cover" />
+                <img loading="lazy" decoding="async" src={registrationOffice} alt="Oventric office reception with its dimensional logo and framed CAC registration certificate" width={1504} height={1104} className="absolute inset-0 h-full w-full object-cover" />
               </div>
               <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-12">
                 <span className="grid size-14 place-items-center rounded-[10px] bg-newsfeed-coral-soft text-newsfeed-coral"><Building2 className="size-7" /></span>
@@ -292,6 +293,9 @@ function AboutPage() {
                 <p className="mt-4 text-sm leading-7 text-newsfeed-muted">
                   Registration gives Oventric a clear legal footing for the retail, trade and e-commerce activities that support its marketplace and digital-product ecosystem.
                 </p>
+                <a href={certificateAsset.url} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 self-start text-sm font-bold text-newsfeed-coral hover:underline">
+                  View registration certificate <ArrowRight className="size-4" />
+                </a>
                 <div className="mt-7 space-y-3 border-t border-newsfeed-line pt-6 text-sm">
                   <p className="flex items-center gap-3"><Check className="size-4 text-newsfeed-green" /> Companies and Allied Matters Act</p>
                   <p className="flex items-center gap-3"><Check className="size-4 text-newsfeed-green" /> Corporate Affairs Commission, Nigeria</p>
