@@ -212,6 +212,9 @@ function BoardSheet({
   const [busy, setBusy] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [creatorPostId, setCreatorPostId] = useState<string | null>(null);
+  const allCreatorIds = board.items
+    .map((it) => creatorIdForItem(it))
+    .filter((v): v is string => Boolean(v));
 
   const creatorIdFor = (item: CollectionDTO["items"][number]) => {
     if (item.refId) return item.refId;
