@@ -16,10 +16,23 @@ export function parseVideoEmbed(input: string): VideoEmbed | null {
 
   const yt = parseYouTubeId(raw);
   if (yt) {
+    // Silent autoplay, hidden controls, seamless loop — behaves like a native preview clip.
+    const params = new URLSearchParams({
+      autoplay: "1",
+      mute: "1",
+      controls: "0",
+      rel: "0",
+      playsinline: "1",
+      loop: "1",
+      playlist: yt,
+      modestbranding: "1",
+      disablekb: "1",
+      fs: "0",
+    });
     return {
       provider: "youtube",
       url: raw,
-      embedUrl: `https://www.youtube-nocookie.com/embed/${yt}`,
+      embedUrl: `https://www.youtube-nocookie.com/embed/${yt}?${params.toString()}`,
     };
   }
 
@@ -33,10 +46,11 @@ export function parseVideoEmbed(input: string): VideoEmbed | null {
 
   if (host === "vimeo.com" || host === "player.vimeo.com") {
     const id = url.pathname.split("/").filter(Boolean).find((p) => /^\d+$/.test(p));
+    // background=1 gives a chromeless, muted, looping autoplay player.
     return {
       provider: "vimeo",
       url: url.toString(),
-      embedUrl: id ? `https://player.vimeo.com/video/${id}` : null,
+      embedUrl: id ? `https://player.vimeo.com/video/${id}?autoplay=1&muted=1&loop=1&background=1&controls=0` : null,
     };
   }
 
@@ -44,7 +58,7 @@ export function parseVideoEmbed(input: string): VideoEmbed | null {
     return {
       provider: "facebook",
       url: url.toString(),
-      embedUrl: `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url.toString())}&show_text=false`,
+      embedUrl: `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url.toString())}&show_text=false&autoplay=true&mute=1`,
     };
   }
 
