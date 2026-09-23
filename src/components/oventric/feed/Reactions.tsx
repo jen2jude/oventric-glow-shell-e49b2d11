@@ -20,16 +20,8 @@ export const REACTION_META: Record<
 
 export const REACTION_ORDER: ReactionType[] = ["love", "like", "dislike", "laugh", "crown"];
 
-export const HEART_IMAGE_URL = heartAsset.url;
-
-/** Reactions rendered as 3D images instead of Lucide icons. */
-const IMAGE_REACTIONS: Partial<Record<ReactionType, string>> = {
-  love: heartAsset.url,
-  like: thumbsUpAsset.url,
-  dislike: thumbsDownAsset.url,
-  laugh: laughAsset.url,
-  crown: crownAsset.url,
-};
+/** Reactions use the default flat Lucide icons (3D image variants removed). */
+const IMAGE_REACTIONS: Partial<Record<ReactionType, string>> = {};
 
 export function isImageReaction(reaction: ReactionType) {
   return Boolean(IMAGE_REACTIONS[reaction]);
