@@ -1,16 +1,47 @@
 import { useEffect, useRef, useState } from "react";
 import { Heart, ThumbsUp, ThumbsDown, Laugh, Crown } from "lucide-react";
 import type { ReactionType } from "@/lib/posts.functions";
+import { Button } from "@/components/ui/button";
 
 export const REACTION_META: Record<
   ReactionType,
-  { label: string; Icon: typeof Heart; color: string }
+  { label: string; Icon: typeof Heart; color: string; tone: string; softTone: string }
 > = {
-  love: { label: "Love", Icon: Heart, color: "#f43f5e" },
-  like: { label: "Like", Icon: ThumbsUp, color: "#38bdf8" },
-  dislike: { label: "Dislike", Icon: ThumbsDown, color: "#94a3b8" },
-  laugh: { label: "Haha", Icon: Laugh, color: "#facc15" },
-  crown: { label: "Crown", Icon: Crown, color: "#a78bfa" },
+  love: {
+    label: "Love",
+    Icon: Heart,
+    color: "var(--newsfeed-coral)",
+    tone: "text-newsfeed-coral",
+    softTone: "bg-newsfeed-coral-soft",
+  },
+  like: {
+    label: "Like",
+    Icon: ThumbsUp,
+    color: "var(--newsfeed-blue)",
+    tone: "text-newsfeed-blue",
+    softTone: "bg-newsfeed-blue-soft",
+  },
+  dislike: {
+    label: "Dislike",
+    Icon: ThumbsDown,
+    color: "var(--newsfeed-green)",
+    tone: "text-newsfeed-green",
+    softTone: "bg-newsfeed-green-soft",
+  },
+  laugh: {
+    label: "Haha",
+    Icon: Laugh,
+    color: "var(--newsfeed-gold)",
+    tone: "text-newsfeed-gold",
+    softTone: "bg-newsfeed-gold-soft",
+  },
+  crown: {
+    label: "Crown",
+    Icon: Crown,
+    color: "var(--newsfeed-violet)",
+    tone: "text-newsfeed-violet",
+    softTone: "bg-newsfeed-violet-soft",
+  },
 };
 
 export const REACTION_ORDER: ReactionType[] = ["love", "like", "dislike", "laugh", "crown"];
@@ -96,23 +127,28 @@ export function ReactionButton({
           : "w-10 h-10 rounded-full";
   const iconSize = size === "xs" ? 12 : size === "sm" ? 16 : size === "lg" ? 28 : 20;
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
+      size="icon"
       aria-label={ariaLabel ?? m.label}
+      title={m.label}
       onClick={onClick}
       className={[
-        "inline-flex items-center justify-center transition-transform duration-200 ease-out hover:scale-110 active:scale-90",
+        "reaction-spectrum-button group relative overflow-hidden shadow-none transition-transform duration-200 ease-out hover:scale-110 active:scale-90",
+        m.tone,
+        m.softTone,
         dims,
         className,
       ].join(" ")}
-      style={{
-        backgroundColor: isImg ? "transparent" : `${m.color}e6`,
-        color: "#ffffff",
-        WebkitTapHighlightColor: "transparent",
-      }}
     >
-      <ReactionGlyph reaction={reaction} size={isImg ? iconSize + 8 : iconSize} />
-    </button>
+      <span className="reaction-spectrum-halo" aria-hidden />
+      <ReactionGlyph
+        reaction={reaction}
+        size={isImg ? iconSize + 8 : iconSize}
+        className="relative z-10"
+      />
+    </Button>
   );
 }
 
@@ -139,8 +175,10 @@ export function ReactionPicker({
   return (
     <div
       ref={ref}
-      className={`absolute bottom-full ${alignCls} mb-3 z-30 flex items-center gap-2 rounded-full bg-[#141418] md:bg-white border border-white/10 md:border-slate-200 px-2.5 py-3 shadow-xl shadow-black/60 animate-in fade-in slide-in-from-bottom-2 duration-150`}
+      data-reaction-picker
+      className={`reaction-spectrum-picker absolute bottom-full ${alignCls} mb-3 z-30 flex items-center gap-1.5 rounded-2xl border border-newsfeed-line bg-newsfeed-surface/95 p-1.5 shadow-newsfeed backdrop-blur-xl animate-in fade-in slide-in-from-bottom-2 duration-150`}
     >
+      <span className="reaction-spectrum-wash" aria-hidden />
       {REACTION_ORDER.map((r) => (
         <ReactionButton
           key={r}
@@ -173,9 +211,9 @@ export function ReactionSplash({
       className="pointer-events-none absolute inset-0 flex items-center justify-center z-20"
     >
       <div
-        className="rounded-2xl p-4 text-white md:text-slate-900"
+        className={`reaction-spectrum-splash rounded-2xl p-4 ${m.tone} ${m.softTone}`}
         style={{
-          backgroundColor: isImg ? "transparent" : m.color,
+          backgroundColor: isImg ? "transparent" : undefined,
           animation: "reaction-splash 900ms cubic-bezier(0.16,1,0.3,1) forwards",
         }}
       >
@@ -192,8 +230,8 @@ export function ReactionImageBadge({ reaction }: { reaction: ReactionType }) {
   return (
     <div className="absolute bottom-3 right-3 z-10 pointer-events-none">
       <div
-        className="rounded-2xl w-10 h-10 flex items-center justify-center text-white md:text-slate-900"
-        style={{ backgroundColor: isImg ? "transparent" : m.color }}
+        className={`reaction-spectrum-badge rounded-[10px] w-10 h-10 flex items-center justify-center ${m.tone} ${m.softTone}`}
+        style={{ backgroundColor: isImg ? "transparent" : undefined }}
       >
         <ReactionGlyph reaction={reaction} className={isImg ? "w-8 h-8" : "w-5 h-5"} />
       </div>
