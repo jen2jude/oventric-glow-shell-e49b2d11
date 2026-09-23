@@ -414,9 +414,6 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
                         <AvatarImage src={u.avatarUrl} alt={u.displayName} />
                       </div>
                     </div>
-                    <span className="absolute -bottom-0.5 -right-0.5 text-[13px] leading-none">
-                      {flagEmoji(u.country)}
-                    </span>
                     {u.reputationStars >= 4.5 && (
                       <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-amber-400 border-2 border-white flex items-center justify-center">
                         <Star className="w-2.5 h-2.5 fill-white text-white" />
