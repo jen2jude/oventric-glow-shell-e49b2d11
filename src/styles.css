@@ -164,6 +164,21 @@
   --color-profile-blue: var(--profile-blue);
   --color-profile-blue-soft: var(--profile-blue-soft);
   --shadow-profile-card: var(--profile-card-shadow);
+  --color-contact-surface: var(--contact-surface);
+  --color-contact-ink: var(--contact-ink);
+  --color-contact-copy: var(--contact-copy);
+  --color-contact-muted: var(--contact-muted);
+  --color-contact-line: var(--contact-line);
+  --color-contact-field: var(--contact-field);
+  --color-contact-whatsapp: var(--contact-whatsapp);
+  --color-contact-whatsapp-strong: var(--contact-whatsapp-strong);
+  --color-contact-whatsapp-soft: var(--contact-whatsapp-soft);
+  --color-contact-on-whatsapp: var(--contact-on-whatsapp);
+  --color-contact-blue: var(--contact-blue);
+  --color-contact-violet: var(--contact-violet);
+  --color-contact-gold: var(--contact-gold);
+  --color-contact-coral: var(--contact-coral);
+  --shadow-contact-sheet: var(--contact-sheet-shadow);
 }
 
 :root {
@@ -172,6 +187,21 @@
   --newsfeed-surface: oklch(1 0 0);
   --newsfeed-accent: oklch(0.61 0.2 22);
   --newsfeed-on-accent: oklch(1 0 0);
+  --contact-surface: oklch(1 0 0);
+  --contact-ink: oklch(0.22 0.03 258);
+  --contact-copy: oklch(0.47 0.025 255);
+  --contact-muted: oklch(0.59 0.02 255);
+  --contact-line: oklch(0.91 0.018 255);
+  --contact-field: oklch(0.975 0.008 255);
+  --contact-whatsapp: oklch(0.64 0.17 155);
+  --contact-whatsapp-strong: oklch(0.56 0.16 155);
+  --contact-whatsapp-soft: oklch(0.955 0.045 155);
+  --contact-on-whatsapp: oklch(1 0 0);
+  --contact-blue: oklch(0.65 0.16 245);
+  --contact-violet: oklch(0.62 0.18 300);
+  --contact-gold: oklch(0.79 0.15 85);
+  --contact-coral: oklch(0.67 0.2 25);
+  --contact-sheet-shadow: 0 24px 70px -28px color-mix(in oklab, var(--contact-ink) 35%, transparent);
 }
 
 .help-board-web {

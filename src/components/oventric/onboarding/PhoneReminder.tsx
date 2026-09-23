@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Loader, PhoneCall, X } from "lucide-react";
+import { Check, Loader, MessageCircle, Phone, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 import {
   getOnboardingStatus as getOnboardingStatusFn,
   saveContactNumbers as saveContactNumbersFn,
@@ -13,8 +14,8 @@ import { COUNTRY_META } from "@/lib/currency/africa";
 const INTERVAL_MS = 2 * 60 * 1000;
 
 const inputCls =
-  "w-full h-11 px-3 bg-[#121214] border border-white/10 rounded-[10px] text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/60 focus:ring-2 focus:ring-emerald-500/20 transition-all";
-const labelCls = "block text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1.5";
+  "h-12 w-full rounded-[10px] border border-contact-line bg-contact-field px-3.5 text-[15px] text-contact-ink outline-none transition-[border-color,box-shadow,background-color] placeholder:text-contact-muted focus:border-contact-whatsapp focus:bg-contact-surface focus:ring-4 focus:ring-contact-whatsapp-soft";
+const labelCls = "mb-1.5 block text-xs font-bold text-contact-ink";
 
 /**
  * Existing members who completed their profile before phone numbers were
@@ -111,65 +112,107 @@ export function PhoneReminder() {
   };
 
   return (
-    <div className="modal-light fixed inset-0 z-[80] flex items-end justify-center sm:items-center px-0 sm:px-4">
-      <div className="absolute inset-0 bg-black/75" onClick={() => setOpen(false)} />
-      <div className="slide-up relative w-full max-w-md bg-[#1E1E24] border border-white/10 rounded-t-2xl sm:rounded-2xl p-6 shadow-2xl">
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <h2 className="text-lg font-bold text-white">Add your WhatsApp number</h2>
-            <p className="text-xs text-slate-400 mt-1">
-              Required so our team can reach you to deliver orders when you're offline.
-            </p>
-          </div>
-          <button
+    <div className="modal-light fixed inset-0 z-[80] flex items-end justify-center px-0 sm:items-center sm:px-4">
+      <div className="absolute inset-0 bg-foreground/55 backdrop-blur-[2px]" onClick={() => setOpen(false)} />
+      <div className="slide-up relative w-full max-w-md overflow-hidden rounded-t-[20px] border border-contact-line bg-contact-surface shadow-contact-sheet sm:rounded-[18px]">
+        <div className="grid h-1.5 grid-cols-5" aria-hidden="true">
+          <span className="bg-contact-whatsapp" />
+          <span className="bg-contact-blue" />
+          <span className="bg-contact-violet" />
+          <span className="bg-contact-gold" />
+          <span className="bg-contact-coral" />
+        </div>
+
+        <div className="relative px-5 pb-3 pt-5 sm:px-6 sm:pt-6">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => setOpen(false)}
-            className="p-2 -m-2 rounded-[10px] hover:bg-white/5 text-slate-400 hover:text-white"
+            className="absolute right-3 top-3 rounded-full text-contact-muted hover:bg-contact-field hover:text-contact-ink sm:right-4 sm:top-4"
             aria-label="Remind me later"
           >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
+            <X className="h-4 w-4" />
+          </Button>
 
-        <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mb-4">
-          <PhoneCall className="w-6 h-6 text-emerald-400" />
-        </div>
-
-        <label className={labelCls}>WhatsApp Number (required)</label>
-        <input
-          className={inputCls}
-          type="tel"
-          autoComplete="tel"
-          placeholder={`${dial} 800 000 0000`}
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
-        <p className="text-[11px] text-slate-400 mt-1.5">Include your country code.</p>
-
-        <label className={labelCls + " mt-4"}>Second Number (optional)</label>
-        <input
-          className={inputCls}
-          type="tel"
-          autoComplete="tel"
-          placeholder={`${dial} 700 000 0000`}
-          value={altPhone}
-          onChange={(e) => setAltPhone(e.target.value)}
-        />
-
-        {error && (
-          <div className="mt-3 rounded-[10px] border border-rose-500/40 bg-rose-500/10 text-rose-200 text-xs px-3 py-2">
-            {error}
+          <div className="mb-4 flex items-center gap-3 pr-10">
+            <div className="relative grid h-14 w-14 shrink-0 place-items-center rounded-[14px] bg-contact-whatsapp-soft text-contact-whatsapp">
+              <MessageCircle className="h-7 w-7" strokeWidth={2.2} />
+              <span className="absolute -bottom-1 -right-1 grid h-6 w-6 place-items-center rounded-full border-2 border-contact-surface bg-contact-blue text-contact-surface">
+                <Phone className="h-3 w-3" strokeWidth={2.5} />
+              </span>
+            </div>
+            <div className="min-w-0">
+              <p className="mb-1 text-[11px] font-extrabold uppercase text-contact-whatsapp">
+                Seller contact
+              </p>
+              <h2 className="text-xl font-black leading-tight text-contact-ink">
+                Add your WhatsApp number
+              </h2>
+            </div>
           </div>
-        )}
 
-        <button
-          type="button"
-          disabled={!canSubmit}
-          onClick={() => void submit()}
-          className="w-full h-11 mt-5 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm rounded-[10px] transition-colors disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
-        >
-          {saving && <Loader className="w-4 h-4 animate-spin" />}
-          {saving ? "Saving…" : "Save my number"}
-        </button>
+          <p className="text-sm leading-5 text-contact-copy">
+            Help our team reach you about customer orders and delivery when you&apos;re offline.
+          </p>
+        </div>
+
+        <div className="border-t border-contact-line px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5 sm:px-6 sm:pb-6">
+          <label className={labelCls} htmlFor="seller-whatsapp-number">
+            WhatsApp number <span className="text-contact-coral">*</span>
+          </label>
+          <div className="relative">
+            <MessageCircle className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-contact-whatsapp" />
+            <input
+              id="seller-whatsapp-number"
+              className={`${inputCls} pl-10`}
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              placeholder={`${dial} 800 000 0000`}
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </div>
+          <p className="mt-1.5 text-xs text-contact-muted">Include your country code.</p>
+
+          <label className={`${labelCls} mt-4`} htmlFor="seller-second-number">
+            Second number <span className="font-medium text-contact-muted">(optional)</span>
+          </label>
+          <div className="relative">
+            <Phone className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-contact-blue" />
+            <input
+              id="seller-second-number"
+              className={`${inputCls} pl-10`}
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              placeholder={`${dial} 700 000 0000`}
+              value={altPhone}
+              onChange={(e) => setAltPhone(e.target.value)}
+            />
+          </div>
+
+          {error && (
+            <div className="mt-3 rounded-[10px] border border-destructive/25 bg-destructive/5 px-3 py-2 text-xs font-medium text-destructive" role="alert">
+              {error}
+            </div>
+          )}
+
+          <Button
+            type="button"
+            disabled={!canSubmit}
+            onClick={() => void submit()}
+            className="mt-5 h-12 w-full rounded-[10px] bg-contact-whatsapp text-sm font-extrabold text-contact-on-whatsapp shadow-none hover:bg-contact-whatsapp-strong"
+          >
+            {saving ? <Loader className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" strokeWidth={3} />}
+            {saving ? "Saving…" : "Save contact details"}
+          </Button>
+
+          <p className="mt-3 text-center text-[11px] leading-4 text-contact-muted">
+            Used only for order support and seller communication.
+          </p>
+        </div>
       </div>
     </div>
   );
