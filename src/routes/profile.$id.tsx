@@ -141,7 +141,6 @@ import {
 
 import { usePresence } from "@/hooks/use-presence";
 import { FollowButton } from "@/components/oventric/FollowButton";
-import { JoinCirclePickerModal } from "@/components/oventric/JoinCirclePickerModal";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { Button } from "@/components/ui/button";
