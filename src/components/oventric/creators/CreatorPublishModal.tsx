@@ -360,8 +360,8 @@ export function CreatorPublishModal({
                   {compressing ? "Preparing your clip…" : "Add images or a video"}
                 </span>
                 <span className="px-4 text-center text-[11px] font-semibold text-slate-400">
-                  Clips up to {MAX_CLIP_SECONDS}s. For longer videos, paste the link below — it plays
-                  here and streams from YouTube, Vimeo, Facebook or Telegram.
+                  Videos up to {MAX_CLIP_SECONDS}s and {MAX_CLIP_MB}MB — trim or compress your clip to
+                  fit before uploading.
                 </span>
               </button>
             ) : (
@@ -511,24 +511,6 @@ export function CreatorPublishModal({
               placeholder="Telegram / WhatsApp channel link (optional)"
               className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
             />
-          </div>
-          <div className="space-y-1.5 rounded-[10px] border border-rose-100 bg-rose-50/55 p-3">
-            <div className="flex items-center gap-2">
-              <Link2 className="h-4 w-4 shrink-0 text-rose-500" />
-              <p className="text-xs font-black text-slate-900">Video that plays in the post (optional)</p>
-            </div>
-            <p className="text-[11px] leading-relaxed text-slate-500">
-              Paste a YouTube, Vimeo, Facebook or Telegram video link — it shows and plays inside your post, no upload and no storage used. This is <span className="font-bold text-slate-700">not</span> a download link and not a social page link.
-            </p>
-            <div className="flex items-center gap-2 rounded-[10px] border border-slate-200 bg-white px-3 py-2.5 focus-within:border-rose-300">
-              <Link2 className="h-4 w-4 shrink-0 text-rose-500" />
-              <input
-                value={external}
-                onChange={(e) => setExternal(e.target.value)}
-                placeholder="Paste YouTube / Vimeo video link here"
-                className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
-              />
-            </div>
           </div>
         </div>
 
