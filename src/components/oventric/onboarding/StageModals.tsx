@@ -8,9 +8,15 @@ import {
   Loader2,
   Check,
   Loader,
+  ArrowRight,
+  LockKeyhole,
+  MapPin,
+  Phone,
+  UserRound,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import {
   useOnboarding,
   type Country,
@@ -25,29 +31,65 @@ function ModalShell({
   subtitle,
   onClose,
   children,
+  spectrum = false,
 }: {
   title: string;
   subtitle?: string;
   onClose: () => void;
   children: React.ReactNode;
+  spectrum?: boolean;
 }) {
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
+
   return (
-    <div className="modal-light fixed inset-0 z-[60] flex items-end justify-center sm:items-center px-0 sm:px-4">
-      <div className="absolute inset-0 bg-black/75" onClick={onClose} />
-      <div className="slide-up relative w-full max-w-md bg-[#1E1E24] border border-white/10 rounded-t-2xl sm:rounded-2xl p-6 shadow-2xl">
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <h2 className="text-lg font-bold text-white">{title}</h2>
-            {subtitle && <p className="text-xs text-slate-400 mt-1">{subtitle}</p>}
+    <div
+      className={`modal-light fixed inset-0 z-[60] flex justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-4 sm:items-center sm:p-6 ${spectrum ? "items-start bg-newsfeed-ink/20 backdrop-blur-sm" : "items-end"}`}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="onboarding-modal-title"
+    >
+      <div className="absolute inset-0 bg-newsfeed-ink/55" onClick={onClose} />
+      <div
+        className={`slide-up relative flex w-full max-w-md flex-col overflow-hidden shadow-newsfeed-panel ${
+          spectrum
+            ? "max-h-[calc(100dvh-2rem)] rounded-[10px] border border-newsfeed-line bg-newsfeed-surface sm:max-h-[calc(100dvh-3rem)]"
+            : "max-h-[calc(100dvh-1rem)] rounded-t-2xl border border-white/10 bg-[#1E1E24] p-6 sm:max-h-[calc(100dvh-3rem)] sm:rounded-2xl"
+        }`}
+      >
+        {spectrum && (
+          <div className="grid h-1.5 shrink-0 grid-cols-5" aria-hidden="true">
+            <span className="bg-newsfeed-coral" />
+            <span className="bg-newsfeed-gold" />
+            <span className="bg-newsfeed-green" />
+            <span className="bg-newsfeed-blue" />
+            <span className="bg-newsfeed-violet" />
           </div>
-          <button
+        )}
+        <div className={`flex shrink-0 items-start justify-between ${spectrum ? "border-b border-newsfeed-line px-5 py-4 sm:px-6" : "mb-4"}`}>
+          <div>
+            <h2 id="onboarding-modal-title" className={spectrum ? "text-lg font-extrabold text-newsfeed-ink" : "text-lg font-bold text-white"}>{title}</h2>
+            {subtitle && <p className={spectrum ? "mt-1 text-xs text-newsfeed-muted" : "mt-1 text-xs text-slate-400"}>{subtitle}</p>}
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
             onClick={onClose}
-            className="p-2 -m-2 rounded-[10px] hover:bg-white/5 text-slate-400 hover:text-white"
+            className={spectrum ? "-mr-2 -mt-1 h-9 w-9 shrink-0 rounded-[10px] text-newsfeed-muted hover:bg-newsfeed-violet-soft hover:text-newsfeed-violet" : "-m-2 h-9 w-9 rounded-[10px] text-slate-400 hover:bg-white/5 hover:text-white"}
+            aria-label="Close"
           >
             <X className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
-        {children}
+        <div className={spectrum ? "min-h-0 overflow-y-auto overscroll-contain scroll-smooth px-5 py-5 sm:px-6" : "min-h-0 overflow-y-auto overscroll-contain"}>
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -71,6 +113,37 @@ function StageIndicator({ current }: { current: number }) {
     </div>
   );
 }
+
+function SpectrumStageIndicator({ current }: { current: number }) {
+  const colors = [
+    "bg-newsfeed-coral",
+    "bg-newsfeed-gold",
+    "bg-newsfeed-green",
+    "bg-newsfeed-blue",
+    "bg-newsfeed-violet",
+  ];
+  return (
+    <div className="mb-5">
+      <div className="mb-2 flex items-center justify-between text-[11px] font-bold text-newsfeed-muted">
+        <span>Profile details</span>
+        <span className="text-newsfeed-violet">Step {current} of 5</span>
+      </div>
+      <div className="flex gap-1.5" aria-label={`Step ${current} of 5`}>
+        {colors.map((color, index) => (
+          <span
+            key={color}
+            className={`h-1.5 flex-1 rounded-full ${index < current ? color : "bg-newsfeed-blue-soft"}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const spectrumInputCls =
+  "h-11 w-full rounded-[10px] border border-newsfeed-line bg-newsfeed-surface px-3 text-sm text-newsfeed-ink outline-none transition-shadow placeholder:text-newsfeed-muted focus:border-newsfeed-violet focus:ring-2 focus:ring-newsfeed-violet-soft";
+const spectrumLabelCls =
+  "mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase text-newsfeed-ink";
 
 // Stage 1 (email verification) is intentionally removed. Email OTP verification
 // is fully handled by the global AuthGate — no legacy progressive form.
@@ -148,24 +221,34 @@ function Stage2({ onClose }: { onClose: () => void }) {
       title="Unlock buying, selling & wallets"
       subtitle="Stage 2 of 5 · Tell us who you are so we can transact for you"
       onClose={onClose}
+      spectrum
     >
-      <StageIndicator current={2} />
-      <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mb-4">
-        <ShieldCheck className="w-6 h-6 text-emerald-400" />
+      <SpectrumStageIndicator current={2} />
+      <div className="mb-5 flex items-center gap-3 rounded-[10px] border border-newsfeed-violet/20 bg-newsfeed-violet-soft p-3.5">
+        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-[10px] bg-newsfeed-violet text-newsfeed-on-accent shadow-newsfeed-panel">
+          <ShieldCheck className="h-6 w-6" />
+          <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-newsfeed-surface bg-newsfeed-green text-newsfeed-on-accent">
+            <LockKeyhole className="h-2.5 w-2.5" />
+          </span>
+        </div>
+        <div>
+          <p className="text-sm font-extrabold text-newsfeed-ink">Your secure commerce profile</p>
+          <p className="mt-0.5 text-xs leading-5 text-newsfeed-muted">These details prepare buying, selling and wallet access in your home currency.</p>
+        </div>
       </div>
 
-      <label className={labelCls}>Full Name</label>
+      <label className={spectrumLabelCls}><UserRound className="h-3.5 w-3.5 text-newsfeed-blue" /> Full Name</label>
       <input
-        className={inputCls}
+        className={spectrumInputCls}
         placeholder="Ada Lovelace"
         autoComplete="name"
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
 
-      <label className={labelCls + " mt-4"}>Country of Residence</label>
+      <label className={spectrumLabelCls + " mt-4"}><MapPin className="h-3.5 w-3.5 text-newsfeed-coral" /> Country of Residence</label>
       <select
-        className={inputCls}
+        className={spectrumInputCls}
         value={country}
         onChange={(e) => setCountry(e.target.value as Country)}
       >
@@ -179,41 +262,41 @@ function Stage2({ onClose }: { onClose: () => void }) {
         ))}
       </select>
       {currency && country !== "OTHER" && (
-        <p className="text-[11px] text-emerald-300/80 mt-1.5">
+        <p className="mt-1.5 text-[11px] text-newsfeed-green">
           Base currency will lock to <span className="font-semibold">{currency}</span> for wallet,
           marketplace and bounties.
         </p>
       )}
       {country === "OTHER" && (
         <>
-          <label className={labelCls + " mt-4"}>Type your country</label>
+          <label className={spectrumLabelCls + " mt-4"}>Type your country</label>
           <input
-            className={inputCls}
+            className={spectrumInputCls}
             autoComplete="country-name"
             placeholder="e.g. Kenya"
             value={countryOther}
             onChange={(e) => setCountryOther(e.target.value)}
           />
-          <p className="text-[11px] text-emerald-300/80 mt-1.5">
+          <p className="mt-1.5 text-[11px] text-newsfeed-green">
             Base currency will be <span className="font-semibold">USD</span>. We'll add local rails
             for your country next.
           </p>
         </>
       )}
 
-      <label className={labelCls + " mt-4"}>Residential Address</label>
+      <label className={spectrumLabelCls + " mt-4"}><MapPin className="h-3.5 w-3.5 text-newsfeed-gold" /> Residential Address</label>
       <textarea
         rows={2}
-        className={inputCls + " h-auto py-2.5"}
+        className={spectrumInputCls + " h-auto min-h-16 resize-none py-2.5"}
         placeholder="Street, city, state, postal code"
         autoComplete="street-address"
         value={address}
         onChange={(e) => setAddress(e.target.value)}
       />
 
-      <label className={labelCls + " mt-4"}>WhatsApp Number (required)</label>
+      <label className={spectrumLabelCls + " mt-4"}><Phone className="h-3.5 w-3.5 text-newsfeed-green" /> WhatsApp Number (required)</label>
       <input
-        className={inputCls}
+        className={spectrumInputCls}
         type="tel"
         autoComplete="tel"
         placeholder={
@@ -222,13 +305,13 @@ function Stage2({ onClose }: { onClose: () => void }) {
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
       />
-      <p className="text-[11px] text-slate-400 mt-1.5">
+      <p className="mt-1.5 text-[11px] leading-4 text-newsfeed-muted">
         Include your country code. We use WhatsApp to reach you about deliveries and payouts.
       </p>
 
-      <label className={labelCls + " mt-4"}>Second Number (optional)</label>
+      <label className={spectrumLabelCls + " mt-4"}><Phone className="h-3.5 w-3.5 text-newsfeed-violet" /> Second Number (optional)</label>
       <input
-        className={inputCls}
+        className={spectrumInputCls}
         type="tel"
         autoComplete="tel"
         placeholder={
@@ -240,23 +323,20 @@ function Stage2({ onClose }: { onClose: () => void }) {
 
 
       {error && (
-        <div className="mt-3 rounded-[10px] border border-rose-500/40 bg-rose-500/10 text-rose-200 text-xs px-3 py-2">
+        <div className="mt-3 rounded-[10px] border border-newsfeed-coral/30 bg-newsfeed-coral-soft px-3 py-2 text-xs text-newsfeed-coral">
           {error}
         </div>
       )}
 
-      <button
+      <Button
         type="button"
         disabled={!canSubmit}
         onClick={() => void submit()}
-        className={
-          btnCls +
-          " mt-5 disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
-        }
+        className="mt-5 h-11 w-full rounded-[10px] bg-newsfeed-violet font-extrabold text-newsfeed-on-accent shadow-newsfeed-panel hover:bg-newsfeed-violet/90 disabled:cursor-not-allowed disabled:opacity-40"
       >
         {saving && <Loader className="w-4 h-4 animate-spin" />}
-        {saving ? "Saving profile…" : "Unlock commerce"}
-      </button>
+        {saving ? "Saving profile…" : <>Unlock commerce <ArrowRight className="h-4 w-4" /></>}
+      </Button>
     </ModalShell>
   );
 }
