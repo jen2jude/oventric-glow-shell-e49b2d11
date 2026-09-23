@@ -2138,7 +2138,6 @@ function ProfilePage() {
           }}
         />
       )}
-      <CircleRequestsDrawer open={requestsOpen} onClose={() => setRequestsOpen(false)} />
       <FollowRequestsDrawer
         open={followRequestsOpen}
         onClose={() => setFollowRequestsOpen(false)}
