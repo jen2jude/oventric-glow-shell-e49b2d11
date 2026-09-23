@@ -141,6 +141,23 @@ export async function buildManualPayment(supabase: Sb, userId: string, input: Bu
 
   if (!(amount > 0)) throw new Error("Nothing to pay");
 
+  // Opening the instructions is not a payment submission. Retire any older,
+  // unsubmitted attempt for this same checkout so it can never clutter the
+  // finance review queue or be mistaken for proof that money was sent.
+  let staleAttempt = supabase
+    .from("manual_payments")
+    .update({ status: "cancelled" })
+    .eq("user_id", userId)
+    .eq("provider", input.provider)
+    .eq("purpose", input.purpose)
+    .eq("status", "pending")
+    .is("proof_path", null);
+  staleAttempt = input.targetId
+    ? staleAttempt.eq("target_id", input.targetId)
+    : staleAttempt.is("target_id", null);
+  const { error: staleError } = await staleAttempt;
+  if (staleError) throw new Error(staleError.message);
+
   const reference = `MP_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`.toUpperCase();
 
   const { data: row, error } = await supabase
@@ -195,6 +212,7 @@ export async function listManualPayments(
   let q = supabase
     .from("manual_payments")
     .select("*, profiles:profiles!manual_payments_user_id_fkey(display_name, username)")
+    .not("proof_path", "is", null)
     .order("created_at", { ascending: false })
     .limit(200);
   if (opts.userId) q = q.eq("user_id", opts.userId);
@@ -202,7 +220,12 @@ export async function listManualPayments(
   const { data, error } = await q;
   if (error) {
     // Profile join is optional — retry flat if the relationship isn't exposed.
-    let q2 = supabase.from("manual_payments").select("*").order("created_at", { ascending: false }).limit(200);
+    let q2 = supabase
+      .from("manual_payments")
+      .select("*")
+      .not("proof_path", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(200);
     if (opts.userId) q2 = q2.eq("user_id", opts.userId);
     if (opts.status && opts.status !== "ALL") q2 = q2.eq("status", opts.status);
     const retry = await q2;
@@ -260,6 +283,7 @@ export async function reviewManualPayment(
   if (error) throw new Error(error.message);
   if (!row) throw new Error("Payment not found");
   if (row.status !== "pending") throw new Error("Already reviewed");
+  if (!row.proof_path) throw new Error("No payment receipt has been submitted");
   const railLabel = (row.provider as string) === "binance" ? "Binance" : "MiniPay";
 
   if (!approve) {
