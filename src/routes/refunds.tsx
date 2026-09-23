@@ -7,8 +7,6 @@ import {
   Check,
   Clock3,
   FileSearch,
-  GraduationCap,
-  HandCoins,
   Headset,
   ListChecks,
   MessageCircleMore,
@@ -30,13 +28,13 @@ export const Route = createFileRoute("/refunds")({
       {
         name: "description",
         content:
-          "How refunds, order disputes, escrow releases, cashback reversals and chargebacks work on Oventric for digital products, services, courses and bounties.",
+          "How refunds, order disputes, cashback reversals and chargebacks work on Oventric for digital products.",
       },
       { property: "og:title", content: "Oventric Refund & Dispute Policy" },
       {
         property: "og:description",
         content:
-          "A plain-language guide to buyer protection, escrow, digital-product refunds, course refunds, payout timing and dispute reviews on Oventric.",
+          "A plain-language guide to buyer protection, digital-product refunds, payout timing and dispute reviews on Oventric.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://oventric.com/refunds" },
@@ -58,7 +56,7 @@ const overviewCards = [
   {
     icon: RotateCcw,
     title: "Clear refund grounds",
-    body: "Refunds follow fixed, published rules for digital products, services, bounties and Academy courses — no guesswork.",
+    body: "Refunds follow fixed, published rules for digital products — no guesswork.",
     tone: "bg-newsfeed-blue-soft text-newsfeed-blue",
     border: "border-newsfeed-blue",
   },
@@ -98,19 +96,6 @@ const digitalNonRefundable = [
   "Items already downloaded and confirmed working by the buyer.",
 ];
 
-const servicePoints = [
-  "Service and bounty funds sit in escrow from the moment you pay.",
-  "If the provider does not start, or does not deliver within the agreed window, you can cancel and the escrowed amount returns to your wallet in full.",
-  "Once delivered work is accepted, the release to the provider is final.",
-  "Partial delivery disputes are reviewed against the agreed scope in the order record.",
-];
-
-const courseRules = [
-  "Academy enrolments can be refunded within 7 days of purchase.",
-  "You must have completed less than 20% of the course content.",
-  "After 7 days, or past 20% completion, the enrolment is non-refundable.",
-  "Refunded enrolments lose access to the course immediately.",
-];
 
 const refundSteps = [
   {
@@ -154,9 +139,8 @@ function RefundsPage() {
                 Buyer protection, explained before you ever need it.
               </h1>
               <p className="mt-6 max-w-xl text-base leading-7 text-newsfeed-muted sm:text-lg sm:leading-8">
-                This policy applies to every purchase on Oventric — marketplace items, services,
-                Academy courses and bounty escrow. It sets out when refunds apply, how disputes
-                are reviewed, and where your money goes.
+                This policy applies to every purchase on the Oventric marketplace. It sets out
+                when refunds apply, how disputes are reviewed, and where your money goes.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Button asChild size="lg">
@@ -317,63 +301,6 @@ function RefundsPage() {
                   ))}
                 </ul>
               </div>
-            </div>
-          </section>
-
-          {/* Services & bounties */}
-          <section className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-            <div className="lg:sticky lg:top-24 self-start">
-              <p className="font-wallet-display text-sm font-bold text-newsfeed-violet">
-                SERVICES &amp; BOUNTIES
-              </p>
-              <h2 className="mt-4 font-wallet-display text-2xl font-bold leading-tight sm:text-3xl lg:text-4xl">
-                Escrow protects both sides
-              </h2>
-              <p className="mt-4 text-sm leading-7 text-newsfeed-muted">
-                Funds for services and bounties stay in escrow until work is delivered and
-                accepted — so providers are paid for real work, and buyers never pay for silence.
-              </p>
-            </div>
-            <ul className="space-y-3">
-              {servicePoints.map((point) => (
-                <li
-                  key={point}
-                  className="flex items-start gap-3 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-4"
-                >
-                  <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-newsfeed-violet-soft text-newsfeed-violet">
-                    <HandCoins className="size-3.5" />
-                  </span>
-                  <span className="text-sm leading-6">{point}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          {/* Courses */}
-          <section className="rounded-[10px] border border-newsfeed-line border-t-4 border-t-newsfeed-blue bg-newsfeed-surface p-6 sm:p-8">
-            <div className="flex items-center gap-3">
-              <span className="grid size-11 place-items-center rounded-[10px] bg-newsfeed-blue-soft text-newsfeed-blue">
-                <GraduationCap className="size-5" />
-              </span>
-              <div>
-                <p className="font-wallet-display text-sm font-bold text-newsfeed-blue">
-                  ACADEMY COURSES
-                </p>
-                <h2 className="mt-1 font-wallet-display text-xl font-bold sm:text-2xl">
-                  A fair window to change your mind
-                </h2>
-              </div>
-            </div>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              {courseRules.map((rule) => (
-                <div
-                  key={rule}
-                  className="flex items-start gap-3 rounded-[10px] bg-newsfeed-blue-soft/60 p-4"
-                >
-                  <Check className="mt-0.5 size-4 shrink-0 text-newsfeed-blue" />
-                  <span className="text-sm leading-6">{rule}</span>
-                </div>
-              ))}
             </div>
           </section>
 
