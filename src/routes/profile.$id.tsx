@@ -1929,9 +1929,6 @@ function ProfilePage() {
                           replace: true,
                         });
                       },
-                      () => {
-                        navigate({ to: "/", search: { section: "Circles" } as never });
-                      },
                     );
                     return <EmptyState {...empty} />;
                   }
