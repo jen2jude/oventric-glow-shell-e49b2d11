@@ -45,16 +45,19 @@ export function FeedTabs({ tab, onTabChange }: { tab: FeedTab; onTabChange: (tab
   const railRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    railRef.current
-      ?.querySelector<HTMLElement>(`[data-feed-tab="${tab}"]`)
-      ?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    const rail = railRef.current;
+    const activeTab = rail?.querySelector<HTMLElement>(`[data-feed-tab="${tab}"]`);
+    if (!rail || !activeTab) return;
+
+    const targetLeft = activeTab.offsetLeft - (rail.clientWidth - activeTab.offsetWidth) / 2;
+    rail.scrollTo({ left: Math.max(0, targetLeft), behavior: "smooth" });
   }, [tab]);
 
   return (
     <nav
       ref={railRef}
       aria-label="Newsfeed views"
-      className="flex snap-x overflow-x-auto border-b border-newsfeed-line bg-newsfeed-surface px-2 no-scrollbar scroll-smooth"
+      className="sticky top-[66px] z-30 flex snap-x overflow-x-auto border-b border-newsfeed-line bg-newsfeed-surface/95 px-2 backdrop-blur-md no-scrollbar scroll-smooth md:top-[72px] lg:static"
     >
       {TABS.map(({ key, label, icon: Icon, active, idle }) => {
         const selected = tab === key;
