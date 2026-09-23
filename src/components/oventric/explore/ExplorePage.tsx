@@ -39,15 +39,20 @@ const TABS = ["All", "Categories", "Products", "Shops", "People"] as const;
 type Tab = (typeof TABS)[number];
 
 const TILE_TINTS = [
-  "bg-[#EAF1FF] text-[#2F5FD0]",
-  "bg-[#F3ECFF] text-[#6F42D4]",
-  "bg-[#FFECF3] text-[#D0417A]",
-  "bg-[#E8F8EF] text-[#1F9D62]",
-  "bg-[#FFF6E2] text-[#C58318]",
-  "bg-[#FFEDE4] text-[#D4622A]",
-  "bg-[#E3F6F6] text-[#158C8C]",
-  "bg-[#ECEEFF] text-[#4A54CF]",
+  "bg-newsfeed-blue-soft text-newsfeed-blue",
+  "bg-newsfeed-violet-soft text-newsfeed-violet",
+  "bg-newsfeed-coral-soft text-newsfeed-coral",
+  "bg-newsfeed-green-soft text-newsfeed-green",
+  "bg-newsfeed-gold-soft text-newsfeed-gold",
 ];
+
+const TAB_STYLES: Record<Tab, string> = {
+  All: "bg-newsfeed-ink text-newsfeed-surface",
+  Categories: "bg-newsfeed-blue-soft text-newsfeed-blue",
+  Products: "bg-newsfeed-violet-soft text-newsfeed-violet",
+  Shops: "bg-newsfeed-green-soft text-newsfeed-green",
+  People: "bg-newsfeed-coral-soft text-newsfeed-coral",
+};
 
 /**
  * Explore — a desktop-first discovery page in the marketing/home visual
@@ -270,7 +275,7 @@ export function ExplorePage({ onSelect }: { onSelect: (section: "Marketplace") =
   );
 
   return (
-    <div className="min-h-screen bg-[#F7F8FA]">
+    <div className="min-h-screen bg-newsfeed-canvas text-newsfeed-ink font-wallet-body">
       <div className="mx-auto w-full max-w-[1280px] px-4 pb-16 pt-5 sm:px-6 lg:pt-8">
         {/* ------------------------------------------------------------ hero */}
         <section className="relative isolate overflow-hidden rounded-[18px] border border-slate-200/80 px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-20">
@@ -312,8 +317,10 @@ export function ExplorePage({ onSelect }: { onSelect: (section: "Marketplace") =
           </div>
         </section>
 
+        <div className="about-spectrum h-1.5 overflow-hidden rounded-b-[10px]" aria-hidden="true" />
+
         {/* ------------------------------------------------- tabs + search */}
-        <div className="sticky top-14 z-20 -mx-4 mt-5 border-b border-slate-200/80 bg-[#F7F8FA]/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
+        <div className="sticky top-14 z-30 -mx-4 mt-5 border-y border-newsfeed-line bg-newsfeed-surface/95 px-4 py-3 shadow-[0_10px_28px_-24px_var(--newsfeed-ink)] backdrop-blur-xl sm:-mx-6 sm:px-6 lg:top-0">
           <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-center">
             <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {TABS.map((t) => (
@@ -321,10 +328,10 @@ export function ExplorePage({ onSelect }: { onSelect: (section: "Marketplace") =
                   key={t}
                   type="button"
                   onClick={() => setTab(t)}
-                  className={`shrink-0 rounded-full px-4 py-2 text-xs font-bold transition-colors sm:text-sm ${
+                  className={`shrink-0 rounded-full px-4 py-2 text-xs font-bold transition-all sm:text-sm ${
                     tab === t
-                      ? "bg-slate-900 text-white"
-                      : "border border-slate-200 bg-white text-slate-600 hover:text-slate-900"
+                      ? `${TAB_STYLES[t]} shadow-sm`
+                      : "border border-newsfeed-line bg-newsfeed-surface text-newsfeed-muted hover:border-newsfeed-violet/30 hover:text-newsfeed-ink"
                   }`}
                 >
                   {t}
@@ -332,12 +339,12 @@ export function ExplorePage({ onSelect }: { onSelect: (section: "Marketplace") =
               ))}
             </div>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-newsfeed-violet" />
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder={`Search ${tab === "All" ? "Oventric" : tab.toLowerCase()}…`}
-                className="h-10 w-full rounded-full border border-slate-200 bg-white pl-9 pr-4 text-sm text-slate-900 placeholder:text-slate-400 focus:border-crimson/50 focus:outline-none"
+                className="h-10 w-full rounded-full border border-newsfeed-line bg-newsfeed-surface pl-9 pr-4 text-sm text-newsfeed-ink placeholder:text-newsfeed-muted focus:border-newsfeed-violet focus:outline-none focus:ring-2 focus:ring-newsfeed-violet-soft"
               />
             </div>
           </div>
@@ -365,7 +372,7 @@ export function ExplorePage({ onSelect }: { onSelect: (section: "Marketplace") =
           </div>
 
           <aside className="min-w-0 lg:pt-10">
-            <h2 className="mb-3 font-[Outfit] text-lg font-extrabold text-slate-900">
+            <h2 className="mb-3 font-wallet-display text-lg font-extrabold text-newsfeed-ink">
               Community
             </h2>
             <DiscoveryPanel asPage />
@@ -390,8 +397,12 @@ function SectionHead({
   return (
     <div className="mb-4 mt-10 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 lg:mt-14">
       <div className="min-w-0">
-        <h2 className="flex min-w-0 items-center gap-2 font-[Outfit] text-xl font-extrabold text-slate-900 sm:text-2xl">
-          {Icon && <Icon className="h-5 w-5 shrink-0 text-crimson" />}
+        <h2 className="flex min-w-0 items-center gap-2 font-wallet-display text-xl font-extrabold text-newsfeed-ink sm:text-2xl">
+          {Icon && (
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-newsfeed-coral-soft text-newsfeed-coral">
+              <Icon className="h-4 w-4" />
+            </span>
+          )}
           <span className="truncate">{title}</span>
         </h2>
         {subtitle && <p className="mt-1 text-xs text-slate-500 sm:text-sm">{subtitle}</p>}
@@ -400,7 +411,7 @@ function SectionHead({
         <button
           type="button"
           onClick={action.onClick}
-          className="inline-flex shrink-0 items-center gap-1 text-xs font-bold text-crimson transition-opacity hover:opacity-80 sm:text-sm"
+          className="inline-flex shrink-0 items-center gap-1 text-xs font-bold text-newsfeed-coral transition-opacity hover:opacity-80 sm:text-sm"
         >
           {action.label}
           <ArrowRight className="h-3.5 w-3.5" />
