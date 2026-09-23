@@ -400,6 +400,15 @@ function CreatorCard({
           <span className="shrink-0 text-[11px] text-slate-400">
             · {relativeTime(post.createdAt)}
           </span>
+          <div className="ml-auto">
+            <CreatorPostMenu
+              post={post}
+              isOwner={isOwner}
+              onHide={onHide}
+              onDeleted={onDeleted}
+              onUpdated={onUpdated}
+            />
+          </div>
         </div>
         <div className="mt-0.5 flex items-center gap-2 text-[11px] text-slate-500">
           {post.fields.length > 0 && <span className="truncate">{post.fields.join(" · ")}</span>}
