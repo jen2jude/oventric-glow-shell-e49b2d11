@@ -16,7 +16,7 @@ export type SiteFooterProps = {
   flag?: string;
 };
 
-export function SiteFooter({ onSelect, currency, flag }: SiteFooterProps) {
+export function SiteFooter({ onSelect: _onSelect, currency, flag }: SiteFooterProps) {
   const year = 2026;
   return (
     <footer className="border-t border-slate-200 bg-[#F7F8FA]">
@@ -36,15 +36,15 @@ export function SiteFooter({ onSelect, currency, flag }: SiteFooterProps) {
 
           <div className="mt-4 flex items-center gap-2">
             <SocialLink href="https://www.facebook.com/oventric" label="Facebook" icon={<Facebook className="h-4 w-4" />} />
-            <SocialLink href="https://www.instagram.com/oventrictech?stkn=MTV1Y3UwaHhmYWRjOA==" label="Instagram" icon={<Instagram className="h-4 w-4" />} />
+            <SocialLink href="https://www.instagram.com/oventrictech" label="Instagram" icon={<Instagram className="h-4 w-4" />} />
             <SocialLink href="https://tiktok.com/@oventric" label="TikTok" icon={<TikTokIcon className="h-4 w-4" />} />
             <SocialLink href="https://youtube.com/@oventric?si=W4Gir4DZB1cA21En" label="YouTube" icon={<Youtube className="h-4 w-4" />} />
           </div>
         </div>
 
         <FooterCol title="Product">
-          <FooterAction label="Marketplace" onClick={() => onSelect("Marketplace")} />
-          <FooterAction label="Wallet" onClick={() => onSelect("Wallet")} />
+          <FooterLink to="/marketplace" label="Marketplace" />
+          <FooterLink to="/wallet" label="Wallet" />
         </FooterCol>
 
 
@@ -91,20 +91,6 @@ function FooterLink({ to, label }: { to: string; label: string }) {
       <Link to={to} className="text-sm text-slate-400 transition-colors hover:text-slate-900">
         {label}
       </Link>
-    </li>
-  );
-}
-
-function FooterAction({ label, onClick }: { label: string; onClick: () => void }) {
-  return (
-    <li>
-      <button
-        type="button"
-        onClick={onClick}
-        className="text-sm text-slate-400 transition-colors hover:text-slate-900"
-      >
-        {label}
-      </button>
     </li>
   );
 }

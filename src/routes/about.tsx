@@ -122,7 +122,7 @@ function AboutPage() {
             <p className="font-wallet-display text-sm font-bold uppercase tracking-normal">
               Built in Africa. Open to digital ambition everywhere.
             </p>
-            <h1 className="about-hero-title mt-5 max-w-4xl font-wallet-display text-4xl font-extrabold leading-[1.08] sm:text-5xl lg:text-6xl">
+            <h1 className="about-hero-title mt-5 max-w-4xl font-wallet-display text-3xl font-extrabold leading-[1.08] sm:text-4xl lg:text-6xl">
               Oventric connects identity, community and digital opportunity.
             </h1>
             <p className="mt-7 max-w-3xl text-base leading-7 sm:text-xl sm:leading-8">
@@ -145,7 +145,7 @@ function AboutPage() {
           <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
             <div>
               <p className="font-wallet-display text-sm font-bold text-newsfeed-violet">WHY OVENTRIC EXISTS</p>
-              <h2 className="mt-4 font-wallet-display text-4xl font-bold leading-tight sm:text-5xl">
+              <h2 className="mt-4 font-wallet-display text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
                 Digital builders deserve a connected path from skill to income.
               </h2>
             </div>
@@ -164,7 +164,7 @@ function AboutPage() {
           <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
             <div className="max-w-3xl">
               <p className="font-wallet-display text-sm font-bold text-newsfeed-blue">ONE CONNECTED ECOSYSTEM</p>
-              <h2 className="mt-4 font-wallet-display text-4xl font-bold sm:text-5xl">Everything is designed to work together.</h2>
+              <h2 className="mt-4 font-wallet-display text-3xl font-bold sm:text-4xl lg:text-5xl">Everything is designed to work together.</h2>
               <p className="mt-5 text-lg leading-8 text-newsfeed-muted">
                 Oventric is not only a marketplace or social network. It is the shared layer between who people are, what they create, how they trade and how they get paid.
               </p>
@@ -178,7 +178,7 @@ function AboutPage() {
                     <item.icon className="size-7" />
                   </span>
                   <p className="mt-6 text-xs font-bold text-newsfeed-muted">0{index + 1}</p>
-                  <h3 className="mt-2 font-wallet-display text-lg font-bold">{item.title}</h3>
+                  <h3 className="mt-2 font-wallet-display text-base font-bold lg:text-lg">{item.title}</h3>
                   <p className="mt-3 text-sm leading-6 text-newsfeed-muted">{item.body}</p>
                 </article>
               ))}
@@ -193,7 +193,7 @@ function AboutPage() {
             </div>
             <div>
               <p className="font-wallet-display text-sm font-bold text-newsfeed-green">BUILT AROUND THE SELLER</p>
-              <h2 className="mt-4 font-wallet-display text-4xl font-bold leading-tight sm:text-5xl">A storefront with a person behind it.</h2>
+              <h2 className="mt-4 font-wallet-display text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">A storefront with a person behind it.</h2>
               <p className="mt-6 text-lg leading-8 text-newsfeed-muted">
                 Oventric helps sellers turn useful knowledge and digital work into organised businesses—without losing the identity and conversation that make customers trust them.
               </p>
@@ -208,7 +208,7 @@ function AboutPage() {
                   return (
                     <div key={title as string} className="border-l-2 border-newsfeed-green pl-4">
                       <ItemIcon className="size-5 text-newsfeed-green" />
-                      <h3 className="mt-3 font-wallet-display font-bold">{title as string}</h3>
+                      <h3 className="mt-3 font-wallet-display text-sm font-bold lg:text-base">{title as string}</h3>
                       <p className="mt-1 text-sm leading-6 text-newsfeed-muted">{body as string}</p>
                     </div>
                   );
@@ -223,7 +223,7 @@ function AboutPage() {
             <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
               <div>
                 <p className="font-wallet-display text-sm font-bold text-newsfeed-gold">COMMERCE WITH GUARDRAILS</p>
-                <h2 className="mt-4 font-wallet-display text-4xl font-bold leading-tight sm:text-5xl">Trust is part of the product.</h2>
+                <h2 className="mt-4 font-wallet-display text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">Trust is part of the product.</h2>
                 <p className="about-trust-muted mt-6 max-w-xl text-lg leading-8">
                   Oventric records the journey around a purchase so that buyers, sellers and support teams can understand what happened and what comes next.
                 </p>
@@ -232,7 +232,7 @@ function AboutPage() {
                 {trustPoints.map((point) => (
                   <article key={point.title} className="bg-newsfeed-ink p-6 sm:p-8">
                     <point.icon className="size-7 text-newsfeed-gold" />
-                    <h3 className="mt-5 font-wallet-display text-xl font-bold">{point.title}</h3>
+                    <h3 className="mt-5 font-wallet-display text-lg font-bold lg:text-xl">{point.title}</h3>
                     <p className="about-trust-muted mt-3 text-sm leading-7">{point.body}</p>
                   </article>
                 ))}
@@ -245,7 +245,7 @@ function AboutPage() {
           <div className="grid gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <div>
               <p className="font-wallet-display text-sm font-bold text-newsfeed-violet">CREATORS ARE MORE THAN LISTINGS</p>
-              <h2 className="mt-4 font-wallet-display text-4xl font-bold leading-tight sm:text-5xl">Show the work. Share the story. Offer the asset.</h2>
+              <h2 className="mt-4 font-wallet-display text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">Show the work. Share the story. Offer the asset.</h2>
               <p className="mt-6 text-lg leading-8 text-newsfeed-muted">
                 Creator spaces are built for skills, services and proof of work. Images and short video previews present the work itself, while portfolio, community and external video links help people explore further.
               </p>
@@ -277,7 +277,7 @@ function AboutPage() {
           <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
             <div className="max-w-3xl">
               <p className="font-wallet-display text-sm font-bold text-newsfeed-coral">LEGAL IDENTITY</p>
-              <h2 className="mt-4 font-wallet-display text-4xl font-bold leading-tight sm:text-5xl">Registered to do business in Nigeria.</h2>
+              <h2 className="mt-4 font-wallet-display text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">Registered to do business in Nigeria.</h2>
               <p className="mt-6 text-lg leading-8 text-newsfeed-muted">
                 Oventric is legally registered under the Companies and Allied Matters Act and with Nigeria’s Corporate Affairs Commission (CAC) to conduct business in Retail, Trade &amp; E-Commerce, including digital products of all kinds.
               </p>
@@ -289,7 +289,7 @@ function AboutPage() {
               </div>
               <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-12">
                 <span className="grid size-14 place-items-center rounded-[10px] bg-newsfeed-coral-soft text-newsfeed-coral"><Building2 className="size-7" /></span>
-                <h3 className="mt-7 font-wallet-display text-2xl font-bold">A formal foundation for digital commerce</h3>
+                <h3 className="mt-7 font-wallet-display text-xl font-bold lg:text-2xl">A formal foundation for digital commerce</h3>
                 <p className="mt-4 text-sm leading-7 text-newsfeed-muted">
                   Registration gives Oventric a clear legal footing for the retail, trade and e-commerce activities that support its marketplace and digital-product ecosystem.
                 </p>
@@ -310,7 +310,7 @@ function AboutPage() {
         <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
           <div className="text-center">
             <p className="font-wallet-display text-sm font-bold text-newsfeed-blue">HOW WE BUILD</p>
-            <h2 className="mx-auto mt-4 max-w-3xl font-wallet-display text-4xl font-bold sm:text-5xl">Principles that keep the platform human.</h2>
+            <h2 className="mx-auto mt-4 max-w-3xl font-wallet-display text-3xl font-bold sm:text-4xl lg:text-5xl">Principles that keep the platform human.</h2>
           </div>
           <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {principles.map((principle, index) => {
@@ -321,7 +321,7 @@ function AboutPage() {
                     <span className={`grid size-11 place-items-center rounded-[10px] ${tones[index]}`}><principle.icon className="size-5" /></span>
                     <span className="font-wallet-display text-xs font-bold text-newsfeed-muted">{principle.number}</span>
                   </div>
-                  <h3 className="mt-8 font-wallet-display text-lg font-bold">{principle.title}</h3>
+                  <h3 className="mt-8 font-wallet-display text-base font-bold lg:text-lg">{principle.title}</h3>
                   <p className="mt-3 text-sm leading-7 text-newsfeed-muted">{principle.body}</p>
                 </article>
               );
@@ -333,7 +333,7 @@ function AboutPage() {
           <div className="relative mx-auto max-w-5xl px-5 text-center sm:px-8">
             <Globe2 className="mx-auto size-9 text-newsfeed-blue" />
             <p className="mt-6 font-wallet-display text-sm font-bold text-newsfeed-violet">NIGERIA TO THE DIGITAL WORLD</p>
-            <h2 className="mt-4 font-wallet-display text-4xl font-bold leading-tight sm:text-6xl">Come build, discover and earn with Oventric.</h2>
+            <h2 className="mt-4 font-wallet-display text-3xl font-bold leading-tight sm:text-4xl lg:text-6xl">Come build, discover and earn with Oventric.</h2>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-newsfeed-muted">
               Whether you are presenting your first project, growing a digital storefront or looking for useful work from trusted people, there is a place for you here.
             </p>
