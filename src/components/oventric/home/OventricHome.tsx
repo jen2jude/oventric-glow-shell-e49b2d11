@@ -1094,7 +1094,7 @@ function SocialLink({ href, label, icon }: { href: string; label: string; icon: 
       aria-label={label}
       target="_blank"
       rel="noopener noreferrer"
-      className="home-pop-social inline-flex h-10 w-10 items-center justify-center rounded-full border text-slate-300 transition-all hover:-translate-y-0.5 hover:text-white"
+      className="home-pop-social inline-flex h-10 w-10 items-center justify-center rounded-full border text-newsfeed-muted transition-all hover:-translate-y-0.5 hover:text-newsfeed-violet"
     >
       {icon}
     </a>
