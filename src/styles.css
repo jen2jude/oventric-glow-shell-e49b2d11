@@ -497,22 +497,38 @@
 }
 
 .home-pop-footer {
+  position: relative;
   background:
-    linear-gradient(110deg, color-mix(in oklab, var(--home-pop-violet) 17%, transparent), transparent 42%),
-    linear-gradient(290deg, color-mix(in oklab, var(--home-pop-red) 12%, transparent), transparent 45%),
-    oklch(0.17 0.025 270);
-  border-color: color-mix(in oklab, var(--home-pop-violet) 25%, transparent);
+    linear-gradient(115deg, color-mix(in oklab, var(--home-pop-violet) 7%, var(--home-surface)), transparent 48%),
+    linear-gradient(295deg, color-mix(in oklab, var(--home-pop-cyan) 7%, var(--home-surface)), transparent 45%),
+    var(--home-surface);
+  border-color: var(--home-line);
+}
+
+.home-pop-footer::before {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  content: "";
+  background: linear-gradient(
+    90deg,
+    var(--newsfeed-blue),
+    var(--newsfeed-violet),
+    var(--newsfeed-green),
+    var(--newsfeed-gold),
+    var(--newsfeed-coral)
+  );
 }
 
 .home-pop-social {
-  border-color: color-mix(in oklab, var(--home-pop-cyan) 22%, transparent);
-  background: color-mix(in oklab, var(--home-surface) 8%, transparent);
+  border-color: color-mix(in oklab, var(--home-pop-violet) 22%, var(--home-line));
+  background: color-mix(in oklab, var(--home-pop-violet) 6%, var(--home-surface));
 }
 
 .home-pop-social:hover {
-  border-color: color-mix(in oklab, var(--home-pop-red) 65%, transparent);
-  background: color-mix(in oklab, var(--home-pop-red) 20%, transparent);
-  box-shadow: 0 12px 30px -14px color-mix(in oklab, var(--home-pop-red) 70%, transparent);
+  border-color: color-mix(in oklab, var(--home-pop-violet) 60%, transparent);
+  background: color-mix(in oklab, var(--home-pop-violet) 14%, var(--home-surface));
+  box-shadow: 0 12px 30px -18px color-mix(in oklab, var(--home-pop-violet) 70%, transparent);
 }
 
 @media (max-width: 639px) {
