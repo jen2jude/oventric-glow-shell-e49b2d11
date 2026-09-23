@@ -49,11 +49,32 @@ export function ImageLightbox(props: GalleryProps | LegacyProps) {
       if (e.key === "ArrowLeft") setIndex((i) => clamp(i - 1));
     };
     document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    // Hard lock the background: freeze the page in place and restore on close.
+    const body = document.body;
+    const scrollY = window.scrollY;
+    const prev = {
+      overflow: body.style.overflow,
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      right: body.style.right,
+      width: body.style.width,
+    };
+    body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.left = "0";
+    body.style.right = "0";
+    body.style.width = "100%";
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
+      body.style.overflow = prev.overflow;
+      body.style.position = prev.position;
+      body.style.top = prev.top;
+      body.style.left = prev.left;
+      body.style.right = prev.right;
+      body.style.width = prev.width;
+      window.scrollTo(0, scrollY);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onClose, total]);
