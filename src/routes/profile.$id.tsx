@@ -2167,14 +2167,6 @@ function ProfilePage() {
         targetId={`profile-${profile.id}`}
         targetKind="profile"
       />
-      {realProfile?.userId && (
-        <JoinCirclePickerModal
-          open={joinCircleOpen}
-          onClose={() => setJoinCircleOpen(false)}
-          userId={realProfile.userId}
-          userName={realProfile.displayName || profile.name}
-        />
-      )}
     </div>
   );
 }
