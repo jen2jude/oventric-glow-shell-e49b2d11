@@ -2530,7 +2530,6 @@ function emptyContentFor(
   name: string,
   q: string,
   onClearSearch: () => void,
-  onJoinCircle: () => void,
 ): {
   title: string;
   hint?: string;
