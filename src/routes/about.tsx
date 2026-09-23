@@ -11,7 +11,6 @@ import {
   Download,
   Globe2,
   HeartHandshake,
-  Landmark,
   LockKeyhole,
   MessageCircleMore,
   PackageCheck,
