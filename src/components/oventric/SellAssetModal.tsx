@@ -666,12 +666,12 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                   type="button"
                   variant="outline"
                   onClick={() => imageInputRef.current?.click()}
-                  className="mt-2 flex w-full cursor-pointer select-none items-center gap-3 rounded-[10px] border border-dashed border-contact-blue/35 bg-contact-surface p-3 text-left transition-colors hover:border-contact-blue"
+                  className="mt-2 flex h-auto w-full min-w-0 cursor-pointer select-none items-center justify-start gap-3 whitespace-normal rounded-[10px] border border-dashed border-contact-blue/35 bg-contact-surface p-3 text-left transition-colors hover:border-contact-blue"
                 >
                   <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[10px] border border-contact-blue/20 bg-contact-blue/10 text-contact-blue sm:h-16 sm:w-16">
                     <ImagePlus className="w-6 h-6" />
                   </div>
-                  <div className="text-xs text-contact-copy">
+                  <div className="min-w-0 text-left text-xs leading-relaxed text-contact-copy">
                     Tap to add images from your phone or camera roll. PNG/JPG up to {MAX_IMAGE_MB}MB
                     each. {images.length}/{MAX_IMAGES} added.
                   </div>
