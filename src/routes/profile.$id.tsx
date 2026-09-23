@@ -1065,7 +1065,7 @@ function ProfilePage() {
 
   return (
     <div
-      className={`profile-render-safe profile-dashboard relative min-h-screen overflow-x-hidden text-foreground md:h-screen md:overflow-hidden ${!isAppShellView ? "oventric-web" : ""}`}
+      className={`profile-render-safe profile-dashboard relative min-h-screen overflow-x-clip text-foreground md:h-screen md:overflow-hidden ${!isAppShellView ? "oventric-web" : ""}`}
     >
       <div className="pointer-events-none fixed top-0 inset-x-0 h-[2px] z-50  hidden md:block" />
       <div className="pointer-events-none fixed bottom-0 inset-x-0 h-[2px] z-50  hidden md:block" />
@@ -1073,7 +1073,9 @@ function ProfilePage() {
       <div className="pointer-events-none fixed top-0 bottom-0 right-0 w-[2px] z-50  hidden md:block" />
 
       <div className="flex min-h-screen flex-col md:h-full md:min-h-0">
-        <Header forceSiteNavbar={!isAppShellView} />
+        <div className="profile-page-header sticky top-0 z-50 shrink-0 bg-newsfeed-surface">
+          <Header forceSiteNavbar={!isAppShellView} />
+        </div>
         <main ref={mainRef} className="flex-1 min-w-0 pb-20 md:overflow-y-auto md:pb-0">
           <div className="profile-dashboard-shell mx-auto w-full max-w-7xl px-4 py-5 md:px-8 md:py-8 lg:px-10">
             {/* Hero — the whole mobile profile surface is intentionally plain:
@@ -1157,9 +1159,9 @@ function ProfilePage() {
                       navigate({ to: "/" });
                     }}
                     aria-label="Back to previous page"
-                    className="group absolute left-3 top-3 h-10 rounded-full border border-newsfeed-line bg-newsfeed-surface/95 py-2 pl-2.5 pr-4 text-[13px] font-semibold text-newsfeed-ink shadow-sm backdrop-blur-md transition hover:border-newsfeed-violet/40 hover:bg-newsfeed-surface hover:text-newsfeed-ink hover:shadow"
+                    className="group absolute left-3 top-3 h-10 rounded-full border border-newsfeed-line bg-newsfeed-surface py-2 pl-2.5 pr-4 text-[13px] font-bold text-newsfeed-ink shadow-md transition hover:border-newsfeed-coral/40 hover:bg-newsfeed-coral-soft hover:text-newsfeed-ink hover:shadow-lg focus-visible:ring-2 focus-visible:ring-newsfeed-coral/40"
                   >
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-newsfeed-violet-soft text-newsfeed-violet transition group-hover:-translate-x-0.5">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-newsfeed-coral-soft text-newsfeed-coral transition group-hover:-translate-x-0.5">
                       <ArrowLeft className="h-3.5 w-3.5" />
                     </span>
                     Back
