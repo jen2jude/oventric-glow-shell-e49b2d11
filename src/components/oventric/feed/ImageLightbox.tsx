@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, X, MousePointerClick, Pause } from "lucide-react";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
 
@@ -215,9 +216,9 @@ export function ImageLightbox(props: GalleryProps | LegacyProps) {
     return () => el.removeEventListener("wheel", onWheel);
   }, []);
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
+      className="fixed inset-0 z-[300] bg-black/95 flex items-center justify-center"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
