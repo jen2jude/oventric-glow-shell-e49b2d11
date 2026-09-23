@@ -205,6 +205,7 @@ function BoardSheet({
   const [title, setTitle] = useState("");
   const [image, setImage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [showAdd, setShowAdd] = useState(false);
 
   return (
     <Sheet onClose={onClose}>
@@ -253,10 +254,16 @@ function BoardSheet({
                 </div>
               )}
             </div>
-            <div className="min-w-0 flex-1">
+            <a
+              href={it.url ?? undefined}
+              className="min-w-0 flex-1"
+              onClick={(e) => {
+                if (!it.url) e.preventDefault();
+              }}
+            >
               <p className="truncate text-[12px] font-bold text-white">{it.title || it.url}</p>
               {it.note && <p className="truncate text-[11px] text-slate-400">{it.note}</p>}
-            </div>
+            </a>
             {it.url && (
               <a
                 href={it.url}
@@ -284,7 +291,16 @@ function BoardSheet({
         ))}
       </div>
 
-      {isOwner && (
+      {isOwner && !showAdd && (
+        <button
+          onClick={() => setShowAdd(true)}
+          className="mt-4 w-full rounded-[10px] border border-dashed border-white/20 py-3 text-[12px] font-bold text-slate-300"
+        >
+          + Add a link manually
+        </button>
+      )}
+
+      {isOwner && showAdd && (
         <div className="mt-4 space-y-2 rounded-2xl border border-white/10 bg-white/[0.03] p-3">
           <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Add to board</p>
           <input
