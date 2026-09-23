@@ -356,7 +356,7 @@ function ShopPage() {
 
       <div className={`mx-auto w-full px-4 pb-20 md:px-8 lg:px-12 ${isAppShell ? "max-w-[720px] md:max-w-[900px] lg:max-w-[1000px]" : "max-w-[1240px] pt-4 md:pt-8"}`}>
         {/* Cover */}
-        <div className={`relative w-full overflow-hidden ${isAppShell ? "h-48 sm:h-64" : "storefront-cover h-48 rounded-lg sm:h-64 lg:h-72"}`}>
+        <div className={`relative w-full overflow-hidden ${isAppShell ? "h-48 sm:h-64" : "storefront-cover h-40 rounded-lg sm:h-64 lg:h-72"}`}>
           {shop?.coverUrl ? (
             <img loading="lazy" decoding="async" src={shop.coverUrl} alt="" className="h-full w-full object-cover" />
           ) : (
@@ -371,7 +371,7 @@ function ShopPage() {
 
         {/* Identity */}
         <div className={isAppShell ? "-mt-12" : "storefront-content relative -mt-10 px-1 sm:-mt-14 sm:px-8"}>
-          <div className={`relative overflow-hidden border bg-card ${isAppShell ? "h-24 w-24 rounded-2xl border-white/10" : "storefront-logo h-24 w-24 rounded-full border-4 border-background shadow-sm sm:h-32 sm:w-32"}`}>
+          <div className={`relative overflow-hidden border bg-card ${isAppShell ? "h-24 w-24 rounded-2xl border-white/10" : "storefront-logo h-20 w-20 rounded-[10px] border-4 border-background shadow-sm sm:h-32 sm:w-32 sm:rounded-[10px]"}`}>
             {shop?.logoUrl ? (
               <img loading="lazy" decoding="async" src={shop.logoUrl} alt="" className="h-full w-full object-cover" />
             ) : (
@@ -414,7 +414,7 @@ function ShopPage() {
           </div>
 
           {!isAppShell && (
-            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+            <div className="mt-4 grid grid-cols-2 gap-2">
               <div className="storefront-trust storefront-trust-blue">
                 <ShieldCheck className="h-4 w-4 shrink-0" />
                 <span>Payments protected by Oventric</span>
@@ -427,7 +427,7 @@ function ShopPage() {
           )}
 
           {/* Actions */}
-          <div className={`mt-5 grid grid-cols-2 gap-3 ${!isAppShell ? "sm:ml-auto sm:max-w-md" : ""}`}>
+          <div className={`mt-4 grid grid-cols-2 gap-3 ${!isAppShell ? "sm:ml-auto sm:max-w-md" : ""}`}>
             {isOwner ? (
               <button
                 type="button"
@@ -463,7 +463,7 @@ function ShopPage() {
           </div>
 
           {/* Tabs */}
-          <nav className={`mt-8 flex items-center overflow-x-auto border-b border-border ${isAppShell ? "gap-1 md:sticky md:top-[57px] md:z-20 md:-mx-8 md:border-b-0 md:px-8 md:web-glass lg:-mx-12 lg:px-12" : "storefront-tabs sticky top-[65px] z-30 -mx-4 gap-7 bg-background/95 px-4 backdrop-blur md:top-[73px] md:mx-0 md:px-0"}`}>
+          <nav className={`mt-5 flex items-center overflow-x-auto border-b border-border ${isAppShell ? "gap-1 md:sticky md:top-[57px] md:z-20 md:-mx-8 md:border-b-0 md:px-8 md:web-glass lg:-mx-12 lg:px-12" : "storefront-tabs sticky top-[65px] z-30 -mx-4 gap-7 bg-background/95 px-4 backdrop-blur md:top-[73px] md:mx-0 md:mt-8 md:px-0"}`}>
             {(
               [
                 ["shop", "Shop"],

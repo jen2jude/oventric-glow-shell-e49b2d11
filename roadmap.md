@@ -13,4 +13,4 @@
 - [x] Add real same-category product recommendations
 - [x] Open saved creator posts as full interactive overlays from Collections
 - [x] Verify creator collection overlays on mobile and desktop
-- [ ] Apply the selected cyber-luxe Coral Commerce facelift to public seller storefronts
+- [x] Apply the selected cyber-luxe Coral Commerce facelift to public seller storefronts
