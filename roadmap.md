@@ -19,5 +19,5 @@
 - [x] Make the social profile header sticky and refresh its Back button
 
 - [x] Fix newly published newsfeed posts appearing below older posts
-- [ ] Apply the selected Coral Commerce tactile redesign to checkout
-- [ ] Verify the redesigned checkout on mobile and desktop
+- [x] Apply the selected Coral Commerce tactile redesign to checkout
+- [x] Verify the redesigned checkout on mobile and desktop
