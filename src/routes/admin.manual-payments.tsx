@@ -3,8 +3,9 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2, CheckCircle2, XCircle, Receipt, ExternalLink } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Receipt, ExternalLink, Trash2 } from "lucide-react";
 import {
+  adminClearManualAttempt,
   adminListManualPayments,
   adminReviewManualPayment,
   getManualProofUrl,
@@ -39,6 +40,7 @@ function AdminManualPaymentsPage() {
   const listFn = useServerFn(adminListManualPayments);
   const reviewFn = useServerFn(adminReviewManualPayment);
   const proofFn = useServerFn(getManualProofUrl);
+  const clearFn = useServerFn(adminClearManualAttempt);
   const qc = useQueryClient();
 
   const query = useQuery({
@@ -59,6 +61,20 @@ function AdminManualPaymentsPage() {
       await qc.invalidateQueries({ queryKey: ["admin-manual-payments"] });
     } catch (e) {
       toast.error("Review failed", { description: e instanceof Error ? e.message : "Try again." });
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const clearAttempt = async (id: string) => {
+    if (!window.confirm("Clear this attempt? The user never submitted a receipt.")) return;
+    setBusyId(id);
+    try {
+      await clearFn({ data: { id } });
+      toast.success("Attempt cleared");
+      await qc.invalidateQueries({ queryKey: ["admin-manual-payments"] });
+    } catch (e) {
+      toast.error("Could not clear attempt", { description: e instanceof Error ? e.message : "Try again." });
     } finally {
       setBusyId(null);
     }
@@ -176,6 +192,21 @@ function AdminManualPaymentsPage() {
                 <span className="text-[11px] uppercase tracking-wider font-bold text-slate-400">
                   {!r.proofPath ? "Attempt only" : r.status}
                 </span>
+              )}
+
+              {!r.proofPath && r.status === "pending" && (
+                <button
+                  onClick={() => clearAttempt(r.id)}
+                  disabled={busyId === r.id}
+                  className="px-3 py-1.5 rounded-[10px] bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 disabled:opacity-60 text-rose-300 text-xs font-bold inline-flex items-center gap-1.5"
+                >
+                  {busyId === r.id ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Trash2 className="w-3.5 h-3.5" />
+                  )}
+                  Clear attempt
+                </button>
               )}
             </div>
           </div>
