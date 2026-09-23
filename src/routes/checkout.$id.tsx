@@ -667,9 +667,9 @@ function CheckoutPage() {
 
   return (
     <div
-      className="web-checkout page-light min-h-screen overflow-x-hidden bg-checkout-canvas text-checkout-ink"
+      className="web-checkout page-light min-h-screen overflow-x-clip bg-checkout-canvas text-checkout-ink"
     >
-      <div className="checkout-header sticky top-0 z-50 border-b border-checkout-line bg-checkout-surface">
+      <div className="checkout-header sticky top-0 z-[60] border-b border-checkout-line bg-checkout-surface">
         <Header onOpenMessages={() => {}} light desktopNav={!isAppShell} forceSiteNavbar={!isAppShell} />
       </div>
       <main
