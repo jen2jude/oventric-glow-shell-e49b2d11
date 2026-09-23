@@ -699,14 +699,15 @@ function SectionHead({
   return (
     <div className="mb-4 mt-10 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 lg:mt-14">
       <div className="min-w-0">
-        <h2 className="font-wallet-display text-xl font-extrabold text-slate-900 sm:text-2xl">{title}</h2>
-        {subtitle && <p className="mt-1 text-xs text-slate-500 sm:text-sm">{subtitle}</p>}
+        <span className="home-pop-strip mb-2.5 block" aria-hidden="true" />
+        <h2 className="font-wallet-display text-xl font-extrabold text-newsfeed-ink sm:text-2xl">{title}</h2>
+        {subtitle && <p className="mt-1 text-xs text-newsfeed-muted sm:text-sm">{subtitle}</p>}
       </div>
       {action && (
         <button
           type="button"
           onClick={action.onClick}
-          className="inline-flex shrink-0 items-center gap-1 text-xs font-bold text-crimson transition-opacity hover:opacity-80 sm:text-sm"
+          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-newsfeed-line bg-newsfeed-surface px-3 py-1.5 text-xs font-bold text-newsfeed-violet shadow-newsfeed-panel transition-all hover:-translate-y-0.5 sm:text-sm"
         >
           {action.label}
           <ArrowRight className="h-3.5 w-3.5" />
