@@ -382,7 +382,11 @@ function BoardSheet({
       )}
 
       {creatorPostId && (
-        <CreatorPostOverlay postId={creatorPostId} onClose={() => setCreatorPostId(null)} />
+        <CreatorPostOverlay
+          postIds={allCreatorIds.length ? allCreatorIds : [creatorPostId]}
+          startId={creatorPostId}
+          onClose={() => setCreatorPostId(null)}
+        />
       )}
     </Sheet>
   );
