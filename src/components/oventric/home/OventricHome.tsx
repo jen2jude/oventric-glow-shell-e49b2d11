@@ -56,16 +56,13 @@ import paidCreatorImage from "@/assets/how-paid-creator.jpg";
 
 type CategoryNode = { id: string; slug: string; name: string };
 
-/** Pastel tile tints, mirroring the marketing layout. */
+/** Bright Spectrum tile tints — blue, violet, green, gold, coral. */
 const TILE_TINTS = [
-  "bg-[#EAF1FF] text-[#2F5FD0]",
-  "bg-[#F3ECFF] text-[#6F42D4]",
-  "bg-[#FFECF3] text-[#D0417A]",
-  "bg-[#E8F8EF] text-[#1F9D62]",
-  "bg-[#FFF6E2] text-[#C58318]",
-  "bg-[#FFEDE4] text-[#D4622A]",
-  "bg-[#E3F6F6] text-[#158C8C]",
-  "bg-[#ECEEFF] text-[#4A54CF]",
+  "bg-newsfeed-blue-soft text-newsfeed-blue",
+  "bg-newsfeed-violet-soft text-newsfeed-violet",
+  "bg-newsfeed-green-soft text-newsfeed-green",
+  "bg-newsfeed-gold-soft text-newsfeed-gold",
+  "bg-newsfeed-coral-soft text-newsfeed-coral",
 ];
 
 const TRUST = [
