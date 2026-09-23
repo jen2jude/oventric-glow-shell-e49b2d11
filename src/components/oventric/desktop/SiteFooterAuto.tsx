@@ -28,7 +28,7 @@ export function SiteFooterAuto({ className = "" }: { className?: string }) {
   };
 
   return (
-    <div className={`hidden md:block ${className}`}>
+    <div className={`block ${className}`}>
       <SiteFooter onSelect={onSelect} currency={currency ?? "USD"} flag={flag} />
     </div>
   );

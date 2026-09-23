@@ -11,8 +11,8 @@ import { SiteFooterAuto } from "@/components/oventric/desktop/SiteFooterAuto";
  * The mobile footer nav is rendered globally in __root.tsx, so this
  * wrapper only provides the header and messages drawer.
  *
- * `lightDesktop` opts the page into the white desktop theme used by
- * Academy / Bounties / Circles (mobile stays dark).
+ * `lightDesktop` opts the page into the light public-page theme across
+ * mobile, tablet, and desktop.
  *
  * `hubMobileHeader` swaps the default header for the Home Hub mobile header
  * when the page is viewed inside the app shell on a narrow viewport.
@@ -40,7 +40,7 @@ export function PublicChrome({
   return (
     <div
       className={`page-light relative min-h-screen w-full max-w-full overflow-x-hidden bg-[#121214] md:bg-slate-50 text-slate-200 md:text-slate-700 flex flex-col ${
-        lightDesktop ? "md:bg-white md:text-slate-700" : ""
+        lightDesktop ? "bg-white text-slate-700" : ""
       }`}
     >
       {useHubHeader ? (
