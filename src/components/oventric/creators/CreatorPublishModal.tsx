@@ -4,7 +4,7 @@ import { Download, FileUp, ImagePlus, Link2, Sparkles, X, Zap } from "lucide-rea
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { publishCreatorPost } from "@/lib/creators.functions";
-import { isCommunityLink, parseVideoEmbed } from "@/lib/video-embed";
+import { isCommunityLink } from "@/lib/video-embed";
 import {
   createProduct,
   listMarketplaceCategories,
@@ -49,7 +49,6 @@ export function CreatorPublishModal({
   const [caption, setCaption] = useState("");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [community, setCommunity] = useState("");
-  const [external, setExternal] = useState("");
   const [busy, setBusy] = useState(false);
   const [compressing, setCompressing] = useState(false);
 
@@ -78,7 +77,6 @@ export function CreatorPublishModal({
     setCaption("");
     setAttachments([]);
     setCommunity("");
-    setExternal("");
     setAssetFile(null);
     setAssetLink("");
     setIsFree(true);
@@ -148,10 +146,6 @@ export function CreatorPublishModal({
     }
     if (community.trim() && !isCommunityLink(community)) {
       toast.error("Community link must be a Telegram or WhatsApp link");
-      return;
-    }
-    if (external.trim() && !parseVideoEmbed(external)) {
-      toast.error("That video link doesn't look right");
       return;
     }
 
@@ -289,7 +283,6 @@ export function CreatorPublishModal({
           mediaPaths,
           mediaType,
           communityLink: community.trim() || undefined,
-          externalUrl: external.trim() || undefined,
           productId,
         },
       });
