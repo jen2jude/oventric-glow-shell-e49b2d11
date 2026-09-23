@@ -30,13 +30,13 @@ export const Route = createFileRoute("/refunds")({
       {
         name: "description",
         content:
-          "How refunds, order disputes, escrow releases, cashback reversals and chargebacks work on Oventric for digital products, services, courses and bounties.",
+          "How refunds, order disputes, cashback reversals and chargebacks work on Oventric for digital products.",
       },
       { property: "og:title", content: "Oventric Refund & Dispute Policy" },
       {
         property: "og:description",
         content:
-          "A plain-language guide to buyer protection, escrow, digital-product refunds, course refunds, payout timing and dispute reviews on Oventric.",
+          "A plain-language guide to buyer protection, digital-product refunds, payout timing and dispute reviews on Oventric.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://oventric.com/refunds" },
@@ -58,7 +58,7 @@ const overviewCards = [
   {
     icon: RotateCcw,
     title: "Clear refund grounds",
-    body: "Refunds follow fixed, published rules for digital products, services, bounties and Academy courses — no guesswork.",
+    body: "Refunds follow fixed, published rules for digital products — no guesswork.",
     tone: "bg-newsfeed-blue-soft text-newsfeed-blue",
     border: "border-newsfeed-blue",
   },
@@ -98,19 +98,6 @@ const digitalNonRefundable = [
   "Items already downloaded and confirmed working by the buyer.",
 ];
 
-const servicePoints = [
-  "Service and bounty funds sit in escrow from the moment you pay.",
-  "If the provider does not start, or does not deliver within the agreed window, you can cancel and the escrowed amount returns to your wallet in full.",
-  "Once delivered work is accepted, the release to the provider is final.",
-  "Partial delivery disputes are reviewed against the agreed scope in the order record.",
-];
-
-const courseRules = [
-  "Academy enrolments can be refunded within 7 days of purchase.",
-  "You must have completed less than 20% of the course content.",
-  "After 7 days, or past 20% completion, the enrolment is non-refundable.",
-  "Refunded enrolments lose access to the course immediately.",
-];
 
 const refundSteps = [
   {
@@ -154,9 +141,8 @@ function RefundsPage() {
                 Buyer protection, explained before you ever need it.
               </h1>
               <p className="mt-6 max-w-xl text-base leading-7 text-newsfeed-muted sm:text-lg sm:leading-8">
-                This policy applies to every purchase on Oventric — marketplace items, services,
-                Academy courses and bounty escrow. It sets out when refunds apply, how disputes
-                are reviewed, and where your money goes.
+                This policy applies to every purchase on the Oventric marketplace. It sets out
+                when refunds apply, how disputes are reviewed, and where your money goes.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Button asChild size="lg">
