@@ -39,6 +39,7 @@ import { MiniPayPanel } from "@/components/oventric/MiniPayPanel";
 import { CRYPTO_DESTINATIONS, VIRTUAL_BANK_DESTINATIONS } from "@/lib/payments/active-rails";
 import { usdRate, convertViaSnapshot, formatMoney } from "@/lib/fx-display";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
+import { Button } from "@/components/ui/button";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 
 // Checkout works in USD canonical (the wallet is USD-native). Display
@@ -341,6 +342,7 @@ function CheckoutPage() {
   const [gateway, setGateway] = useState<"paystack" | "minipay" | "binance">("paystack");
   const [payTab, setPayTab] = useState<PayTabId>("card");
   const [optionKey, setOptionKey] = useState<string>("paystack-card");
+  const [paymentMethodsOpen, setPaymentMethodsOpen] = useState(true);
   const [recommended, setRecommended] = useState<"paystack" | "minipay" | "binance">("paystack");
   const loadOptions = useServerFn(getPaymentOptions);
   const loadPackages = useServerFn(getServicePackages);
@@ -743,14 +745,36 @@ function CheckoutPage() {
                     your dashboard so you can get it again any time.
                   </p>
                 </div>
-              ) : (
-              <h2 className="font-wallet-display text-lg font-bold text-checkout-ink">
-                Select Payment Method
-              </h2>
-              )}
-              {!isFree && (<>
+              ) : null}
+              {!isFree && (
+              <section className="checkout-payment-card overflow-hidden rounded-[10px] border border-checkout-line bg-checkout-surface shadow-checkout-card">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="checkout-payment-toggle h-auto w-full justify-between rounded-none px-5 py-4 text-left hover:bg-checkout-muted-surface"
+                  onClick={() => setPaymentMethodsOpen((open) => !open)}
+                  aria-expanded={paymentMethodsOpen}
+                  aria-controls="checkout-payment-methods"
+                >
+                  <span className="min-w-0">
+                    <span className="block font-wallet-display text-lg font-bold text-checkout-ink">
+                      Select Payment Method
+                    </span>
+                    <span className="mt-0.5 block truncate text-xs font-semibold text-checkout-muted">
+                      {activeOption?.label ?? "Choose how you want to pay"}
+                    </span>
+                  </span>
+                  <span className="ml-3 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-checkout-coral-soft text-checkout-coral">
+                    <ChevronDown className={`h-4 w-4 transition-transform ${paymentMethodsOpen ? "rotate-180" : ""}`} />
+                  </span>
+                </Button>
 
-
+                <div
+                  id="checkout-payment-methods"
+                  className={`checkout-payment-content grid transition-[grid-template-rows,opacity] duration-300 ${paymentMethodsOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
+                >
+                  <div className="min-h-0 overflow-hidden">
+                    <div className="space-y-4 border-t border-checkout-line px-4 py-4 sm:px-5">
               {/* Compact tab strip */}
               <div
                 className="checkout-tabs no-scrollbar flex gap-1 overflow-x-auto rounded-[10px] border border-checkout-line bg-checkout-muted-surface p-1"
@@ -884,7 +908,11 @@ function CheckoutPage() {
                   </div>
                 </div>
               )}
-              </>)}
+                    </div>
+                  </div>
+                </div>
+              </section>
+              )}
 
 
               {isService && (
