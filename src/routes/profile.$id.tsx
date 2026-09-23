@@ -131,7 +131,6 @@ import {
 } from "@/lib/profiles/mockProfiles";
 import { ReportModal } from "@/components/oventric/ReportModal";
 import { EditProfileModal } from "@/components/oventric/EditProfileModal";
-import { CircleRequestsDrawer } from "@/components/oventric/CircleRequestsDrawer";
 import { FollowRequestsDrawer } from "@/components/oventric/FollowRequestsDrawer";
 import { ProfileMessageModal } from "@/components/oventric/messaging/ProfileMessageModal";
 import {
