@@ -1346,9 +1346,7 @@ export function Feed({ homepageMenuVisible = false }: { homepageMenuVisible?: bo
           </div>
         )}
 
-        <div>
-          <FeedTabs tab={feedTab} onTabChange={setFeedTab} />
-        </div>
+        <FeedTabs tab={feedTab} onTabChange={setFeedTab} />
 
         <AdSlot placement="feed" variant="banner" />
 
