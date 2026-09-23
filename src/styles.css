@@ -4049,6 +4049,10 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
 .about-hero-copy p {
   color: var(--about-on-image);
 }
+.about-hero-title {
+  color: var(--about-on-image) !important;
+  text-shadow: 0 2px 18px color-mix(in oklab, var(--newsfeed-ink) 55%, transparent);
+}
 .about-spectrum {
   background: linear-gradient(
     90deg,
@@ -4068,9 +4072,6 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
     var(--newsfeed-gold),
     var(--newsfeed-coral)
   );
-}
-.about-certificate-panel {
-  background: var(--newsfeed-surface);
 }
 .about-cta {
   background:
