@@ -10,7 +10,6 @@ import {
   ShieldAlert,
   Truck,
   X,
-  Upload,
   Clock,
   ImagePlus,
 } from "lucide-react";
@@ -540,7 +539,7 @@ function DisputeModal({
     document.body.style.width = "100%";
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !busy) onClose();
+      if (event.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKeyDown);
 
@@ -553,7 +552,7 @@ function DisputeModal({
       document.body.style.width = previousBody.width;
       window.scrollTo(0, scrollY);
     };
-  }, [busy, onClose]);
+  }, [onClose]);
 
   const onFiles = async (files: FileList | null) => {
     if (!files?.length) return;
