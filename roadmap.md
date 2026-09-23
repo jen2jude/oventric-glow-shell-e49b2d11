@@ -10,3 +10,4 @@
 - [x] Newsfeed navigation refresh — search icon, category-style content tabs, personalized/following/shop views.
 - [x] Creators feed — X-style timeline with compact asset actions and direct free downloads.
 - [x] Verify creator timestamps and add real view/download counters in the Creators feed.
+- [x] Resume unfinished product listings with private per-seller browser drafts, including images and files.
