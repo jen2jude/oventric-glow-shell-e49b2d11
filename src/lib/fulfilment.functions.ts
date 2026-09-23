@@ -222,6 +222,8 @@ export const getOrderFulfilment = createServerFn({ method: "POST" })
       };
     }
 
+    const instantCompletedAt = manual ? null : o.paid_at ?? o.created_at;
+
     return {
       orderId: o.id,
       productId: o.product_id,
@@ -236,10 +238,10 @@ export const getOrderFulfilment = createServerFn({ method: "POST" })
       createdAt: o.created_at,
       requiresManualDelivery: manual,
       escrowStatus: (o.escrow_status ?? "released") as "held" | "released" | "refunded",
-      deliveredAt: o.delivered_at ?? null,
+      deliveredAt: o.delivered_at ?? instantCompletedAt,
       deliveryNote: o.delivery_note ?? null,
-      buyerConfirmedAt: o.buyer_confirmed_at ?? null,
-      releasedAt: o.released_at ?? null,
+      buyerConfirmedAt: o.buyer_confirmed_at ?? instantCompletedAt,
+      releasedAt: o.released_at ?? instantCompletedAt,
       autoReleaseAt: o.auto_release_at ?? null,
       autoRefundAt: o.auto_refund_at ?? null,
       payoutReleaseAt: o.payout_release_at ?? null,
