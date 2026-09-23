@@ -79,10 +79,6 @@ const faqGroups: FaqGroup[] = [
         a: "Choose Connect Account, continue with Google or email, then complete the onboarding steps. Your country helps Oventric display money in your home currency.",
       },
       {
-        q: "Why does Oventric ask sellers for a WhatsApp number?",
-        a: "A reachable WhatsApp number with country code is required before selling so the Oventric team can contact a seller when an order needs delivery support. A second phone number is optional.",
-      },
-      {
         q: "How do I keep my account secure?",
         a: "Keep sign-in codes and passwords private, use accurate account details, and review unfamiliar activity promptly. Oventric support will never ask you to share a private sign-in code in a report or order conversation.",
       },
