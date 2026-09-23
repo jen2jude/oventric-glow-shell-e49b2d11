@@ -97,7 +97,7 @@ function OrderPage() {
 
 
   return (
-    <div className="web-order min-h-screen overflow-x-hidden bg-newsfeed-blue-soft/30 text-newsfeed-ink">
+    <div className="web-order min-h-screen overflow-x-hidden bg-newsfeed-blue-soft text-newsfeed-ink">
       <Header onOpenMessages={() => {}} forceSiteNavbar={!isAppShell} />
       <main
         className="mx-auto w-full max-w-3xl px-3 pb-24 pt-5 sm:px-5 sm:pt-8 md:py-12"
