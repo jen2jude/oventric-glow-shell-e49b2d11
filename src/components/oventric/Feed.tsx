@@ -1223,25 +1223,10 @@ export function Feed({ homepageMenuVisible = false }: { homepageMenuVisible?: bo
       );
     });
 
-    if (feedTab !== "foryou" || term) return visible;
-    const affinityByAuthor = new Map<string, number>();
-    visible.forEach((post) => {
-      const interaction = (post.viewer_reaction ? 4 : 0) + (post.viewer_saved ? 3 : 0);
-      affinityByAuthor.set(post.author_id, (affinityByAuthor.get(post.author_id) ?? 0) + interaction);
-    });
-    return visible
-      .map((post, index) => ({
-        post,
-        index,
-        score:
-          (affinityByAuthor.get(post.author_id) ?? 0) * 5 +
-          post.likes_count * 2 +
-          post.comments_count * 3 +
-          post.reposts_count * 3 +
-          post.views_count * 0.05,
-      }))
-      .sort((a, b) => b.score - a.score || a.index - b.index)
-      .map(({ post }) => post);
+    // listPosts already returns newest first. Preserve that order in For You
+    // so a post that was just published appears at the top instead of being
+    // pushed below older posts with more reactions or views.
+    return visible;
   }, [
     posts,
     hiddenPosts,
