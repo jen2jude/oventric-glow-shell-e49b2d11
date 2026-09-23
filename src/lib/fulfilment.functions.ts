@@ -114,7 +114,9 @@ function buildSteps(o: Record<string, any>, manual: boolean): FulfilmentStep[] {
     {
       key: "confirmed",
       label: confirmed ? "Receipt confirmed" : "Buyer to confirm receipt",
-      hint: "Buyer confirms the item was received and works. Auto-confirms 24 hours after delivery.",
+      hint: manual
+        ? "Buyer confirms the item was received and works. Auto-confirms 24 hours after delivery."
+        : "Instant downloads are treated as received once the secure file is available.",
       state: state(confirmed, delivered),
       at: confirmed ?? null,
     },
@@ -127,7 +129,7 @@ function buildSteps(o: Record<string, any>, manual: boolean): FulfilmentStep[] {
           : "24-hour payout hold",
       hint: refunded
         ? "The delivery window closed, so the payment went back to the buyer's wallet."
-        : "Funds stay in escrow for 24 hours after confirmation, then the seller is paid.",
+        : "Paid orders stay in escrow for 24 hours after confirmation, then the seller is paid.",
       state: state(completed, confirmed),
       at: completed ?? null,
     },
@@ -241,7 +243,7 @@ export const getOrderFulfilment = createServerFn({ method: "POST" })
       deliveredAt: o.delivered_at ?? instantCompletedAt,
       deliveryNote: o.delivery_note ?? null,
       buyerConfirmedAt: o.buyer_confirmed_at ?? instantCompletedAt,
-      releasedAt: o.released_at ?? instantCompletedAt,
+      releasedAt: o.released_at ?? null,
       autoReleaseAt: o.auto_release_at ?? null,
       autoRefundAt: o.auto_refund_at ?? null,
       payoutReleaseAt: o.payout_release_at ?? null,

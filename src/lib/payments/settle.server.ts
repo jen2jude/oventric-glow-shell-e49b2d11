@@ -287,28 +287,28 @@ export async function settleOrder(
       ? originalAmount * qty * saleRatio * SELLER_SHARE * sellerNetRatio
       : convertViaSnapshot(sellerCutUSD, "USD", sellerCurrency, snap);
   const sellerCutLocal = Number(sellerCutLocalRaw.toFixed(sellerCurrency === "USD" ? 2 : 0));
-  const holdEscrow = Boolean(pRow.requires_manual_delivery);
-  const { DELIVER_DEADLINE_HOURS, hoursFromNow } = await import("@/lib/fulfilment.server");
+  const manualDelivery = Boolean(pRow.requires_manual_delivery);
+  // A paid listing remains escrowed even when the buyer covers the checkout
+  // total with wallet cashback. Only genuinely free downloads bypass escrow.
+  const holdEscrow = afterCouponUSD > 0;
+  const settledAt = new Date().toISOString();
+  const { DELIVER_DEADLINE_HOURS, PAYOUT_HOLD_HOURS, hoursFromNow } = await import("@/lib/fulfilment.server");
 
   await supabaseAdmin
     .from("orders")
     .update({
       escrow_status: holdEscrow ? "held" : "released",
       seller_share_usd: sellerCutUSD,
-      released_at: holdEscrow ? null : new Date().toISOString(),
+      delivered_at: holdEscrow && !manualDelivery ? settledAt : null,
+      buyer_confirmed_at: holdEscrow && !manualDelivery ? settledAt : null,
+      released_at: holdEscrow ? null : settledAt,
       // Seller has a fixed window to deliver, or the buyer is refunded.
-      auto_refund_at: holdEscrow ? hoursFromNow(DELIVER_DEADLINE_HOURS) : null,
+      auto_refund_at: holdEscrow && manualDelivery ? hoursFromNow(DELIVER_DEADLINE_HOURS) : null,
+      payout_release_at: holdEscrow && !manualDelivery ? hoursFromNow(PAYOUT_HOLD_HOURS) : null,
     })
     .eq("id", oRow.id as string);
 
 
-  if (!holdEscrow) {
-    await supabaseAdmin.rpc("wallet_credit_currency", {
-      _user_id: pRow.seller_id as string,
-      _amount: sellerCutLocal,
-      _currency: sellerCurrency,
-    });
-  }
   await supabaseAdmin.from("wallet_transactions").insert({
     user_id: pRow.seller_id as string,
     paystack_ref: reference,
@@ -363,38 +363,42 @@ export async function settleOrder(
     orderTotalUSD: afterCouponUSD,
   });
 
-  // Escrowed (manual-delivery) sale: tell the seller immediately and open the
-  // order-tagged chat thread so the whole hand-off happens on Oventric.
+  // Paid sales stay escrow-protected until the payout hold ends. Manual orders
+  // need seller delivery; instant downloads are delivered and confirmed at once,
+  // while the seller's 80% share stays pending until release.
   if (holdEscrow) {
     const orderId = oRow.id as string;
     const productName = (pRow.name as string) ?? "your listing";
     try {
-      // 1. Buyer ➜ Seller: payment confirmed, please deliver.
       await supabaseAdmin.from("direct_messages").insert({
         sender_id: buyerId,
         recipient_id: pRow.seller_id as string,
         order_id: orderId,
         is_system: true,
-        body:
-          `📦 Payment confirmed — "${productName}" (Qty ${qty})\n\n` +
-          `Oventric has verified this payment and it is held in escrow. Please deliver as soon as possible — ` +
-          `share the file, link or setup steps right here in this chat, then tap "Delivered".\n\n` +
-          `You have ${DELIVER_DEADLINE_HOURS} hours to deliver, otherwise the payment is automatically refunded to the buyer. ` +
-          `Once the buyer confirms (or the confirmation window closes), your earnings clear into your wallet.\n\n` +
-          `Order ref: ${orderId.slice(0, 8)}`,
+        body: manualDelivery
+          ? `📦 Payment confirmed — "${productName}" (Qty ${qty})\n\n` +
+            `Oventric has verified this payment and it is held in escrow. Please deliver as soon as possible — ` +
+            `share the file, link or setup steps right here in this chat, then tap "Delivered".\n\n` +
+            `You have ${DELIVER_DEADLINE_HOURS} hours to deliver, otherwise the payment is automatically refunded to the buyer. ` +
+            `Once the buyer confirms (or the confirmation window closes), your earnings clear into your wallet.\n\n` +
+            `Order ref: ${orderId.slice(0, 8)}`
+          : `✅ Instant download sold — "${productName}" (Qty ${qty})\n\n` +
+            `The buyer can download from their receipt and My purchases. Your seller share is held under Oventric escrow and clears after the ${PAYOUT_HOLD_HOURS}-hour payout hold if there is no dispute.\n\n` +
+            `Order ref: ${orderId.slice(0, 8)}`,
       });
 
-      // 2. Seller ➜ Buyer: automatic acknowledgement reply.
       await supabaseAdmin.from("direct_messages").insert({
         sender_id: pRow.seller_id as string,
         recipient_id: buyerId,
         order_id: orderId,
         is_system: true,
-        body:
-          `✅ Payment confirmed — "${productName}"\n\n` +
-          `Thank you! Your payment is confirmed and safely held in escrow. The seller has been notified and will deliver as soon as possible.\n\n` +
-          `When you receive it, tap "Confirm delivery" below. If anything goes wrong, tap "Report issue". ` +
-          `Keep the whole trade in this chat — escrow, refunds and mediation only cover deals completed on Oventric.`,
+        body: manualDelivery
+          ? `✅ Payment confirmed — "${productName}"\n\n` +
+            `Thank you! Your payment is confirmed and safely held in escrow. The seller has been notified and will deliver as soon as possible.\n\n` +
+            `When you receive it, tap "Confirm delivery" below. If anything goes wrong, tap "Report issue". ` +
+            `Keep the whole trade in this chat — escrow, refunds and mediation only cover deals completed on Oventric.`
+          : `✅ Payment confirmed — "${productName}"\n\n` +
+            `Your instant download is ready on the confirmation page and in My purchases. The trade remains protected on Oventric during the payout hold. If anything goes wrong, report it from the order page.`,
       });
     } catch (e) {
       console.error("[settleOrder] order DMs failed", e);
@@ -403,9 +407,11 @@ export async function settleOrder(
     try {
       await supabaseAdmin.from("notifications").insert({
         user_id: pRow.seller_id as string,
-        kind: "order_manual_delivery",
-        title: `New order — deliver "${productName}"`,
-        body: `${displayTotal.toLocaleString()} ${meta.displayCurrency} is held in escrow. Deliver in chat to get paid.`,
+        kind: manualDelivery ? "order_manual_delivery" : "order_instant_download",
+        title: manualDelivery ? `New order — deliver "${productName}"` : `Instant download sold — "${productName}"`,
+        body: manualDelivery
+          ? `${displayTotal.toLocaleString()} ${meta.displayCurrency} is held in escrow. Deliver in chat to get paid.`
+          : `${displayTotal.toLocaleString()} ${meta.displayCurrency} is held in escrow until the payout hold ends.`,
         link: `/order/${orderId}`,
         from_user_id: buyerId,
       });

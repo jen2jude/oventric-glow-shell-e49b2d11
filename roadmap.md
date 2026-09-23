@@ -8,3 +8,4 @@
 - [x] Complete the instant-delivery timeline at payment confirmation
 - [x] Redesign the purchase confirmation page with Bright Spectrum accents
 - [x] Verify paid instant and manual-delivery purchase states
+- [x] Keep paid instant-download seller payouts in escrow while preserving the 80/20 split
