@@ -27,6 +27,7 @@ import {
   Home,
   Compass,
   Newspaper,
+  Store,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
@@ -325,7 +326,8 @@ export function MegaMenu({ open, onClose }: Props) {
         </div>
 
         <nav className="px-2 pb-2" aria-label="Account shortcuts">
-          <WebMenuItem icon={User} label="Profile details" onClick={() => go(`/profile/${userSlug}`)} />
+          <WebMenuItem icon={User} label="Social Profile" onClick={() => go(`/profile/${userSlug}`)} />
+          <WebMenuItem icon={Store} label="Shop Profile" onClick={() => go(`/shop/${userSlug}`)} />
           {grid.map((item) => (
             <WebMenuItem key={item.label} icon={item.icon} label={item.label} onClick={item.onClick} />
           ))}
@@ -793,7 +795,7 @@ function WebMenuItem({
   onClick: () => void;
 }) {
   const toneByLabel: Record<string, string> = {
-    "Profile details": "bg-newsfeed-coral-soft text-newsfeed-coral", Home: "bg-newsfeed-blue-soft text-newsfeed-blue",
+    "Social Profile": "bg-newsfeed-coral-soft text-newsfeed-coral", "Shop Profile": "bg-newsfeed-green-soft text-newsfeed-green", Home: "bg-newsfeed-blue-soft text-newsfeed-blue",
     Explore: "bg-newsfeed-violet-soft text-newsfeed-violet", Feed: "bg-newsfeed-coral-soft text-newsfeed-coral",
     Marketplace: "bg-newsfeed-green-soft text-newsfeed-green", Wallet: "bg-newsfeed-gold-soft text-newsfeed-gold",
     Messages: "bg-newsfeed-blue-soft text-newsfeed-blue", Followers: "bg-newsfeed-violet-soft text-newsfeed-violet",

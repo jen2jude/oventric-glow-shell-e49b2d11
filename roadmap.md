@@ -14,5 +14,5 @@
 - [x] Open saved creator posts as full interactive overlays from Collections
 - [x] Verify creator collection overlays on mobile and desktop
 - [x] Apply the selected cyber-luxe Coral Commerce facelift to public seller storefronts
-- [ ] Finish storefront navigation: solid header, back button, no footer
-- [ ] Add Social Profile and Shop Profile shortcuts to the user menu
+- [x] Finish storefront navigation: solid header, back button, no footer
+- [x] Add Social Profile and Shop Profile shortcuts to the user menu

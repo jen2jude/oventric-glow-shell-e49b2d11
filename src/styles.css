@@ -3710,6 +3710,13 @@ section + section {
   background: linear-gradient(90deg, var(--newsfeed-blue), var(--newsfeed-violet), var(--newsfeed-green), var(--newsfeed-gold), var(--newsfeed-coral));
 }
 
+.web-storefront .storefront-header header {
+  background-color: var(--newsfeed-surface) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: var(--newsfeed-line) !important;
+}
+
 .web-storefront .storefront-title {
   font-family: var(--font-wallet-display);
   letter-spacing: 0;
