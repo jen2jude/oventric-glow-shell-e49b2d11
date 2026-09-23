@@ -1,6 +1,19 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Bell, Menu, Plus, X, User, MessageSquare } from "lucide-react";
+import {
+  Bell,
+  Compass,
+  Home,
+  Menu,
+  MessageSquare,
+  Newspaper,
+  Plus,
+  ShoppingBag,
+  Store,
+  User,
+  WalletCards,
+  X,
+} from "lucide-react";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { CurrencyPreviewToggle } from "../CurrencyPreviewToggle";
@@ -14,6 +27,19 @@ import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import logo from "@/assets/oventric-logo-dark.png";
 
 import { COUNTRY_META } from "@/lib/currency/africa";
+
+const NAV_ITEMS = [
+  { label: "Home", section: "Home", icon: Home },
+  { label: "Explore", section: "Explore", icon: Compass },
+  { label: "Newsfeed", section: "Feed", icon: Newspaper },
+  { label: "Wallet", section: "Wallet", icon: WalletCards },
+] as const;
+
+const MOBILE_NAV_ITEMS = [
+  ...NAV_ITEMS.slice(0, 3),
+  { label: "Marketplace", section: "Marketplace", icon: ShoppingBag },
+  NAV_ITEMS[3],
+] as const;
 
 export type SiteNavbarProps = {
   onSelect: (section: string) => void;
@@ -83,22 +109,25 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
 
           {/* Universal Navigation Links (Desktop) */}
           <nav className="hidden lg:flex items-center gap-6 text-sm font-bold text-slate-600">
-            {["Home", "Explore", "Newsfeed", "Wallet"].map(item => (
+            {NAV_ITEMS.map(({ label, section, icon: Icon }) => (
               <button
-                key={item}
-                onClick={() => onSelect(item === "Newsfeed" ? "Feed" : item)}
-                className="hover:text-slate-900 transition-colors"
+                key={label}
+                onClick={() => onSelect(section)}
+                className="inline-flex items-center gap-1.5 transition-colors hover:text-slate-900"
               >
-                {item}
+                <Icon className="h-4 w-4" strokeWidth={2} />
+                {label}
               </button>
             ))}
-            <Link to="/sellers" className="hover:text-slate-900 transition-colors">
+            <Link to="/sellers" className="inline-flex items-center gap-1.5 transition-colors hover:text-slate-900">
+              <Store className="h-4 w-4" strokeWidth={2} />
               Shop
             </Link>
             <button
               onClick={() => onSelect("Marketplace")}
-              className="px-4 py-3 bg-slate-900 text-white rounded-full hover:bg-slate-800 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-4 py-3 text-white transition-colors hover:bg-slate-800"
             >
+              <ShoppingBag className="h-4 w-4" strokeWidth={2} />
               Marketplace
             </button>
           </nav>
@@ -182,20 +211,22 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
           <nav className="p-6 space-y-6">
             <div className="space-y-4">
               <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Navigation</h3>
-              {["Home", "Explore", "Newsfeed", "Marketplace", "Wallet"].map(item => (
+              {MOBILE_NAV_ITEMS.map(({ label, section, icon: Icon }) => (
                 <button
-                  key={item}
-                  onClick={() => { onSelect(item === "Newsfeed" ? "Feed" : item); setMenuOpen(false); }}
-                  className="block w-full text-left text-lg font-black text-slate-900"
+                  key={label}
+                  onClick={() => { onSelect(section); setMenuOpen(false); }}
+                  className="flex w-full items-center gap-3 text-left text-lg font-black text-slate-900"
                 >
-                  {item}
+                  <Icon className="h-5 w-5 text-slate-500" strokeWidth={2} />
+                  {label}
                 </button>
               ))}
               <Link
                 to="/sellers"
                 onClick={() => setMenuOpen(false)}
-                className="block w-full text-left text-lg font-black text-slate-900"
+                className="flex w-full items-center gap-3 text-left text-lg font-black text-slate-900"
               >
+                <Store className="h-5 w-5 text-slate-500" strokeWidth={2} />
                 Shop
               </Link>
               <button
