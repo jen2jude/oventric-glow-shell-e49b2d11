@@ -218,13 +218,13 @@ function AboutPage() {
           </div>
         </section>
 
-        <section className="bg-newsfeed-ink py-20 text-primary-foreground lg:py-28">
+        <section className="about-trust-section bg-newsfeed-ink py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
             <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
               <div>
                 <p className="font-wallet-display text-sm font-bold text-newsfeed-gold">COMMERCE WITH GUARDRAILS</p>
                 <h2 className="mt-4 font-wallet-display text-4xl font-bold leading-tight sm:text-5xl">Trust is part of the product.</h2>
-                <p className="mt-6 max-w-xl text-lg leading-8 text-primary-foreground/75">
+                <p className="about-trust-muted mt-6 max-w-xl text-lg leading-8">
                   Oventric records the journey around a purchase so that buyers, sellers and support teams can understand what happened and what comes next.
                 </p>
               </div>
@@ -233,7 +233,7 @@ function AboutPage() {
                   <article key={point.title} className="bg-newsfeed-ink p-6 sm:p-8">
                     <point.icon className="size-7 text-newsfeed-gold" />
                     <h3 className="mt-5 font-wallet-display text-xl font-bold">{point.title}</h3>
-                    <p className="mt-3 text-sm leading-7 text-primary-foreground/70">{point.body}</p>
+                    <p className="about-trust-muted mt-3 text-sm leading-7">{point.body}</p>
                   </article>
                 ))}
               </div>
