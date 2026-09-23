@@ -91,13 +91,47 @@ export function CreatorPublishModal({
 
   if (!open) return null;
 
-  const pick = (files: FileList | null) => {
+  const pick = async (files: FileList | null) => {
     if (!files) return;
+    const picked = Array.from(files).slice(0, 10);
     const next: Attachment[] = [];
-    for (const file of Array.from(files).slice(0, 10)) {
-      const kind = file.type.startsWith("video/") ? "video" : "image";
+    for (const raw of picked) {
+      const kind = raw.file?.name || raw.type.startsWith("video/") ? (raw.type.startsWith("video/") ? "video" : "image") : "image";
+      let file = raw;
+      if (kind === "video") {
+        // Short clips only — long videos belong on YouTube/Vimeo and stream
+        // from there, so hosting never fills up with heavy uploads.
+        setCompressing(true);
+        try {
+          const { getVideoDuration, trimVideoSegment } = await import("@/lib/media/videoTrim");
+          const duration = await getVideoDuration(file);
+          if (duration > MAX_CLIP_SECONDS + 0.5) {
+            toast.error(
+              `Clips here are up to ${MAX_CLIP_SECONDS}s. For a longer video, paste its YouTube, Vimeo, Facebook or Telegram link below — it plays right here without an upload.`,
+            );
+            continue;
+          }
+          if (file.size > MAX_CLIP_BYTES) {
+            const compact = await trimVideoSegment(
+              file,
+              0,
+              Math.max(1, Math.min(MAX_CLIP_SECONDS, duration || MAX_CLIP_SECONDS)),
+            );
+            if (compact && compact.size < file.size) file = compact;
+          }
+          if (file.size > MAX_CLIP_BYTES * 1.5) {
+            toast.error(
+              "That clip is still too heavy. Paste a video link below instead — it streams from the original platform.",
+            );
+            continue;
+          }
+        } finally {
+          setCompressing(false);
+        }
+      }
       next.push({ file, url: URL.createObjectURL(file), kind });
     }
+    if (!next.length) return;
     // A video showcase is a single clip; images can be a set.
     setAttachments(next[0]?.kind === "video" ? next.slice(0, 1) : next);
   };
