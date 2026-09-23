@@ -371,6 +371,7 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
         aria-modal="true"
         aria-label="Notifications"
       >
+        <div className="about-spectrum h-1 w-full" aria-hidden />
         <div className="flex items-center justify-between px-5 h-16 border-b">
           <div>
             <h2 className="font-wallet-display text-foreground font-semibold text-base">
@@ -429,8 +430,14 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
                 onClick={() => void handleSelectChannel(c.key)}
                 className={`relative shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors border inline-flex items-center gap-1.5 ${
                   active
-                    ? "bg-primary text-primary-foreground border-transparent"
-                    : "bg-muted text-muted-foreground border-border hover:text-foreground"
+                     ? c.key === "financials"
+                       ? "border-transparent bg-newsfeed-green text-newsfeed-on-accent"
+                       : c.key === "social"
+                         ? "border-transparent bg-newsfeed-blue text-newsfeed-on-accent"
+                         : c.key === "system"
+                           ? "border-transparent bg-newsfeed-coral text-newsfeed-on-accent"
+                           : "border-transparent bg-newsfeed-violet text-newsfeed-on-accent"
+                     : "border-newsfeed-line bg-newsfeed-surface text-newsfeed-muted hover:text-newsfeed-ink"
                 }`}
               >
                 <span>{c.label}</span>
@@ -468,14 +475,14 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
               <button
                 key={n.id}
                 onClick={() => void handleOpenItem(n)}
-                className={`w-full text-left rounded-xl mb-2.5 p-3.5 border transition-all hover:shadow-[0_6px_18px_-12px_rgba(15,23,42,0.45)] ${
+                className={`mb-2.5 w-full rounded-[10px] border p-3.5 text-left transition-all hover:shadow-sm ${
                   !n.read_at
-                    ? "bg-primary/[0.04] border-primary/25"
-                    : "bg-card border-border hover:border-foreground/15"
+                    ? "border-newsfeed-violet/25 bg-newsfeed-violet-soft"
+                    : "border-newsfeed-line bg-newsfeed-surface hover:border-newsfeed-blue/30"
                 }`}
               >
                 <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 shrink-0 rounded-[10px] flex items-center justify-center bg-muted border">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] border border-newsfeed-line bg-newsfeed-blue-soft">
                     {iconForKind(n.kind)}
                   </div>
                   <div className="flex-1 min-w-0">

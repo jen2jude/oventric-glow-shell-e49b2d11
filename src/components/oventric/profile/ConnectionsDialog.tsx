@@ -217,12 +217,13 @@ export function ConnectionsDialog({
       role="dialog"
       aria-modal="true"
       aria-label={`${name}'s connections`}
-      className="web-connections fixed inset-0 z-[80] overflow-y-auto bg-muted/95 px-3 py-3 text-foreground sm:px-6 sm:py-8"
+      className="web-connections fixed inset-0 z-[80] overflow-y-auto bg-newsfeed-canvas/95 px-3 py-3 text-newsfeed-ink sm:px-6 sm:py-8"
     >
       <div className="mx-auto flex min-h-[min(760px,calc(100dvh-1.5rem))] w-full max-w-2xl flex-col overflow-hidden rounded-[10px] border border-border bg-background shadow-xl sm:min-h-0 sm:max-h-[calc(100dvh-4rem)]">
+        <div className="about-spectrum h-1 w-full shrink-0" aria-hidden />
         <header className="border-b border-border px-4 pt-4 sm:px-6 sm:pt-6">
           <div className="mb-5 flex items-center gap-3">
-            <div className="grid size-10 shrink-0 place-items-center rounded-[10px] bg-primary/10 text-primary">
+            <div className="grid size-10 shrink-0 place-items-center rounded-[10px] bg-newsfeed-violet-soft text-newsfeed-violet">
               <UsersRound className="size-5" aria-hidden />
             </div>
             <div className="min-w-0 flex-1">
@@ -257,7 +258,13 @@ export function ConnectionsDialog({
                   onClick={() => setTab(t.key)}
                   className={`shrink-0 border-b-2 pb-3 text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
                     active
-                      ? "border-primary text-primary"
+                      ? t.key === "following"
+                        ? "border-newsfeed-green text-newsfeed-green"
+                        : t.key === "followers"
+                          ? "border-newsfeed-blue text-newsfeed-blue"
+                          : t.key === "suggested"
+                            ? "border-newsfeed-coral text-newsfeed-coral"
+                            : "border-newsfeed-violet text-newsfeed-violet"
                       : "border-transparent text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -268,7 +275,7 @@ export function ConnectionsDialog({
           </div>
         </header>
 
-        <div className="border-b border-border bg-muted/40 p-3 sm:p-4">
+        <div className="border-b border-newsfeed-line bg-newsfeed-blue-soft/45 p-3 sm:p-4">
           <label className="flex items-center gap-2 rounded-[10px] border border-border bg-background px-3 py-2.5 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10">
             <Search className="size-4 shrink-0 text-muted-foreground" aria-hidden />
             <input

@@ -351,7 +351,7 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
 
   const identityBanner = (
     <div className="flex items-center gap-3">
-      <div className="w-12 h-12 rounded-full bg-neutral-800 text-white/85 flex items-center justify-center shrink-0 overflow-hidden">
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-newsfeed-violet-soft text-newsfeed-violet ring-2 ring-newsfeed-violet/20">
         {profile.avatarDataUrl ? (
           <ResponsiveImage
             sizes="48px"
@@ -366,20 +366,20 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
         )}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="text-white font-black text-sm truncate">{profile.displayName}</div>
-        <div className="text-[11px] text-slate-500 font-mono truncate">{handle}</div>
+        <div className="truncate text-sm font-black text-newsfeed-ink">{profile.displayName}</div>
+        <div className="truncate font-mono text-[11px] text-newsfeed-muted">{handle}</div>
         <div className="flex items-center gap-2 mt-1.5 flex-wrap">
           <span
             className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
               tierNumeric > 0
-                ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-300"
-                : "bg-slate-500/15 border-slate-500/40 text-slate-300"
+                ? "bg-newsfeed-green-soft border-newsfeed-green/30 text-newsfeed-green"
+                : "bg-newsfeed-blue-soft border-newsfeed-blue/30 text-newsfeed-blue"
             }`}
           >
             <ShieldCheck className="w-3 h-3" /> {tierLabel}
           </span>
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-300">
-            <Star className="w-3 h-3 fill-amber-300" /> {reputation}
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-newsfeed-gold">
+            <Star className="w-3 h-3 fill-newsfeed-gold" /> {reputation}
           </span>
         </div>
       </div>
@@ -389,7 +389,7 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
   const walletSnapshot = (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-newsfeed-muted">
           Wallet Snapshot
         </span>
         <button
@@ -397,7 +397,7 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
           role="menuitem"
           tabIndex={-1}
           onClick={toggleBalancesHidden}
-          className="text-slate-500 hover:text-slate-300 inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 focus:text-slate-200"
+          className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold text-newsfeed-muted hover:text-newsfeed-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-newsfeed-violet/40"
           aria-label={balancesHidden ? "Show balances" : "Hide balances"}
         >
           {balancesHidden ? (
@@ -427,14 +427,14 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
             aria-label="Wallet balance"
           >
             <div
-              className="rounded-[10px] px-2 py-3 text-center bg-emerald-500/15 border border-emerald-400/60 shadow-sm"
+              className="rounded-[10px] border border-newsfeed-green/30 bg-newsfeed-green-soft px-2 py-3 text-center shadow-sm"
               title={`${homeCurrency} is your locked base currency (from your country)`}
             >
-              <div className="text-[9px] font-bold uppercase tracking-widest text-emerald-300">
+              <div className="text-[9px] font-bold uppercase tracking-widest text-newsfeed-green">
                 {homeCurrency} · Base
               </div>
               <div
-                className={`text-xs font-black tabular-nums mt-0.5 ${balancesHidden ? "text-slate-600" : "text-emerald-100"}`}
+                className={`mt-0.5 text-xs font-black tabular-nums ${balancesHidden ? "text-newsfeed-muted" : "text-newsfeed-ink"}`}
               >
                 {balancesHidden
                   ? "••••••"
@@ -443,18 +443,18 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
             </div>
             {showUsdTile && (
               <div
-                className="rounded-[10px] px-2 py-3 text-center bg-[#121214] border border-white/5"
+                className="rounded-[10px] border border-newsfeed-blue/25 bg-newsfeed-blue-soft px-2 py-3 text-center"
                 title="USD equivalent — display only, not withdrawable"
               >
-                <div className="text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                <div className="text-[9px] font-bold uppercase tracking-widest text-newsfeed-blue">
                   USD · Equivalent
                 </div>
                 <div
-                  className={`text-xs font-black tabular-nums mt-0.5 ${balancesHidden ? "text-slate-600" : "text-slate-200"}`}
+                  className={`mt-0.5 text-xs font-black tabular-nums ${balancesHidden ? "text-newsfeed-muted" : "text-newsfeed-ink"}`}
                 >
                   {balancesHidden ? "••••••" : `≈ $${fmtBalance(usdEquivalent, "USD")}`}
                 </div>
-                <div className="text-[8px] text-slate-500 mt-0.5">Not withdrawable</div>
+                <div className="mt-0.5 text-[8px] text-newsfeed-muted">Not withdrawable</div>
               </div>
             )}
           </div>
@@ -471,12 +471,12 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
         role="menuitem"
         tabIndex={-1}
         onClick={() => closeMenu(false)}
-        className="flex items-center gap-3 px-2 py-3 rounded-[10px] text-sm text-slate-200 hover:bg-white/5 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 focus:bg-white/5 focus:text-white"
+        className="flex items-center gap-3 rounded-[10px] px-2 py-3 text-sm text-newsfeed-ink transition-colors hover:bg-newsfeed-green-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-newsfeed-green/40"
       >
-        <UserCircle2 className="w-4 h-4 text-emerald-300 shrink-0" aria-hidden />
+        <span className="grid size-8 shrink-0 place-items-center rounded-[8px] bg-newsfeed-green-soft text-newsfeed-green"><UserCircle2 className="h-4 w-4" aria-hidden /></span>
         <div className="min-w-0">
           <div className="font-semibold truncate">View My Workspace</div>
-          <div className="text-[10px] text-slate-500 truncate">
+          <div className="truncate text-[10px] text-newsfeed-muted">
             Your /profile aggregator tab view
           </div>
         </div>
@@ -486,12 +486,12 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
         role="menuitem"
         tabIndex={-1}
         onClick={openSettings}
-        className="w-full flex items-center gap-3 px-2 py-3 rounded-[10px] text-sm text-slate-200 hover:bg-white/5 hover:text-white transition-colors text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/70 focus:bg-white/5 focus:text-white"
+        className="flex w-full items-center gap-3 rounded-[10px] px-2 py-3 text-left text-sm text-newsfeed-ink transition-colors hover:bg-newsfeed-blue-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-newsfeed-blue/40"
       >
-        <Settings className="w-4 h-4 text-sky-300 shrink-0" aria-hidden />
+        <span className="grid size-8 shrink-0 place-items-center rounded-[8px] bg-newsfeed-blue-soft text-newsfeed-blue"><Settings className="h-4 w-4" aria-hidden /></span>
         <div className="min-w-0">
           <div className="font-semibold truncate">Profile Settings & KYC Edit</div>
-          <div className="text-[10px] text-slate-500 truncate">
+          <div className="truncate text-[10px] text-newsfeed-muted">
             Name, bio, avatar, verification docs
           </div>
         </div>
@@ -504,12 +504,12 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
           closeMenu(false);
           navigate({ to: "/dashboard" });
         }}
-        className="w-full flex items-center gap-3 px-2 py-3 rounded-[10px] text-sm text-slate-200 hover:bg-white/5 hover:text-white transition-colors text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 focus:bg-white/5 focus:text-white"
+        className="flex w-full items-center gap-3 rounded-[10px] px-2 py-3 text-left text-sm text-newsfeed-ink transition-colors hover:bg-newsfeed-violet-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-newsfeed-violet/40"
       >
-        <LayoutDashboard className="w-4 h-4 text-sky-300 shrink-0" aria-hidden />
+        <span className="grid size-8 shrink-0 place-items-center rounded-[8px] bg-newsfeed-violet-soft text-newsfeed-violet"><LayoutDashboard className="h-4 w-4" aria-hidden /></span>
         <div className="min-w-0">
           <div className="font-semibold truncate">My Dashboard</div>
-          <div className="text-[10px] text-slate-500 truncate">
+          <div className="truncate text-[10px] text-newsfeed-muted">
             Digital downloads · contacted sellers
           </div>
         </div>
@@ -523,7 +523,7 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
       role="menuitem"
       tabIndex={-1}
       onClick={onSignOut}
-      className="w-full flex items-center gap-3 px-2 py-3 rounded-[10px] text-sm font-bold text-red-300 bg-red-500/5 border border-red-500/20 hover:bg-red-500/15 hover:border-red-500/40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70"
+      className="flex w-full items-center gap-3 rounded-[10px] border border-newsfeed-coral/25 bg-newsfeed-coral-soft px-2 py-3 text-sm font-bold text-newsfeed-coral transition-colors hover:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-newsfeed-coral/40"
     >
       <LogOut className="w-4 h-4 shrink-0" aria-hidden />
       Exit Platform / Sign Out
@@ -532,9 +532,9 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
 
   const panelBody = (
     <div className="space-y-4">
-      <div className="pb-4 border-b border-white/5">{identityBanner}</div>
-      <div className="pb-4 border-b border-white/5">{walletSnapshot}</div>
-      <div className="pb-4 border-b border-white/5">{navMatrix}</div>
+      <div className="border-b border-newsfeed-line pb-4">{identityBanner}</div>
+      <div className="border-b border-newsfeed-line pb-4">{walletSnapshot}</div>
+      <div className="border-b border-newsfeed-line pb-4">{navMatrix}</div>
       <div>{signOutRow}</div>
     </div>
   );
@@ -546,7 +546,7 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
             <div
               aria-hidden
               onClick={() => closeMenu(true)}
-              className="fixed inset-0 bg-black/60 z-[90]"
+              className="fixed inset-0 z-[90] bg-newsfeed-ink/35 backdrop-blur-[2px]"
             />
             <div
               ref={menuRef}
@@ -557,9 +557,9 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
               aria-orientation="vertical"
               aria-modal="true"
               onKeyDown={onMenuKeyDown}
-              className="fixed bottom-0 left-0 right-0 w-full rounded-t-2xl border-t border-x border-white/5 bg-[#1E1E24] p-6 pb-8 z-[100] max-h-[85vh] overflow-y-auto shadow-2xl animate-in slide-in-from-bottom duration-200 focus:outline-none"
+              className="profile-menu-spectrum fixed bottom-0 left-0 right-0 z-[100] max-h-[85vh] w-full overflow-y-auto rounded-t-[10px] border-x border-t border-newsfeed-line bg-newsfeed-surface p-6 pb-8 text-newsfeed-ink shadow-2xl animate-in slide-in-from-bottom duration-200 focus:outline-none"
             >
-              <div className="w-10 h-1 rounded-full bg-white/10 mx-auto mb-4" aria-hidden />
+              <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-newsfeed-line" aria-hidden />
               {panelBody}
             </div>
           </>,
@@ -577,7 +577,7 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
         aria-labelledby={triggerId}
         aria-orientation="vertical"
         onKeyDown={onMenuKeyDown}
-        className="absolute top-14 right-0 w-72 rounded-xl border border-white/5 bg-[#1E1E24] p-4 z-[100] shadow-2xl animate-in fade-in slide-in-from-top-2 duration-150 focus:outline-none"
+        className="profile-menu-spectrum absolute right-0 top-14 z-[100] w-72 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-4 text-newsfeed-ink shadow-2xl animate-in fade-in slide-in-from-top-2 duration-150 focus:outline-none"
       >
         {panelBody}
       </div>
