@@ -20,6 +20,20 @@ import { supabase } from "@/integrations/supabase/client";
 
 const ACCENT = "#E5484D";
 
+/** Saved creator post id for an item (new saves store refId, older ones a /feed link). */
+function creatorIdForItem(item: CollectionDTO["items"][number]): string | null {
+  if (item.refId) return item.refId;
+  if (!item.url) return null;
+  try {
+    const parsed = new URL(item.url, "https://oventric.com");
+    return parsed.pathname === "/feed" && parsed.searchParams.get("tab") === "creators"
+      ? parsed.searchParams.get("post")
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Profile "Collections" tab — public curated boards.
  * Anyone can browse a member's public boards; owners create, fill and
