@@ -56,7 +56,7 @@ const issues: Array<{
   title: string;
   body: string;
   tone: string;
-  border: string;
+  active: string;
 }> = [
   {
     key: "spam",
@@ -64,7 +64,7 @@ const issues: Array<{
     title: "Spam or misleading content",
     body: "Fake listings, misleading claims or repeated unwanted content.",
     tone: "bg-newsfeed-gold-soft text-newsfeed-gold",
-    border: "border-newsfeed-gold",
+    active: "border-2 border-newsfeed-gold bg-newsfeed-gold-soft/60",
   },
   {
     key: "harassment",
@@ -72,7 +72,7 @@ const issues: Array<{
     title: "Harassment or unsafe behavior",
     body: "Abuse, hate, threats or behavior that makes someone unsafe.",
     tone: "bg-newsfeed-coral-soft text-newsfeed-coral",
-    border: "border-newsfeed-coral",
+    active: "border-2 border-newsfeed-coral bg-newsfeed-coral-soft/60",
   },
   {
     key: "ip",
@@ -80,7 +80,7 @@ const issues: Array<{
     title: "Copyright or IP infringement",
     body: "Content or products that copy work you own the rights to.",
     tone: "bg-newsfeed-violet-soft text-newsfeed-violet",
-    border: "border-newsfeed-violet",
+    active: "border-2 border-newsfeed-violet bg-newsfeed-violet-soft/60",
   },
   {
     key: "scam",
@@ -88,7 +88,7 @@ const issues: Array<{
     title: "Fraud, scam or payment issue",
     body: "Suspicious payments, non-delivery or anything that feels like a scam.",
     tone: "bg-newsfeed-blue-soft text-newsfeed-blue",
-    border: "border-newsfeed-blue",
+    active: "border-2 border-newsfeed-blue bg-newsfeed-blue-soft/60",
   },
 ];
 
@@ -265,7 +265,7 @@ function ReportPage() {
                     aria-pressed={active}
                     className={`flex items-start gap-3 rounded-[10px] border p-4 text-left transition-colors ${
                       active
-                        ? `${it.border} ${it.tone.split(" ")[0]}/60 border-2`
+                        ? it.active
                         : "border-newsfeed-line bg-newsfeed-surface hover:bg-newsfeed-canvas"
                     }`}
                   >
