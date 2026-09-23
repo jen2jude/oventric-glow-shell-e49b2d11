@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
@@ -70,7 +70,8 @@ function txStyle(type: WalletTxType, inflow: boolean) {
     : { icon: ArrowUp, tone: "bg-wallet-muted text-wallet-copy" };
 }
 
-export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
+export function Wallet() {
+  const navigate = useNavigate();
   const { balances: localBalances, balancesHidden: hide, toggleBalancesHidden, homeCurrency } = useOnboarding();
   const [addFundsOpen, setAddFundsOpen] = useState(false);
   const [payoutOpen, setPayoutOpen] = useState(false);
@@ -146,15 +147,15 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
     { label: "Seller earnings", value: fmt(available, cur), sub: "From marketplace sales", icon: WalletIcon, tone: "bg-wallet-positive-soft text-wallet-positive", to: "/wallet/history" as const },
   ];
   const walletNav = [
-    { label: "Home", section: "Home", icon: Home },
-    { label: "Explore", section: "Explore", icon: Compass },
-    { label: "Marketplace", section: "Marketplace", icon: Store },
-    { label: "Feed", section: "Feed", icon: Newspaper },
-    { label: "Messages", section: "Messages", icon: MessageSquare },
-    { label: "Wallet", section: "Wallet", icon: WalletIcon },
-    { label: "Orders", section: "Orders", icon: Package },
-    { label: "My products", section: "Marketplace", icon: ShoppingCart },
-    { label: "Settings", section: "Settings", icon: Settings },
+    { label: "Home", icon: Home, onClick: () => navigate({ to: "/" }) },
+    { label: "Explore", icon: Compass, onClick: () => navigate({ to: "/explore" }) },
+    { label: "Marketplace", icon: Store, onClick: () => navigate({ to: "/marketplace" }) },
+    { label: "Feed", icon: Newspaper, onClick: () => navigate({ to: "/feed", search: { post: undefined } }) },
+    { label: "Messages", icon: MessageSquare, onClick: () => navigate({ to: "/messages" }) },
+    { label: "Wallet", icon: WalletIcon, onClick: () => navigate({ to: "/wallet" }) },
+    { label: "Orders", icon: Package, onClick: () => navigate({ to: "/dashboard", search: { tab: "sales" } }) },
+    { label: "My products", icon: ShoppingCart, onClick: () => navigate({ to: "/dashboard", search: { tab: "listings" } }) },
+    { label: "Settings", icon: Settings, onClick: () => window.dispatchEvent(new Event("oventric:open-profile-settings")) },
   ];
 
   return (
@@ -189,7 +190,7 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
         <aside className="wallet-reference-nav hidden md:flex md:flex-col">
           <nav className="space-y-1">
             {walletNav.map((item) => (
-              <Button key={item.label} variant="ghost" onClick={() => onSelect?.(item.section)} className={`h-10 w-full justify-start gap-3 px-3 text-xs ${item.section === "Wallet" ? "bg-newsfeed-violet-soft text-newsfeed-violet hover:bg-newsfeed-violet-soft hover:text-newsfeed-violet" : "text-wallet-copy hover:bg-wallet-muted"}`}>
+              <Button key={item.label} variant="ghost" onClick={item.onClick} className={`h-10 w-full justify-start gap-3 px-3 text-xs ${item.label === "Wallet" ? "bg-newsfeed-violet-soft text-newsfeed-violet hover:bg-newsfeed-violet-soft hover:text-newsfeed-violet" : "text-wallet-copy hover:bg-wallet-muted"}`}>
                 <item.icon className="h-4 w-4" /> {item.label}
               </Button>
             ))}
