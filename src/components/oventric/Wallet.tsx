@@ -170,14 +170,16 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
             {unreadNotifs > 0 && <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-wallet-crimson" />}
           </Button>
         </div>
+        <div aria-hidden="true" className="about-spectrum absolute inset-x-0 bottom-0 h-1" />
       </header>
-      <header className="wallet-desktop-header hidden h-[72px] items-center border-b border-wallet-line bg-wallet-panel px-6 md:flex">
+      <header className="wallet-desktop-header sticky top-0 z-40 hidden h-[72px] items-center border-b border-wallet-line bg-wallet-panel px-6 md:flex">
         <Link to="/" aria-label="Oventric home" className="w-[150px] shrink-0"><img loading="lazy" decoding="async" src={logo} alt="Oventric" className="h-8 w-auto" /></Link>
         <div className="mx-auto flex h-10 w-full max-w-xl items-center gap-3 rounded-full bg-wallet-panel-raised px-4 text-wallet-copy-muted"><Search className="h-4 w-4" /><span className="text-xs">Search for products, creators, shops...</span></div>
         <div className="ml-5 flex w-[150px] shrink-0 justify-end gap-2">
           <Button variant="ghost" size="icon" aria-label="Notifications" onClick={() => isAuthenticated ? setNotifOpen(true) : openGate("funding")} className="text-wallet-copy hover:bg-wallet-muted"><Bell /></Button>
           <Button variant="ghost" size="icon" aria-label="Open menu" onClick={() => setMenuOpen(true)} className="text-wallet-copy hover:bg-wallet-muted"><Menu /></Button>
         </div>
+        <div aria-hidden="true" className="about-spectrum absolute inset-x-0 bottom-0 h-1" />
       </header>
 
       <MegaMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
@@ -187,7 +189,7 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
         <aside className="wallet-reference-nav hidden md:flex md:flex-col">
           <nav className="space-y-1">
             {walletNav.map((item) => (
-              <Button key={item.label} variant="ghost" onClick={() => onSelect?.(item.section)} className={`h-10 w-full justify-start gap-3 px-3 text-xs ${item.section === "Wallet" ? "bg-wallet-copy text-wallet-panel hover:bg-wallet-copy hover:text-wallet-panel" : "text-wallet-copy hover:bg-wallet-muted"}`}>
+              <Button key={item.label} variant="ghost" onClick={() => onSelect?.(item.section)} className={`h-10 w-full justify-start gap-3 px-3 text-xs ${item.section === "Wallet" ? "bg-newsfeed-violet-soft text-newsfeed-violet hover:bg-newsfeed-violet-soft hover:text-newsfeed-violet" : "text-wallet-copy hover:bg-wallet-muted"}`}>
                 <item.icon className="h-4 w-4" /> {item.label}
               </Button>
             ))}
@@ -214,22 +216,21 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
         )}
 
         <div className="wallet-hero-grid grid gap-3 lg:grid-cols-[minmax(0,1.7fr)_minmax(190px,1fr)]">
-          <section className="wallet-balance-card relative overflow-hidden rounded-[10px] bg-wallet-rich px-5 py-5 text-wallet-on-rich sm:px-6 sm:py-6">
-            <div aria-hidden="true" className="wallet-balance-glow wallet-balance-glow-one" />
-            <div aria-hidden="true" className="wallet-balance-glow wallet-balance-glow-two" />
+          <section className="wallet-balance-card relative overflow-hidden rounded-[10px] border border-wallet-line bg-wallet-panel px-5 py-5 text-wallet-copy shadow-wallet-card sm:px-6 sm:py-6">
+            <div aria-hidden="true" className="about-spectrum absolute inset-x-0 top-0 h-1" />
             <div className="relative z-10">
-              <div className="flex items-center gap-2 text-sm font-medium text-wallet-on-rich-muted">
-                 Available balance <span className="rounded-md bg-wallet-rich-muted px-2 py-1 text-[10px] font-semibold text-wallet-on-rich">{cur}</span>
+              <div className="flex items-center gap-2 text-sm font-medium text-wallet-copy-muted">
+                 Available balance <span className="rounded-md bg-newsfeed-blue-soft px-2 py-1 text-[10px] font-semibold text-newsfeed-blue">{cur}</span>
               </div>
               <div className="mt-3 font-wallet-display text-4xl font-bold tabular-nums sm:text-[2.65rem]">{mask(fmt(main, cur))}</div>
-              <div className="mt-2 flex items-center gap-1.5 text-xs text-wallet-on-rich-muted">≈ {mask(`$${usdEquiv.toFixed(2)}`)} USD</div>
+              <div className="mt-2 flex items-center gap-1.5 text-xs text-wallet-copy-muted">≈ {mask(`$${usdEquiv.toFixed(2)}`)} USD</div>
             </div>
-               <div className="wallet-balance-split relative z-10 mt-5 grid grid-cols-3 divide-x divide-wallet-rich-line border-t border-wallet-rich-line pt-4">
-              <div className="pr-3"><p className="text-sm font-semibold tabular-nums">{mask(fmt(locked, cur))}</p><p className="mt-1 text-[10px] text-wallet-on-rich-muted">Pending balance</p></div>
-              <div className="px-3"><p className="text-sm font-semibold tabular-nums">{mask(fmt(totalEarned, cur))}</p><p className="mt-1 text-[10px] text-wallet-on-rich-muted">Total earned</p></div>
-              <div className="pl-3"><p className="text-sm font-semibold tabular-nums">{mask(fmt(totalWithdrawn, cur))}</p><p className="mt-1 text-[10px] text-wallet-on-rich-muted">Total withdrawn</p></div>
+            <div className="wallet-balance-split relative z-10 mt-5 grid grid-cols-3 gap-2 border-t border-wallet-line pt-4">
+              <div className="rounded-[10px] bg-newsfeed-gold-soft p-3"><p className="text-sm font-semibold tabular-nums text-newsfeed-gold">{mask(fmt(locked, cur))}</p><p className="mt-1 text-[10px] text-wallet-copy-muted">Pending balance</p></div>
+              <div className="rounded-[10px] bg-newsfeed-green-soft p-3"><p className="text-sm font-semibold tabular-nums text-newsfeed-green">{mask(fmt(totalEarned, cur))}</p><p className="mt-1 text-[10px] text-wallet-copy-muted">Total earned</p></div>
+              <div className="rounded-[10px] bg-newsfeed-blue-soft p-3"><p className="text-sm font-semibold tabular-nums text-newsfeed-blue">{mask(fmt(totalWithdrawn, cur))}</p><p className="mt-1 text-[10px] text-wallet-copy-muted">Total withdrawn</p></div>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => requireAuth(toggleBalancesHidden)} aria-label={hide ? "Show balances" : "Hide balances"} className="absolute right-4 top-4 z-20 text-wallet-on-rich-muted hover:bg-wallet-rich-muted hover:text-wallet-on-rich"><Eye className={hide ? "hidden" : "block"} /><EyeOff className={hide ? "block" : "hidden"} /></Button>
+            <Button variant="ghost" size="icon" onClick={() => requireAuth(toggleBalancesHidden)} aria-label={hide ? "Show balances" : "Hide balances"} className="absolute right-4 top-4 z-20 text-wallet-copy-muted hover:bg-newsfeed-violet-soft hover:text-newsfeed-violet"><Eye className={hide ? "hidden" : "block"} /><EyeOff className={hide ? "block" : "hidden"} /></Button>
           </section>
 
           <section className="wallet-actions-section">
@@ -250,7 +251,7 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
           </section>
         </div>
 
-        <section className="wallet-shop-banner my-3 flex items-center justify-between gap-4 rounded-[10px] border border-wallet-warm-line bg-wallet-panel px-4 py-3 shadow-wallet-card sm:px-5">
+        <section className="wallet-shop-banner my-3 flex items-center justify-between gap-4 rounded-[10px] border border-wallet-warm-line bg-newsfeed-gold-soft px-4 py-3 shadow-wallet-card sm:px-5">
           <div className="flex min-w-0 items-center gap-3"><span className="wallet-icon-halo grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-wallet-warning-soft text-wallet-warning"><Gift /></span><p className="text-xs font-medium text-wallet-copy sm:text-sm">Use your wallet to pay for digital products and enjoy a faster checkout.</p></div>
           <Button asChild className="shrink-0 bg-wallet-copy text-wallet-panel shadow-none hover:bg-wallet-copy"><Link to="/marketplace">Shop now <ChevronRight /></Link></Button>
         </section>
@@ -265,7 +266,8 @@ export function Wallet({ onSelect }: { onSelect?: (section: string) => void }) {
         </section>
 
         <div className="pt-2">
-          <section className="overflow-hidden rounded-[10px] border border-wallet-line bg-wallet-panel shadow-wallet-card">
+          <section className="relative overflow-hidden rounded-[10px] border border-wallet-line bg-wallet-panel shadow-wallet-card">
+            <div aria-hidden="true" className="about-spectrum h-1 w-full" />
             <div className="flex items-center justify-between px-4 py-4 sm:px-5">
               <div><h2 className="font-wallet-display text-lg font-bold text-wallet-copy">Recent transactions</h2></div>
               {isAuthenticated ? <Link to="/wallet/ledger" className="text-sm font-semibold text-wallet-crimson hover:text-wallet-crimson-strong">View all</Link> : <button onClick={() => openGate("funding")} className="text-sm font-semibold text-wallet-crimson">View all</button>}
