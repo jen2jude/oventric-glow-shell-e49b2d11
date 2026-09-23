@@ -1477,7 +1477,7 @@ function ProfilePage() {
 
                 {/* Primary actions */}
                 {!isOwnProfile && !identityMissing && realProfile?.userId && (
-                   <div className="profile-primary-actions mt-3 grid grid-cols-[minmax(0,1fr)_auto_auto] items-start gap-2 md:flex md:justify-end">
+                   <div className="profile-primary-actions mt-3 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2 md:flex md:justify-end">
                     <FollowButton
                       targetId={realProfile.userId}
                       className="h-11 w-full justify-center rounded-[10px] border-transparent! bg-[#E5484D]! px-5 py-0 text-sm font-black text-white! hover:bg-[#C43D42]! md:w-44"
