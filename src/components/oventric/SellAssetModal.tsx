@@ -10,6 +10,7 @@ import {
   ShieldAlert,
   Zap,
   ShoppingBag,
+  Save,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -26,6 +27,12 @@ import {
 import { snapshotFxRates } from "@/lib/fx.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { Button } from "@/components/ui/button";
+import {
+  deleteProductDraft,
+  loadProductDraft,
+  saveProductDraft,
+  type ProductDraft,
+} from "@/lib/product-draft";
 
 const FALLBACK_CATEGORIES: CategoryNode[] = [
   {
@@ -118,8 +125,147 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
   const [submitting, setSubmitting] = useState(false);
   const [progress, setProgress] = useState("");
   const [success, setSuccess] = useState(false);
+  const [draftUserId, setDraftUserId] = useState<string | null>(null);
+  const [draftReady, setDraftReady] = useState(false);
+  const [draftRestored, setDraftRestored] = useState(false);
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const previewsRef = useRef<string[]>([]);
+
+  const replaceImages = (next: File[]) => {
+    previewsRef.current.forEach((preview) => URL.revokeObjectURL(preview));
+    const nextPreviews = next.map((image) => URL.createObjectURL(image));
+    previewsRef.current = nextPreviews;
+    setImages(next);
+    setPreviews(nextPreviews);
+  };
+
+  const hasDraftData =
+    Boolean(name.trim()) ||
+    Boolean(description.trim()) ||
+    Boolean(priceInput.trim()) ||
+    Boolean(discountInput.trim()) ||
+    Boolean(cashbackInput.trim()) ||
+    Boolean(externalUrl.trim()) ||
+    Boolean(basicInfo.trim()) ||
+    Boolean(activationGuide.trim()) ||
+    Boolean(stockInput.trim()) ||
+    Boolean(file) ||
+    images.length > 0 ||
+    isFree ||
+    requiresManualDelivery;
+
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    setDraftReady(false);
+    setDraftRestored(false);
+    void supabase.auth.getUser().then(async ({ data }) => {
+      const userId = data.user?.id ?? null;
+      if (cancelled) return;
+      setDraftUserId(userId);
+      if (!userId) {
+        setDraftReady(true);
+        return;
+      }
+      try {
+        const draft = await loadProductDraft(userId);
+        if (cancelled || !draft || draft.version !== 1) return;
+        setName(draft.name);
+        setCategory(draft.category as ProductCategory);
+        setSubcategory(draft.subcategory);
+        setDescription(draft.description);
+        setIsFree(draft.isFree);
+        setPriceInput(draft.priceInput);
+        setDiscountInput(draft.discountInput);
+        setCashbackInput(draft.cashbackInput);
+        setMode(draft.mode);
+        setFile(draft.file);
+        setExternalUrl(draft.externalUrl);
+        setBasicInfo(draft.basicInfo);
+        setActivationGuide(draft.activationGuide);
+        setInStock(draft.inStock);
+        setStockInput(draft.stockInput);
+        setRequiresManualDelivery(draft.requiresManualDelivery);
+        setAgreedToSplit(draft.agreedToSplit);
+        replaceImages(Array.isArray(draft.images) ? draft.images : []);
+        setDraftRestored(true);
+      } catch {
+        // Draft recovery is best-effort; publishing must remain available.
+      } finally {
+        if (!cancelled) setDraftReady(true);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open || !draftReady || !draftUserId || success || submitting) return;
+    const timer = window.setTimeout(() => {
+      if (!hasDraftData) {
+        void deleteProductDraft(draftUserId);
+        return;
+      }
+      const draft: ProductDraft = {
+        version: 1,
+        updatedAt: Date.now(),
+        name,
+        category,
+        subcategory,
+        description,
+        isFree,
+        priceInput,
+        discountInput,
+        cashbackInput,
+        mode,
+        file,
+        externalUrl,
+        basicInfo,
+        activationGuide,
+        inStock,
+        stockInput,
+        requiresManualDelivery,
+        agreedToSplit,
+        images,
+      };
+      void saveProductDraft(draftUserId, draft);
+    }, 450);
+    return () => window.clearTimeout(timer);
+  }, [
+    open,
+    draftReady,
+    draftUserId,
+    success,
+    submitting,
+    hasDraftData,
+    name,
+    category,
+    subcategory,
+    description,
+    isFree,
+    priceInput,
+    discountInput,
+    cashbackInput,
+    mode,
+    file,
+    externalUrl,
+    basicInfo,
+    activationGuide,
+    inStock,
+    stockInput,
+    requiresManualDelivery,
+    agreedToSplit,
+    images,
+  ]);
+
+  useEffect(
+    () => () => {
+      previewsRef.current.forEach((preview) => URL.revokeObjectURL(preview));
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -142,22 +288,32 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
 
   const reset = () => {
     setName("");
+    setCategory(categories[0]?.slug ?? "themes");
+    setSubcategory("");
     setDescription("");
     setBasicInfo("");
     setActivationGuide("");
     setPriceInput("");
     setDiscountInput("");
+    setCashbackInput("");
     setIsFree(false);
     setFile(null);
     setExternalUrl("");
     setMode("file");
+    setInStock(true);
+    setStockInput("");
     setProgress("");
     setRequiresManualDelivery(false);
     setAgreedToSplit(false);
-    previews.forEach((p) => URL.revokeObjectURL(p));
-    setImages([]);
-    setPreviews([]);
+    replaceImages([]);
     setSuccess(false);
+    setDraftRestored(false);
+  };
+
+  const discardDraft = async () => {
+    if (draftUserId) await deleteProductDraft(draftUserId).catch(() => {});
+    reset();
+    toast.success("Product draft discarded");
   };
 
   const addImages = (files: FileList | null) => {
@@ -175,16 +331,12 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
       valid.push(f);
     }
     const next = [...images, ...valid].slice(0, MAX_IMAGES);
-    previews.forEach((p) => URL.revokeObjectURL(p));
-    setImages(next);
-    setPreviews(next.map((f) => URL.createObjectURL(f)));
+    replaceImages(next);
   };
 
   const removeImage = (i: number) => {
     const next = images.filter((_, idx) => idx !== i);
-    previews.forEach((p) => URL.revokeObjectURL(p));
-    setImages(next);
-    setPreviews(next.map((f) => URL.createObjectURL(f)));
+    replaceImages(next);
   };
 
   const handleFile = (f: File | null) => {
@@ -312,6 +464,8 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
           activationGuide: activationGuide.trim() || null,
         },
       });
+      await deleteProductDraft(uid).catch(() => {});
+      setDraftRestored(false);
       setSuccess(true);
     } catch (err) {
       toast.error("Listing failed", {
@@ -386,18 +540,39 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                   </p>
                 </div>
               </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={onClose}
-                disabled={submitting}
-                className="h-9 w-9 shrink-0 rounded-full text-contact-muted hover:bg-contact-field hover:text-contact-ink"
-                aria-label="Close"
-              >
-                <X className="h-4 w-4" />
-              </Button>
+              <div className="flex items-center gap-1">
+                {(draftRestored || hasDraftData) && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => void discardDraft()}
+                    disabled={submitting}
+                    className="h-9 rounded-[10px] px-2 text-[11px] font-bold text-contact-coral hover:bg-contact-coral/10 hover:text-contact-coral sm:px-3"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Discard draft</span>
+                  </Button>
+                )}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={onClose}
+                  disabled={submitting}
+                  className="h-9 w-9 shrink-0 rounded-full text-contact-muted hover:bg-contact-field hover:text-contact-ink"
+                  aria-label="Close"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
             </header>
+
+            {draftRestored && (
+              <div className="mx-4 mt-4 flex items-center gap-2 rounded-[10px] border border-contact-whatsapp/25 bg-contact-whatsapp-soft px-3 py-2.5 text-xs font-semibold text-contact-whatsapp-strong sm:mx-7">
+                <Save className="h-4 w-4 shrink-0" />
+                Draft restored — continue where you stopped.
+              </div>
+            )}
 
             <div className="mx-4 mt-4 flex items-start gap-2.5 rounded-[10px] border border-contact-gold/25 bg-contact-gold/10 p-3 sm:mx-7">
               <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-contact-gold" />
