@@ -288,7 +288,9 @@ export async function settleOrder(
       : convertViaSnapshot(sellerCutUSD, "USD", sellerCurrency, snap);
   const sellerCutLocal = Number(sellerCutLocalRaw.toFixed(sellerCurrency === "USD" ? 2 : 0));
   const manualDelivery = Boolean(pRow.requires_manual_delivery);
-  const holdEscrow = totalUSD > 0;
+  // A paid listing remains escrowed even when the buyer covers the checkout
+  // total with wallet cashback. Only genuinely free downloads bypass escrow.
+  const holdEscrow = afterCouponUSD > 0;
   const settledAt = new Date().toISOString();
   const { DELIVER_DEADLINE_HOURS, PAYOUT_HOLD_HOURS, hoursFromNow } = await import("@/lib/fulfilment.server");
 
