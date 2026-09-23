@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Heart, ThumbsUp, ThumbsDown, Laugh, Crown } from "lucide-react";
 import type { ReactionType } from "@/lib/posts.functions";
-import heartAsset from "@/assets/heart-3d.png.asset.json";
-import thumbsUpAsset from "@/assets/thumbs-up-3d.png.asset.json";
-import thumbsDownAsset from "@/assets/thumbs-down-3d.png.asset.json";
-import laughAsset from "@/assets/laugh-3d.png.asset.json";
-import crownAsset from "@/assets/crown-3d.png.asset.json";
 
 export const REACTION_META: Record<
   ReactionType,
@@ -20,16 +15,8 @@ export const REACTION_META: Record<
 
 export const REACTION_ORDER: ReactionType[] = ["love", "like", "dislike", "laugh", "crown"];
 
-export const HEART_IMAGE_URL = heartAsset.url;
-
-/** Reactions rendered as 3D images instead of Lucide icons. */
-const IMAGE_REACTIONS: Partial<Record<ReactionType, string>> = {
-  love: heartAsset.url,
-  like: thumbsUpAsset.url,
-  dislike: thumbsDownAsset.url,
-  laugh: laughAsset.url,
-  crown: crownAsset.url,
-};
+/** Reactions use the default flat Lucide icons (3D image variants removed). */
+const IMAGE_REACTIONS: Partial<Record<ReactionType, string>> = {};
 
 export function isImageReaction(reaction: ReactionType) {
   return Boolean(IMAGE_REACTIONS[reaction]);
