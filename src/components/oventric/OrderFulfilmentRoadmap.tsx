@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { useServerFn } from "@tanstack/react-start";
 import {
   CheckCircle2,
@@ -9,11 +10,12 @@ import {
   ShieldAlert,
   Truck,
   X,
-  Upload,
   Clock,
+  ImagePlus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 import {
   getOrderFulfilment,
   markOrderDelivered,
@@ -520,6 +522,38 @@ function DisputeModal({
   const [previews, setPreviews] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
 
+  useEffect(() => {
+    const scrollY = window.scrollY;
+    const previousBody = {
+      overflow: document.body.style.overflow,
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+    };
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      document.documentElement.style.overflow = previousHtmlOverflow;
+      document.body.style.overflow = previousBody.overflow;
+      document.body.style.position = previousBody.position;
+      document.body.style.top = previousBody.top;
+      document.body.style.width = previousBody.width;
+      window.scrollTo(0, scrollY);
+    };
+  }, [onClose]);
+
   const onFiles = async (files: FileList | null) => {
     if (!files?.length) return;
     const list = Array.from(files).slice(0, 5 - paths.length);
@@ -558,93 +592,139 @@ function DisputeModal({
     }
   };
 
-  return (
-    <div className="modal-light fixed inset-0 z-[80] flex items-end sm:items-center justify-center bg-black/70 p-0 sm:p-4">
-      <div className="w-full sm:max-w-lg max-h-[92vh] overflow-y-auto rounded-t-2xl sm:rounded-xl border border-slate-200 bg-white p-5">
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <div>
-            <h3 className="text-slate-900 font-bold text-base">Open a dispute</h3>
-            <p className="text-xs text-slate-500">
-              Admin will review your case and mediate with the seller.
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            aria-label="Close"
-            className="p-1.5 rounded-[10px] text-slate-500 hover:text-slate-900 hover:bg-slate-50 md:hover:bg-slate-100"
-          >
-            <X className="w-4 h-4" />
-          </button>
+  return createPortal(
+    <div
+      className="modal-light fixed inset-0 z-[100] flex items-center justify-center bg-newsfeed-ink/55 p-4 sm:p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="dispute-title"
+    >
+      <div className="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-lg flex-col overflow-hidden rounded-[10px] border border-newsfeed-line bg-newsfeed-surface shadow-newsfeed-panel">
+        <div className="grid h-1.5 shrink-0 grid-cols-5" aria-hidden="true">
+          <span className="bg-newsfeed-coral" />
+          <span className="bg-newsfeed-gold" />
+          <span className="bg-newsfeed-green" />
+          <span className="bg-newsfeed-blue" />
+          <span className="bg-newsfeed-violet" />
         </div>
 
-        <label className="block text-[11px] uppercase tracking-widest text-slate-500 mb-1">
-          What went wrong?
-        </label>
-        <select
-          value={reason}
-          onChange={(e) => setReason(e.target.value as typeof reason)}
-          className="w-full mb-3 rounded-[10px] bg-slate-50 border border-slate-200 px-3 py-3 text-sm text-slate-900"
-        >
-          {REASONS.map((r) => (
-            <option key={r.value} value={r.value}>
-              {r.label}
-            </option>
-          ))}
-        </select>
-
-        <label className="block text-[11px] uppercase tracking-widest text-slate-500 mb-1">
-          Details
-        </label>
-        <textarea
-          value={details}
-          onChange={(e) => setDetails(e.target.value)}
-          rows={5}
-          placeholder="Explain what happened, including dates and what the seller said."
-          className="w-full mb-3 rounded-[10px] bg-slate-50 border border-slate-200 px-3 py-3 text-sm text-slate-900 placeholder:text-slate-400"
-        />
-
-        <label className="block text-[11px] uppercase tracking-widest text-slate-500 mb-1">
-          Evidence (up to 5 images)
-        </label>
-        <label className="inline-flex items-center gap-2 px-3 py-3 rounded-[10px] text-sm text-slate-700 md:text-slate-700 bg-slate-100 border border-slate-200 cursor-pointer mb-3">
-          <Upload className="w-4 h-4" /> Add screenshots
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            hidden
-            onChange={(e) => void onFiles(e.target.files)}
-          />
-        </label>
-        {previews.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-3">
-            {previews.map((u) => (
-              <img loading="lazy" decoding="async"
-                key={u}
-                src={u}
-                alt="Evidence preview"
-                className="w-16 h-16 object-cover rounded border border-slate-200"
-              />
-            ))}
+        <div className="min-h-0 overflow-y-auto overscroll-contain p-5 sm:p-6">
+          <div className="mb-5 flex items-start justify-between gap-3">
+            <div className="flex min-w-0 items-start gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] bg-newsfeed-coral-soft text-newsfeed-coral">
+                <ShieldAlert className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 id="dispute-title" className="text-base font-extrabold text-newsfeed-ink sm:text-lg">
+                  Open a dispute
+                </h3>
+                <p className="mt-0.5 text-xs leading-relaxed text-newsfeed-ink">
+                  Oventric will review your case and mediate with the seller.
+                </p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              disabled={busy}
+              aria-label="Close dispute form"
+              className="h-9 w-9 shrink-0 rounded-[10px] text-newsfeed-ink hover:bg-newsfeed-blue-soft"
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </div>
-        )}
 
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="px-3 py-3 rounded-[10px] text-sm text-slate-600 bg-slate-100 border border-slate-200"
+          <div className="mb-4 rounded-[10px] border border-newsfeed-blue/20 bg-newsfeed-blue-soft p-3 text-xs leading-relaxed text-newsfeed-ink">
+            Share clear details and evidence. Paid funds remain protected while the dispute is reviewed.
+          </div>
+
+          <label htmlFor="dispute-reason" className="mb-1.5 block text-[11px] font-bold uppercase text-newsfeed-ink">
+            What went wrong?
+          </label>
+          <select
+            id="dispute-reason"
+            value={reason}
+            onChange={(e) => setReason(e.target.value as typeof reason)}
+            className="mb-4 w-full rounded-[10px] border border-newsfeed-line bg-newsfeed-surface px-3 py-3 text-sm font-medium text-newsfeed-ink outline-none focus:border-newsfeed-violet focus:ring-2 focus:ring-newsfeed-violet/20"
           >
-            Cancel
-          </button>
-          <button
-            onClick={submit}
-            disabled={busy}
-            className="px-4 py-3 rounded-[10px] text-sm font-bold text-white disabled:opacity-60 inline-flex items-center gap-2 bg-[#E5484D] hover:bg-[#D63D42] transition-colors"
+            {REASONS.map((r) => (
+              <option key={r.value} value={r.value}>
+                {r.label}
+              </option>
+            ))}
+          </select>
+
+          <label htmlFor="dispute-details" className="mb-1.5 block text-[11px] font-bold uppercase text-newsfeed-ink">
+            Details
+          </label>
+          <textarea
+            id="dispute-details"
+            value={details}
+            onChange={(e) => setDetails(e.target.value)}
+            rows={4}
+            placeholder="Explain what happened, including dates and what the seller said."
+            className="mb-4 w-full resize-none rounded-[10px] border border-newsfeed-line bg-newsfeed-surface px-3 py-3 text-sm text-newsfeed-ink outline-none placeholder:text-newsfeed-muted focus:border-newsfeed-violet focus:ring-2 focus:ring-newsfeed-violet/20"
+          />
+
+          <div className="mb-1.5 flex items-center justify-between gap-3">
+            <label htmlFor="dispute-evidence" className="text-[11px] font-bold uppercase text-newsfeed-ink">
+              Evidence
+            </label>
+            <span className="text-[11px] font-medium text-newsfeed-ink">Up to 5 images</span>
+          </div>
+          <label
+            htmlFor="dispute-evidence"
+            className="mb-4 flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-newsfeed-gold/35 bg-newsfeed-gold-soft px-3 py-3 text-sm font-bold text-newsfeed-ink transition-colors hover:border-newsfeed-gold"
           >
-            {busy && <Loader2 className="w-4 h-4 animate-spin" />} Submit dispute
-          </button>
+            <ImagePlus className="h-4 w-4 text-newsfeed-gold" /> Add screenshots
+            <input
+              id="dispute-evidence"
+              type="file"
+              accept="image/*"
+              multiple
+              hidden
+              onChange={(e) => void onFiles(e.target.files)}
+            />
+          </label>
+          {previews.length > 0 && (
+            <div className="mb-4 flex flex-wrap gap-2">
+              {previews.map((u) => (
+                <img
+                  loading="lazy"
+                  decoding="async"
+                  key={u}
+                  src={u}
+                  alt="Evidence preview"
+                  className="h-16 w-16 rounded-[10px] border border-newsfeed-line object-cover"
+                />
+              ))}
+            </div>
+          )}
+
+          <div className="flex flex-col-reverse gap-2 border-t border-newsfeed-line pt-4 sm:flex-row sm:justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={busy}
+              className="h-11 rounded-[10px] border-newsfeed-line bg-newsfeed-surface font-bold text-newsfeed-ink hover:bg-newsfeed-blue-soft"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={submit}
+              disabled={busy}
+              className="h-11 rounded-[10px] bg-newsfeed-coral font-extrabold text-newsfeed-on-accent hover:bg-newsfeed-coral/90"
+            >
+              {busy && <Loader2 className="h-4 w-4 animate-spin" />} Submit dispute
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
