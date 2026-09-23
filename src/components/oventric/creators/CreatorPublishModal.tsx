@@ -96,7 +96,7 @@ export function CreatorPublishModal({
     const picked = Array.from(files).slice(0, 10);
     const next: Attachment[] = [];
     for (const raw of picked) {
-      const kind = raw.file?.name || raw.type.startsWith("video/") ? (raw.type.startsWith("video/") ? "video" : "image") : "image";
+      const kind: "image" | "video" = raw.type.startsWith("video/") ? "video" : "image";
       let file = raw;
       if (kind === "video") {
         // Short clips only — long videos belong on YouTube/Vimeo and stream
