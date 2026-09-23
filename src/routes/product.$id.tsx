@@ -507,40 +507,44 @@ function ProductPage() {
       {!isAppShell && <Header onOpenMessages={() => {}} forceSiteNavbar={!isAppShell} />}
       <main className="mx-auto w-full max-w-[1440px] px-3 pb-32 pt-3 sm:px-6 sm:pt-6 lg:px-11 lg:pt-8">
         {!isAppShell && (
-          <nav className="mb-6 flex items-center gap-1.5 text-[12.5px] font-medium text-slate-500">
-            <Link to="/" className="hover:text-crimson">
-              Home
-            </Link>
-            <span className="text-slate-300">/</span>
+          <div className="mb-5 flex items-center gap-3">
             <button
               type="button"
               onClick={() => {
-                navigate({ to: "/" });
-                setTimeout(
-                  () =>
-                    window.dispatchEvent(
-                      new CustomEvent("oventric:navigate", { detail: { section: "Marketplace" } }),
-                    ),
-                  100,
-                );
+                if (typeof window !== "undefined" && window.history.length > 1) {
+                  window.history.back();
+                  return;
+                }
+                navigate({ to: "/marketplace" });
               }}
-              className="hover:text-crimson"
+              className="group inline-flex items-center gap-2 rounded-full border border-newsfeed-line bg-white py-2 pl-2.5 pr-4 text-[13px] font-semibold text-newsfeed-ink shadow-sm transition hover:border-newsfeed-coral/40 hover:shadow"
             >
-              Marketplace
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-newsfeed-coral-soft text-newsfeed-coral transition group-hover:-translate-x-0.5">
+                <ArrowLeft className="h-3.5 w-3.5" />
+              </span>
+              Back
             </button>
-            {product?.category && (
-              <>
-                <span className="text-slate-300">/</span>
-                <span className="capitalize text-slate-500">{product.category}</span>
-              </>
-            )}
-            {product?.name && (
-              <>
-                <span className="text-slate-300">/</span>
-                <span className="max-w-[280px] truncate font-bold text-slate-900">{product.name}</span>
-              </>
-            )}
-          </nav>
+
+            <span className="hidden h-6 w-px bg-newsfeed-line sm:block" />
+
+            <nav className="hidden min-w-0 items-center gap-2 text-[12.5px] font-medium text-slate-500 sm:flex">
+              <Link to="/" className="transition hover:text-newsfeed-coral">
+                Home
+              </Link>
+              <span className="text-slate-300">/</span>
+              <Link to="/marketplace" className="transition hover:text-newsfeed-coral">
+                Marketplace
+              </Link>
+              {product?.category && (
+                <>
+                  <span className="text-slate-300">/</span>
+                  <span className="inline-flex items-center rounded-full bg-newsfeed-gold-soft px-2.5 py-0.5 text-[11.5px] font-bold capitalize text-newsfeed-ink">
+                    {product.category}
+                  </span>
+                </>
+              )}
+            </nav>
+          </div>
         )}
 
 
