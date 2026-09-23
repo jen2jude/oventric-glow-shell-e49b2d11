@@ -641,7 +641,7 @@ function ProductPage() {
                           )}
                           {product.promoted && !isAppShell && (
                             <span className="absolute left-3 top-3 rounded-full border border-newsfeed-gold/30 bg-newsfeed-gold-soft px-2.5 py-1 text-[10px] font-bold uppercase text-newsfeed-ink">
-                              <Flame className="w-3 h-3 inline -mt-0.5 mr-0.5" /> Promoted
+                              <Flame className="w-3 h-3 inline -mt-0.5 mr-0.5" /> Featured
                             </span>
                           )}
                         </div>
