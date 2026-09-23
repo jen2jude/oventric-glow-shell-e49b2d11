@@ -1490,15 +1490,6 @@ function ProfilePage() {
                     >
                       <MessageCircle className="h-4 w-4" /> Message
                     </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setJoinCircleOpen(true)}
-                      aria-label="Request to join one of this user's circles"
-                      className="h-11 w-11 shrink-0 rounded-[10px] border-white/12 bg-[#1A1A1F] text-slate-300 hover:bg-[#232329] hover:text-white md:border-slate-300 md:bg-white md:text-slate-600 md:hover:bg-slate-100 md:hover:text-slate-900"
-                    >
-                      <Users className="h-4 w-4" />
-                    </Button>
                   </div>
                 )}
                 {isOwnProfile && (
