@@ -818,8 +818,9 @@ function ProductCard({
       <Link
         to="/product/$id"
         params={{ id: product.id }}
-        className={`relative block w-full overflow-hidden bg-slate-100 ${compact ? "aspect-[16/10]" : "aspect-[4/3]"}`}
+        className={`relative block w-full overflow-hidden bg-slate-100 ${compact ? "aspect-[16/10]" : "aspect-[16/11]"}`}
       >
+
         {product.coverUrl ? (
           <img
             src={product.coverUrl}
