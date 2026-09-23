@@ -270,25 +270,48 @@
 /* Colour-rich creator marketplace homepage. */
 .home-pop {
   color-scheme: light;
-  --home-canvas: oklch(0.98 0.008 270);
-  --home-surface: oklch(1 0 0);
-  --home-ink: oklch(0.2 0.035 265);
+  --home-canvas: var(--newsfeed-canvas);
+  --home-surface: var(--newsfeed-surface);
+  --home-ink: var(--newsfeed-ink);
   --home-copy: oklch(0.34 0.025 265);
-  --home-muted: oklch(0.55 0.025 265);
-  --home-line: oklch(0.91 0.018 270);
-  --home-feed: oklch(0.965 0.035 300);
-  --home-pop-red: oklch(0.62 0.205 22);
-  --home-pop-yellow: oklch(0.87 0.165 94);
-  --home-pop-cyan: oklch(0.72 0.13 210);
-  --home-pop-violet: oklch(0.56 0.2 295);
-  --home-shadow-soft: 0 14px 38px -26px color-mix(in oklab, var(--home-ink) 35%, transparent);
+  --home-muted: var(--newsfeed-muted);
+  --home-line: var(--newsfeed-line);
+  --home-feed: var(--newsfeed-violet-soft);
+  /* Bright Spectrum accents — shared with the newsfeed and the publish sheet. */
+  --home-pop-red: var(--newsfeed-coral);
+  --home-pop-yellow: var(--newsfeed-gold);
+  --home-pop-cyan: var(--newsfeed-blue);
+  --home-pop-violet: var(--newsfeed-violet);
+  --home-pop-green: var(--newsfeed-green);
+  --home-shadow-soft: var(--newsfeed-panel-shadow);
   font-family: var(--font-wallet-body);
 }
 
 .home-pop :is(h1, h2, h3, .font-wallet-display) {
   font-family: var(--font-wallet-display);
-  letter-spacing: 0;
+  letter-spacing: -0.01em;
 }
+
+/* Signature multicolour strip used above every homepage section heading. */
+.home-pop-strip {
+  height: 3px;
+  width: 54px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--newsfeed-blue),
+    var(--newsfeed-violet),
+    var(--newsfeed-green),
+    var(--newsfeed-gold),
+    var(--newsfeed-coral)
+  );
+}
+
+/* Five-colour rotation so the spectrum reads across every card row. */
+.home-pop-trust-card:nth-child(5n + 5),
+.home-pop-category:nth-child(5n + 5),
+.home-pop-product:nth-child(5n + 5),
+.home-pop-reason:nth-child(5n + 5) { --home-card-accent: var(--home-pop-green); }
 
 .home-pop-hero::before,
 .home-pop-hero::after {
