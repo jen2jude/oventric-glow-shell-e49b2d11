@@ -145,10 +145,10 @@ function ProductRating({
 
   return (
     <div id="reviews" className="mb-5 scroll-mt-24">
-      <div className="flex items-center gap-1 text-sm text-amber-400">
+      <div className="flex items-center gap-1 text-sm text-newsfeed-gold">
         <Star className="w-4 h-4 fill-current" />
         <span className={`font-semibold ${isAppShell ? "text-amber-400" : "text-slate-900"}`}>{average.toFixed(1)}</span>
-        <span className="text-red-500 font-semibold">
+        <span className="font-semibold text-newsfeed-ink">
           ({count} {count === 1 ? "review" : "reviews"})
         </span>
       </div>
@@ -164,7 +164,7 @@ function ProductRating({
             className="p-0.5 disabled:opacity-50"
           >
             <Star
-              className={`w-5 h-5 transition-transform hover:scale-110 ${s <= shown ? "text-amber-400 fill-current" : isAppShell ? "text-slate-600" : "text-slate-300"}`}
+              className={`w-5 h-5 transition-transform hover:scale-110 ${s <= shown ? "fill-current text-newsfeed-gold" : "text-newsfeed-line"}`}
             />
           </button>
         ))}
@@ -480,10 +480,10 @@ function ProductPage() {
   return (
     <div
       style={{ touchAction: "pan-y", overscrollBehaviorY: "auto" }}
-      className={`min-h-screen ${isAppShell ? "bg-[#0A0A0B] text-slate-300" : "oventric-web bg-[#F7F8FA] text-slate-700"}`}
+      className="web-product oventric-web min-h-screen bg-newsfeed-canvas text-newsfeed-ink"
     >
       {!isAppShell && <Header onOpenMessages={() => {}} forceSiteNavbar={!isAppShell} />}
-      <main className={`w-full ${isAppShell ? "max-w-6xl px-0 py-0 gap-0" : "max-w-[1440px] px-4 py-6 sm:px-6 lg:px-11"} mx-auto pb-32`}>
+      <main className="mx-auto w-full max-w-[1440px] px-3 pb-32 pt-3 sm:px-6 sm:pt-6 lg:px-11 lg:pt-8">
         {!isAppShell && (
           <nav className="mb-6 flex items-center gap-1.5 text-[12.5px] font-medium text-slate-500">
             <Link to="/" className="hover:text-crimson">
@@ -543,9 +543,9 @@ function ProductPage() {
         )}
 
         {product && (
-          <div className={`grid grid-cols-1 items-start ${isAppShell ? "lg:grid-cols-2 gap-0" : "md:grid-cols-[1.1fr_0.9fr] gap-10"}`}>
-            <div className={`flex flex-col ${isAppShell ? "gap-0" : "gap-8"}`}>
-              <div className={isAppShell ? "px-0 pt-0" : ""}>
+          <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12 lg:gap-12">
+            <div className="flex flex-col gap-6 lg:col-span-7">
+              <div>
                 {(() => {
                   const gallery = Array.from(
                     new Set(
@@ -557,7 +557,7 @@ function ProductPage() {
                   const cur = gallery[activeImage] ?? gallery[0];
                   return (
                     <>
-                        <div className={`relative ${isAppShell ? "w-full aspect-[4/3] rounded-b-[10px] bg-[#141416] border-b border-white/[0.06]" : "web-card aspect-[4/3] overflow-hidden md:bg-slate-100"} overflow-hidden flex items-center justify-center`}>
+                        <div className="product-gallery relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-[10px] border border-newsfeed-line bg-newsfeed-coral-soft">
                           {cur ? (
                             <ResponsiveImage
                               sizes="(min-width: 1024px) 640px, 100vw"
@@ -569,7 +569,7 @@ function ProductPage() {
                               decoding="async"
                             />
                           ) : (
-                            <ShoppingCart className="w-12 h-12 text-white/20" />
+                            <ShoppingCart className="h-12 w-12 text-newsfeed-coral/30" />
                           )}
                           {isAppShell && (
                             <>
@@ -585,7 +585,7 @@ function ProductPage() {
                                     100,
                                   );
                                 }}
-                                className="absolute top-3 left-3 z-10 grid place-items-center h-9 w-9 rounded-full bg-black/50 backdrop-blur-xl-md border border-white/10 text-white"
+                                 className="absolute left-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-full border border-newsfeed-line bg-newsfeed-surface/90 text-newsfeed-ink shadow-sm backdrop-blur-xl-md"
                               >
                                 <ArrowLeft className="w-[18px] h-[18px]" />
                               </button>
@@ -594,7 +594,7 @@ function ProductPage() {
                                   type="button"
                                   onClick={() => toast.success("Saved to your wishlist")}
                                   aria-label="Save product"
-                                  className="grid place-items-center h-9 w-9 rounded-full bg-black/50 backdrop-blur-xl-md border border-white/10 text-white"
+                                   className="grid h-9 w-9 place-items-center rounded-full border border-newsfeed-line bg-newsfeed-surface/90 text-newsfeed-ink shadow-sm backdrop-blur-xl-md"
                                 >
                                   <Heart className="w-[18px] h-[18px]" />
                                 </button>
@@ -605,31 +605,31 @@ function ProductPage() {
                                     toast.success("Link copied");
                                   }}
                                   aria-label="Share product"
-                                  className="grid place-items-center h-9 w-9 rounded-full bg-black/50 backdrop-blur-xl-md border border-white/10 text-white"
+                                   className="grid h-9 w-9 place-items-center rounded-full border border-newsfeed-line bg-newsfeed-surface/90 text-newsfeed-ink shadow-sm backdrop-blur-xl-md"
                                 >
                                   <Share2 className="w-[18px] h-[18px]" />
                                 </button>
                               </div>
                               {gallery.length > 1 && (
-                                <span className="absolute bottom-3 left-3 z-10 rounded-full bg-black/60 backdrop-blur-xl px-2 py-0.5 text-[11px] font-semibold text-white/90">
+                                 <span className="absolute bottom-3 left-3 z-10 rounded-full bg-newsfeed-ink/80 px-2 py-0.5 text-[11px] font-semibold text-newsfeed-on-accent backdrop-blur-xl">
                                   {activeImage + 1}/{gallery.length}
                                 </span>
                               )}
                             </>
                           )}
                           {product.promoted && !isAppShell && (
-                            <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider bg-black/60 text-emerald-300 border border-emerald-400/50 rounded px-2 py-0.5">
+                            <span className="absolute left-3 top-3 rounded-full border border-newsfeed-gold/30 bg-newsfeed-gold-soft px-2.5 py-1 text-[10px] font-bold uppercase text-newsfeed-ink">
                               <Flame className="w-3 h-3 inline -mt-0.5 mr-0.5" /> Promoted
                             </span>
                           )}
                         </div>
                       {gallery.length > 1 && (
-                        <div className={`${isAppShell ? "mt-3 px-3" : "mt-3"} flex gap-2 overflow-x-auto scrollbar-none`}>
+                        <div className="mt-3 flex gap-3 overflow-x-auto scrollbar-none">
                           {gallery.map((url, i) => (
                             <button
                               key={url}
                               onClick={() => setActiveImage(i)}
-                              className={`shrink-0 w-16 h-16 rounded-[10px] overflow-hidden border-2 ${i === activeImage ? (isAppShell ? "border-[#E5484D]" : "border-crimson") : isAppShell ? "border-white/10" : "border-slate-200"}`}
+                              className={`h-16 w-16 shrink-0 overflow-hidden rounded-[10px] border-2 bg-newsfeed-surface ${i === activeImage ? "border-newsfeed-coral" : "border-newsfeed-line"}`}
                             >
                               <img
                                 src={url}
@@ -655,13 +655,14 @@ function ProductPage() {
               )}
             </div>
 
-            <div className={isAppShell ? "px-4 pt-5 pb-28" : "md:sticky md:top-24 rounded-[10px] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_-30px_rgba(15,23,42,0.35)]"}>
-              <div className={`text-xs font-bold uppercase tracking-widest ${isAppShell ? "text-[#E5484D]" : "text-crimson"} mb-2`}>
+            <div className={`product-summary lg:col-span-5 lg:sticky lg:top-24 ${isAppShell ? "pb-28" : ""}`}>
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-newsfeed-coral-soft px-3 py-1.5 text-[10px] font-extrabold uppercase text-newsfeed-coral">
+                <span className="h-1.5 w-1.5 rounded-full bg-newsfeed-coral" />
 
                 {product.category}
                 {product.subcategory ? ` · ${product.subcategory}` : ""}
               </div>
-              <h1 className={`min-w-0 text-2xl md:text-3xl font-black ${isAppShell ? "text-white" : "text-slate-900"} md:text-slate-900 mb-2 truncate`}>
+              <h1 className="mb-3 min-w-0 text-3xl font-extrabold leading-tight text-newsfeed-ink sm:text-4xl lg:text-5xl">
                 {product.name}
               </h1>
               {outOfStock ? (
@@ -683,7 +684,7 @@ function ProductPage() {
                     : `${product.stockQuantity} in stock`}
                 </div>
               ) : null}
-              <div className="mb-3 space-y-2">
+              <div className="mb-4 space-y-2 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-3">
                 <CreatorChip
                   idOrSlug={product.sellerSlug ?? product.sellerId}
                   name={product.vendor}
@@ -697,7 +698,7 @@ function ProductPage() {
                 />
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 mb-4">
+              <div className="mb-4 flex flex-wrap items-center gap-2">
                 <ProductRating
                   productId={product.id}
                   initialAverage={product.rating}
@@ -707,7 +708,7 @@ function ProductPage() {
                 />
               </div>
 
-              <div className="mb-6">
+              <div className="mb-5 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface px-4">
                 <Accordion type="single" collapsible className="w-full">
                   <AccordionItem value="about" className={`${isAppShell ? "border-white/5" : "border-slate-200"}`}>
                     <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold py-3 hover:no-underline`}>
@@ -768,7 +769,13 @@ function ProductPage() {
                 </Accordion>
               </div>
 
-              <div className={`${isAppShell ? "bg-transparent border-transparent p-0 mb-5" : "web-card p-5 mb-4"}`}>
+              <div className="product-purchase mb-5 overflow-hidden rounded-[10px] border border-newsfeed-line bg-newsfeed-surface shadow-newsfeed-panel">
+                <div className="grid h-1.5 grid-cols-3" aria-hidden="true">
+                  <span className="bg-newsfeed-coral" />
+                  <span className="bg-newsfeed-gold" />
+                  <span className="bg-newsfeed-blue" />
+                </div>
+                <div className="p-5 sm:p-6">
 
                 <div className="flex items-baseline justify-between mb-4">
                   <div>
@@ -776,7 +783,7 @@ function ProductPage() {
                       const dp = productDisplay(product, baseCurrency);
                       return (
                         <>
-                          <div className={`${isAppShell ? "text-white" : "text-crimson"} md:text-crimson font-black text-3xl`}>
+                          <div className="text-3xl font-extrabold text-newsfeed-ink sm:text-4xl">
                             {dp.formatted}
                           </div>
                         </>
@@ -796,7 +803,7 @@ function ProductPage() {
                         onChange={(e) =>
                           setQty(Math.max(1, Math.min(20, Number(e.target.value) || 1)))
                         }
-                        className={`w-16 ${isAppShell ? "bg-[#121214] border-white/10 text-white" : "bg-slate-50 border-slate-200 text-slate-900"} md:bg-slate-50 border md:border-slate-200 rounded-[10px] px-2 py-1.5 text-sm text-center`}
+                        className="w-16 rounded-[10px] border border-newsfeed-line bg-newsfeed-blue-soft px-2 py-1.5 text-center text-sm font-bold text-newsfeed-ink"
                       />
                     </div>
                   )}
@@ -871,10 +878,10 @@ function ProductPage() {
                 )}
                 {product.kind === "service" ? (
                   isAppShell ? (
-                    <div className="fixed bottom-[92px] pb-safe left-0 right-0 z-20 px-4 py-3 bg-[#0A0A0B]/80 backdrop-blur-xl-xl border-t border-white/[0.06]">
+                    <div className="fixed bottom-[92px] left-0 right-0 z-20 border-t border-newsfeed-line bg-newsfeed-surface/95 px-4 py-3 pb-safe backdrop-blur-xl-xl">
                       <button
                         onClick={openSellerChat}
-                        className="w-full inline-flex items-center justify-center gap-2 py-3.5 text-[14px] rounded-[10px] bg-[#E5484D] hover:bg-[#d13a3f] text-white font-black transition-colors"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-newsfeed-coral py-3.5 text-[14px] font-black text-newsfeed-on-accent transition-colors hover:bg-newsfeed-coral/90"
                       >
                         <MessageCircle className="w-4 h-4" /> Contact for this service
                       </button>
@@ -888,12 +895,12 @@ function ProductPage() {
                     </button>
                   )
                 ) : isAppShell ? (
-                  <div className="fixed bottom-[92px] pb-safe left-0 right-0 z-20 px-4 py-3 bg-[#0A0A0B]/80 backdrop-blur-xl-xl border-t border-white/[0.06]">
+                  <div className="fixed bottom-[92px] left-0 right-0 z-20 border-t border-newsfeed-line bg-newsfeed-surface/95 px-4 py-3 pb-safe backdrop-blur-xl-xl">
                     <div className="flex items-center gap-2">
                       <Link
                         to="/shop/$id"
                         params={{ id: product.sellerSlug ?? product.sellerId }}
-                        className="flex-1 inline-flex items-center justify-center gap-2 py-3 text-[13px] bg-white/[0.04] border border-white/10 text-white rounded-[10px] font-bold transition-colors"
+                         className="inline-flex flex-1 items-center justify-center gap-2 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface py-3 text-[13px] font-bold text-newsfeed-ink transition-colors"
                       >
                         <ShoppingBag className="w-4 h-4" />
                         <span>Shop</span>
@@ -901,7 +908,7 @@ function ProductPage() {
                       
                       <button
                         onClick={openSellerChat}
-                        className="flex-1 inline-flex items-center justify-center gap-2 py-3 text-[13px] bg-[#1C1C1F] border border-white/[0.06] text-white rounded-[10px] font-bold transition-colors"
+                        className="inline-flex flex-1 items-center justify-center gap-2 rounded-[10px] border border-newsfeed-blue/25 bg-newsfeed-blue-soft py-3 text-[13px] font-bold text-newsfeed-ink transition-colors"
                       >
                         <MessageCircle className="w-4 h-4" />
                         <span>Chat</span>
@@ -910,7 +917,7 @@ function ProductPage() {
                       <button
                         onClick={startCheckout}
                         disabled={outOfStock}
-                        className={`flex-[1.5] inline-flex items-center justify-center gap-2 py-3 text-[13px] rounded-[10px] font-black transition-colors ${outOfStock ? "bg-white/[0.06] text-white/40 cursor-not-allowed" : "bg-[#E5484D] hover:bg-[#d13a3f] text-white"}`}
+                        className={`inline-flex flex-[1.5] items-center justify-center gap-2 rounded-[10px] py-3 text-[13px] font-black transition-colors ${outOfStock ? "cursor-not-allowed bg-newsfeed-line text-newsfeed-muted" : "bg-newsfeed-coral text-newsfeed-on-accent hover:bg-newsfeed-coral/90"}`}
                       >
                         <ShoppingCart className="w-4 h-4" />
                         <span>{outOfStock ? "Out of Stock" : isFree ? "Download" : "Buy Now"}</span>
@@ -930,7 +937,7 @@ function ProductPage() {
                       <>
                         <button
                           onClick={startCheckout}
-                          className="w-full inline-flex items-center justify-center gap-2 py-3 text-sm rounded-[10px] font-black bg-crimson hover:bg-crimson/90 text-white transition-colors"
+                            className="inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-newsfeed-coral py-3 text-sm font-black text-newsfeed-on-accent transition-colors hover:bg-newsfeed-coral/90"
                         >
                           <ShoppingCart className="w-4 h-4" /> {isFree ? "Download" : "Buy Now"}
                         </button>
@@ -956,22 +963,23 @@ function ProductPage() {
                     )}
                   </div>
                 )}
+                </div>
 
               </div>
 
               {!isAppShell && (
-                <div className="web-card mt-5 flex items-center gap-3 p-3.5">
-                  <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-crimson/10 grid place-items-center text-[13px] font-black text-crimson">
+                <div className="mt-5 flex items-center gap-3 rounded-[10px] border border-newsfeed-gold/25 bg-newsfeed-gold-soft p-3.5">
+                  <div className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-full bg-newsfeed-surface text-[13px] font-black text-newsfeed-coral">
                     {product.vendor?.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-[14px] font-bold text-slate-900">{product.vendor}</div>
-                    <div className="text-[11.5px] text-slate-500">Seller on Oventric</div>
+                    <div className="truncate text-[14px] font-bold text-newsfeed-ink">{product.vendor}</div>
+                    <div className="text-[11.5px] text-newsfeed-ink">Seller on Oventric</div>
                   </div>
                   <Link
                     to="/shop/$id"
                     params={{ id: product.sellerSlug ?? product.sellerId }}
-                    className="shrink-0 rounded-[10px] border border-crimson/25 bg-crimson/5 px-3.5 py-2 text-[12.5px] font-bold text-crimson"
+                    className="shrink-0 rounded-[10px] border border-newsfeed-coral/25 bg-newsfeed-surface px-3.5 py-2 text-[12.5px] font-bold text-newsfeed-coral"
                   >
                     View Shop
                   </Link>
