@@ -212,22 +212,11 @@ function BoardSheet({
   const [busy, setBusy] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [creatorPostId, setCreatorPostId] = useState<string | null>(null);
+
+  const creatorIdFor = creatorIdForItem;
   const allCreatorIds = board.items
     .map((it) => creatorIdForItem(it))
     .filter((v): v is string => Boolean(v));
-
-  const creatorIdFor = (item: CollectionDTO["items"][number]) => {
-    if (item.refId) return item.refId;
-    if (!item.url) return null;
-    try {
-      const parsed = new URL(item.url, "https://oventric.com");
-      return parsed.pathname === "/feed" && parsed.searchParams.get("tab") === "creators"
-        ? parsed.searchParams.get("post")
-        : null;
-    } catch {
-      return null;
-    }
-  };
 
   return (
     <Sheet onClose={onClose}>
