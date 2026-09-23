@@ -28,17 +28,24 @@ import logo from "@/assets/oventric-logo-dark.png";
 
 import { COUNTRY_META } from "@/lib/currency/africa";
 
-const NAV_ITEMS = [
+const DESKTOP_NAV_ITEMS = [
   { label: "Home", section: "Home", icon: Home },
   { label: "Explore", section: "Explore", icon: Compass },
   { label: "Newsfeed", section: "Feed", icon: Newspaper },
-  { label: "Wallet", section: "Wallet", icon: WalletCards },
 ] as const;
 
 const MOBILE_NAV_ITEMS = [
-  ...NAV_ITEMS.slice(0, 3),
+  ...DESKTOP_NAV_ITEMS,
   { label: "Marketplace", section: "Marketplace", icon: ShoppingBag },
-  NAV_ITEMS[3],
+  { label: "Wallet", section: "Wallet", icon: WalletCards },
+] as const;
+
+const MOBILE_NAV_TONES = [
+  "bg-newsfeed-blue-soft text-newsfeed-blue",
+  "bg-newsfeed-violet-soft text-newsfeed-violet",
+  "bg-newsfeed-coral-soft text-newsfeed-coral",
+  "bg-newsfeed-green-soft text-newsfeed-green",
+  "bg-newsfeed-gold-soft text-newsfeed-gold",
 ] as const;
 
 export type SiteNavbarProps = {
@@ -109,7 +116,7 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
 
           {/* Universal Navigation Links (Desktop) */}
           <nav className="hidden lg:flex items-center gap-6 text-sm font-bold text-slate-600">
-            {NAV_ITEMS.map(({ label, section, icon: Icon }) => (
+            {DESKTOP_NAV_ITEMS.map(({ label, section, icon: Icon }) => (
               <button
                 key={label}
                 onClick={() => onSelect(section)}
@@ -203,30 +210,32 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
 
       {/* Mobile Menu Overlay */}
       {menuOpen && (
-        <div className="fixed inset-0 z-50 bg-white lg:hidden overflow-y-auto">
-          <div className="p-4 border-b flex items-center justify-between">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-newsfeed-canvas text-newsfeed-ink lg:hidden">
+          <div className="about-spectrum h-1 w-full" aria-hidden />
+          <div className="sticky top-0 z-10 flex items-center justify-between border-b border-newsfeed-line bg-newsfeed-surface/95 p-4 backdrop-blur-md">
             <img loading="lazy" decoding="async" src={logo} alt="Oventric" className="h-6 w-auto" />
-            <button onClick={() => setMenuOpen(false)}><X className="w-6 h-6" /></button>
+            <button onClick={() => setMenuOpen(false)} aria-label="Close navigation menu" className="grid size-10 place-items-center rounded-[10px] bg-newsfeed-coral-soft text-newsfeed-coral"><X className="w-5 h-5" /></button>
           </div>
-          <nav className="p-6 space-y-6">
+          <nav className="space-y-6 p-5">
             <div className="space-y-4">
               <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Navigation</h3>
-              {MOBILE_NAV_ITEMS.map(({ label, section, icon: Icon }) => (
+              {MOBILE_DESKTOP_NAV_ITEMS.map(({ label, section, icon: Icon }) => (
                 <button
                   key={label}
                   onClick={() => { onSelect(section); setMenuOpen(false); }}
-                  className="flex w-full items-center gap-3 text-left text-lg font-black text-slate-900"
+                  className="flex min-h-24 w-full flex-col items-start justify-between rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-3 text-left shadow-sm"
                 >
-                  <Icon className="h-5 w-5 text-slate-500" strokeWidth={2} />
-                  {label}
+                  <span className={`grid size-9 place-items-center rounded-[8px] ${MOBILE_NAV_TONES[index % MOBILE_NAV_TONES.length]}`}><Icon className="h-4.5 w-4.5" strokeWidth={2.2} /></span>
+                  <span className="font-wallet-display text-sm font-bold text-newsfeed-ink">{label}</span>
                 </button>
               ))}
+              </div>
               <Link
                 to="/sellers"
                 onClick={() => setMenuOpen(false)}
-                className="flex w-full items-center gap-3 text-left text-lg font-black text-slate-900"
+                className="flex min-h-12 w-full items-center gap-3 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface px-3 text-left font-bold text-newsfeed-ink"
               >
-                <Store className="h-5 w-5 text-slate-500" strokeWidth={2} />
+                <span className="grid size-8 place-items-center rounded-[8px] bg-newsfeed-green-soft text-newsfeed-green"><Store className="h-4 w-4" strokeWidth={2} /></span>
                 Shop
               </Link>
               <button
@@ -235,9 +244,9 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
                   setMenuOpen(false);
                   openNotifications();
                 }}
-                className="flex min-h-11 w-full items-center gap-3 text-left text-lg font-black text-slate-900"
+                className="flex min-h-12 w-full items-center gap-3 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface px-3 text-left font-bold text-newsfeed-ink"
               >
-                <Bell className="h-5 w-5" /> Notifications
+                <span className="grid size-8 place-items-center rounded-[8px] bg-newsfeed-coral-soft text-newsfeed-coral"><Bell className="h-4 w-4" /></span> Notifications
                 {unreadNotifications > 0 && (
                   <span className="rounded-full bg-crimson px-2 py-0.5 text-xs text-white">
                     {unreadNotifications > 99 ? "99+" : unreadNotifications}
@@ -250,15 +259,15 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
                   setMenuOpen(false);
                   openMessages();
                 }}
-                className="flex min-h-11 w-full items-center gap-3 text-left text-lg font-black text-slate-900"
+                className="flex min-h-12 w-full items-center gap-3 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface px-3 text-left font-bold text-newsfeed-ink"
               >
-                <MessageSquare className="h-5 w-5" /> Messages
+                <span className="grid size-8 place-items-center rounded-[8px] bg-newsfeed-blue-soft text-newsfeed-blue"><MessageSquare className="h-4 w-4" /></span> Messages
               </button>
             </div>
             {onCreate && (
               <button
                 onClick={() => { onCreate(); setMenuOpen(false); }}
-                className="w-full py-4 rounded-[10px] bg-crimson text-white font-black text-center text-lg"
+                className="w-full rounded-[10px] bg-newsfeed-violet py-4 text-center text-lg font-black text-newsfeed-on-accent shadow-lg"
               >
                 Create new post
               </button>

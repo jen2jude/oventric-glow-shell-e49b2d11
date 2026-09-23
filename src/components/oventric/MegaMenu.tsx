@@ -271,7 +271,8 @@ export function MegaMenu({ open, onClose }: Props) {
         data-variant="web"
         className="web-account-menu absolute inset-x-3 bottom-3 max-h-[calc(100dvh-1.5rem)] overflow-y-auto rounded-[10px] border border-border bg-background text-foreground shadow-2xl sm:inset-x-auto sm:bottom-auto sm:right-6 sm:top-[76px] sm:w-[390px] sm:max-h-[calc(100dvh-92px)] lg:right-11 lg:top-[88px]"
       >
-        <div className="sticky top-0 z-10 flex items-center gap-4 border-b border-border bg-background px-5 py-5">
+        <div className="about-spectrum sticky top-0 z-20 h-1 w-full" aria-hidden />
+        <div className="sticky top-1 z-10 flex items-center gap-4 border-b border-border bg-background/95 px-5 py-5 backdrop-blur-md">
           <button
             type="button"
             onClick={() => {
@@ -314,7 +315,7 @@ export function MegaMenu({ open, onClose }: Props) {
         </div>
 
         <div className="px-5 py-3">
-          <div className="flex items-center justify-between rounded-[10px] border border-border bg-muted/60 px-3 py-2.5">
+          <div className="flex items-center justify-between rounded-[10px] border border-newsfeed-gold/25 bg-newsfeed-gold-soft px-3 py-2.5">
             <div className="min-w-0">
               <p className="text-[10px] font-bold uppercase text-muted-foreground">Display currency</p>
               <p className="mt-0.5 font-wallet-display text-sm font-bold text-foreground">{baseCurrency}</p>
@@ -346,7 +347,7 @@ export function MegaMenu({ open, onClose }: Props) {
           <button
             type="button"
             onClick={doInvite}
-            className="flex w-full items-center gap-3 rounded-[10px] bg-primary/5 px-3 py-3 text-left text-primary transition-colors hover:bg-primary/10"
+            className="flex w-full items-center gap-3 rounded-[10px] bg-newsfeed-green-soft px-3 py-3 text-left text-newsfeed-green transition-colors hover:brightness-95"
           >
             <Gift className="h-5 w-5 shrink-0" />
             <span className="min-w-0 flex-1">
@@ -791,13 +792,21 @@ function WebMenuItem({
   label: string;
   onClick: () => void;
 }) {
+  const toneByLabel: Record<string, string> = {
+    "Profile details": "bg-newsfeed-coral-soft text-newsfeed-coral", Home: "bg-newsfeed-blue-soft text-newsfeed-blue",
+    Explore: "bg-newsfeed-violet-soft text-newsfeed-violet", Feed: "bg-newsfeed-coral-soft text-newsfeed-coral",
+    Marketplace: "bg-newsfeed-green-soft text-newsfeed-green", Wallet: "bg-newsfeed-gold-soft text-newsfeed-gold",
+    Messages: "bg-newsfeed-blue-soft text-newsfeed-blue", Followers: "bg-newsfeed-violet-soft text-newsfeed-violet",
+    "My purchases": "bg-newsfeed-green-soft text-newsfeed-green", "Purchase assistant": "bg-newsfeed-gold-soft text-newsfeed-gold",
+  };
+  const tone = toneByLabel[label] ?? "bg-newsfeed-blue-soft text-newsfeed-blue";
   return (
     <button
       type="button"
       onClick={onClick}
-      className="group flex w-full items-center gap-3 rounded-[10px] px-3 py-2.5 text-left transition-colors hover:bg-muted"
+      className="group flex w-full items-center gap-3 rounded-[10px] px-3 py-2.5 text-left transition-colors hover:bg-newsfeed-canvas"
     >
-      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[8px] bg-primary/8 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+      <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-[8px] transition-transform group-hover:scale-105 ${tone}`}>
         <Icon className="h-4 w-4" strokeWidth={2} />
       </span>
       <span className="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">{label}</span>
