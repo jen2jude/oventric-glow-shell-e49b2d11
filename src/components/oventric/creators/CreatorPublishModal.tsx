@@ -50,6 +50,7 @@ export function CreatorPublishModal({
   const [community, setCommunity] = useState("");
   const [external, setExternal] = useState("");
   const [busy, setBusy] = useState(false);
+  const [compressing, setCompressing] = useState(false);
 
   // Sellable asset
   const [assetFile, setAssetFile] = useState<File | null>(null);
