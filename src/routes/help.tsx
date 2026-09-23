@@ -196,7 +196,7 @@ function HelpPage() {
                 <Button asChild size="lg">
                   <Link to="/faq">Browse common answers <ArrowRight /></Link>
                 </Button>
-                <Button asChild size="lg" variant="outline">
+                <Button asChild size="lg" variant="outline" className="border-newsfeed-line bg-newsfeed-surface text-newsfeed-ink hover:bg-newsfeed-blue-soft hover:text-newsfeed-blue">
                   <Link to="/report-problem">Contact support</Link>
                 </Button>
               </div>
@@ -335,7 +335,7 @@ function HelpPage() {
             <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-newsfeed-muted sm:text-lg">Include the relevant order or transaction details, what you expected, and what you saw. Never include your password or private sign-in codes.</p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg"><Link to="/report-problem">Report a problem <ArrowRight /></Link></Button>
-              <Button asChild size="lg" variant="outline"><Link to="/faq">Read FAQs</Link></Button>
+              <Button asChild size="lg" variant="outline" className="border-newsfeed-line bg-newsfeed-surface text-newsfeed-ink hover:bg-newsfeed-blue-soft hover:text-newsfeed-blue"><Link to="/faq">Read FAQs</Link></Button>
             </div>
           </div>
         </section>
