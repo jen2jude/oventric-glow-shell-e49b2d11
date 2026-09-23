@@ -783,27 +783,38 @@
 /* Seller-led light marketplace. */
 .web-marketplace {
   color-scheme: light;
-  --background: oklch(0.975 0.004 245);
-  --foreground: oklch(0.22 0.014 255);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.014 255);
-  --primary: oklch(0.57 0.18 22);
-  --primary-foreground: oklch(0.99 0.003 22);
-  --secondary: oklch(0.965 0.006 245);
-  --secondary-foreground: oklch(0.28 0.014 255);
-  --muted: oklch(0.965 0.006 245);
-  --muted-foreground: oklch(0.51 0.018 255);
-  --accent: oklch(0.95 0.018 22);
-  --accent-foreground: oklch(0.49 0.18 22);
-  --border: oklch(0.89 0.012 245);
-  --input: oklch(0.86 0.014 245);
-  --ring: oklch(0.57 0.18 22);
+  --background: var(--newsfeed-canvas);
+  --foreground: var(--newsfeed-ink);
+  --card: var(--newsfeed-surface);
+  --card-foreground: var(--newsfeed-ink);
+  --primary: var(--newsfeed-violet);
+  --primary-foreground: var(--newsfeed-on-accent);
+  --secondary: var(--newsfeed-blue-soft);
+  --secondary-foreground: var(--newsfeed-ink);
+  --muted: var(--newsfeed-blue-soft);
+  --muted-foreground: var(--newsfeed-muted);
+  --accent: var(--newsfeed-coral-soft);
+  --accent-foreground: var(--newsfeed-coral);
+  --border: var(--newsfeed-line);
+  --input: var(--newsfeed-line);
+  --ring: var(--newsfeed-violet);
   font-family: var(--font-wallet-body);
 }
 
 .web-marketplace :is(h1, h2, h3, .font-wallet-display) {
   font-family: var(--font-wallet-display);
   letter-spacing: 0;
+}
+
+.marketplace-spectrum-section > div:first-child h2::before {
+  content: "";
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 0.55rem;
+  border-radius: 999px;
+  background: var(--newsfeed-violet);
+  vertical-align: 0.12em;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3458,11 +3469,11 @@ section + section {
   color-scheme: light;
   --background: oklch(1 0 0);
   --foreground: oklch(0.2 0.012 260);
-  --primary: oklch(0.61 0.2 24);
-  --primary-foreground: oklch(0.99 0.003 24);
-  --muted: oklch(0.96 0.005 260);
-  --muted-foreground: oklch(0.48 0.014 260);
-  --border: oklch(0.2 0.012 260 / 12%);
+  --primary: var(--newsfeed-violet);
+  --primary-foreground: var(--newsfeed-on-accent);
+  --muted: var(--newsfeed-canvas);
+  --muted-foreground: var(--newsfeed-muted);
+  --border: var(--newsfeed-line);
   --destructive: oklch(0.58 0.22 25);
   font-family: var(--font-wallet-body);
   background-color: var(--background);
@@ -3486,15 +3497,15 @@ section + section {
 /* Notifications panel keeps the light website skin on every page. */
 .web-notifications {
   color-scheme: light;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.2 0.012 260);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.012 260);
-  --primary: oklch(0.61 0.2 24);
-  --primary-foreground: oklch(0.99 0.003 24);
-  --muted: oklch(0.97 0.004 260);
-  --muted-foreground: oklch(0.48 0.014 260);
-  --border: oklch(0.2 0.012 260 / 12%);
+  --background: var(--newsfeed-surface);
+  --foreground: var(--newsfeed-ink);
+  --card: var(--newsfeed-surface);
+  --card-foreground: var(--newsfeed-ink);
+  --primary: var(--newsfeed-violet);
+  --primary-foreground: var(--newsfeed-on-accent);
+  --muted: var(--newsfeed-canvas);
+  --muted-foreground: var(--newsfeed-muted);
+  --border: var(--newsfeed-line);
   --destructive: oklch(0.58 0.22 25);
   font-family: var(--font-wallet-body);
   background-color: var(--background);
@@ -3569,13 +3580,13 @@ section + section {
 /* Followers and connections use the cool professional web directory palette. */
 .web-connections {
   color-scheme: light;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.22 0.006 250);
-  --primary: oklch(0.57 0.18 22);
-  --primary-foreground: oklch(1 0 0);
-  --muted: oklch(0.97 0.005 240);
-  --muted-foreground: oklch(0.55 0.035 250);
-  --border: oklch(0.91 0.012 240);
+  --background: var(--newsfeed-surface);
+  --foreground: var(--newsfeed-ink);
+  --primary: var(--newsfeed-violet);
+  --primary-foreground: var(--newsfeed-on-accent);
+  --muted: var(--newsfeed-canvas);
+  --muted-foreground: var(--newsfeed-muted);
+  --border: var(--newsfeed-line);
   --destructive: oklch(0.57 0.18 22);
   --online: oklch(0.72 0.19 149);
   font-family: var(--font-wallet-body);

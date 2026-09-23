@@ -420,7 +420,19 @@ function DashboardPage() {
           />
         )}
         {tab === "digital" && (
-          <div className="space-y-4">
+          <div className="dashboard-purchases space-y-4">
+            <div className="overflow-hidden rounded-[10px] border border-newsfeed-line bg-newsfeed-surface">
+              <div className="about-spectrum h-1 w-full" aria-hidden />
+              <div className="flex items-center gap-3 p-4 sm:p-5">
+                <span className="grid size-10 shrink-0 place-items-center rounded-[10px] bg-newsfeed-green-soft text-newsfeed-green">
+                  <ShoppingBag className="size-5" aria-hidden />
+                </span>
+                <div>
+                  <h2 className="font-wallet-display text-lg font-bold text-newsfeed-ink">My purchases</h2>
+                  <p className="text-xs font-medium text-newsfeed-muted">Downloads, receipts and order progress in one place.</p>
+                </div>
+              </div>
+            </div>
             <PurchaseAssistantPanel />
             <DigitalList
               rows={purchases}
@@ -524,14 +536,14 @@ function EmptyState({
 
 function StatusBadge({ status }: { status: PurchaseDTO["status"] }) {
   const meta = {
-    paid: { label: "Paid", icon: CheckCircle2 },
-    pending: { label: "Pending", icon: Clock },
-    failed: { label: "Failed", icon: AlertTriangle },
-    refunded: { label: "Refunded", icon: AlertTriangle },
+    paid: { label: "Paid", icon: CheckCircle2, tone: "bg-newsfeed-green-soft text-newsfeed-green border-newsfeed-green/25" },
+    pending: { label: "Pending", icon: Clock, tone: "bg-newsfeed-gold-soft text-newsfeed-gold border-newsfeed-gold/25" },
+    failed: { label: "Failed", icon: AlertTriangle, tone: "bg-newsfeed-coral-soft text-newsfeed-coral border-newsfeed-coral/25" },
+    refunded: { label: "Refunded", icon: AlertTriangle, tone: "bg-newsfeed-blue-soft text-newsfeed-blue border-newsfeed-blue/25" },
   }[status];
   const Icon = meta.icon;
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-white/10 md:border-slate-200 bg-white/5 md:bg-slate-50 text-[10px] font-bold text-slate-300 md:text-slate-600">
+    <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold ${meta.tone}`}>
       <Icon className="w-3 h-3" /> {meta.label}
     </span>
   );
@@ -578,11 +590,11 @@ function DigitalList({
     <div className="space-y-3">
       {rows.map((r) => (
         <div key={r.orderId} className="space-y-2">
-          <div className="rounded-xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-3 flex gap-3">
+          <div className="flex gap-3 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-3 shadow-sm">
             <Link
               to="/order/$id"
               params={{ id: r.orderId }}
-              className="shrink-0 w-20 h-20 rounded-[10px] overflow-hidden bg-white/5 md:bg-slate-50 flex items-center justify-center"
+              className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-newsfeed-blue-soft"
             >
               {r.coverUrl ? (
                 <img
@@ -593,7 +605,7 @@ function DigitalList({
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <ShoppingBag className="w-6 h-6 text-white/30" />
+                <ShoppingBag className="h-6 w-6 text-newsfeed-blue" />
               )}
             </Link>
             <div className="min-w-0 flex-1">
@@ -605,7 +617,7 @@ function DigitalList({
                   <Link
                     to="/order/$id"
                     params={{ id: r.orderId }}
-                    className="text-sm font-bold text-white md:text-slate-900 hover:text-white md:hover:text-slate-900 truncate block"
+                    className="block truncate text-sm font-bold text-newsfeed-ink hover:text-newsfeed-violet"
                   >
                     {r.productName}
                   </Link>
@@ -626,7 +638,7 @@ function DigitalList({
                     <button
                       onClick={() => onDownload(r.orderId, r.productId, r.externalUrl, r.hasFile)}
                       disabled={downloadingId === r.orderId}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] bg-white text-black hover:bg-white/90 text-xs font-bold disabled:opacity-60"
+                      className="inline-flex items-center gap-1.5 rounded-[10px] bg-newsfeed-violet px-3 py-1.5 text-xs font-bold text-newsfeed-on-accent hover:brightness-95 disabled:opacity-60"
                     >
                       {downloadingId === r.orderId ? (
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -641,7 +653,7 @@ function DigitalList({
                   {r.status === "paid" && r.escrowStatus === "held" && (
                     <button
                       onClick={() => onConfirm(r.orderId)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] bg-white/10 hover:bg-white/15 md:bg-slate-100 border border-white/10 md:border-slate-200 text-white md:text-slate-900 text-xs font-bold"
+                      className="inline-flex items-center gap-1.5 rounded-[10px] border border-newsfeed-green/25 bg-newsfeed-green-soft px-3 py-1.5 text-xs font-bold text-newsfeed-green"
                       title="Confirm you've received this product to release the seller's funds"
                     >
                       Confirm received
@@ -650,13 +662,13 @@ function DigitalList({
                   <Link
                     to="/order/$id"
                     params={{ id: r.orderId }}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] bg-white/5 md:bg-slate-50 hover:bg-white/10 md:bg-slate-100 md:hover:bg-slate-100 border border-white/10 md:border-slate-200 text-slate-200 md:text-slate-700 text-xs font-semibold"
+                    className="inline-flex items-center gap-1.5 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface px-3 py-1.5 text-xs font-semibold text-newsfeed-ink hover:bg-newsfeed-blue-soft"
                   >
                     View details
                   </Link>
                   <button
                     onClick={() => setTracking((t) => (t === r.orderId ? null : r.orderId))}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] bg-white/5 md:bg-slate-50 hover:bg-white/10 md:bg-slate-100 md:hover:bg-slate-100 border border-white/10 md:border-slate-200 text-slate-200 md:text-slate-700 text-xs font-semibold"
+                    className="inline-flex items-center gap-1.5 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface px-3 py-1.5 text-xs font-semibold text-newsfeed-ink hover:bg-newsfeed-gold-soft"
                   >
                     <Truck className="w-3.5 h-3.5" />{" "}
                     {tracking === r.orderId ? "Hide tracking" : "Track order"}
