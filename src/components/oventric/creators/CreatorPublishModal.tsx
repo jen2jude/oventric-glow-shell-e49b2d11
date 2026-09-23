@@ -22,6 +22,9 @@ interface Attachment {
 }
 
 const MAX_ASSET_MB = 50;
+/** Uploaded showcase clips stay short; longer videos are pasted as links. */
+const MAX_CLIP_SECONDS = 30;
+const MAX_CLIP_BYTES = 15 * 1024 * 1024;
 
 /** Creator showcase publisher: title, caption, media, sellable asset, links. */
 export function CreatorPublishModal({
@@ -47,6 +50,7 @@ export function CreatorPublishModal({
   const [community, setCommunity] = useState("");
   const [external, setExternal] = useState("");
   const [busy, setBusy] = useState(false);
+  const [compressing, setCompressing] = useState(false);
 
   // Sellable asset
   const [assetFile, setAssetFile] = useState<File | null>(null);
@@ -91,13 +95,47 @@ export function CreatorPublishModal({
 
   if (!open) return null;
 
-  const pick = (files: FileList | null) => {
+  const pick = async (files: FileList | null) => {
     if (!files) return;
+    const picked = Array.from(files).slice(0, 10);
     const next: Attachment[] = [];
-    for (const file of Array.from(files).slice(0, 10)) {
-      const kind = file.type.startsWith("video/") ? "video" : "image";
+    for (const raw of picked) {
+      const kind: "image" | "video" = raw.type.startsWith("video/") ? "video" : "image";
+      let file = raw;
+      if (kind === "video") {
+        // Short clips only — long videos belong on YouTube/Vimeo and stream
+        // from there, so hosting never fills up with heavy uploads.
+        setCompressing(true);
+        try {
+          const { getVideoDuration, trimVideoSegment } = await import("@/lib/media/videoTrim");
+          const duration = await getVideoDuration(file);
+          if (duration > MAX_CLIP_SECONDS + 0.5) {
+            toast.error(
+              `Clips here are up to ${MAX_CLIP_SECONDS}s. For a longer video, paste its YouTube, Vimeo, Facebook or Telegram link below — it plays right here without an upload.`,
+            );
+            continue;
+          }
+          if (file.size > MAX_CLIP_BYTES) {
+            const compact = await trimVideoSegment(
+              file,
+              0,
+              Math.max(1, Math.min(MAX_CLIP_SECONDS, duration || MAX_CLIP_SECONDS)),
+            );
+            if (compact && compact.size < file.size) file = compact;
+          }
+          if (file.size > MAX_CLIP_BYTES * 1.5) {
+            toast.error(
+              "That clip is still too heavy. Paste a video link below instead — it streams from the original platform.",
+            );
+            continue;
+          }
+        } finally {
+          setCompressing(false);
+        }
+      }
       next.push({ file, url: URL.createObjectURL(file), kind });
     }
+    if (!next.length) return;
     // A video showcase is a single clip; images can be a set.
     setAttachments(next[0]?.kind === "video" ? next.slice(0, 1) : next);
   };
@@ -297,16 +335,23 @@ export function CreatorPublishModal({
               accept="image/*,video/*"
               multiple
               hidden
-              onChange={(e) => pick(e.target.files)}
+              onChange={(e) => void pick(e.target.files)}
             />
             {attachments.length === 0 ? (
               <button
                 type="button"
+                disabled={compressing}
                 onClick={() => fileRef.current?.click()}
-                className="flex w-full flex-col items-center gap-1.5 py-5 text-slate-500"
+                className="flex w-full flex-col items-center gap-1.5 py-5 text-slate-500 disabled:opacity-60"
               >
                 <ImagePlus className="h-6 w-6 text-emerald-600" />
-                <span className="text-xs font-bold">Add images or a video</span>
+                <span className="text-xs font-bold">
+                  {compressing ? "Preparing your clip…" : "Add images or a video"}
+                </span>
+                <span className="px-4 text-center text-[11px] font-semibold text-slate-400">
+                  Clips up to {MAX_CLIP_SECONDS}s. For longer videos, paste the link below — it plays
+                  here and streams from YouTube, Vimeo, Facebook or Telegram.
+                </span>
               </button>
             ) : (
               <div className="grid grid-cols-3 gap-2">
