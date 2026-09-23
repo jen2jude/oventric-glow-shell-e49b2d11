@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useServerFn } from "@tanstack/react-start";
 import { Bookmark, Globe, Lock, Plus, Trash2, X, Layers, ExternalLink, LoaderCircle } from "lucide-react";
