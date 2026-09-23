@@ -3837,7 +3837,7 @@ section + section {
   --checkout-canvas: color-mix(in oklab, var(--newsfeed-coral-soft) 28%, var(--newsfeed-canvas));
   --checkout-surface: var(--newsfeed-surface);
   --checkout-muted-surface: color-mix(in oklab, var(--newsfeed-blue-soft) 42%, var(--newsfeed-surface));
-  --checkout-ink: var(--newsfeed-ink);
+  --checkout-ink: oklch(0.14 0.018 260);
   --checkout-muted: var(--newsfeed-muted);
   --checkout-line: var(--newsfeed-line);
   --checkout-coral: var(--newsfeed-coral);
@@ -3856,6 +3856,7 @@ section + section {
 .web-checkout :is(h1, h2, h3) {
   font-family: var(--font-wallet-display);
   letter-spacing: 0;
+  color: var(--checkout-ink);
 }
 
 .web-checkout .checkout-shell { max-width: 760px; }
@@ -3885,6 +3886,10 @@ section + section {
   background-color: var(--checkout-surface) !important;
   border-color: var(--checkout-line) !important;
   backdrop-filter: none !important;
+}
+.web-checkout .checkout-header {
+  background-color: var(--checkout-surface);
+  box-shadow: 0 1px 0 var(--checkout-line);
 }
 
 /* Retire the old dark checkout skin, including app-shell checkout. */
