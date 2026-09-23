@@ -372,11 +372,6 @@ export function Header({
         )}
 
         <div className="flex items-center justify-end gap-0.5 md:gap-2.5 w-auto shrink-0 min-w-0">
-          {/* Wallet chip - desktop/tablet position in the right cluster */}
-          <div className="hidden md:inline-flex shrink-0">
-            <HeaderWalletChip align="right" />
-          </div>
-
           {/* Desktop candy-box menu hidden here, moved inside profile cluster */}
 
           {/* Circles & Guilds */}
