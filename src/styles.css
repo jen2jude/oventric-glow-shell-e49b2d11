@@ -127,6 +127,19 @@
   --color-newsfeed-gold-soft: var(--newsfeed-gold-soft);
   --color-newsfeed-coral: var(--newsfeed-coral);
   --color-newsfeed-coral-soft: var(--newsfeed-coral-soft);
+  --color-checkout-canvas: var(--checkout-canvas);
+  --color-checkout-surface: var(--checkout-surface);
+  --color-checkout-muted-surface: var(--checkout-muted-surface);
+  --color-checkout-ink: var(--checkout-ink);
+  --color-checkout-muted: var(--checkout-muted);
+  --color-checkout-line: var(--checkout-line);
+  --color-checkout-coral: var(--checkout-coral);
+  --color-checkout-coral-soft: var(--checkout-coral-soft);
+  --color-checkout-coral-line: var(--checkout-coral-line);
+  --color-checkout-on-coral: var(--checkout-on-coral);
+  --color-checkout-gold-soft: var(--checkout-gold-soft);
+  --color-checkout-gold-ink: var(--checkout-gold-ink);
+  --shadow-checkout-card: var(--checkout-card-shadow);
   --color-chat-canvas: var(--chat-canvas);
   --color-chat-surface: var(--chat-surface);
   --color-chat-ink: var(--chat-ink);
@@ -3816,6 +3829,79 @@ section + section {
 
 .web-storefront .storefront-featured-card {
   width: min(82vw, 390px);
+}
+
+/* Checkout: Coral Commerce with a tactile, guided payment journey. */
+.web-checkout {
+  color-scheme: light;
+  --checkout-canvas: color-mix(in oklab, var(--newsfeed-coral-soft) 28%, var(--newsfeed-canvas));
+  --checkout-surface: var(--newsfeed-surface);
+  --checkout-muted-surface: color-mix(in oklab, var(--newsfeed-blue-soft) 42%, var(--newsfeed-surface));
+  --checkout-ink: var(--newsfeed-ink);
+  --checkout-muted: var(--newsfeed-muted);
+  --checkout-line: var(--newsfeed-line);
+  --checkout-coral: var(--newsfeed-coral);
+  --checkout-coral-soft: var(--newsfeed-coral-soft);
+  --checkout-coral-line: color-mix(in oklab, var(--newsfeed-coral) 45%, var(--newsfeed-line));
+  --checkout-on-coral: var(--newsfeed-on-accent);
+  --checkout-gold-soft: var(--newsfeed-gold-soft);
+  --checkout-gold-ink: oklch(0.46 0.12 75);
+  --checkout-spectrum: linear-gradient(90deg, var(--newsfeed-blue), var(--newsfeed-violet), var(--newsfeed-green), var(--newsfeed-gold), var(--newsfeed-coral));
+  --checkout-card-shadow: 0 22px 60px -45px color-mix(in oklab, var(--newsfeed-ink) 38%, transparent);
+  background-color: var(--checkout-canvas);
+  color: var(--checkout-ink);
+  font-family: var(--font-wallet-body);
+}
+
+.web-checkout :is(h1, h2, h3) {
+  font-family: var(--font-wallet-display);
+  letter-spacing: 0;
+}
+
+.web-checkout .checkout-shell { max-width: 760px; }
+.web-checkout .checkout-spectrum-strip {
+  height: 4px;
+  background: var(--checkout-spectrum);
+}
+.web-checkout .checkout-intro,
+.web-checkout .checkout-summary,
+.web-checkout .checkout-method {
+  backdrop-filter: blur(18px) saturate(130%);
+}
+.web-checkout .checkout-method-active {
+  box-shadow: 0 14px 34px -25px color-mix(in oklab, var(--checkout-coral) 68%, transparent);
+  transform: translateY(-1px);
+}
+.web-checkout .checkout-tab-active {
+  background-color: var(--checkout-coral);
+  color: var(--checkout-on-coral);
+  box-shadow: 0 8px 18px -13px color-mix(in oklab, var(--checkout-coral) 75%, transparent);
+}
+.web-checkout .checkout-pay-button {
+  box-shadow: 0 16px 34px -20px color-mix(in oklab, var(--checkout-coral) 78%, transparent);
+}
+.web-checkout .checkout-pay-button:hover { filter: saturate(1.08) brightness(0.97); }
+.web-checkout .checkout-header header {
+  background-color: var(--checkout-surface) !important;
+  border-color: var(--checkout-line) !important;
+  backdrop-filter: none !important;
+}
+
+/* Retire the old dark checkout skin, including app-shell checkout. */
+.web-checkout .checkout-flow :is(.text-white, .text-slate-900) { color: var(--checkout-ink) !important; }
+.web-checkout .checkout-flow :is(.text-slate-200, .text-slate-300, .text-slate-400, .text-slate-500, .text-slate-600) { color: var(--checkout-muted) !important; }
+.web-checkout .checkout-flow :is(.bg-white\/\[0\.03\], .bg-white\/\[0\.04\], .bg-white\/5) { background-color: var(--checkout-surface) !important; }
+.web-checkout .checkout-flow :is(.border-white\/5, .border-white\/10) { border-color: var(--checkout-line) !important; }
+
+@media (max-width: 767px) {
+  .web-checkout .checkout-shell { padding-inline: 0.9rem; }
+  .web-checkout .checkout-intro { border-radius: 10px; }
+  .web-checkout .checkout-summary { margin-bottom: 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .web-checkout .checkout-method,
+  .web-checkout .checkout-pay-button { transition: none !important; transform: none !important; }
 }
 
 .web-storefront .storefront-trust {
