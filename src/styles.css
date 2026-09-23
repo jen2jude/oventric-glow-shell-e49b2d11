@@ -4053,6 +4053,14 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
   color: var(--about-on-image) !important;
   text-shadow: 0 2px 18px color-mix(in oklab, var(--newsfeed-ink) 55%, transparent);
 }
+.about-trust-section,
+.about-trust-section h2,
+.about-trust-section h3 {
+  color: var(--about-on-image);
+}
+.about-trust-section .about-trust-muted {
+  color: color-mix(in oklab, var(--about-on-image) 76%, transparent);
+}
 .about-spectrum {
   background: linear-gradient(
     90deg,
