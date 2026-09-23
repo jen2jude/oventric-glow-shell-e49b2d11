@@ -56,40 +56,37 @@ import paidCreatorImage from "@/assets/how-paid-creator.jpg";
 
 type CategoryNode = { id: string; slug: string; name: string };
 
-/** Pastel tile tints, mirroring the marketing layout. */
+/** Bright Spectrum tile tints — blue, violet, green, gold, coral. */
 const TILE_TINTS = [
-  "bg-[#EAF1FF] text-[#2F5FD0]",
-  "bg-[#F3ECFF] text-[#6F42D4]",
-  "bg-[#FFECF3] text-[#D0417A]",
-  "bg-[#E8F8EF] text-[#1F9D62]",
-  "bg-[#FFF6E2] text-[#C58318]",
-  "bg-[#FFEDE4] text-[#D4622A]",
-  "bg-[#E3F6F6] text-[#158C8C]",
-  "bg-[#ECEEFF] text-[#4A54CF]",
+  "bg-newsfeed-blue-soft text-newsfeed-blue",
+  "bg-newsfeed-violet-soft text-newsfeed-violet",
+  "bg-newsfeed-green-soft text-newsfeed-green",
+  "bg-newsfeed-gold-soft text-newsfeed-gold",
+  "bg-newsfeed-coral-soft text-newsfeed-coral",
 ];
 
 const TRUST = [
   {
     Icon: ShieldCheck,
-    tint: "bg-[#E8F8EF] text-[#1F9D62]",
+    tint: "bg-newsfeed-green-soft text-newsfeed-green",
     title: "Secure Payments",
     body: "Powered by Paystack",
   },
   {
     Icon: HeartHandshake,
-    tint: "bg-[#FFEDE4] text-[#D4622A]",
+    tint: "bg-newsfeed-coral-soft text-newsfeed-coral",
     title: "Support Creators",
     body: "Shop with impact",
   },
   {
     Icon: WalletIcon,
-    tint: "bg-[#F3ECFF] text-[#6F42D4]",
+    tint: "bg-newsfeed-violet-soft text-newsfeed-violet",
     title: "Seller Cashback",
     body: "Earn up to 50% cashback on digital product purchases",
   },
   {
     Icon: Globe2,
-    tint: "bg-[#EAF1FF] text-[#2F5FD0]",
+    tint: "bg-newsfeed-blue-soft text-newsfeed-blue",
     title: "Global Community",
     body: "Creators. Buyers. Builders.",
   },
@@ -101,37 +98,37 @@ const HANDWRITTEN = ["Ideas", "Skills", "Products", "Community", "Opportunities"
 const REASONS = [
   {
     Icon: WalletIcon,
-    tint: "bg-[#E8F8EF] text-[#1F9D62]",
+    tint: "bg-newsfeed-green-soft text-newsfeed-green",
     title: "Keep 80% of every sale",
     body: "Oventric takes a flat 20%. No listing fees, no monthly subscription, no hidden cuts.",
   },
   {
     Icon: ShieldCheck,
-    tint: "bg-[#EAF1FF] text-[#2F5FD0]",
+    tint: "bg-newsfeed-blue-soft text-newsfeed-blue",
     title: "Escrow on every order",
     body: "Buyer payments are held until the asset is delivered, then released to the seller.",
   },
   {
     Icon: Download,
-    tint: "bg-[#F3ECFF] text-[#6F42D4]",
+    tint: "bg-newsfeed-violet-soft text-newsfeed-violet",
     title: "Instant digital delivery",
     body: "Files and access links hand over in-app the moment a payment is confirmed.",
   },
   {
     Icon: Banknote,
-    tint: "bg-[#FFF6E2] text-[#C58318]",
+    tint: "bg-newsfeed-gold-soft text-newsfeed-gold",
     title: "Withdraw in your currency",
     body: "Earnings land in your Oventric wallet and cash out to your local bank account.",
   },
   {
     Icon: Clock,
-    tint: "bg-[#FFEDE4] text-[#D4622A]",
+    tint: "bg-newsfeed-coral-soft text-newsfeed-coral",
     title: "Fast, automatic release",
     body: "Completed orders settle automatically — no chasing buyers for confirmation.",
   },
   {
     Icon: Headphones,
-    tint: "bg-[#E3F6F6] text-[#158C8C]",
+    tint: "bg-newsfeed-blue-soft text-newsfeed-blue",
     title: "Support & disputes",
     body: "Raise a dispute on any order and get a mediated resolution from our team.",
   },
@@ -292,6 +289,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
 
         <div className="relative z-10 mx-auto flex w-full max-w-[1280px] flex-col justify-center gap-6 px-4 py-14 sm:px-6 sm:py-20 lg:min-h-[520px] lg:px-8 lg:py-28">
           <div>
+            <span className="home-pop-strip mb-4 block" aria-hidden="true" />
             <h1 className="font-wallet-display text-[26px] font-extrabold leading-[1.05] text-home-ink sm:text-[48px] lg:text-[58px]">
               1st Africa Digital
               <span className="block text-crimson">Marketplace & Community</span>
@@ -369,7 +367,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             {TRUST.map(({ Icon, title, body }) => (
               <div
                 key={title}
-                className="home-pop-trust-card min-w-[85%] shrink-0 snap-center rounded-[14px] border p-5 transition-transform hover:-translate-y-1 sm:min-w-0 sm:flex sm:items-center sm:gap-3 sm:p-4"
+                className="home-pop-trust-card min-w-[85%] shrink-0 snap-center rounded-[10px] border p-5 transition-transform hover:-translate-y-1 sm:min-w-0 sm:flex sm:items-center sm:gap-3 sm:p-4"
               >
                 <span
                   className="home-pop-icon grid h-11 w-11 shrink-0 place-items-center rounded-[12px]"
@@ -417,7 +415,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
                 key={c.id}
                 type="button"
                 onClick={() => onSelect("Marketplace")}
-                className="home-pop-category flex flex-col items-center gap-2 rounded-[14px] p-2 text-center transition-all active:scale-[0.98] sm:flex-row sm:gap-3 sm:p-4 sm:text-left sm:hover:-translate-y-1"
+                className="home-pop-category flex flex-col items-center gap-2 rounded-[10px] p-2 text-center transition-all active:scale-[0.98] sm:flex-row sm:gap-3 sm:p-4 sm:text-left sm:hover:-translate-y-1"
               >
                 <span className={`grid h-14 w-14 shrink-0 place-items-center rounded-full ${tint} sm:h-11 sm:w-11 sm:rounded-[12px]`}>
                   <Icon className="h-6 w-6 sm:h-5 sm:w-5" />
@@ -496,7 +494,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         </div>
 
         {/* ------------------------------------------------------------ CTA band */}
-        <section className="relative mt-10 overflow-hidden rounded-[20px] lg:mt-14">
+        <section className="relative mt-10 overflow-hidden rounded-[10px] lg:mt-14">
           <img
             src={skillsCtaImage}
             alt="A 3D creator character beside a laptop showing growing sales"
@@ -508,7 +506,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           <div className="absolute inset-0 bg-gradient-to-r from-white from-[22%] via-white/95 via-[45%] to-white/10 to-[78%]" />
           <div className="relative px-6 py-10 sm:px-10 sm:py-14">
             <div className="max-w-xl">
-              <h2 className="font-[Outfit] text-2xl font-extrabold leading-tight text-slate-950 sm:text-3xl lg:text-[38px]">
+              <h2 className="font-wallet-display text-2xl font-extrabold leading-tight text-slate-950 sm:text-3xl lg:text-[38px]">
                 Turn Your Skills Into Income
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-slate-600">
@@ -551,7 +549,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         )}
 
         {/* ------------------------------------------------------------- promos */}
-        <section className="home-pop-earn relative mt-10 overflow-hidden rounded-[20px] px-4 pb-5 pt-1 sm:px-6 sm:pb-6 lg:mt-14 lg:px-8 lg:pb-8">
+        <section className="home-pop-earn relative mt-10 overflow-hidden rounded-[10px] px-4 pb-5 pt-1 sm:px-6 sm:pb-6 lg:mt-14 lg:px-8 lg:pb-8">
         <SectionHead title="Ways to Earn More" />
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5">
           <PromoCard
@@ -574,13 +572,13 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         </section>
 
         {/* --------------------------------------------------- why sell / why buy */}
-        <section className="home-pop-why mt-10 overflow-hidden rounded-[20px] px-4 pb-5 pt-1 sm:px-6 sm:pb-6 lg:mt-14 lg:px-8 lg:pb-8">
+        <section className="home-pop-why mt-10 overflow-hidden rounded-[10px] px-4 pb-5 pt-1 sm:px-6 sm:pb-6 lg:mt-14 lg:px-8 lg:pb-8">
         <SectionHead title="Why Oventric" subtitle="Everything you need to build an income online" />
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
           {REASONS.map(({ Icon, tint, title, body }) => (
             <div
               key={title}
-              className="home-pop-reason rounded-[14px] border p-4 transition-all hover:-translate-y-1 sm:p-5"
+              className="home-pop-reason rounded-[10px] border p-4 transition-all hover:-translate-y-1 sm:p-5"
             >
               <span
                 className={`grid h-9 w-9 place-items-center rounded-[10px] ${tint} max-sm:bg-crimson/10 max-sm:text-crimson sm:h-11 sm:w-11 sm:rounded-[12px]`}
@@ -599,13 +597,13 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         </section>
 
         {/* -------------------------------------------------------- how it works */}
-        <section className="home-pop-how mt-10 rounded-[20px] px-4 pb-5 pt-1 sm:px-6 sm:pb-6 lg:mt-14 lg:px-8 lg:pb-8">
+        <section className="home-pop-how mt-10 rounded-[10px] px-4 pb-5 pt-1 sm:px-6 sm:pb-6 lg:mt-14 lg:px-8 lg:pb-8">
         <SectionHead title="How It Works" subtitle="Three steps from sign-up to payout" />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:gap-5">
           {STEPS.map((s, i) => (
             <article
               key={s.title}
-              className="home-pop-step group overflow-hidden rounded-[14px] border bg-white transition-all hover:-translate-y-1"
+              className="home-pop-step group overflow-hidden rounded-[10px] border bg-white transition-all hover:-translate-y-1"
             >
               <div className="relative aspect-[16/10] overflow-hidden">
                 <img
@@ -617,12 +615,12 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
                 />
                 <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white to-transparent" />
-                <span className="absolute left-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-crimson font-[Outfit] text-sm font-extrabold text-primary-foreground shadow-md">
+                <span className="absolute left-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-crimson font-wallet-display text-sm font-extrabold text-primary-foreground shadow-md">
                   {i + 1}
                 </span>
               </div>
               <div className="relative -mt-5 px-5 pb-6 sm:px-6 sm:pb-7">
-                <h3 className="font-[Outfit] text-lg font-extrabold leading-tight text-slate-950">{s.title}</h3>
+                <h3 className="font-wallet-display text-lg font-extrabold leading-tight text-slate-950">{s.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{s.body}</p>
               </div>
             </article>
@@ -631,11 +629,11 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         </section>
 
         {/* ----------------------------------------------------- secure payments */}
-        <section className="home-pop-payments mt-10 overflow-hidden rounded-[20px] border px-5 py-9 text-center sm:px-8 lg:mt-14 lg:py-12">
+        <section className="home-pop-payments mt-10 overflow-hidden rounded-[10px] border px-5 py-9 text-center sm:px-8 lg:mt-14 lg:py-12">
           <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-crimson">
             <Lock className="h-3.5 w-3.5" /> Secured payments
           </span>
-          <h2 className="mt-3 font-[Outfit] text-xl font-extrabold text-slate-900 sm:text-2xl">
+          <h2 className="mt-3 font-wallet-display text-xl font-extrabold text-slate-900 sm:text-2xl">
             Pay your way, protected end to end
           </h2>
           <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-slate-500">
@@ -702,14 +700,15 @@ function SectionHead({
   return (
     <div className="mb-4 mt-10 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 lg:mt-14">
       <div className="min-w-0">
-        <h2 className="font-[Outfit] text-xl font-extrabold text-slate-900 sm:text-2xl">{title}</h2>
-        {subtitle && <p className="mt-1 text-xs text-slate-500 sm:text-sm">{subtitle}</p>}
+        <span className="home-pop-strip mb-2.5 block" aria-hidden="true" />
+        <h2 className="font-wallet-display text-xl font-extrabold text-newsfeed-ink sm:text-2xl">{title}</h2>
+        {subtitle && <p className="mt-1 text-xs text-newsfeed-muted sm:text-sm">{subtitle}</p>}
       </div>
       {action && (
         <button
           type="button"
           onClick={action.onClick}
-          className="inline-flex shrink-0 items-center gap-1 text-xs font-bold text-crimson transition-opacity hover:opacity-80 sm:text-sm"
+          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-newsfeed-line bg-newsfeed-surface px-3 py-1.5 text-xs font-bold text-newsfeed-violet shadow-newsfeed-panel transition-all hover:-translate-y-0.5 sm:text-sm"
         >
           {action.label}
           <ArrowRight className="h-3.5 w-3.5" />
@@ -748,7 +747,7 @@ function PromoCard({
       />
       <div className="absolute inset-0 bg-gradient-to-r from-white from-0% via-white/95 via-[48%] to-white/5 to-[82%]" />
       <div className="relative flex min-h-[270px] max-w-[72%] flex-col items-start justify-center p-6 text-left sm:min-h-[300px] sm:max-w-[66%] sm:p-8 lg:max-w-[62%]">
-        <h3 className="font-[Outfit] text-2xl font-extrabold leading-tight text-slate-950 sm:text-3xl">{title}</h3>
+        <h3 className="font-wallet-display text-2xl font-extrabold leading-tight text-slate-950 sm:text-3xl">{title}</h3>
         <p className="mt-3 text-sm leading-6 text-slate-700">{body}</p>
         <span className="mt-6 inline-flex min-h-10 items-center gap-2 rounded-[8px] bg-crimson px-5 text-sm font-bold text-primary-foreground shadow-sm transition-colors group-hover:bg-crimson/90">
           {cta}
@@ -776,7 +775,7 @@ function PromoCard({
 
 function EmptyNote({ children }: { children: React.ReactNode }) {
   return (
-    <p className="col-span-full rounded-[14px] border border-dashed border-slate-200 bg-white p-6 text-center text-sm text-slate-400">
+    <p className="col-span-full rounded-[10px] border border-dashed border-slate-200 bg-white p-6 text-center text-sm text-slate-400">
       {children}
     </p>
   );
@@ -784,8 +783,8 @@ function EmptyNote({ children }: { children: React.ReactNode }) {
 
 function Stat({ value, label }: { value?: number; label: string }) {
   return (
-    <div className="rounded-[14px] border border-slate-200/80 bg-white/90 px-3 py-4 text-center shadow-sm backdrop-blur-sm">
-      <p className="font-[Outfit] text-xl font-extrabold text-slate-950 sm:text-2xl">
+    <div className="rounded-[10px] border border-slate-200/80 bg-white/90 px-3 py-4 text-center shadow-sm backdrop-blur-sm">
+      <p className="font-wallet-display text-xl font-extrabold text-slate-950 sm:text-2xl">
         {value === undefined ? "—" : value.toLocaleString()}
       </p>
       <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
@@ -815,7 +814,7 @@ function ProductCard({
   ).formatted;
 
   return (
-    <div className="home-pop-product group flex flex-col overflow-hidden rounded-[14px] border bg-home-surface transition-all hover:-translate-y-1">
+    <div className="home-pop-product group flex flex-col overflow-hidden rounded-[10px] border bg-home-surface transition-all hover:-translate-y-1">
       <Link
         to="/product/$id"
         params={{ id: product.id }}
@@ -878,22 +877,23 @@ function NewsfeedRail({ posts, onOpenFeed }: { posts: FeedPost[]; onOpenFeed: ()
   };
 
   return (
-    <section className="home-pop-feed mt-10 rounded-[20px] px-4 py-6 sm:px-6 lg:mt-14 lg:px-8">
+    <section className="home-pop-feed mt-10 rounded-[10px] px-4 py-6 sm:px-6 lg:mt-14 lg:px-8">
       {/* Header */}
       <div className="mb-4 flex items-end justify-between">
         <div>
-          <div className="mb-1.5 flex items-center gap-2 text-crimson">
+          <span className="home-pop-strip mb-2 block" aria-hidden="true" />
+          <div className="mb-1.5 flex items-center gap-2 text-newsfeed-violet">
             <Sparkles className="h-3.5 w-3.5" />
             <span className="text-[10px] font-extrabold uppercase tracking-widest">Community pulse</span>
           </div>
-          <h2 className="font-[Outfit] text-xl font-extrabold text-slate-900 sm:text-2xl">
+          <h2 className="font-wallet-display text-xl font-extrabold text-newsfeed-ink sm:text-2xl">
             Latest from Newsfeed
           </h2>
         </div>
         <Link
           to="/feed"
           search={{ post: undefined }}
-          className="group flex items-center gap-1 text-xs font-bold text-crimson transition-opacity hover:opacity-80 sm:text-sm"
+          className="group flex items-center gap-1 rounded-full border border-newsfeed-line bg-newsfeed-surface px-3 py-1.5 text-xs font-bold text-newsfeed-violet shadow-newsfeed-panel transition-all hover:-translate-y-0.5 sm:text-sm"
         >
           View all
           <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -951,7 +951,7 @@ function CompactPostCard({ post }: { post: FeedPost }) {
     <Link
       to="/feed"
       search={{ post: post.id }}
-      className="group flex h-auto w-[220px] shrink-0 snap-start flex-col overflow-hidden rounded-[16px] border border-slate-200/80 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:w-[260px]"
+      className="group flex h-auto w-[220px] shrink-0 snap-start flex-col overflow-hidden rounded-[10px] border border-slate-200/80 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:w-[260px]"
     >
       {/* Header */}
       <div className="flex items-center gap-2.5 p-3 pb-0">
@@ -1005,7 +1005,7 @@ function JoinDiscussionCard({ posts, onOpenFeed }: { posts: FeedPost[]; onOpenFe
     <button
       type="button"
       onClick={onOpenFeed}
-      className="group flex h-auto w-[220px] shrink-0 snap-start flex-col items-center justify-center gap-4 overflow-hidden rounded-[16px] border-2 border-dashed border-crimson/30 bg-white p-5 text-center transition-all hover:-translate-y-0.5 hover:border-crimson hover:shadow-md sm:w-[260px]"
+      className="group flex h-auto w-[220px] shrink-0 snap-start flex-col items-center justify-center gap-4 overflow-hidden rounded-[10px] border-2 border-dashed border-crimson/30 bg-white p-5 text-center transition-all hover:-translate-y-0.5 hover:border-crimson hover:shadow-md sm:w-[260px]"
     >
       <div className="flex -space-x-2.5">
         {authors.map((post) => (
@@ -1024,7 +1024,7 @@ function JoinDiscussionCard({ posts, onOpenFeed }: { posts: FeedPost[]; onOpenFe
       </div>
       <div>
         <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Active now</p>
-        <p className="mt-1 font-[Outfit] text-lg font-extrabold text-slate-900">
+        <p className="mt-1 font-wallet-display text-lg font-extrabold text-slate-900">
           Join the discussion
         </p>
         <p className="mx-auto mt-1 max-w-[180px] text-[11px] leading-relaxed text-slate-500">
@@ -1061,8 +1061,8 @@ function HomeFooter() {
   return (
     <footer className="home-pop-footer mt-12 overflow-hidden border-t lg:mt-16">
       <div className="mx-auto flex w-full max-w-[1280px] flex-col items-center gap-6 px-4 py-10 text-center sm:px-6 lg:flex-row lg:justify-between lg:gap-8 lg:px-8 lg:py-12 lg:text-left">
-        <p className="text-sm text-slate-400">
-          <span className="font-extrabold text-white">Oventric</span> &copy; 2026
+        <p className="text-sm text-newsfeed-muted">
+          <span className="font-extrabold text-newsfeed-ink">Oventric</span> &copy; 2026
         </p>
 
         <div className="flex items-center gap-2">
@@ -1077,7 +1077,7 @@ function HomeFooter() {
             <Link
               key={l.label}
               to={l.to}
-              className="text-sm font-semibold text-slate-400 transition-colors hover:text-white"
+              className="text-sm font-semibold text-newsfeed-muted transition-colors hover:text-newsfeed-violet"
             >
               {l.label}
             </Link>
@@ -1095,7 +1095,7 @@ function SocialLink({ href, label, icon }: { href: string; label: string; icon: 
       aria-label={label}
       target="_blank"
       rel="noopener noreferrer"
-      className="home-pop-social inline-flex h-10 w-10 items-center justify-center rounded-full border text-slate-300 transition-all hover:-translate-y-0.5 hover:text-white"
+      className="home-pop-social inline-flex h-10 w-10 items-center justify-center rounded-full border text-newsfeed-muted transition-all hover:-translate-y-0.5 hover:text-newsfeed-violet"
     >
       {icon}
     </a>

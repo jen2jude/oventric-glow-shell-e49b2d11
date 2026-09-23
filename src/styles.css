@@ -270,25 +270,43 @@
 /* Colour-rich creator marketplace homepage. */
 .home-pop {
   color-scheme: light;
-  --home-canvas: oklch(0.98 0.008 270);
-  --home-surface: oklch(1 0 0);
-  --home-ink: oklch(0.2 0.035 265);
+  --home-canvas: var(--newsfeed-canvas);
+  --home-surface: var(--newsfeed-surface);
+  --home-ink: var(--newsfeed-ink);
   --home-copy: oklch(0.34 0.025 265);
-  --home-muted: oklch(0.55 0.025 265);
-  --home-line: oklch(0.91 0.018 270);
-  --home-feed: oklch(0.965 0.035 300);
-  --home-pop-red: oklch(0.62 0.205 22);
-  --home-pop-yellow: oklch(0.87 0.165 94);
-  --home-pop-cyan: oklch(0.72 0.13 210);
-  --home-pop-violet: oklch(0.56 0.2 295);
-  --home-shadow-soft: 0 14px 38px -26px color-mix(in oklab, var(--home-ink) 35%, transparent);
+  --home-muted: var(--newsfeed-muted);
+  --home-line: var(--newsfeed-line);
+  --home-feed: var(--newsfeed-violet-soft);
+  /* Bright Spectrum accents — shared with the newsfeed and the publish sheet. */
+  --home-pop-red: var(--newsfeed-coral);
+  --home-pop-yellow: var(--newsfeed-gold);
+  --home-pop-cyan: var(--newsfeed-blue);
+  --home-pop-violet: var(--newsfeed-violet);
+  --home-pop-green: var(--newsfeed-green);
+  --home-shadow-soft: var(--newsfeed-panel-shadow);
   font-family: var(--font-wallet-body);
 }
 
 .home-pop :is(h1, h2, h3, .font-wallet-display) {
   font-family: var(--font-wallet-display);
-  letter-spacing: 0;
+  letter-spacing: -0.01em;
 }
+
+/* Signature multicolour strip used above every homepage section heading. */
+.home-pop-strip {
+  height: 3px;
+  width: 54px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--newsfeed-blue),
+    var(--newsfeed-violet),
+    var(--newsfeed-green),
+    var(--newsfeed-gold),
+    var(--newsfeed-coral)
+  );
+}
+
 
 .home-pop-hero::before,
 .home-pop-hero::after {
@@ -348,18 +366,21 @@
   box-shadow: 0 15px 38px -30px color-mix(in oklab, var(--home-card-accent) 55%, transparent);
 }
 
-.home-pop-trust-card:nth-child(4n + 1),
-.home-pop-category:nth-child(4n + 1),
-.home-pop-product:nth-child(4n + 1) { --home-card-accent: var(--home-pop-cyan); }
-.home-pop-trust-card:nth-child(4n + 2),
-.home-pop-category:nth-child(4n + 2),
-.home-pop-product:nth-child(4n + 2) { --home-card-accent: var(--home-pop-red); }
-.home-pop-trust-card:nth-child(4n + 3),
-.home-pop-category:nth-child(4n + 3),
-.home-pop-product:nth-child(4n + 3) { --home-card-accent: var(--home-pop-violet); }
-.home-pop-trust-card:nth-child(4n + 4),
-.home-pop-category:nth-child(4n + 4),
-.home-pop-product:nth-child(4n + 4) { --home-card-accent: var(--home-pop-yellow); }
+.home-pop-trust-card:nth-child(5n + 1),
+.home-pop-category:nth-child(5n + 1),
+.home-pop-product:nth-child(5n + 1) { --home-card-accent: var(--home-pop-cyan); }
+.home-pop-trust-card:nth-child(5n + 2),
+.home-pop-category:nth-child(5n + 2),
+.home-pop-product:nth-child(5n + 2) { --home-card-accent: var(--home-pop-violet); }
+.home-pop-trust-card:nth-child(5n + 3),
+.home-pop-category:nth-child(5n + 3),
+.home-pop-product:nth-child(5n + 3) { --home-card-accent: var(--home-pop-green); }
+.home-pop-trust-card:nth-child(5n + 4),
+.home-pop-category:nth-child(5n + 4),
+.home-pop-product:nth-child(5n + 4) { --home-card-accent: var(--home-pop-yellow); }
+.home-pop-trust-card:nth-child(5n + 5),
+.home-pop-category:nth-child(5n + 5),
+.home-pop-product:nth-child(5n + 5) { --home-card-accent: var(--home-pop-red); }
 
 .home-pop-icon {
   color: color-mix(in oklab, var(--home-card-accent) 78%, var(--home-ink));
@@ -435,11 +456,10 @@
   box-shadow: 0 18px 35px -30px color-mix(in oklab, var(--home-card-accent) 65%, var(--home-ink));
 }
 
-.home-pop-reason:nth-child(4n + 2) { --home-card-accent: var(--home-pop-violet); }
-.home-pop-reason:nth-child(4n + 3) { --home-card-accent: var(--home-pop-red); }
-.home-pop-reason:nth-child(4n + 4) { --home-card-accent: var(--home-pop-yellow); }
-.home-pop-reason:nth-child(4n + 5) { --home-card-accent: var(--home-pop-red); }
-.home-pop-reason:nth-child(4n + 6) { --home-card-accent: var(--home-pop-cyan); }
+.home-pop-reason:nth-child(5n + 2) { --home-card-accent: var(--home-pop-violet); }
+.home-pop-reason:nth-child(5n + 3) { --home-card-accent: var(--home-pop-green); }
+.home-pop-reason:nth-child(5n + 4) { --home-card-accent: var(--home-pop-yellow); }
+.home-pop-reason:nth-child(5n + 5) { --home-card-accent: var(--home-pop-red); }
 .home-pop-reason:hover {
   box-shadow: 0 24px 45px -29px color-mix(in oklab, var(--home-card-accent) 70%, var(--home-ink));
 }
@@ -477,22 +497,38 @@
 }
 
 .home-pop-footer {
+  position: relative;
   background:
-    linear-gradient(110deg, color-mix(in oklab, var(--home-pop-violet) 17%, transparent), transparent 42%),
-    linear-gradient(290deg, color-mix(in oklab, var(--home-pop-red) 12%, transparent), transparent 45%),
-    oklch(0.17 0.025 270);
-  border-color: color-mix(in oklab, var(--home-pop-violet) 25%, transparent);
+    linear-gradient(115deg, color-mix(in oklab, var(--home-pop-violet) 7%, var(--home-surface)), transparent 48%),
+    linear-gradient(295deg, color-mix(in oklab, var(--home-pop-cyan) 7%, var(--home-surface)), transparent 45%),
+    var(--home-surface);
+  border-color: var(--home-line);
+}
+
+.home-pop-footer::before {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  content: "";
+  background: linear-gradient(
+    90deg,
+    var(--newsfeed-blue),
+    var(--newsfeed-violet),
+    var(--newsfeed-green),
+    var(--newsfeed-gold),
+    var(--newsfeed-coral)
+  );
 }
 
 .home-pop-social {
-  border-color: color-mix(in oklab, var(--home-pop-cyan) 22%, transparent);
-  background: color-mix(in oklab, var(--home-surface) 8%, transparent);
+  border-color: color-mix(in oklab, var(--home-pop-violet) 22%, var(--home-line));
+  background: color-mix(in oklab, var(--home-pop-violet) 6%, var(--home-surface));
 }
 
 .home-pop-social:hover {
-  border-color: color-mix(in oklab, var(--home-pop-red) 65%, transparent);
-  background: color-mix(in oklab, var(--home-pop-red) 20%, transparent);
-  box-shadow: 0 12px 30px -14px color-mix(in oklab, var(--home-pop-red) 70%, transparent);
+  border-color: color-mix(in oklab, var(--home-pop-violet) 60%, transparent);
+  background: color-mix(in oklab, var(--home-pop-violet) 14%, var(--home-surface));
+  box-shadow: 0 12px 30px -18px color-mix(in oklab, var(--home-pop-violet) 70%, transparent);
 }
 
 @media (max-width: 639px) {
@@ -3996,6 +4032,38 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
   .web-feed article {
     transition: none;
   }
+}
+
+/* Bright Spectrum home hub — same light signature as the newsfeed profile card
+   and the product publish sheet. */
+.hub-bright {
+  font-family: var(--font-wallet-body);
+  background: var(--newsfeed-canvas);
+  color: var(--newsfeed-ink);
+}
+.hub-bright h1,
+.hub-bright h2,
+.hub-bright h3 {
+  font-family: var(--font-wallet-display);
+  letter-spacing: -0.01em;
+}
+.hub-panel {
+  background: var(--newsfeed-surface);
+  border: 1px solid var(--newsfeed-line);
+  border-radius: 10px;
+  box-shadow: var(--newsfeed-panel-shadow);
+}
+.hub-strip {
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--newsfeed-blue),
+    var(--newsfeed-violet),
+    var(--newsfeed-green),
+    var(--newsfeed-gold),
+    var(--newsfeed-coral)
+  );
 }
 
 /* Web-native light create chooser — always light/premium outside the app shell,
