@@ -556,7 +556,15 @@ export function CreatorFeed({ reloadKey }: { reloadKey: number }) {
         </div>
       )}
       {visible.map((p) => (
-        <CreatorCard key={p.id} post={p} onRecordedView={handleRecordedView} />
+        <CreatorCard
+          key={p.id}
+          post={p}
+          onRecordedView={handleRecordedView}
+          isOwner={!!meId && meId === p.author.userId}
+          onHide={handleHide}
+          onDeleted={handleDeleted}
+          onUpdated={handleUpdated}
+        />
       ))}
     </div>
   );
