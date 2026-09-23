@@ -14,6 +14,9 @@ import {
   Package,
   RefreshCcw,
   Lock,
+  ReceiptText,
+  Sparkles,
+  ShoppingBag,
 } from "lucide-react";
 
 import { Header } from "@/components/oventric/Header";
@@ -22,6 +25,7 @@ import { getOrderWithDownload, FX_FROM_USD, type OrderDTO } from "@/lib/marketpl
 import { OrderFulfilmentRoadmap } from "@/components/oventric/OrderFulfilmentRoadmap";
 import { formatMoney } from "@/lib/fx-display";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 function fmt(v: number, c: Currency) {
   return formatMoney(v, c);
@@ -86,21 +90,6 @@ function OrderPage() {
     };
   }, [id, load]);
 
-  // Instant-download orders fire the download automatically once per order.
-  useEffect(() => {
-    if (!order || order.requiresManualDelivery) return;
-    const href = downloadUrl ?? order.externalUrl;
-    if (!href) return;
-    const key = `oventric:auto-dl:${order.id}`;
-    try {
-      if (sessionStorage.getItem(key)) return;
-      sessionStorage.setItem(key, "1");
-    } catch {
-      /* private mode — fall through and still trigger once */
-    }
-    window.open(href, "_blank", "noopener");
-  }, [order, downloadUrl]);
-
   const displayAmount = order
     ? order.displayTotal * (FX_FROM_USD[homeCurrency] / FX_FROM_USD[order.displayCurrency])
     : 0;
@@ -109,10 +98,10 @@ function OrderPage() {
 
 
   return (
-    <div className="web-order min-h-screen bg-[#F7F8FA] text-slate-700 overflow-x-hidden">
+    <div className="web-order min-h-screen overflow-x-hidden bg-newsfeed-blue-soft/30 text-newsfeed-ink">
       <Header onOpenMessages={() => {}} forceSiteNavbar={!isAppShell} />
       <main
-        className="max-w-2xl mx-auto w-full px-4 py-8 md:py-12 pb-24"
+        className="mx-auto w-full max-w-3xl px-3 pb-24 pt-5 sm:px-5 sm:pt-8 md:py-12"
         style={{
           transform: entered ? "translateY(0)" : "translateY(20px)",
           opacity: entered ? 1 : 0,
@@ -120,12 +109,11 @@ function OrderPage() {
           willChange: "transform, opacity",
         }}
       >
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-sm text-slate-600 bg-white border border-slate-200 rounded-[10px] px-3 py-2 mb-6 shadow-sm hover:bg-slate-50 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to Marketplace
-        </Link>
+        <Button asChild variant="outline" className="mb-5 rounded-[10px] border-newsfeed-line bg-newsfeed-surface text-newsfeed-ink shadow-sm hover:bg-newsfeed-blue-soft">
+          <Link to="/marketplace">
+            <ArrowLeft /> Back to Marketplace
+          </Link>
+        </Button>
 
         {!authChecked && (
           <div className="flex items-center gap-2 text-slate-500 text-sm">
@@ -170,40 +158,80 @@ function OrderPage() {
 
         {order && (
           <>
-            <div className="text-center mb-8">
-              <div
-                className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
-                  isFree
-                    ? "bg-violet-50 border border-violet-100"
-                    : "bg-emerald-50 border border-emerald-100"
-                }`}
-              >
-                {isFree ? (
-                  <Gift className="w-8 h-8 text-violet-600" />
-                ) : (
-                  <CheckCircle2 className="w-8 h-8 text-emerald-600" />
-                )}
+            <section className="relative mb-5 overflow-hidden rounded-[10px] border border-newsfeed-line bg-newsfeed-surface shadow-newsfeed-panel">
+              <div className="grid h-1.5 grid-cols-5" aria-hidden="true">
+                <span className="bg-newsfeed-coral" />
+                <span className="bg-newsfeed-gold" />
+                <span className="bg-newsfeed-green" />
+                <span className="bg-newsfeed-blue" />
+                <span className="bg-newsfeed-violet" />
               </div>
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2 font-wallet-display">
-                {isFree ? "Your free download" : "Thank you for your purchase"}
-              </h1>
-              <p className="text-sm text-slate-600">
-                {isFree
-                  ? "No payment needed — it's saved to your dashboard so you can grab it again any time."
-                  : "A receipt has been sent to your email."}
-              </p>
+              <div className="px-5 py-7 text-center sm:px-8 sm:py-9">
+                <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border ${isFree ? "border-newsfeed-violet/25 bg-newsfeed-violet-soft text-newsfeed-violet" : "border-newsfeed-green/25 bg-newsfeed-green-soft text-newsfeed-green"}`}>
+                  {isFree ? <Gift className="h-8 w-8" /> : <CheckCircle2 className="h-8 w-8" />}
+                </div>
+                <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-newsfeed-green-soft px-3 py-1 text-[10px] font-extrabold uppercase text-newsfeed-green">
+                  <Sparkles className="h-3 w-3" /> {isFree ? "Ready for you" : "Payment confirmed"}
+                </div>
+                <h1 className="mb-2 text-2xl font-extrabold text-newsfeed-ink sm:text-3xl font-wallet-display">
+                  {isFree ? "Your free download is ready" : "Your purchase is ready"}
+                </h1>
+                <p className="mx-auto max-w-md text-sm leading-relaxed text-newsfeed-muted">
+                  {isFree
+                    ? "It is saved to My purchases, so you can download it again whenever you need it."
+                    : order.requiresManualDelivery
+                      ? "Payment is confirmed. Follow the delivery steps below while the seller prepares your order."
+                      : "Your digital product has been delivered. Download it here or return from My purchases at any time."}
+                </p>
+                <div className="mt-4 inline-flex items-center gap-2 text-xs text-newsfeed-muted">
+                  <ReceiptText className="h-4 w-4 text-newsfeed-blue" /> Order {order.id.slice(0, 8)}
+                </div>
+              </div>
+            </section>
+
+            {!order.requiresManualDelivery && (
+              <section className="mb-5 rounded-[10px] border border-newsfeed-green/25 bg-newsfeed-surface p-5 shadow-newsfeed-panel sm:p-6">
+                <div className="mb-4 flex items-start gap-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] bg-newsfeed-green-soft text-newsfeed-green">
+                    <Download className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h2 className="font-wallet-display text-base font-extrabold text-newsfeed-ink">Your download</h2>
+                    <p className="mt-0.5 text-sm text-newsfeed-muted">
+                      {downloadUrl
+                        ? "Your secure link is valid for 60 minutes. You can create a fresh one from My purchases."
+                        : order.externalUrl
+                          ? "This product is delivered through the seller’s hosted link."
+                          : "Delivery instructions have been sent to your email."}
+                    </p>
+                  </div>
+                </div>
+                {href ? (
+                  <Button asChild className="h-11 w-full rounded-[10px] bg-newsfeed-violet font-extrabold text-newsfeed-on-accent shadow-newsfeed-panel hover:bg-newsfeed-violet/90 sm:w-auto">
+                    <a href={href} target="_blank" rel="noreferrer">
+                      {downloadUrl ? <Download /> : <ExternalLink />}
+                      {downloadUrl ? "Download now" : "Open delivery link"}
+                    </a>
+                  </Button>
+                ) : (
+                  <div className="inline-flex items-center gap-2 text-sm text-newsfeed-muted">
+                    <Mail className="h-4 w-4 text-newsfeed-gold" /> Check your receipt email for delivery details.
+                  </div>
+                )}
+              </section>
+            )}
             </div>
 
-            <div className="bg-white border border-slate-200 rounded-[10px] p-5 shadow-sm mb-5">
+            <section className="mb-5 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-5 shadow-newsfeed-panel">
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div className="min-w-0">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-[#E5484D] mb-1">
+                  <div className="mb-1 text-[10px] font-bold uppercase text-newsfeed-coral">
                     {order.category}
                   </div>
-                  <div className="text-slate-900 font-bold text-base md:text-lg truncate">
+                  <div className="truncate text-base font-bold text-newsfeed-ink md:text-lg">
                     {order.productName}
                   </div>
-                  <div className="text-xs text-slate-500 truncate">
+                  <div className="truncate text-xs text-newsfeed-muted">
                     by {order.vendor} · Qty {order.quantity}
                   </div>
                 </div>
@@ -214,7 +242,7 @@ function OrderPage() {
                     </span>
                   ) : (
                     <>
-                      <div className="text-slate-900 font-bold text-lg">
+                      <div className="text-lg font-bold text-newsfeed-ink">
                         {fmt(displayAmount, homeCurrency)}
                       </div>
                       <div className="text-[10px] text-slate-500 font-mono uppercase">
@@ -225,10 +253,10 @@ function OrderPage() {
                 </div>
               </div>
 
-              <div className="border-t border-slate-100 pt-4 space-y-2 text-sm text-slate-600">
+              <div className="space-y-2 border-t border-newsfeed-line pt-4 text-sm text-newsfeed-muted">
                 <div className="flex justify-between">
                   <span>{isFree ? "Reference" : "Order ID"}</span>
-                  <span className="font-mono text-slate-800">{order.id.slice(0, 8)}…</span>
+                   <span className="font-mono text-newsfeed-ink">{order.id.slice(0, 8)}…</span>
                 </div>
                 {!isFree && (
                   <div className="flex justify-between">
@@ -241,7 +269,7 @@ function OrderPage() {
                   <span>{new Date(order.createdAt).toLocaleString()}</span>
                 </div>
               </div>
-            </div>
+            </section>
 
             {!(isFree && !order.requiresManualDelivery) && (
               <div className="mb-5">
@@ -320,71 +348,34 @@ function OrderPage() {
                   <div className="text-slate-900 font-mono truncate">{order.deliveryEmail ?? "—"}</div>
                 </div>
               </div>
-            ) : (
-              <div className="bg-white border border-emerald-200 rounded-[10px] p-5 shadow-sm">
-                <div className="flex items-center gap-2 mb-2">
-                  <Download className="w-5 h-5 text-emerald-600" />
-                  <h2 className="text-slate-900 font-bold text-base font-wallet-display">
-                    Your download
-                  </h2>
-                </div>
-                <p className="text-sm text-slate-600 mb-4">
-                  {downloadUrl
-                    ? "Signed download link valid for 60 minutes."
-                    : order.externalUrl
-                      ? "Delivered from the seller's hosted link."
-                      : "The seller hasn't attached a downloadable file for this listing."}
-                </p>
-                {href ? (
-                  <a
-                    href={href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] bg-emerald-600 text-white font-semibold text-sm shadow-sm hover:bg-emerald-700 transition-colors"
-                  >
-                    {downloadUrl ? (
-                      <>
-                        <Download className="w-4 h-4" /> Download now
-                      </>
-                    ) : (
-                      <>
-                        <ExternalLink className="w-4 h-4" /> Open delivery link
-                      </>
-                    )}
-                  </a>
-                ) : (
-                  <div className="text-sm text-slate-500 inline-flex items-center gap-2">
-                    <Mail className="w-4 h-4" /> Delivery instructions sent to your email.
-                  </div>
-                )}
-              </div>
-            )}
+            ) : null}
 
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <a
-                href="/dashboard?tab=purchases"
-                className="flex items-center gap-3 rounded-[10px] bg-white border border-slate-200 p-4 shadow-sm hover:bg-slate-50 transition-colors"
+              <Link
+                to="/dashboard"
+                search={{ tab: "purchases" }}
+                className="flex items-center gap-3 rounded-[10px] border border-newsfeed-violet/20 bg-newsfeed-surface p-4 shadow-sm transition-colors hover:bg-newsfeed-violet-soft"
               >
-                <div className="w-10 h-10 rounded-full bg-[#E5484D]/10 flex items-center justify-center shrink-0">
-                  <RefreshCcw className="w-5 h-5 text-[#E5484D]" />
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-newsfeed-violet-soft">
+                  <RefreshCcw className="h-5 w-5 text-newsfeed-violet" />
                 </div>
                 <div>
-                  <div className="font-semibold text-slate-900 text-sm">My purchases</div>
-                  <div className="text-xs text-slate-500">Track and re-download your orders.</div>
+                   <div className="text-sm font-semibold text-newsfeed-ink">My purchases</div>
+                   <div className="text-xs text-newsfeed-muted">Track and re-download your orders.</div>
                 </div>
-              </a>
-              <a
-                href="/messages"
-                className="flex items-center gap-3 rounded-[10px] bg-white border border-slate-200 p-4 shadow-sm hover:bg-slate-50 transition-colors"
+              </Link>
+              <Link
+                to="/messages"
+                className="flex items-center gap-3 rounded-[10px] border border-newsfeed-blue/20 bg-newsfeed-surface p-4 shadow-sm transition-colors hover:bg-newsfeed-blue-soft"
               >
-                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-                  <ShieldCheck className="w-5 h-5 text-slate-600" />
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-newsfeed-blue-soft">
+                  <ShieldCheck className="h-5 w-5 text-newsfeed-blue" />
                 </div>
                 <div>
-                  <div className="font-semibold text-slate-900 text-sm">Seller chat</div>
-                  <div className="text-xs text-slate-500">Get delivery help inside Oventric.</div>
+                   <div className="text-sm font-semibold text-newsfeed-ink">Seller chat</div>
+                   <div className="text-xs text-newsfeed-muted">Get delivery help inside Oventric.</div>
                 </div>
-              </a>
+              </Link>
             </div>
           </>
         )}
