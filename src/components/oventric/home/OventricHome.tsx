@@ -442,12 +442,13 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         />
         <div className="home-pop-products -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5 lg:gap-4">
           {featured.slice(0, 10).map((p) => (
-            <div key={p.id} className="w-[84%] shrink-0 snap-start sm:w-auto sm:shrink">
+            <div key={p.id} className="w-[74%] shrink-0 snap-start sm:w-auto sm:shrink">
               <ProductCard product={p} currency={baseCurrency} />
             </div>
           ))}
           {featured.length === 0 && <EmptyNote>No listings published yet.</EmptyNote>}
         </div>
+
 
         {/* -------------------------------------------------------- top sellers */}
         <SectionHead
