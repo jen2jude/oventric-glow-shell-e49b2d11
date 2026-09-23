@@ -4102,6 +4102,46 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
     scroll-behavior: auto !important;
   }
 }
+
+/* Oventric Help — editorial support journey using the Unified UI palette. */
+.help-editorial {
+  font-family: var(--font-wallet-body);
+}
+.help-editorial h1,
+.help-editorial h2,
+.help-editorial h3,
+.help-editorial .font-wallet-display {
+  font-family: var(--font-wallet-display);
+  letter-spacing: 0;
+}
+.help-image-shade {
+  background: linear-gradient(
+    0deg,
+    color-mix(in oklab, var(--newsfeed-ink) 20%, transparent),
+    transparent 56%
+  );
+}
+.help-step-line {
+  background: linear-gradient(
+    90deg,
+    var(--newsfeed-blue),
+    var(--newsfeed-violet),
+    var(--newsfeed-green),
+    var(--newsfeed-gold),
+    var(--newsfeed-coral)
+  );
+}
+.help-cta {
+  background:
+    linear-gradient(120deg, var(--newsfeed-violet-soft), transparent 40%),
+    linear-gradient(240deg, var(--newsfeed-green-soft), transparent 42%),
+    var(--newsfeed-surface);
+}
+@media (prefers-reduced-motion: reduce) {
+  .help-editorial * {
+    scroll-behavior: auto !important;
+  }
+}
 @media (min-width: 1024px) {
   .web-feed-timeline {
     border-radius: 10px;
