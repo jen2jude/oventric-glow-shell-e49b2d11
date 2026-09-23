@@ -1361,58 +1361,6 @@ export function Feed() {
           </div>
         )}
 
-        {!(feedTab === "creators" || feedTab === "shops") && (
-          <button
-            id="oventric-composer"
-            type="button"
-            onClick={() => require(1, () => setComposerOpen(true), "seller")}
-            className={isAppShell
-              ? "group flex w-full items-center gap-3 rounded-[22px] border border-white/10 bg-[#1B1D1F] p-4 text-left transition-colors hover:border-[#FF3EB5]/45 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF3EB5]/60"
-               : "group mt-2 flex w-full items-center gap-3 border-y border-newsfeed-line bg-newsfeed-surface px-4 py-3 text-left transition-colors hover:bg-newsfeed-blue-soft/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-newsfeed-violet/30 md:px-5 md:py-4 lg:mt-0 lg:border-t-0"
-            }
-          >
-            <span
-              className={isAppShell
-                ? "flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-neutral-800"
-                : "flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-100"
-              }
-            >
-              <AvatarImage src={meAvatarUrl} alt="Your profile" initials={meInitials} />
-            </span>
-            <span
-              className={isAppShell
-                ? "min-w-0 flex-1 px-1"
-                 : "min-w-0 flex-1 px-1 py-2"
-              }
-            >
-              <span
-                className={isAppShell
-                  ? "block truncate text-sm font-medium text-white/45"
-                  : "block truncate text-sm font-medium text-slate-500"
-                }
-              >
-                {placeholderIdx === 0
-                  ? `Hey${meLastName ? ` ${meLastName}` : ""}! What are you creating today?`
-                  : "Create on Oventric"}
-              </span>
-            </span>
-            {isAppShell ? (
-              <span className="shrink-0 rounded-full bg-[#FF3EB5]/12 p-2 text-[#FF3EB5]" aria-hidden>
-                <ImageIcon className="w-6 h-6" strokeWidth={1.5} />
-              </span>
-            ) : (
-              <>
-                 <span className="shrink-0 rounded-[10px] bg-newsfeed-blue-soft p-2 text-newsfeed-blue" aria-hidden>
-                  <ImageIcon className="h-5 w-5" strokeWidth={1.7} />
-                </span>
-                 <span className="hidden shrink-0 rounded-[10px] bg-newsfeed-violet px-5 py-2 text-sm font-semibold text-newsfeed-on-accent transition-colors group-hover:bg-newsfeed-violet/90 sm:inline-block">
-                  Post
-                </span>
-              </>
-            )}
-          </button>
-        )}
-
         <div>
           <FeedTabs tab={feedTab} onTabChange={setFeedTab} />
         </div>
@@ -1720,7 +1668,7 @@ export function Feed() {
                  className={`scroll-mt-24 md:scroll-mt-28 [transition:border-color_400ms_ease,box-shadow_400ms_ease,opacity_300ms_ease] ${
                     isAppShell
                       ? "md:bg-white md:shadow-sm border bg-[#141416] rounded-none -mx-4 p-0 overflow-hidden border-x-0 md:mx-0 md:p-5 md:rounded-xl md:border-x"
-                       : "group/post relative border-b border-slate-100 bg-white px-4 py-3 transition-colors hover:bg-slate-50 last:border-b-0"
+                       : "group/post relative grid grid-cols-[40px_minmax(0,1fr)] gap-x-3 border-b border-slate-100 bg-white px-4 py-3 transition-colors hover:bg-slate-50 last:border-b-0 [&>header]:col-span-2 [&>*:not(header)]:col-start-2"
                   } ${isReported ? "opacity-70" : ""} ${
                     isNew
                       ? isAppShell
@@ -1736,9 +1684,13 @@ export function Feed() {
                       : { contentVisibility: "auto", containIntrinsicSize: "1px 600px" }
                   }
                 >
-                   <header
-                     className={`flex items-center gap-3 mb-3 ${isAppShell ? "px-4 pt-4 md:px-0 md:pt-0" : ""}`}
-                  >
+                    <header
+                      className={
+                        isAppShell
+                          ? "mb-3 flex items-center gap-3 px-4 pt-4 md:px-0 md:pt-0"
+                          : "col-span-2 mb-3 grid grid-cols-[40px_minmax(0,1fr)] items-start gap-3"
+                      }
+                    >
                     <Link
                       to="/profile/$id"
                       params={{ id: profileSlug }}
@@ -1796,7 +1748,7 @@ export function Feed() {
                     {isReported ? (
                       <ReportedBadge details={reported.get(post.id)} />
                     ) : (
-                      <div className="ml-auto flex items-center gap-1">
+                      <div className={isAppShell ? "ml-auto flex items-center gap-1" : "absolute right-4 top-3 flex items-center gap-1"}>
                         <PostActionsMenu
                           postId={post.id}
                           shareTitle={`${post.author_name} on Oventric`}
@@ -2464,35 +2416,47 @@ export function Feed() {
           </div>
         </div>
       )}
-      {(feedTab === "creators" || feedTab === "shops") && (
-        <button
-          type="button"
-          aria-label={feedTab === "shops" ? "Publish a product" : "Add creator content"}
-          onClick={() =>
-            require(
-              feedTab === "shops" ? 2 : 1,
-              () => {
-                if (feedTab === "shops") {
-                  setSellPanelOpen(true);
-                  return;
-                }
+      <button
+        type="button"
+        aria-label={
+          feedTab === "shops"
+            ? "Publish a product"
+            : feedTab === "creators"
+              ? "Add creator content"
+              : "Create a post"
+        }
+        onClick={() =>
+          require(
+            feedTab === "shops" ? 2 : 1,
+            () => {
+              if (feedTab === "shops") {
+                setSellPanelOpen(true);
+                return;
+              }
+              if (feedTab === "creators") {
                 // Creators: first-timers do the short setup, then publish.
                 void loadCreatorProfile()
                   .then((p) =>
                     p.isCreator ? setCreatorPublishOpen(true) : setCreatorOnboardOpen(true),
                   )
                   .catch(() => setCreatorOnboardOpen(true));
-              },
-              "seller",
-            )
-          }
-          className={`fixed bottom-24 right-5 z-[70] grid h-14 w-14 place-items-center rounded-full text-white shadow-xl transition-transform active:scale-95 md:bottom-10 md:right-10 ${
-            feedTab === "shops" ? "bg-amber-500 hover:bg-amber-600" : "bg-emerald-600 hover:bg-emerald-700"
-          }`}
-        >
-          <Plus className="h-6 w-6" strokeWidth={2.6} />
-        </button>
-      )}
+                return;
+              }
+              setComposerOpen(true);
+            },
+            "seller",
+          )
+        }
+        className={`fixed bottom-24 right-5 z-[70] grid h-14 w-14 place-items-center rounded-full text-white shadow-xl transition-transform active:scale-95 md:bottom-10 md:right-10 ${
+          feedTab === "shops"
+            ? "bg-amber-500 hover:bg-amber-600"
+            : feedTab === "creators"
+              ? "bg-emerald-600 hover:bg-emerald-700"
+              : "bg-newsfeed-violet hover:bg-newsfeed-violet/90"
+        }`}
+      >
+        <Plus className="h-6 w-6" strokeWidth={2.6} />
+      </button>
       {sellPanelOpen && (
         <CreatePanel open initialChoice="sell" onClose={() => setSellPanelOpen(false)} />
       )}
