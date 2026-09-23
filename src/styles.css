@@ -3774,7 +3774,6 @@ section + section {
 
 .web-storefront .storefront-editorial-1 { border-top: 3px solid var(--newsfeed-blue); }
 .web-storefront .storefront-editorial-2 { border-top: 3px solid var(--newsfeed-gold); }
-}
 
 .web-storefront .storefront-product {
   border: 1px solid transparent;
