@@ -335,16 +335,23 @@ export function CreatorPublishModal({
               accept="image/*,video/*"
               multiple
               hidden
-              onChange={(e) => pick(e.target.files)}
+              onChange={(e) => void pick(e.target.files)}
             />
             {attachments.length === 0 ? (
               <button
                 type="button"
+                disabled={compressing}
                 onClick={() => fileRef.current?.click()}
-                className="flex w-full flex-col items-center gap-1.5 py-5 text-slate-500"
+                className="flex w-full flex-col items-center gap-1.5 py-5 text-slate-500 disabled:opacity-60"
               >
                 <ImagePlus className="h-6 w-6 text-emerald-600" />
-                <span className="text-xs font-bold">Add images or a video</span>
+                <span className="text-xs font-bold">
+                  {compressing ? "Preparing your clip…" : "Add images or a video"}
+                </span>
+                <span className="px-4 text-center text-[11px] font-semibold text-slate-400">
+                  Clips up to {MAX_CLIP_SECONDS}s. For longer videos, paste the link below — it plays
+                  here and streams from YouTube, Vimeo, Facebook or Telegram.
+                </span>
               </button>
             ) : (
               <div className="grid grid-cols-3 gap-2">
