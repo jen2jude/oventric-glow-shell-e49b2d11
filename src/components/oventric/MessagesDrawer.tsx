@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { X } from "lucide-react";
 import { Messages } from "./Messages";
 import { setChatOpen } from "@/hooks/use-chat-open";
 
@@ -49,31 +48,16 @@ export function MessagesDrawer({
       <div
         onClick={onClose}
         aria-hidden="true"
-        className="fixed inset-0 z-[70] bg-slate-950/35"
+        className="fixed inset-0 z-[70] bg-chat-backdrop backdrop-blur-[2px]"
       />
       {/* Drawer */}
       <aside
         role="dialog"
         aria-label="Messages"
         aria-modal="true"
-        className="web-chat fixed inset-y-0 right-0 z-[80] flex h-[100dvh] max-h-[100dvh] w-full max-w-full flex-col overflow-hidden border-l border-border bg-muted shadow-2xl animate-in slide-in-from-right duration-300 md:w-[min(1280px,94vw)] md:p-4 md:pl-5"
+        className="web-chat fixed inset-y-0 right-0 z-[80] flex h-[100dvh] max-h-[100dvh] w-full max-w-full flex-col overflow-hidden border-l border-chat-line bg-chat-canvas shadow-[var(--chat-drawer-shadow)] animate-in slide-in-from-right duration-300 md:w-[min(1280px,94vw)] md:p-4 md:pl-5"
 
       >
-        <div className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-background px-5 md:hidden">
-          <div className="flex items-center gap-3">
-            <span className="font-wallet-display text-sm font-semibold text-foreground">Messages</span>
-            <span className="hidden sm:inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-1 text-[10px] font-semibold text-muted-foreground">
-              Secure conversations
-            </span>
-          </div>
-          <button
-            onClick={onClose}
-            aria-label="Close messages drawer"
-            className="inline-flex size-9 items-center justify-center rounded-[10px] text-muted-foreground hover:bg-muted hover:text-foreground"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
         <div className="min-h-0 flex-1 overflow-hidden">
           <Messages
             variant="compact"
