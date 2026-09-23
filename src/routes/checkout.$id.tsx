@@ -913,7 +913,6 @@ function CheckoutPage() {
                 </div>
               </section>
               )}
-              </>)}
 
 
               {isService && (
