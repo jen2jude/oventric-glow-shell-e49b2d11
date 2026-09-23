@@ -1684,9 +1684,13 @@ export function Feed() {
                       : { contentVisibility: "auto", containIntrinsicSize: "1px 600px" }
                   }
                 >
-                   <header
-                     className={`flex items-center gap-3 mb-3 ${isAppShell ? "px-4 pt-4 md:px-0 md:pt-0" : ""}`}
-                  >
+                    <header
+                      className={
+                        isAppShell
+                          ? "mb-3 flex items-center gap-3 px-4 pt-4 md:px-0 md:pt-0"
+                          : "col-span-2 mb-3 grid grid-cols-[40px_minmax(0,1fr)] items-start gap-3"
+                      }
+                    >
                     <Link
                       to="/profile/$id"
                       params={{ id: profileSlug }}
@@ -1744,7 +1748,7 @@ export function Feed() {
                     {isReported ? (
                       <ReportedBadge details={reported.get(post.id)} />
                     ) : (
-                      <div className="ml-auto flex items-center gap-1">
+                      <div className={isAppShell ? "ml-auto flex items-center gap-1" : "absolute right-4 top-3 flex items-center gap-1"}>
                         <PostActionsMenu
                           postId={post.id}
                           shareTitle={`${post.author_name} on Oventric`}
