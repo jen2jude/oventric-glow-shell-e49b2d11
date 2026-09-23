@@ -112,7 +112,7 @@ export function CreatorPublishModal({
           const duration = await getVideoDuration(file);
           if (duration > MAX_CLIP_SECONDS + 0.5) {
             toast.error(
-              `Clips here are up to ${MAX_CLIP_SECONDS}s. For a longer video, paste its YouTube, Vimeo, Facebook or Telegram link below — it plays right here without an upload.`,
+              `Clips here are up to ${MAX_CLIP_SECONDS}s and ${MAX_CLIP_MB}MB. Trim or compress your video to fit, then upload again.`,
             );
             continue;
           }
@@ -124,9 +124,9 @@ export function CreatorPublishModal({
             );
             if (compact && compact.size < file.size) file = compact;
           }
-          if (file.size > MAX_CLIP_BYTES * 1.5) {
+          if (file.size > MAX_CLIP_BYTES) {
             toast.error(
-              "That clip is still too heavy. Paste a video link below instead — it streams from the original platform.",
+              `That clip is still over ${MAX_CLIP_MB}MB. Compress it below ${MAX_CLIP_MB}MB and upload again.`,
             );
             continue;
           }
