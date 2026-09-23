@@ -350,7 +350,7 @@ function OrderPage() {
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
               <Link
                 to="/dashboard"
-                search={{ tab: "purchases" }}
+                search={{ tab: "digital" }}
                 className="flex items-center gap-3 rounded-[10px] border border-newsfeed-violet/20 bg-newsfeed-surface p-4 shadow-sm transition-colors hover:bg-newsfeed-violet-soft"
               >
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-newsfeed-violet-soft">
