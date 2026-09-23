@@ -9,6 +9,7 @@ import {
   Trash2,
   ShieldAlert,
   Zap,
+  ShoppingBag,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -24,6 +25,7 @@ import {
 } from "@/lib/marketplace.functions";
 import { snapshotFxRates } from "@/lib/fx.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
+import { Button } from "@/components/ui/button";
 
 const FALLBACK_CATEGORIES: CategoryNode[] = [
   {
@@ -115,6 +117,31 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
   const [success, setSuccess] = useState(false);
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const scrollY = window.scrollY;
+    const previous = {
+      overflow: document.body.style.overflow,
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+      overscrollBehavior: document.documentElement.style.overscrollBehavior,
+    };
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+    document.documentElement.style.overscrollBehavior = "none";
+    return () => {
+      document.body.style.overflow = previous.overflow;
+      document.body.style.position = previous.position;
+      document.body.style.top = previous.top;
+      document.body.style.width = previous.width;
+      document.documentElement.style.overscrollBehavior = previous.overscrollBehavior;
+      window.scrollTo(0, scrollY);
+    };
+  }, [open]);
 
   if (!open) return null;
 
@@ -301,82 +328,92 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
     }
   };
 
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [open]);
-
   return (
     <div
-      className="modal-light web-sell-asset fixed inset-0 z-[70] grid h-[100dvh] w-screen place-items-center overflow-y-auto p-0 sm:p-6"
+      className="modal-light web-sell-asset fixed inset-0 z-[70] flex h-[100dvh] w-screen items-start justify-center overflow-hidden px-0 pt-3 sm:items-center sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-label="Sell an asset"
     >
-      <div className="absolute inset-0 bg-black/70" onClick={submitting ? undefined : onClose} />
-      <div className="web-sell-panel slide-up relative my-auto h-full w-full max-w-3xl overflow-y-auto border border-border bg-card p-5 text-card-foreground shadow-lg sm:h-auto sm:max-h-[calc(100vh-3rem)] sm:rounded-[10px] sm:p-8">
+      <div className="absolute inset-0 bg-foreground/55 backdrop-blur-[2px]" onClick={submitting ? undefined : onClose} />
+      <div className="web-sell-panel slide-up relative flex max-h-[calc(100dvh-0.75rem)] w-full max-w-3xl flex-col overflow-hidden rounded-t-[20px] border border-contact-line bg-contact-surface text-contact-ink shadow-contact-sheet sm:max-h-[calc(100dvh-3rem)] sm:rounded-[18px]">
+        <div className="grid h-1.5 shrink-0 grid-cols-5" aria-hidden="true">
+          <span className="bg-contact-whatsapp" />
+          <span className="bg-contact-blue" />
+          <span className="bg-contact-violet" />
+          <span className="bg-contact-gold" />
+          <span className="bg-contact-coral" />
+        </div>
+        <div className="sell-asset-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain scroll-smooth">
         {success ? (
-          <div className="py-8 text-center">
-            <div className="w-16 h-16 mx-auto rounded-full bg-emerald-500/10 sm:bg-emerald-100 border border-emerald-400/40 sm:border-emerald-300 flex items-center justify-center mb-4">
-              <CheckCircle2 className="w-8 h-8 text-emerald-400 sm:text-emerald-600" />
+          <div className="px-5 py-10 text-center sm:px-8">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[16px] border border-contact-whatsapp/25 bg-contact-whatsapp-soft">
+              <CheckCircle2 className="h-8 w-8 text-contact-whatsapp" />
             </div>
-            <h2 className="text-xl font-bold text-white sm:text-slate-900 mb-2">
+            <h2 className="mb-2 text-xl font-black text-contact-ink">
               Submitted for review
             </h2>
-            <p className="text-sm text-slate-400 sm:text-slate-600 max-w-md mx-auto mb-3">
+            <p className="mx-auto mb-3 max-w-md text-sm text-contact-copy">
               Your asset has been submitted. Our system is scanning it for malware and verifying
               licensing.
             </p>
-            <p className="text-xs text-slate-500 sm:text-slate-700 max-w-md mx-auto mb-6">
+            <p className="mx-auto mb-6 max-w-md text-xs text-contact-muted">
               If the product is not genuine, missing a valid license, nulled, or contains malware,
               it will be rejected and the poster may be banned. Only upload genuine products with
               valid GPL/commercial licenses.
             </p>
-            <button
+            <Button
               onClick={() => {
                 reset();
                 onClose();
               }}
-              className="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm rounded-[10px]"
+              className="h-11 rounded-[10px] bg-contact-whatsapp px-6 font-bold text-contact-on-whatsapp shadow-none hover:bg-contact-whatsapp-strong"
             >
               OK
-            </button>
+            </Button>
           </div>
         ) : (
           <>
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-xl font-bold text-white sm:text-slate-900">
-                  Sell a Digital Asset
-                </h2>
-                <p className="text-xs text-slate-400 sm:text-slate-600 mt-1">
-                  List your digital product in the marketplace. Reviewed by admin before going live.
-                </p>
+            <header className="sell-asset-header sticky top-0 z-20 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 border-b border-contact-line bg-contact-surface/95 px-4 py-3 backdrop-blur-md sm:px-7 sm:py-5">
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-contact-violet/10 text-contact-violet sm:h-12 sm:w-12">
+                  <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.2} />
+                </span>
+                <div className="min-w-0">
+                  <span className="block text-[10px] font-extrabold uppercase text-contact-violet">
+                    Marketplace publish
+                  </span>
+                  <h2 className="truncate text-lg font-black leading-tight text-contact-ink sm:text-xl">
+                    Sell a digital product
+                  </h2>
+                  <p className="mt-0.5 hidden text-xs text-contact-copy sm:block">
+                    Add your product details, delivery and pricing.
+                  </p>
+                </div>
               </div>
-              <button
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
                 onClick={onClose}
                 disabled={submitting}
-                className="p-2 rounded-[10px] hover:bg-white/5 sm:hover:bg-slate-100 text-slate-400 sm:text-slate-600 hover:text-white sm:hover:text-slate-900 disabled:opacity-40"
+                className="h-9 w-9 shrink-0 rounded-full text-contact-muted hover:bg-contact-field hover:text-contact-ink"
                 aria-label="Close"
               >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+                <X className="h-4 w-4" />
+              </Button>
+            </header>
 
-            <div className="mb-4 flex items-start gap-2 p-3 rounded-[10px] bg-muted border border-border">
-              <ShieldAlert className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
-              <p className="text-[11px] sm:text-xs text-foreground leading-relaxed font-medium">
+            <div className="mx-4 mt-4 flex items-start gap-2.5 rounded-[10px] border border-contact-gold/25 bg-contact-gold/10 p-3 sm:mx-7">
+              <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-contact-gold" />
+              <p className="text-[11px] font-medium leading-relaxed text-contact-ink sm:text-xs">
                 Every submission is scanned for malware and verified for licensing. Nulled, pirated,
                 or malicious uploads are rejected and posters may be banned. Only upload genuine
                 products with valid licenses (GPL or commercial).
               </p>
             </div>
 
-            <form onSubmit={submit} className="space-y-4">
+            <form onSubmit={submit} className="space-y-4 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4 sm:px-7 sm:pb-7">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <label className="block">
                   <span className="text-xs font-medium text-slate-300 sm:text-slate-700">
@@ -825,32 +862,34 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                 </label>
               </div>
 
-              <div className="flex items-center justify-between pt-2 border-t border-white/5 sm:border-slate-200">
+              <div className="sticky bottom-0 z-10 -mx-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-t border-contact-line bg-contact-surface/95 px-4 pb-[max(0.25rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md sm:-mx-7 sm:px-7 sm:pb-0">
                 <div className="text-xs text-slate-400 sm:text-slate-600 min-h-[1rem]">
                   {progress}
                 </div>
                 <div className="flex gap-2">
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
                     onClick={onClose}
                     disabled={submitting}
-                    className="px-4 py-3 rounded-[10px] border border-white/10 sm:border-slate-300 text-slate-300 sm:text-slate-700 hover:text-white sm:hover:text-slate-900 hover:bg-white/5 sm:hover:bg-slate-100 text-sm disabled:opacity-40"
+                    className="h-11 rounded-[10px] border-contact-line bg-contact-surface px-3 text-contact-copy shadow-none hover:bg-contact-field hover:text-contact-ink sm:px-4"
                   >
                     Cancel
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="submit"
                     disabled={submitting || (!isFree && !agreedToSplit)}
-                    className="px-4 py-3 rounded-[10px] bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="h-11 rounded-[10px] bg-contact-violet px-3 text-sm font-bold text-contact-surface shadow-none hover:bg-contact-violet/90 sm:px-4"
                   >
                     {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
                     {submitting ? "Submitting…" : "Submit for review"}
-                  </button>
+                  </Button>
                 </div>
               </div>
             </form>
           </>
         )}
+        </div>
       </div>
     </div>
   );
