@@ -3667,19 +3667,20 @@ section + section {
   }
 }
 
-/* Public seller shops use a spacious, desktop-first boutique composition. */
+/* Public seller shops: bright cyber-luxe retail discovery composition. */
 .web-storefront {
   color-scheme: light;
-  --background: oklch(0.975 0.004 260);
-  --foreground: oklch(0.2 0.012 260);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.012 260);
-  --primary: oklch(0.61 0.2 24);
-  --primary-foreground: oklch(0.99 0.003 24);
-  --muted: oklch(0.94 0.006 260);
-  --muted-foreground: oklch(0.48 0.014 260);
-  --border: oklch(0.2 0.012 260 / 12%);
+  --background: var(--newsfeed-canvas);
+  --foreground: var(--newsfeed-ink);
+  --card: var(--newsfeed-surface);
+  --card-foreground: var(--newsfeed-ink);
+  --primary: var(--newsfeed-coral);
+  --primary-foreground: var(--newsfeed-on-accent);
+  --muted: var(--newsfeed-blue-soft);
+  --muted-foreground: var(--newsfeed-muted);
+  --border: var(--newsfeed-line);
   background: var(--background);
+  font-family: var(--font-wallet-body);
 }
 
 .web-storefront .bg-card {
@@ -3699,8 +3700,23 @@ section + section {
   box-shadow: 0 20px 55px -42px color-mix(in oklab, var(--foreground) 38%, transparent);
 }
 
+.web-storefront .storefront-cover-fallback {
+  background:
+    linear-gradient(115deg, var(--newsfeed-blue-soft), var(--newsfeed-violet-soft) 48%, var(--newsfeed-coral-soft));
+}
+
+.web-storefront .storefront-spectrum-strip {
+  height: 3px;
+  background: linear-gradient(90deg, var(--newsfeed-blue), var(--newsfeed-violet), var(--newsfeed-green), var(--newsfeed-gold), var(--newsfeed-coral));
+}
+
 .web-storefront .storefront-title {
-  font-family: var(--font-storefront);
+  font-family: var(--font-wallet-display);
+  letter-spacing: 0;
+}
+
+.web-storefront :is(h2, h3) {
+  font-family: var(--font-wallet-display);
   letter-spacing: 0;
 }
 
@@ -3708,10 +3724,56 @@ section + section {
   border-left: 1px solid var(--border);
 }
 
-.web-storefront .storefront-product-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 2rem 1rem;
+.web-storefront .storefront-product-rail {
+  display: flex;
+  gap: 0.85rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.web-storefront .storefront-product-rail::-webkit-scrollbar { display: none; }
+.web-storefront .storefront-product-rail > * {
+  width: min(74vw, 285px);
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+.web-storefront .storefront-featured-card {
+  width: min(82vw, 390px);
+}
+
+.web-storefront .storefront-trust {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.web-storefront .storefront-trust-blue { background: var(--newsfeed-blue-soft); color: var(--newsfeed-blue); }
+.web-storefront .storefront-trust-gold { background: var(--newsfeed-gold-soft); color: var(--newsfeed-ink); }
+.web-storefront .storefront-tabs { box-shadow: 0 10px 22px -22px color-mix(in oklab, var(--newsfeed-ink) 40%, transparent); }
+.web-storefront .storefront-info-panel,
+.web-storefront .storefront-identity-panel,
+.web-storefront .storefront-editorial {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+}
+
+.web-storefront .storefront-selected {
+  border-color: color-mix(in oklab, var(--newsfeed-coral) 42%, var(--border));
+  box-shadow: 0 20px 48px -36px color-mix(in oklab, var(--newsfeed-coral) 45%, transparent);
+}
+
+.web-storefront .storefront-editorial-1 { border-top: 3px solid var(--newsfeed-blue); }
+.web-storefront .storefront-editorial-2 { border-top: 3px solid var(--newsfeed-gold); }
 }
 
 .web-storefront .storefront-product {
@@ -3735,17 +3797,13 @@ section + section {
 }
 
 @media (min-width: 640px) {
-  .web-storefront .storefront-product-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 2.5rem 1.5rem;
-  }
+  .web-storefront .storefront-product-rail > * { width: 270px; }
+  .web-storefront .storefront-featured-card { width: 370px; }
 }
 
 @media (min-width: 1024px) {
-  .web-storefront .storefront-product-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 3rem 1.75rem;
-  }
+  .web-storefront .storefront-product-rail > * { width: 250px; }
+  .web-storefront .storefront-featured-card { width: 360px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
