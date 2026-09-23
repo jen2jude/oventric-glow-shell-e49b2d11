@@ -122,7 +122,7 @@ function AboutPage() {
             <p className="font-wallet-display text-sm font-bold uppercase tracking-normal">
               Built in Africa. Open to digital ambition everywhere.
             </p>
-            <h1 className="mt-5 max-w-5xl font-wallet-display text-5xl font-extrabold leading-[1.02] sm:text-7xl lg:text-8xl">
+            <h1 className="about-hero-title mt-5 max-w-4xl font-wallet-display text-4xl font-extrabold leading-[1.08] sm:text-5xl lg:text-6xl">
               Oventric connects identity, community and digital opportunity.
             </h1>
             <p className="mt-7 max-w-3xl text-base leading-7 sm:text-xl sm:leading-8">
@@ -286,11 +286,6 @@ function AboutPage() {
             <div className="mt-12 grid overflow-hidden rounded-[10px] border border-newsfeed-line bg-newsfeed-canvas shadow-newsfeed-panel lg:grid-cols-[1.18fr_0.82fr]">
               <div className="relative min-h-[420px] overflow-hidden lg:min-h-[570px]">
                 <img loading="lazy" decoding="async" src={registrationOffice} alt="A framed registration display in a modern Oventric office reception" width={1504} height={1104} className="absolute inset-0 h-full w-full object-cover" />
-                <div className="about-certificate-panel absolute left-[42.2%] top-[13.6%] flex h-[35.3%] w-[19.9%] flex-col items-center justify-center px-2 text-center">
-                  <Landmark className="size-6 text-newsfeed-coral sm:size-8" />
-                  <span className="mt-2 font-wallet-display text-[7px] font-bold uppercase leading-tight text-newsfeed-ink sm:text-[10px]">CAC Registered</span>
-                  <span className="mt-1 text-[6px] leading-tight text-newsfeed-muted sm:text-[8px]">Federal Republic of Nigeria</span>
-                </div>
               </div>
               <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-12">
                 <span className="grid size-14 place-items-center rounded-[10px] bg-newsfeed-coral-soft text-newsfeed-coral"><Building2 className="size-7" /></span>
