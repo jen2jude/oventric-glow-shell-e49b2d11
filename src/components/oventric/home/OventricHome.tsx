@@ -880,18 +880,19 @@ function NewsfeedRail({ posts, onOpenFeed }: { posts: FeedPost[]; onOpenFeed: ()
       {/* Header */}
       <div className="mb-4 flex items-end justify-between">
         <div>
-          <div className="mb-1.5 flex items-center gap-2 text-crimson">
+          <span className="home-pop-strip mb-2 block" aria-hidden="true" />
+          <div className="mb-1.5 flex items-center gap-2 text-newsfeed-violet">
             <Sparkles className="h-3.5 w-3.5" />
             <span className="text-[10px] font-extrabold uppercase tracking-widest">Community pulse</span>
           </div>
-          <h2 className="font-wallet-display text-xl font-extrabold text-slate-900 sm:text-2xl">
+          <h2 className="font-wallet-display text-xl font-extrabold text-newsfeed-ink sm:text-2xl">
             Latest from Newsfeed
           </h2>
         </div>
         <Link
           to="/feed"
           search={{ post: undefined }}
-          className="group flex items-center gap-1 text-xs font-bold text-crimson transition-opacity hover:opacity-80 sm:text-sm"
+          className="group flex items-center gap-1 rounded-full border border-newsfeed-line bg-newsfeed-surface px-3 py-1.5 text-xs font-bold text-newsfeed-violet shadow-newsfeed-panel transition-all hover:-translate-y-0.5 sm:text-sm"
         >
           View all
           <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
