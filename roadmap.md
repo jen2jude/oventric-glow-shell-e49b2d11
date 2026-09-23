@@ -11,3 +11,5 @@
 - [x] Keep paid instant-download seller payouts in escrow while preserving the 80/20 split
 - [x] Remove the footer from product detail pages
 - [x] Add real same-category product recommendations
+- [x] Open saved creator posts as full interactive overlays from Collections
+- [x] Verify creator collection overlays on mobile and desktop

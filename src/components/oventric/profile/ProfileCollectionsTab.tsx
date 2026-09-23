@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useServerFn } from "@tanstack/react-start";
-import { Bookmark, Globe, Lock, Plus, Trash2, X, Layers, ExternalLink } from "lucide-react";
+import { Bookmark, Globe, Lock, Plus, Trash2, X, Layers, ExternalLink, LoaderCircle } from "lucide-react";
 import {
   addCollectionItem,
   deleteCollection,
@@ -12,6 +13,10 @@ import {
 } from "@/lib/collections.functions";
 import { listSavedPosts } from "@/lib/posts.functions";
 import { Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { CreatorCard } from "@/components/oventric/creators/CreatorFeed";
+import { getCreatorPost, type CreatorPostDTO } from "@/lib/creators.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 const ACCENT = "#E5484D";
 
@@ -206,6 +211,20 @@ function BoardSheet({
   const [image, setImage] = useState("");
   const [busy, setBusy] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
+  const [creatorPostId, setCreatorPostId] = useState<string | null>(null);
+
+  const creatorIdFor = (item: CollectionDTO["items"][number]) => {
+    if (item.refId) return item.refId;
+    if (!item.url) return null;
+    try {
+      const parsed = new URL(item.url, "https://oventric.com");
+      return parsed.pathname === "/feed" && parsed.searchParams.get("tab") === "creators"
+        ? parsed.searchParams.get("post")
+        : null;
+    } catch {
+      return null;
+    }
+  };
 
   return (
     <Sheet onClose={onClose}>
@@ -240,11 +259,10 @@ function BoardSheet({
             Nothing saved to this board yet.
           </p>
         )}
-        {board.items.map((it) => (
-          <div
-            key={it.id}
-            className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-2"
-          >
+        {board.items.map((it) => {
+          const savedCreatorPostId = creatorIdFor(it);
+          return (
+          <div key={it.id} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-2">
             <div className="h-12 w-12 shrink-0 overflow-hidden rounded-[10px] bg-white/[0.06]">
               {it.imageUrl ? (
                 <img loading="lazy" decoding="async" src={it.imageUrl} alt="" className="h-full w-full object-cover" />
@@ -254,26 +272,29 @@ function BoardSheet({
                 </div>
               )}
             </div>
-            <a
-              href={it.url ?? undefined}
+            <button
+              type="button"
               className="min-w-0 flex-1"
-              onClick={(e) => {
-                if (!it.url) e.preventDefault();
+              onClick={() => {
+                if (savedCreatorPostId) {
+                  setCreatorPostId(savedCreatorPostId);
+                } else if (it.url) {
+                  window.location.assign(it.url);
+                }
               }}
             >
-              <p className="truncate text-[12px] font-bold text-white">{it.title || it.url}</p>
-              {it.note && <p className="truncate text-[11px] text-slate-400">{it.note}</p>}
-            </a>
+              <p className="truncate text-left text-[12px] font-bold text-white">{it.title || it.url}</p>
+              {it.note && <p className="truncate text-left text-[11px] text-slate-400">{it.note}</p>}
+            </button>
             {it.url && (
-              <a
-                href={it.url}
-                target="_blank"
-                rel="noreferrer"
+              <button
+                type="button"
+                onClick={() => savedCreatorPostId ? setCreatorPostId(savedCreatorPostId) : window.open(it.url ?? "", "_blank", "noopener,noreferrer")}
                 className="rounded-full p-1.5 text-slate-400 hover:bg-white/10"
                 aria-label="Open"
               >
                 <ExternalLink className="h-4 w-4" />
-              </a>
+              </button>
             )}
             {isOwner && (
               <button
@@ -288,7 +309,8 @@ function BoardSheet({
               </button>
             )}
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {isOwner && !showAdd && (
@@ -352,7 +374,86 @@ function BoardSheet({
           </button>
         </div>
       )}
+
+      {creatorPostId && (
+        <CreatorPostOverlay postId={creatorPostId} onClose={() => setCreatorPostId(null)} />
+      )}
     </Sheet>
+  );
+}
+
+function CreatorPostOverlay({ postId, onClose }: { postId: string; onClose: () => void }) {
+  const loadPost = useServerFn(getCreatorPost);
+  const [post, setPost] = useState<CreatorPostDTO | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [missing, setMissing] = useState(false);
+  const [meId, setMeId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    void Promise.all([loadPost({ data: { postId } }), supabase.auth.getUser()])
+      .then(([result, auth]) => {
+        if (!alive) return;
+        setPost(result);
+        setMissing(!result);
+        setMeId(auth.data.user?.id ?? null);
+      })
+      .catch(() => alive && setMissing(true))
+      .finally(() => alive && setLoading(false));
+    return () => {
+      alive = false;
+      document.removeEventListener("keydown", closeOnEscape);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [loadPost, onClose, postId]);
+
+  return createPortal(
+    <div className="fixed inset-0 z-[300] flex items-center justify-center bg-slate-950/55 p-3 backdrop-blur-sm sm:p-6" role="dialog" aria-modal="true" aria-label="Saved creator post">
+      <button type="button" className="absolute inset-0" aria-label="Close saved creator post" onClick={onClose} />
+      <div className="relative z-10 flex max-h-[calc(100dvh-24px)] w-full max-w-2xl flex-col overflow-hidden rounded-[18px] border border-slate-200 bg-white shadow-2xl sm:max-h-[calc(100dvh-48px)]">
+        <div className="flex h-1 shrink-0">
+          <span className="flex-1 bg-emerald-400" /><span className="flex-1 bg-sky-400" /><span className="flex-1 bg-violet-400" /><span className="flex-1 bg-amber-400" /><span className="flex-1 bg-rose-400" />
+        </div>
+        <div className="flex shrink-0 items-center justify-between border-b border-slate-100 px-4 py-3">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.14em] text-violet-600">Saved showcase</p>
+            <h3 className="text-sm font-black text-slate-950">Creator post</h3>
+          </div>
+          <Button type="button" variant="ghost" size="icon" onClick={onClose} aria-label="Close" className="rounded-full text-slate-600 hover:bg-rose-50 hover:text-rose-600">
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-white pb-[env(safe-area-inset-bottom)]">
+          {loading && (
+            <div className="grid min-h-64 place-items-center text-center">
+              <div><LoaderCircle className="mx-auto h-6 w-6 animate-spin text-violet-600" /><p className="mt-2 text-xs font-bold text-slate-700">Opening post…</p></div>
+            </div>
+          )}
+          {!loading && missing && (
+            <div className="grid min-h-64 place-items-center px-6 text-center">
+              <div><Bookmark className="mx-auto h-6 w-6 text-rose-500" /><p className="mt-2 text-sm font-black text-slate-950">This creator post is no longer available.</p></div>
+            </div>
+          )}
+          {post && (
+            <CreatorCard
+              post={post}
+              onRecordedView={() => setPost((current) => current ? { ...current, viewCount: current.viewCount + 1 } : current)}
+              isOwner={meId === post.author.userId}
+              onHide={onClose}
+              onDeleted={onClose}
+              onUpdated={(_, patch) => setPost((current) => current ? { ...current, ...patch } : current)}
+            />
+          )}
+        </div>
+      </div>
+    </div>,
+    document.body,
   );
 }
 

@@ -372,6 +372,7 @@ export const saveCreatorPostToCollection = createServerFn({ method: "POST" })
       collection_id: boardId,
       user_id: userId,
       kind: "link",
+      ref_id: data.postId,
       url,
       title: data.title,
       image_url: data.imageUrl || null,
@@ -383,18 +384,16 @@ export const saveCreatorPostToCollection = createServerFn({ method: "POST" })
     return { ok: true, alreadySaved: false };
   });
 
-/** Public creator showcase feed. */
-export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
-  async (): Promise<CreatorPostDTO[]> => {
+async function loadCreatorPosts(postId?: string): Promise<CreatorPostDTO[]> {
     const sb = publicClient();
-    const { data: rows, error } = await sb
+    let query = sb
       .from("creator_posts")
       .select(
         "id, author_id, title, caption, media_paths, media_type, community_link, external_url, external_provider, product_id, fields, created_at, view_count",
       )
-      .eq("status", "published")
-      .order("created_at", { ascending: false })
-      .limit(40);
+      .eq("status", "published");
+    if (postId) query = query.eq("id", postId);
+    const { data: rows, error } = await query.order("created_at", { ascending: false }).limit(postId ? 1 : 40);
     if (error || !rows || rows.length === 0) return [];
 
     // Linked assets: only active (approved) listings are publicly readable, so
@@ -533,5 +532,17 @@ export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
         },
       } satisfies CreatorPostDTO;
     });
-  },
+}
+
+/** Public creator showcase feed. */
+export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
+  async (): Promise<CreatorPostDTO[]> => loadCreatorPosts(),
 );
+
+/** One published showcase post for collection previews and direct opening. */
+export const getCreatorPost = createServerFn({ method: "GET" })
+  .inputValidator((input: unknown) => z.object({ postId: z.string().uuid() }).parse(input ?? {}))
+  .handler(async ({ data }): Promise<CreatorPostDTO | null> => {
+    const posts = await loadCreatorPosts(data.postId);
+    return posts[0] ?? null;
+  });
