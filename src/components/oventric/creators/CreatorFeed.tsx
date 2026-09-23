@@ -9,6 +9,8 @@ import { listCreatorFeed, recordCreatorPostView, type CreatorPostDTO } from "@/l
 import { computeDisplayPrice } from "@/lib/fx-display";
 import { createOrder, getOrderWithDownload } from "@/lib/marketplace.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
+import { CreatorPostMenu } from "./CreatorPostMenu";
+import { getHiddenPosts } from "@/components/oventric/PostActionsMenu";
 
 
 function compactNumber(value: number) {
