@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useServerFn } from "@tanstack/react-start";
 import { Bookmark, Globe, Lock, Plus, Trash2, X, Layers, ExternalLink, LoaderCircle } from "lucide-react";
@@ -19,6 +19,20 @@ import { getCreatorPost, type CreatorPostDTO } from "@/lib/creators.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 const ACCENT = "#E5484D";
+
+/** Saved creator post id for an item (new saves store refId, older ones a /feed link). */
+function creatorIdForItem(item: CollectionDTO["items"][number]): string | null {
+  if (item.refId) return item.refId;
+  if (!item.url) return null;
+  try {
+    const parsed = new URL(item.url, "https://oventric.com");
+    return parsed.pathname === "/feed" && parsed.searchParams.get("tab") === "creators"
+      ? parsed.searchParams.get("post")
+      : null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Profile "Collections" tab — public curated boards.
@@ -213,18 +227,10 @@ function BoardSheet({
   const [showAdd, setShowAdd] = useState(false);
   const [creatorPostId, setCreatorPostId] = useState<string | null>(null);
 
-  const creatorIdFor = (item: CollectionDTO["items"][number]) => {
-    if (item.refId) return item.refId;
-    if (!item.url) return null;
-    try {
-      const parsed = new URL(item.url, "https://oventric.com");
-      return parsed.pathname === "/feed" && parsed.searchParams.get("tab") === "creators"
-        ? parsed.searchParams.get("post")
-        : null;
-    } catch {
-      return null;
-    }
-  };
+  const creatorIdFor = creatorIdForItem;
+  const allCreatorIds = board.items
+    .map((it) => creatorIdForItem(it))
+    .filter((v): v is string => Boolean(v));
 
   return (
     <Sheet onClose={onClose}>
@@ -376,18 +382,32 @@ function BoardSheet({
       )}
 
       {creatorPostId && (
-        <CreatorPostOverlay postId={creatorPostId} onClose={() => setCreatorPostId(null)} />
+        <CreatorPostOverlay
+          postIds={allCreatorIds.length ? allCreatorIds : [creatorPostId]}
+          startId={creatorPostId}
+          onClose={() => setCreatorPostId(null)}
+        />
       )}
     </Sheet>
   );
 }
 
-function CreatorPostOverlay({ postId, onClose }: { postId: string; onClose: () => void }) {
+function CreatorPostOverlay({
+  postIds,
+  startId,
+  onClose,
+}: {
+  postIds: string[];
+  startId: string;
+  onClose: () => void;
+}) {
   const loadPost = useServerFn(getCreatorPost);
-  const [post, setPost] = useState<CreatorPostDTO | null>(null);
+  const [posts, setPosts] = useState<CreatorPostDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [missing, setMissing] = useState(false);
   const [meId, setMeId] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const idsKey = postIds.join(",");
 
   useEffect(() => {
     let alive = true;
@@ -397,11 +417,16 @@ function CreatorPostOverlay({ postId, onClose }: { postId: string; onClose: () =
       if (event.key === "Escape") onClose();
     };
     document.addEventListener("keydown", closeOnEscape);
-    void Promise.all([loadPost({ data: { postId } }), supabase.auth.getUser()])
-      .then(([result, auth]) => {
+    const ids = idsKey ? idsKey.split(",") : [];
+    void Promise.all([
+      Promise.all(ids.map((id) => loadPost({ data: { postId: id } }).catch(() => null))),
+      supabase.auth.getUser(),
+    ])
+      .then(([results, auth]) => {
         if (!alive) return;
-        setPost(result);
-        setMissing(!result);
+        const found = results.filter((p): p is CreatorPostDTO => Boolean(p));
+        setPosts(found);
+        setMissing(found.length === 0);
         setMeId(auth.data.user?.id ?? null);
       })
       .catch(() => alive && setMissing(true))
@@ -411,7 +436,15 @@ function CreatorPostOverlay({ postId, onClose }: { postId: string; onClose: () =
       document.removeEventListener("keydown", closeOnEscape);
       document.body.style.overflow = previousOverflow;
     };
-  }, [loadPost, onClose, postId]);
+  }, [idsKey, loadPost, onClose]);
+
+  // Land on the post the member tapped; the rest stay reachable by scrolling.
+  useEffect(() => {
+    if (loading || !posts.length) return;
+    const container = scrollRef.current;
+    const target = container?.querySelector<HTMLElement>(`[data-post-id="${startId}"]`);
+    if (container && target) container.scrollTop = target.offsetTop;
+  }, [loading, posts, startId]);
 
   return createPortal(
     <div className="fixed inset-0 z-[300] flex items-center justify-center bg-slate-950/55 p-3 backdrop-blur-sm sm:p-6" role="dialog" aria-modal="true" aria-label="Saved creator post">
@@ -423,13 +456,18 @@ function CreatorPostOverlay({ postId, onClose }: { postId: string; onClose: () =
         <div className="flex shrink-0 items-center justify-between border-b border-slate-100 px-4 py-3">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.14em] text-violet-600">Saved showcase</p>
-            <h3 className="text-sm font-black text-slate-950">Creator post</h3>
+            <h3 className="text-sm font-black text-slate-950">
+              {posts.length > 1 ? `${posts.length} saved posts` : "Creator post"}
+            </h3>
           </div>
           <Button type="button" variant="ghost" size="icon" onClick={onClose} aria-label="Close" className="rounded-full text-slate-600 hover:bg-rose-50 hover:text-rose-600">
             <X className="h-5 w-5" />
           </Button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-white pb-[env(safe-area-inset-bottom)]">
+        <div
+          ref={scrollRef}
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-white pb-[env(safe-area-inset-bottom)]"
+        >
           {loading && (
             <div className="grid min-h-64 place-items-center text-center">
               <div><LoaderCircle className="mx-auto h-6 w-6 animate-spin text-violet-600" /><p className="mt-2 text-xs font-bold text-slate-700">Opening post…</p></div>
@@ -440,16 +478,24 @@ function CreatorPostOverlay({ postId, onClose }: { postId: string; onClose: () =
               <div><Bookmark className="mx-auto h-6 w-6 text-rose-500" /><p className="mt-2 text-sm font-black text-slate-950">This creator post is no longer available.</p></div>
             </div>
           )}
-          {post && (
-            <CreatorCard
-              post={post}
-              onRecordedView={() => setPost((current) => current ? { ...current, viewCount: current.viewCount + 1 } : current)}
-              isOwner={meId === post.author.userId}
-              onHide={onClose}
-              onDeleted={onClose}
-              onUpdated={(_, patch) => setPost((current) => current ? { ...current, ...patch } : current)}
-            />
-          )}
+          {posts.map((p) => (
+            <div key={p.id} data-post-id={p.id} className="border-b border-slate-100 last:border-b-0">
+              <CreatorCard
+                post={p}
+                onRecordedView={() =>
+                  setPosts((current) =>
+                    current.map((c) => (c.id === p.id ? { ...c, viewCount: c.viewCount + 1 } : c)),
+                  )
+                }
+                isOwner={meId === p.author.userId}
+                onHide={() => setPosts((current) => current.filter((c) => c.id !== p.id))}
+                onDeleted={() => setPosts((current) => current.filter((c) => c.id !== p.id))}
+                onUpdated={(_, patch) =>
+                  setPosts((current) => current.map((c) => (c.id === p.id ? { ...c, ...patch } : c)))
+                }
+              />
+            </div>
+          ))}
         </div>
       </div>
     </div>,
