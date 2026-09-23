@@ -521,11 +521,11 @@ function MiniRail({
   return (
     <section>
       <div className="flex items-center justify-between mb-3 px-1">
-        <h2 className="text-[16px] font-bold text-white">{title}</h2>
+        <h2 className="text-[16px] font-bold text-slate-900">{title}</h2>
         <button
           type="button"
           onClick={onSeeAll}
-          className="text-[13px] font-medium text-white/40 flex items-center gap-1"
+          className="text-[13px] font-semibold text-violet-600 flex items-center gap-1"
         >
           See all <ChevronRight className="w-3.5 h-3.5" />
         </button>
@@ -538,7 +538,7 @@ function MiniRail({
             onClick={it.onClick}
             className="shrink-0 w-28 text-left active:scale-95 transition-transform group"
           >
-            <span className="block w-28 h-28 rounded-[14px] overflow-hidden bg-[#141416] border border-white/5 relative">
+            <span className="block w-28 h-28 rounded-[10px] overflow-hidden bg-white border border-slate-200 relative shadow-[0_10px_30px_-28px_rgba(15,23,42,0.6)]">
 
               {it.coverUrl ? (
                 <img loading="lazy" decoding="async"
@@ -547,17 +547,16 @@ function MiniRail({
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span className="w-full h-full flex items-center justify-center text-white/20">
+                <span className="w-full h-full flex items-center justify-center text-slate-300">
                   <Newspaper className="w-7 h-7" />
                 </span>
               )}
             </span>
-            <span className="mt-2 block text-[12px] font-bold text-white line-clamp-1 truncate group-hover:text-[#E5484D] transition-colors">
+            <span className="mt-2 block text-[12px] font-bold text-slate-900 line-clamp-1 truncate group-hover:text-violet-600 transition-colors">
               {it.title}
             </span>
             <div className="flex items-center gap-1.5 mt-0.5">
-              {(it as any).icon && <span className="text-[10px]">{(it as any).icon}</span>}
-              <span className="block text-[10.5px] text-white/40 font-medium">{(it as any).meta}</span>
+              <span className="block text-[10.5px] text-slate-500 font-semibold">{(it as any).meta}</span>
             </div>
           </button>
         ))}
