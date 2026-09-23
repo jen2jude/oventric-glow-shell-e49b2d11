@@ -1368,7 +1368,7 @@ export function Feed() {
             onClick={() => require(1, () => setComposerOpen(true), "seller")}
             className={isAppShell
               ? "group flex w-full items-center gap-3 rounded-[22px] border border-white/10 bg-[#1B1D1F] p-4 text-left transition-colors hover:border-[#FF3EB5]/45 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF3EB5]/60"
-               : "group flex w-full items-center gap-3 border-b border-newsfeed-line bg-newsfeed-surface px-4 py-4 text-left transition-colors hover:bg-newsfeed-blue-soft/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-newsfeed-violet/30 md:px-5"
+               : "group mt-2 flex w-full items-center gap-3 border-y border-newsfeed-line bg-newsfeed-surface px-4 py-3 text-left transition-colors hover:bg-newsfeed-blue-soft/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-newsfeed-violet/30 md:px-5 md:py-4 lg:mt-0 lg:border-t-0"
             }
           >
             <span
