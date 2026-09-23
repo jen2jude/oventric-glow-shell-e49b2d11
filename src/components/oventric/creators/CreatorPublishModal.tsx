@@ -22,8 +22,9 @@ interface Attachment {
 }
 
 const MAX_ASSET_MB = 50;
-/** Uploaded showcase clips stay short and light — 30s / 50MB max. */
-const MAX_CLIP_SECONDS = 30;
+/** Uploaded showcase clips stay short and light — 1 min 30s / 50MB max. */
+const MAX_CLIP_SECONDS = 90;
+const MAX_CLIP_LABEL = "1 min 30s";
 const MAX_CLIP_MB = 50;
 const MAX_CLIP_BYTES = MAX_CLIP_MB * 1024 * 1024;
 
@@ -110,7 +111,7 @@ export function CreatorPublishModal({
           const duration = await getVideoDuration(file);
           if (duration > MAX_CLIP_SECONDS + 0.5) {
             toast.error(
-              `Clips here are up to ${MAX_CLIP_SECONDS}s and ${MAX_CLIP_MB}MB. Trim or compress your video to fit, then upload again.`,
+              `Clips here are up to ${MAX_CLIP_LABEL} and ${MAX_CLIP_MB}MB. Trim or compress your video to fit, then upload again.`,
             );
             continue;
           }
@@ -360,7 +361,7 @@ export function CreatorPublishModal({
                   {compressing ? "Preparing your clip…" : "Add images or a video"}
                 </span>
                 <span className="px-4 text-center text-[11px] font-semibold text-slate-400">
-                  Videos up to {MAX_CLIP_SECONDS}s and {MAX_CLIP_MB}MB — trim or compress your clip to
+                  Videos up to {MAX_CLIP_LABEL} and {MAX_CLIP_MB}MB — trim or compress your clip to
                   fit before uploading.
                 </span>
               </button>
