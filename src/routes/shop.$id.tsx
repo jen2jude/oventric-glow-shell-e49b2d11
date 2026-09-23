@@ -12,6 +12,8 @@ import {
   ChevronRight,
   MessageCircle,
   Pencil,
+  PackageCheck,
+  ShieldCheck,
   ShoppingBag,
   Star,
 } from "lucide-react";
@@ -79,12 +81,12 @@ function compact(n: number): string {
 
 function Cover({ url, className }: { url?: string | null; className?: string }) {
   return (
-    <div className={`overflow-hidden bg-[#1C1C21] ${className ?? ""}`}>
+    <div className={`overflow-hidden bg-muted ${className ?? ""}`}>
       {url ? (
         <img src={url} alt="" loading="lazy" className="h-full w-full object-cover" />
       ) : (
         <div className="grid h-full w-full place-items-center">
-          <ShoppingBag className="h-6 w-6 text-white/25" />
+          <ShoppingBag className="h-6 w-6 text-muted-foreground/50" />
         </div>
       )}
     </div>
@@ -115,7 +117,7 @@ function Rail({ children, web = false }: { children: React.ReactNode; web?: bool
     <div className="relative">
       <div
         ref={ref}
-        className={`-mx-1 mt-3 px-1 pb-2 ${web ? "storefront-product-grid" : "flex snap-x snap-mandatory gap-3 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"}`}
+        className={`-mx-1 mt-3 px-1 pb-2 ${web ? "storefront-product-rail" : "flex snap-x snap-mandatory gap-3 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"}`}
       >
         {children}
       </div>
@@ -310,7 +312,8 @@ function ShopPage() {
   return (
     <div className={`min-h-screen ${!isAppShell ? "oventric-web web-storefront bg-background text-foreground" : "bg-[#0A0A0B] text-white"}`}>
       {!isAppShell && (
-        <Header
+        <div className="sticky top-0 z-50">
+          <Header
           onOpenMessages={() => setDmOpen(true)}
           forceSiteNavbar
           siteNavbarOnSelect={(section) => {
@@ -324,7 +327,9 @@ function ShopPage() {
             const path = paths[section];
             if (path) void navigate({ to: path });
           }}
-        />
+          />
+          <div className="storefront-spectrum-strip" />
+        </div>
       )}
 
       {/* Compact app-shell top bar */}
@@ -349,13 +354,13 @@ function ShopPage() {
         )}
       </div>}
 
-      <div className={`mx-auto w-full px-4 pb-20 md:px-8 lg:px-12 ${isAppShell ? "max-w-[720px] md:max-w-[900px] lg:max-w-[1000px]" : "max-w-[1240px] pt-8 md:pt-12"}`}>
+      <div className={`mx-auto w-full px-4 pb-20 md:px-8 lg:px-12 ${isAppShell ? "max-w-[720px] md:max-w-[900px] lg:max-w-[1000px]" : "max-w-[1240px] pt-4 md:pt-8"}`}>
         {/* Cover */}
-        <div className={`relative w-full overflow-hidden ${isAppShell ? "h-48 sm:h-64" : "storefront-cover h-48 rounded-lg sm:h-64 lg:h-72"}`}>
+        <div className={`relative w-full overflow-hidden ${isAppShell ? "h-48 sm:h-64" : "storefront-cover h-40 rounded-lg sm:h-64 lg:h-72"}`}>
           {shop?.coverUrl ? (
             <img loading="lazy" decoding="async" src={shop.coverUrl} alt="" className="h-full w-full object-cover" />
           ) : (
-            <div className={isAppShell ? "h-full w-full bg-[#1A1A1F]" : "h-full w-full bg-muted"} />
+            <div className={isAppShell ? "h-full w-full bg-[#1A1A1F]" : "storefront-cover-fallback h-full w-full"} />
           )}
           {isAppShell && <div className="absolute inset-0 bg-linear-to-t from-[#0A0A0B] via-transparent to-transparent" />}
           <div
@@ -366,7 +371,7 @@ function ShopPage() {
 
         {/* Identity */}
         <div className={isAppShell ? "-mt-12" : "storefront-content relative -mt-10 px-1 sm:-mt-14 sm:px-8"}>
-          <div className={`relative overflow-hidden border bg-card ${isAppShell ? "h-24 w-24 rounded-2xl border-white/10" : "storefront-logo h-24 w-24 rounded-full border-4 border-background shadow-sm sm:h-32 sm:w-32"}`}>
+          <div className={`relative overflow-hidden border bg-card ${isAppShell ? "h-24 w-24 rounded-2xl border-white/10" : "storefront-logo h-20 w-20 rounded-[10px] border-4 border-background shadow-sm sm:h-32 sm:w-32 sm:rounded-[10px]"}`}>
             {shop?.logoUrl ? (
               <img loading="lazy" decoding="async" src={shop.logoUrl} alt="" className="h-full w-full object-cover" />
             ) : (
@@ -376,7 +381,7 @@ function ShopPage() {
             )}
           </div>
 
-          <div className={isAppShell ? "mt-4 flex items-center justify-between gap-4" : "storefront-identity mt-5 flex items-start justify-between gap-6 sm:ml-40 sm:-mt-16 sm:min-h-16"}>
+          <div className={isAppShell ? "mt-4 flex items-center justify-between gap-4" : "storefront-identity mt-5 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4 sm:ml-40 sm:-mt-16 sm:min-h-16"}>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <h1 className={`truncate text-2xl font-black ${!isAppShell ? "storefront-title sm:text-4xl" : ""}`}>{name}</h1>
@@ -389,7 +394,7 @@ function ShopPage() {
               </div>
             </div>
           </div>
-          <p className={`mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground ${!isAppShell ? "sm:ml-40" : ""}`}>
+          <p className={`mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground ${!isAppShell ? "storefront-about sm:ml-40" : ""}`}>
             {shop?.shopAbout?.trim() || "Branded digital goods and professional services on Oventric."}
           </p>
 
@@ -408,8 +413,21 @@ function ShopPage() {
             ))}
           </div>
 
+          {!isAppShell && (
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="storefront-trust storefront-trust-blue">
+                <ShieldCheck className="h-4 w-4 shrink-0" />
+                <span>Payments protected by Oventric</span>
+              </div>
+              <div className="storefront-trust storefront-trust-gold">
+                <PackageCheck className="h-4 w-4 shrink-0" />
+                <span>Digital delivery tracked securely</span>
+              </div>
+            </div>
+          )}
+
           {/* Actions */}
-          <div className={`mt-5 grid grid-cols-2 gap-3 ${!isAppShell ? "sm:ml-auto sm:max-w-md" : ""}`}>
+          <div className={`mt-4 grid grid-cols-2 gap-3 ${!isAppShell ? "sm:ml-auto sm:max-w-md" : ""}`}>
             {isOwner ? (
               <button
                 type="button"
@@ -445,7 +463,7 @@ function ShopPage() {
           </div>
 
           {/* Tabs */}
-          <nav className={`mt-8 flex items-center overflow-x-auto border-b border-border ${isAppShell ? "gap-1 md:sticky md:top-[57px] md:z-20 md:-mx-8 md:border-b-0 md:px-8 md:web-glass lg:-mx-12 lg:px-12" : "gap-8"}`}>
+          <nav className={`mt-5 flex items-center overflow-x-auto border-b border-border ${isAppShell ? "gap-1 md:sticky md:top-[57px] md:z-20 md:-mx-8 md:border-b-0 md:px-8 md:web-glass lg:-mx-12 lg:px-12" : "storefront-tabs sticky top-[65px] z-30 -mx-4 gap-7 bg-background/95 px-4 backdrop-blur md:top-[73px] md:mx-0 md:mt-8 md:px-0"}`}>
             {(
               [
                 ["shop", "Shop"],
@@ -460,7 +478,7 @@ function ShopPage() {
                 onClick={() => setTab(key)}
                 className={`-mb-px shrink-0 border-b-2 py-4 text-sm font-semibold transition-colors ${isAppShell ? "px-4" : ""} ${
                   tab === key
-                    ? isAppShell ? "border-primary text-white md:rounded-full md:border-b-0 md:bg-primary/10 md:text-primary" : "border-primary text-foreground"
+                    ? isAppShell ? "border-primary text-white md:rounded-full md:border-b-0 md:bg-primary/10 md:text-primary" : "border-primary text-primary"
                     : isAppShell ? "border-transparent text-slate-400 hover:text-white md:rounded-full md:border-b-0 md:hover:bg-white/5" : "border-transparent text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -476,7 +494,7 @@ function ShopPage() {
               <div className="h-28 animate-pulse rounded-2xl bg-white/5" />
             </div>
           ) : tab === "about" ? (
-            <div className="mt-5 rounded-2xl border border-white/10 bg-[#141417] p-4 text-sm leading-relaxed text-slate-300">
+            <div className="storefront-info-panel mt-5 p-5 text-sm leading-relaxed text-foreground">
               {shop?.shopAbout?.trim() || "This seller hasn't added a shop description yet."}
               {shop?.country && (
                 <div className="mt-3 text-xs text-slate-500">Based in {shop.country}</div>
@@ -494,7 +512,7 @@ function ShopPage() {
           ) : tab === "services" ? (
             <Grid items={services} price={price} emptyLabel="No services listed yet." web={!isAppShell} />
           ) : tab === "collections" ? (
-            <div className="mt-5 rounded-2xl border border-white/10 bg-[#141417] p-6 text-center text-sm text-slate-400">
+            <div className="storefront-info-panel mt-5 p-6 text-center text-sm text-muted-foreground">
               Collections are coming to this shop soon.
             </div>
           ) : (
@@ -506,11 +524,11 @@ function ShopPage() {
                   <Link
                     to="/product/$id"
                     params={{ id: focalProduct.id }}
-                    className="group mt-4 block overflow-hidden rounded-[2rem] border border-[#E5484D]/50 bg-[#141417] ring-2 ring-[#E5484D]/25 transition-all hover:border-[#E5484D]"
+                    className="storefront-selected group mt-4 block overflow-hidden rounded-[10px] border bg-card transition-all"
                   >
                     <div className="relative aspect-[16/9] w-full overflow-hidden bg-neutral-900">
                       <Cover url={focalProduct.coverUrl} className="h-full w-full transition-transform duration-700 group-hover:scale-105" />
-                      <div className="absolute top-5 left-5 rounded-full bg-[#E5484D] px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg">
+                      <div className="absolute left-4 top-4 rounded-full bg-primary px-3 py-1 text-[10px] font-black uppercase text-primary-foreground shadow-sm">
                         From the post
                       </div>
 
@@ -518,30 +536,23 @@ function ShopPage() {
                     <div className="p-6">
                       <div className="flex items-start justify-between gap-6">
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-xl font-black leading-tight text-white group-hover:text-[#E5484D] transition-colors">
+                          <h3 className="text-xl font-black leading-tight text-foreground transition-colors group-hover:text-primary">
                             {focalProduct.title}
                           </h3>
                           <p className="mt-2 line-clamp-2 text-sm text-slate-400">
                             {focalProduct.blurb || focalProduct.category}
                           </p>
                         </div>
-                        <div className="text-2xl font-black text-[#E5484D]">
+                          <div className="text-xl font-black text-primary sm:text-2xl">
                           {price(focalProduct.priceUsd, focalProduct)}
                         </div>
                       </div>
 
-                      <div className="mt-6 flex items-center justify-between border-t border-white/5 pt-5">
-                        <div className="flex items-center gap-3">
-                          <div className="flex -space-x-2.5">
-                            {[1, 2, 3].map((i) => (
-                              <div key={i} className="h-7 w-7 rounded-full border-2 border-[#141417] bg-slate-800" />
-                            ))}
-                          </div>
-                          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                            {compact(sales + 12)} global sales
-                          </span>
-                        </div>
-                        <div className="rounded-full bg-white/5 px-6 py-2.5 text-xs font-black uppercase tracking-widest text-white transition-colors group-hover:bg-[#E5484D]">
+                      <div className="mt-6 flex items-center justify-between border-t border-border pt-5">
+                        <span className="text-[11px] font-bold uppercase text-muted-foreground">
+                          {(focalProduct.sales ?? 0) > 0 ? `${compact(focalProduct.sales ?? 0)} sold` : focalProduct.category}
+                        </span>
+                        <div className="rounded-full bg-primary px-5 py-2.5 text-xs font-black uppercase text-primary-foreground">
                           View Details
                         </div>
                       </div>
@@ -566,7 +577,7 @@ function ShopPage() {
                         key={p.id}
                         to="/product/$id"
                         params={{ id: p.id }}
-                        className={isAppShell ? "w-[78%] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141417] sm:w-[46%]" : "storefront-product group overflow-hidden rounded-lg bg-card"}
+                        className={isAppShell ? "w-[78%] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 bg-[#141417] sm:w-[46%]" : "storefront-featured-card storefront-product group shrink-0 snap-start overflow-hidden rounded-[10px] bg-card"}
                       >
                         <Cover url={p.coverUrl} className="aspect-[16/10] w-full" />
                         <div className="p-3">
@@ -590,6 +601,26 @@ function ShopPage() {
                     ))}
                   </Rail>
                 </>
+              )}
+
+              {bestSellers.length > 1 && (
+                <section className="mt-9">
+                  <SectionHead title="Popular picks" action={<span className="text-xs font-bold text-newsfeed-blue">Most purchased</span>} />
+                  <div className="mt-3 grid gap-3 md:grid-cols-2">
+                    {bestSellers.slice(0, 2).map((p, index) => (
+                      <Link key={`editorial-${p.id}`} to="/product/$id" params={{ id: p.id }} className={`storefront-editorial storefront-editorial-${index + 1}`}>
+                        <Cover url={p.coverUrl} className="aspect-[16/10] w-full" />
+                        <div className="p-4">
+                          <div className="line-clamp-2 text-base font-black text-foreground">{p.title}</div>
+                          <div className="mt-3 flex items-center justify-between gap-3">
+                            <span className="font-black text-primary">{price(p.priceUsd, p)}</span>
+                            {(p.sales ?? 0) > 0 && <span className="text-xs font-bold text-muted-foreground">{compact(p.sales ?? 0)} sold</span>}
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
               )}
 
               {/* New arrivals rail */}
@@ -668,13 +699,14 @@ function ShopPage() {
 
               {/* Seller Content Module */}
               {isOwner === false && (
-                <div className="mt-12 mb-8 rounded-3xl border border-white/10 bg-[#141417] p-8 text-center">
-                  <h3 className="text-base font-black uppercase tracking-widest text-white">Identity Verified</h3>
-                  <p className="mt-2 text-sm text-slate-400">This shop belongs to a real person/creator. Check their Oventric profile for more content.</p>
+                 <div className="storefront-identity-panel mb-8 mt-12 p-8 text-center">
+                   <BadgeCheck className="mx-auto h-7 w-7 text-newsfeed-blue" />
+                   <h3 className="mt-3 text-base font-black uppercase text-foreground">Seller identity</h3>
+                   <p className="mt-2 text-sm text-muted-foreground">Visit this seller's Oventric profile for their work, links and community activity.</p>
                   <Link 
                     to="/profile/$id" 
                     params={{ id }} 
-                    className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-6 py-2.5 text-xs font-black uppercase tracking-widest text-white hover:bg-white/10"
+                     className="mt-6 inline-flex items-center gap-2 rounded-full border border-border bg-background px-6 py-2.5 text-xs font-black uppercase text-foreground transition-colors hover:border-newsfeed-blue/40"
                   >
                     View Broader Identity <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
