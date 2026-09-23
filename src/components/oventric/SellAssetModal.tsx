@@ -73,6 +73,9 @@ const FALLBACK_CATEGORIES: CategoryNode[] = [
 const MAX_FILE_MB = 50;
 const MAX_IMAGE_MB = 10;
 const MAX_IMAGES = 5;
+const fieldClass =
+  "mt-1 w-full rounded-[10px] border border-contact-line bg-contact-field px-3 py-2.5 text-sm text-contact-ink outline-none transition-[border-color,box-shadow,background-color] placeholder:text-contact-muted focus:border-contact-violet focus:bg-contact-surface focus:ring-4 focus:ring-contact-violet/10";
+const labelClass = "text-xs font-bold text-contact-ink";
 
 export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const persist = useServerFn(createProduct);
@@ -414,29 +417,27 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
             </div>
 
             <form onSubmit={submit} className="space-y-4 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4 sm:px-7 sm:pb-7">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <section className="rounded-[10px] border border-contact-blue/20 bg-contact-blue/5 p-3.5 sm:p-4">
+                <p className="mb-3 text-[10px] font-extrabold uppercase text-contact-blue">Product details</p>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <label className="block">
-                  <span className="text-xs font-medium text-slate-300 sm:text-slate-700">
-                    Asset name
-                  </span>
+                  <span className={labelClass}>Asset name</span>
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Neon Analytics Dashboard"
-                    className="mt-1 w-full bg-[#121214] sm:bg-white border border-white/10 sm:border-slate-300 rounded-[10px] px-3 py-3 text-sm text-white sm:text-slate-900 placeholder-slate-500 sm:placeholder-slate-400 focus:border-emerald-500/60 sm:focus:border-emerald-500 outline-none"
+                    className={fieldClass}
                   />
                 </label>
                 <label className="block">
-                  <span className="text-xs font-medium text-slate-300 sm:text-slate-700">
-                    Category
-                  </span>
+                  <span className={labelClass}>Category</span>
                   <select
                     value={category}
                     onChange={(e) => {
                       setCategory(e.target.value as ProductCategory);
                       setSubcategory("");
                     }}
-                    className="mt-1 w-full bg-[#121214] sm:bg-white border border-white/10 sm:border-slate-300 rounded-[10px] px-3 py-3 text-sm text-white sm:text-slate-900 outline-none focus:border-emerald-500/60 sm:focus:border-emerald-500"
+                    className={fieldClass}
                   >
                     {categories.map((c) => (
                       <option key={c.id} value={c.slug}>
@@ -445,19 +446,17 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                     ))}
                   </select>
                 </label>
-              </div>
+                </div>
               {(() => {
                 const chosen = categories.find((c) => c.slug === category);
                 if (!chosen || chosen.children.length === 0) return null;
                 return (
                   <label className="block">
-                    <span className="text-xs font-medium text-slate-300 sm:text-slate-700">
-                      Subcategory (optional)
-                    </span>
+                    <span className={labelClass}>Subcategory (optional)</span>
                     <select
                       value={subcategory}
                       onChange={(e) => setSubcategory(e.target.value)}
-                      className="mt-1 w-full bg-[#121214] sm:bg-white border border-white/10 sm:border-slate-300 rounded-[10px] px-3 py-3 text-sm text-white sm:text-slate-900 outline-none focus:border-emerald-500/60 sm:focus:border-emerald-500"
+                      className={fieldClass}
                     >
                       <option value="">— None —</option>
                       {chosen.children.map((s) => (
@@ -469,29 +468,29 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                   </label>
                 );
               })()}
+              </section>
 
-              <div>
-                <label className="flex items-center gap-2 text-sm text-slate-200 sm:text-slate-800">
+              <section className="rounded-[10px] border border-contact-violet/20 bg-contact-violet/5 p-3.5 sm:p-4">
+                <p className="mb-3 text-[10px] font-extrabold uppercase text-contact-violet">Pricing & earnings</p>
+                <label className="flex items-center gap-2 text-sm font-semibold text-contact-ink">
                   <input
                     type="checkbox"
                     checked={isFree}
                     onChange={(e) => setIsFree(e.target.checked)}
-                    className="accent-emerald-500"
+                    className="accent-contact-violet"
                   />
                   This is a free product
                 </label>
                 {!isFree && (
                   <div className="mt-2">
                     <label className="block">
-                      <span className="text-xs font-medium text-slate-300 sm:text-slate-700">
-                        Price ({homeCurrency})
-                      </span>
+                      <span className={labelClass}>Price ({homeCurrency})</span>
                       <input
                         value={priceInput}
                         onChange={(e) => setPriceInput(e.target.value)}
                         inputMode="decimal"
                         placeholder="29.00"
-                        className="mt-1 w-full bg-[#121214] sm:bg-white border border-white/10 sm:border-slate-300 rounded-[10px] px-3 py-3 text-sm text-white sm:text-slate-900 placeholder-slate-500 sm:placeholder-slate-400 focus:border-emerald-500/60 sm:focus:border-emerald-500 outline-none"
+                        className={fieldClass}
                       />
                     </label>
                   </div>
@@ -499,18 +498,16 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                 {!isFree && (
                   <div className="mt-2">
                     <label className="block">
-                      <span className="text-xs font-medium text-slate-300 sm:text-slate-700">
-                        Buyer cashback (% of the sale, optional)
-                      </span>
+                      <span className={labelClass}>Buyer cashback (% of the sale, optional)</span>
                       <input
                         value={cashbackInput}
                         onChange={(e) => setCashbackInput(e.target.value)}
                         inputMode="decimal"
                         placeholder="0"
-                        className="mt-1 w-full bg-[#121214] sm:bg-white border border-white/10 sm:border-slate-300 rounded-[10px] px-3 py-3 text-sm text-white sm:text-slate-900 placeholder-slate-500 sm:placeholder-slate-400 focus:border-emerald-500/60 sm:focus:border-emerald-500 outline-none"
+                        className={fieldClass}
                       />
                     </label>
-                    <p className="mt-1 text-[10px] leading-relaxed text-slate-500">
+                    <p className="mt-1 text-[10px] leading-relaxed text-contact-muted">
                       Reward buyers with Oventric credit on this product. It is paid out of your own
                       80% share (max 50%), and buyers can spend it on future Oventric purchases.
                     </p>
@@ -533,21 +530,21 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                         maximumFractionDigits: 2,
                       }).format(n);
                     return (
-                      <div className="mt-2 rounded-[10px] border border-emerald-500/20 sm:border-emerald-200 bg-emerald-500/5 sm:bg-emerald-50 p-3 text-xs space-y-1.5">
-                        <div className="flex items-center justify-between text-slate-200 sm:text-slate-800">
+                      <div className="mt-2 space-y-1.5 rounded-[10px] border border-contact-whatsapp/20 bg-contact-whatsapp-soft p-3 text-xs">
+                        <div className="flex items-center justify-between text-contact-ink">
                           <span>
                             You keep{" "}
-                            <span className="text-emerald-300 sm:text-emerald-700 font-bold">
+                            <span className="font-bold text-contact-whatsapp-strong">
                               80%
                             </span>{" "}
                             → your main wallet
                           </span>
-                          <span className="font-semibold text-emerald-300 sm:text-emerald-700">
+                          <span className="font-semibold text-contact-whatsapp-strong">
                             {fmt(sellerGrossLocal)}
                           </span>
                         </div>
                         {cashbackLocal > 0 && (
-                          <div className="flex items-center justify-between text-slate-300 sm:text-slate-700">
+                          <div className="flex items-center justify-between text-contact-copy">
                             <span>
                               Buyer cashback you fund{" "}
                               <span className="font-bold">{cbPct}%</span>
@@ -556,20 +553,20 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                           </div>
                         )}
                         {cashbackLocal > 0 && (
-                          <div className="flex items-center justify-between text-slate-100 sm:text-slate-900">
+                          <div className="flex items-center justify-between text-contact-ink">
                             <span className="font-semibold">Your final earnings</span>
-                            <span className="font-bold text-emerald-300 sm:text-emerald-700">
+                            <span className="font-bold text-contact-whatsapp-strong">
                               {fmt(sellerLocal)}
                             </span>
                           </div>
                         )}
-                        <div className="flex items-center justify-between text-slate-400 sm:text-slate-600">
+                        <div className="flex items-center justify-between text-contact-copy">
                           <span>
                             Oventric Digital Solutions keeps <span className="font-bold">20%</span>
                           </span>
                           <span className="font-medium">{fmt(platformLocal)}</span>
                         </div>
-                        <div className="text-[10px] leading-relaxed text-slate-500 sm:text-slate-500 pt-1 border-t border-white/5 sm:border-slate-200">
+                        <div className="border-t border-contact-whatsapp/15 pt-1 text-[10px] leading-relaxed text-contact-muted">
                           Buyer pays {fmt(priceLocal)}. Your earnings are credited to your Oventric
                           wallet and can be withdrawn to your local bank at any time.
                         </div>
@@ -578,17 +575,17 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                   })()}
                 {!isFree && (
                   <label
-                    className={`mt-2 flex items-start gap-2 text-xs p-3 rounded-[10px] border cursor-pointer ${agreedToSplit ? "border-emerald-500/50 sm:border-emerald-400 bg-emerald-500/5 sm:bg-emerald-50 text-slate-100 sm:text-slate-900" : "border-white/10 sm:border-slate-300 bg-[#121214] sm:bg-white text-slate-300 sm:text-slate-700"}`}
+                    className={`mt-2 flex cursor-pointer items-start gap-2 rounded-[10px] border p-3 text-xs ${agreedToSplit ? "border-contact-violet/35 bg-contact-violet/10 text-contact-ink" : "border-contact-line bg-contact-surface text-contact-copy"}`}
                   >
                     <input
                       type="checkbox"
                       checked={agreedToSplit}
                       onChange={(e) => setAgreedToSplit(e.target.checked)}
-                      className="mt-0.5 accent-emerald-500"
+                      className="mt-0.5 accent-contact-violet"
                     />
                     <span>
                       I agree to the{" "}
-                      <span className="font-semibold text-white sm:text-slate-900">
+                      <span className="font-semibold text-contact-ink">
                         80/20 revenue split
                       </span>{" "}
                       — I keep 80% of every sale, and Oventric Digital Solutions keeps 20% as a
@@ -596,57 +593,52 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                     </span>
                   </label>
                 )}
-              </div>
+              </section>
 
+              <section className="rounded-[10px] border border-contact-coral/20 bg-contact-coral/5 p-3.5 sm:p-4">
+                <p className="mb-3 text-[10px] font-extrabold uppercase text-contact-coral">Description & instructions</p>
               <label className="block">
-                <span className="text-xs font-medium text-slate-300 sm:text-slate-700">
-                  Description
-                </span>
+                <span className={labelClass}>Description</span>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
                   placeholder="What buyers get, tech stack, key features…"
                   style={{ fieldSizing: "content" } as React.CSSProperties}
-                  className="mt-1 w-full min-h-[80px] bg-[#121214] sm:bg-white border border-white/10 sm:border-slate-300 rounded-[10px] px-3 py-3 text-sm text-white sm:text-slate-900 placeholder-slate-500 sm:placeholder-slate-400 focus:border-emerald-500/60 sm:focus:border-emerald-500 outline-none resize-y"
+                  className={`${fieldClass} min-h-[76px] resize-y`}
                 />
               </label>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <label className="block">
-                  <span className="text-xs font-medium text-slate-300 sm:text-slate-700">
-                    Basic Info
-                  </span>
+                  <span className={labelClass}>Basic Info</span>
                   <textarea
                     value={basicInfo}
                     onChange={(e) => setBasicInfo(e.target.value)}
                     rows={3}
                     placeholder="Key specifications, requirements..."
                     style={{ fieldSizing: "content" } as React.CSSProperties}
-                    className="mt-1 w-full min-h-[80px] bg-[#121214] sm:bg-white border border-white/10 sm:border-slate-300 rounded-[10px] px-3 py-3 text-sm text-white sm:text-slate-900 placeholder-slate-500 sm:placeholder-slate-400 focus:border-emerald-500/60 sm:focus:border-emerald-500 outline-none resize-y"
+                    className={`${fieldClass} min-h-[76px] resize-y`}
                   />
                 </label>
                 <label className="block">
-                  <span className="text-xs font-medium text-slate-300 sm:text-slate-700">
-                    Activation Guide
-                  </span>
+                  <span className={labelClass}>Activation Guide</span>
                   <textarea
                     value={activationGuide}
                     onChange={(e) => setActivationGuide(e.target.value)}
                     rows={3}
                     placeholder="How to activate/install the product..."
                     style={{ fieldSizing: "content" } as React.CSSProperties}
-                    className="mt-1 w-full min-h-[80px] bg-[#121214] sm:bg-white border border-white/10 sm:border-slate-300 rounded-[10px] px-3 py-3 text-sm text-white sm:text-slate-900 placeholder-slate-500 sm:placeholder-slate-400 focus:border-emerald-500/60 sm:focus:border-emerald-500 outline-none resize-y"
+                    className={`${fieldClass} min-h-[76px] resize-y`}
                   />
                 </label>
               </div>
+              </section>
 
               <StockToggleField inStock={inStock} onChange={setInStock} appearance="light" />
 
               <label className="block">
-                <span className="text-xs font-medium text-slate-300 sm:text-slate-700">
-                  Stock available (optional)
-                </span>
+                <span className={labelClass}>Stock available (optional)</span>
                 <input
                   type="number"
                   min={0}
@@ -655,15 +647,16 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                   value={stockInput}
                   onChange={(e) => setStockInput(e.target.value)}
                   placeholder="Leave blank for unlimited"
-                  className="mt-1 w-full bg-[#121214] sm:bg-white border border-white/10 sm:border-slate-300 rounded-[10px] px-3 py-3 text-sm text-white sm:text-slate-900 placeholder-slate-500 sm:placeholder-slate-400 focus:border-emerald-500/60 sm:focus:border-emerald-500 outline-none"
+                  className={fieldClass}
                 />
-                <span className="mt-1 block text-[11px] text-slate-400 sm:text-slate-500">
+                <span className="mt-1 block text-[11px] text-contact-muted">
                   Shown on the product page as &quot;X in stock&quot;. Blank means unlimited copies.
                 </span>
               </label>
 
-              <div>
-                <span className="text-xs font-medium text-slate-300 sm:text-slate-700">
+              <section className="rounded-[10px] border border-contact-blue/20 bg-contact-blue/5 p-3.5 sm:p-4">
+                <p className="mb-3 text-[10px] font-extrabold uppercase text-contact-blue">Product gallery</p>
+                <span className={labelClass}>
                   Product images (up to {MAX_IMAGES}, first is cover)
                 </span>
                 <input
@@ -686,12 +679,12 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                 />
                 <label
                   htmlFor="sell-asset-images"
-                  className="mt-2 w-full flex items-center gap-3 border border-dashed border-white/15 sm:border-slate-300 rounded-[10px] p-3 hover:border-emerald-500/60 sm:hover:border-emerald-500 text-left cursor-pointer select-none"
+                  className="mt-2 flex w-full cursor-pointer select-none items-center gap-3 rounded-[10px] border border-dashed border-contact-blue/35 bg-contact-surface p-3 text-left transition-colors hover:border-contact-blue"
                 >
-                  <div className="w-16 h-16 rounded-[10px] bg-[#121214] sm:bg-slate-100 border border-white/10 sm:border-slate-300 flex items-center justify-center text-emerald-400 sm:text-emerald-600">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[10px] border border-contact-blue/20 bg-contact-blue/10 text-contact-blue sm:h-16 sm:w-16">
                     <ImagePlus className="w-6 h-6" />
                   </div>
-                  <div className="text-xs text-slate-400 sm:text-slate-600">
+                  <div className="text-xs text-contact-copy">
                     Tap to add images from your phone or camera roll. PNG/JPG up to {MAX_IMAGE_MB}MB
                     each. {images.length}/{MAX_IMAGES} added.
                   </div>
@@ -702,53 +695,56 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                     {previews.map((src, i) => (
                       <div
                         key={i}
-                        className={`relative aspect-square rounded-[10px] overflow-hidden border ${i === 0 ? "border-emerald-500/60 sm:border-emerald-500" : "border-white/10 sm:border-slate-200"}`}
+                        className={`relative aspect-square overflow-hidden rounded-[10px] border ${i === 0 ? "border-contact-blue" : "border-contact-line"}`}
                       >
                         <img loading="lazy" decoding="async" src={src} alt="" className="w-full h-full object-cover" />
                         {i === 0 && (
-                          <span className="absolute top-1 left-1 text-[9px] font-bold uppercase bg-emerald-500/90 text-black rounded px-1">
+                          <span className="absolute left-1 top-1 rounded bg-contact-blue px-1 text-[9px] font-bold uppercase text-contact-surface">
                             Cover
                           </span>
                         )}
-                        <button
+                        <Button
                           type="button"
+                          variant="destructive"
+                          size="icon-sm"
                           onClick={() => removeImage(i)}
-                          className="absolute top-1 right-1 p-1 rounded bg-black/70 text-white hover:bg-red-500/80"
+                          className="absolute right-1 top-1 h-7 w-7 rounded-[8px] shadow-none"
+                          aria-label={`Remove image ${i + 1}`}
                         >
                           <Trash2 className="w-3 h-3" />
-                        </button>
+                        </Button>
                       </div>
                     ))}
                   </div>
                 )}
-              </div>
+              </section>
 
-              <div
+              <section
                 className={
-                  requiresManualDelivery ? "opacity-50 pointer-events-none select-none" : ""
+                  `rounded-[10px] border border-contact-gold/25 bg-contact-gold/5 p-3.5 sm:p-4 ${requiresManualDelivery ? "pointer-events-none select-none opacity-50" : ""}`
                 }
                 aria-disabled={requiresManualDelivery}
               >
-                <span className="text-xs font-medium text-slate-300 sm:text-slate-700">
-                  Delivery
-                </span>
+                <p className="mb-3 text-[10px] font-extrabold uppercase text-contact-gold">Delivery</p>
                 <div className="mt-1 grid grid-cols-2 gap-2">
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
                     onClick={() => setMode("file")}
                     disabled={requiresManualDelivery}
-                    className={`flex items-center gap-2 px-3 py-3 rounded-[10px] border text-sm transition-colors ${mode === "file" ? "border-emerald-500/60 sm:border-emerald-500 bg-emerald-500/10 sm:bg-emerald-50 text-white sm:text-slate-900" : "border-white/10 sm:border-slate-300 bg-[#121214] sm:bg-white text-slate-400 sm:text-slate-600 hover:text-white sm:hover:text-slate-900"}`}
+                    className={`h-11 rounded-[10px] border px-3 text-sm shadow-none ${mode === "file" ? "border-contact-gold/50 bg-contact-gold/15 text-contact-ink" : "border-contact-line bg-contact-surface text-contact-copy hover:bg-contact-field hover:text-contact-ink"}`}
                   >
                     <Upload className="w-4 h-4" /> Upload file
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
+                    variant="outline"
                     onClick={() => setMode("url")}
                     disabled={requiresManualDelivery}
-                    className={`flex items-center gap-2 px-3 py-3 rounded-[10px] border text-sm transition-colors ${mode === "url" ? "border-emerald-500/60 sm:border-emerald-500 bg-emerald-500/10 sm:bg-emerald-50 text-white sm:text-slate-900" : "border-white/10 sm:border-slate-300 bg-[#121214] sm:bg-white text-slate-400 sm:text-slate-600 hover:text-white sm:hover:text-slate-900"}`}
+                    className={`h-11 rounded-[10px] border px-3 text-sm shadow-none ${mode === "url" ? "border-contact-gold/50 bg-contact-gold/15 text-contact-ink" : "border-contact-line bg-contact-surface text-contact-copy hover:bg-contact-field hover:text-contact-ink"}`}
                   >
                     <Link2 className="w-4 h-4" /> External link
-                  </button>
+                  </Button>
                 </div>
 
                 {mode === "file" ? (
@@ -773,19 +769,19 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                     />
                     <label
                       htmlFor="sell-asset-file"
-                      className="mt-2 w-full block border border-dashed border-white/15 sm:border-slate-300 rounded-[10px] p-4 text-center cursor-pointer hover:border-emerald-500/60 sm:hover:border-emerald-500 transition-colors select-none"
+                      className="mt-2 block w-full cursor-pointer select-none rounded-[10px] border border-dashed border-contact-gold/40 bg-contact-surface p-4 text-center transition-colors hover:border-contact-gold"
                     >
                       {file ? (
-                        <div className="text-sm text-white sm:text-slate-900">
+                        <div className="text-sm text-contact-ink">
                           <div className="font-medium truncate">{file.name}</div>
-                          <div className="text-xs text-slate-400 sm:text-slate-500 mt-1">
+                          <div className="mt-1 text-xs text-contact-muted">
                             {(file.size / (1024 * 1024)).toFixed(2)} MB — tap to replace
                           </div>
                         </div>
                       ) : (
-                        <div className="text-sm text-slate-400 sm:text-slate-600">
-                          <Upload className="w-5 h-5 mx-auto mb-2 text-emerald-400 sm:text-emerald-600" />
-                          <div className="font-medium text-slate-200 sm:text-slate-900">
+                        <div className="text-sm text-contact-copy">
+                          <Upload className="mx-auto mb-2 h-5 w-5 text-contact-gold" />
+                          <div className="font-medium text-contact-ink">
                             Tap to upload product ZIP file
                           </div>
                           <div className="text-xs mt-1">ZIP / RAR / 7Z — max {MAX_FILE_MB}MB</div>
@@ -799,21 +795,21 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                     onChange={(e) => setExternalUrl(e.target.value)}
                     disabled={requiresManualDelivery}
                     placeholder="https://your-delivery-link.com/download"
-                    className="mt-2 w-full bg-[#121214] sm:bg-white border border-white/10 sm:border-slate-300 rounded-[10px] px-3 py-3 text-sm text-white sm:text-slate-900 placeholder-slate-500 sm:placeholder-slate-400 focus:border-emerald-500/60 sm:focus:border-emerald-500 outline-none"
+                    className={fieldClass}
                   />
                 )}
-              </div>
+              </section>
 
               {requiresManualDelivery && (
-                <div className="rounded-[10px] border border-border bg-muted p-3 text-[12px] sm:text-xs text-foreground leading-relaxed">
-                  <div className="font-semibold text-foreground mb-1">
+                <div className="rounded-[10px] border border-contact-coral/25 bg-contact-coral/5 p-3 text-[12px] leading-relaxed text-contact-copy sm:text-xs">
+                  <div className="mb-1 font-semibold text-contact-ink">
                     Manual delivery selected — file / link fields are locked.
                   </div>
                   After a buyer pays, funds are held in escrow and you must deliver on Oventric
                   (share a link, upload a file, or attach it in the buyer's chat). We also relay the
                   order to your Oventric inbox and email. Payment releases to your wallet only after
                   the buyer confirms receipt.{" "}
-                  <span className="font-semibold">
+                  <span className="font-semibold text-contact-ink">
                     Never finish deals on WhatsApp or any other app
                   </span>{" "}
                   — escrow, refunds and dispute mediation only cover trades completed on Oventric.
@@ -822,20 +818,20 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <label
-                  className={`flex items-start gap-2 text-sm p-3 rounded-[10px] border ${!requiresManualDelivery ? "bg-emerald-500/5 sm:bg-emerald-50 border-emerald-500/30 sm:border-emerald-200 text-slate-100 sm:text-slate-900" : "bg-[#121214] sm:bg-slate-100 border-white/10 sm:border-slate-300 text-slate-200 sm:text-slate-800"}`}
+                  className={`flex items-start gap-2 rounded-[10px] border p-3 text-sm ${!requiresManualDelivery ? "border-contact-whatsapp/30 bg-contact-whatsapp-soft text-contact-ink" : "border-contact-line bg-contact-field text-contact-copy"}`}
                 >
                   <input
                     type="checkbox"
                     checked={!requiresManualDelivery}
                     onChange={(e) => setRequiresManualDelivery(!e.target.checked)}
-                    className="mt-0.5 accent-emerald-500"
+                    className="mt-0.5 accent-contact-whatsapp"
                   />
                   <span>
                     <span className="flex items-center gap-1 font-medium">
-                      <Zap className="w-3.5 h-3.5 text-emerald-400 sm:text-emerald-600" /> Instant
+                      <Zap className="h-3.5 w-3.5 text-contact-whatsapp" /> Instant
                       download
                     </span>
-                    <span className="block text-[11px] text-slate-400 sm:text-slate-600 mt-0.5">
+                    <span className="mt-0.5 block text-[11px] text-contact-copy">
                       Buyer gets the file (or link) automatically as soon as payment is confirmed —
                       no action needed from you. Best for themes, plugins, scripts, and any packaged
                       download.
@@ -843,17 +839,17 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                   </span>
                 </label>
                 <label
-                  className={`flex items-start gap-2 text-sm p-3 rounded-[10px] border ${requiresManualDelivery ? "bg-emerald-500/5 sm:bg-emerald-50 border-emerald-500/30 sm:border-emerald-200 text-slate-100 sm:text-slate-900" : "bg-[#121214] sm:bg-slate-100 border-white/10 sm:border-slate-300 text-slate-200 sm:text-slate-800"}`}
+                  className={`flex items-start gap-2 rounded-[10px] border p-3 text-sm ${requiresManualDelivery ? "border-contact-coral/30 bg-contact-coral/5 text-contact-ink" : "border-contact-line bg-contact-field text-contact-copy"}`}
                 >
                   <input
                     type="checkbox"
                     checked={requiresManualDelivery}
                     onChange={(e) => setRequiresManualDelivery(e.target.checked)}
-                    className="mt-0.5 accent-emerald-500"
+                    className="mt-0.5 accent-contact-coral"
                   />
                   <span>
                     <span className="block font-medium">Requires manual delivery / setup</span>
-                    <span className="block text-[11px] text-slate-400 sm:text-slate-600 mt-0.5">
+                    <span className="mt-0.5 block text-[11px] text-contact-copy">
                       Check this if the buyer needs custom deployment (SaaS setup, provisioning,
                       license issuance) instead of an instant download. We’ll collect their email at
                       checkout and open an order chat so you can deliver in-app.
@@ -863,7 +859,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
               </div>
 
               <div className="sticky bottom-0 z-10 -mx-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-t border-contact-line bg-contact-surface/95 px-4 pb-[max(0.25rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md sm:-mx-7 sm:px-7 sm:pb-0">
-                <div className="text-xs text-slate-400 sm:text-slate-600 min-h-[1rem]">
+                <div className="min-h-[1rem] truncate text-xs text-contact-muted">
                   {progress}
                 </div>
                 <div className="flex gap-2">
