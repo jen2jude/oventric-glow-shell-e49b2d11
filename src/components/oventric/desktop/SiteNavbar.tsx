@@ -218,17 +218,21 @@ export function SiteNavbar({ onSelect, onCreate, avatarUrl, name, country, curre
           </div>
           <nav className="space-y-6 p-5">
             <div className="space-y-4">
-              <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Navigation</h3>
-              {MOBILE_DESKTOP_NAV_ITEMS.map(({ label, section, icon: Icon }) => (
-                <button
-                  key={label}
-                  onClick={() => { onSelect(section); setMenuOpen(false); }}
-                  className="flex min-h-24 w-full flex-col items-start justify-between rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-3 text-left shadow-sm"
-                >
-                  <span className={`grid size-9 place-items-center rounded-[8px] ${MOBILE_NAV_TONES[index % MOBILE_NAV_TONES.length]}`}><Icon className="h-4.5 w-4.5" strokeWidth={2.2} /></span>
-                  <span className="font-wallet-display text-sm font-bold text-newsfeed-ink">{label}</span>
-                </button>
-              ))}
+              <div>
+                <p className="font-wallet-display text-xl font-bold">Where do you want to go?</p>
+                <p className="mt-1 text-xs font-medium text-newsfeed-muted">Your Oventric spaces, all in one place.</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {MOBILE_NAV_ITEMS.map(({ label, section, icon: Icon }, index) => (
+                  <button
+                    key={label}
+                    onClick={() => { onSelect(section); setMenuOpen(false); }}
+                    className="flex min-h-24 w-full flex-col items-start justify-between rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-3 text-left shadow-sm"
+                  >
+                    <span className={`grid size-9 place-items-center rounded-[8px] ${MOBILE_NAV_TONES[index % MOBILE_NAV_TONES.length]}`}><Icon className="h-4.5 w-4.5" strokeWidth={2.2} /></span>
+                    <span className="font-wallet-display text-sm font-bold text-newsfeed-ink">{label}</span>
+                  </button>
+                ))}
               </div>
               <Link
                 to="/sellers"
