@@ -212,22 +212,26 @@ export async function listManualPayments(
   let q = supabase
     .from("manual_payments")
     .select("*, profiles:profiles!manual_payments_user_id_fkey(display_name, username)")
-    .not("proof_path", "is", null)
     .order("created_at", { ascending: false })
     .limit(200);
+  q = opts.admin && opts.status === "ATTEMPTED"
+    ? q.is("proof_path", null)
+    : q.not("proof_path", "is", null);
   if (opts.userId) q = q.eq("user_id", opts.userId);
-  if (opts.status && opts.status !== "ALL") q = q.eq("status", opts.status);
+  if (opts.status && opts.status !== "ALL" && opts.status !== "ATTEMPTED") q = q.eq("status", opts.status);
   const { data, error } = await q;
   if (error) {
     // Profile join is optional — retry flat if the relationship isn't exposed.
     let q2 = supabase
       .from("manual_payments")
       .select("*")
-      .not("proof_path", "is", null)
       .order("created_at", { ascending: false })
       .limit(200);
+    q2 = opts.admin && opts.status === "ATTEMPTED"
+      ? q2.is("proof_path", null)
+      : q2.not("proof_path", "is", null);
     if (opts.userId) q2 = q2.eq("user_id", opts.userId);
-    if (opts.status && opts.status !== "ALL") q2 = q2.eq("status", opts.status);
+    if (opts.status && opts.status !== "ALL" && opts.status !== "ATTEMPTED") q2 = q2.eq("status", opts.status);
     const retry = await q2;
     if (retry.error) throw new Error(retry.error.message);
     return (retry.data ?? []).map(mapRow);
