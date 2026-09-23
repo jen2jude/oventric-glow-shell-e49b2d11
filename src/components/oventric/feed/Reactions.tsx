@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Heart, ThumbsUp, ThumbsDown, Laugh, Crown } from "lucide-react";
 import type { ReactionType } from "@/lib/posts.functions";
-import heartAsset from "@/assets/heart-3d.png.asset.json";
-import thumbsUpAsset from "@/assets/thumbs-up-3d.png.asset.json";
-import thumbsDownAsset from "@/assets/thumbs-down-3d.png.asset.json";
-import laughAsset from "@/assets/laugh-3d.png.asset.json";
-import crownAsset from "@/assets/crown-3d.png.asset.json";
 
 export const REACTION_META: Record<
   ReactionType,
