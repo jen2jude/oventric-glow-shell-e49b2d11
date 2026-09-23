@@ -39,7 +39,7 @@ export function PublicChrome({
 
   return (
     <div
-      className={`page-light relative min-h-screen w-full max-w-full overflow-x-hidden bg-[#121214] md:bg-slate-50 text-slate-200 md:text-slate-700 flex flex-col ${
+      className={`page-light relative min-h-screen w-full max-w-full overflow-x-clip bg-[#121214] md:bg-slate-50 text-slate-200 md:text-slate-700 flex flex-col ${
         lightDesktop ? "bg-white text-slate-700" : ""
       }`}
     >
@@ -56,7 +56,7 @@ export function PublicChrome({
           />
         )}
       </div>
-      <main className="flex-1 min-w-0 w-full max-w-full overflow-x-hidden pb-20 md:pb-0">
+      <main className="flex-1 min-w-0 w-full max-w-full overflow-x-clip pb-20 md:pb-0">
         {children}
       </main>
       <SiteFooterAuto />
