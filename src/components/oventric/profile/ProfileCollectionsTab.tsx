@@ -456,7 +456,9 @@ function CreatorPostOverlay({
         <div className="flex shrink-0 items-center justify-between border-b border-slate-100 px-4 py-3">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.14em] text-violet-600">Saved showcase</p>
-            <h3 className="text-sm font-black text-slate-950">Creator post</h3>
+            <h3 className="text-sm font-black text-slate-950">
+              {posts.length > 1 ? `${posts.length} saved posts` : "Creator post"}
+            </h3>
           </div>
           <Button type="button" variant="ghost" size="icon" onClick={onClose} aria-label="Close" className="rounded-full text-slate-600 hover:bg-rose-50 hover:text-rose-600">
             <X className="h-5 w-5" />
