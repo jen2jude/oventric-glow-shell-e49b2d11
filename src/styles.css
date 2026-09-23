@@ -456,11 +456,10 @@
   box-shadow: 0 18px 35px -30px color-mix(in oklab, var(--home-card-accent) 65%, var(--home-ink));
 }
 
-.home-pop-reason:nth-child(4n + 2) { --home-card-accent: var(--home-pop-violet); }
-.home-pop-reason:nth-child(4n + 3) { --home-card-accent: var(--home-pop-red); }
-.home-pop-reason:nth-child(4n + 4) { --home-card-accent: var(--home-pop-yellow); }
-.home-pop-reason:nth-child(4n + 5) { --home-card-accent: var(--home-pop-red); }
-.home-pop-reason:nth-child(4n + 6) { --home-card-accent: var(--home-pop-cyan); }
+.home-pop-reason:nth-child(5n + 2) { --home-card-accent: var(--home-pop-violet); }
+.home-pop-reason:nth-child(5n + 3) { --home-card-accent: var(--home-pop-green); }
+.home-pop-reason:nth-child(5n + 4) { --home-card-accent: var(--home-pop-yellow); }
+.home-pop-reason:nth-child(5n + 5) { --home-card-accent: var(--home-pop-red); }
 .home-pop-reason:hover {
   box-shadow: 0 24px 45px -29px color-mix(in oklab, var(--home-card-accent) 70%, var(--home-ink));
 }
