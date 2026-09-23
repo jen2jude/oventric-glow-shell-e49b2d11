@@ -17,5 +17,3 @@
 - [x] Finish storefront navigation: solid header, back button, no footer
 - [x] Add Social Profile and Shop Profile shortcuts to the user menu
 - [x] Make the social profile header sticky and refresh its Back button
-
-- [x] Redesign the fixed mobile bottom navigation with signature category accents

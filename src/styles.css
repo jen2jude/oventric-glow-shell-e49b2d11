@@ -2621,30 +2621,7 @@ html.high-gpu .rgb-promo-border {
    content on <768px, so reserve space so page CTAs aren't overlapped. */
 @media (max-width: 767px) {
   body {
-    padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
-  }
-}
-
-.mobile-spectrum-dock {
-  display: flex;
-  font-family: var(--font-wallet-body);
-  isolation: isolate;
-}
-
-.mobile-spectrum-dock__rail {
-  background: linear-gradient(
-    90deg,
-    var(--newsfeed-coral),
-    var(--newsfeed-gold),
-    var(--newsfeed-green),
-    var(--newsfeed-blue),
-    var(--newsfeed-violet)
-  );
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mobile-spectrum-dock * {
-    transition-duration: 0.01ms !important;
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
   }
 }
 
