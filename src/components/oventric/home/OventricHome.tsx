@@ -1060,8 +1060,8 @@ function HomeFooter() {
   return (
     <footer className="home-pop-footer mt-12 overflow-hidden border-t lg:mt-16">
       <div className="mx-auto flex w-full max-w-[1280px] flex-col items-center gap-6 px-4 py-10 text-center sm:px-6 lg:flex-row lg:justify-between lg:gap-8 lg:px-8 lg:py-12 lg:text-left">
-        <p className="text-sm text-slate-400">
-          <span className="font-extrabold text-white">Oventric</span> &copy; 2026
+        <p className="text-sm text-newsfeed-muted">
+          <span className="font-extrabold text-newsfeed-ink">Oventric</span> &copy; 2026
         </p>
 
         <div className="flex items-center gap-2">
