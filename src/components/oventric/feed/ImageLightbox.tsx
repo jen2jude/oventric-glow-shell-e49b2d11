@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, X, MousePointerClick, Pause } from "lucide-react";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
 
@@ -49,11 +50,32 @@ export function ImageLightbox(props: GalleryProps | LegacyProps) {
       if (e.key === "ArrowLeft") setIndex((i) => clamp(i - 1));
     };
     document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    // Hard lock the background: freeze the page in place and restore on close.
+    const body = document.body;
+    const scrollY = window.scrollY;
+    const prev = {
+      overflow: body.style.overflow,
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      right: body.style.right,
+      width: body.style.width,
+    };
+    body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.left = "0";
+    body.style.right = "0";
+    body.style.width = "100%";
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
+      body.style.overflow = prev.overflow;
+      body.style.position = prev.position;
+      body.style.top = prev.top;
+      body.style.left = prev.left;
+      body.style.right = prev.right;
+      body.style.width = prev.width;
+      window.scrollTo(0, scrollY);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onClose, total]);
@@ -194,20 +216,24 @@ export function ImageLightbox(props: GalleryProps | LegacyProps) {
     return () => el.removeEventListener("wheel", onWheel);
   }, []);
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
+      className="fixed inset-0 z-[300] bg-black/95 flex items-center justify-center"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
     >
       <button
         type="button"
-        onClick={onClose}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
         aria-label="Close"
-        className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/70 hover:bg-black text-white border border-white/20"
+        className="absolute z-20 p-2.5 rounded-full bg-white text-black shadow-lg hover:bg-white/90 border border-black/10"
+        style={{ top: "calc(env(safe-area-inset-top, 0px) + 16px)", right: "16px" }}
       >
-        <X className="w-5 h-5" />
+        <X className="w-5 h-5" strokeWidth={2.5} />
       </button>
 
       {total > 1 && (
@@ -282,6 +308,7 @@ export function ImageLightbox(props: GalleryProps | LegacyProps) {
           </div>
         ))}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
