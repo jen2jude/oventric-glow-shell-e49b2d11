@@ -301,7 +301,7 @@ function LinkDock({ post }: { post: CreatorPostDTO }) {
   );
 }
 
-function CreatorCard({
+export function CreatorCard({
   post,
   onRecordedView,
   isOwner,
