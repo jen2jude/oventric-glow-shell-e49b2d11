@@ -2551,9 +2551,8 @@ function emptyContentFor(
       };
     case "groups":
       return {
-        title: `${name} hasn't joined any circle yet`,
-        hint: "Click below to explore circles and request to join.",
-        primary: { label: "Click here to join a circle", onClick: onJoinCircle },
+        title: `${name} has no groups yet`,
+        hint: "Groups this member belongs to will show up here.",
       };
     case "marketplace":
       return {
