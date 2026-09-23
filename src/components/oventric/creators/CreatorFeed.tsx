@@ -107,6 +107,43 @@ function PreviewVideo({ src, poster }: { src: string; poster: string | null }) {
   );
 }
 
+/** Linked video (YouTube/Vimeo/etc): mounts and plays only while scrolled into view. */
+function ViewportEmbed({ src, title }: { src: string; title: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), {
+      threshold: 0.5,
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className="mt-3 aspect-video w-full overflow-hidden rounded-[10px] border border-slate-100 bg-slate-50"
+    >
+      {visible ? (
+        <iframe
+          src={src}
+          title={title}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"
+          allowFullScreen
+          className="h-full w-full"
+        />
+      ) : (
+        <div className="grid h-full w-full place-items-center text-slate-300">
+          <Play className="h-8 w-8" />
+        </div>
+      )}
+    </div>
+  );
+}
+
 /** Buy / download call-to-action for a showcase item that has a listed asset. */
 function AssetCta({ asset }: { asset: NonNullable<CreatorPostDTO["asset"]> }) {
   const { baseCurrency } = useOnboarding();
