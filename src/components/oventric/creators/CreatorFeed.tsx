@@ -453,6 +453,20 @@ export function CreatorFeed({ reloadKey }: { reloadKey: number }) {
   const [posts, setPosts] = useState<CreatorPostDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [field, setField] = useState<string>("all");
+  const [meId, setMeId] = useState<string | null>(null);
+  const [hidden, setHidden] = useState<Set<string>>(() => new Set());
+
+  useEffect(() => {
+    setHidden(getHiddenPosts());
+    let alive = true;
+    supabase.auth.getUser().then(({ data }) => {
+      if (alive) setMeId(data.user?.id ?? null);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
 
   useEffect(() => {
     let alive = true;
