@@ -41,7 +41,15 @@ const TABS = [
   idle: string;
 }>;
 
-export function FeedTabs({ tab, onTabChange }: { tab: FeedTab; onTabChange: (tab: FeedTab) => void }) {
+export function FeedTabs({
+  tab,
+  onTabChange,
+  belowManagedHeader = false,
+}: {
+  tab: FeedTab;
+  onTabChange: (tab: FeedTab) => void;
+  belowManagedHeader?: boolean;
+}) {
   const railRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -57,7 +65,11 @@ export function FeedTabs({ tab, onTabChange }: { tab: FeedTab; onTabChange: (tab
     <nav
       ref={railRef}
       aria-label="Newsfeed views"
-      className="sticky top-[66px] z-30 flex snap-x overflow-x-auto border-b border-newsfeed-line bg-newsfeed-surface/95 px-2 backdrop-blur-md no-scrollbar scroll-smooth md:top-[72px] lg:static"
+      className={`sticky z-30 flex snap-x overflow-x-auto border-b border-newsfeed-line bg-newsfeed-surface/95 px-2 backdrop-blur-md no-scrollbar scroll-smooth ${
+        belowManagedHeader
+          ? "top-0"
+          : "top-[66px] md:top-[72px] lg:top-14"
+      }`}
     >
       {TABS.map(({ key, label, icon: Icon, active, idle }) => {
         const selected = tab === key;
