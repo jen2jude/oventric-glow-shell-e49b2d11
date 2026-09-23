@@ -1076,7 +1076,7 @@ function HomeFooter() {
             <Link
               key={l.label}
               to={l.to}
-              className="text-sm font-semibold text-slate-400 transition-colors hover:text-white"
+              className="text-sm font-semibold text-newsfeed-muted transition-colors hover:text-newsfeed-violet"
             >
               {l.label}
             </Link>
