@@ -22,6 +22,9 @@ interface Attachment {
 }
 
 const MAX_ASSET_MB = 50;
+/** Uploaded showcase clips stay short; longer videos are pasted as links. */
+const MAX_CLIP_SECONDS = 30;
+const MAX_CLIP_BYTES = 15 * 1024 * 1024;
 
 /** Creator showcase publisher: title, caption, media, sellable asset, links. */
 export function CreatorPublishModal({
