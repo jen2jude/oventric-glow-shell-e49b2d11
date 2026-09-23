@@ -230,6 +230,14 @@
   --newsfeed-coral: oklch(0.67 0.2 25);
   --newsfeed-coral-soft: oklch(0.965 0.035 25);
   --newsfeed-panel-shadow: 0 18px 50px -34px color-mix(in oklab, var(--newsfeed-ink) 32%, transparent);
+  --reaction-spectrum-wash: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--newsfeed-blue) 13%, transparent),
+    color-mix(in oklab, var(--newsfeed-violet) 11%, transparent),
+    color-mix(in oklab, var(--newsfeed-gold) 13%, transparent),
+    color-mix(in oklab, var(--newsfeed-coral) 12%, transparent)
+  );
+  --reaction-spectrum-shadow: 0 12px 34px -12px color-mix(in oklab, var(--newsfeed-violet) 30%, transparent);
   --about-on-image: oklch(1 0 0);
   --contact-surface: oklch(1 0 0);
   --contact-ink: oklch(0.22 0.03 258);
@@ -246,6 +254,66 @@
   --contact-gold: oklch(0.79 0.15 85);
   --contact-coral: oklch(0.67 0.2 25);
   --contact-sheet-shadow: 0 24px 70px -28px color-mix(in oklab, var(--contact-ink) 35%, transparent);
+}
+
+.reaction-spectrum-picker {
+  box-shadow: var(--reaction-spectrum-shadow), 0 1px 2px color-mix(in oklab, var(--newsfeed-ink) 9%, transparent);
+  isolation: isolate;
+  overflow: visible;
+}
+
+.reaction-spectrum-picker::after {
+  position: absolute;
+  bottom: -5px;
+  left: 24px;
+  z-index: -1;
+  width: 10px;
+  height: 10px;
+  content: "";
+  transform: rotate(45deg);
+  border-right: 1px solid var(--newsfeed-line);
+  border-bottom: 1px solid var(--newsfeed-line);
+  background: var(--newsfeed-surface);
+}
+
+.reaction-spectrum-wash {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+  background: var(--reaction-spectrum-wash);
+  pointer-events: none;
+}
+
+.reaction-spectrum-button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.reaction-spectrum-halo {
+  position: absolute;
+  inset: 4px;
+  border-radius: 8px;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.reaction-spectrum-button:hover .reaction-spectrum-halo,
+.reaction-spectrum-button:focus-visible .reaction-spectrum-halo {
+  opacity: 0.1;
+}
+
+.reaction-spectrum-badge,
+.reaction-spectrum-splash {
+  border: 1px solid color-mix(in oklab, currentColor 22%, var(--newsfeed-surface));
+  box-shadow: 0 8px 20px -12px currentColor;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reaction-spectrum-button {
+    transition: none;
+  }
 }
 
 .help-board-web {
