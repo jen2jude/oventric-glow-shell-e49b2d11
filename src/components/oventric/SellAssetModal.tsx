@@ -123,26 +123,18 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
 
   useEffect(() => {
     if (!open) return;
-    const scrollY = window.scrollY;
     const previous = {
       overflow: document.body.style.overflow,
-      position: document.body.style.position,
-      top: document.body.style.top,
-      width: document.body.style.width,
+      htmlOverflow: document.documentElement.style.overflow,
       overscrollBehavior: document.documentElement.style.overscrollBehavior,
     };
     document.body.style.overflow = "hidden";
-    document.body.style.position = "fixed";
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = "100%";
+    document.documentElement.style.overflow = "hidden";
     document.documentElement.style.overscrollBehavior = "none";
     return () => {
       document.body.style.overflow = previous.overflow;
-      document.body.style.position = previous.position;
-      document.body.style.top = previous.top;
-      document.body.style.width = previous.width;
+      document.documentElement.style.overflow = previous.htmlOverflow;
       document.documentElement.style.overscrollBehavior = previous.overscrollBehavior;
-      window.scrollTo(0, scrollY);
     };
   }, [open]);
 
@@ -661,7 +653,6 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                 </span>
                 <input
                   ref={imageInputRef}
-                  id="sell-asset-images"
                   type="file"
                   accept="image/*"
                   multiple
@@ -669,16 +660,12 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                     addImages(e.target.files);
                     if (e.target) e.target.value = "";
                   }}
-                  style={{
-                    position: "absolute",
-                    width: 1,
-                    height: 1,
-                    opacity: 0,
-                    pointerEvents: "none",
-                  }}
+                  className="sr-only"
                 />
-                <label
-                  htmlFor="sell-asset-images"
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => imageInputRef.current?.click()}
                   className="mt-2 flex w-full cursor-pointer select-none items-center gap-3 rounded-[10px] border border-dashed border-contact-blue/35 bg-contact-surface p-3 text-left transition-colors hover:border-contact-blue"
                 >
                   <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[10px] border border-contact-blue/20 bg-contact-blue/10 text-contact-blue sm:h-16 sm:w-16">
@@ -688,7 +675,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                     Tap to add images from your phone or camera roll. PNG/JPG up to {MAX_IMAGE_MB}MB
                     each. {images.length}/{MAX_IMAGES} added.
                   </div>
-                </label>
+                </Button>
 
                 {previews.length > 0 && (
                   <div className="mt-2 grid grid-cols-5 gap-2">
@@ -719,19 +706,14 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                 )}
               </section>
 
-              <section
-                className={
-                  `rounded-[10px] border border-contact-gold/25 bg-contact-gold/5 p-3.5 sm:p-4 ${requiresManualDelivery ? "pointer-events-none select-none opacity-50" : ""}`
-                }
-                aria-disabled={requiresManualDelivery}
-              >
+              {!requiresManualDelivery && (
+              <section className="rounded-[10px] border border-contact-gold/25 bg-contact-gold/5 p-3.5 sm:p-4">
                 <p className="mb-3 text-[10px] font-extrabold uppercase text-contact-gold">Delivery</p>
                 <div className="mt-1 grid grid-cols-2 gap-2">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => setMode("file")}
-                    disabled={requiresManualDelivery}
                     className={`h-11 rounded-[10px] border px-3 text-sm shadow-none ${mode === "file" ? "border-contact-gold/50 bg-contact-gold/15 text-contact-ink" : "border-contact-line bg-contact-surface text-contact-copy hover:bg-contact-field hover:text-contact-ink"}`}
                   >
                     <Upload className="w-4 h-4" /> Upload file
@@ -740,7 +722,6 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                     type="button"
                     variant="outline"
                     onClick={() => setMode("url")}
-                    disabled={requiresManualDelivery}
                     className={`h-11 rounded-[10px] border px-3 text-sm shadow-none ${mode === "url" ? "border-contact-gold/50 bg-contact-gold/15 text-contact-ink" : "border-contact-line bg-contact-surface text-contact-copy hover:bg-contact-field hover:text-contact-ink"}`}
                   >
                     <Link2 className="w-4 h-4" /> External link
@@ -751,24 +732,18 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                   <>
                     <input
                       ref={fileInputRef}
-                      id="sell-asset-file"
                       type="file"
-                      disabled={requiresManualDelivery}
-                      style={{
-                        position: "absolute",
-                        width: 1,
-                        height: 1,
-                        opacity: 0,
-                        pointerEvents: "none",
-                      }}
+                      className="sr-only"
                       onChange={(e) => {
                         handleFile(e.target.files?.[0] ?? null);
                         if (e.target) e.target.value = "";
                       }}
                       accept=".zip,.rar,.7z,.tar,.gz,application/zip,application/x-zip-compressed,application/x-rar-compressed,application/x-7z-compressed"
                     />
-                    <label
-                      htmlFor="sell-asset-file"
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
                       className="mt-2 block w-full cursor-pointer select-none rounded-[10px] border border-dashed border-contact-gold/40 bg-contact-surface p-4 text-center transition-colors hover:border-contact-gold"
                     >
                       {file ? (
@@ -787,18 +762,18 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                           <div className="text-xs mt-1">ZIP / RAR / 7Z — max {MAX_FILE_MB}MB</div>
                         </div>
                       )}
-                    </label>
+                    </Button>
                   </>
                 ) : (
                   <input
                     value={externalUrl}
                     onChange={(e) => setExternalUrl(e.target.value)}
-                    disabled={requiresManualDelivery}
                     placeholder="https://your-delivery-link.com/download"
                     className={fieldClass}
                   />
                 )}
               </section>
+              )}
 
               {requiresManualDelivery && (
                 <div className="rounded-[10px] border border-contact-coral/25 bg-contact-coral/5 p-3 text-[12px] leading-relaxed text-contact-copy sm:text-xs">
