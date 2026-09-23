@@ -30,7 +30,7 @@ export const Route = createFileRoute("/admin/manual-payments")({
   ),
 });
 
-const STATUSES = ["pending", "approved", "rejected", "cancelled", "ALL"] as const;
+const STATUSES = ["pending", "approved", "rejected", "cancelled", "ATTEMPTED", "ALL"] as const;
 
 function AdminManualPaymentsPage() {
   const [status, setStatus] = useState<(typeof STATUSES)[number]>("pending");
@@ -119,7 +119,10 @@ function AdminManualPaymentsPage() {
                 </div>
                 <div className="text-[11px] text-slate-500 font-mono">{r.reference}</div>
                 <div className="text-xs text-slate-400 mt-1">
-                  {r.payerName ?? r.payerUsername ?? r.userId.slice(0, 8)} · {r.purpose}
+                  <span className="font-semibold text-slate-200">
+                    {r.payerName ?? "Full name unavailable"}
+                  </span>
+                  {r.payerUsername ? ` · @${r.payerUsername}` : ""} · {r.purpose}
                 </div>
               </div>
               <div className="text-right">
@@ -145,7 +148,7 @@ function AdminManualPaymentsPage() {
                 <span className="text-[11px] text-amber-300">No receipt uploaded yet</span>
               )}
 
-              {r.status === "pending" && (
+              {r.status === "pending" && r.proofPath && (
                 <>
                   <button
                     onClick={() => review(r.id, true)}
@@ -169,9 +172,9 @@ function AdminManualPaymentsPage() {
                 </>
               )}
 
-              {r.status !== "pending" && (
+              {(r.status !== "pending" || !r.proofPath) && (
                 <span className="text-[11px] uppercase tracking-wider font-bold text-slate-400">
-                  {r.status}
+                  {!r.proofPath ? "Attempt only" : r.status}
                 </span>
               )}
             </div>

@@ -211,28 +211,33 @@ export async function listManualPayments(
   }
   let q = supabase
     .from("manual_payments")
-    .select("*, profiles:profiles!manual_payments_user_id_fkey(display_name, username)")
-    .not("proof_path", "is", null)
+    .select("*")
     .order("created_at", { ascending: false })
     .limit(200);
+  q = opts.admin && opts.status === "ATTEMPTED"
+    ? q.is("proof_path", null)
+    : q.not("proof_path", "is", null);
   if (opts.userId) q = q.eq("user_id", opts.userId);
-  if (opts.status && opts.status !== "ALL") q = q.eq("status", opts.status);
+  if (opts.status && opts.status !== "ALL" && opts.status !== "ATTEMPTED") q = q.eq("status", opts.status);
   const { data, error } = await q;
-  if (error) {
-    // Profile join is optional — retry flat if the relationship isn't exposed.
-    let q2 = supabase
-      .from("manual_payments")
-      .select("*")
-      .not("proof_path", "is", null)
-      .order("created_at", { ascending: false })
-      .limit(200);
-    if (opts.userId) q2 = q2.eq("user_id", opts.userId);
-    if (opts.status && opts.status !== "ALL") q2 = q2.eq("status", opts.status);
-    const retry = await q2;
-    if (retry.error) throw new Error(retry.error.message);
-    return (retry.data ?? []).map(mapRow);
+  if (error) throw new Error(error.message);
+
+  const rows = (data ?? []) as Record<string, unknown>[];
+  const userIds = [...new Set(rows.map((row) => String(row.user_id)).filter(Boolean))];
+  const profileByUser = new Map<string, { display_name?: string; username?: string }>();
+  if (userIds.length > 0) {
+    const profiles = await supabase
+      .from("profiles")
+      .select("user_id, display_name, username")
+      .in("user_id", userIds);
+    if (!profiles.error) {
+      for (const profile of profiles.data ?? []) {
+        profileByUser.set(String(profile.user_id), profile);
+      }
+    }
   }
-  return (data ?? []).map(mapRow);
+
+  return rows.map((row) => mapRow({ ...row, profiles: profileByUser.get(String(row.user_id)) ?? null }));
 }
 
 export async function signProofUrl(supabase: Sb, path: string): Promise<string | null> {
