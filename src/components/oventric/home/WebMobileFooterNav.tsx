@@ -62,7 +62,7 @@ export function WebMobileFooterNav({
               haptic("select");
               onSelect(section);
             }}
-            className="group h-full min-w-0 flex-col gap-0 rounded-full px-1 py-1 font-wallet-body hover:bg-transparent"
+            className="group h-full min-w-0 flex-1 flex-col gap-0 rounded-full px-1 py-1 font-wallet-body hover:bg-transparent"
           >
             <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full transition-all duration-200 ${selected ? `${activeClass} -translate-y-0.5 shadow-lg` : idle}`}>
               <Icon className="h-[18px] w-[18px]" strokeWidth={selected ? 2.6 : 2.1} />
