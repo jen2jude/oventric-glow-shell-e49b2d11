@@ -18,5 +18,4 @@
 - [x] Add Social Profile and Shop Profile shortcuts to the user menu
 - [x] Make the social profile header sticky and refresh its Back button
 
-- [ ] Redesign the fixed mobile bottom navigation with unique category-colour accents
 - [ ] Fix newly published newsfeed posts appearing below older posts
