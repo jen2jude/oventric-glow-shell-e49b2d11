@@ -25,17 +25,25 @@ export interface HomeStatsDTO {
 export const getHomeStats = createServerFn({ method: "GET" }).handler(
   async (): Promise<HomeStatsDTO> => {
     const sb = serverPublicClient();
+    // orders RLS hides rows from the public client, so buyer counts must be
+    // read with privileged access on the server (aggregate ids only, no PII).
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const [{ data: sellerRows }, { count: productCount }, { data: buyerRows }, { data: countryRows }] =
       await Promise.all([
         sb.from("products").select("seller_id").eq("status", "active"),
         sb.from("products").select("id", { count: "exact", head: true }).eq("status", "active"),
-        sb.from("orders").select("buyer_id").eq("status", "paid"),
+        supabaseAdmin
+          .from("orders")
+          .select("buyer_id")
+          .in("status", ["paid", "delivered", "completed"]),
         sb.from("profiles").select("country"),
       ]);
 
     const creators = new Set((sellerRows ?? []).map((r: { seller_id: string }) => r.seller_id)).size;
-    const customers = new Set((buyerRows ?? []).map((r: { buyer_id: string }) => r.buyer_id)).size;
+    const customers = new Set(
+      (buyerRows ?? []).map((r: { buyer_id: string }) => r.buyer_id).filter(Boolean),
+    ).size;
     const countries = new Set(
       (countryRows ?? [])
         .map((r: { country: string | null }) => r.country)
