@@ -392,12 +392,22 @@ function BoardSheet({
   );
 }
 
-function CreatorPostOverlay({ postId, onClose }: { postId: string; onClose: () => void }) {
+function CreatorPostOverlay({
+  postIds,
+  startId,
+  onClose,
+}: {
+  postIds: string[];
+  startId: string;
+  onClose: () => void;
+}) {
   const loadPost = useServerFn(getCreatorPost);
-  const [post, setPost] = useState<CreatorPostDTO | null>(null);
+  const [posts, setPosts] = useState<CreatorPostDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [missing, setMissing] = useState(false);
   const [meId, setMeId] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const idsKey = postIds.join(",");
 
   useEffect(() => {
     let alive = true;
@@ -407,11 +417,16 @@ function CreatorPostOverlay({ postId, onClose }: { postId: string; onClose: () =
       if (event.key === "Escape") onClose();
     };
     document.addEventListener("keydown", closeOnEscape);
-    void Promise.all([loadPost({ data: { postId } }), supabase.auth.getUser()])
-      .then(([result, auth]) => {
+    const ids = idsKey ? idsKey.split(",") : [];
+    void Promise.all([
+      Promise.all(ids.map((id) => loadPost({ data: { postId: id } }).catch(() => null))),
+      supabase.auth.getUser(),
+    ])
+      .then(([results, auth]) => {
         if (!alive) return;
-        setPost(result);
-        setMissing(!result);
+        const found = results.filter((p): p is CreatorPostDTO => Boolean(p));
+        setPosts(found);
+        setMissing(found.length === 0);
         setMeId(auth.data.user?.id ?? null);
       })
       .catch(() => alive && setMissing(true))
@@ -421,7 +436,15 @@ function CreatorPostOverlay({ postId, onClose }: { postId: string; onClose: () =
       document.removeEventListener("keydown", closeOnEscape);
       document.body.style.overflow = previousOverflow;
     };
-  }, [loadPost, onClose, postId]);
+  }, [idsKey, loadPost, onClose]);
+
+  // Land on the post the member tapped; the rest stay reachable by scrolling.
+  useEffect(() => {
+    if (loading || !posts.length) return;
+    const container = scrollRef.current;
+    const target = container?.querySelector<HTMLElement>(`[data-post-id="${startId}"]`);
+    if (container && target) container.scrollTop = target.offsetTop;
+  }, [loading, posts, startId]);
 
   return createPortal(
     <div className="fixed inset-0 z-[300] flex items-center justify-center bg-slate-950/55 p-3 backdrop-blur-sm sm:p-6" role="dialog" aria-modal="true" aria-label="Saved creator post">
