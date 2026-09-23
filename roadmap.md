@@ -12,4 +12,4 @@
 - [x] Remove the footer from product detail pages
 - [x] Add real same-category product recommendations
 - [x] Open saved creator posts as full interactive overlays from Collections
-- [ ] Verify creator collection overlays on mobile and desktop
+- [x] Verify creator collection overlays on mobile and desktop
