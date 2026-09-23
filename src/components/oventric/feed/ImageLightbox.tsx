@@ -308,6 +308,7 @@ export function ImageLightbox(props: GalleryProps | LegacyProps) {
           </div>
         ))}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
