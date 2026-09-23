@@ -132,7 +132,7 @@ function SpectrumStageIndicator({ current }: { current: number }) {
         {colors.map((color, index) => (
           <span
             key={color}
-            className={`h-1.5 flex-1 rounded-full ${index < current ? color : "bg-newsfeed-soft"}`}
+            className={`h-1.5 flex-1 rounded-full ${index < current ? color : "bg-newsfeed-blue-soft"}`}
           />
         ))}
       </div>
