@@ -131,7 +131,6 @@ import {
 } from "@/lib/profiles/mockProfiles";
 import { ReportModal } from "@/components/oventric/ReportModal";
 import { EditProfileModal } from "@/components/oventric/EditProfileModal";
-import { CircleRequestsDrawer } from "@/components/oventric/CircleRequestsDrawer";
 import { FollowRequestsDrawer } from "@/components/oventric/FollowRequestsDrawer";
 import { ProfileMessageModal } from "@/components/oventric/messaging/ProfileMessageModal";
 import {
@@ -141,7 +140,6 @@ import {
 
 import { usePresence } from "@/hooks/use-presence";
 import { FollowButton } from "@/components/oventric/FollowButton";
-import { JoinCirclePickerModal } from "@/components/oventric/JoinCirclePickerModal";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { Button } from "@/components/ui/button";
@@ -332,8 +330,6 @@ function ProfilePage() {
   const [reportOpen, setReportOpen] = useState(false);
   const [aboutExpanded, setAboutExpanded] = useState(false);
   const [editProfileOpen, setEditProfileOpen] = useState(false);
-  const [joinCircleOpen, setJoinCircleOpen] = useState(false);
-  const [requestsOpen, setRequestsOpen] = useState(false);
   const [followRequestsOpen, setFollowRequestsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [mpLastRefreshed, setMpLastRefreshed] = useState<number | null>(null);
@@ -1477,7 +1473,7 @@ function ProfilePage() {
 
                 {/* Primary actions */}
                 {!isOwnProfile && !identityMissing && realProfile?.userId && (
-                   <div className="profile-primary-actions mt-3 grid grid-cols-[minmax(0,1fr)_auto_auto] items-start gap-2 md:flex md:justify-end">
+                   <div className="profile-primary-actions mt-3 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2 md:flex md:justify-end">
                     <FollowButton
                       targetId={realProfile.userId}
                       className="h-11 w-full justify-center rounded-[10px] border-transparent! bg-[#E5484D]! px-5 py-0 text-sm font-black text-white! hover:bg-[#C43D42]! md:w-44"
@@ -1489,15 +1485,6 @@ function ProfilePage() {
                       className="h-11 rounded-[10px] border-white/12 bg-[#1A1A1F] px-4 text-sm font-bold text-white hover:bg-[#232329] hover:text-white md:w-36 md:border-slate-300 md:bg-white md:text-slate-900 md:hover:bg-slate-100"
                     >
                       <MessageCircle className="h-4 w-4" /> Message
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setJoinCircleOpen(true)}
-                      aria-label="Request to join one of this user's circles"
-                      className="h-11 w-11 shrink-0 rounded-[10px] border-white/12 bg-[#1A1A1F] text-slate-300 hover:bg-[#232329] hover:text-white md:border-slate-300 md:bg-white md:text-slate-600 md:hover:bg-slate-100 md:hover:text-slate-900"
-                    >
-                      <Users className="h-4 w-4" />
                     </Button>
                   </div>
                 )}
@@ -1929,9 +1916,6 @@ function ProfilePage() {
                           replace: true,
                         });
                       },
-                      () => {
-                        navigate({ to: "/", search: { section: "Circles" } as never });
-                      },
                     );
                     return <EmptyState {...empty} />;
                   }
@@ -2141,7 +2125,6 @@ function ProfilePage() {
           }}
         />
       )}
-      <CircleRequestsDrawer open={requestsOpen} onClose={() => setRequestsOpen(false)} />
       <FollowRequestsDrawer
         open={followRequestsOpen}
         onClose={() => setFollowRequestsOpen(false)}
@@ -2170,14 +2153,6 @@ function ProfilePage() {
         targetId={`profile-${profile.id}`}
         targetKind="profile"
       />
-      {realProfile?.userId && (
-        <JoinCirclePickerModal
-          open={joinCircleOpen}
-          onClose={() => setJoinCircleOpen(false)}
-          userId={realProfile.userId}
-          userName={realProfile.displayName || profile.name}
-        />
-      )}
     </div>
   );
 }
@@ -2530,7 +2505,6 @@ function emptyContentFor(
   name: string,
   q: string,
   onClearSearch: () => void,
-  onJoinCircle: () => void,
 ): {
   title: string;
   hint?: string;
@@ -2552,9 +2526,8 @@ function emptyContentFor(
       };
     case "groups":
       return {
-        title: `${name} hasn't joined any circle yet`,
-        hint: "Click below to explore circles and request to join.",
-        primary: { label: "Click here to join a circle", onClick: onJoinCircle },
+        title: `${name} has no groups yet`,
+        hint: "Groups this member belongs to will show up here.",
       };
     case "marketplace":
       return {
