@@ -86,11 +86,9 @@ export function ReactionGlyph({
         ? "reaction-heart-beat"
         : reaction === "like"
           ? "reaction-thumb-up-bob"
-          : reaction === "laugh"
-            ? "reaction-laugh-wobble"
-            : reaction === "crown"
-              ? "reaction-crown-float"
-              : "reaction-thumb-down-bob";
+          : reaction === "crown"
+            ? "reaction-crown-float"
+            : "reaction-thumb-down-bob";
     return (
       <img loading="lazy" decoding="async"
         src={imageUrl}
