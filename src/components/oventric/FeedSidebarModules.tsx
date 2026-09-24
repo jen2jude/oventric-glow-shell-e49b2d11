@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { BadgeCheck, Flame, PenSquare, Store, TrendingUp, Wallet as WalletIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
-import { formatMoney } from "@/lib/fx-display";
+import { formatMoney, usdRate } from "@/lib/fx-display";
 import { getMyFullProfile } from "@/lib/profiles.functions";
 import { getProfileSocialCounts } from "@/lib/profiles.functions";
 import { getWalletBalances } from "@/lib/wallet.functions";
@@ -41,8 +41,9 @@ function Card({
 
 /** Signed-in snapshot: who you are, what you have, and where you go next. */
 function MeCard({ onCreatePost }: { onCreatePost?: () => void }) {
-  const { baseCurrency } = useOnboarding();
+  const { baseCurrency, homeCurrency } = useOnboarding();
   const currency = (baseCurrency ?? "USD") as Currency;
+  const walletCurrency = (homeCurrency ?? currency) as Currency;
   const [uid, setUid] = useState<string | null>(null);
 
   useEffect(() => {
@@ -87,7 +88,12 @@ function MeCard({ onCreatePost }: { onCreatePost?: () => void }) {
 
   if (!uid || !profile) return null;
 
-  const balance = walletQ.data?.balances?.[currency] ?? 0;
+  // The wallet lives in the home currency; USD preview converts it for display only.
+  const homeBalance = walletQ.data?.balances?.[walletCurrency] ?? 0;
+  const balance =
+    currency === walletCurrency
+      ? homeBalance
+      : (homeBalance / (usdRate(walletCurrency) || 1)) * (currency === "USD" ? 1 : usdRate(currency));
 
   return (
     <section className="overflow-hidden rounded-[10px] border border-newsfeed-line bg-newsfeed-surface shadow-newsfeed-panel">
