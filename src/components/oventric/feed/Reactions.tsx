@@ -68,17 +68,6 @@ export function ReactionGlyph({
   size?: number;
   animate?: boolean;
 }) {
-  if (reaction === "laugh") {
-    return (
-      <span
-        aria-hidden
-        className={`inline-flex shrink-0 items-center justify-center leading-none ${className ?? ""}`}
-        style={size ? { width: size, height: size, fontSize: size } : undefined}
-      >
-        😂
-      </span>
-    );
-  }
   const imageUrl = IMAGE_REACTIONS[reaction];
   if (imageUrl) {
     const motion =
