@@ -68,6 +68,17 @@ export function ReactionGlyph({
   size?: number;
   animate?: boolean;
 }) {
+  if (reaction === "laugh") {
+    return (
+      <span
+        aria-hidden
+        className={`inline-flex shrink-0 items-center justify-center leading-none ${className ?? ""}`}
+        style={size ? { width: size, height: size, fontSize: size } : undefined}
+      >
+        😂
+      </span>
+    );
+  }
   const imageUrl = IMAGE_REACTIONS[reaction];
   if (imageUrl) {
     const motion =
@@ -75,11 +86,9 @@ export function ReactionGlyph({
         ? "reaction-heart-beat"
         : reaction === "like"
           ? "reaction-thumb-up-bob"
-          : reaction === "laugh"
-            ? "reaction-laugh-wobble"
-            : reaction === "crown"
-              ? "reaction-crown-float"
-              : "reaction-thumb-down-bob";
+          : reaction === "crown"
+            ? "reaction-crown-float"
+            : "reaction-thumb-down-bob";
     return (
       <img loading="lazy" decoding="async"
         src={imageUrl}
