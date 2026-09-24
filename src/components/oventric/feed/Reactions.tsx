@@ -96,7 +96,13 @@ export function ReactionGlyph({
     );
   }
   const Icon = REACTION_META[reaction].Icon;
-  return <Icon size={size} className={`fill-current ${className ?? ""}`} strokeWidth={2.5} />;
+  return (
+    <Icon
+      size={size}
+      className={`${reaction === "laugh" ? "fill-none" : "fill-current"} ${className ?? ""}`}
+      strokeWidth={reaction === "laugh" ? 2.25 : 2.5}
+    />
+  );
 }
 
 /** Default flat reaction button. */
