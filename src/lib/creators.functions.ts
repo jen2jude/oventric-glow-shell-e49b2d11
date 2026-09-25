@@ -539,6 +539,110 @@ export const listCreatorFeed = createServerFn({ method: "GET" }).handler(
   async (): Promise<CreatorPostDTO[]> => loadCreatorPosts(),
 );
 
+export interface TopCreatorDTO {
+  id: string;
+  name: string;
+  slug: string | null;
+  avatarUrl: string | null;
+  country: string | null;
+  verified: boolean;
+  followersCount: number;
+  postsCount: number;
+  viewsCount: number;
+  /** Creator fields they post in most (top 3). */
+  fields: string[];
+}
+
+/** Live leaderboard of showcase creators ranked by followers, with post counts and views. */
+export const getTopCreators = createServerFn({ method: "GET" }).handler(
+  async (): Promise<TopCreatorDTO[]> => {
+    const sb = publicClient();
+    const { data: postRows } = await sb
+      .from("creator_posts")
+      .select("author_id, fields, view_count")
+      .eq("status", "published")
+      .limit(2000);
+    if (!postRows || postRows.length === 0) return [];
+
+    const postsByAuthor = new Map<string, number>();
+    const viewsByAuthor = new Map<string, number>();
+    const fieldsByAuthor = new Map<string, Map<string, number>>();
+    postRows.forEach((r) => {
+      const aid = r.author_id as string;
+      if (!aid) return;
+      postsByAuthor.set(aid, (postsByAuthor.get(aid) ?? 0) + 1);
+      viewsByAuthor.set(aid, (viewsByAuthor.get(aid) ?? 0) + Number(r.view_count ?? 0));
+      (r.fields ?? []).forEach((f) => {
+        const counts = fieldsByAuthor.get(aid) ?? new Map<string, number>();
+        counts.set(f, (counts.get(f) ?? 0) + 1);
+        fieldsByAuthor.set(aid, counts);
+      });
+    });
+    const authorIds = Array.from(postsByAuthor.keys()).slice(0, 200);
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const [profileRes, followRes] = await Promise.all([
+      supabaseAdmin
+        .from("profiles")
+        .select("user_id, display_name, slug, avatar_path, country, verification_tier, banned_at, deleted_at")
+        .in("user_id", authorIds),
+      sb.from("follows").select("followee_id").in("followee_id", authorIds).limit(10000),
+    ]);
+
+    const followersByAuthor = new Map<string, number>();
+    (followRes.data ?? []).forEach((f: any) => {
+      const id = f.followee_id as string;
+      followersByAuthor.set(id, (followersByAuthor.get(id) ?? 0) + 1);
+    });
+
+    const profiles = (profileRes.data ?? []).filter(
+      (p: any) => !p.banned_at && !p.deleted_at,
+    );
+    const avatarPaths = Array.from(
+      new Set(
+        profiles
+          .map((p: any) => p.avatar_path as string | null)
+          .filter((p): p is string => !!p && !/^https?:\/\//.test(p)),
+      ),
+    );
+    const signedAvatars = new Map<string, string>();
+    for (const p of avatarPaths) {
+      const url = stableImageUrl("avatars", p);
+      if (url) signedAvatars.set(p, url);
+    }
+
+    return profiles
+      .map((p: any) => {
+        const aid = p.user_id as string;
+        const fieldCounts = fieldsByAuthor.get(aid) ?? new Map<string, number>();
+        const fields = Array.from(fieldCounts.entries())
+          .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+          .slice(0, 3)
+          .map(([f]) => f);
+        const avatarPath = p.avatar_path as string | null;
+        const tier = String(p.verification_tier ?? "").toLowerCase();
+        return {
+          id: aid,
+          name: (p.display_name as string) ?? "Creator",
+          slug: (p.slug as string | null) ?? null,
+          avatarUrl: avatarPath
+            ? /^https?:\/\//.test(avatarPath)
+              ? avatarPath
+              : (signedAvatars.get(avatarPath) ?? null)
+            : null,
+          country: (p.country as string | null) ?? null,
+          verified: !!tier && tier !== "none",
+          followersCount: followersByAuthor.get(aid) ?? 0,
+          postsCount: postsByAuthor.get(aid) ?? 0,
+          viewsCount: viewsByAuthor.get(aid) ?? 0,
+          fields,
+        } satisfies TopCreatorDTO;
+      })
+      .sort((a, b) => b.followersCount - a.followersCount || b.postsCount - a.postsCount)
+      .slice(0, 10);
+  },
+);
+
 /** One published showcase post for collection previews and direct opening. */
 export const getCreatorPost = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => z.object({ postId: z.string().uuid() }).parse(input ?? {}))

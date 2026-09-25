@@ -38,6 +38,7 @@ import {
   type ProductDTO,
   type TopSellerDTO,
 } from "@/lib/marketplace.functions";
+import { getTopCreators, type TopCreatorDTO } from "@/lib/creators.functions";
 import { getHomeStats, type HomeStatsDTO } from "@/lib/home-stats.functions";
 import { listPosts, type FeedPost } from "@/lib/posts.functions";
 import { readRecentProductIds } from "@/lib/recent-products";
@@ -187,6 +188,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
   const loadDiscovery = useServerFn(getMarketplaceDiscovery);
   const loadCategories = useServerFn(listMarketplaceCategories);
   const loadSellers = useServerFn(getTopSellers);
+  const loadCreators = useServerFn(getTopCreators);
   const loadStats = useServerFn(getHomeStats);
   const loadRecentProducts = useServerFn(getRecentProducts);
   const loadPosts = useServerFn(listPosts);
@@ -194,6 +196,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
   const [featured, setFeatured] = useState<ProductDTO[]>([]);
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [sellers, setSellers] = useState<TopSellerDTO[]>([]);
+  const [creators, setCreators] = useState<TopCreatorDTO[]>([]);
   const [fresh, setFresh] = useState<ProductDTO[]>([]);
   const [recentProducts, setRecentProducts] = useState<ProductDTO[]>([]);
   const [latestPosts, setLatestPosts] = useState<FeedPost[]>([]);
@@ -219,13 +222,14 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
     void (async () => {
       try {
         const recentIds = readRecentProductIds();
-        const [discovery, cats, tops, s, recent, postResult] = await Promise.all([
+        const [discovery, cats, tops, s, recent, postResult, topsCreators] = await Promise.all([
           loadDiscovery(),
           loadCategories(),
           loadSellers(),
           loadStats(),
           loadRecentProducts({ data: { ids: recentIds } }),
           loadPosts(),
+          loadCreators(),
         ]);
         if (!alive) return;
         const picks = [
@@ -240,6 +244,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         setFresh((discovery?.newArrivals ?? []).slice(0, 5));
         setCategories((cats ?? []).slice(0, 8));
         setSellers((tops ?? []).slice(0, 5));
+        setCreators((topsCreators ?? []).slice(0, 5));
         setStats(s);
         setRecentProducts((recent ?? []).slice(0, 10));
         setLatestPosts((postResult?.posts ?? []).slice(0, 4));
@@ -250,7 +255,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
     return () => {
       alive = false;
     };
-  }, [loadDiscovery, loadCategories, loadPosts, loadRecentProducts, loadSellers, loadStats]);
+  }, [loadDiscovery, loadCategories, loadCreators, loadPosts, loadRecentProducts, loadSellers, loadStats]);
 
   const startSelling = () => onCreate?.();
 
@@ -508,6 +513,65 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             </Link>
           ))}
           {sellers.length === 0 && <EmptyNote>No sellers to show yet.</EmptyNote>}
+        </div>
+
+        {/* -------------------------------------------------------- top creators */}
+        <SectionHead
+          title="Top Creators"
+          subtitle="Showcase stars the community follows"
+          action={{ label: "View all", onClick: () => navigate({ to: "/feed", search: { post: undefined } }) }}
+        />
+        <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5 lg:gap-4">
+          {creators.map((c) => (
+            <Link
+              key={c.id}
+              to="/profile/$id"
+              params={{ id: c.slug || c.id }}
+              className="group w-[188px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-home-line bg-home-surface shadow-home-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lg sm:w-auto sm:shrink"
+            >
+              <div className="relative aspect-square overflow-hidden bg-muted">
+                <AvatarImage
+                  src={c.avatarUrl}
+                  alt={c.name}
+                  className="transition-transform duration-500 group-hover:scale-105"
+                />
+                <SellerCountryFlag country={c.country} />
+                <span
+                  className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[10px] font-bold shadow-sm backdrop-blur-sm"
+                  style={{ color: "#0A0A0B" }}
+                >
+                  <Sparkles className="h-3 w-3 text-violet-500" />
+                  Top Creator · {compactNum(c.postsCount)} posts
+                </span>
+              </div>
+              <div className="space-y-2 p-3">
+                <p className="flex min-w-0 items-center gap-1 text-[14px] font-extrabold leading-tight text-home-ink">
+                  <span className="truncate">{c.name}</span>
+                  {c.verified && <BadgeCheck className="h-4 w-4 shrink-0 text-primary" />}
+                </p>
+                <p className="text-[11.5px] font-semibold text-home-muted">
+                  {compactFollowers(c.followersCount)} followers
+                </p>
+                {c.fields.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {c.fields.map((f) => (
+                      <span
+                        key={f}
+                        className="rounded-full border border-home-line bg-home-canvas px-2.5 py-1 text-[10.5px] font-semibold text-home-copy"
+                      >
+                        {f}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <span className="flex w-full items-center justify-center gap-1.5 rounded-[10px] bg-violet-500/10 py-2.5 text-[12px] font-bold text-violet-600 transition-colors group-hover:bg-violet-500/15">
+                  View Profile
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+              </div>
+            </Link>
+          ))}
+          {creators.length === 0 && <EmptyNote>No creators to show yet.</EmptyNote>}
         </div>
 
         {/* ------------------------------------------------------------ CTA band */}
