@@ -7,6 +7,7 @@ import {
   Wallet as WalletIcon,
   Globe2,
   Star,
+  Crown,
   ShoppingCart,
   ArrowRight,
   BadgeCheck,
@@ -683,24 +684,16 @@ function SellerCountryFlag({ country }: { country: string | null }) {
     <span
       title={meta.name}
       aria-label={meta.name}
-      className="absolute right-3 top-3 grid h-8 w-8 place-items-center overflow-hidden rounded-full border-2 border-home-surface bg-home-surface shadow-home-soft"
+      className="absolute left-3 top-3 grid h-8 w-8 place-items-center overflow-hidden rounded-full border-2 border-home-surface bg-home-surface shadow-home-soft"
     >
       <span className={`fi fi-${code.toLowerCase()} h-full w-full bg-cover bg-center`} aria-hidden="true" />
     </span>
   );
 }
 
-function SellerStat({ icon, value, label }: { icon: React.ReactNode; value: string; label: string }) {
-  return (
-    <span className="min-w-0 text-home-copy">
-      <span className="flex items-center justify-center gap-1 text-[11px] font-extrabold text-home-ink">
-        {icon}
-        <span className="truncate">{value}</span>
-      </span>
-      <span className="mt-0.5 block truncate text-[9px] font-semibold text-home-muted">{label}</span>
-    </span>
-  );
-}
+const compactFollowers = (n: number) =>
+  n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}K` : String(n);
+
 
 /* -------------------------------------------------------------- sub-parts */
 
