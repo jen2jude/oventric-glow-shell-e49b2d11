@@ -241,7 +241,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         setSellers((tops ?? []).slice(0, 5));
         setStats(s);
         setRecentProducts((recent ?? []).slice(0, 10));
-        setLatestPosts((postResult?.posts ?? []).slice(0, 10));
+        setLatestPosts((postResult?.posts ?? []).slice(0, 4));
       } catch {
         /* public page stays usable even if a feed is unavailable */
       }
