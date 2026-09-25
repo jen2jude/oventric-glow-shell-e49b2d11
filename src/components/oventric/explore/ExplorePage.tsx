@@ -320,7 +320,7 @@ export function ExplorePage({ onSelect }: { onSelect: (section: "Marketplace") =
         <div className="about-spectrum h-1.5 overflow-hidden rounded-b-[10px]" aria-hidden="true" />
 
         {/* ------------------------------------------------- tabs + search */}
-        <div className="sticky top-14 z-30 -mx-4 mt-5 border-y border-newsfeed-line bg-newsfeed-surface/95 px-4 py-3 shadow-[0_10px_28px_-24px_var(--newsfeed-ink)] backdrop-blur-xl sm:-mx-6 sm:px-6 lg:top-0">
+        <div className="sticky top-0 z-30 -mx-4 mt-5 border-y border-newsfeed-line bg-newsfeed-surface/95 px-4 py-3 shadow-[0_10px_28px_-24px_var(--newsfeed-ink)] backdrop-blur-xl sm:-mx-6 sm:px-6">
           <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-center">
             <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {TABS.map((t) => (
