@@ -477,7 +477,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
                   style={{ color: "#ffffff" }}
                 >
                   <Crown className="h-3 w-3 text-amber-400" />
-                  Top Creator
+                  Top Seller · {compactNum(s.salesCount)} sales
                 </span>
               </div>
               <div className="space-y-2 p-3">
@@ -691,8 +691,9 @@ function SellerCountryFlag({ country }: { country: string | null }) {
   );
 }
 
-const compactFollowers = (n: number) =>
+const compactNum = (n: number) =>
   n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}K` : String(n);
+const compactFollowers = compactNum;
 
 
 /* -------------------------------------------------------------- sub-parts */
