@@ -249,6 +249,22 @@ export function SocialProofRails({
   );
 }
 
+function SellerFlag({ country, dark }: { country: string | null; dark: boolean }) {
+  const code = normalizeCountryCode(country);
+  if (!code || !COUNTRY_META[code]) return null;
+  return (
+    <span
+      title={COUNTRY_META[code].name}
+      aria-label={COUNTRY_META[code].name}
+      className={`absolute left-2.5 top-2.5 grid h-7 w-7 place-items-center overflow-hidden rounded-full border-2 shadow-sm ${
+        dark ? "border-[#141416] bg-[#141416]" : "border-white bg-white"
+      }`}
+    >
+      <span className={`fi fi-${code.toLowerCase()} h-full w-full bg-cover bg-center`} aria-hidden="true" />
+    </span>
+  );
+}
+
 function RailHead({
   dark,
   eyebrow,
