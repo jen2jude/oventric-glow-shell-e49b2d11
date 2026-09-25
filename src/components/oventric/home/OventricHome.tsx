@@ -493,7 +493,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
                     {s.categories.map((c) => (
                       <span
                         key={c}
-                        className="rounded-full border border-home-line bg-home-canvas px-2.5 py-1 text-[10.5px] font-semibold text-home-copy"
+                        className="rounded-full border border-home-line bg-home-canvas px-2.5 py-1 text-[10.5px] font-semibold capitalize text-home-copy"
                       >
                         {c}
                       </span>

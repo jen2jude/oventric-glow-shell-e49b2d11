@@ -145,7 +145,7 @@ export function SocialProofRails({
                         {s.categories.map((c) => (
                           <span
                             key={c}
-                            className={`rounded-full px-2.5 py-1 text-[10.5px] font-semibold ${
+                            className={`rounded-full px-2.5 py-1 text-[10.5px] font-semibold capitalize ${
                               dark ? "bg-white/[0.06] text-white/70" : "bg-slate-100 text-slate-700"
                             }`}
                           >
