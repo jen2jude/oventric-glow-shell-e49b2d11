@@ -456,38 +456,53 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           subtitle="Global creators making waves"
           action={{ label: "View all", onClick: () => navigate({ to: "/sellers" }) }}
         />
-        <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5">
-          {sellers.map((s, index) => (
+        <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5 lg:gap-4">
+          {sellers.map((s) => (
             <Link
               key={s.id}
               to="/shop/$id"
               params={{ id: s.slug || s.id }}
-              className="group w-[168px] shrink-0 snap-start sm:w-auto sm:shrink"
+              className="group w-[188px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-home-line bg-home-surface shadow-home-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lg sm:w-auto sm:shrink"
             >
-              <div className="relative aspect-[3/4] overflow-hidden rounded-[10px] bg-muted shadow-home-soft ring-1 ring-home-line transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
+              <div className="relative aspect-square overflow-hidden bg-muted">
                 <AvatarImage
                   src={s.avatarUrl}
                   alt={s.name}
                   className="transition-transform duration-500 group-hover:scale-105"
                 />
-                <span className="absolute left-3 top-3 grid h-7 min-w-7 place-items-center rounded-full border-2 border-home-surface bg-home-surface px-1 text-[11px] font-extrabold text-home-ink shadow-home-soft">
-                  {index + 1}
-                </span>
                 <SellerCountryFlag country={s.country} />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/90 via-foreground/45 to-transparent px-3 pb-3 pt-12 text-primary-foreground">
-                  <p className="flex min-w-0 items-center gap-1 text-sm font-extrabold leading-tight">
-                    <span className="truncate">{s.name}</span>
-                    {s.verified && <BadgeCheck className="h-4 w-4 shrink-0 text-primary" />}
-                  </p>
-                  <p className="mt-1 truncate text-[11px] font-semibold text-primary-foreground/75">
-                    @{s.username}
-                  </p>
-                </div>
+                <span
+                  className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-full bg-foreground/75 px-2.5 py-1 text-[10px] font-bold backdrop-blur-sm"
+                  style={{ color: "#ffffff" }}
+                >
+                  <Crown className="h-3 w-3 text-amber-400" />
+                  Top Creator
+                </span>
               </div>
-              <div className="grid grid-cols-3 gap-1 px-1 pt-3 text-center">
-                <SellerStat icon={<Star className="h-3 w-3 fill-current text-seller-rating" />} value={s.rating ? s.rating.toFixed(1) : "New"} label="Rating" />
-                <SellerStat icon={<ShoppingCart className="h-3 w-3" />} value={String(s.productsCount)} label="Products" />
-                <SellerStat icon={<Banknote className="h-3 w-3" />} value={String(s.salesCount)} label="Sales" />
+              <div className="space-y-2 p-3">
+                <p className="flex min-w-0 items-center gap-1 text-[14px] font-extrabold leading-tight text-home-ink">
+                  <span className="truncate">{s.name}</span>
+                  {s.verified && <BadgeCheck className="h-4 w-4 shrink-0 text-primary" />}
+                </p>
+                <p className="text-[11.5px] font-semibold text-home-muted">
+                  {compactFollowers(s.followersCount)} followers
+                </p>
+                {s.categories.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {s.categories.map((c) => (
+                      <span
+                        key={c}
+                        className="rounded-full border border-home-line bg-home-canvas px-2.5 py-1 text-[10.5px] font-semibold text-home-copy"
+                      >
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <span className="flex w-full items-center justify-center gap-1.5 rounded-[10px] bg-crimson/10 py-2.5 text-[12px] font-bold text-crimson transition-colors group-hover:bg-crimson/15">
+                  View Shop
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </span>
               </div>
             </Link>
           ))}
