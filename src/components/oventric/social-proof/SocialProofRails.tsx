@@ -129,7 +129,7 @@ export function SocialProofRails({
                       style={{ color: "#ffffff" }}
                     >
                       <Crown className="h-3 w-3 text-amber-400" />
-                      Top Creator
+                      Top Seller · {compact(s.salesCount)} sales
                     </span>
                   </div>
                   <div className="space-y-2 p-3.5">
