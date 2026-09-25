@@ -108,40 +108,62 @@ export function SocialProofRails({
               {...(dark ? { onAction: onOpenMarketplace } : { actionTo: "/sellers" as const })}
             />
             <div className="web-rail no-scrollbar mt-4 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
-              {sellers.map((s, i) => (
+              {sellers.map((s) => (
                 <Link
                   key={s.id}
                   to="/shop/$id"
                   params={{ id: s.slug || s.id }}
-                  className={`group w-[220px] shrink-0 snap-start rounded-[10px] p-4 transition-transform active:scale-[0.99] ${card}`}
+                  className={`group w-[204px] shrink-0 snap-start overflow-hidden rounded-[10px] transition-transform active:scale-[0.99] ${card}`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
-                      <div
-                        className={`h-12 w-12 overflow-hidden rounded-full ${dark ? "border border-white/10" : "border border-slate-200"}`}
-                      >
-                        <AvatarImage src={s.avatarUrl} alt={s.name} />
-                      </div>
-                      <span className="absolute -left-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-crimson text-[10px] font-black text-white">
-                        {i + 1}
-                      </span>
-                    </div>
-                    <div className="min-w-0">
-                      <div className={`flex items-center gap-1 truncate text-[13px] font-bold ${title}`}>
-                        <span className="truncate">{s.name}</span>
-                        {s.verified && <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-crimson" />}
-                      </div>
-                      <div className={`mt-0.5 flex items-center gap-1 text-[11px] ${muted}`}>
-                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                        {s.rating ? s.rating.toFixed(1) : "New"} · {compact(s.followersCount)} followers
-                      </div>
-                    </div>
-                  </div>
-                  <div className={`mt-3 flex items-center gap-3 text-[11px] font-semibold ${muted}`}>
-                    <span className="inline-flex items-center gap-1">
-                      <ShoppingBag className="h-3.5 w-3.5" /> {compact(s.salesCount)} sales
+                  <div className={`relative aspect-square overflow-hidden ${dark ? "bg-white/[0.04]" : "bg-slate-100"}`}>
+                    <AvatarImage
+                      src={s.avatarUrl}
+                      alt={s.name}
+                      className="transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <SellerFlag country={s.country} dark={dark} />
+                    <span
+                      className={`absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold backdrop-blur-sm ${
+                        dark ? "bg-black/60" : "bg-foreground/75"
+                      }`}
+                      style={{ color: "#ffffff" }}
+                    >
+                      <Crown className="h-3 w-3 text-amber-400" />
+                      Top Creator
                     </span>
-                    <span>{compact(s.productsCount)} listings</span>
+                  </div>
+                  <div className="space-y-2 p-3.5">
+                    <div className={`flex items-center gap-1 text-[13.5px] font-bold ${title}`}>
+                      <span className="truncate">{s.name}</span>
+                      {s.verified && <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-crimson" />}
+                    </div>
+                    <p className={`text-[11.5px] font-semibold ${muted}`}>
+                      {compact(s.followersCount)} followers
+                    </p>
+                    {s.categories.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {s.categories.map((c) => (
+                          <span
+                            key={c}
+                            className={`rounded-full px-2.5 py-1 text-[10.5px] font-semibold ${
+                              dark ? "bg-white/[0.06] text-white/70" : "bg-slate-100 text-slate-700"
+                            }`}
+                          >
+                            {c}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <span
+                      className={`flex w-full items-center justify-center gap-1.5 rounded-[10px] py-2.5 text-[12px] font-bold transition-colors ${
+                        dark
+                          ? "bg-crimson/15 text-white group-hover:bg-crimson/25"
+                          : "bg-crimson/10 text-crimson group-hover:bg-crimson/15"
+                      }`}
+                    >
+                      View Shop
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </span>
                   </div>
                 </Link>
               ))}
