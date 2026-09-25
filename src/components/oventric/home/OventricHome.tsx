@@ -38,6 +38,7 @@ import {
   type ProductDTO,
   type TopSellerDTO,
 } from "@/lib/marketplace.functions";
+import { getTopCreators, type TopCreatorDTO } from "@/lib/creators.functions";
 import { getHomeStats, type HomeStatsDTO } from "@/lib/home-stats.functions";
 import { listPosts, type FeedPost } from "@/lib/posts.functions";
 import { readRecentProductIds } from "@/lib/recent-products";
@@ -187,6 +188,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
   const loadDiscovery = useServerFn(getMarketplaceDiscovery);
   const loadCategories = useServerFn(listMarketplaceCategories);
   const loadSellers = useServerFn(getTopSellers);
+  const loadCreators = useServerFn(getTopCreators);
   const loadStats = useServerFn(getHomeStats);
   const loadRecentProducts = useServerFn(getRecentProducts);
   const loadPosts = useServerFn(listPosts);
@@ -194,6 +196,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
   const [featured, setFeatured] = useState<ProductDTO[]>([]);
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [sellers, setSellers] = useState<TopSellerDTO[]>([]);
+  const [creators, setCreators] = useState<TopCreatorDTO[]>([]);
   const [fresh, setFresh] = useState<ProductDTO[]>([]);
   const [recentProducts, setRecentProducts] = useState<ProductDTO[]>([]);
   const [latestPosts, setLatestPosts] = useState<FeedPost[]>([]);
@@ -219,13 +222,14 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
     void (async () => {
       try {
         const recentIds = readRecentProductIds();
-        const [discovery, cats, tops, s, recent, postResult] = await Promise.all([
+        const [discovery, cats, tops, s, recent, postResult, topsCreators] = await Promise.all([
           loadDiscovery(),
           loadCategories(),
           loadSellers(),
           loadStats(),
           loadRecentProducts({ data: { ids: recentIds } }),
           loadPosts(),
+          loadCreators(),
         ]);
         if (!alive) return;
         const picks = [
@@ -240,6 +244,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         setFresh((discovery?.newArrivals ?? []).slice(0, 5));
         setCategories((cats ?? []).slice(0, 8));
         setSellers((tops ?? []).slice(0, 5));
+        setCreators((topsCreators ?? []).slice(0, 5));
         setStats(s);
         setRecentProducts((recent ?? []).slice(0, 10));
         setLatestPosts((postResult?.posts ?? []).slice(0, 4));
@@ -250,7 +255,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
     return () => {
       alive = false;
     };
-  }, [loadDiscovery, loadCategories, loadPosts, loadRecentProducts, loadSellers, loadStats]);
+  }, [loadDiscovery, loadCategories, loadCreators, loadPosts, loadRecentProducts, loadSellers, loadStats]);
 
   const startSelling = () => onCreate?.();
 
