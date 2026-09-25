@@ -571,7 +571,6 @@ export const getTopCreators = createServerFn({ method: "GET" }).handler(
       const aid = r.author_id as string;
       if (!aid) return;
       postsByAuthor.set(aid, (postsByAuthor.get(aid) ?? 0) + 1);
-      viewsByAuthor.set(aid, viewsByAuthor.get(aid) ?? 0 + Number(r.view_count ?? 0));
       viewsByAuthor.set(aid, (viewsByAuthor.get(aid) ?? 0) + Number(r.view_count ?? 0));
       (r.fields ?? []).forEach((f) => {
         const counts = fieldsByAuthor.get(aid) ?? new Map<string, number>();
