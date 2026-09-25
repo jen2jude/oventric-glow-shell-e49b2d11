@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { BadgeCheck, Heart, MessageCircle, ShoppingBag, Star } from "lucide-react";
+import { ArrowRight, BadgeCheck, Crown, Heart, MessageCircle } from "lucide-react";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { getTopSellers } from "@/lib/marketplace.functions";
 import { listPosts, type FeedPost } from "@/lib/posts.functions";
+import { COUNTRY_META, normalizeCountryCode } from "@/lib/currency/africa";
 
 type Variant = "light" | "dark";
 
@@ -14,10 +15,11 @@ type Seller = {
   slug: string;
   avatarUrl: string | null;
   verified: boolean;
-  rating: number;
+  country: string | null;
   followersCount: number;
   productsCount: number;
   salesCount: number;
+  categories: string[];
 };
 
 const compact = (n: number) =>
