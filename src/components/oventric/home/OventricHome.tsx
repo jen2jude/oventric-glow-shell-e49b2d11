@@ -553,11 +553,11 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
                   {compactFollowers(c.followersCount)} followers
                 </p>
                 {c.fields.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex max-h-[54px] flex-wrap gap-1.5 overflow-hidden">
                     {c.fields.map((f) => (
                       <span
                         key={f}
-                        className="rounded-full border border-home-line bg-home-canvas px-2.5 py-1 text-[10.5px] font-semibold text-home-copy"
+                        className="rounded-full border border-home-line bg-home-canvas px-2.5 py-1 text-[10.5px] font-semibold leading-[14px] text-home-copy"
                       >
                         {f}
                       </span>
