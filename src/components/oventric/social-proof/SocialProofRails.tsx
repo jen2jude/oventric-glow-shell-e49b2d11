@@ -123,12 +123,10 @@ export function SocialProofRails({
                     />
                     <SellerFlag country={s.country} dark={dark} />
                     <span
-                      className={`absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold backdrop-blur-sm ${
-                        dark ? "bg-black/60" : "bg-foreground/75"
-                      }`}
-                      style={{ color: "#ffffff" }}
+                      className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[10px] font-bold shadow-sm backdrop-blur-sm"
+                      style={{ color: "#0A0A0B" }}
                     >
-                      <Crown className="h-3 w-3 text-amber-400" />
+                      <Crown className="h-3 w-3 text-amber-500" />
                       Top Seller · {compact(s.salesCount)} sales
                     </span>
                   </div>
