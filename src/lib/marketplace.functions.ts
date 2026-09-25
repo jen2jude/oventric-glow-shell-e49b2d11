@@ -1795,6 +1795,8 @@ export interface TopSellerDTO {
   followersCount: number;
   productsCount: number;
   salesCount: number;
+  /** Most-listed marketplace categories for this seller (top 3). */
+  categories: string[];
 }
 
 /** Live leaderboard of sellers ranked by paid sales, with live ratings and follower counts. */
@@ -1804,18 +1806,24 @@ export const getTopSellers = createServerFn({ method: "GET" })
 
     const { data: productRows } = await sb
       .from("products")
-      .select("id, seller_id")
+      .select("id, seller_id, category")
       .eq("status", "active")
       .eq("creator_asset", false)
       .limit(2000);
 
     const productsBySeller = new Map<string, string[]>();
     const sellerByProduct = new Map<string, string>();
+    const categoriesBySeller = new Map<string, Map<string, number>>();
     (productRows ?? []).forEach((r: any) => {
       const sid = r.seller_id as string;
       if (!sid) return;
       sellerByProduct.set(r.id as string, sid);
       productsBySeller.set(sid, [...(productsBySeller.get(sid) ?? []), r.id as string]);
+      const cat = String(r.category ?? "").trim();
+      if (!cat) return;
+      const counts = categoriesBySeller.get(sid) ?? new Map<string, number>();
+      counts.set(cat, (counts.get(cat) ?? 0) + 1);
+      categoriesBySeller.set(sid, counts);
     });
     const sellerIds = Array.from(productsBySeller.keys()).slice(0, 200);
     if (sellerIds.length === 0) return [];
@@ -1901,6 +1909,13 @@ export const getTopSellers = createServerFn({ method: "GET" })
       followers.set(id, (followers.get(id) ?? 0) + 1);
     });
 
+    // Top 3 most-listed categories per seller, for the home page seller cards.
+    const topCategories = (sid: string) =>
+      Array.from(categoriesBySeller.get(sid) ?? [])
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .slice(0, 3)
+        .map(([c]) => c);
+
     const sellers: TopSellerDTO[] = rows.map((s: any, i: number) => {
       const id = s.user_id as string;
       const count = ratingCount.get(id) ?? 0;
@@ -1919,6 +1934,7 @@ export const getTopSellers = createServerFn({ method: "GET" })
         followersCount: followers.get(id) ?? 0,
         productsCount: (productsBySeller.get(id) ?? []).length,
         salesCount: salesBySeller.get(id) ?? 0,
+        categories: topCategories(id),
       };
     });
 
