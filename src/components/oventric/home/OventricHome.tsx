@@ -11,6 +11,7 @@ import {
   ShoppingCart,
   ArrowRight,
   BadgeCheck,
+  Check,
   Lock,
   Clock,
   Headphones,
@@ -527,44 +528,81 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
               key={c.id}
               to="/profile/$id"
               params={{ id: c.slug || c.id }}
-              className="group w-[188px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-home-line bg-home-surface shadow-home-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lg sm:w-auto sm:shrink"
+              className="group flex w-[220px] shrink-0 snap-start flex-col overflow-hidden rounded-[10px] border border-home-line bg-home-surface shadow-home-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lg sm:w-auto sm:shrink"
             >
-              <div className="relative aspect-square overflow-hidden bg-muted">
-                <AvatarImage
-                  src={c.avatarUrl}
-                  alt={c.name}
-                  className="transition-transform duration-500 group-hover:scale-105"
+              {/* banner */}
+              <div className="relative h-20 shrink-0 bg-linear-to-br from-violet-600 to-fuchsia-500">
+                <div
+                  className="absolute inset-0 opacity-20"
+                  style={{
+                    backgroundImage:
+                      "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
+                    backgroundSize: "18px 18px",
+                  }}
                 />
                 <SellerCountryFlag country={c.country} />
-                <span
-                  className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[10px] font-bold shadow-sm backdrop-blur-sm"
-                  style={{ color: "#0A0A0B" }}
-                >
-                  <Sparkles className="h-3 w-3 text-violet-500" />
-                  Top Creator · {compactNum(c.postsCount)} posts
-                </span>
               </div>
-              <div className="space-y-2 p-3">
-                <p className="flex min-w-0 items-center gap-1 text-[14px] font-extrabold leading-tight text-home-ink">
-                  <span className="truncate">{c.name}</span>
-                  {c.verified && <BadgeCheck className="h-4 w-4 shrink-0 text-primary" />}
+
+              {/* body */}
+              <div className="flex grow flex-col items-center px-4 pb-4 text-center">
+                <div className="relative -mt-11 mb-2.5">
+                  <div className="h-[88px] w-[88px] overflow-hidden rounded-full border-4 border-white bg-muted shadow-md">
+                    <AvatarImage
+                      src={c.avatarUrl}
+                      alt={c.name}
+                      className="transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  {c.verified && (
+                    <span
+                      className="absolute -bottom-0.5 -right-0.5 grid h-6 w-6 place-items-center rounded-full border-2 border-white bg-violet-600"
+                      style={{ color: "#ffffff" }}
+                    >
+                      <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                    </span>
+                  )}
+                </div>
+                <p className="max-w-full truncate text-[14px] font-extrabold leading-tight text-home-ink">
+                  {c.name}
                 </p>
-                <p className="text-[11.5px] font-semibold text-home-muted">
+                <p className="mt-0.5 text-[10px] font-bold uppercase tracking-widest text-home-muted">
                   {compactFollowers(c.followersCount)} followers
                 </p>
+
+                {/* stats */}
+                <div className="mt-3 grid w-full grid-cols-2 gap-2 border-y border-home-line py-2.5">
+                  <div>
+                    <p className="text-[9.5px] font-semibold uppercase tracking-wide text-home-muted">
+                      Posts
+                    </p>
+                    <p className="text-[13px] font-extrabold text-home-ink">
+                      {compactNum(c.postsCount)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[9.5px] font-semibold uppercase tracking-wide text-home-muted">
+                      Views
+                    </p>
+                    <p className="text-[13px] font-extrabold text-home-ink">
+                      {compactNum(c.viewsCount)}
+                    </p>
+                  </div>
+                </div>
+
                 {c.fields.length > 0 && (
-                  <div className="flex max-h-[54px] flex-wrap gap-1.5 overflow-hidden">
+                  <div className="mt-3 flex max-h-[52px] flex-wrap items-start justify-center gap-1.5 overflow-hidden">
                     {c.fields.map((f) => (
                       <span
                         key={f}
-                        className="rounded-full border border-home-line bg-home-canvas px-2.5 py-1 text-[10.5px] font-semibold leading-[14px] text-home-copy"
+                        className="rounded-full bg-violet-500/10 px-2.5 py-1 text-[10.5px] font-semibold leading-[14px] text-violet-600"
                       >
                         {f}
                       </span>
                     ))}
                   </div>
                 )}
-                <span className="flex w-full items-center justify-center gap-1.5 rounded-[10px] bg-violet-500/10 py-2.5 text-[12px] font-bold text-violet-600 transition-colors group-hover:bg-violet-500/15">
+
+                <span className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-[10px] bg-violet-600 py-2.5 text-[12px] font-bold transition-colors group-hover:bg-violet-700" style={{ color: "#ffffff" }}>
                   View Profile
                   <ArrowRight className="h-3.5 w-3.5" />
                 </span>
