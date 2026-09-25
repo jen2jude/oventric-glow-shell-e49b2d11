@@ -42,9 +42,18 @@ function ProductGridCard({ product }: { product: DiscoveryProduct }) {
         ) : (
           <div className={`h-full w-full bg-gradient-to-br ${product.hue}`} />
         )}
-        {free && (
-          <span className="absolute left-2 top-2 rounded-full bg-emerald-600 px-2 py-0.5 text-[10px] font-extrabold text-white">
-            FREE
+        {free ? (
+          <>
+            <span className="absolute left-2 top-2 rounded-full bg-emerald-600 px-2 py-0.5 text-[10px] font-extrabold text-white">
+              FREE
+            </span>
+            <span className="absolute right-2 top-2 max-w-[calc(100%-60px)] truncate rounded-full bg-black/65 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur">
+              {product.category}
+            </span>
+          </>
+        ) : (
+          <span className="absolute left-2 top-2 max-w-[calc(100%-16px)] truncate rounded-full bg-black/65 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur">
+            {product.category}
           </span>
         )}
       </div>
