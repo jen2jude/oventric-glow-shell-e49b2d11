@@ -445,6 +445,7 @@ function RootComponent() {
               <PushOptInPrompt />
               <OfflineBanner />
               <ReferralCapture />
+              <AppInstallPrompt />
 
               <BootSplash />
                {show && hydrated && !isPc && isAppShell && <FeatureCarousel onComplete={markSeen} />}
