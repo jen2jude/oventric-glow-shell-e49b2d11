@@ -492,7 +492,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
       <div
         className={`web-sell-panel slide-up relative flex flex-col overflow-hidden border border-contact-line bg-contact-surface text-contact-ink shadow-contact-sheet ${
           success
-            ? "w-full max-w-[19rem] rounded-[18px] sm:max-w-sm"
+             ? "sell-asset-success w-full max-w-[19rem] rounded-[18px] sm:max-w-sm"
             : "max-h-[calc(100dvh-0.75rem)] max-w-3xl w-full rounded-t-[20px] sm:max-h-[calc(100dvh-3rem)] sm:rounded-[18px]"
         }`}
       >

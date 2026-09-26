@@ -1111,7 +1111,7 @@
     border-bottom: 0;
   }
 
-  .web-sell-asset .web-sell-panel:has(.sell-asset-success) {
+  .web-sell-asset .web-sell-panel.sell-asset-success {
     border-bottom: 1px solid var(--contact-line);
   }
 
