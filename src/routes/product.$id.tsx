@@ -681,7 +681,8 @@ function ProductPage() {
               )}
             </div>
 
-            <div className={`product-summary lg:col-span-5 lg:sticky lg:top-24 ${isAppShell ? "pb-28" : ""}`}>
+            <div className="product-summary lg:col-span-5">
+              <div className={`${isAppShell ? "pb-28" : ""} lg:sticky lg:top-24`}>
               <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-newsfeed-coral-soft px-3 py-1.5 text-[10px] font-extrabold uppercase text-newsfeed-coral">
                 <span className="h-1.5 w-1.5 rounded-full bg-newsfeed-coral" />
 
@@ -1033,7 +1034,8 @@ function ProductPage() {
 
 
             </div>
-            
+            </div>
+
             {/* Review and Comment Section (Mobile/App fallback) */}
             <div className={`lg:col-span-2 ${!isAppShell ? "lg:hidden" : "px-4"}`}>
               <ProductComments productId={product.id} />
