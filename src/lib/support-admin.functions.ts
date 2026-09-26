@@ -87,12 +87,26 @@ export const adminListSupportChat = createServerFn({ method: "GET" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: rows } = await supabaseAdmin
+    const { data: rows, error } = await supabaseAdmin
       .from("support_chat_messages")
-      .select("id, sender, body, created_at")
+      .select("id, sender, body, created_at, read_at")
       .eq("user_id", data.userId)
       .order("created_at", { ascending: true })
       .limit(300);
+    if (error) throw new Error("Could not load the conversation.");
+    const unreadIds = (rows ?? [])
+      .filter((row) => row.sender === "user" && row.read_at === null)
+      .map((row) => row.id);
+    if (unreadIds.length) {
+      const { error: updateError } = await supabaseAdmin
+        .from("support_chat_messages")
+        .update({ read_at: new Date().toISOString() })
+        .in("id", unreadIds)
+        .eq("user_id", data.userId)
+        .eq("sender", "user")
+        .is("read_at", null);
+      if (updateError) throw new Error("Could not mark the conversation as read.");
+    }
     return rows ?? [];
   });
 
