@@ -303,6 +303,11 @@ export const getPeerOrderContext = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     const o = (rows ?? [])[0] as Record<string, unknown> | undefined;
     if (!o) return null;
+    // Once the seller has marked delivery AND the buyer has confirmed receipt,
+    // both parties have acknowledged the trade — clear the stickied order
+    // banner from the chat even if escrow is still settling. Keep it visible
+    // while an open dispute needs attention.
+    if (o.delivered_at && o.buyer_confirmed_at && o.dispute_status !== "open") return null;
     const products = o.products as { name?: string; requires_manual_delivery?: boolean } | null;
     return {
       orderId: o.id as string,
