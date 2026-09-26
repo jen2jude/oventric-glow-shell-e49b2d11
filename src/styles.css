@@ -1111,6 +1111,10 @@
     border-bottom: 0;
   }
 
+  .web-sell-asset .web-sell-panel:has(.sell-asset-success) {
+    border-bottom: 1px solid var(--contact-line);
+  }
+
   .web-sell-asset .sell-asset-scroll {
     scroll-padding-top: 5rem;
     scroll-padding-bottom: 5rem;
