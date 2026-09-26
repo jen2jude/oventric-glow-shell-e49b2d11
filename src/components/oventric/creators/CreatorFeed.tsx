@@ -13,6 +13,18 @@ import { CreatorPostMenu } from "./CreatorPostMenu";
 import { getHiddenPosts } from "@/components/oventric/PostActionsMenu";
 
 
+function isDirectVideoUrl(url: string): boolean {
+  try {
+    const u = new URL(url);
+    if (/\.(mp4|mov|webm|m4v|mkv|avi)$/i.test(u.pathname)) return true;
+    if (u.hostname.includes("dropbox.com") && (u.searchParams.get("dl") === "1" || u.searchParams.get("raw") === "1")) return true;
+    if (u.hostname.includes("drive.google.com") && u.search.includes("export=download")) return true;
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 function compactNumber(value: number) {
   return new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(value);
 }
@@ -434,7 +446,15 @@ export function CreatorCard({
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-[11px] font-bold text-violet-700 transition-colors hover:bg-violet-100"
                     >
-                      <Download className="h-3.5 w-3.5" /> Download full video
+                      {isDirectVideoUrl(post.fullVideoUrl) ? (
+                        <>
+                          <Download className="h-3.5 w-3.5" /> Download full video
+                        </>
+                      ) : (
+                        <>
+                          <ArrowUpRight className="h-3.5 w-3.5" /> Watch full video
+                        </>
+                      )}
                     </a>
                   </div>
                 )}
