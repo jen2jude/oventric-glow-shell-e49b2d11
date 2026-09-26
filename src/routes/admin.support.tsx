@@ -78,6 +78,7 @@ function AdminSupportPage() {
     setActiveUser(userId);
     try {
       setMessages((await listChat({ data: { userId } })) as Msg[]);
+      window.dispatchEvent(new Event("oventric:admin-activity-changed"));
     } catch {
       setMessages([]);
     }
@@ -98,6 +99,7 @@ function AdminSupportPage() {
       data: { id: t.id, status: next as "open" | "in_review" | "resolved" | "closed" },
     });
     setTickets((await listTickets()) as Ticket[]);
+    window.dispatchEvent(new Event("oventric:admin-activity-changed"));
   };
 
   return (

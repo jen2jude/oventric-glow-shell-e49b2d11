@@ -217,9 +217,11 @@ function AdminLayout() {
     };
     load();
     const id = window.setInterval(load, 30_000);
+    window.addEventListener("oventric:admin-activity-changed", load);
     return () => {
       cancelled = true;
       window.clearInterval(id);
+      window.removeEventListener("oventric:admin-activity-changed", load);
     };
   }, [state, getActivityCounts]);
 
@@ -232,7 +234,13 @@ function AdminLayout() {
       try {
         await markActivitySeen({ data: { section } });
         if (!cancelled) {
-          setActivityCounts((current) => ({ ...current, [section]: 0 }));
+          if (section === "/admin/support") {
+            // Opening the desk does not resolve its tickets or read its chats.
+            const counts = await getActivityCounts();
+            if (!cancelled) setActivityCounts(counts);
+          } else {
+            setActivityCounts((current) => ({ ...current, [section]: 0 }));
+          }
         }
       } catch {
         /* keep the alert visible if marking it seen fails */
@@ -242,7 +250,7 @@ function AdminLayout() {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [state, location.pathname, roles, markActivitySeen]);
+  }, [state, location.pathname, roles, markActivitySeen, getActivityCounts]);
 
   const visibleNav = useMemo(() => NAV.filter((n) => canAccessSection(n.to, roles)), [roles]);
   const currentAllowed = canAccessSection(location.pathname, roles);
