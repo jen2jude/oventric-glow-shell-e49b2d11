@@ -8,3 +8,14 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## App shell vs website
+Oventric renders two presentations from one codebase. `useIsAppShell()` in
+`src/hooks/use-launch-context.ts` is the single source of truth: it returns true
+when the page runs standalone (installed PWA) or `?mode=app` was requested, and
+the choice sticks for the session. Reason: one codebase, two experiences, without
+duplicating routes or data logic.
+
+Installability is manifest-only (`public/manifest.webmanifest`). No app-shell
+service worker is registered — `public/push-sw.js` is messaging-only. Reason:
+cached app shells serve stale pages in Lovable previews.

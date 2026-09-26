@@ -23,3 +23,9 @@
 - [x] Fix newly published newsfeed posts appearing below older posts
 - [x] Apply the selected Coral Commerce tactile redesign to checkout
 - [x] Verify the redesigned checkout on mobile and desktop
+
+## True App Experience
+- [x] Stage 1: installable app manifest, app-mode detection, install prompt
+- [ ] Stage 2: native app home and feed layout (compact, edge-to-edge, no web chrome)
+- [ ] Stage 3: sliding bottom sheets for checkout, publishing, search and support
+- [ ] Stage 4: lock-screen push alerts and home-screen icon badge counts
