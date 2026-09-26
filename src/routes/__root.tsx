@@ -30,6 +30,7 @@ import { PushOptInPrompt } from "@/components/oventric/PushOptInPrompt";
 import { BootSplash } from "@/components/oventric/BootSplash";
 
 import { OfflineBanner } from "@/components/oventric/pwa/OfflineBanner";
+import { AppInstallPrompt } from "@/components/oventric/app/AppInstallPrompt";
 import { ReferralCapture } from "@/components/oventric/ReferralCapture";
 
 import { useLiveFx } from "@/lib/useLiveFx";
@@ -143,6 +144,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap",
       },
+      { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       // Warm the media/storage origin so the first image/video byte arrives sooner.
