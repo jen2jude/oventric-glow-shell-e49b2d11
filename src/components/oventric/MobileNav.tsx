@@ -1,4 +1,5 @@
-import { Home, Compass, Newspaper, Plus, ShoppingBag } from "lucide-react";
+import { Home, MessageCircle, Plus, ShoppingBag, Wallet } from "lucide-react";
+import { useUnreadCounts } from "@/hooks/use-unread-counts";
 import { CountBadge } from "@/components/oventric/CountBadge";
 import { haptic } from "@/lib/haptics";
 import { useChatOpen } from "@/hooks/use-chat-open";
@@ -7,15 +8,15 @@ import { useChromeHidden } from "@/hooks/use-chrome-hide";
 
 const left = [
   { icon: Home, label: "Home" },
-  { icon: Compass, label: "Explore" },
+  { icon: ShoppingBag, label: "Market" },
 ];
 const right = [
-  { icon: ShoppingBag, label: "Market" },
-  { icon: Newspaper, label: "Feed" },
+  { icon: MessageCircle, label: "Chats" },
+  { icon: Wallet, label: "Wallet" },
 ];
 
 export type MobileNavCounts = Partial<
-  Record<"Home" | "Feed" | "Explore" | "Market" | "Academy" | "Bounties" | "Wallet", number>
+  Record<"Home" | "Chats" | "Feed" | "Explore" | "Market" | "Academy" | "Bounties" | "Wallet", number>
 >;
 
 export function MobileNav({
@@ -31,10 +32,12 @@ export function MobileNav({
 }) {
   const chatOpen = useChatOpen();
   const chromeHidden = useChromeHidden();
+  const { messages } = useUnreadCounts();
   const Item = (it: { icon: typeof Home; label: string }) => {
 
     const isActive = active === it.label;
-    const count = counts?.[it.label as keyof MobileNavCounts] ?? 0;
+    const count =
+      it.label === "Chats" ? (messages ?? 0) : (counts?.[it.label as keyof MobileNavCounts] ?? 0);
     return (
       <button
         key={it.label}

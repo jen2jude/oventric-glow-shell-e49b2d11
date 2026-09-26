@@ -328,7 +328,9 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   const isMarketplace = active === "Marketplace";
 
   const rawView =
-    active === "Home" ? (
+    active === "Home" && isAppShell && !isDesktop ? (
+      <Feed />
+    ) : active === "Home" ? (
       <OventricHome onSelect={setActive} onCreate={() => handleCreate("sell")} />
     ) : active === "__legacy_home" ? (
       isAppShell ? (
@@ -430,7 +432,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         <div
           className={`flex flex-1 min-h-0 ${desktopLanding && active === "Marketplace" && !isDesktop ? "pt-0" : ""}`}
         >
-          {!isDesktop && !desktopLanding && liveSection(active) !== "Wallet" && (
+          {!isDesktop && !isAppShell && !desktopLanding && liveSection(active) !== "Wallet" && (
             <Sidebar onCreate={handleCreate} active={active} onSelect={setActive} />
           )}
           {isDesktop && !desktopLanding && !isMessages && liveSection(active) !== "Wallet" && <DesktopAppSidebar onSelect={setActive} />}
@@ -446,8 +448,11 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         {isAppShell && !desktopLanding && !isMessages && (
           <MobileNav
             onCreate={handleCreate}
-            active={active === "Wallet" ? "Wallet" : active === "Marketplace" ? "Market" : active}
-            onSelect={(l) => setActive(l === "Market" ? "Marketplace" : l)}
+            active={active === "Marketplace" ? "Market" : active === "Feed" ? "Home" : active}
+            onSelect={(l) => {
+              if (l === "Chats") setMessagesOpen(true);
+              else setActive(l === "Market" ? "Marketplace" : l);
+            }}
             counts={{
               Feed: feedCount.count,
               Market: marketCount.count,
