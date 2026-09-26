@@ -479,14 +479,24 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
 
   return (
     <div
-      className="modal-light web-sell-asset fixed inset-0 z-[70] flex h-[100dvh] w-screen items-start justify-center overflow-hidden px-0 pt-3 sm:items-center sm:p-6"
+      className={`modal-light web-sell-asset fixed inset-0 z-[70] flex h-[100dvh] w-screen justify-center overflow-hidden ${
+        success
+          ? "items-center p-5 sm:p-6"
+          : "items-start px-0 pt-3 sm:items-center sm:p-6"
+      }`}
       role="dialog"
       aria-modal="true"
       aria-label="Sell an asset"
     >
       <div className="absolute inset-0 bg-foreground/55 backdrop-blur-[2px]" onClick={submitting ? undefined : onClose} />
-      <div className="web-sell-panel slide-up relative flex max-h-[calc(100dvh-0.75rem)] w-full max-w-3xl flex-col overflow-hidden rounded-t-[20px] border border-contact-line bg-contact-surface text-contact-ink shadow-contact-sheet sm:max-h-[calc(100dvh-3rem)] sm:rounded-[18px]">
-        <div className="grid h-1.5 shrink-0 grid-cols-5" aria-hidden="true">
+      <div
+        className={`web-sell-panel slide-up relative flex flex-col overflow-hidden border border-contact-line bg-contact-surface text-contact-ink shadow-contact-sheet ${
+          success
+            ? "w-full max-w-[19rem] rounded-[18px] sm:max-w-sm"
+            : "max-h-[calc(100dvh-0.75rem)] max-w-3xl w-full rounded-t-[20px] sm:max-h-[calc(100dvh-3rem)] sm:rounded-[18px]"
+        }`}
+      >
+        <div className={success ? "hidden" : "grid h-1.5 shrink-0 grid-cols-5"} aria-hidden="true">
           <span className="bg-contact-whatsapp" />
           <span className="bg-contact-blue" />
           <span className="bg-contact-violet" />
