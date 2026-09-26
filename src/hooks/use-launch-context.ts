@@ -1,20 +1,92 @@
 import { useEffect, useState } from "react";
 
 /**
- * Oventric is a pure web application: there is no native shell and no
- * installable app build. The launch context is kept as a tiny compatibility
- * shim so existing components keep compiling, but it always resolves to
- * "browser".
+ * Oventric runs as one codebase with two presentations:
+ *
+ *  - "browser"  → the marketing/web experience (desktop site, SEO pages)
+ *  - "app"      → the native-feeling app shell (installed PWA on a phone,
+ *                 or an explicit `?mode=app` preview from the web build)
+ *
+ * The app shell is activated when the page is running in a standalone
+ * window (installed to the home screen) or when the visitor explicitly asked
+ * for app mode. The choice sticks for the rest of the browsing session so
+ * in-app navigation doesn't bounce back to the website skin.
  */
-export type LaunchContext = "browser";
+export type LaunchContext = "browser" | "app";
 
+export const APP_MODE_KEY = "oventric:launch-mode";
+
+/** True when the page is running in an installed / standalone window. */
+export function isStandaloneDisplay(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    if (window.matchMedia?.("(display-mode: standalone)").matches) return true;
+    if (window.matchMedia?.("(display-mode: fullscreen)").matches) return true;
+    if (window.matchMedia?.("(display-mode: minimal-ui)").matches) return true;
+  } catch {
+    /* ignore */
+  }
+  return (window.navigator as unknown as { standalone?: boolean }).standalone === true;
+}
+
+/** Lovable editor preview runs inside an iframe — never treat that as installed. */
+function inIframe(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.self !== window.top;
+  } catch {
+    return true;
+  }
+}
+
+/** Resolve the launch context for this page view (client only). */
+export function resolveLaunchContext(): LaunchContext {
+  if (typeof window === "undefined") return "browser";
+
+  // 1. Explicit request via the URL wins and is remembered for the session.
+  const params = new URLSearchParams(window.location.search);
+  const requested = params.get("mode");
+  if (requested === "app") {
+    try {
+      window.sessionStorage.setItem(APP_MODE_KEY, "app");
+    } catch {
+      /* ignore */
+    }
+    return "app";
+  }
+  if (requested === "web") {
+    try {
+      window.sessionStorage.setItem(APP_MODE_KEY, "browser");
+    } catch {
+      /* ignore */
+    }
+    return "browser";
+  }
+
+  // 2. Installed to the home screen (and not the editor iframe).
+  if (!inIframe() && isStandaloneDisplay()) return "app";
+
+  // 3. Sticky choice from earlier in this session.
+  try {
+    const stored = window.sessionStorage.getItem(APP_MODE_KEY);
+    if (stored === "app") return "app";
+    if (stored === "browser") return "browser";
+  } catch {
+    /* ignore */
+  }
+
+  return "browser";
+}
+
+/** Null until hydration so server and client markup match. */
 export function useLaunchContext(): LaunchContext | null {
   const [ctx, setCtx] = useState<LaunchContext | null>(null);
-  useEffect(() => setCtx("browser"), []);
+  useEffect(() => setCtx(resolveLaunchContext()), []);
   return ctx;
 }
 
-/** Always false — the web app has no app-shell mode. */
+/** True only once hydrated and running the app shell presentation. */
 export function useIsAppShell(): boolean {
-  return false;
+  const ctx = useLaunchContext();
+  return ctx === "app";
 }
