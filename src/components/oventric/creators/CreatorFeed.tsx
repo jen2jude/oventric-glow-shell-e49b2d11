@@ -434,7 +434,15 @@ export function CreatorCard({
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-[11px] font-bold text-violet-700 transition-colors hover:bg-violet-100"
                     >
-                      <Download className="h-3.5 w-3.5" /> Download full video
+                      {isDirectVideoUrl(post.fullVideoUrl) ? (
+                        <>
+                          <Download className="h-3.5 w-3.5" /> Download full video
+                        </>
+                      ) : (
+                        <>
+                          <ArrowUpRight className="h-3.5 w-3.5" /> Watch full video
+                        </>
+                      )}
                     </a>
                   </div>
                 )}
