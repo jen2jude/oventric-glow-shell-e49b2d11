@@ -51,6 +51,8 @@ export interface CreatorPostDTO {
   caption: string | null;
   media: CreatorMedia[];
   communityLink: string | null;
+  /** Full-length video link when the uploaded clip was auto-trimmed. */
+  fullVideoUrl: string | null;
   externalUrl: string | null;
   externalEmbedUrl: string | null;
   externalProvider: string | null;
@@ -213,6 +215,7 @@ const PublishInput = z.object({
   mediaPaths: z.array(z.string().trim().max(300)).max(10).optional(),
   mediaType: z.enum(["image", "video"]).optional(),
   communityLink: z.string().trim().max(300).optional(),
+  fullVideoUrl: z.string().trim().max(500).regex(/^https?:\/\//i).optional(),
   externalUrl: z.string().trim().max(500).optional(),
   /** Marketplace product created by the same creator, sold as an instant download. */
   productId: z.string().uuid().optional(),
@@ -260,6 +263,7 @@ export const publishCreatorPost = createServerFn({ method: "POST" })
         media_paths: data.mediaPaths ?? [],
         media_type: data.mediaType ?? null,
         community_link: data.communityLink || null,
+        full_video_url: data.mediaType === "video" ? data.fullVideoUrl || null : null,
         external_url: embed?.url ?? null,
         external_provider: embed?.provider ?? null,
         product_id: productId,
@@ -389,7 +393,7 @@ async function loadCreatorPosts(postId?: string): Promise<CreatorPostDTO[]> {
     let query = sb
       .from("creator_posts")
       .select(
-        "id, author_id, title, caption, media_paths, media_type, community_link, external_url, external_provider, product_id, fields, created_at, view_count",
+        "id, author_id, title, caption, media_paths, media_type, community_link, full_video_url, external_url, external_provider, product_id, fields, created_at, view_count",
       )
       .eq("status", "published");
     if (postId) query = query.eq("id", postId);
@@ -504,6 +508,7 @@ async function loadCreatorPosts(postId?: string): Promise<CreatorPostDTO[]> {
         caption: r.caption,
         media,
         communityLink: r.community_link,
+        fullVideoUrl: (r as { full_video_url?: string | null }).full_video_url ?? null,
         externalUrl: r.external_url,
         externalEmbedUrl: embed?.embedUrl ?? null,
         externalProvider: r.external_provider,

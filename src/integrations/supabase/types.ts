@@ -1661,6 +1661,7 @@ export type Database = {
           external_provider: string | null
           external_url: string | null
           fields: string[]
+          full_video_url: string | null
           id: string
           media_paths: string[]
           media_type: string | null
@@ -1678,6 +1679,7 @@ export type Database = {
           external_provider?: string | null
           external_url?: string | null
           fields?: string[]
+          full_video_url?: string | null
           id?: string
           media_paths?: string[]
           media_type?: string | null
@@ -1695,6 +1697,7 @@ export type Database = {
           external_provider?: string | null
           external_url?: string | null
           fields?: string[]
+          full_video_url?: string | null
           id?: string
           media_paths?: string[]
           media_type?: string | null

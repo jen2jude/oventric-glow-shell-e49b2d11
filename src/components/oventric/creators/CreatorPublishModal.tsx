@@ -52,6 +52,9 @@ export function CreatorPublishModal({
   const [community, setCommunity] = useState("");
   const [busy, setBusy] = useState(false);
   const [compressing, setCompressing] = useState(false);
+  /** Set when a long/heavy video was auto-cut to the allowed first part. */
+  const [trimmedFrom, setTrimmedFrom] = useState<number | null>(null);
+  const [fullVideoUrl, setFullVideoUrl] = useState("");
 
   // Sellable asset
   const [assetFile, setAssetFile] = useState<File | null>(null);
@@ -78,6 +81,8 @@ export function CreatorPublishModal({
     setCaption("");
     setAttachments([]);
     setCommunity("");
+    setTrimmedFrom(null);
+    setFullVideoUrl("");
     setAssetFile(null);
     setAssetLink("");
     setIsFree(true);
@@ -109,25 +114,33 @@ export function CreatorPublishModal({
         try {
           const { getVideoDuration, trimVideoSegment } = await import("@/lib/media/videoTrim");
           const duration = await getVideoDuration(file);
-          if (duration > MAX_CLIP_SECONDS + 0.5) {
-            toast.error(
-              `Clips here are up to ${MAX_CLIP_LABEL} and ${MAX_CLIP_MB}MB. Trim or compress your video to fit, then upload again.`,
-            );
-            continue;
-          }
-          if (file.size > MAX_CLIP_BYTES) {
+          const tooLong = duration > MAX_CLIP_SECONDS + 0.5;
+          if (tooLong || file.size > MAX_CLIP_BYTES) {
+            // Keep only the allowed opening part; the rest is discarded.
             const compact = await trimVideoSegment(
               file,
               0,
               Math.max(1, Math.min(MAX_CLIP_SECONDS, duration || MAX_CLIP_SECONDS)),
             );
-            if (compact && compact.size < file.size) file = compact;
+            if (compact && (tooLong || compact.size < file.size)) file = compact;
+            else if (tooLong) {
+              toast.error("Couldn't shorten this video on your device. Trim it to " + MAX_CLIP_LABEL + " and try again.");
+              continue;
+            }
           }
           if (file.size > MAX_CLIP_BYTES) {
             toast.error(
               `That clip is still over ${MAX_CLIP_MB}MB. Compress it below ${MAX_CLIP_MB}MB and upload again.`,
             );
             continue;
+          }
+          if (tooLong) {
+            setTrimmedFrom(duration || MAX_CLIP_SECONDS);
+            toast.message(`Only the first ${MAX_CLIP_LABEL} of your video will be uploaded`, {
+              description: "Add a link to the full video below so viewers can get all of it.",
+            });
+          } else {
+            setTrimmedFrom(null);
           }
         } finally {
           setCompressing(false);
@@ -143,6 +156,10 @@ export function CreatorPublishModal({
   const submit = async () => {
     if (title.trim().length < 2) {
       toast.error("Add a title");
+      return;
+    }
+    if (fullVideoUrl.trim() && !/^https?:\/\//i.test(fullVideoUrl.trim())) {
+      toast.error("Full video link must start with https://");
       return;
     }
     if (community.trim() && !isCommunityLink(community)) {
@@ -284,6 +301,10 @@ export function CreatorPublishModal({
           mediaPaths,
           mediaType,
           communityLink: community.trim() || undefined,
+          fullVideoUrl:
+            trimmedFrom !== null && mediaType === "video" && fullVideoUrl.trim()
+              ? fullVideoUrl.trim()
+              : undefined,
           productId,
         },
       });
@@ -361,8 +382,8 @@ export function CreatorPublishModal({
                   {compressing ? "Preparing your clip…" : "Add images or a video"}
                 </span>
                 <span className="px-4 text-center text-[11px] font-semibold text-slate-400">
-                  Videos up to {MAX_CLIP_LABEL} and {MAX_CLIP_MB}MB — trim or compress your clip to
-                  fit before uploading.
+                  Videos up to {MAX_CLIP_LABEL} and {MAX_CLIP_MB}MB — longer videos are cut to the
+                  first {MAX_CLIP_LABEL} automatically.
                 </span>
               </button>
             ) : (
@@ -377,7 +398,10 @@ export function CreatorPublishModal({
                     <button
                       type="button"
                       aria-label="Remove"
-                      onClick={() => setAttachments((prev) => prev.filter((_, idx) => idx !== i))}
+                      onClick={() => {
+                        setAttachments((prev) => prev.filter((_, idx) => idx !== i));
+                        if (a.kind === "video") setTrimmedFrom(null);
+                      }}
                       className="absolute right-1 top-1 grid h-5 w-5 place-items-center rounded-full bg-black/60 text-white"
                     >
                       <X className="h-3 w-3" />
@@ -394,6 +418,27 @@ export function CreatorPublishModal({
               </div>
             )}
           </div>
+
+          {trimmedFrom !== null && attachments[0]?.kind === "video" && (
+            <div className="space-y-2 rounded-[10px] border border-violet-100 bg-violet-50/60 p-3">
+              <div className="flex items-center gap-2">
+                <Link2 className="h-4 w-4 text-violet-600" />
+                <p className="text-xs font-black text-slate-900">Paste link to full video (optional)</p>
+              </div>
+              <p className="text-[11px] leading-relaxed text-slate-500">
+                Your video is longer than {MAX_CLIP_LABEL}, so only the first {MAX_CLIP_LABEL} will be
+                uploaded and played. Add a link (Google Drive, YouTube, Dropbox…) and viewers get a
+                "Download full video" button under your clip.
+              </p>
+              <input
+                value={fullVideoUrl}
+                onChange={(e) => setFullVideoUrl(e.target.value)}
+                placeholder="https://…"
+                inputMode="url"
+                className="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-violet-400"
+              />
+            </div>
+          )}
 
           {/* Sellable asset */}
           <div className="space-y-3 rounded-[10px] border border-emerald-100 bg-emerald-50/50 p-3">
