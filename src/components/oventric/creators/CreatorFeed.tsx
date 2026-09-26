@@ -424,7 +424,21 @@ export function CreatorCard({
         {post.media.length > 0 && (
           <div className="mt-3 overflow-hidden rounded-[10px] border border-slate-100">
             {post.media[0].type === "video" ? (
-              <PreviewVideo src={post.media[0].url} poster={post.media[0].posterUrl} />
+              <>
+                <PreviewVideo src={post.media[0].url} poster={post.media[0].posterUrl} />
+                {post.fullVideoUrl && (
+                  <div className="flex justify-end border-t border-slate-100 bg-white px-3 py-2">
+                    <a
+                      href={post.fullVideoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-[11px] font-bold text-violet-700 transition-colors hover:bg-violet-100"
+                    >
+                      <Download className="h-3.5 w-3.5" /> Download full video
+                    </a>
+                  </div>
+                )}
+              </>
             ) : (
               <div className={`grid gap-0.5 ${post.media.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
                 {post.media.slice(0, 4).map((m) => (
