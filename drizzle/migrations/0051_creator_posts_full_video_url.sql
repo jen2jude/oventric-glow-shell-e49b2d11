@@ -1,0 +1,1 @@
+ALTER TABLE public.creator_posts ADD COLUMN IF NOT EXISTS full_video_url text;
