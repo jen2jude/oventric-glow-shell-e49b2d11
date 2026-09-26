@@ -418,7 +418,7 @@ function RootComponent() {
     if (launchCtx === "browser") {
       url.searchParams.set("mode", "app");
     } else {
-      url.searchParams.delete("mode");
+      url.searchParams.set("mode", "web");
     }
     window.location.href = url.toString();
   };
