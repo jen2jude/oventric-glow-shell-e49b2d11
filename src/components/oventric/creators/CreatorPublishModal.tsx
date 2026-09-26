@@ -134,8 +134,8 @@ export function CreatorPublishModal({
             );
             continue;
           }
-          if (file !== raw) {
-            setTrimmedFrom(duration || null);
+          if (tooLong) {
+            setTrimmedFrom(duration || MAX_CLIP_SECONDS);
             toast.message(`Only the first ${MAX_CLIP_LABEL} of your video will be uploaded`, {
               description: "Add a link to the full video below so viewers can get all of it.",
             });
