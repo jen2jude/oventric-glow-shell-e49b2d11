@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 
-import cashbackArt from "@/assets/cashback-spotlight.png.asset.json";
+import cashbackArt from "@/assets/cashback-spotlight.webp.asset.json";
 
 const DISMISSED_AT_KEY = "oventric:cashback-spotlight-dismissed-at";
 const REPEAT_AFTER_MS = 24 * 60 * 60 * 1000;
