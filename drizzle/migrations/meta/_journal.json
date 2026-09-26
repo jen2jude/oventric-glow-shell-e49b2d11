@@ -351,6 +351,13 @@
       "when": 1790093237552,
       "tag": "0049_grant_select_products_creator_asset",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1790429175721,
+      "tag": "0050_notify_all_on_new_or_restocked_product",
+      "breakpoints": true
     }
   ]
 }
