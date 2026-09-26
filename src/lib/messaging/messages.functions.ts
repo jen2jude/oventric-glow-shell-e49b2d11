@@ -28,6 +28,7 @@ export interface DMRow {
   id: string;
   sender_id: string;
   recipient_id: string;
+  is_system: boolean;
   body: string | null;
   media_path: string | null;
   media_type: string | null;
@@ -64,7 +65,7 @@ export const listThreads = createServerFn({ method: "GET" })
     const me = context.userId;
     const { data: rows, error } = await context.supabase
       .from("direct_messages")
-      .select("id, sender_id, recipient_id, body, media_path, created_at, read_at")
+      .select("id, sender_id, recipient_id, is_system, body, media_path, created_at, read_at")
       .or(`sender_id.eq.${me},recipient_id.eq.${me}`)
       .order("created_at", { ascending: false })
       .limit(500);
@@ -97,7 +98,8 @@ export const listThreads = createServerFn({ method: "GET" })
       const p = pMap.get(id);
       const name = p?.display_name || p?.username || "Unknown peer";
       const entry = byPeer.get(id)!;
-      const preview = entry.last.body ?? (entry.last.media_path ? "📎 Attachment" : "…");
+      const previewText = entry.last.body ?? (entry.last.media_path ? "📎 Attachment" : "…");
+      const preview = entry.last.is_system ? `Oventric · ${previewText}` : previewText;
       const ap = (p as { avatar_path?: string | null } | undefined)?.avatar_path ?? null;
       return {
         peerId: id,
@@ -136,7 +138,7 @@ export const listMessages = createServerFn({ method: "GET" })
     const limit = data.limit ?? 30;
     let q = context.supabase
       .from("direct_messages")
-      .select("id, sender_id, recipient_id, body, media_path, media_type, created_at, read_at, order_id")
+      .select("id, sender_id, recipient_id, is_system, body, media_path, media_type, created_at, read_at, order_id")
       .or(
         `and(sender_id.eq.${me},recipient_id.eq.${data.peerId}),and(sender_id.eq.${data.peerId},recipient_id.eq.${me})`,
       )
@@ -180,7 +182,7 @@ export const sendMessage = createServerFn({ method: "POST" })
         media_type: data.mediaType ?? null,
         order_id: data.orderId ?? null,
       })
-      .select("id, sender_id, recipient_id, body, media_path, media_type, created_at, read_at, order_id")
+      .select("id, sender_id, recipient_id, is_system, body, media_path, media_type, created_at, read_at, order_id")
       .single();
     if (error) throw error;
     return row as DMRow;
@@ -359,7 +361,7 @@ export const ensureDirectThread = createServerFn({ method: "POST" })
     const limit = 30;
     const { data: rows, error: mErr } = await context.supabase
       .from("direct_messages")
-      .select("id, sender_id, recipient_id, body, media_path, media_type, created_at, read_at, order_id")
+      .select("id, sender_id, recipient_id, is_system, body, media_path, media_type, created_at, read_at, order_id")
       .or(
         `and(sender_id.eq.${me},recipient_id.eq.${data.peerId}),and(sender_id.eq.${data.peerId},recipient_id.eq.${me})`,
       )
