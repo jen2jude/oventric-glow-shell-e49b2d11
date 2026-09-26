@@ -1,3 +1,4 @@
+import { MessagesDrawer } from "@/components/oventric/MessagesDrawer";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -322,6 +323,8 @@ function DashboardPage() {
     [purchases, listings],
   );
 
+  const [messagesOpen, setMessagesOpen] = useState(false);
+
   if (!authChecked) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -333,10 +336,11 @@ function DashboardPage() {
   return (
     <div className="web-dashboard min-h-screen bg-background text-foreground">
       <Header 
-        onOpenMessages={() => {}} 
+        onOpenMessages={() => setMessagesOpen(true)}
         browserVisitorHeader={!isAppShell} 
         forceSiteNavbar={!isAppShell}
       />
+      <MessagesDrawer open={messagesOpen} onClose={() => setMessagesOpen(false)} />
       <div
         className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12"
         style={{
