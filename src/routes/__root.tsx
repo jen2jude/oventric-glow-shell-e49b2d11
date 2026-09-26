@@ -382,7 +382,7 @@ function RootComponent() {
   // Welcome slides belong to the app shell (native build / installed PWA);
   // plain browser visitors get the marketing site instead.
   const launchCtx = useLaunchContext();
-  const isAppShell = false;
+  const isAppShell = launchCtx === "app";
   // Welcome slides are a mobile-first onboarding experience; skip them on PC.
   const [isPc, setIsPc] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth >= 1024 : false,
