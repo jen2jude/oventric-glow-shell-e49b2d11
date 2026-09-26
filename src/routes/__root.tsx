@@ -30,6 +30,7 @@ import { PushOptInPrompt } from "@/components/oventric/PushOptInPrompt";
 import { BootSplash } from "@/components/oventric/BootSplash";
 
 import { OfflineBanner } from "@/components/oventric/pwa/OfflineBanner";
+import { AppInstallPrompt } from "@/components/oventric/app/AppInstallPrompt";
 import { ReferralCapture } from "@/components/oventric/ReferralCapture";
 
 import { useLiveFx } from "@/lib/useLiveFx";
@@ -107,8 +108,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { name: "theme-color", content: "#121214" },
+      { name: "theme-color", content: "#0A0A0B" },
       { name: "color-scheme", content: "dark" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "apple-mobile-web-app-title", content: "Oventric" },
+      { name: "application-name", content: "Oventric" },
       { title: "Oventric — Marketplace, Academy, Bounties, and Wallet" },
       {
         name: "description",
@@ -143,6 +149,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap",
       },
+      { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       // Warm the media/storage origin so the first image/video byte arrives sooner.
@@ -375,7 +382,7 @@ function RootComponent() {
   // Welcome slides belong to the app shell (native build / installed PWA);
   // plain browser visitors get the marketing site instead.
   const launchCtx = useLaunchContext();
-  const isAppShell = false;
+  const isAppShell = launchCtx === "app";
   // Welcome slides are a mobile-first onboarding experience; skip them on PC.
   const [isPc, setIsPc] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth >= 1024 : false,
@@ -411,7 +418,7 @@ function RootComponent() {
     if (launchCtx === "browser") {
       url.searchParams.set("mode", "app");
     } else {
-      url.searchParams.delete("mode");
+      url.searchParams.set("mode", "web");
     }
     window.location.href = url.toString();
   };
@@ -438,6 +445,7 @@ function RootComponent() {
               <PushOptInPrompt />
               <OfflineBanner />
               <ReferralCapture />
+              <AppInstallPrompt />
 
               <BootSplash />
                {show && hydrated && !isPc && isAppShell && <FeatureCarousel onComplete={markSeen} />}
