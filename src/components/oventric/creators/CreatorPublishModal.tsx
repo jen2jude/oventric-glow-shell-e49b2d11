@@ -427,8 +427,9 @@ export function CreatorPublishModal({
               </div>
               <p className="text-[11px] leading-relaxed text-slate-500">
                 Your video is longer than {MAX_CLIP_LABEL}, so only the first {MAX_CLIP_LABEL} will be
-                uploaded and played. Add a link (Google Drive, YouTube, Dropbox…) and viewers get a
-                "Download full video" button under your clip.
+                uploaded and played. Add a link to the full video — a direct file link (ends in .mp4,
+                Dropbox/Drive download link) gives viewers a "Download full video" button; any other
+                link (YouTube, Drive page…) shows a "Watch full video" button instead.
               </p>
               <input
                 value={fullVideoUrl}

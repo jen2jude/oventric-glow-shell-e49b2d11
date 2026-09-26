@@ -13,6 +13,18 @@ import { CreatorPostMenu } from "./CreatorPostMenu";
 import { getHiddenPosts } from "@/components/oventric/PostActionsMenu";
 
 
+function isDirectVideoUrl(url: string): boolean {
+  try {
+    const u = new URL(url);
+    if (/\.(mp4|mov|webm|m4v|mkv|avi)$/i.test(u.pathname)) return true;
+    if (u.hostname.includes("dropbox.com") && (u.searchParams.get("dl") === "1" || u.searchParams.get("raw") === "1")) return true;
+    if (u.hostname.includes("drive.google.com") && u.search.includes("export=download")) return true;
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 function compactNumber(value: number) {
   return new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(value);
 }
