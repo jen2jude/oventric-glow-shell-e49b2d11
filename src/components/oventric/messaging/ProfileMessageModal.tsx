@@ -338,6 +338,7 @@ export function ProfileMessageModal({
       media_type: attachment?.file.type ?? null,
       created_at: new Date().toISOString(),
       read_at: null,
+      is_system: false,
     };
     setMessages((prev) => [...prev, optimistic]);
     const draftBackup = draft;
@@ -430,6 +431,17 @@ export function ProfileMessageModal({
               </div>
             ) : (
               messages.map((m) => {
+                if (m.is_system) {
+                  return (
+                    <div key={m.id} role="note" aria-label="Oventric order update" className="mx-auto w-full max-w-md rounded-[10px] border border-chat-blue/25 bg-chat-blue-soft px-4 py-3 text-chat-ink">
+                      <div className="mb-1.5 flex items-center gap-1.5 text-xs font-bold text-chat-blue">
+                        <ShoppingBag className="size-3.5" aria-hidden="true" /> Oventric update
+                      </div>
+                      <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">{m.body}</div>
+                      <div className="mt-2 text-[10px] text-chat-muted">{formatTime(m.created_at)}</div>
+                    </div>
+                  );
+                }
                 const mine = m.sender_id === me;
                 const isTmp = m.id.startsWith("tmp-");
                 const url = m.media_path ? attachmentUrls[m.media_path] : null;

@@ -197,6 +197,17 @@ function MessageBubble({
   attachmentUrl?: string | null;
 }) {
   const productId = extractProductId(msg.body);
+  if (msg.is_system) {
+    return (
+      <div role="note" aria-label="Oventric order update" className="mx-auto my-3 w-full max-w-md rounded-[10px] border border-chat-blue/25 bg-chat-blue-soft px-4 py-3 text-chat-ink">
+        <div className="mb-1.5 flex items-center gap-1.5 text-xs font-bold text-chat-blue">
+          <ShieldCheck className="size-3.5" aria-hidden="true" /> Oventric update
+        </div>
+        <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">{msg.body}</div>
+        <div className="mt-2 text-[10px] text-chat-muted">{formatTime(msg.created_at)}</div>
+      </div>
+    );
+  }
   return (
     <Message from={mine ? "user" : "assistant"} className="max-w-[78%]">
       <MessageContent
@@ -786,6 +797,7 @@ export function Messages({
       media_type: mediaType,
       created_at: new Date().toISOString(),
       read_at: null,
+      is_system: false,
     };
     if (mediaPath && attachment?.previewUrl) {
       const localPreview = attachment.previewUrl;
