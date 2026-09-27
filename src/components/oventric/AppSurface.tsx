@@ -400,7 +400,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         <Bounties />
       </AppOnlyGate>
     ) : active === "Messages" ? (
-      <Messages variant="page" />
+      isAppShell ? <AppMessages /> : <Messages variant="page" />
     ) : active === "Circles" ? (
       <AppOnlyGate
         title="Circles live in the app"
@@ -504,16 +504,27 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
             }}
           />
         )}
-        {messagesOpen && (
-          <MessagesDrawer
-            open={messagesOpen}
-            onClose={() => {
-              setMessagesOpen(false);
-              setMessagesPeer(undefined);
-            }}
-            initialThreadId={messagesPeer}
-          />
-        )}
+        {messagesOpen &&
+          (isAppShell ? (
+            <div className="fixed inset-0 z-[80] bg-[#070A08]">
+              <AppMessages
+                initialThreadId={messagesPeer}
+                onClose={() => {
+                  setMessagesOpen(false);
+                  setMessagesPeer(undefined);
+                }}
+              />
+            </div>
+          ) : (
+            <MessagesDrawer
+              open={messagesOpen}
+              onClose={() => {
+                setMessagesOpen(false);
+                setMessagesPeer(undefined);
+              }}
+              initialThreadId={messagesPeer}
+            />
+          ))}
       </Suspense>
 
       <CashbackSpotlight active={active === "Home" || active === "Marketplace"} />
