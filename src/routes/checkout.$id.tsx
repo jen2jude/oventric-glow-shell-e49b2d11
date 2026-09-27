@@ -728,6 +728,21 @@ function CheckoutPage() {
           <div
             className="checkout-flow grid min-w-0 grid-cols-1 gap-6"
           >
+            {isAppShell && (
+              <div className="checkout-product-hero flex items-center gap-3 border-b border-checkout-line px-1 py-5">
+                {product.coverUrl ? (
+                  <ResponsiveImage src={product.coverUrl} alt={product.name} sizes="72px" className="h-[72px] w-[72px] shrink-0 rounded-xl border border-checkout-line object-cover" />
+                ) : (
+                  <div className="h-[72px] w-[72px] shrink-0 rounded-xl bg-checkout-muted-surface" />
+                )}
+                <div className="min-w-0">
+                  <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.14em] text-checkout-coral">Your order</p>
+                  <h1 className="line-clamp-2 text-sm font-bold leading-snug text-checkout-ink">{product.name}</h1>
+                  <p className="mt-1 text-xs text-checkout-muted">by {product.vendor} · Qty {qty}</p>
+                  <p className="mt-1 text-sm font-black text-checkout-ink">{isFree ? "Free" : fmtPrice(subtotalUSD, homeCurrency, product, subtotalLocal)}</p>
+                </div>
+              </div>
+            )}
             {/* Payment methods */}
             <div className="min-w-0 space-y-5">
               <section className="checkout-intro overflow-hidden rounded-[10px] border border-checkout-line bg-checkout-surface shadow-checkout-card">
@@ -1045,7 +1060,7 @@ function CheckoutPage() {
                 </h2>
                 <span className="rounded-full bg-checkout-gold-soft px-3 py-1 text-[10px] font-bold uppercase text-checkout-gold-ink">Protected</span>
               </div>
-              {product.coverUrl ? (
+              {!isAppShell && (product.coverUrl ? (
                 <ResponsiveImage
                   src={product.coverUrl}
                   alt={product.name}
@@ -1056,15 +1071,15 @@ function CheckoutPage() {
                 />
               ) : (
                 <div className="h-20 rounded-[10px] bg-white/5 md:bg-slate-100 mb-3" />
-              )}
-              <>
+              ))}
+              {!isAppShell && <>
                   <div className="mb-1 text-sm font-bold text-checkout-ink">
                     {product.name}
                   </div>
                   <div className="mb-3 text-xs text-checkout-muted">
                     by {product.vendor} · Qty {qty}
                   </div>
-              </>
+              </>}
 
               {/* Coupon — mutually exclusive with cashback. */}
               <div
