@@ -1,7 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useIsAppShell } from "@/hooks/use-launch-context";
+import { trackPostView } from "@/lib/post-views";
+import { haptic } from "@/lib/haptics";
+import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
+import type { Currency } from "@/lib/onboarding/OnboardingContext";
+import { visibleProductPrice } from "@/lib/money-visibility";
 import { useServerFn } from "@tanstack/react-start";
 import {
+  Eye,
+  Heart,
+  Play,
+  ShoppingBag,
   Image as ImageIcon,
   Loader2,
   MessageCircle,
@@ -52,6 +62,12 @@ function timeAgo(iso: string) {
   return new Date(iso).toLocaleDateString();
 }
 
+function compact(n: number) {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, "")}K`;
+  return String(n);
+}
+
 /**
  * The profile "Posts" tab: one live wall feed with a newsfeed-style composer
  * on top. Reactions, comments and sharing use the same wiring as the wall.
@@ -78,6 +94,10 @@ export function ProfilePostsFeed({
   const [meInitials, setMeInitials] = useState("Me");
 
   const isSelf = viewerId === wallUserId;
+  const isApp = useIsAppShell();
+  const navigate = useNavigate();
+  const { homeCurrency, balancesHidden } = useOnboarding();
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -210,7 +230,7 @@ export function ProfilePostsFeed({
           <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading posts…
         </div>
       ) : visiblePosts && visiblePosts.length > 0 ? (
-        <div className="space-y-3">
+        <div className={isApp ? "-mx-4 divide-y divide-white/5" : "space-y-3"}>
           {visiblePosts.map((p) => {
             const meta = p.viewer_reaction ? REACTION_META[p.viewer_reaction] : null;
             const shareHref = `${typeof window !== "undefined" ? window.location.origin : ""}/profile/${wallUserId}/item/post/${p.id}`;
