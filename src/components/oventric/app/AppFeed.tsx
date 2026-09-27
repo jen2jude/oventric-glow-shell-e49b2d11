@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
-import { Heart, MessageCircle, Share2, Play, Loader2, ShoppingBag } from "lucide-react";
+import { Heart, MessageCircle, Share2, Play, Loader2, ShoppingBag, MoreHorizontal, Eye, EyeOff, Link2 } from "lucide-react";
+import { AppSheet } from "@/components/oventric/app/AppSheet";
 import { listPosts, toggleLike } from "@/lib/posts.functions";
 import { CommentsSheet } from "@/components/oventric/feed/CommentsSheet";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
@@ -30,6 +31,9 @@ export function AppFeed() {
   const [posts, setPosts] = useState<Post[] | null>(null);
   const [signedIn, setSignedIn] = useState(false);
   const [commentsFor, setCommentsFor] = useState<Post | null>(null);
+  const [menuFor, setMenuFor] = useState<Post | null>(null);
+  const [hidden, setHidden] = useState<Set<string>>(new Set());
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetchPosts()
@@ -100,7 +104,7 @@ export function AppFeed() {
       </div>
 
       <div className="divide-y divide-white/5">
-        {posts.map((p) => {
+        {posts.filter((p) => !hidden.has(p.id)).map((p) => {
           const img = p.media_type === "video" ? p.poster_url : p.media_url;
           return (
             <article key={p.id} className="px-4 py-3 active:bg-white/[0.02]">
@@ -134,12 +138,36 @@ export function AppFeed() {
                     <span className="shrink-0 text-[12px] text-white/40">· {ago(p.created_at)}</span>
                   </div>
 
-                  {/* Text */}
-                  {p.text && (
-                    <p className="mt-0.5 whitespace-pre-line text-[14px] leading-snug text-white/90">
-                      {p.text}
-                    </p>
-                  )}
+                  {/* Text — long posts truncate with a View more toggle */}
+                  {p.text &&
+                    (p.text.length > 240 ? (
+                      <div className="mt-0.5">
+                        <p
+                          className={`whitespace-pre-line text-[14px] leading-snug text-white/90 ${
+                            expanded.has(p.id) ? "" : "line-clamp-5"
+                          }`}
+                        >
+                          {p.text}
+                        </p>
+                        <button
+                          onClick={() =>
+                            setExpanded((s) => {
+                              const n = new Set(s);
+                              if (n.has(p.id)) n.delete(p.id);
+                              else n.add(p.id);
+                              return n;
+                            })
+                          }
+                          className="mt-1 text-[13px] font-semibold text-[#E5484D]"
+                        >
+                          {expanded.has(p.id) ? "Show less" : "View more"}
+                        </button>
+                      </div>
+                    ) : (
+                      <p className="mt-0.5 whitespace-pre-line text-[14px] leading-snug text-white/90">
+                        {p.text}
+                      </p>
+                    ))}
 
                   {/* Media */}
                   {img && (
