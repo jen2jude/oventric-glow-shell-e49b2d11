@@ -100,13 +100,25 @@ export function ServiceComposerModal({
     [title, description, amount, days, file, homeCurrency, snapshotFx, persist, onPublished, onClose],
   );
 
+  useEffect(() => {
+    if (!open) return;
+    const prevBody = document.body.style.overflow;
+    const prevHtml = document.documentElement.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevBody;
+      document.documentElement.style.overflow = prevHtml;
+    };
+  }, [open]);
+
   if (!open) return null;
 
   return createPortal(
     <div className="fixed inset-0 z-[110] flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center">
       <form
         onSubmit={submit}
-        className="max-h-[92vh] w-full max-w-[560px] overflow-y-auto rounded-t-3xl border border-white/10 bg-[#101014] p-5 text-white sm:rounded-3xl"
+        className="max-h-[92vh] w-full max-w-[560px] overflow-y-auto overscroll-contain rounded-t-3xl border border-white/10 bg-[#101014] p-5 text-white sm:rounded-3xl"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-black">Offer a service</h2>
