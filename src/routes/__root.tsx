@@ -30,6 +30,7 @@ import { LiveNotificationToasts } from "@/components/oventric/LiveNotificationTo
 import { PushOptInPrompt } from "@/components/oventric/PushOptInPrompt";
 import { AppBadgeSync } from "@/components/oventric/app/AppBadgeSync";
 import { BootSplash } from "@/components/oventric/BootSplash";
+import logoFull from "@/assets/oventric-full-transparent.png";
 
 import { OfflineBanner } from "@/components/oventric/pwa/OfflineBanner";
 import { ReferralCapture } from "@/components/oventric/ReferralCapture";
