@@ -42,8 +42,9 @@ const PAID = ["paid", "delivered", "completed", "released"];
 export const getCreatorHub = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ tzOffset: z.number().min(-900).max(900).default(0) }).parse(d ?? {}))
-  .handler(async ({ context, data }): Promise<CreatorHubData> => {
-    const me = context.userId;
+  .handler(async ({ context, data }): Promise<CreatorHubData> => buildCreatorHubData(context.userId, data.tzOffset));
+
+export async function buildCreatorHubData(me: string, tzOffset: number): Promise<CreatorHubData> {
     // Privileged reads, strictly scoped to the signed-in creator's own content.
     const { supabaseAdmin: sb } = await import("@/integrations/supabase/client.server");
 
