@@ -87,9 +87,18 @@ export function resolveLaunchContext(): LaunchContext {
 }
 
 /** Null until hydration so server and client markup match. */
+// After the first hydration, components that mount later (sheets, popups)
+// can read the context immediately. Otherwise their first frame renders the
+// website look and flashes before switching to the app look.
+let hydratedContext: LaunchContext | null = null;
+
 export function useLaunchContext(): LaunchContext | null {
-  const [ctx, setCtx] = useState<LaunchContext | null>(null);
-  useEffect(() => setCtx(resolveLaunchContext()), []);
+  const [ctx, setCtx] = useState<LaunchContext | null>(() => hydratedContext);
+  useEffect(() => {
+    const next = resolveLaunchContext();
+    hydratedContext = next;
+    setCtx(next);
+  }, []);
   return ctx;
 }
 
