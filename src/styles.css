@@ -4032,6 +4032,29 @@ section + section {
 .web-connections .bg-online { background-color: var(--online); }
 .web-connections .text-online { color: var(--online); }
 
+/* Connections: compact native roster when opened from the app profile. */
+.app-connections {
+  color-scheme: dark;
+  --background: oklch(0.145 0.004 270);
+  --foreground: oklch(0.97 0 0);
+  --primary: oklch(0.66 0.2 25);
+  --primary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.205 0.006 270);
+  --muted-foreground: oklch(0.68 0.008 270);
+  --border: oklch(1 0 0 / 10%);
+  --destructive: oklch(0.67 0.2 24);
+  --online: oklch(0.72 0.19 149);
+  --newsfeed-panel-shadow: 0 -20px 60px oklch(0 0 0 / 58%);
+  font-family: var(--font-wallet-body);
+}
+
+.app-connections .font-wallet-display {
+  font-family: var(--font-wallet-display);
+}
+
+.app-connections .bg-online { background-color: var(--online); }
+.app-connections .text-online { color: var(--online); }
+
 @media (prefers-reduced-motion: reduce) {
   .web-chat { animation: none !important; }
   .web-chat .animate-bounce { animation: none !important; }
