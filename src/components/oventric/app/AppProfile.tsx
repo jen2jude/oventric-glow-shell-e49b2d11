@@ -53,6 +53,7 @@ import { AppSheet } from "./AppSheet";
 import { ConnectionsDialog } from "@/components/oventric/profile/ConnectionsDialog";
 import { FollowRequestsDrawer } from "@/components/oventric/FollowRequestsDrawer";
 import { ReportModal } from "@/components/oventric/ReportModal";
+import { ProfilePostsFeed } from "@/components/oventric/profile/ProfilePostsFeed";
 import { ProfileServicesTab } from "@/components/oventric/profile/ProfileServicesTab";
 import { ProfileCollectionsTab } from "@/components/oventric/profile/ProfileCollectionsTab";
 import { PhotoBatches } from "@/components/oventric/PhotoBatches";
@@ -284,11 +285,6 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
                 </div>
               )}
             </div>
-            {verified && (
-              <span className="absolute -bottom-0.5 -right-0.5 z-10 grid h-6 w-6 place-items-center rounded-full border-[3px] border-[#0A0A0B] bg-[#1D9BF0]">
-                <BadgeCheck className="h-3.5 w-3.5 text-white" />
-              </span>
-            )}
           </div>
           <div className="flex items-center gap-2 pb-1">
             {products.length > 0 && (
@@ -448,46 +444,16 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
         ))}
       </div>
 
-      {/* Posts */}
-      {tab === "posts" &&
-        (posts.length === 0 ? (
-          <p className="px-8 py-14 text-center text-xs text-white/35">
-            No posts yet.
-          </p>
-        ) : (
-          <div className="divide-y divide-white/[0.05]">
-            {posts.map((p: FeedPost) => (
-              <button
-                key={p.id}
-                onClick={() => navigate({ to: "/post/$id", params: { id: p.id } })}
-                className="block w-full px-4 py-3 text-left"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-[13px] font-semibold text-white">
-                    {profile.displayName}
-                  </span>
-                  <span className="text-[11px] text-white/35">
-                    {ago(p.created_at)}
-                  </span>
-                </div>
-                {p.text && (
-                  <p className="mt-1 text-[13px] leading-snug text-white/80 line-clamp-4">
-                    {p.text}
-                  </p>
-                )}
-                {p.media && p.media.length > 0 && (
-                  <div className="mt-2 overflow-hidden rounded-xl border border-white/[0.06]">
-                    <img
-                      src={p.media[0].poster_url ?? p.media[0].url}
-                      alt=""
-                      className="max-h-56 w-full object-cover"
-                    />
-                  </div>
-                )}
-              </button>
-            ))}
-          </div>
-        ))}
+      {/* Posts — same wall feed and composer as the Newsfeed */}
+      {tab === "posts" && profile.userId && (
+        <div className="px-3 pt-3">
+          <ProfilePostsFeed
+            wallUserId={profile.userId}
+            wallOwnerName={profile.displayName}
+            viewerId={me ?? null}
+          />
+        </div>
+      )}
 
       {/* Shop */}
       {tab === "shop" &&
