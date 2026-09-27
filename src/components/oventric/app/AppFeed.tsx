@@ -88,6 +88,20 @@ export function AppFeed() {
   const loadFollowers = useServerFn(listFollowers);
   const [quickViewId, setQuickViewId] = useState<string | null>(null);
   const fetchProducts = useServerFn(listProducts);
+  const fetchCreatorFeed = useServerFn(listCreatorFeed);
+  const fetchTopCreators = useServerFn(getTopCreators);
+  const { data: creatorPosts } = useQuery({
+    queryKey: ["app-feed-creator-posts"],
+    queryFn: () => fetchCreatorFeed(),
+    staleTime: 60_000,
+    enabled: tab === "creators",
+  });
+  const { data: topCreators } = useQuery({
+    queryKey: ["app-feed-top-creators"],
+    queryFn: () => fetchTopCreators(),
+    staleTime: 120_000,
+    enabled: tab === "creators",
+  });
   const { data: shopProducts } = useQuery({
     queryKey: ["app-feed-shop-products"],
     queryFn: () => fetchProducts(),
@@ -238,6 +252,7 @@ export function AppFeed() {
   const visiblePosts = posts
     .filter((p) => !hidden.has(p.id))
     .filter((p) => {
+      if (tab === "creators") return false; // creators tab renders its own section
       if (tab === "shop") return (p.product_attachments?.length ?? 0) > 0;
       if (tab !== "following") return true;
       if (!followingIds || !followerIds) return true; // still loading
@@ -254,6 +269,7 @@ export function AppFeed() {
               { key: "foryou", label: "For you" },
               { key: "following", label: "Following" },
               { key: "shop", label: "Shop" },
+              { key: "creators", label: "Creators" },
             ] as const
           ).map((t) => (
             <button
