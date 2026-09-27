@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Users, Eye, Heart, MessageCircle, Bookmark, Share2, Clock, Globe2, Sparkles, ShoppingBag, Film, TrendingUp, Loader2 } from "lucide-react";
+import { Users, Eye, Heart, MessageCircle, Bookmark, Share2, Clock, Globe2, Sparkles, ShoppingBag, Film, TrendingUp, Loader2, ChevronRight } from "lucide-react";
 import { getCreatorHub } from "@/lib/dashboard/creator.functions";
 import { computeDisplayPrice, formatMoney } from "@/lib/fx-display";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
+import { useIsAppShell } from "@/hooks/use-launch-context";
+import { CreatorCoachDrawer } from "@/components/oventric/app/CreatorCoach";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const n = (v: number) => (v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `${(v / 1e3).toFixed(1)}K` : String(v));
