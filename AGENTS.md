@@ -20,10 +20,10 @@ Installability is manifest-only (`public/manifest.webmanifest`). No app-shell
 service worker is registered — `public/push-sw.js` is messaging-only. Reason:
 cached app shells serve stale pages in Lovable previews.
 
-App launch and install promotion are temporarily paused for public visitors:
-the website omits the manifest link and install invitations, and app mode is
-limited to preview hosts until the owner explicitly reactivates it. Reason:
-the unfinished app must remain reviewable without inviting public use.
+App launch/install promotion stays paused publicly: no manifest or invites;
+app mode runs only on localhost, `id-preview--*`, or `project--*-dev.lovable.app`
+until owner reactivation. Reason: both preview addresses need review access
+without exposing the unfinished app to public visitors.
 
 App conversations open in a sheet over the mounted inbox; web stays separate. Reason: closing returns to the same inbox position.
 
