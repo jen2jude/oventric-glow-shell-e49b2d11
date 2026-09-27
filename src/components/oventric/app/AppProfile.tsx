@@ -291,15 +291,17 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
             )}
           </div>
           <div className="flex items-center gap-2 pb-1">
-            <button
-              onClick={() => {
-                haptic("select");
-                navigate({ to: "/shop/$id", params: { id: profile.userId } });
-              }}
-              className="flex items-center gap-1.5 rounded-full border border-[#E5484D]/40 bg-[#E5484D]/10 px-3.5 py-2 text-xs font-semibold text-[#E5484D]"
-            >
-              <ShoppingBag className="h-3.5 w-3.5" /> View shop
-            </button>
+            {products.length > 0 && (
+              <button
+                onClick={() => {
+                  haptic("select");
+                  navigate({ to: "/shop/$id", params: { id: profile.userId } });
+                }}
+                className="flex items-center gap-1.5 rounded-full border border-[#E5484D]/40 bg-[#E5484D]/10 px-3.5 py-2 text-xs font-semibold text-[#E5484D]"
+              >
+                <ShoppingBag className="h-3.5 w-3.5" /> View shop
+              </button>
+            )}
             {!isOwn && (
               <>
                 <button
