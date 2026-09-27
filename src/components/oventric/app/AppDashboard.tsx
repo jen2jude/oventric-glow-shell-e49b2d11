@@ -47,6 +47,7 @@ import {
 import { listMySales, type SaleDTO } from "@/lib/fulfilment.functions";
 import { listUserPhotos, type UserPhoto } from "@/lib/posts.functions";
 import { formatMoney } from "@/lib/fx-display";
+import { computeDisplayPrice } from "@/lib/fx-display";
 import { visibleMoney, usdEquivalent } from "@/lib/money-visibility";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { haptic } from "@/lib/haptics";
@@ -900,7 +901,7 @@ function ListingsList({ rows, onEdit }: { rows: ProductDTO[] | null; onEdit: (p:
                       {p.name}
                     </Link>
                     <div className="text-xs text-white/40">
-                      ${p.priceUSD.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                      {visibleMoney(computeDisplayPrice({ original_currency: "USD", original_amount: p.priceUSD }, currency).value, currency, balancesHidden)}
                       {p.location ? (
                         <span className="ml-2 inline-flex items-center gap-1">
                           <MapPin className="w-3 h-3" /> {p.location}

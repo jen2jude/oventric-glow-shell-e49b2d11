@@ -10,7 +10,6 @@ import {
   Wallet,
   ArrowRight
 } from "lucide-react";
-import { formatMoney } from "@/lib/fx-display";
 import { visibleMoney, usdEquivalent } from "@/lib/money-visibility";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 

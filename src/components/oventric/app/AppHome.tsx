@@ -19,7 +19,7 @@ import { useServerFn } from "@tanstack/react-start";
 
 import { listProducts, type ProductDTO } from "@/lib/marketplace.functions";
 import { getWalletBalances } from "@/lib/wallet.functions";
-import { safeFormatDisplayPrice, formatMoney } from "@/lib/fx-display";
+import { safeFormatDisplayPrice } from "@/lib/fx-display";
 import { usdEquivalent, visibleMoney } from "@/lib/money-visibility";
 import type { Currency } from "@/lib/onboarding/OnboardingContext";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";

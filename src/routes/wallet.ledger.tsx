@@ -23,7 +23,6 @@ import {
 } from "@/lib/wallet.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { downloadWalletCsv, printWalletPdf } from "@/components/oventric/wallet/export";
-import { formatMoney } from "@/lib/fx-display";
 import { visibleMoney, usdEquivalent } from "@/lib/money-visibility";
 import { Button } from "@/components/ui/button";
 
@@ -75,7 +74,7 @@ function txStyle(type: WalletTxType, inflow: boolean) {
 
 function WalletLedgerPage() {
   const router = useRouter();
-  const { homeCurrency } = useOnboarding();
+  const { homeCurrency, balancesHidden } = useOnboarding();
   const [userId, setUserId] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>("All");
   const [filtersOpen, setFiltersOpen] = useState(false);

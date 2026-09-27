@@ -14,7 +14,7 @@ import {
   Heart,
 } from "lucide-react";
 import { getSellerMetrics } from "@/lib/dashboard/seller.functions";
-import { computeDisplayPrice, formatMoney } from "@/lib/fx-display";
+import { computeDisplayPrice } from "@/lib/fx-display";
 import { visibleMoney } from "@/lib/money-visibility";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { AnalyticsWidget } from "./AnalyticsWidget";

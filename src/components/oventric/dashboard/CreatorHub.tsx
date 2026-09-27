@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Users, Eye, Heart, MessageCircle, Bookmark, Share2, Clock, Globe2, Sparkles, ShoppingBag, Film, TrendingUp, Loader2, ChevronRight } from "lucide-react";
 import { getCreatorHub } from "@/lib/dashboard/creator.functions";
 import { computeDisplayPrice, formatMoney } from "@/lib/fx-display";
-import { visibleMoney, usdEquivalent } from "@/lib/money-visibility";
+import { visibleMoney } from "@/lib/money-visibility";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 import { CreatorCoachDrawer } from "@/components/oventric/app/CreatorCoach";

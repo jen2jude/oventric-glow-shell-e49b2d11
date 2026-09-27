@@ -15,7 +15,6 @@ import {
   getWalletBalances,
   listWalletTransactions,
 } from "@/lib/wallet.functions";
-import { formatMoney } from "@/lib/fx-display";
 import { usdEquivalent, visibleMoney } from "@/lib/money-visibility";
 import type { Currency } from "@/lib/onboarding/OnboardingContext";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
