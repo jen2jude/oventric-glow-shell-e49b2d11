@@ -40,6 +40,10 @@ type Mention = {
   avatarUrl: string | null;
 };
 type CircleOpt = { id: string; name: string };
+type MobileVirtualKeyboard = EventTarget & {
+  boundingRect: DOMRectReadOnly;
+  overlaysContent: boolean;
+};
 
 const MAX_MEDIA_BYTES = 50 * 1024 * 1024;
 const MAX_IMAGES = 10;
@@ -133,23 +137,45 @@ export function PostComposerModal({
   useFocusTrap(shellRef, open);
   const [appViewport, setAppViewport] = useState<{ top: number; height: number; keyboardOpen: boolean } | null>(null);
 
-  // The keyboard covers part of the layout viewport on mobile. Anchor the entire
-  // composer to the visible viewport so its action rail stays above the keys.
+  // Android app windows can leave the layout viewport unchanged while the
+  // keyboard overlays it. Combine VisualViewport with the VirtualKeyboard
+  // bounds so the composer always ends at the real top edge of the keyboard.
   useEffect(() => {
     if (!open || !isApp) return;
     const viewport = window.visualViewport;
-    if (!viewport) return;
-    const initialHeight = Math.max(window.innerHeight, viewport.height);
+    const virtualKeyboard = (navigator as Navigator & { virtualKeyboard?: MobileVirtualKeyboard }).virtualKeyboard;
+    if (virtualKeyboard) {
+      try {
+        virtualKeyboard.overlaysContent = true;
+      } catch {
+        // Some embedded browsers expose the API without allowing this setting.
+      }
+    }
+
     const sync = () => {
-      const keyboardOpen = initialHeight - viewport.height - viewport.offsetTop > 120;
-      setAppViewport({ top: viewport.offsetTop, height: viewport.height, keyboardOpen });
+      const top = viewport?.offsetTop ?? 0;
+      const visualBottom = top + (viewport?.height ?? window.innerHeight);
+      const keyboardRect = virtualKeyboard?.boundingRect;
+      const keyboardTop = keyboardRect && keyboardRect.height > 0
+        ? keyboardRect.top
+        : Number.POSITIVE_INFINITY;
+      const visibleBottom = Math.min(visualBottom, keyboardTop);
+      const height = Math.max(1, visibleBottom - top);
+      const layoutHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
+      const keyboardOpen = (keyboardRect?.height ?? 0) > 80 || layoutHeight - visibleBottom > 80;
+      setAppViewport({ top, height, keyboardOpen });
     };
+
     sync();
-    viewport.addEventListener("resize", sync);
-    viewport.addEventListener("scroll", sync);
+    viewport?.addEventListener("resize", sync);
+    viewport?.addEventListener("scroll", sync);
+    virtualKeyboard?.addEventListener("geometrychange", sync);
+    window.addEventListener("resize", sync);
     return () => {
-      viewport.removeEventListener("resize", sync);
-      viewport.removeEventListener("scroll", sync);
+      viewport?.removeEventListener("resize", sync);
+      viewport?.removeEventListener("scroll", sync);
+      virtualKeyboard?.removeEventListener("geometrychange", sync);
+      window.removeEventListener("resize", sync);
       setAppViewport(null);
     };
   }, [open, isApp]);
@@ -494,7 +520,7 @@ export function PostComposerModal({
   if (!open) return null;
 
   if (isApp && typeof document !== "undefined") return createPortal((
-    <div className="app-post-composer fixed inset-0 z-[60] flex items-end justify-center bg-background/75 backdrop-blur-sm" style={appViewport ? { top: appViewport.top, height: appViewport.height, bottom: "auto" } : undefined} onClick={onClose}>
+    <div className="app-post-composer fixed inset-0 z-[60] flex items-end justify-center bg-background/75 backdrop-blur-sm" style={appViewport ? { top: `${appViewport.top}px`, height: `${appViewport.height}px`, bottom: "auto" } : undefined} onClick={onClose}>
       <div ref={shellRef} role="dialog" aria-modal="true" aria-label="Create post" className="slide-up relative flex w-full max-w-2xl flex-col overflow-hidden rounded-t-[24px] border border-b-0 border-border bg-card text-foreground shadow-2xl" style={{ height: appViewport ? Math.min(appViewport.keyboardOpen ? appViewport.height : appViewport.height * 0.94, 850) : "min(94dvh, 850px)" }} onClick={(event) => event.stopPropagation()}>
         <div className="app-profile-handle" aria-hidden="true" />
         <header className="flex h-14 shrink-0 items-center justify-between border-b border-border px-4">
@@ -559,7 +585,7 @@ export function PostComposerModal({
         </footer>
       </div>
 
-      {(productPickerOpen || mentionPickerOpen) && <div className="fixed inset-0 z-[70] flex items-center justify-center bg-background/80 px-5 backdrop-blur-sm" style={appViewport ? { top: appViewport.top, height: appViewport.height, bottom: "auto" } : undefined} onClick={() => { setProductPickerOpen(false); setMentionPickerOpen(false); }}>
+      {(productPickerOpen || mentionPickerOpen) && <div className="fixed inset-0 z-[70] flex items-center justify-center bg-background/80 px-5 backdrop-blur-sm" style={appViewport ? { top: `${appViewport.top}px`, height: `${appViewport.height}px`, bottom: "auto" } : undefined} onClick={() => { setProductPickerOpen(false); setMentionPickerOpen(false); }}>
         <div role="dialog" aria-modal="true" aria-label={productPickerOpen ? "Choose products" : "Mention people"} className="flex max-h-[65dvh] w-full max-w-sm flex-col overflow-hidden rounded-[10px] border border-border bg-card shadow-2xl" onClick={(event) => event.stopPropagation()}>
           <div className="flex items-center gap-2 border-b border-border p-3">{productPickerOpen ? <ShoppingBag className="size-4 text-primary" /> : <AtSign className="size-4 text-primary" />}
             <input autoFocus value={productPickerOpen ? productQuery : mentionQuery} onChange={(event) => productPickerOpen ? setProductQuery(event.target.value) : setMentionQuery(event.target.value)} placeholder={productPickerOpen ? "Search your products" : "Search people"} className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
