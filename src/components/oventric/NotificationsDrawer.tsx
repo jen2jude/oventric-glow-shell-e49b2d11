@@ -559,11 +559,7 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
         typeof document !== "undefined" &&
         createPortal(
           <div
-            className={
-              isApp
-                ? "fixed inset-0 z-[100] flex items-end justify-center bg-black/70 backdrop-blur-sm animate-fade-in"
-                : "modal-light fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-900/50 backdrop-blur-[2px] animate-fade-in p-4"
-            }
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm animate-fade-in p-5"
             onClick={() => setViewing(null)}
             role="dialog"
             aria-modal="true"
@@ -572,12 +568,12 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
             <div
               className={
                 isApp
-                  ? "app-notif-sheet slide-up flex max-h-[82dvh] w-full flex-col overflow-hidden rounded-t-[24px] border border-newsfeed-line bg-newsfeed-surface shadow-newsfeed-panel"
+                  ? "app-notif-sheet flex w-full max-w-sm flex-col overflow-hidden rounded-[20px] border border-newsfeed-line bg-newsfeed-surface shadow-newsfeed-panel animate-in zoom-in-95 duration-200"
                   : "web-notifications w-full max-w-lg my-auto border rounded-2xl shadow-2xl overflow-hidden"
               }
               onClick={(e) => e.stopPropagation()}
             >
-              {isApp && <div className="app-profile-handle mx-auto mt-3 shrink-0" aria-hidden />}
+
               <div className="flex items-start gap-3 px-5 py-4 border-b border-newsfeed-line shrink-0">
                 <div className="w-9 h-9 rounded-[10px] flex items-center justify-center bg-muted border shrink-0">
                   {iconForKind(viewing.kind)}
