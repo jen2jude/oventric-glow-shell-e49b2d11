@@ -14,6 +14,8 @@ import {
   Plus
 } from "lucide-react";
 import { getSellerMetrics } from "@/lib/dashboard/seller.functions";
+import { computeDisplayPrice } from "@/lib/fx-display";
+import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { AnalyticsWidget } from "./AnalyticsWidget";
 import { ProductManagement } from "./ProductManagement";
 import { ShopManagement } from "./ShopManagement";
@@ -25,11 +27,18 @@ type SellerTab = "overview" | "products" | "orders" | "shop" | "earnings";
 export function SellerDashboard() {
   const [activeTab, setActiveTab] = useState<SellerTab>("overview");
   const fetchMetrics = useServerFn(getSellerMetrics);
-  
+  const { baseCurrency } = useOnboarding();
+  const currency = (baseCurrency ?? "USD") as Currency;
+
   const { data: metrics } = useSuspenseQuery({
     queryKey: ["seller-metrics"],
     queryFn: () => fetchMetrics({}),
   });
+
+  const revenueDisplay = computeDisplayPrice(
+    { original_currency: "USD", original_amount: metrics.totalRevenueUSD },
+    currency,
+  ).formatted;
 
   const TABS = [
     { id: "overview", label: "Overview", icon: BarChart3 },
@@ -74,7 +83,7 @@ export function SellerDashboard() {
               />
               <MetricCard 
                 label="Revenue" 
-                value={`$${metrics.totalRevenueUSD.toLocaleString()}`} 
+                value={revenueDisplay} 
                 icon={TrendingUp} 
                 color="text-primary"
               />
