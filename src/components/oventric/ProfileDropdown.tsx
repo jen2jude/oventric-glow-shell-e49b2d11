@@ -553,6 +553,8 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
             </div>
           </div>
         </button>
+      )}
+      {isCreator && (
         <button
           type="button"
           role="menuitem"
