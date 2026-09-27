@@ -23,6 +23,7 @@ import {
 } from "@/lib/marketplace.functions";
 import { getDiscoveryFeed, type DiscoveryPeer } from "@/lib/discovery.functions";
 import { searchGlobal, type SearchResults } from "@/lib/search.functions";
+import { AppSearchSuggestions, rememberSearch } from "./AppSearchSuggestions";
 import { visualForCategory } from "@/components/oventric/marketplace-discovery/utils";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { CashbackBadge } from "@/components/oventric/CashbackBadge";
@@ -82,6 +83,7 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
 
   const [tab, setTab] = useState<Tab>("All");
   const [q, setQ] = useState(routeSearch?.search ?? "");
+  const [focused, setFocused] = useState(false);
   const query = q.trim().toLowerCase();
 
   useEffect(() => {
@@ -133,6 +135,11 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
+            onFocus={() => setFocused(true)}
+            onBlur={() => {
+              if (q.trim()) rememberSearch(q);
+              setTimeout(() => setFocused(false), 150);
+            }}
             placeholder={`Search ${tab === "All" ? "Oventric" : tab.toLowerCase()}…`}
             className="h-11 w-full rounded-2xl border border-white/[0.08] bg-white/[0.04] pl-10 pr-4 text-sm text-white placeholder:text-white/35 focus:border-[#E5484D]/50 focus:outline-none"
           />
@@ -159,6 +166,19 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
       </div>
 
       <div className="px-4">
+        {focused && !query && (
+          <div onMouseDown={(e) => e.preventDefault()}>
+            <AppSearchSuggestions
+              names={[...allTrending, ...allNew].map((p) => p.name)}
+              vendors={[
+                ...(sellers as TopSellerDTO[]).map((s) => s.name),
+                ...allPeers.map((p) => p.name),
+              ]}
+              categories={categories.map((c) => c.name)}
+              onPick={(t) => setQ(t)}
+            />
+          </div>
+        )}
         {query ? (
           <SearchResultsView
             results={searchResults}
