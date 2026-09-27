@@ -40,11 +40,13 @@ function messageText(message: UIMessage | undefined): string {
 
 async function buildCoachContext(userId: string): Promise<string> {
   const { supabaseAdmin: sb } = await import("@/integrations/supabase/client.server");
-  const [profileRes, hub] = await Promise.all([
-    sb.from("profiles").select("display_name, username, country, base_currency, is_creator").eq("user_id", userId).maybeSingle(),
+  const [profileRes, walletRes, hub] = await Promise.all([
+    sb.from("profiles").select("display_name, username, country").eq("user_id", userId).maybeSingle(),
+    sb.from("wallets").select("currency").eq("user_id", userId).maybeSingle(),
     buildCreatorHubData(userId, 0),
   ]);
   const profile = profileRes.data;
+  const homeCurrency = walletRes.data?.currency ?? "USD";
 
   // Compact seller snapshot
   const { data: orders } = await sb
