@@ -3,7 +3,7 @@ import { Heart, MessageCircle, Send, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
-type Comment = { id: string; user_id: string; body: string; created_at: string; name: string };
+type Comment = { id: string; user_id: string; body: string; created_at: string; name: string; avatar: string | null };
 
 /** Like + comment controls for a Creators-tab showcase. `dark` for the app sheet, light for the web feed. */
 export function ShowcaseEngagement({ postId, authorId, dark = false }: { postId: string; authorId?: string | null; dark?: boolean }) {
@@ -25,11 +25,15 @@ export function ShowcaseEngagement({ postId, authorId, dark = false }: { postId:
     const rows = data ?? [];
     const ids = [...new Set(rows.map((r) => r.user_id))];
     const names = new Map<string, string>();
+    const avatars = new Map<string, string | null>();
     if (ids.length) {
-      const { data: ps } = await supabase.from("profiles").select("user_id, display_name, username").in("user_id", ids);
-      for (const p of ps ?? []) names.set(p.user_id, p.display_name || p.username || "Member");
+      const { data: ps } = await supabase.from("profiles").select("user_id, display_name, username, avatar_url").in("user_id", ids);
+      for (const p of ps ?? []) {
+        names.set(p.user_id, p.display_name || p.username || "Member");
+        avatars.set(p.user_id, p.avatar_url ?? null);
+      }
     }
-    setComments(rows.map((r) => ({ ...r, name: names.get(r.user_id) ?? "Member" })));
+    setComments(rows.map((r) => ({ ...r, name: names.get(r.user_id) ?? "Member", avatar: avatars.get(r.user_id) ?? null })));
   }
 
   useEffect(() => {
@@ -100,7 +104,14 @@ export function ShowcaseEngagement({ postId, authorId, dark = false }: { postId:
             <ul className="max-h-60 space-y-2 overflow-y-auto">
               {comments.map((c) => (
                 <li key={c.id} className="flex items-start gap-2 text-[12.5px]">
-                  <span className="min-w-0 flex-1">
+                  {c.avatar ? (
+                    <img src={c.avatar} alt="" className="h-6 w-6 shrink-0 rounded-full object-cover" loading="lazy" />
+                  ) : (
+                    <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${dark ? "bg-white/10 text-white/80" : "bg-slate-200 text-slate-700"}`}>
+                      {c.name.charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                  <span className="min-w-0 flex-1 pt-0.5">
                     <b className={strong}>{c.name}</b> <span className={dark ? "text-white/75" : "text-slate-700"}>{c.body}</span>
                   </span>
                   {(c.user_id === me || (me && me === authorId)) && (
