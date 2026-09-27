@@ -1236,13 +1236,13 @@ function CheckoutPage() {
                         <Download className="w-4 h-4" /> Download now
                       </>
                     ) : method === "wallet" ? (
-                      `Pay ${payTotalLabel}`
+                      `Pay ${blind(payTotalLabel)}`
                     ) : gateway === "minipay" ? (
-                      `Pay with MiniPay · ${payTotalLabel}`
+                      `Pay with MiniPay · ${blind(payTotalLabel)}`
                     ) : gateway === "binance" ? (
-                      `Pay with Binance · ${payTotalLabel}`
+                      `Pay with Binance · ${blind(payTotalLabel)}`
                     ) : (
-                      `Pay with Paystack · ${payTotalLabel}`
+                      `Pay with Paystack · ${blind(payTotalLabel)}`
                     )}
                   </button>
                   <div className="text-[10px] text-slate-500 flex items-center justify-center gap-1 opacity-60">
@@ -1267,12 +1267,12 @@ function CheckoutPage() {
                         <Download className="w-4 h-4" /> Download now
                       </>
                     ) : method === "wallet" ? (
-                      `Pay ${payTotalLabel}`
+                      `Pay ${blind(payTotalLabel)}`
                     ) : gateway === "minipay" || gateway === "binance" ? (
-                      `Pay with ${activeOption?.label ?? (gateway === "minipay" ? "MiniPay" : "Binance")} · ${payTotalLabel}`
+                      `Pay with ${activeOption?.label ?? (gateway === "minipay" ? "MiniPay" : "Binance")} · ${blind(payTotalLabel)}`
                     ) : (
                       <span className="inline-flex items-center gap-2">
-                        Pay with Paystack · {payTotalLabel}
+                         Pay with Paystack · {blind(payTotalLabel)}
                       </span>
                     )}
                   </button>
