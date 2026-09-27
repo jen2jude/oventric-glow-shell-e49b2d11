@@ -439,6 +439,23 @@ export function AppFeed() {
         </div>
       </div>
 
+      {/* Tab content: follows the finger while swiping, slides in on tab change */}
+      <div
+        key={tab}
+        className={
+          enterDir === "left"
+            ? "animate-[feed-slide-left_0.28s_ease-out]"
+            : enterDir === "right"
+              ? "animate-[feed-slide-right_0.28s_ease-out]"
+              : undefined
+        }
+        style={
+          dragX !== null
+            ? { transform: `translateX(${dragX}px)`, transition: "none" }
+            : { transition: "transform 0.22s ease-out" }
+        }
+        onAnimationEnd={() => setEnterDir(null)}
+      >
       {/* Shop tab: product rail above the shoppable posts */}
       {tab === "shop" && shopSections.trending.length > 0 && (
         <div className="border-b border-white/5 py-3">
@@ -918,6 +935,7 @@ export function AppFeed() {
             </article>
           );
         })}
+      </div>
       </div>
 
       {menuFor && (() => {
