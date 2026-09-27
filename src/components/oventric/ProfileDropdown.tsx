@@ -14,6 +14,7 @@ import {
   Eye,
   EyeOff,
   LayoutDashboard,
+  Sparkles,
   User,
   Store,
 } from "lucide-react";
@@ -143,6 +144,7 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
   const fetchFx = useServerFn(snapshotFxRates);
   const [liveStars, setLiveStars] = useState<number | null>(null);
   const [verificationTier, setVerificationTier] = useState<string | null>(null);
+  const [isCreator, setIsCreator] = useState(false);
   const [fxRates, setFxRates] = useState<Record<string, number> | null>(null);
 
   useEffect(() => {
@@ -158,6 +160,7 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
           avatarDataUrl: res.profile!.avatarUrl ?? p.avatarDataUrl,
         }));
         setVerificationTier(res.profile!.verificationTier ?? null);
+        setIsCreator(res.profile!.isCreator === true);
       } catch (e) {
         console.error("[ProfileDropdown] real profile load failed", e);
       }
@@ -531,6 +534,26 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
           </div>
         </div>
       </button>
+      {isCreator && (
+        <button
+          type="button"
+          role="menuitem"
+          tabIndex={-1}
+          onClick={() => {
+            closeMenu(false);
+            navigate({ to: "/dashboard", search: { tab: "creator" } });
+          }}
+          className="flex w-full items-center gap-3 rounded-[10px] px-2 py-3 text-left text-sm text-newsfeed-ink transition-colors hover:bg-newsfeed-violet-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-newsfeed-violet/40"
+        >
+          <span className="grid size-8 shrink-0 place-items-center rounded-[8px] bg-gradient-to-br from-newsfeed-violet to-newsfeed-coral text-white"><Sparkles className="h-4 w-4" aria-hidden /></span>
+          <div className="min-w-0">
+            <div className="font-semibold truncate">Creator Hub</div>
+            <div className="truncate text-[10px] text-newsfeed-muted">
+              Revenue, shop visits, engagement and growth
+            </div>
+          </div>
+        </button>
+      )}
     </div>
   );
 
