@@ -2,15 +2,13 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
-  ArrowDownToLine,
-  ArrowUpFromLine,
   Bell,
-  Images,
+  Compass,
   MessageCircle,
   Package,
-  Plus,
   Sparkles,
   Store,
+  User,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 
@@ -22,6 +20,7 @@ import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
 import { NotificationsDrawer } from "@/components/oventric/NotificationsDrawer";
+import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 
 /**
