@@ -4,6 +4,7 @@ import { useRouterState } from "@tanstack/react-router";
 
 import { Sidebar } from "@/components/oventric/Sidebar";
 import { MobileNav } from "@/components/oventric/MobileNav";
+import { getCurrentFeedTab } from "@/lib/create-context";
 import { CreatorCoachLauncher } from "@/components/oventric/app/CreatorCoach";
 const AppFeed = lazy(() => import("@/components/oventric/app/AppFeed").then((m) => ({ default: m.AppFeed })));
 const Feed = lazy(() => import("@/components/oventric/Feed").then((m) => ({ default: m.Feed })));
@@ -487,7 +488,25 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         </div>
         {isAppShell && !desktopLanding && !isMessages && (
           <MobileNav
-            onCreate={handleCreate}
+            onCreate={() => {
+              // Context-aware +: the screen decides what gets created.
+              if (active === "Marketplace") return handleCreate("sell");
+              if (active === "Feed") {
+                const tab = getCurrentFeedTab();
+                if (tab === "shop") return handleCreate("sell");
+                return require(
+                  1,
+                  () =>
+                    window.dispatchEvent(
+                      new CustomEvent("oventric:create", {
+                        detail: { kind: tab === "creators" ? "creator" : "post" },
+                      }),
+                    ),
+                  "seller",
+                );
+              }
+              return handleCreate();
+            }}
             active={active === "Marketplace" ? "Market" : active}
             onSelect={(l) => {
               if (l === "Chats") setMessagesOpen(true);

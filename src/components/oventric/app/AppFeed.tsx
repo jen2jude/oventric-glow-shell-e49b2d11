@@ -2,7 +2,7 @@ import { logCreatorEvent } from "@/lib/creator-events";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Heart,
   MessageCircle,
@@ -31,7 +31,10 @@ import { toast } from "sonner";
 import { AppSheet } from "@/components/oventric/app/AppSheet";
 import { listPosts, toggleLike, setPostSaved as setPostSavedFn, deletePost as deletePostFn, updatePostText as updatePostTextFn } from "@/lib/posts.functions";
 import { listFollowing, listFollowers } from "@/lib/follows.functions";
-import { listCreatorFeed, getTopCreators, type CreatorPostDTO } from "@/lib/creators.functions";
+import { listCreatorFeed, getTopCreators, getMyCreatorProfile, type CreatorPostDTO } from "@/lib/creators.functions";
+import { CreatorOnboardingModal } from "@/components/oventric/creators/CreatorOnboardingModal";
+import { CreatorPublishModal } from "@/components/oventric/creators/CreatorPublishModal";
+import { setCurrentFeedTab } from "@/lib/create-context";
 import { listProducts } from "@/lib/marketplace.functions";
 import { CreatorPostSheet } from "@/components/oventric/app/CreatorPostSheet";
 import { ProductQuickView } from "./ProductQuickView";
@@ -154,6 +157,10 @@ export function AppFeed() {
   const fetchProducts = useServerFn(listProducts);
   const fetchCreatorFeed = useServerFn(listCreatorFeed);
   const fetchTopCreators = useServerFn(getTopCreators);
+  const loadCreatorProfile = useServerFn(getMyCreatorProfile);
+  const queryClient = useQueryClient();
+  const [creatorOnboardOpen, setCreatorOnboardOpen] = useState(false);
+  const [creatorPublishOpen, setCreatorPublishOpen] = useState(false);
   const { data: creatorPosts } = useQuery({
     queryKey: ["app-feed-creator-posts"],
     queryFn: () => fetchCreatorFeed(),
@@ -235,14 +242,27 @@ export function AppFeed() {
       .then((r) => setPosts(r.posts.filter((p) => !p.repost_of || p.text || p.media_url)))
       .catch(() => {});
 
-  // "Drop a Post" from the create menu opens the composer on the app feed.
+  // Let the footer + button know which tab is showing.
+  useEffect(() => {
+    setCurrentFeedTab(tab);
+  }, [tab]);
+  useEffect(() => () => setCurrentFeedTab(null), []);
+
+  // Create requests: "post" opens the composer; "creator" opens the creator
+  // upload for returning creators, or onboarding for first-timers.
   useEffect(() => {
     const onCreate = (e: Event) => {
-      if ((e as CustomEvent<{ kind?: string }>).detail?.kind === "post") setComposerOpen(true);
+      const kind = (e as CustomEvent<{ kind?: string }>).detail?.kind;
+      if (kind === "post") setComposerOpen(true);
+      if (kind === "creator") {
+        void loadCreatorProfile()
+          .then((p) => (p.isCreator ? setCreatorPublishOpen(true) : setCreatorOnboardOpen(true)))
+          .catch(() => setCreatorOnboardOpen(true));
+      }
     };
     window.addEventListener("oventric:create", onCreate);
     return () => window.removeEventListener("oventric:create", onCreate);
-  }, []);
+  }, [loadCreatorProfile]);
 
   useEffect(() => {
     fetchPosts()
@@ -1056,6 +1076,23 @@ export function AppFeed() {
       )}
 
       <CreatorPostSheet post={creatorSheet} onClose={() => setCreatorSheet(null)} />
+
+      <CreatorOnboardingModal
+        open={creatorOnboardOpen}
+        onClose={() => setCreatorOnboardOpen(false)}
+        onDone={() => {
+          window.dispatchEvent(new Event("oventric:creator-onboarded"));
+          setCreatorOnboardOpen(false);
+          setCreatorPublishOpen(true);
+        }}
+      />
+      <CreatorPublishModal
+        open={creatorPublishOpen}
+        onClose={() => setCreatorPublishOpen(false)}
+        onPublished={() => {
+          void queryClient.invalidateQueries({ queryKey: ["app-feed-creator-posts"] });
+        }}
+      />
 
       <ProductQuickView
         productId={quickViewId}
