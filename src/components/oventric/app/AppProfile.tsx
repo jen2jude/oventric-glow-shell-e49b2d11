@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowLeft,
   BadgeCheck,
+  Sparkles,
   CalendarDays,
   Flag,
   Images,
