@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -19,6 +19,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 import wallet3d from "@/assets/wallet-hero-3d.png.asset.json";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { currencySymbol, usdRate } from "@/lib/fx-display";
@@ -70,6 +71,7 @@ function kindOf(r: PayoutRecipientDTO): MethodKind {
 }
 
 export function PayoutModal({ onClose }: { onClose: () => void }) {
+  const isApp = useIsAppShell();
   const { balances, homeCurrency, setBalances } = useOnboarding();
   const qc = useQueryClient();
 
@@ -268,20 +270,23 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
     }
   }
 
-  return (
-    <div className="fixed inset-0 z-[60] bg-[#0A0A0B] flex flex-col">
-      {/* Header */}
-      <div className="shrink-0 bg-[#0A0A0B]/95 backdrop-blur border-b border-white/5">
-        <div className="flex items-center justify-between px-4 py-4">
-          <button onClick={onClose} className="p-2 -ml-2 text-white">
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="text-base font-black text-white">Withdraw Funds</h1>
-          <span className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400">
-            <HelpCircle className="w-4 h-4" />
-          </span>
-        </div>
+  const cta = (
+    <>
+      <button
+        onClick={openReview}
+        disabled={submitting}
+        className="w-full bg-[#E5484D] text-white font-black py-3.5 rounded-[10px] disabled:opacity-50"
+      >
+        Review Withdrawal
+      </button>
+      <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 mt-2">
+        <Lock className="w-3 h-3" /> Secured by Oventric
       </div>
+    </>
+  );
+
+  const form = (
+    <>
 
       <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-6 pt-4">
         {/* Balance card */}
