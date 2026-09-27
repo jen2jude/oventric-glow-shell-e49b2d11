@@ -236,4 +236,4 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
         topProducts: [...byProd.values()].sort((a, b) => b.revenueUSD - a.revenueUSD).slice(0, 5),
       },
     };
-  });
+}
