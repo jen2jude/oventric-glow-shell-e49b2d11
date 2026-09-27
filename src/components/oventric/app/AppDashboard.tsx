@@ -1,3 +1,5 @@
+import { CreatorHub } from "@/components/oventric/dashboard/CreatorHub";
+import { Sparkles as SparklesIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -69,6 +71,7 @@ const TABS = [
   { key: "listings", label: "Listings", icon: Store },
   { key: "social", label: "Social", icon: Users },
   { key: "creator", label: "Seller Hub", icon: TrendingUp },
+  { key: "creatorhub", label: "Creator Hub", icon: SparklesIcon },
 ] as const;
 type Tab = (typeof TABS)[number]["key"];
 
@@ -352,6 +355,7 @@ export function AppDashboard({ initialTab }: { initialTab?: string }) {
         )}
         {tab === "social" && <SocialPane data={social} />}
         {tab === "creator" && <SellerDashboard />}
+        {tab === "creatorhub" && <CreatorHub />}
       </main>
 
       {editing && (
