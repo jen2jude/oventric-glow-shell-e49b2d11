@@ -93,7 +93,9 @@ export function resolveLaunchContext(): LaunchContext {
 let hydratedContext: LaunchContext | null = null;
 
 export function useLaunchContext(): LaunchContext | null {
-  const [ctx, setCtx] = useState<LaunchContext | null>(() => hydratedContext);
+  const [ctx, setCtx] = useState<LaunchContext | null>(() =>
+    hydratedContext ?? (typeof window !== "undefined" ? resolveLaunchContext() : null)
+  );
   useEffect(() => {
     const next = resolveLaunchContext();
     hydratedContext = next;

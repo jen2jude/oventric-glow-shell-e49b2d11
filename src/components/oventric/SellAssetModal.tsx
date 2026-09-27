@@ -87,6 +87,22 @@ const labelClass = "text-xs font-bold text-contact-ink";
 
 export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const isApp = useIsAppShell();
+  const [rendered, setRendered] = useState(open);
+  const [closing, setClosing] = useState(false);
+  useEffect(() => {
+    if (open) {
+      setRendered(true);
+      setClosing(false);
+      return;
+    }
+    if (!rendered) return;
+    setClosing(true);
+    const t = window.setTimeout(() => {
+      setRendered(false);
+      setClosing(false);
+    }, 300);
+    return () => window.clearTimeout(t);
+  }, [open, rendered]);
   const persist = useServerFn(createProduct);
   const snapshotFx = useServerFn(snapshotFxRates);
   const loadCats = useServerFn(listMarketplaceCategories);
@@ -286,7 +302,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
     };
   }, [open]);
 
-  if (!open) return null;
+  if (!rendered) return null;
 
   const reset = () => {
     setName("");
@@ -481,7 +497,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
 
   return (
     <div
-      className={`${isApp ? "app-sell-asset" : "modal-light web-sell-asset"} fixed inset-0 z-[70] flex h-[100dvh] w-screen justify-center overflow-hidden ${
+      className={`sell-asset-root ${isApp ? "" : "modal-light web-sell-asset"} fixed inset-0 z-[70] flex h-[100dvh] w-screen justify-center overflow-hidden ${
         success
           ? "items-center p-5 sm:p-6"
           : isApp ? "items-end p-0" : "items-start px-0 pt-3 sm:items-center sm:p-6"
@@ -490,9 +506,9 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
       aria-modal="true"
       aria-label="Sell an asset"
     >
-      <div className="absolute inset-0 bg-foreground/55 backdrop-blur-[2px]" onClick={submitting ? undefined : onClose} />
+      <div className={`absolute inset-0 bg-foreground/55 backdrop-blur-[2px] transition-opacity duration-300 ${closing ? "opacity-0" : "opacity-100"}`} onClick={submitting ? undefined : onClose} />
       <div
-        className={`web-sell-panel slide-up relative flex flex-col overflow-hidden border border-contact-line bg-contact-surface text-contact-ink shadow-contact-sheet ${
+        className={`web-sell-panel ${closing ? "slide-down" : "slide-up"} relative flex flex-col overflow-hidden border border-contact-line bg-contact-surface text-contact-ink shadow-contact-sheet ${
           success
              ? "sell-asset-success w-full max-w-[19rem] rounded-[18px] sm:max-w-sm"
             : isApp ? "h-[94dvh] w-full max-w-2xl rounded-t-[24px]" : "max-h-[calc(100dvh-0.75rem)] max-w-3xl w-full rounded-t-[20px] sm:max-h-[calc(100dvh-3rem)] sm:rounded-[18px]"

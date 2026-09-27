@@ -1268,7 +1268,7 @@
 }
 
 /* Bright category-accented workspace for publishing digital products. */
-.web-sell-asset {
+.sell-asset-root.web-sell-asset {
   color-scheme: light;
   --background: var(--contact-field);
   --foreground: var(--contact-ink);
@@ -1286,44 +1286,44 @@
   font-family: var(--font-wallet-body);
 }
 
-.web-sell-asset .web-sell-panel {
+.sell-asset-root.web-sell-asset .web-sell-panel {
   scrollbar-gutter: stable;
 }
 
-.web-sell-asset .web-sell-panel h2 {
+.sell-asset-root.web-sell-asset .web-sell-panel h2 {
   font-family: var(--font-wallet-display);
   letter-spacing: 0;
 }
 
-.web-sell-asset .sell-asset-scroll {
+.sell-asset-root.web-sell-asset .sell-asset-scroll {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: var(--contact-line) transparent;
 }
 
 @media (max-width: 639px) {
-  .web-sell-asset .web-sell-panel {
+  .sell-asset-root.web-sell-asset .web-sell-panel {
     border-bottom: 0;
   }
 
-  .web-sell-asset .web-sell-panel.sell-asset-success {
+  .sell-asset-root.web-sell-asset .web-sell-panel.sell-asset-success {
     border-bottom: 1px solid var(--contact-line);
   }
 
-  .web-sell-asset .sell-asset-scroll {
+  .sell-asset-root.web-sell-asset .sell-asset-scroll {
     scroll-padding-top: 5rem;
     scroll-padding-bottom: 5rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .web-sell-asset .slide-up {
+  .sell-asset-root.web-sell-asset .slide-up {
     animation: none !important;
   }
 }
 
 /* App marketplace publisher: shared fields and submission, native sheet. */
-.app-sell-asset {
+.sell-asset-root {
   color-scheme: dark;
   font-family: var(--font-wallet-body);
   --background: oklch(0.13 0.005 270);
@@ -1352,59 +1352,59 @@
   --contact-whatsapp-soft: oklch(0.72 0.13 155 / 10%);
   --contact-on-whatsapp: var(--card);
 }
-.app-sell-asset .web-sell-panel {
+.sell-asset-root .web-sell-panel {
   border-bottom: 0;
   background: var(--card);
   box-shadow: 0 -20px 60px oklch(0 0 0 / 50%);
 }
-.app-sell-asset > .absolute.inset-0 {
+.sell-asset-root > .absolute.inset-0 {
   background: oklch(0 0 0 / 70%);
 }
-.app-sell-asset .sell-asset-scroll {
+.sell-asset-root .sell-asset-scroll {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
 }
-.app-sell-asset .sell-asset-header {
+.sell-asset-root .sell-asset-header {
   border-color: var(--border);
   background: var(--card);
 }
-.app-sell-asset .sell-asset-header > div:first-child > span:first-child {
+.sell-asset-root .sell-asset-header > div:first-child > span:first-child {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 10px;
   background: color-mix(in oklab, var(--primary) 14%, transparent);
   color: var(--primary);
 }
-.app-sell-asset .sell-asset-header h2 {
+.sell-asset-root .sell-asset-header h2 {
   font-family: var(--font-wallet-display);
   font-size: 1rem;
   letter-spacing: 0;
 }
-.app-sell-asset form > section {
+.sell-asset-root form > section {
   border: 0;
   border-bottom: 1px solid var(--border);
   border-radius: 0;
   background: transparent;
   padding: 0.5rem 0 1.5rem;
 }
-.app-sell-asset form > section > p:first-child {
+.sell-asset-root form > section > p:first-child {
   margin-bottom: 1rem;
   font-size: 0.7rem;
   letter-spacing: 0;
 }
-.app-sell-asset form :is(input:not([type="checkbox"]):not([type="file"]), select, textarea) {
+.sell-asset-root form :is(input:not([type="checkbox"]):not([type="file"]), select, textarea) {
   min-height: 2.9rem;
   background: var(--muted);
   color: var(--foreground);
 }
-.app-sell-asset form :is(input, textarea)::placeholder { color: var(--muted-foreground); }
-.app-sell-asset form :is(input, textarea, select):focus { border-color: var(--primary); outline: none; }
-.app-sell-asset form select option { background: var(--card); color: var(--foreground); }
-.app-sell-asset form input[type="checkbox"] { accent-color: var(--primary); }
-.app-sell-asset .app-sell-actions { box-shadow: 0 -10px 25px oklch(0 0 0 / 15%); }
+.sell-asset-root form :is(input, textarea)::placeholder { color: var(--muted-foreground); }
+.sell-asset-root form :is(input, textarea, select):focus { border-color: var(--primary); outline: none; }
+.sell-asset-root form select option { background: var(--card); color: var(--foreground); }
+.sell-asset-root form input[type="checkbox"] { accent-color: var(--primary); }
+.sell-asset-root .app-sell-actions { box-shadow: 0 -10px 25px oklch(0 0 0 / 15%); }
 @media (prefers-reduced-motion: reduce) {
-  .app-sell-asset .slide-up { animation: none !important; }
+  .sell-asset-root .slide-up { animation: none !important; }
 }
 
 /* Brand accent remap: green/emerald utilities resolve to the sharp hero blue. */
@@ -1736,6 +1736,15 @@ body {
 
 @utility slide-up {
   animation: slide-up-panel 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slide-down-panel {
+  from { transform: translateY(0); opacity: 1; }
+  to   { transform: translateY(100%); opacity: 0; }
+}
+
+@utility slide-down {
+  animation: slide-down-panel 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
 @keyframes reaction-splash {
