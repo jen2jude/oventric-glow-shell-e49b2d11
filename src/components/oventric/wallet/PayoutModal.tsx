@@ -23,6 +23,7 @@ import { useIsAppShell } from "@/hooks/use-launch-context";
 import wallet3d from "@/assets/wallet-hero-3d.png.asset.json";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { currencySymbol, usdRate } from "@/lib/fx-display";
+import { usdSellRate, usdReceived, USD_MIN_WITHDRAWAL } from "@/lib/usd-sell-rate";
 import {
   listMyRecipients,
   estimatePayoutFee,
@@ -108,7 +109,8 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
   const [usdNetwork, setUsdNetwork] = useState("TRC20");
 
   const rate = usdRate(currency);
-  const availableUsd = rate > 0 ? available / rate : 0;
+  const sellRate = usdSellRate(rate);
+  const availableUsd = usdReceived(available, 0, rate);
   const usdPayoutFn = useServerFn(createUsdPayoutRequest);
 
   const amount = Number(amountRaw.replace(/,/g, "")) || 0;
@@ -132,6 +134,7 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
   });
   const fee = feeQ.data?.fee ?? 0;
   const net = Math.max(0, amount - fee);
+  const usdOut = usdReceived(amount, fee, rate);
 
   const presets = currency === "NGN" ? [10000, 20000, 50000] : [100, 500, 1000];
 
@@ -206,8 +209,8 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
   function openReview() {
     if (mode === "usd") {
       if (amount <= 0) return toast.error("Enter an amount to withdraw");
-      if (amount > availableUsd) return toast.error("Amount exceeds your available balance");
-      if (amount < 5) return toast.error("Minimum USD withdrawal is $5");
+      if (amount > available) return toast.error("Amount exceeds your available balance");
+      if (usdOut < USD_MIN_WITHDRAWAL) return toast.error(`Minimum USD withdrawal is $${USD_MIN_WITHDRAWAL} after conversion`);
       if (usdIdentifier.trim().length < 4) return toast.error("Enter your account ID or wallet address");
       setReview(true);
       return;
@@ -241,7 +244,7 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
             identifier: usdIdentifier.trim(),
             accountName: usdName.trim(),
             network: usdChannel === "wallet" ? usdNetwork : "",
-            amountUsd: amount,
+            amountLocal: amount,
           },
         });
         setDone(
@@ -474,15 +477,11 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
         <div className="space-y-3">
           <h2 className="text-base font-black text-white">Amount to Withdraw</h2>
           <div className="flex items-center gap-2 rounded-[10px] border border-[#E5484D]/50 bg-white/[0.03] px-4 py-3.5">
-            <span className="text-xl font-black text-white">{mode === "usd" ? "$" : sym}</span>
+            <span className="text-xl font-black text-white">{sym}</span>
             <input
               inputMode="numeric"
               value={amountRaw}
               onChange={(e) => {
-                if (mode === "usd") {
-                  setAmountRaw(e.target.value.replace(/[^\d.]/g, "").slice(0, 12));
-                  return;
-                }
                 const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
                 setAmountRaw(digits ? Number(digits).toLocaleString("en-US") : "");
               }}
@@ -497,7 +496,7 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div className="grid grid-cols-4 gap-2">
-            {(mode === "usd" ? [10, 50, 100] : presets).map((p) => (
+            {presets.map((p) => (
               <button
                 key={p}
                 onClick={() => setAmountRaw(p.toLocaleString("en-US"))}
@@ -507,16 +506,14 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
                     : "border-white/10 text-white bg-white/[0.03]"
                 }`}
               >
-                {mode === "usd" ? "$" : sym}
+                {sym}
                 {p >= 1000 ? `${p / 1000}K` : p}
               </button>
             ))}
             <button
               onClick={() =>
                 setAmountRaw(
-                  mode === "usd"
-                    ? (Math.floor(availableUsd * 100) / 100).toFixed(2)
-                    : Math.floor(available).toLocaleString("en-US"),
+                  Math.floor(available).toLocaleString("en-US"),
                 )
               }
               className="py-2.5 rounded-[10px] border border-white/10 text-white bg-white/[0.03] text-xs font-black"
@@ -531,7 +528,7 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
               <div className="text-xs font-black text-white">Important</div>
               <p className="text-[11px] text-slate-400">
                 {mode === "usd"
-                  ? `USD withdrawals are reviewed manually and can take up to 3 working days. We debit ${money(amount * rate, sym)} from your ${currency} wallet at today's rate.`
+                  ? `You're buying USD with your ${currency} balance at our sell rate of ${money(sellRate, sym)} = $1. USD withdrawals are reviewed manually and can take up to 3 working days.`
                   : "Withdrawals are processed within 5 – 30 minutes during working hours."}
               </p>
             </div>
@@ -541,9 +538,10 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
             <div className="text-sm font-black text-white">Summary</div>
             {mode === "usd" ? (
               <>
-                <Row label="Amount" value={money(amount, "$")} />
-                <Row label={`Debited from ${currency} wallet`} value={money(amount * rate, sym)} />
-                <Row label="You will receive" value={money(amount, "$")} strong />
+                <Row label={`Debited from ${currency} wallet`} value={money(amount, sym)} />
+                <Row label="Withdrawal Fee" value={money(fee, sym)} />
+                <Row label="Sell rate" value={`${money(sellRate, sym)} = $1`} />
+                <Row label="You will receive" value={money(usdOut, "$")} strong />
               </>
             ) : (
               <>
@@ -573,8 +571,10 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
 
       {review && mode === "usd" && (
         <UsdReviewSheet
-          amount={amount}
-          localAmount={amount * rate}
+          amount={usdOut}
+          localAmount={amount}
+          fee={fee}
+          sellRate={sellRate}
           sym={sym}
           currency={currency}
           channelLabel={USD_CHANNELS.find((c) => c.id === usdChannel)?.label ?? ""}
@@ -832,6 +832,8 @@ function SuccessSplash({
 function UsdReviewSheet({
   amount,
   localAmount,
+  fee,
+  sellRate,
   sym,
   currency,
   channelLabel,
@@ -845,6 +847,8 @@ function UsdReviewSheet({
 }: {
   amount: number;
   localAmount: number;
+  fee: number;
+  sellRate: number;
   sym: string;
   currency: string;
   channelLabel: string;
@@ -882,6 +886,8 @@ function UsdReviewSheet({
         <div className="h-px bg-white/8" />
         <Row label="You will receive" value={money(amount, "$")} strong />
         <Row label={`Debited from ${currency} wallet`} value={money(localAmount, sym)} />
+        <Row label="Withdrawal Fee" value={money(fee, sym)} />
+        <Row label="Sell rate" value={`${money(sellRate, sym)} = $1`} />
         <Row label="Processing Time" value="Up to 3 working days" />
       </div>
 
