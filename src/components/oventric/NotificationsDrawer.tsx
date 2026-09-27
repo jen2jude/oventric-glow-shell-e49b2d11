@@ -559,19 +559,26 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
         typeof document !== "undefined" &&
         createPortal(
           <div
-            className="modal-light fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-900/50 backdrop-blur-[2px] animate-fade-in p-4"
+            className={
+              isApp
+                ? "fixed inset-0 z-[100] flex items-end justify-center bg-black/70 backdrop-blur-sm animate-fade-in"
+                : "modal-light fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-900/50 backdrop-blur-[2px] animate-fade-in p-4"
+            }
             onClick={() => setViewing(null)}
             role="dialog"
             aria-modal="true"
             aria-label={viewing.title}
           >
             <div
-              className={`web-notifications w-full max-w-lg my-auto border rounded-2xl shadow-2xl overflow-hidden ${
-                isApp ? "app-notif-sheet border-newsfeed-line bg-newsfeed-surface" : ""
-              }`}
+              className={
+                isApp
+                  ? "app-notif-sheet slide-up flex max-h-[82dvh] w-full flex-col overflow-hidden rounded-t-[24px] border border-newsfeed-line bg-newsfeed-surface shadow-newsfeed-panel"
+                  : "web-notifications w-full max-w-lg my-auto border rounded-2xl shadow-2xl overflow-hidden"
+              }
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-start gap-3 px-5 py-4 border-b">
+              {isApp && <div className="app-profile-handle mx-auto mt-3 shrink-0" aria-hidden />}
+              <div className="flex items-start gap-3 px-5 py-4 border-b border-newsfeed-line shrink-0">
                 <div className="w-9 h-9 rounded-[10px] flex items-center justify-center bg-muted border shrink-0">
                   {iconForKind(viewing.kind)}
                 </div>
@@ -591,7 +598,7 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
                   <X className="w-4 h-4" />
                 </button>
               </div>
-              <div className="px-5 py-4 max-h-[60vh] overflow-y-auto">
+              <div className="px-5 py-4 flex-1 overflow-y-auto overscroll-contain max-h-[60vh]">
                 {viewing.body ? (
                   isHtml(viewing.body) ? (
                     <div
@@ -647,7 +654,13 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
               </div>
 
               {viewing.link && (
-                <div className="px-5 py-3 border-t bg-muted">
+                <div
+                  className={`shrink-0 px-5 py-3 border-t ${
+                    isApp
+                      ? "border-newsfeed-line bg-newsfeed-surface pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+                      : "bg-muted"
+                  }`}
+                >
                   <button
                     onClick={() => {
                       const url = viewing.link!;
