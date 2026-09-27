@@ -47,6 +47,7 @@ import type { Currency } from "@/lib/onboarding/OnboardingContext";
 import { visibleProductPrice } from "@/lib/money-visibility";
 import { trackPostView } from "@/lib/post-views";
 import type { ProductDTO } from "@/lib/marketplace.functions";
+import { PostComposerModal } from "@/components/oventric/PostComposerModal";
 
 type Post = Awaited<ReturnType<typeof listPosts>>["posts"][number];
 
@@ -130,6 +131,7 @@ export function AppFeed() {
   const { openGate } = useAuthGate() as any;
   const { homeCurrency, balancesHidden } = useOnboarding();
   const [posts, setPosts] = useState<Post[] | null>(null);
+  const [composerOpen, setComposerOpen] = useState(false);
   const [signedIn, setSignedIn] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [savedIds, setSavedIds] = useState<Set<string>>(() =>
@@ -228,6 +230,20 @@ export function AppFeed() {
     }
   };
 
+  const reloadPosts = () =>
+    fetchPosts()
+      .then((r) => setPosts(r.posts.filter((p) => !p.repost_of || p.text || p.media_url)))
+      .catch(() => {});
+
+  // "Drop a Post" from the create menu opens the composer on the app feed.
+  useEffect(() => {
+    const onCreate = (e: Event) => {
+      if ((e as CustomEvent<{ kind?: string }>).detail?.kind === "post") setComposerOpen(true);
+    };
+    window.addEventListener("oventric:create", onCreate);
+    return () => window.removeEventListener("oventric:create", onCreate);
+  }, []);
+
   useEffect(() => {
     fetchPosts()
       .then((r) => setPosts(r.posts.filter((p) => !p.repost_of || p.text || p.media_url)))
@@ -324,6 +340,13 @@ export function AppFeed() {
 
   return (
     <div className="min-h-[calc(100dvh-80px)] bg-[#070A08] pb-24 pt-[calc(3rem+env(safe-area-inset-top))]">
+      <PostComposerModal
+        open={composerOpen}
+        onClose={() => setComposerOpen(false)}
+        onPosted={async () => {
+          await reloadPosts();
+        }}
+      />
       {/* Keep feed sections outside the scrolling timeline so restored scroll
           positions can never move them off screen. */}
       <div className="fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-[#070A08]/95 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_rgba(0,0,0,0.24)] backdrop-blur-xl">
