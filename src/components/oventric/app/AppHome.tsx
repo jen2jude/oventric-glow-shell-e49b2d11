@@ -122,7 +122,7 @@ export function AppHome({
             onSelect("Profile");
           }}
           className="nav-tap flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white/[0.06]"
-          aria-label="Your profile"
+          aria-label="Your account"
         >
           {avatarUrl ? (
             <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
