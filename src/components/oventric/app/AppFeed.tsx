@@ -39,7 +39,7 @@ export function AppFeed() {
   }, [fetchPosts]);
 
   const onLike = async (p: Post) => {
-    if (!signedIn) return openGate?.("social");
+    if (!signedIn) return openGate?.("generic");
     haptic("select");
     const next = !p.viewer_liked;
     setPosts((xs) =>
