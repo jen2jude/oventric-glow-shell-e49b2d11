@@ -29,3 +29,8 @@
 - [x] Stage 2: native app home and feed layout (compact, edge-to-edge, no web chrome)
 - [x] Stage 3: sliding bottom sheets — product quick view, search sheet; deep-link landing via ?section=
 - [x] Stage 4: lock-screen push alerts and home-screen icon badge counts
+
+## Stage 5 — Native Market & Wallet screens
+- [x] AppMarket: search-first, category chips, dense grid, quick-view sheet
+- [x] AppWallet: glow balance card, escrow line, history/ledger shortcuts, recent activity list
+- [x] Wired into AppSurface for app shell only; web pages untouched

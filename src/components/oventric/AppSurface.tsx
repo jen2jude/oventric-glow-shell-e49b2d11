@@ -11,6 +11,13 @@ const Wallet = lazy(() =>
 const Marketplace = lazy(() =>
   import("@/components/oventric/Marketplace").then((m) => ({ default: m.Marketplace })),
 );
+const AppMarket = lazy(() =>
+  import("@/components/oventric/app/AppMarket").then((m) => ({ default: m.AppMarket })),
+);
+const AppWallet = lazy(() =>
+  import("@/components/oventric/app/AppWallet").then((m) => ({ default: m.AppWallet })),
+);
+);
 const Academy = lazy(() =>
   import("@/components/oventric/Academy").then((m) => ({ default: m.Academy })),
 );
@@ -367,10 +374,10 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         description="Install the Oventric app to top up, withdraw, track earnings and manage cashback."
         from="wallet"
       >
-        <Wallet />
+        {isAppShell ? <AppWallet /> : <Wallet />}
       </AppOnlyGate>
     ) : active === "Marketplace" ? (
-      <Marketplace />
+      isAppShell ? <AppMarket /> : <Marketplace />
     ) : active === "Academy" ? (
       <Academy hubMode={active === "Academy"} />
     ) : active === "Bounties" ? (
