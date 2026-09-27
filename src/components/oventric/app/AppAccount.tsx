@@ -336,7 +336,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
             <div className="text-[10px] uppercase tracking-wider text-white/45">Total revenue</div>
             <div className="mt-1 text-[22px] font-bold tabular-nums">
               {sellerMetrics
-                ? safeFormatDisplayPrice({ original_currency: "USD", original_amount: sellerMetrics.totalRevenueUSD }, currency)
+                ? formatMoney(computeDisplayPrice({ original_currency: "USD", original_amount: sellerMetrics.totalRevenueUSD }, currency).value, currency)
                 : "—"}
             </div>
             {sellerMetrics && currency !== "USD" && (
@@ -380,7 +380,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
             <div className="text-[10px] uppercase tracking-wider text-white/45">Sales from your showcase</div>
             <div className="mt-1 text-[22px] font-bold tabular-nums">
               {creatorHub
-                ? safeFormatDisplayPrice({ original_currency: "USD", original_amount: creatorHub.postSales.revenueUSD }, currency)
+                ? formatMoney(computeDisplayPrice({ original_currency: "USD", original_amount: creatorHub.postSales.revenueUSD }, currency).value, currency)
                 : "—"}
             </div>
             {creatorHub && currency !== "USD" && (
