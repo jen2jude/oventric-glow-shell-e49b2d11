@@ -67,7 +67,6 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
       postIds.length ? sb.from("post_saves").select("post_id, user_id, created_at").in("post_id", postIds).limit(50000) : empty,
       postIds.length ? sb.from("post_shares").select("post_id, user_id, created_at").in("post_id", postIds).limit(50000) : empty,
       showIds.length ? sb.from("creator_post_views").select("post_id, viewer_id, session_key").in("post_id", showIds).limit(50000) : empty,
-      postIds.length ? sb.from("post_product_attachments").select("post_id, product_id, created_at").in("post_id", postIds).limit(5000) : empty,
     ]);
     const likes = likesRes.data ?? [];
     const comments = commentsRes.data ?? [];
