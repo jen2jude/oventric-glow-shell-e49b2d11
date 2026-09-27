@@ -141,7 +141,41 @@ export function CreatorHub() {
           <Stat label="Unique viewers" value={n(data.showcase.uniqueViewers)} />
           <Stat label="Sales from showcase" value={String(data.showcase.linkedSales)} />
         </div>
+        <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+          <Stat label="Free downloads" value={n(data.showcase.freeDownloads)} />
+          <Stat label="Paid downloads" value={n(data.showcase.paidDownloads)} />
+          <Stat label="Video plays (tapped)" value={n(data.showcase.plays)} />
+          <Stat label="Total watch time" value={dur(data.showcase.watchSeconds)} />
+          <Stat label="Avg. watch per play" value={dur(data.showcase.avgWatchSeconds)} />
+          <Stat label="Link clicks" value={n(data.showcase.linkClicks)} />
+          <Stat label="Full-video clicks" value={n(data.showcase.fullVideoClicks)} />
+          <Stat label="Showcase engagement" value={`${data.showcase.engagementRate}%`} />
+        </div>
         <div className="mt-3 text-sm">Revenue from showcase: <b>{money(data.showcase.linkedRevenueUSD)}</b> <span className="text-xs text-muted-foreground">{usd(data.showcase.linkedRevenueUSD)}</span></div>
+        <p className="mt-1 text-xs text-muted-foreground">Watch time only counts when someone taps to play — silent autoplay in the feed is ignored.</p>
+        {data.showcase.topLinks.length > 0 && (
+          <div className="mt-4">
+            <div className="mb-1 text-xs font-semibold uppercase text-muted-foreground">Most-clicked links</div>
+            <ul className="divide-y divide-border">
+              {data.showcase.topLinks.map((l) => (
+                <li key={l.target} className="flex justify-between gap-3 py-2 text-sm"><span className="truncate">{l.target.replace(/^https?:\/\//, "")}</span><span className="shrink-0 text-muted-foreground">{l.clicks}</span></li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {data.showcase.perItem.length > 0 && (
+          <div className="mt-4">
+            <div className="mb-1 text-xs font-semibold uppercase text-muted-foreground">Per showcase</div>
+            <ul className="divide-y divide-border">
+              {data.showcase.perItem.map((it) => (
+                <li key={it.id} className="py-2 text-sm">
+                  <div className="truncate font-medium">{it.title}</div>
+                  <div className="text-xs text-muted-foreground">{n(it.views)} views · {n(it.plays)} plays · {dur(it.watchSeconds)} watched · {it.freeDownloads} free / {it.paidDownloads} paid downloads · {it.clicks} clicks</div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </Card>
 
       <Card title="Sales from your posts" hint="Orders for products you attached to posts, after you posted" icon={ShoppingBag}>
@@ -183,4 +217,10 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 function Empty({ text }: { text: string }) {
   return <p className="py-4 text-center text-sm text-muted-foreground">{text}</p>;
+}
+
+function dur(sec: number) {
+  if (!sec) return "0s";
+  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+  return h ? `${h}h ${m}m` : m ? `${m}m ${s}s` : `${s}s`;
 }
