@@ -4,6 +4,7 @@ import { useRouterState } from "@tanstack/react-router";
 
 import { Sidebar } from "@/components/oventric/Sidebar";
 import { MobileNav } from "@/components/oventric/MobileNav";
+const AppFeed = lazy(() => import("@/components/oventric/app/AppFeed").then((m) => ({ default: m.AppFeed })));
 const Feed = lazy(() => import("@/components/oventric/Feed").then((m) => ({ default: m.Feed })));
 const Wallet = lazy(() =>
   import("@/components/oventric/Wallet").then((m) => ({ default: m.Wallet })),
@@ -406,6 +407,8 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
       </AppOnlyGate>
     ) : desktopLanding ? (
       <Feed homepageMenuVisible />
+    ) : isAppShell && !isDesktop ? (
+      <AppFeed />
     ) : (
       <Feed />
     );
