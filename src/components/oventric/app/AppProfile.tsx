@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -7,7 +7,10 @@ import {
   BadgeCheck,
   CalendarDays,
   Flag,
+  Images,
   Link2,
+  Loader2,
+  PlayCircle,
   MapPin,
   MessageCircle,
   MoreHorizontal,
@@ -30,7 +33,12 @@ import {
   unfollow,
   listIncomingFollowRequests,
 } from "@/lib/follows.functions";
-import { listPosts, type FeedPost } from "@/lib/posts.functions";
+import {
+  listPosts,
+  listUserPhotos,
+  type FeedPost,
+  type UserPhoto,
+} from "@/lib/posts.functions";
 import { listProducts, type ProductDTO } from "@/lib/marketplace.functions";
 import type { ProfileListing } from "@/lib/profiles/mockProfiles";
 import { supabase } from "@/integrations/supabase/client";
@@ -43,6 +51,9 @@ import { ConnectionsDialog } from "@/components/oventric/profile/ConnectionsDial
 import { FollowRequestsDrawer } from "@/components/oventric/FollowRequestsDrawer";
 import { ReportModal } from "@/components/oventric/ReportModal";
 import { ProfileServicesTab } from "@/components/oventric/profile/ProfileServicesTab";
+import { ProfileCollectionsTab } from "@/components/oventric/profile/ProfileCollectionsTab";
+import { PhotoBatches } from "@/components/oventric/PhotoBatches";
+import { ReelsGrid, useReels } from "@/components/oventric/feed/ReelsShelf";
 
 function ago(iso: string) {
   const s = (Date.now() - new Date(iso).getTime()) / 1000;
@@ -56,7 +67,14 @@ function compact(n: number) {
   return n >= 1000 ? `${(n / 1000).toFixed(1).replace(/\.0$/, "")}k` : `${n}`;
 }
 
-type Tab = "posts" | "shop" | "services" | "skills" | "about";
+type Tab =
+  | "posts"
+  | "shop"
+  | "services"
+  | "collections"
+  | "photos"
+  | "skills"
+  | "about";
 
 function priceOf(p: ProductDTO): string {
   return `$${p.priceUSD.toFixed(2)}`;
@@ -398,6 +416,8 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
             ["posts", "Posts"],
             ["shop", "Shop"],
             ["services", "Services"],
+            ["collections", "Collections"],
+            ["photos", "Photos"],
             ["skills", "Skills"],
             ["about", "About"],
           ] as [Tab, string][]
