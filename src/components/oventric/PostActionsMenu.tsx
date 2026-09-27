@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { setPostSaved, logPostShare } from "@/lib/posts.functions";
 import { sendFollowRequest, unfollow } from "@/lib/follows.functions";
 import { blockUser } from "@/lib/blocks.functions";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 
 type Action =
   | "interested"
@@ -115,6 +116,7 @@ export function PostActionsMenu({
   const [open, setOpen] = useState(false);
   const [saved, setSavedState] = useState(() => getSavedPosts().has(postId));
   const ref = useRef<HTMLDivElement | null>(null);
+  const isApp = useIsAppShell();
 
   useEffect(() => {
     if (!open) return;
