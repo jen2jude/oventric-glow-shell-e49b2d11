@@ -34,3 +34,4 @@
 - [x] AppMarket: search-first, category chips, dense grid, quick-view sheet
 - [x] AppWallet: glow balance card, escrow line, history/ledger shortcuts, recent activity list
 - [x] Wired into AppSurface for app shell only; web pages untouched
+- [x] Stage 8: native full-screen app feed (snap cards, right action rail, likes, comments, share)
