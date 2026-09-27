@@ -674,6 +674,7 @@ export function AppFeed() {
 
       <ProductQuickView
         productId={quickViewId}
+        currency={(baseCurrency ?? "USD") as string}
         onClose={() => setQuickViewId(null)}
       />
     </div>
