@@ -603,7 +603,16 @@ function ProductPage() {
                             <>
                               <button
                                 type="button"
-                                 onClick={() => navigate({ to: "/marketplace" })}
+                                 onClick={() => {
+                                   navigate({ to: "/" });
+                                   setTimeout(
+                                     () =>
+                                       window.dispatchEvent(
+                                         new CustomEvent("oventric:navigate", { detail: { section: "Marketplace" } }),
+                                       ),
+                                     100,
+                                   );
+                                 }}
                                  aria-label="Back to marketplace"
                                  className="absolute left-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-full border border-newsfeed-line bg-newsfeed-surface/90 text-newsfeed-ink shadow-sm backdrop-blur-xl-md"
                               >
