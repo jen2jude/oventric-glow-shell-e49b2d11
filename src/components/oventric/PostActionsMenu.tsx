@@ -335,22 +335,30 @@ export function PostActionsMenu({
       {open && (
         <div className="md:hidden fixed inset-0 z-[1000] grid place-items-center p-4">
           <div
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            className={`absolute inset-0 backdrop-blur-sm ${isApp ? "bg-black/60" : "bg-slate-900/40"}`}
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="relative w-full max-w-sm flex max-h-[75dvh] flex-col rounded-[20px] bg-white border border-slate-200 shadow-[0_20px_60px_-10px_rgba(15,23,42,0.25)] animate-in zoom-in-95 fade-in duration-150">
+          <div
+            className={`relative w-full max-w-sm flex max-h-[75dvh] flex-col rounded-[20px] border animate-in zoom-in-95 fade-in duration-150 ${
+              isApp
+                ? "bg-[#141416] border-white/10 shadow-[0_20px_60px_-10px_rgba(0,0,0,0.7)]"
+                : "bg-white border-slate-200 shadow-[0_20px_60px_-10px_rgba(15,23,42,0.25)]"
+            }`}
+          >
             <div className="flex items-center justify-between px-5 pt-5 pb-3 shrink-0">
-              <h3 className="text-[17px] font-semibold text-slate-900">More options</h3>
+              <h3 className={`text-[17px] font-semibold ${isApp ? "text-white" : "text-slate-900"}`}>
+                More options
+              </h3>
               <button
                 onClick={() => setOpen(false)}
                 aria-label="Close"
-                className="p-1.5 -mr-1.5 text-slate-400 active:text-slate-700"
+                className={`p-1.5 -mr-1.5 ${isApp ? "text-white/40 active:text-white" : "text-slate-400 active:text-slate-700"}`}
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="h-px bg-slate-100 mx-5 shrink-0" />
+            <div className={`h-px mx-5 shrink-0 ${isApp ? "bg-white/10" : "bg-slate-100"}`} />
             <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain py-2 pb-[calc(env(safe-area-inset-bottom)+12px)]">
               {sheetItem(Bookmark, saved ? "Unsave" : "Save", "save", "Add this to your saved items")}
               {sheetItem(ThumbsDown, "See less content like this", "not_interested")}
@@ -376,9 +384,11 @@ export function PostActionsMenu({
                     setOpen(false);
                     onEdit();
                   }}
-                  className="w-full flex items-center gap-4 px-5 py-3.5 text-left text-[15px] text-slate-900 active:bg-slate-100"
+                  className={`w-full flex items-center gap-4 px-5 py-3.5 text-left text-[15px] ${
+                    isApp ? "text-white active:bg-white/10" : "text-slate-900 active:bg-slate-100"
+                  }`}
                 >
-                  <Pencil className="w-5 h-5 text-slate-500" /> Edit post
+                  <Pencil className={`w-5 h-5 ${isApp ? "text-white/50" : "text-slate-500"}`} /> Edit post
                 </button>
               )}
 
@@ -389,7 +399,9 @@ export function PostActionsMenu({
                     setOpen(false);
                     onDelete();
                   }}
-                  className="w-full flex items-center gap-4 px-5 py-3.5 text-left text-[15px] text-red-600 active:bg-red-50"
+                  className={`w-full flex items-center gap-4 px-5 py-3.5 text-left text-[15px] text-red-500 ${
+                    isApp ? "active:bg-white/10" : "active:bg-red-50"
+                  }`}
                 >
                   <Trash2 className="w-5 h-5" /> Delete post
                 </button>
