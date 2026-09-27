@@ -25,7 +25,7 @@ import { getMyFullProfile } from "@/lib/profiles.functions";
 import { getWalletBalances } from "@/lib/wallet.functions";
 import { getSellerMetrics } from "@/lib/dashboard/seller.functions";
 import { getCreatorHub } from "@/lib/dashboard/creator.functions";
-import { formatMoney, safeFormatDisplayPrice } from "@/lib/fx-display";
+import { formatMoney, computeDisplayPrice } from "@/lib/fx-display";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { OPEN_PROFILE_SETTINGS_EVENT } from "@/components/oventric/ProfileDropdown";
@@ -336,7 +336,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
             <div className="text-[10px] uppercase tracking-wider text-white/45">Total revenue</div>
             <div className="mt-1 text-[22px] font-bold tabular-nums">
               {sellerMetrics
-                ? safeFormatDisplayPrice({ original_currency: "USD", original_amount: sellerMetrics.totalRevenueUSD }, currency)
+                ? formatMoney(computeDisplayPrice({ original_currency: "USD", original_amount: sellerMetrics.totalRevenueUSD }, currency).value, currency)
                 : "—"}
             </div>
             {sellerMetrics && currency !== "USD" && (
@@ -380,7 +380,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
             <div className="text-[10px] uppercase tracking-wider text-white/45">Sales from your showcase</div>
             <div className="mt-1 text-[22px] font-bold tabular-nums">
               {creatorHub
-                ? safeFormatDisplayPrice({ original_currency: "USD", original_amount: creatorHub.postSales.revenueUSD }, currency)
+                ? formatMoney(computeDisplayPrice({ original_currency: "USD", original_amount: creatorHub.postSales.revenueUSD }, currency).value, currency)
                 : "—"}
             </div>
             {creatorHub && currency !== "USD" && (
