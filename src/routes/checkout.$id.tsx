@@ -670,15 +670,28 @@ function CheckoutPage() {
 
   return (
     <div
-      className="web-checkout page-light min-h-screen overflow-x-clip bg-checkout-canvas text-checkout-ink"
+      className={`web-checkout min-h-screen overflow-x-clip bg-checkout-canvas text-checkout-ink ${isAppShell ? "app-checkout" : "page-light"}`}
     >
-      <div className="checkout-header sticky top-0 z-[60] border-b border-checkout-line bg-checkout-surface">
-        <Header onOpenMessages={() => {}} light desktopNav={!isAppShell} forceSiteNavbar={!isAppShell} />
-      </div>
+      {isAppShell ? (
+        <header className="checkout-app-header sticky top-0 z-[60] flex items-center gap-3 border-b border-checkout-line bg-checkout-canvas px-4 py-3">
+          <Button variant="ghost" size="icon" asChild className="h-10 w-10 shrink-0 rounded-full text-checkout-ink" title="Back to product">
+            <Link to="/product/$id" params={{ id }} search={{ qty }} aria-label="Back to product"><ArrowLeft className="h-5 w-5" /></Link>
+          </Button>
+          <div className="min-w-0 flex-1">
+            <div className="text-[15px] font-bold text-checkout-ink">Secure checkout</div>
+            <div className="text-[11px] text-checkout-muted">Oventric buyer protection</div>
+          </div>
+          <ShieldCheck className="h-5 w-5 text-checkout-coral" aria-hidden="true" />
+        </header>
+      ) : (
+        <div className="checkout-header sticky top-0 z-[60] border-b border-checkout-line bg-checkout-surface">
+          <Header onOpenMessages={() => {}} light desktopNav forceSiteNavbar />
+        </div>
+      )}
       <main
         className={`checkout-shell mx-auto w-full min-w-0 px-4 pt-4 ${isAppShell ? "pb-32" : "pb-24 sm:pt-7"}`}
       >
-        <Link
+        {!isAppShell && <Link
           to="/product/$id"
           params={{ id }}
           search={{ qty }}
@@ -688,7 +701,7 @@ function CheckoutPage() {
             <ArrowLeft className="h-4 w-4" />
           </span>
           Back
-        </Link>
+        </Link>}
 
         {/* No H1 needed as Header provides context */}
 
@@ -726,8 +739,8 @@ function CheckoutPage() {
                     </span>
                     <span className="text-xs font-semibold text-checkout-muted">Payment</span>
                   </div>
-                  <h1 className="font-wallet-display text-3xl font-bold text-checkout-ink sm:text-4xl">Choose how to pay</h1>
-                  <p className="mt-2 text-sm text-checkout-muted">Select a payment method, review your order, then complete your purchase securely.</p>
+                   <h1 className="font-wallet-display text-3xl font-bold text-checkout-ink sm:text-4xl">{isAppShell ? "Payment" : "Choose how to pay"}</h1>
+                   {!isAppShell && <p className="mt-2 text-sm text-checkout-muted">Select a payment method, review your order, then complete your purchase securely.</p>}
                 </div>
               </section>
               {isFree ? (
@@ -784,7 +797,9 @@ function CheckoutPage() {
                 {PAY_TABS.map((t) => {
                   const on = payTab === t.id;
                   return (
-                    <button
+                     <Button
+                       type="button"
+                       variant="ghost"
                       key={t.id}
                       role="tab"
                       aria-selected={on}
@@ -793,7 +808,7 @@ function CheckoutPage() {
                     >
                       <t.Icon className="w-3.5 h-3.5" />
                       {t.label}
-                    </button>
+                     </Button>
                   );
                 })}
               </div>
@@ -803,7 +818,9 @@ function CheckoutPage() {
                 {tabOptions.map((o) => {
                   const on = !o.soon && optionKey === o.key;
                   return (
-                    <button
+                     <Button
+                       type="button"
+                       variant="ghost"
                       key={o.key}
                       onClick={() => {
                         if (o.soon) return;
@@ -848,7 +865,7 @@ function CheckoutPage() {
                       <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${on ? "border-checkout-coral bg-checkout-coral text-checkout-on-coral" : "border-checkout-line"}`}>
                         {on && <Check className="h-3 w-3" />}
                       </span>
-                    </button>
+                     </Button>
                   );
                 })}
               </div>
@@ -1216,12 +1233,13 @@ function CheckoutPage() {
               </div>
 
               {isAppShell ? (
-                <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#0A0A0B]/80 backdrop-blur-xl border-t border-white/5 p-4 flex flex-col gap-3 pb-safe">
+                 <div className="checkout-app-actions fixed bottom-0 left-0 right-0 z-40 flex flex-col gap-2 border-t border-checkout-line bg-checkout-canvas p-4 backdrop-blur-xl">
                   <div className="flex justify-between items-center px-1">
-                    <span className="text-xs text-slate-400">{isFree ? "Price" : "Total to pay"}</span>
-                    <span className="text-lg font-black text-white">{isFree ? "Free" : payTotalLabel}</span>
+                     <span className="text-xs text-checkout-muted">{isFree ? "Price" : "Total to pay"}</span>
+                     <span className="text-lg font-black text-checkout-ink">{isFree ? "Free" : payTotalLabel}</span>
                   </div>
-                  <button
+                   <Button
+                     type="button"
                     onClick={pay}
                     disabled={submitting || isOwnListing || (!isFree && insufficient) || (needsDelivery && !deliveryValid)}
                     className="checkout-pay-button w-full inline-flex items-center justify-center gap-2 rounded-[10px] bg-checkout-coral py-4 text-sm font-black text-checkout-on-coral transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
@@ -1244,7 +1262,7 @@ function CheckoutPage() {
                     ) : (
                       `Pay with Paystack · ${payTotalLabel}`
                     )}
-                  </button>
+                   </Button>
                   <div className="text-[10px] text-slate-500 flex items-center justify-center gap-1 opacity-60">
                     <ShieldCheck className="w-3 h-3 text-[#E5484D]/50" /> Secured by Oventric
                     escrow
@@ -1297,12 +1315,12 @@ function CheckoutPage() {
 
       {topUpOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4"
+           className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4"
           onClick={() => !topUpBusy && setTopUpOpen(false)}
         >
           <div
-            className={`w-full max-w-md border rounded-2xl p-6 ${
-              isAppShell ? "bg-white/[0.03] backdrop-blur-xl border-white/5" : "bg-white shadow-sm border-slate-200"
+             className={`checkout-topup w-full max-w-md border rounded-[10px] p-6 ${
+               isAppShell ? "border-checkout-line bg-checkout-surface" : "bg-white shadow-sm border-slate-200"
             }`}
             onClick={(e) => e.stopPropagation()}
           >
