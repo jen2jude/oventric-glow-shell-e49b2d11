@@ -299,6 +299,11 @@ export function AppFeed() {
                 <div className="p-2">
                   <p className="line-clamp-1 text-[11px] font-semibold text-white">{sp.name}</p>
                   <p className="mt-0.5 text-[11px] font-bold text-[#E5484D]">{shopPriceOf(sp)}</p>
+                  {(sp.salesCount ?? 0) > 0 && (
+                    <p className="mt-0.5 text-[10px] font-medium text-white/35">
+                      {sp.salesCount} sold
+                    </p>
+                  )}
                 </div>
               </button>
             ))}
