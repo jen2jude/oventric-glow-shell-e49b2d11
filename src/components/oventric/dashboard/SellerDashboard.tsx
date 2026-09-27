@@ -27,11 +27,18 @@ type SellerTab = "overview" | "products" | "orders" | "shop" | "earnings";
 export function SellerDashboard() {
   const [activeTab, setActiveTab] = useState<SellerTab>("overview");
   const fetchMetrics = useServerFn(getSellerMetrics);
-  
+  const { baseCurrency } = useOnboarding();
+  const currency = (baseCurrency ?? "USD") as Currency;
+
   const { data: metrics } = useSuspenseQuery({
     queryKey: ["seller-metrics"],
     queryFn: () => fetchMetrics({}),
   });
+
+  const revenueDisplay = computeDisplayPrice(
+    { original_currency: "USD", original_amount: metrics.totalRevenueUSD },
+    currency,
+  ).formatted;
 
   const TABS = [
     { id: "overview", label: "Overview", icon: BarChart3 },
