@@ -153,6 +153,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      // Start fetching the splash wordmark before the app code runs, so the
+      // splash shows the logo from its first frame.
+      { rel: "preload", as: "image", href: logoFull, fetchPriority: "high" as const },
       // Warm the media/storage origin so the first image/video byte arrives sooner.
       ...(STORAGE_ORIGIN
         ? [
