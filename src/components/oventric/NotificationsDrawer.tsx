@@ -654,7 +654,13 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
               </div>
 
               {viewing.link && (
-                <div className="px-5 py-3 border-t bg-muted">
+                <div
+                  className={`shrink-0 px-5 py-3 border-t ${
+                    isApp
+                      ? "border-newsfeed-line bg-newsfeed-surface pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+                      : "bg-muted"
+                  }`}
+                >
                   <button
                     onClick={() => {
                       const url = viewing.link!;
