@@ -73,7 +73,6 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
     const saves = savesRes.data ?? [];
     const shares = sharesRes.data ?? [];
     const showViews = showViewsRes.data ?? [];
-    const attaches = attachRes.data ?? [];
 
     // Follower growth: last 8 weeks
     const now = Date.now();
