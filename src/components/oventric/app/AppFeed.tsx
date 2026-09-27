@@ -31,7 +31,8 @@ import { AppSheet } from "@/components/oventric/app/AppSheet";
 import { listPosts, toggleLike, setPostSaved as setPostSavedFn, deletePost as deletePostFn, updatePostText as updatePostTextFn } from "@/lib/posts.functions";
 import { listFollowing, listFollowers } from "@/lib/follows.functions";
 import { listCreatorFeed, getTopCreators, type CreatorPostDTO } from "@/lib/creators.functions";
-import { listProducts, createOrder, getOrderWithDownload } from "@/lib/marketplace.functions";
+import { listProducts } from "@/lib/marketplace.functions";
+import { CreatorPostSheet } from "@/components/oventric/app/CreatorPostSheet";
 import { ProductQuickView } from "./ProductQuickView";
 import { EDIT_WINDOW_MS } from "@/lib/post-edit";
 import { togglePostSet, getSavedPosts } from "@/components/oventric/PostActionsMenu";
@@ -1023,6 +1024,8 @@ export function AppFeed() {
           viewerInitials="OV"
         />
       )}
+
+      <CreatorPostSheet post={creatorSheet} onClose={() => setCreatorSheet(null)} />
 
       <ProductQuickView
         productId={quickViewId}
