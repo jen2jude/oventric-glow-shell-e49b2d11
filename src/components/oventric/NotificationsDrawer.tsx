@@ -343,6 +343,7 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
 
   const handleSelectChannel = async (next: Channel) => {
     setChannel(next);
+    setVisibleCount(10);
     const unread = items.filter(
       (n) => !n.read_at && (next === "all" || channelForKind(n.kind) === next),
     );
