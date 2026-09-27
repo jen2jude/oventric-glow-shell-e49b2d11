@@ -130,6 +130,28 @@ export function PostComposerModal({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const shellRef = useRef<HTMLDivElement | null>(null);
   useFocusTrap(shellRef, open);
+  const [appViewport, setAppViewport] = useState<{ top: number; height: number; keyboardOpen: boolean } | null>(null);
+
+  // The keyboard covers part of the layout viewport on mobile. Anchor the entire
+  // composer to the visible viewport so its action rail stays above the keys.
+  useEffect(() => {
+    if (!open || !isApp) return;
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+    const initialHeight = Math.max(window.innerHeight, viewport.height);
+    const sync = () => {
+      const keyboardOpen = initialHeight - viewport.height - viewport.offsetTop > 120;
+      setAppViewport({ top: viewport.offsetTop, height: viewport.height, keyboardOpen });
+    };
+    sync();
+    viewport.addEventListener("resize", sync);
+    viewport.addEventListener("scroll", sync);
+    return () => {
+      viewport.removeEventListener("resize", sync);
+      viewport.removeEventListener("scroll", sync);
+      setAppViewport(null);
+    };
+  }, [open, isApp]);
 
   // Fetch current user details
   useEffect(() => {
@@ -471,8 +493,8 @@ export function PostComposerModal({
   if (!open) return null;
 
   if (isApp) return (
-    <div className="app-post-composer fixed inset-0 z-[60] flex items-end justify-center bg-background/75 backdrop-blur-sm" onClick={onClose}>
-      <div ref={shellRef} role="dialog" aria-modal="true" aria-label="Create post" className="slide-up relative flex h-[min(94dvh,850px)] w-full max-w-2xl flex-col overflow-hidden rounded-t-[24px] border border-b-0 border-border bg-card text-foreground shadow-2xl" onClick={(event) => event.stopPropagation()}>
+    <div className="app-post-composer fixed inset-0 z-[60] flex items-end justify-center bg-background/75 backdrop-blur-sm" style={appViewport ? { top: appViewport.top, height: appViewport.height, bottom: "auto" } : undefined} onClick={onClose}>
+      <div ref={shellRef} role="dialog" aria-modal="true" aria-label="Create post" className={`slide-up relative flex w-full max-w-2xl flex-col overflow-hidden rounded-t-[24px] border border-b-0 border-border bg-card text-foreground shadow-2xl ${appViewport?.keyboardOpen ? "h-full max-h-[850px]" : "h-[min(94dvh,850px)]"}`} onClick={(event) => event.stopPropagation()}>
         <div className="app-profile-handle" aria-hidden="true" />
         <header className="flex h-14 shrink-0 items-center justify-between border-b border-border px-4">
           <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close post composer" title="Close"><X /></Button>
@@ -526,7 +548,7 @@ export function PostComposerModal({
           <div className="flex-1" />
         </div>
 
-        <footer className="shrink-0 border-t border-border bg-card px-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3">
+        <footer className={`shrink-0 border-t border-border bg-card px-5 pt-3 ${appViewport?.keyboardOpen ? "pb-3" : "pb-[calc(1rem+env(safe-area-inset-bottom))]"}`}>
           <div className="mb-3 flex items-center justify-between gap-2 text-xs text-muted-foreground"><span>Add to your post</span><span className={textError ? "text-destructive" : ""}>{trimmed.length.toLocaleString()} / {MAX_TEXT.toLocaleString()}</span></div>
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={onPickFile} className="min-w-0 flex-1 rounded-[10px] border-border bg-muted/40 text-foreground" title="Add photo or video"><ImageIcon className="text-primary" /><span className="hidden min-[350px]:inline">Media</span></Button>
@@ -536,7 +558,7 @@ export function PostComposerModal({
         </footer>
       </div>
 
-      {(productPickerOpen || mentionPickerOpen) && <div className="fixed inset-0 z-[70] flex items-center justify-center bg-background/80 px-5 backdrop-blur-sm" onClick={() => { setProductPickerOpen(false); setMentionPickerOpen(false); }}>
+      {(productPickerOpen || mentionPickerOpen) && <div className="fixed inset-0 z-[70] flex items-center justify-center bg-background/80 px-5 backdrop-blur-sm" style={appViewport ? { top: appViewport.top, height: appViewport.height, bottom: "auto" } : undefined} onClick={() => { setProductPickerOpen(false); setMentionPickerOpen(false); }}>
         <div role="dialog" aria-modal="true" aria-label={productPickerOpen ? "Choose products" : "Mention people"} className="flex max-h-[65dvh] w-full max-w-sm flex-col overflow-hidden rounded-[10px] border border-border bg-card shadow-2xl" onClick={(event) => event.stopPropagation()}>
           <div className="flex items-center gap-2 border-b border-border p-3">{productPickerOpen ? <ShoppingBag className="size-4 text-primary" /> : <AtSign className="size-4 text-primary" />}
             <input autoFocus value={productPickerOpen ? productQuery : mentionQuery} onChange={(event) => productPickerOpen ? setProductQuery(event.target.value) : setMentionQuery(event.target.value)} placeholder={productPickerOpen ? "Search your products" : "Search people"} className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
