@@ -4,8 +4,8 @@ import { Rss, Store } from "lucide-react";
 const ACTIONS = [
   { to: "/", search: { section: "Feed" }, label: "Posts", icon: Rss, hint: "Jump to your feed" },
   {
-    to: "/dashboard",
-    search: { tab: "creator" },
+    to: "/seller-hub",
+    search: {},
     label: "Seller Hub",
     icon: Store,
     hint: "Manage your business",

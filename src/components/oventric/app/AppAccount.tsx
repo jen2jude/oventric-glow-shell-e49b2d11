@@ -201,7 +201,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
           type="button"
           onClick={() => {
             haptic("select");
-            navigate({ to: "/dashboard", search: { tab: "creator" } });
+            navigate({ to: "/seller-hub" });
           }}
           className="mt-3 flex w-full items-center gap-3 rounded-[16px] border border-violet-400/20 bg-gradient-to-br from-violet-500/20 via-[#E5484D]/10 to-transparent p-3.5 text-left active:bg-violet-500/25"
         >
