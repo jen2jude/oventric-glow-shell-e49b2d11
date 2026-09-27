@@ -93,9 +93,11 @@ export function resolveLaunchContext(): LaunchContext {
 let hydratedContext: LaunchContext | null = null;
 
 export function useLaunchContext(): LaunchContext | null {
-  const [ctx, setCtx] = useState<LaunchContext | null>(() =>
-    hydratedContext ?? (typeof window !== "undefined" ? resolveLaunchContext() : null)
-  );
+  // The first client render must match SSR. Resolving from `window` here made
+  // review previews hydrate website markup as app markup, leaving the website
+  // shell behind when React abandoned hydration. The splash covers this brief
+  // null state until the effect selects the presentation.
+  const [ctx, setCtx] = useState<LaunchContext | null>(() => hydratedContext);
   useEffect(() => {
     const next = resolveLaunchContext();
     hydratedContext = next;
