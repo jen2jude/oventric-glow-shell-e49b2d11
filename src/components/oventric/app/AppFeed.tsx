@@ -106,8 +106,14 @@ export function AppFeed() {
   // now, then up to 6 category sections.
   const shopSections = useMemo(() => {
     const all = shopProducts ?? [];
+    const bySales = (a: ProductDTO, b: ProductDTO) =>
+      (b.salesCount ?? 0) - (a.salesCount ?? 0);
     const free = all.filter((p) => p.priceUSD <= 0).slice(0, 8);
     const paid = all.filter((p) => p.priceUSD > 0);
+    // Trending rail: most-bought first; if nothing has sold yet, fall back to
+    // the newest paid products so the rail is never empty.
+    const sold = paid.filter((p) => (p.salesCount ?? 0) > 0).sort(bySales);
+    const trending = (sold.length > 0 ? sold : [...paid]).slice(0, 10);
     const byCategory = new Map<string, ProductDTO[]>();
     paid.forEach((p) => {
       const key = p.category || "Other";
