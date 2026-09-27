@@ -356,7 +356,7 @@ function RootShell({ children }: { children: ReactNode }) {
   try{
     var params=new URLSearchParams(window.location.search);
      var host=window.location.hostname;
-     var review=host==='localhost'||host==='127.0.0.1'||host.indexOf('id-preview--')===0||host.indexOf('preview--')===0||/^project--[a-f0-9-]+-dev\.lovable\.app$/.test(host)||host.endsWith('.lovableproject-dev.com');
+     var review=host==='localhost'||host==='127.0.0.1'||host.indexOf('id-preview--')===0||host.indexOf('preview--')===0||/^project--[a-f0-9-]+-dev\\.lovable\\.app$/.test(host)||host.endsWith('.lovableproject-dev.com');
      var forced=params.get('mode');
     var native=!!(window.Capacitor&&(typeof window.Capacitor.isNativePlatform==='function'?window.Capacitor.isNativePlatform():window.Capacitor.isNative));
     var standalone=((window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true)&&window.matchMedia('(max-width: 767px)').matches;
