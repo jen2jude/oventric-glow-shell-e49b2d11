@@ -40,6 +40,7 @@ const ExplorePage = lazy(() =>
 import { HomeHub } from "@/components/oventric/HomeHub";
 import { DesktopHome } from "@/components/oventric/desktop/DesktopHome";
 import { OventricHome } from "@/components/oventric/home/OventricHome";
+import { AppHome } from "@/components/oventric/app/AppHome";
 import { DesktopAppSidebar } from "@/components/oventric/desktop/DesktopAppSidebar";
 import { SiteFooterAuto } from "@/components/oventric/desktop/SiteFooterAuto";
 import { SiteNavbar } from "@/components/oventric/desktop/SiteNavbar";
@@ -329,7 +330,13 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
 
   const rawView =
     active === "Home" && isAppShell && !isDesktop ? (
-      <Feed />
+      <AppHome
+        name={name}
+        avatarUrl={avatarUrl}
+        onSelect={setActive}
+        onCreate={() => handleCreate("sell")}
+        onOpenMessages={() => setMessagesOpen(true)}
+      />
     ) : active === "Home" ? (
       <OventricHome onSelect={setActive} onCreate={() => handleCreate("sell")} />
     ) : active === "__legacy_home" ? (
