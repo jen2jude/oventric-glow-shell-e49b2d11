@@ -159,20 +159,12 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
       hours[d.getUTCHours()]++; days[d.getUTCDay()]++;
     }
 
-    // Sales from posts & showcases
-    const productIds = [...new Set([...attaches.map((a: any) => a.product_id), ...shows.map((s) => s.product_id).filter(Boolean)])] as string[];
+    // Sales from showcase (Creators tab) posts only — feed-post product sales belong to the Seller Hub
+    const productIds = [...new Set(shows.map((s) => s.product_id).filter(Boolean))] as string[];
     let orders: any[] = [];
     if (productIds.length) {
       const o = await sb.from("orders").select("product_id, total_usd, status, created_at, product_name_snapshot").eq("seller_id", me).in("product_id", productIds).in("status", PAID).limit(20000);
       orders = o.data ?? [];
-    }
-    const firstAttach = new Map<string, number>();
-    for (const a of attaches) { const t = +new Date(a.created_at); if (!firstAttach.has(a.product_id) || t < firstAttach.get(a.product_id)!) firstAttach.set(a.product_id, t); }
-    const postOrders = orders.filter((o) => firstAttach.has(o.product_id) && +new Date(o.created_at) >= firstAttach.get(o.product_id)!);
-    const byProd = new Map<string, { name: string; sales: number; revenueUSD: number }>();
-    for (const o of postOrders) {
-      const e = byProd.get(o.product_id) ?? { name: o.product_name_snapshot || "Product", sales: 0, revenueUSD: 0 };
-      e.sales++; e.revenueUSD += Number(o.total_usd || 0); byProd.set(o.product_id, e);
     }
     const showFirst = new Map<string, number>();
     for (const s of shows) if (s.product_id) { const t = +new Date(s.created_at); if (!showFirst.has(s.product_id) || t < showFirst.get(s.product_id)!) showFirst.set(s.product_id, t); }
