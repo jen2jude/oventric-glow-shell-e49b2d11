@@ -118,9 +118,9 @@ export function Wallet() {
   const tierTop = 5000 * rate;
   const [spend, setSpend] = useState(() => Math.round(tierMid * 2.5));
   const tiers = [
-    { key: "base", label: "Baseline", range: `< ${fmt(tierMid, cur)}`, pct: 2 },
-    { key: "elite", label: "Elite", range: `${fmt(tierMid, cur)} – ${fmt(tierTop, cur)}`, pct: 3.5 },
-    { key: "apex", label: "Apex", range: `> ${fmt(tierTop, cur)}`, pct: 5 },
+    { key: "base", label: "Baseline", range: `< ${mask(fmt(tierMid, cur))}`, pct: 2 },
+    { key: "elite", label: "Elite", range: `${mask(fmt(tierMid, cur))} – ${mask(fmt(tierTop, cur))}`, pct: 3.5 },
+    { key: "apex", label: "Apex", range: `> ${mask(fmt(tierTop, cur))}`, pct: 5 },
   ];
   const tier = spend < tierMid ? tiers[0] : spend <= tierTop ? tiers[1] : tiers[2];
   const annual = spend * 12 * (tier?.pct ?? 0) / 100;
@@ -300,10 +300,11 @@ export function Wallet() {
           </section>
           <section className="rounded-[10px] border border-wallet-line bg-wallet-panel p-4 shadow-wallet-card">
             <div className="mb-5"><p className="text-[10px] font-semibold uppercase text-wallet-crimson">Cashback planner</p><h2 className="mt-1 font-wallet-display text-base font-bold text-wallet-copy">Estimate your earnings</h2></div>
-            <div className="flex items-end justify-between gap-3"><label htmlFor="wallet-spend" className="text-xs text-wallet-copy-muted">Monthly volume</label><span className="font-wallet-display text-lg font-semibold tabular-nums text-wallet-copy">{fmt(spend, cur)}</span></div>
+            <div className="flex items-end justify-between gap-3"><label htmlFor="wallet-spend" className="text-xs text-wallet-copy-muted">Monthly volume</label><span className="font-wallet-display text-lg font-semibold tabular-nums text-wallet-copy">{mask(fmt(spend, cur))}</span></div>
+            <p className="text-[10px] text-wallet-copy-muted">{usdEquivalent(spend, cur, hide)}</p>
             <input id="wallet-spend" type="range" min={0} max={Math.round(tierMid * 10)} step={Math.max(1, Math.round(tierMid / 100))} value={spend} onChange={(event) => setSpend(Number(event.target.value))} className="mt-4 h-1.5 w-full cursor-pointer appearance-none rounded-full bg-wallet-muted accent-wallet-crimson" />
             <div className="mt-5 grid grid-cols-3 gap-2">{tiers.map((item) => { const active = item.key === tier?.key; return <div key={item.key} className={`rounded-[10px] border p-2.5 text-center ${active ? "border-wallet-crimson-line bg-wallet-crimson-soft" : "border-wallet-line bg-wallet-panel-raised"}`}><p className="text-xs font-semibold text-wallet-copy">{item.label}</p><p className="mt-1 text-[10px] text-wallet-copy-faint">{item.pct}%</p></div>; })}</div>
-            <div className="mt-5 rounded-[10px] border border-wallet-crimson-line bg-wallet-crimson-soft p-5"><p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-wallet-copy-muted">Estimated annual cashback</p><p className="mt-2 font-wallet-display text-3xl font-semibold tabular-nums text-wallet-copy">{mask(fmt(annual, cur))}</p><p className="mt-2 text-xs text-wallet-copy-muted">At the {tier?.label ?? "Baseline"} estimate</p></div>
+            <div className="mt-5 rounded-[10px] border border-wallet-crimson-line bg-wallet-crimson-soft p-5"><p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-wallet-copy-muted">Estimated annual cashback</p><p className="mt-2 font-wallet-display text-3xl font-semibold tabular-nums text-wallet-copy">{mask(fmt(annual, cur))}</p><p className="text-[10px] text-wallet-copy-muted">{usdEquivalent(annual, cur, hide)}</p><p className="mt-2 text-xs text-wallet-copy-muted">At the {tier?.label ?? "Baseline"} estimate</p></div>
           </section>
         </aside>
       </main>

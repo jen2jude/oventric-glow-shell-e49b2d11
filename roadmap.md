@@ -25,7 +25,7 @@
 - [x] Verify the redesigned checkout on mobile and desktop
 
 ## True App Experience
-- [ ] Make the eye control persist and hide displayed amounts across app and web; show USD equivalents for home-currency money
+- [x] Make the eye control persist and hide displayed amounts across app and web; show USD equivalents for home-currency money
 - [x] Open app conversations as slide-up sheets over the inbox and round chat bubbles further
 - [x] Stage 1: installable app manifest, app-mode detection, install prompt
 - [x] Stage 2: native app home and feed layout (compact, edge-to-edge, no web chrome)
