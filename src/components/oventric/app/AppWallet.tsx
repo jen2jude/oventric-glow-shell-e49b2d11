@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { AddCapitalModal } from "@/components/oventric/wallet/AddCapitalModal";
 import { AppAddFundsSheet } from "@/components/oventric/app/AppAddFundsSheet";
 import { PayoutModal } from "@/components/oventric/wallet/PayoutModal";
-import { useIsAppShell } from "@/hooks/use-launch-context";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import {
@@ -183,7 +181,7 @@ export function AppWallet() {
           ))}
         </div>
       )}
-      {fundOpen && <AddCapitalModal onClose={() => setFundOpen(false)} />}
+      {fundOpen && <AppAddFundsSheet onClose={() => setFundOpen(false)} />}
       {payoutOpen && <PayoutModal onClose={() => setPayoutOpen(false)} />}
     </div>
   );
