@@ -14,7 +14,7 @@ import {
   Plus
 } from "lucide-react";
 import { getSellerMetrics } from "@/lib/dashboard/seller.functions";
-import { computeDisplayPrice } from "@/lib/fx-display";
+import { computeDisplayPrice, formatMoney } from "@/lib/fx-display";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { AnalyticsWidget } from "./AnalyticsWidget";
 import { ProductManagement } from "./ProductManagement";
@@ -39,6 +39,9 @@ export function SellerDashboard() {
     { original_currency: "USD", original_amount: metrics.totalRevenueUSD },
     currency,
   ).formatted;
+
+  const usdPreview =
+    currency === "USD" ? null : formatMoney(metrics.totalRevenueUSD, "USD");
 
   const TABS = [
     { id: "overview", label: "Overview", icon: BarChart3 },
@@ -84,6 +87,7 @@ export function SellerDashboard() {
               <MetricCard 
                 label="Revenue" 
                 value={revenueDisplay} 
+                subValue={usdPreview}
                 icon={TrendingUp} 
                 color="text-primary"
               />
@@ -136,7 +140,7 @@ export function SellerDashboard() {
   );
 }
 
-function MetricCard({ label, value, icon: Icon, color }: { label: string, value: string | number, icon: any, color: string }) {
+function MetricCard({ label, value, subValue, icon: Icon, color }: { label: string, value: string | number, subValue?: string | null, icon: any, color: string }) {
   return (
     <div className="rounded-[10px] border border-border bg-card p-4 shadow-sm">
       <div className="flex items-center justify-between mb-2">
@@ -144,6 +148,9 @@ function MetricCard({ label, value, icon: Icon, color }: { label: string, value:
         <Icon className={`w-4 h-4 ${color}`} />
       </div>
       <div className="text-2xl font-black text-foreground">{value}</div>
+      {subValue ? (
+        <div className="mt-0.5 text-[11px] font-medium text-muted-foreground">≈ {subValue}</div>
+      ) : null}
     </div>
   );
 }
