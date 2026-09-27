@@ -22,7 +22,7 @@ export function isAppReviewPreview(): boolean {
   const host = window.location.hostname;
   return host === "localhost" || host === "127.0.0.1" ||
     host.startsWith("id-preview--") || host.startsWith("preview--") ||
-    /^project--[a-f0-9-]+-dev\.lovable\.app$/.test(host) ||
+    (host.startsWith("project--") && host.endsWith("-dev.lovable.app")) ||
     host.endsWith(".lovableproject-dev.com");
 }
 
