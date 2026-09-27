@@ -136,12 +136,15 @@ export function BootSplash() {
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background transition-opacity duration-300"
       style={{ opacity: fading ? 0 : 1 }}
     >
-        <div className="flex flex-col items-center gap-4">
-          <img loading="lazy" decoding="async"
+        <div className="flex flex-col items-center gap-5">
+          {/* Eager + high priority so the wordmark is visible from the very
+              first frame of the splash, never popping in late. */}
+          <img
             src={logoFull}
             alt="Oventric"
-            className="h-10 w-auto select-none sm:h-12"
+            className="h-12 w-auto select-none sm:h-14"
             draggable={false}
+            fetchPriority="high"
           />
           <div className="flex items-center gap-2">
             {ICONS.map(({ Icon, color }, i) => {
