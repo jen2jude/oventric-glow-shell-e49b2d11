@@ -83,7 +83,7 @@ export function SellerDashboard() {
               />
               <MetricCard 
                 label="Revenue" 
-                value={`$${metrics.totalRevenueUSD.toLocaleString()}`} 
+                value={revenueDisplay} 
                 icon={TrendingUp} 
                 color="text-primary"
               />
