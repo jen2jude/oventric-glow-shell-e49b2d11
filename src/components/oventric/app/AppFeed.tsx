@@ -127,7 +127,7 @@ export function AppFeed() {
   const updateText = useServerFn(updatePostTextFn);
   const navigate = useNavigate();
   const { openGate } = useAuthGate() as any;
-  const { baseCurrency, homeCurrency, balancesHidden } = useOnboarding();
+  const { homeCurrency, balancesHidden } = useOnboarding();
   const [posts, setPosts] = useState<Post[] | null>(null);
   const [signedIn, setSignedIn] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);

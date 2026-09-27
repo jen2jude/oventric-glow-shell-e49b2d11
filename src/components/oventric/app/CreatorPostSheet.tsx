@@ -12,7 +12,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import type { Currency } from "@/lib/onboarding/OnboardingContext";
-import { computeDisplayPrice } from "@/lib/fx-display";
 import { visibleProductPrice } from "@/lib/money-visibility";
 
 function compact(n: number) {
