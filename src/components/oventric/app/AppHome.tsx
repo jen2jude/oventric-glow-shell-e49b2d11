@@ -5,12 +5,12 @@ import {
   ArrowDownToLine,
   ArrowUpFromLine,
   Bell,
-  Images,
+  Compass,
   MessageCircle,
   Package,
-  Plus,
   Sparkles,
   Store,
+  User,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 
@@ -22,6 +22,7 @@ import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
 import { NotificationsDrawer } from "@/components/oventric/NotificationsDrawer";
+import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 
 /**
@@ -91,6 +92,18 @@ export function AppHome({
     navigate({ to: "/product/$id", params: { id: p.id } });
   };
 
+  // Own profile & shop are keyed by the auth user id (the routes resolve
+  // id-or-slug), so resolve the session user right before navigating.
+  const openOwn = async (dest: "profile" | "shop") => {
+    const { data } = await supabase.auth.getSession();
+    const id = data.session?.user?.id;
+    if (!id) return;
+    navigate({
+      to: dest === "profile" ? "/profile/$id" : "/shop/$id",
+      params: { id },
+    });
+  };
+
   return (
     <div className="mx-auto w-full max-w-xl px-4 pb-28 pt-4 text-white">
       {/* Top bar: identity + alerts */}
@@ -99,7 +112,7 @@ export function AppHome({
           type="button"
           onClick={() => {
             haptic("select");
-            onSelect("Profile");
+            openOwn("profile");
           }}
           className="nav-tap flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white/[0.06]"
           aria-label="Your profile"
@@ -196,10 +209,10 @@ export function AppHome({
       {/* Quick actions — everything the bottom dock doesn't already cover */}
       <div className="mt-5 grid grid-cols-4 gap-2">
         {[
-          { icon: Package, label: "Orders", run: () => navigate({ to: "/escrow" }) },
-          { icon: Images, label: "Showcase", run: () => onSelect("Feed") },
-          { icon: Plus, label: "Sell", run: onCreate },
-          { icon: Store, label: "My shop", run: () => onSelect("Profile") },
+          { icon: Package, label: "Purchases", run: () => navigate({ to: "/escrow" }) },
+          { icon: User, label: "Profile", run: () => openOwn("profile") },
+          { icon: Store, label: "My shop", run: () => openOwn("shop") },
+          { icon: Compass, label: "Explore", run: () => onSelect("Explore") },
         ].map((a) => (
           <button
             key={a.label}
