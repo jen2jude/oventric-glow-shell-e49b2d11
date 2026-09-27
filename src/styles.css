@@ -5587,3 +5587,12 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
   --newsfeed-panel-shadow: 0 -20px 60px oklch(0 0 0 / 55%);
   color-scheme: dark;
 }
+
+@keyframes feed-slide-left {
+  from { transform: translateX(60px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes feed-slide-right {
+  from { transform: translateX(-60px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}

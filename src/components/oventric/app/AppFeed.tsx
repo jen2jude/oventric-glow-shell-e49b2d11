@@ -400,6 +400,7 @@ export function AppFeed() {
     <div
       className="min-h-[calc(100dvh-80px)] bg-[#070A08] pb-24 pt-[calc(3rem+env(safe-area-inset-top))]"
       onTouchStart={onFeedTouchStart}
+      onTouchMove={onFeedTouchMove}
       onTouchEnd={onFeedTouchEnd}
     >
       <PostComposerModal
