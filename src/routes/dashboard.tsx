@@ -1222,11 +1222,12 @@ function WalletPane({
                   <div className="text-right shrink-0">
                     <div className="font-black text-sm text-white md:text-slate-900">
                       {r.inflow ? "+" : "-"}
-                      {fmtHomeAmt(r.amountHome, home)}
+                      {visibleMoney(r.amountHome, home, balancesHidden)}
                     </div>
+                    <div className="text-[10px] text-slate-500">{usdEquivalent(r.amountHome, home, balancesHidden)}</div>
                     {r.currency !== home && (
                       <div className="text-[10px] text-slate-500 mt-0.5">
-                        {r.currency} {r.amount.toFixed(2)}
+                        {visibleMoney(r.amount, r.currency, balancesHidden)}
                       </div>
                     )}
                   </div>
