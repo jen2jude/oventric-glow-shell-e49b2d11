@@ -23,7 +23,9 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { getMyFullProfile } from "@/lib/profiles.functions";
 import { getWalletBalances } from "@/lib/wallet.functions";
-import { formatMoney } from "@/lib/fx-display";
+import { getSellerMetrics } from "@/lib/dashboard/seller.functions";
+import { getCreatorHub } from "@/lib/dashboard/creator.functions";
+import { convertUsd, formatMoney } from "@/lib/fx-display";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { OPEN_PROFILE_SETTINGS_EVENT } from "@/components/oventric/ProfileDropdown";
