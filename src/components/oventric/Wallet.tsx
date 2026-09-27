@@ -39,6 +39,7 @@ import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { getWalletBalances, listWalletTransactions, type WalletTxType } from "@/lib/wallet.functions";
 import { formatMoney, usdRate } from "@/lib/fx-display";
+import { usdEquivalent } from "@/lib/money-visibility";
 import { MegaMenu } from "@/components/oventric/MegaMenu";
 import { NotificationsDrawer, useUnreadNotificationsCount } from "@/components/oventric/NotificationsDrawer";
 import { AddCapitalModal } from "@/components/oventric/wallet/AddCapitalModal";
@@ -224,12 +225,12 @@ export function Wallet() {
                  Available balance <span className="rounded-md bg-newsfeed-blue-soft px-2 py-1 text-[10px] font-semibold text-newsfeed-blue">{cur}</span>
               </div>
               <div className="mt-3 font-wallet-display text-4xl font-bold tabular-nums sm:text-[2.65rem]">{mask(fmt(main, cur))}</div>
-              <div className="mt-2 flex items-center gap-1.5 text-xs text-wallet-copy-muted">≈ {mask(`$${usdEquiv.toFixed(2)}`)} USD</div>
+               {cur !== "USD" && <div className="mt-2 flex items-center gap-1.5 text-xs text-wallet-copy-muted">{mask(`≈ $${usdEquiv.toFixed(2)}`)} USD</div>}
             </div>
             <div className="wallet-balance-split relative z-10 mt-5 grid grid-cols-3 gap-2 border-t border-wallet-line pt-4">
-              <div className="rounded-[10px] bg-newsfeed-gold-soft p-3"><p className="text-sm font-semibold tabular-nums text-newsfeed-gold">{mask(fmt(locked, cur))}</p><p className="mt-1 text-[10px] text-wallet-copy-muted">Pending balance</p></div>
-              <div className="rounded-[10px] bg-newsfeed-green-soft p-3"><p className="text-sm font-semibold tabular-nums text-newsfeed-green">{mask(fmt(totalEarned, cur))}</p><p className="mt-1 text-[10px] text-wallet-copy-muted">Total earned</p></div>
-              <div className="rounded-[10px] bg-newsfeed-blue-soft p-3"><p className="text-sm font-semibold tabular-nums text-newsfeed-blue">{mask(fmt(totalWithdrawn, cur))}</p><p className="mt-1 text-[10px] text-wallet-copy-muted">Total withdrawn</p></div>
+              <div className="rounded-[10px] bg-newsfeed-gold-soft p-3"><p className="text-sm font-semibold tabular-nums text-newsfeed-gold">{mask(fmt(locked, cur))}</p><p className="text-[10px] text-wallet-copy-muted">{usdEquivalent(locked, cur, hide)}</p><p className="mt-1 text-[10px] text-wallet-copy-muted">Pending balance</p></div>
+              <div className="rounded-[10px] bg-newsfeed-green-soft p-3"><p className="text-sm font-semibold tabular-nums text-newsfeed-green">{mask(fmt(totalEarned, cur))}</p><p className="text-[10px] text-wallet-copy-muted">{usdEquivalent(totalEarned, cur, hide)}</p><p className="mt-1 text-[10px] text-wallet-copy-muted">Total earned</p></div>
+              <div className="rounded-[10px] bg-newsfeed-blue-soft p-3"><p className="text-sm font-semibold tabular-nums text-newsfeed-blue">{mask(fmt(totalWithdrawn, cur))}</p><p className="text-[10px] text-wallet-copy-muted">{usdEquivalent(totalWithdrawn, cur, hide)}</p><p className="mt-1 text-[10px] text-wallet-copy-muted">Total withdrawn</p></div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => requireAuth(toggleBalancesHidden)} aria-label={hide ? "Show balances" : "Hide balances"} className="absolute right-4 top-4 z-20 text-wallet-copy-muted hover:bg-newsfeed-violet-soft hover:text-newsfeed-violet"><Eye className={hide ? "hidden" : "block"} /><EyeOff className={hide ? "block" : "hidden"} /></Button>
           </section>
