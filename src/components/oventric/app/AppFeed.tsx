@@ -237,11 +237,48 @@ export function AppFeed() {
         </div>
       </div>
 
+      {/* Shop tab: product rail above the shoppable posts */}
+      {tab === "shop" && (shopProducts?.length ?? 0) > 0 && (
+        <div className="border-b border-white/5 py-3">
+          <p className="px-4 text-[11px] font-bold uppercase tracking-wider text-white/40">
+            Trending in the market
+          </p>
+          <div className="mt-2 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-4 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {shopProducts!.slice(0, 10).map((sp) => (
+              <button
+                key={sp.id}
+                onClick={() => {
+                  haptic("select");
+                  setQuickViewId(sp.id);
+                }}
+                className="w-[130px] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] text-left active:bg-white/[0.06]"
+              >
+                <div className="aspect-square w-full bg-neutral-900">
+                  {sp.coverUrl ? (
+                    <img src={sp.coverUrl} alt={sp.name} loading="lazy" className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <ShoppingBag className="h-5 w-5 text-white/10" />
+                    </div>
+                  )}
+                </div>
+                <div className="p-2">
+                  <p className="line-clamp-1 text-[11px] font-semibold text-white">{sp.name}</p>
+                  <p className="mt-0.5 text-[11px] font-bold text-[#E5484D]">{shopPriceOf(sp)}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {visiblePosts.length === 0 && (
         <div className="flex items-center justify-center px-8 py-20 text-center text-[13px] text-white/50">
           {tab === "following"
             ? "No posts from people you follow yet — follow creators to fill this feed."
-            : "No posts yet — tap + to share the first one."}
+            : tab === "shop"
+              ? "No shoppable posts yet — sellers can attach products to their posts."
+              : "No posts yet — tap + to share the first one."}
         </div>
       )}
 
@@ -634,6 +671,11 @@ export function AppFeed() {
           viewerInitials="OV"
         />
       )}
+
+      <ProductQuickView
+        productId={quickViewId}
+        onClose={() => setQuickViewId(null)}
+      />
     </div>
   );
 }
