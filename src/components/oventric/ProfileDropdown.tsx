@@ -81,6 +81,7 @@ function loadProfile(fallbackName: string): ProfileState {
 }
 
 export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown" | "mega" }) {
+  const isAppShell = useIsAppShell();
   const [open, setOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
