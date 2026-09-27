@@ -377,7 +377,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
         header={<h2 className="px-4 pb-2 text-[15px] font-semibold text-white">Creator Hub</h2>}>
         <div className="px-4 pb-8">
           <div className="rounded-[14px] border border-fuchsia-400/20 bg-gradient-to-br from-fuchsia-500/20 via-violet-500/10 to-transparent p-4">
-            <div className="text-[10px] uppercase tracking-wider text-white/45">Sales from your posts</div>
+            <div className="text-[10px] uppercase tracking-wider text-white/45">Sales from your showcase</div>
             <div className="mt-1 text-[22px] font-bold tabular-nums">
               {creatorHub
                 ? safeFormatDisplayPrice({ original_currency: "USD", original_amount: creatorHub.postSales.revenueUSD }, currency)

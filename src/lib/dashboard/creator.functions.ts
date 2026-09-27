@@ -61,20 +61,18 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
     const showIds = shows.map((s) => s.id);
 
     const empty = { data: [] as any[] };
-    const [likesRes, commentsRes, savesRes, sharesRes, showViewsRes, attachRes] = await Promise.all([
+    const [likesRes, commentsRes, savesRes, sharesRes, showViewsRes] = await Promise.all([
       postIds.length ? sb.from("post_likes").select("post_id, user_id, created_at").in("post_id", postIds).limit(50000) : empty,
       postIds.length ? sb.from("post_comments").select("post_id, author_id, created_at").in("post_id", postIds).limit(50000) : empty,
       postIds.length ? sb.from("post_saves").select("post_id, user_id, created_at").in("post_id", postIds).limit(50000) : empty,
       postIds.length ? sb.from("post_shares").select("post_id, user_id, created_at").in("post_id", postIds).limit(50000) : empty,
       showIds.length ? sb.from("creator_post_views").select("post_id, viewer_id, session_key").in("post_id", showIds).limit(50000) : empty,
-      postIds.length ? sb.from("post_product_attachments").select("post_id, product_id, created_at").in("post_id", postIds).limit(5000) : empty,
     ]);
     const likes = likesRes.data ?? [];
     const comments = commentsRes.data ?? [];
     const saves = savesRes.data ?? [];
     const shares = sharesRes.data ?? [];
     const showViews = showViewsRes.data ?? [];
-    const attaches = attachRes.data ?? [];
 
     // Follower growth: last 8 weeks
     const now = Date.now();
@@ -161,24 +159,21 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
       hours[d.getUTCHours()]++; days[d.getUTCDay()]++;
     }
 
-    // Sales from posts & showcases
-    const productIds = [...new Set([...attaches.map((a: any) => a.product_id), ...shows.map((s) => s.product_id).filter(Boolean)])] as string[];
+    // Sales from showcase (Creators tab) posts only — feed-post product sales belong to the Seller Hub
+    const productIds = [...new Set(shows.map((s) => s.product_id).filter(Boolean))] as string[];
     let orders: any[] = [];
     if (productIds.length) {
       const o = await sb.from("orders").select("product_id, total_usd, status, created_at, product_name_snapshot").eq("seller_id", me).in("product_id", productIds).in("status", PAID).limit(20000);
       orders = o.data ?? [];
     }
-    const firstAttach = new Map<string, number>();
-    for (const a of attaches) { const t = +new Date(a.created_at); if (!firstAttach.has(a.product_id) || t < firstAttach.get(a.product_id)!) firstAttach.set(a.product_id, t); }
-    const postOrders = orders.filter((o) => firstAttach.has(o.product_id) && +new Date(o.created_at) >= firstAttach.get(o.product_id)!);
-    const byProd = new Map<string, { name: string; sales: number; revenueUSD: number }>();
-    for (const o of postOrders) {
-      const e = byProd.get(o.product_id) ?? { name: o.product_name_snapshot || "Product", sales: 0, revenueUSD: 0 };
-      e.sales++; e.revenueUSD += Number(o.total_usd || 0); byProd.set(o.product_id, e);
-    }
     const showFirst = new Map<string, number>();
     for (const s of shows) if (s.product_id) { const t = +new Date(s.created_at); if (!showFirst.has(s.product_id) || t < showFirst.get(s.product_id)!) showFirst.set(s.product_id, t); }
     const showOrders = orders.filter((o) => showFirst.has(o.product_id) && +new Date(o.created_at) >= showFirst.get(o.product_id)!);
+    const byProd = new Map<string, { name: string; sales: number; revenueUSD: number }>();
+    for (const o of showOrders) {
+      const e = byProd.get(o.product_id) ?? { name: o.product_name_snapshot || "Product", sales: 0, revenueUSD: 0 };
+      e.sales++; e.revenueUSD += Number(o.total_usd || 0); byProd.set(o.product_id, e);
+    }
 
     // Creators-tab engagement: real watch time (user-initiated plays only), link clicks, downloads
     const evRes = showIds.length
@@ -241,8 +236,8 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
         perItem,
       },
       postSales: {
-        sales: postOrders.length,
-        revenueUSD: Number(postOrders.reduce((a, o) => a + Number(o.total_usd || 0), 0).toFixed(2)),
+        sales: showOrders.length,
+        revenueUSD: Number(showOrders.reduce((a, o) => a + Number(o.total_usd || 0), 0).toFixed(2)),
         topProducts: [...byProd.values()].sort((a, b) => b.revenueUSD - a.revenueUSD).slice(0, 5),
       },
     };

@@ -200,7 +200,7 @@ export function CreatorHub() {
         )}
       </Card>
 
-      <Card title="Sales from your posts" hint="Orders for products you attached to posts, after you posted" icon={ShoppingBag}>
+      <Card title="Sales from your showcase" hint="Orders for products linked to your Creators tab posts, after you posted" icon={ShoppingBag}>
         <div className="flex items-end gap-6">
           <div><div className="text-2xl font-bold">{money(data.postSales.revenueUSD)}</div><div className="text-xs text-muted-foreground">{usd(data.postSales.revenueUSD) ?? "Revenue"}</div></div>
           <div><div className="text-2xl font-bold">{data.postSales.sales}</div><div className="text-xs text-muted-foreground">Sales</div></div>
