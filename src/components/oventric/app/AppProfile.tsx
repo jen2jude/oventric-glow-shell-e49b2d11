@@ -317,6 +317,16 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
                 </button>
               </>
             )}
+            <button
+              onClick={() => {
+                haptic("select");
+                setMenuOpen(true);
+              }}
+              aria-label="More options"
+              className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/15"
+            >
+              <MoreHorizontal className="h-4 w-4 text-white/80" />
+            </button>
           </div>
         </div>
 
@@ -352,14 +362,26 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
 
         {/* Stats */}
         <div className="mt-3 flex gap-5 text-[13px]">
-          <span className="text-white/50">
+          <button
+            onClick={() => {
+              setConnectionsTab("followers");
+              setConnectionsOpen(true);
+            }}
+            className="text-white/50"
+          >
             <b className="text-white">{compact(counts?.followers ?? 0)}</b>{" "}
             Followers
-          </span>
-          <span className="text-white/50">
+          </button>
+          <button
+            onClick={() => {
+              setConnectionsTab("following");
+              setConnectionsOpen(true);
+            }}
+            className="text-white/50"
+          >
             <b className="text-white">{compact(counts?.following ?? 0)}</b>{" "}
             Following
-          </span>
+          </button>
           <span className="text-white/50">
             <b className="text-white">{posts.length}</b> Posts
           </span>
