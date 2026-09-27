@@ -594,7 +594,7 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
                   <X className="w-4 h-4" />
                 </button>
               </div>
-              <div className="px-5 py-4 flex-1 overflow-y-auto overscroll-contain max-h-[60vh]">
+              <div className="px-5 py-4 flex-1 overflow-y-auto overscroll-contain max-h-[45vh]">
                 {viewing.body ? (
                   isHtml(viewing.body) ? (
                     <div
