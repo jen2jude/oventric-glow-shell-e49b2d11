@@ -44,7 +44,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import type { Currency } from "@/lib/onboarding/OnboardingContext";
-import { computeDisplayPrice, safeFormatDisplayPrice } from "@/lib/fx-display";
+import { visibleProductPrice } from "@/lib/money-visibility";
 import type { ProductDTO } from "@/lib/marketplace.functions";
 
 type Post = Awaited<ReturnType<typeof listPosts>>["posts"][number];
@@ -127,7 +127,7 @@ export function AppFeed() {
   const updateText = useServerFn(updatePostTextFn);
   const navigate = useNavigate();
   const { openGate } = useAuthGate() as any;
-  const { baseCurrency } = useOnboarding();
+  const { baseCurrency, homeCurrency, balancesHidden } = useOnboarding();
   const [posts, setPosts] = useState<Post[] | null>(null);
   const [signedIn, setSignedIn] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -170,14 +170,15 @@ export function AppFeed() {
     enabled: tab === "shop",
   });
   const shopPriceOf = (p: ProductDTO) =>
-    safeFormatDisplayPrice(
+    visibleProductPrice(
       {
         price_usd: p.priceUSD,
         original_currency: p.originalCurrency,
         original_amount: p.originalAmount,
         fx_snapshot: p.fxSnapshot,
       },
-      (baseCurrency ?? "USD") as Currency,
+      (homeCurrency ?? "USD") as Currency,
+      balancesHidden,
     );
 
   // Shop tab sections, mirroring the web feed: Free downloads, Popular right
@@ -515,15 +516,16 @@ export function AppFeed() {
               const price = cp.asset
                 ? cp.asset.isFree
                   ? "Free"
-                  : computeDisplayPrice(
+                  : visibleProductPrice(
                       {
                         price_usd: cp.asset.priceUsd,
                         original_currency: cp.asset.originalCurrency ?? "USD",
                         original_amount: cp.asset.originalAmount ?? cp.asset.priceUsd,
                         fx_snapshot: cp.asset.fxSnapshot,
                       },
-                      (baseCurrency ?? "USD") as Currency,
-                    ).formatted
+                      (homeCurrency ?? "USD") as Currency,
+                      balancesHidden,
+                    )
                 : null;
               return (
                 <article key={cp.id} className="px-4 py-3 active:bg-white/[0.02]">
@@ -735,15 +737,16 @@ export function AppFeed() {
                         </div>
                       );
                     }
-                    const priceLabel = computeDisplayPrice(
+                    const priceLabel = visibleProductPrice(
                       {
                         price_usd: pa.priceUsd,
                         original_currency: (pa.originalCurrency ?? "USD") as any,
                         original_amount: pa.originalAmount ?? pa.priceUsd,
                         fx_snapshot: pa.fxSnapshot ?? null,
                       },
-                      baseCurrency,
-                    ).formatted;
+                      homeCurrency,
+                      balancesHidden,
+                    );
                     return (
                       <button
                         onClick={() =>
@@ -1032,7 +1035,7 @@ export function AppFeed() {
 
       <ProductQuickView
         productId={quickViewId}
-        currency={(baseCurrency ?? "USD") as string}
+        currency={(homeCurrency ?? "USD") as Currency}
         onClose={() => setQuickViewId(null)}
       />
     </div>
