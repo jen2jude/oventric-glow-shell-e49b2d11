@@ -11,19 +11,17 @@
 
 ## App shell vs website
 Oventric renders two presentations from one codebase. `useIsAppShell()` in
-`src/hooks/use-launch-context.ts` is the single source of truth: it returns true
-when the page runs standalone (installed PWA) or `?mode=app` was requested, and
-the choice sticks for the session. Reason: one codebase, two experiences, without
-duplicating routes or data logic.
+`src/hooks/use-launch-context.ts` is the single source of truth: review hosts
+always use the app shell; Oventric's public hosts use the website. Reason: one
+codebase, two experiences, without duplicating routes or data logic.
 
 Installability is manifest-only (`public/manifest.webmanifest`). No app-shell
 service worker is registered — `public/push-sw.js` is messaging-only. Reason:
 cached app shells serve stale pages in Lovable previews.
 
 App launch/install promotion stays paused publicly: no manifest or invites;
-app mode runs only on localhost, `id-preview--*`, or `project--*-dev.lovable.app`
-until owner reactivation. Reason: both preview addresses need review access
-without exposing the unfinished app to public visitors.
+every non-public review host uses app mode until owner reactivation. Reason:
+Lovable embeds previews on changing internal hosts that cannot be allow-listed.
 
 App conversations open in a sheet over the mounted inbox; web stays separate. Reason: closing returns to the same inbox position.
 
