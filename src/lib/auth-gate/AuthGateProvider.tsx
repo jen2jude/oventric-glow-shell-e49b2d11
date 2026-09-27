@@ -526,13 +526,15 @@ function AuthGateModal({
       <div className="w-full sm:max-w-[400px]">
         <div className="slide-up max-h-[94dvh] overflow-y-auto overscroll-contain rounded-t-[24px] border border-newsfeed-line bg-newsfeed-surface shadow-newsfeed-panel sm:max-h-[calc(100dvh-3rem)] sm:rounded-[24px]">
           {isAppShell && <div className="app-profile-handle" aria-hidden="true" />}
-          <div className="grid h-1.5 grid-cols-5" aria-hidden>
-            <span className="bg-newsfeed-coral" />
-            <span className="bg-newsfeed-gold" />
-            <span className="bg-newsfeed-green" />
-            <span className="bg-newsfeed-blue" />
-            <span className="bg-newsfeed-violet" />
-          </div>
+          {!isAppShell && (
+            <div className="grid h-1.5 grid-cols-5" aria-hidden>
+              <span className="bg-newsfeed-coral" />
+              <span className="bg-newsfeed-gold" />
+              <span className="bg-newsfeed-green" />
+              <span className="bg-newsfeed-blue" />
+              <span className="bg-newsfeed-violet" />
+            </div>
+          )}
           {stage === "email" && (
             <div className="flex border-b border-newsfeed-line bg-newsfeed-surface px-5" role="tablist" aria-label="Account access">
               <button
