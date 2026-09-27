@@ -585,7 +585,7 @@ function ProductPage() {
                   const cur = gallery[activeImage] ?? gallery[0];
                   return (
                     <>
-                        <div className={`product-gallery relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden bg-newsfeed-coral-soft ${isAppShell ? "rounded-none border-0 sm:rounded-[10px]" : "rounded-[10px] border border-newsfeed-line"}`}>
+                         <div className={`product-gallery relative flex w-full items-center justify-center overflow-hidden bg-newsfeed-coral-soft ${isAppShell ? "aspect-[16/11] rounded-none border-0 sm:rounded-[10px]" : "aspect-[4/3] rounded-[10px] border border-newsfeed-line"}`}>
                           {cur ? (
                             <ResponsiveImage
                               sizes="(min-width: 1024px) 640px, 100vw"
@@ -652,13 +652,13 @@ function ProductPage() {
                             </span>
                           )}
                         </div>
-                      {gallery.length > 1 && (
-                        <div className={`mt-3 flex gap-3 overflow-x-auto scrollbar-none ${isAppShell ? "px-4 sm:px-0" : ""}`}>
+                       {gallery.length > 1 && (
+                         <div className={`flex overflow-x-auto scrollbar-none ${isAppShell ? "gap-2 px-4 py-3 sm:px-0" : "mt-3 gap-3"}`}>
                           {gallery.map((url, i) => (
                             <button
                               key={url}
                               onClick={() => setActiveImage(i)}
-                              className={`h-16 w-16 shrink-0 overflow-hidden rounded-[10px] border-2 bg-newsfeed-surface ${i === activeImage ? "border-newsfeed-coral" : "border-newsfeed-line"}`}
+                               className={`${isAppShell ? "h-12 w-12 rounded-md" : "h-16 w-16 rounded-[10px]"} shrink-0 overflow-hidden border-2 bg-newsfeed-surface ${i === activeImage ? "border-newsfeed-coral" : "border-newsfeed-line"}`}
                             >
                               <img
                                 src={url}
@@ -684,15 +684,15 @@ function ProductPage() {
               )}
             </div>
 
-            <div className={`product-summary lg:col-span-5 ${isAppShell ? "px-4 pt-5 sm:px-0" : ""}`}>
-              <div className={`${isAppShell ? "flex flex-col pb-28" : ""} lg:sticky lg:top-24`}>
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-newsfeed-coral-soft px-3 py-1.5 text-[10px] font-extrabold uppercase text-newsfeed-coral">
+             <div className={`product-summary lg:col-span-5 ${isAppShell ? "px-4 pt-2 sm:px-0" : ""}`}>
+               <div className={`${isAppShell ? "flex flex-col pb-28" : ""} lg:sticky lg:top-24`}>
+               <div className={`product-category mb-3 inline-flex items-center gap-2 text-[10px] font-extrabold uppercase text-newsfeed-coral ${isAppShell ? "" : "rounded-full bg-newsfeed-coral-soft px-3 py-1.5"}`}>
                 <span className="h-1.5 w-1.5 rounded-full bg-newsfeed-coral" />
 
                 {product.category}
                 {product.subcategory ? ` · ${product.subcategory}` : ""}
               </div>
-              <h1 className="mb-3 min-w-0 text-3xl font-extrabold leading-tight text-newsfeed-ink sm:text-4xl lg:text-5xl">
+               <h1 className={`product-title mb-3 min-w-0 font-extrabold leading-tight text-newsfeed-ink ${isAppShell ? "text-[24px] sm:text-3xl lg:text-4xl" : "text-3xl sm:text-4xl lg:text-5xl"}`}>
                 {product.name}
               </h1>
               {outOfStock ? (
@@ -714,7 +714,7 @@ function ProductPage() {
                     : `${product.stockQuantity} in stock`}
                 </div>
               ) : null}
-              <div className="product-seller mb-4 space-y-2 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-3">
+               <div className="product-seller mb-4 space-y-2 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-3">
                 <CreatorChip
                   idOrSlug={product.sellerSlug ?? product.sellerId}
                   name={product.vendor}
@@ -799,13 +799,13 @@ function ProductPage() {
                 </Accordion>
               </div>
 
-              <div className="product-purchase mb-5 overflow-hidden rounded-[10px] border border-newsfeed-line bg-newsfeed-surface shadow-newsfeed-panel">
+               <div className="product-purchase mb-5 overflow-hidden rounded-[10px] border border-newsfeed-line bg-newsfeed-surface shadow-newsfeed-panel">
                 {!isAppShell && <div className="grid h-1.5 grid-cols-3" aria-hidden="true">
                   <span className="bg-newsfeed-coral" />
                   <span className="bg-newsfeed-gold" />
                   <span className="bg-newsfeed-blue" />
                 </div>}
-                <div className="p-5 sm:p-6">
+                 <div className={isAppShell ? "py-2" : "p-5 sm:p-6"}>
 
                 <div className="flex items-baseline justify-between mb-4">
                   <div>
@@ -813,7 +813,7 @@ function ProductPage() {
                       const dp = productDisplay(product, baseCurrency);
                       return (
                         <>
-                          <div className="text-3xl font-extrabold text-newsfeed-ink sm:text-4xl">
+                           <div className={`${isAppShell ? "text-[27px] text-newsfeed-coral" : "text-3xl text-newsfeed-ink sm:text-4xl"} font-extrabold`}>
                             {dp.value === 0 ? "Free" : dp.formatted}
                           </div>
                         </>
@@ -908,7 +908,7 @@ function ProductPage() {
                 )}
                 {product.kind === "service" ? (
                   isAppShell ? (
-                    <div className="fixed bottom-[92px] left-0 right-0 z-20 border-t border-newsfeed-line bg-newsfeed-surface/95 px-4 py-3 pb-safe backdrop-blur-xl-xl">
+                   <div className="product-fixed-actions fixed bottom-[76px] left-0 right-0 z-20 border-t border-newsfeed-line bg-newsfeed-surface/95 px-4 py-3 pb-safe backdrop-blur-xl">
                       <button
                         onClick={openSellerChat}
                         className="inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-newsfeed-coral py-3.5 text-[14px] font-black text-newsfeed-on-accent transition-colors hover:bg-newsfeed-coral/90"
@@ -925,29 +925,29 @@ function ProductPage() {
                     </button>
                   )
                 ) : isAppShell ? (
-                  <div className="fixed bottom-[92px] left-0 right-0 z-20 border-t border-newsfeed-line bg-newsfeed-surface/95 px-4 py-3 pb-safe backdrop-blur-xl-xl">
+                   <div className="product-fixed-actions fixed bottom-[76px] left-0 right-0 z-20 border-t border-newsfeed-line bg-newsfeed-surface/95 px-4 py-3 pb-safe backdrop-blur-xl">
                     <div className="flex items-center gap-2">
                       <Link
                         to="/shop/$id"
                         params={{ id: product.sellerSlug ?? product.sellerId }}
-                         className="inline-flex flex-1 items-center justify-center gap-2 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface py-3 text-[13px] font-bold text-newsfeed-ink transition-colors"
+                          className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-[10px] border border-newsfeed-line bg-newsfeed-surface text-[13px] font-bold text-newsfeed-ink transition-colors"
+                          aria-label="Visit shop"
                       >
                         <ShoppingBag className="w-4 h-4" />
-                        <span>Shop</span>
                       </Link>
                       
                       <button
                         onClick={openSellerChat}
-                        className="inline-flex flex-1 items-center justify-center gap-2 rounded-[10px] border border-newsfeed-blue/25 bg-newsfeed-blue-soft py-3 text-[13px] font-bold text-newsfeed-ink transition-colors"
+                         className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-[10px] border border-newsfeed-line bg-newsfeed-surface text-[13px] font-bold text-newsfeed-ink transition-colors"
+                         aria-label="Chat with seller"
                       >
                         <MessageCircle className="w-4 h-4" />
-                        <span>Chat</span>
                       </button>
 
                       <button
                         onClick={startCheckout}
                         disabled={outOfStock}
-                        className={`inline-flex flex-[1.5] items-center justify-center gap-2 rounded-[10px] py-3 text-[13px] font-black transition-colors ${outOfStock ? "cursor-not-allowed bg-newsfeed-line text-newsfeed-muted" : "bg-newsfeed-coral text-newsfeed-on-accent hover:bg-newsfeed-coral/90"}`}
+                         className={`inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-[10px] text-[13px] font-black transition-colors ${outOfStock ? "cursor-not-allowed bg-newsfeed-line text-newsfeed-muted" : "bg-newsfeed-coral text-newsfeed-on-accent hover:bg-newsfeed-coral/90"}`}
                       >
                         <ShoppingCart className="w-4 h-4" />
                         <span>{outOfStock ? "Out of Stock" : isFree ? "Download" : "Buy Now"}</span>
