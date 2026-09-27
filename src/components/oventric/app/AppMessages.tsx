@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Link } from "@tanstack/react-router";
+import { Drawer as VaulDrawer } from "vaul";
+import { Drawer, DrawerOverlay, DrawerPortal } from "@/components/ui/drawer";
 import {
   ArrowLeft,
   Search,
@@ -109,10 +111,10 @@ function Bubble({
   return (
     <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[78%] rounded-[10px] px-4 py-3 text-sm ${
+        className={`max-w-[78%] rounded-[22px] px-4 py-3 text-sm ${
           mine
-            ? "rounded-br-sm bg-[#E5484D] text-white shadow-sm"
-            : "rounded-bl-sm border border-white/10 bg-white/[0.06] text-slate-100 shadow-sm"
+            ? "rounded-br-lg bg-[#E5484D] text-white shadow-sm"
+            : "rounded-bl-lg border border-white/10 bg-white/[0.06] text-slate-100 shadow-sm"
         }`}
       >
         {stripProductLink(msg.body) && (
@@ -812,13 +814,11 @@ export function AppMessages({ initialThreadId, onClose }: AppMessagesProps) {
     );
   }
 
-  // ---------- Conversation view ----------
-  if (activePeer && activeThread) {
-    return (
+  // Keep the inbox mounted underneath the conversation sheet.
+  const conversation = activePeer && activeThread ? (
       <div className="relative flex h-full min-h-0 flex-col overflow-hidden bg-[#070A08] text-slate-200">
         <header
           className="shrink-0 flex items-center gap-3 px-3 py-3 border-b border-white/10 bg-[#070A08]/95 backdrop-blur"
-          style={{ paddingTop: "max(env(safe-area-inset-top), 0.75rem)" }}
         >
           <button
             type="button"
@@ -910,7 +910,7 @@ export function AppMessages({ initialThreadId, onClose }: AppMessagesProps) {
           )}
           {peerTyping && (
             <div className="flex justify-start">
-              <div className="inline-flex items-center gap-2 rounded-xl px-3 py-3 bg-white/[0.06] border border-white/10">
+              <div className="inline-flex items-center gap-2 rounded-[22px] px-3 py-3 bg-white/[0.06] border border-white/10">
                 <span className="text-[11px] text-slate-400">
                   {activeThread.peerName.split(/\s+/)[0]} is typing
                 </span>
@@ -1032,8 +1032,11 @@ export function AppMessages({ initialThreadId, onClose }: AppMessagesProps) {
           </div>
         </div>
       </div>
+    ) : (
+      <div className="flex h-full items-center justify-center bg-[#070A08] text-slate-400">
+        <Loader2 className="size-5 animate-spin" aria-label="Opening conversation" />
+      </div>
     );
-  }
 
   // ---------- Thread list view ----------
   const online = [
@@ -1187,6 +1190,18 @@ export function AppMessages({ initialThreadId, onClose }: AppMessagesProps) {
           })
         )}
       </div>
+      <Drawer open={!!activePeer} onOpenChange={(open) => { if (!open) setActivePeer(null); }}>
+        <DrawerPortal>
+          <DrawerOverlay className="fixed inset-0 z-[90] bg-background/75 backdrop-blur-[2px]" />
+          <VaulDrawer.Content
+            aria-label="Conversation"
+            className="fixed inset-x-0 bottom-0 z-[91] mx-auto flex h-[94dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-3xl border border-b-0 border-white/10 bg-[#070A08] outline-none"
+          >
+            <div className="mx-auto my-2.5 h-1.5 w-10 shrink-0 rounded-full bg-white/20" aria-hidden="true" />
+            <div className="min-h-0 flex-1">{conversation}</div>
+          </VaulDrawer.Content>
+        </DrawerPortal>
+      </Drawer>
     </div>
   );
 }

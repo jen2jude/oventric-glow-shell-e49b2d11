@@ -25,6 +25,7 @@
 - [x] Verify the redesigned checkout on mobile and desktop
 
 ## True App Experience
+- [x] Open app conversations as slide-up sheets over the inbox and round chat bubbles further
 - [x] Stage 1: installable app manifest, app-mode detection, install prompt
 - [x] Stage 2: native app home and feed layout (compact, edge-to-edge, no web chrome)
 - [x] Stage 3: sliding bottom sheets — product quick view, search sheet; deep-link landing via ?section=
