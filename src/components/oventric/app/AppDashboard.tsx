@@ -810,6 +810,7 @@ function ListingStatusBadge({ status }: { status: ProductDTO["status"] }) {
 }
 
 function ListingsList({ rows, onEdit }: { rows: ProductDTO[] | null; onEdit: (p: ProductDTO) => void }) {
+  const { homeCurrency, balancesHidden } = useOnboarding();
   const [filter, setFilter] = useState<"all" | "pending" | "active" | "rejected">("all");
   const [sellOpen, setSellOpen] = useState(false);
 
@@ -901,7 +902,7 @@ function ListingsList({ rows, onEdit }: { rows: ProductDTO[] | null; onEdit: (p:
                       {p.name}
                     </Link>
                     <div className="text-xs text-white/40">
-                      {visibleMoney(computeDisplayPrice({ original_currency: "USD", original_amount: p.priceUSD }, currency).value, currency, balancesHidden)}
+                      {visibleMoney(computeDisplayPrice({ original_currency: "USD", original_amount: p.priceUSD }, homeCurrency).value, homeCurrency, balancesHidden)}
                       {p.location ? (
                         <span className="ml-2 inline-flex items-center gap-1">
                           <MapPin className="w-3 h-3" /> {p.location}
