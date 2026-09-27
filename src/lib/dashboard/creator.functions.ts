@@ -23,16 +23,16 @@ export interface CreatorHubData {
   topFans: { userId: string; name: string; avatarPath: string | null; interactions: number }[];
   totals: { posts: number; showcases: number; views: number; likes: number; comments: number; saves: number; shares: number };
   engagementRate: number;
-  reach: { postViews: number; showcaseViews: number; uniqueShowcaseViewers: number; nonFollowerShare: number };
+  reach: { postViews: number; showcaseViews: number; uniqueShowcaseViewers: number; nonFollowerShare: number; profileVisits: number; profileVisitsFromPosts: number };
   bestHours: { hour: number; count: number }[];
   bestDays: { day: number; count: number }[];
   posts: CreatorPostStat[];
   showcase: {
     items: number; views: number; uniqueViewers: number; linkedSales: number; linkedRevenueUSD: number;
     freeDownloads: number; paidDownloads: number; plays: number; watchSeconds: number; avgWatchSeconds: number;
-    linkClicks: number; fullVideoClicks: number; engagementRate: number;
+    linkClicks: number; fullVideoClicks: number; engagementRate: number; likes: number; comments: number;
     topLinks: { target: string; clicks: number }[];
-    perItem: { id: string; title: string; views: number; plays: number; watchSeconds: number; freeDownloads: number; paidDownloads: number; clicks: number }[];
+    perItem: { id: string; title: string; views: number; plays: number; watchSeconds: number; freeDownloads: number; paidDownloads: number; clicks: number; likes: number; comments: number }[];
   };
   postSales: { sales: number; revenueUSD: number; topProducts: { name: string; sales: number; revenueUSD: number }[] };
 }
@@ -226,7 +226,7 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
       topFans,
       totals,
       engagementRate,
-      reach: { postViews, showcaseViews: shows.reduce((a, s) => a + Math.max(Number(s.view_count || 0), svm.get(s.id) ?? 0), 0), uniqueShowcaseViewers: viewerKeys.size, nonFollowerShare },
+      reach: { postViews, showcaseViews: shows.reduce((a, s) => a + Math.max(Number(s.view_count || 0), svm.get(s.id) ?? 0), 0), uniqueShowcaseViewers: viewerKeys.size, nonFollowerShare, profileVisits, profileVisitsFromPosts },
       bestHours: hours.map((count, hour) => ({ hour, count })),
       bestDays: days.map((count, day) => ({ day, count })),
       posts: postStats.slice(0, 10),
@@ -243,6 +243,8 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
         avgWatchSeconds: plays.length ? Math.round(watchSeconds / plays.length) : 0,
         linkClicks: clicks.filter((c) => c.kind === "link_click").length,
         fullVideoClicks: clicks.filter((c) => c.kind === "full_video_click").length,
+        likes: showLikes.length,
+        comments: showComments.length,
         engagementRate: showViewTotal ? Math.min(100, Number(((showActions / showViewTotal) * 100).toFixed(1))) : 0,
         topLinks: [...linkMap.entries()].map(([target, c]) => ({ target, clicks: c })).sort((a, b) => b.clicks - a.clicks).slice(0, 5),
         perItem,
