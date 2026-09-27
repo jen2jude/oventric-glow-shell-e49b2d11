@@ -22,6 +22,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { updateMyProfile, type SocialLinks } from "@/lib/profiles.functions";
 import { AvatarCropper } from "@/components/oventric/profile/AvatarCropper";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 
 const MAX_BIO = 280;
 const MAX_NAME = 80;
@@ -217,6 +218,7 @@ interface Props {
  * look. Client-side validation mirrors the server's zod schema.
  */
 export function EditProfileModal({ open, onClose, initial, userId, onSaved }: Props) {
+  const isAppShell = useIsAppShell();
   const save = useServerFn(updateMyProfile);
   const avatarInputRef = useRef<HTMLInputElement | null>(null);
   const coverInputRef = useRef<HTMLInputElement | null>(null);
@@ -480,7 +482,7 @@ export function EditProfileModal({ open, onClose, initial, userId, onSaved }: Pr
 
   return createPortal(
     <div
-      className="modal-light fixed inset-0 z-[120] flex items-end sm:items-center justify-center bg-black/70 p-0 sm:p-4"
+      className={`modal-light fixed inset-0 z-[120] flex items-end sm:items-center justify-center bg-black/70 p-0 sm:p-4 ${isAppShell ? "app-profile-editor" : ""}`}
       role="presentation"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -493,6 +495,7 @@ export function EditProfileModal({ open, onClose, initial, userId, onSaved }: Pr
         aria-labelledby="edit-profile-title"
         className="w-full sm:max-w-lg max-h-[92vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl border border-white/10 md:border-slate-200 bg-[#1a1a1f] md:bg-white shadow-2xl"
       >
+        {isAppShell && <div className="app-profile-handle" aria-hidden="true" />}
         <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-white/10 md:border-slate-200 bg-[#1a1a1f] md:bg-white px-4 py-3">
           <h2 id="edit-profile-title" className="text-base font-black text-white md:text-slate-900">
             Edit profile
