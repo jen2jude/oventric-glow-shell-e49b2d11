@@ -94,13 +94,12 @@ export function AppShop({ idOrSlug }: { idOrSlug: string }) {
   return (
     <div className="min-h-dvh bg-[#0A0A0B] pb-32">
       {/* Cover */}
-      <div className="relative h-32 overflow-hidden">
+      <div className="relative h-28 overflow-hidden">
         {shop.coverUrl ? (
           <img src={shop.coverUrl} alt="" className="h-full w-full object-cover" />
         ) : (
           <div className="h-full w-full bg-gradient-to-br from-[#E5484D]/40 via-[#17171B] to-[#0A0A0B]" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0B] to-transparent" />
         <button
           onClick={() => window.history.back()}
           aria-label="Back"
@@ -111,20 +110,20 @@ export function AppShop({ idOrSlug }: { idOrSlug: string }) {
       </div>
 
       {/* Identity */}
-      <div className="px-4">
-        <div className="-mt-10 flex items-end justify-between">
-          <div className="h-20 w-20 rounded-2xl border-4 border-[#0A0A0B] bg-[#17171B] overflow-hidden">
+      <div className="relative z-10 px-4">
+        <div className="-mt-9 flex items-end justify-between">
+          <div className="h-20 w-20 shrink-0 rounded-2xl border-4 border-[#0A0A0B] bg-[#17171B] shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
             {shop.logoUrl ? (
-              <img src={shop.logoUrl} alt="" className="h-full w-full object-cover" />
+              <img src={shop.logoUrl} alt="" className="h-full w-full rounded-2xl object-cover" />
             ) : (
-              <div className="grid h-full w-full place-items-center bg-[#E5484D]">
+              <div className="grid h-full w-full place-items-center rounded-2xl bg-[#E5484D]">
                 <Store className="h-8 w-8 text-white" />
               </div>
             )}
           </div>
           <button
             onClick={() => navigate({ to: "/messages" })}
-            className="mb-1 flex items-center gap-1.5 rounded-full bg-[#E5484D] px-4 py-2 text-xs font-semibold text-white"
+            className="mb-1 flex shrink-0 items-center gap-1.5 rounded-full bg-[#E5484D] px-4 py-2 text-xs font-semibold text-white"
           >
             <MessageCircle className="h-3.5 w-3.5" /> Message
           </button>
