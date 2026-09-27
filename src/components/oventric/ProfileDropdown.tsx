@@ -561,7 +561,7 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
           tabIndex={-1}
           onClick={() => {
             closeMenu(false);
-            navigate({ to: "/dashboard", search: { tab: "creatorhub" } });
+            navigate({ to: "/creator-hub" });
           }}
           className="flex w-full items-center gap-3 rounded-[10px] px-2 py-3 text-left text-sm text-newsfeed-ink transition-colors hover:bg-newsfeed-violet-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-newsfeed-violet/40"
         >

@@ -100,8 +100,18 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
       : { data: [] as any[] };
     const profMap = new Map((profRes.data ?? []).map((p: any) => [p.user_id, p]));
     const countryCount = new Map<string, number>();
+    let regionNames: Intl.DisplayNames | null = null;
+    try { regionNames = new Intl.DisplayNames(["en"], { type: "region" }); } catch { regionNames = null; }
+    const toCountryName = (raw: string | undefined) => {
+      const v = raw?.trim();
+      if (!v) return "Unknown";
+      if (/^[A-Za-z]{2}$/.test(v) && regionNames) {
+        try { const n = regionNames.of(v.toUpperCase()); if (n && n.toUpperCase() !== v.toUpperCase()) return n; } catch { /* keep raw */ }
+      }
+      return v.charAt(0).toUpperCase() + v.slice(1);
+    };
     for (const id of followerIds) {
-      const c = (profMap.get(id)?.country as string | undefined)?.trim() || "Unknown";
+      const c = toCountryName(profMap.get(id)?.country as string | undefined);
       countryCount.set(c, (countryCount.get(c) ?? 0) + 1);
     }
     const followerCountries = [...countryCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([country, count]) => ({ country, count }));
