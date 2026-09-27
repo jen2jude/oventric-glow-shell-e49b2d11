@@ -8,7 +8,6 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { Monitor, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import appCss from "../styles.css?url";
@@ -38,7 +37,7 @@ import { ReferralCapture } from "@/components/oventric/ReferralCapture";
 import { useLiveFx } from "@/lib/useLiveFx";
 import { FeatureCarousel } from "@/components/oventric/FeatureCarousel";
 import { useFirstLaunch } from "@/hooks/useFirstLaunch";
-import { isAppReviewPreview, useLaunchContext } from "@/hooks/use-launch-context";
+import { useLaunchContext } from "@/hooks/use-launch-context";
 import { unlockNotificationSound } from "@/lib/notification-sound";
 
 function NotFoundComponent() {
@@ -380,8 +379,6 @@ function RootComponent() {
   const appRouter = useRouter();
 
   const { show, markSeen, hydrated } = useFirstLaunch();
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => setIsMounted(true), []);
   // Welcome slides belong to the app shell (native build / installed PWA);
   // plain browser visitors get the marketing site instead.
   const launchCtx = useLaunchContext();
@@ -414,18 +411,6 @@ function RootComponent() {
     };
   }, []);
 
-  // Mode switcher for preview environment
-  const isPreview = isAppReviewPreview();
-  const toggleMode = () => {
-    const url = new URL(window.location.href);
-    if (launchCtx === "browser") {
-      url.searchParams.set("mode", "app");
-    } else {
-      url.searchParams.set("mode", "web");
-    }
-    window.location.href = url.toString();
-  };
-
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
@@ -450,21 +435,8 @@ function RootComponent() {
               <OfflineBanner />
               <ReferralCapture />
 
-              <BootSplash />
-               {show && hydrated && !isPc && isAppShell && <FeatureCarousel onComplete={markSeen} />}
-              
-              {isPreview && isMounted && (
-                 <Button
-                   type="button"
-                   variant="default"
-                  onClick={toggleMode}
-                   className="fixed bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] right-4 z-[9999] h-10 gap-2 rounded-[10px] bg-primary px-3 text-primary-foreground shadow-lg hover:bg-primary/90 md:bottom-6 md:right-6"
-                   aria-label={launchCtx === "browser" ? "View app mode" : "View website mode"}
-                >
-                   {launchCtx === "browser" ? <Smartphone className="size-4" aria-hidden="true" /> : <Monitor className="size-4" aria-hidden="true" />}
-                   {launchCtx === "browser" ? "View app" : "View website"}
-                 </Button>
-              )}
+               <BootSplash />
+                {show && hydrated && !isPc && isAppShell && <FeatureCarousel onComplete={markSeen} />}
             </KycGateProvider>
           </OnboardingProvider>
         </AuthGateProvider>

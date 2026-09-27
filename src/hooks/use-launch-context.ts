@@ -86,7 +86,9 @@ export function resolveLaunchContext(): LaunchContext {
     /* ignore */
   }
 
-  return "browser";
+  // 4. Preview hosts default to the app shell while we tighten things up;
+  //    the public site stays on the browser presentation.
+  return "app";
 }
 
 /** Null until hydration so server and client markup match. */
