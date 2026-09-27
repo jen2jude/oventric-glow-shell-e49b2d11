@@ -562,7 +562,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
 
       <CashbackSpotlight active={active === "Home" || active === "Marketplace"} />
 
-      {isAppShell && !isMessages && <CreatorCoachLauncher />}
+      {isAppShell && !isMessages && <CreatorCoachLauncher section={active} />}
 
 
     </div>

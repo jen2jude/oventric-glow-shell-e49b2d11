@@ -6,7 +6,7 @@
 
 const MUTE_KEY = "oventric:sound-muted";
 
-export type SoundKind = "notification" | "message" | "success";
+export type SoundKind = "notification" | "message" | "success" | "coach";
 
 let ctx: AudioContext | null = null;
 let unlocked = false;
@@ -56,6 +56,7 @@ const TONES: Record<SoundKind, { freqs: number[]; step: number; gain: number; ty
   notification: { freqs: [880, 1244.5], step: 0.11, gain: 0.09, type: "sine" },
   message: { freqs: [1046.5, 1396.9, 1567.98], step: 0.075, gain: 0.075, type: "sine" },
   success: { freqs: [659.25, 880, 1318.5], step: 0.09, gain: 0.08, type: "triangle" },
+  coach: { freqs: [783.99, 1174.66], step: 0.14, gain: 0.035, type: "sine" },
 };
 
 /** Play a short chime. Silently no-ops when muted or audio is unavailable. */

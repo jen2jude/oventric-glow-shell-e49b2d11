@@ -148,6 +148,15 @@ export function AppFeed() {
   const [editingPost, setEditingPost] = useState<{ id: string; text: string } | null>(null);
   const [editSaving, setEditSaving] = useState(false);
   const [tab, setTab] = useState<"foryou" | "following" | "shop" | "creators">("foryou");
+  // Tell the page-aware coach which Newsfeed tab is showing.
+  useEffect(() => {
+    (window as unknown as { __oventricFeedTab?: string }).__oventricFeedTab = tab;
+    window.dispatchEvent(new CustomEvent("oventric:feed-tab", { detail: tab }));
+    return () => {
+      (window as unknown as { __oventricFeedTab?: string }).__oventricFeedTab = undefined;
+      window.dispatchEvent(new CustomEvent("oventric:feed-tab", { detail: null }));
+    };
+  }, [tab]);
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
   const [followerIds, setFollowerIds] = useState<Set<string> | null>(null);
   const loadFollowing = useServerFn(listFollowing);
