@@ -54,6 +54,7 @@ export function AppFeed() {
   const updateText = useServerFn(updatePostTextFn);
   const navigate = useNavigate();
   const { openGate } = useAuthGate() as any;
+  const { baseCurrency } = useOnboarding();
   const [posts, setPosts] = useState<Post[] | null>(null);
   const [signedIn, setSignedIn] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -237,21 +238,72 @@ export function AppFeed() {
                     </button>
                   )}
 
-                  {/* Product attachment */}
-                  {p.product_attachments?.[0] && (
-                    <button
-                      onClick={() =>
-                        navigate({
-                          to: "/product/$id",
-                          params: { id: p.product_attachments![0].id },
-                        })
-                      }
-                      className="mt-2.5 inline-flex items-center gap-1.5 rounded-full bg-[#E5484D]/15 px-3 py-1.5 text-[12px] font-semibold text-[#E5484D]"
-                    >
-                      <ShoppingBag className="h-3.5 w-3.5" />
-                      Shop this post
-                    </button>
-                  )}
+                  {/* Product attachment — rich card, matches the web feed */}
+                  {p.product_attachments?.[0] && (() => {
+                    const pa = p.product_attachments![0];
+                    if (pa.available === false) {
+                      return (
+                        <div className="mt-2.5 flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-3">
+                          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/[0.04]">
+                            <ShoppingBag className="h-4 w-4 text-white/20" />
+                          </div>
+                          <p className="text-[12px] font-semibold text-white/60">
+                            This product is no longer available
+                          </p>
+                        </div>
+                      );
+                    }
+                    const priceLabel = computeDisplayPrice(
+                      {
+                        price_usd: pa.priceUsd,
+                        original_currency: (pa.originalCurrency ?? "USD") as any,
+                        original_amount: pa.originalAmount ?? pa.priceUsd,
+                        fx_snapshot: pa.fxSnapshot ?? null,
+                      },
+                      baseCurrency,
+                    ).formatted;
+                    return (
+                      <button
+                        onClick={() =>
+                          navigate({ to: "/product/$id", params: { id: pa.id } })
+                        }
+                        className="mt-2.5 flex w-full items-stretch overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] text-left active:bg-white/[0.06]"
+                      >
+                        <div className="w-20 shrink-0 bg-neutral-900">
+                          {pa.coverUrl ? (
+                            <img
+                              src={pa.coverUrl}
+                              alt={pa.name}
+                              loading="lazy"
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center">
+                              <ShoppingBag className="h-5 w-5 text-white/10" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1 p-2.5">
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="line-clamp-1 text-[13px] font-bold text-white">
+                              {pa.name}
+                            </p>
+                            <span className="shrink-0 text-[13px] font-black text-[#E5484D]">
+                              {priceLabel}
+                            </span>
+                          </div>
+                          <p className="mt-0.5 line-clamp-1 text-[11px] text-white/45">
+                            {pa.shortDescription || pa.vendor}
+                          </p>
+                          {!!pa.cashbackPct && pa.cashbackPct > 0 && (
+                            <span className="mt-1 inline-block rounded-md border border-emerald-400/25 bg-emerald-400/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-300">
+                              {pa.cashbackPct}% cashback
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })()}
 
                   {/* Action row */}
                   <div className="mt-2 flex items-center justify-between pr-2">
