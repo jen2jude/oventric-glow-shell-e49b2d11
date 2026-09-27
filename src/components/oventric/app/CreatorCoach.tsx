@@ -119,7 +119,7 @@ export function CreatorCoachChat({ starter }: { starter?: string | null } = {}) 
                 <Sparkles className="h-7 w-7 text-white" />
               </span>
               <div>
-                <p className="text-base font-bold text-white">Your Creator Coach</p>
+                <p className="text-base font-bold text-white">Your Oventric Coach</p>
                 <p className="mt-1 max-w-[260px] text-xs text-white/50">
                   I know your real numbers — audience, posts, watch time, downloads and sales. Ask me anything.
                 </p>
