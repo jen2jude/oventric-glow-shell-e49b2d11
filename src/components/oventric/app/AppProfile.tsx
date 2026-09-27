@@ -623,11 +623,7 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
       />
 
       {/* More options */}
-      <AppSheet
-        open={menuOpen}
-        onClose={() => setMenuOpen(false)}
-        title="More options"
-      >
+      <AppSheet open={menuOpen} onClose={() => setMenuOpen(false)}>
         <div className="space-y-1 p-4">
           <button
             onClick={() => {
