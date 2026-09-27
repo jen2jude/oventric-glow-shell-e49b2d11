@@ -8,6 +8,8 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
+import { Monitor, Smartphone } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -452,12 +454,16 @@ function RootComponent() {
                {show && hydrated && !isPc && isAppShell && <FeatureCarousel onComplete={markSeen} />}
               
               {isPreview && isMounted && (
-                <button
+                 <Button
+                   type="button"
+                   variant="default"
                   onClick={toggleMode}
-                  className="fixed top-1/2 -translate-y-1/2 right-0 z-[9999] px-2 py-3 bg-emerald-500/90 text-black text-[9px] font-bold uppercase tracking-widest rounded-l-full shadow-2xl hover:scale-105 active:scale-95 transition-all border border-white/20 [writing-mode:vertical-rl]"
+                   className="fixed bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] right-4 z-[9999] h-10 gap-2 rounded-[10px] bg-primary px-3 text-primary-foreground shadow-lg hover:bg-primary/90 md:bottom-6 md:right-6"
+                   aria-label={launchCtx === "browser" ? "View app mode" : "View website mode"}
                 >
-                  {launchCtx === "browser" ? "View App Version" : "View Web Version"}
-                </button>
+                   {launchCtx === "browser" ? <Smartphone className="size-4" aria-hidden="true" /> : <Monitor className="size-4" aria-hidden="true" />}
+                   {launchCtx === "browser" ? "View app" : "View website"}
+                 </Button>
               )}
             </KycGateProvider>
           </OnboardingProvider>
