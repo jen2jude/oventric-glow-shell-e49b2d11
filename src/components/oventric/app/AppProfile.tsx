@@ -613,13 +613,6 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
                 </div>
               </section>
             )}
-          {profile.skills.length === 0 &&
-            profile.tools.length === 0 &&
-            profile.interests.length === 0 && (
-              <p className="py-10 text-center text-xs text-white/35">
-                Nothing shared here yet.
-              </p>
-            )}
         </div>
       )}
 
@@ -627,6 +620,85 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
         productId={quickViewId}
         currency={currency}
         onClose={() => setQuickViewId(null)}
+      />
+
+      {/* More options */}
+      <AppSheet
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        title="More options"
+      >
+        <div className="space-y-1 p-4">
+          <button
+            onClick={() => {
+              setMenuOpen(false);
+              void shareProfile();
+            }}
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[13px] font-semibold text-white/85 active:bg-white/[0.04]"
+          >
+            <Share2 className="h-4 w-4 text-white/50" /> Share profile
+          </button>
+          <button
+            onClick={() => {
+              setMenuOpen(false);
+              setConnectionsTab("all");
+              setConnectionsOpen(true);
+            }}
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[13px] font-semibold text-white/85 active:bg-white/[0.04]"
+          >
+            <Users className="h-4 w-4 text-white/50" /> Connections
+          </button>
+          {isOwn && (
+            <button
+              onClick={() => {
+                setMenuOpen(false);
+                setFollowReqOpen(true);
+              }}
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[13px] font-semibold text-white/85 active:bg-white/[0.04]"
+            >
+              <UserPlus className="h-4 w-4 text-white/50" /> Follow requests
+              {pendingFollowReqCount > 0 && (
+                <span className="ml-auto rounded-full bg-[#E5484D] px-2 py-0.5 text-[10px] font-bold text-white">
+                  {pendingFollowReqCount}
+                </span>
+              )}
+            </button>
+          )}
+          {!isOwn && (
+            <button
+              onClick={() => {
+                setMenuOpen(false);
+                setReportOpen(true);
+              }}
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[13px] font-semibold text-[#E5484D] active:bg-white/[0.04]"
+            >
+              <Flag className="h-4 w-4" /> Report profile
+            </button>
+          )}
+        </div>
+      </AppSheet>
+
+      {userId && (
+        <ConnectionsDialog
+          open={connectionsOpen}
+          onOpenChange={setConnectionsOpen}
+          userId={userId}
+          name={profile.displayName}
+          viewerId={me}
+          initialTab={connectionsTab}
+        />
+      )}
+      <FollowRequestsDrawer
+        open={followReqOpen}
+        onClose={() => setFollowReqOpen(false)}
+      />
+      <ReportModal
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        target="profile"
+        targetKind="profile"
+        targetId={userId ?? idOrSlug}
+        onReported={() => setReportOpen(false)}
       />
     </div>
   );
