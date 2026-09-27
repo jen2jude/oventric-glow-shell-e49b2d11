@@ -16,7 +16,6 @@ type Choice = {
   tier: Tier;
   iconClass: string;
   iconSurfaceClass: string;
-  badge?: string;
 };
 
 const choices: Choice[] = [
