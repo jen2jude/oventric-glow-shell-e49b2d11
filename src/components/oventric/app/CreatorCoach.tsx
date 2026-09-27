@@ -7,7 +7,7 @@ import { Drawer as VaulDrawer } from "vaul";
 import { Sparkles, X, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCreatorCoachHistory } from "@/lib/dashboard/coach.functions";
-import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
+import { getMyFullProfile } from "@/lib/profiles.functions";
 import { Conversation, ConversationContent, ConversationScrollButton } from "@/components/ai-elements/conversation";
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import { PromptInput, PromptInputBody, PromptInputTextarea, PromptInputFooter, PromptInputSubmit } from "@/components/ai-elements/prompt-input";
