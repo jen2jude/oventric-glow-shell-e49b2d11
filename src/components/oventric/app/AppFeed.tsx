@@ -45,12 +45,19 @@ function compact(n: number) {
 export function AppFeed() {
   const fetchPosts = useServerFn(listPosts);
   const like = useServerFn(toggleLike);
+  const saveFn = useServerFn(setPostSavedFn);
+  const deleteFn = useServerFn(deletePostFn);
   const navigate = useNavigate();
   const { openGate } = useAuthGate() as any;
   const [posts, setPosts] = useState<Post[] | null>(null);
   const [signedIn, setSignedIn] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [savedIds, setSavedIds] = useState<Set<string>>(() =>
+    typeof window === "undefined" ? new Set() : getSavedPosts(),
+  );
   const [commentsFor, setCommentsFor] = useState<Post | null>(null);
   const [menuFor, setMenuFor] = useState<Post | null>(null);
+  const [reportFor, setReportFor] = useState<Post | null>(null);
   const [hidden, setHidden] = useState<Set<string>>(new Set());
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
@@ -58,7 +65,10 @@ export function AppFeed() {
     fetchPosts()
       .then((r) => setPosts(r.posts.filter((p) => !p.repost_of || p.text || p.media_url)))
       .catch(() => setPosts([]));
-    supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
+    supabase.auth.getSession().then(({ data }) => {
+      setSignedIn(!!data.session);
+      setUserId(data.session?.user.id ?? null);
+    });
   }, [fetchPosts]);
 
   const onLike = async (p: Post) => {
