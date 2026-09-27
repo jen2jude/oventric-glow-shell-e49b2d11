@@ -40,6 +40,7 @@ const ExplorePage = lazy(() =>
 import { HomeHub } from "@/components/oventric/HomeHub";
 import { DesktopHome } from "@/components/oventric/desktop/DesktopHome";
 import { OventricHome } from "@/components/oventric/home/OventricHome";
+import { AppHome } from "@/components/oventric/app/AppHome";
 import { DesktopAppSidebar } from "@/components/oventric/desktop/DesktopAppSidebar";
 import { SiteFooterAuto } from "@/components/oventric/desktop/SiteFooterAuto";
 import { SiteNavbar } from "@/components/oventric/desktop/SiteNavbar";

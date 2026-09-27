@@ -250,7 +250,7 @@ export function AppHome({
                 </div>
                 <p className="mt-1.5 line-clamp-1 text-[12px] font-semibold">{p.name}</p>
                 <p className="text-[11px] font-bold text-[#E5484D]">
-                  {safeFormatDisplayPrice(p, currency)}
+                  {priceOf(p)}
                 </p>
               </button>
             ))}
@@ -283,7 +283,7 @@ export function AppHome({
                   <p className="line-clamp-1 text-[12px] font-semibold">{p.name}</p>
                   <p className="mt-0.5 line-clamp-1 text-[10px] text-white/35">{p.vendor}</p>
                   <p className="mt-1 text-[12px] font-bold text-[#E5484D]">
-                    {safeFormatDisplayPrice(p, currency)}
+                    {priceOf(p)}
                   </p>
                 </div>
               </button>
