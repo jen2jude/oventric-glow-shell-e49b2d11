@@ -18,7 +18,12 @@ export function GlobalMobileNav() {
 
   // Hide on admin routes, on "/", (index renders its own nav), and on product pages.
   // We keep it on checkout for app users because it's universal there now.
-  if (pathname.startsWith("/admin") || pathname === "/" || pathname.startsWith("/product/")) return null;
+  // Pages built on AppSurface render their own context-aware nav; a second
+  // copy here would sit on top and swallow the + button's taps.
+  const ownsNav = ["/", "/feed", "/marketplace", "/explore", "/wallet", "/academy", "/bounties", "/circles"].some(
+    (p) => pathname === p || pathname === `${p}/`,
+  );
+  if (pathname.startsWith("/admin") || ownsNav || pathname.startsWith("/product/")) return null;
 
   const goSection = (label: string) => {
     const section = label === "Market" ? "Marketplace" : label;
