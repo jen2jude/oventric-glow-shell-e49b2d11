@@ -87,6 +87,22 @@ const labelClass = "text-xs font-bold text-contact-ink";
 
 export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const isApp = useIsAppShell();
+  const [rendered, setRendered] = useState(open);
+  const [closing, setClosing] = useState(false);
+  useEffect(() => {
+    if (open) {
+      setRendered(true);
+      setClosing(false);
+      return;
+    }
+    if (!rendered) return;
+    setClosing(true);
+    const t = window.setTimeout(() => {
+      setRendered(false);
+      setClosing(false);
+    }, 300);
+    return () => window.clearTimeout(t);
+  }, [open, rendered]);
   const persist = useServerFn(createProduct);
   const snapshotFx = useServerFn(snapshotFxRates);
   const loadCats = useServerFn(listMarketplaceCategories);
@@ -286,7 +302,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
     };
   }, [open]);
 
-  if (!open) return null;
+  if (!rendered) return null;
 
   const reset = () => {
     setName("");
@@ -481,7 +497,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
 
   return (
     <div
-      className={`${isApp ? "app-sell-asset" : "modal-light web-sell-asset"} fixed inset-0 z-[70] flex h-[100dvh] w-screen justify-center overflow-hidden ${
+      className={`sell-asset-root ${isApp ? "" : "modal-light web-sell-asset"} fixed inset-0 z-[70] flex h-[100dvh] w-screen justify-center overflow-hidden ${
         success
           ? "items-center p-5 sm:p-6"
           : isApp ? "items-end p-0" : "items-start px-0 pt-3 sm:items-center sm:p-6"
