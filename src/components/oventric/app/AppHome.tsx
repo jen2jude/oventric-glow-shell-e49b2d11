@@ -5,12 +5,12 @@ import {
   ArrowDownToLine,
   ArrowUpFromLine,
   Bell,
+  Images,
   MessageCircle,
+  Package,
   Plus,
-  ShoppingBag,
   Sparkles,
   Store,
-  Wallet as WalletIcon,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 
@@ -193,13 +193,13 @@ export function AppHome({
         </div>
       </div>
 
-      {/* Quick actions */}
+      {/* Quick actions — everything the bottom dock doesn't already cover */}
       <div className="mt-5 grid grid-cols-4 gap-2">
         {[
+          { icon: Package, label: "Orders", run: () => navigate({ to: "/escrow" }) },
+          { icon: Images, label: "Showcase", run: () => onSelect("Feed") },
           { icon: Plus, label: "Sell", run: onCreate },
-          { icon: ShoppingBag, label: "Market", run: () => onSelect("Marketplace") },
           { icon: Store, label: "My shop", run: () => onSelect("Profile") },
-          { icon: WalletIcon, label: "Wallet", run: () => onSelect("Wallet") },
         ].map((a) => (
           <button
             key={a.label}
