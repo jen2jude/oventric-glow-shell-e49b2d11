@@ -28,4 +28,4 @@
 - [x] Stage 1: installable app manifest, app-mode detection, install prompt
 - [x] Stage 2: native app home and feed layout (compact, edge-to-edge, no web chrome)
 - [x] Stage 3: sliding bottom sheets — product quick view, search sheet; deep-link landing via ?section=
-- [ ] Stage 4: lock-screen push alerts and home-screen icon badge counts
+- [x] Stage 4: lock-screen push alerts and home-screen icon badge counts

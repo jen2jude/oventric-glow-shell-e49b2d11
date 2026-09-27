@@ -73,6 +73,20 @@ export const Route = createFileRoute("/api/public/hooks/push-dispatch")({
         const rows = (subs ?? []) as Row[];
         if (rows.length === 0) return Response.json({ ok: true, sent: 0 });
 
+        const [nCount, dCount] = await Promise.all([
+          supabaseAdmin
+            .from("notifications")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", notif.user_id)
+            .is("read_at", null),
+          supabaseAdmin
+            .from("direct_messages")
+            .select("id", { count: "exact", head: true })
+            .eq("recipient_id", notif.user_id)
+            .is("read_at", null),
+        ]);
+        const badge = (nCount.count ?? 0) + (dCount.count ?? 0);
+
         const message = {
           data: {
             title: notif.title ?? "Oventric",
@@ -80,6 +94,7 @@ export const Route = createFileRoute("/api/public/hooks/push-dispatch")({
             link: notif.link ?? "/",
             id: notif.id,
             tag: notif.id,
+            badge,
           },
           options: { ttl: 60 * 60 * 24, urgency: "high" as const },
         };
