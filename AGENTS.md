@@ -20,6 +20,11 @@ Installability is manifest-only (`public/manifest.webmanifest`). No app-shell
 service worker is registered — `public/push-sw.js` is messaging-only. Reason:
 cached app shells serve stale pages in Lovable previews.
 
+App launch and install promotion are temporarily paused for public visitors:
+the website omits the manifest link and install invitations, and app mode is
+limited to preview hosts until the owner explicitly reactivates it. Reason:
+the unfinished app must remain reviewable without inviting public use.
+
 App-mode conversations open in a slide-up drawer above the mounted Messages inbox; the website message layout stays separate. Reason: closing or swiping away a conversation should return to the same inbox position without losing chat state.
 
 ## Creator Coach (AI)

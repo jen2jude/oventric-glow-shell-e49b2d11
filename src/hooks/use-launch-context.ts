@@ -16,6 +16,15 @@ export type LaunchContext = "browser" | "app";
 
 export const APP_MODE_KEY = "oventric:launch-mode";
 
+/** Keep the unfinished app presentation available only for internal previews. */
+export function isAppReviewPreview(): boolean {
+  if (typeof window === "undefined") return false;
+  const host = window.location.hostname;
+  return host === "localhost" || host === "127.0.0.1" ||
+    host.startsWith("id-preview--") || host.startsWith("preview--") ||
+    host.endsWith(".lovableproject-dev.com");
+}
+
 /** True when the page is running in an installed / standalone window. */
 export function isStandaloneDisplay(): boolean {
   if (typeof window === "undefined") return false;
@@ -42,6 +51,7 @@ function inIframe(): boolean {
 /** Resolve the launch context for this page view (client only). */
 export function resolveLaunchContext(): LaunchContext {
   if (typeof window === "undefined") return "browser";
+  if (!isAppReviewPreview()) return "browser";
 
   // 1. Explicit request via the URL wins and is remembered for the session.
   const params = new URLSearchParams(window.location.search);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Search, User, Smartphone, Truck, RefreshCcw, Menu, X } from "lucide-react";
+import { Search, User, Truck, RefreshCcw, Menu, X } from "lucide-react";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { CurrencyPreviewToggle } from "@/components/oventric/CurrencyPreviewToggle";
@@ -42,9 +42,6 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
           </div>
           <div className="flex items-center gap-4">
             <Link to="/help" className="hover:underline">Help</Link>
-            <span className="flex items-center gap-1.5 cursor-pointer">
-              <Smartphone className="w-3.5 h-3.5" /> Get the Oventric App
-            </span>
           </div>
         </div>
       </div>

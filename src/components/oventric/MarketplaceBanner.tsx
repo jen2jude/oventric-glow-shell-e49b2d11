@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { BadgePercent, ShieldCheck, Smartphone } from "lucide-react";
+import { BadgePercent, ShieldCheck } from "lucide-react";
 
 /** Nearest scrollable ancestor, falling back to the window. */
 function scrollParent(el: HTMLElement | null): HTMLElement | Window {
@@ -14,7 +14,6 @@ function scrollParent(el: HTMLElement | null): HTMLElement | Window {
 
 /**
  * Temu-style full-width trust strip across the top of the marketplace.
- * The "Get the Oventric App" item is desktop-only.
  * The strip is sticky on every viewport and smoothly hides on scroll-down,
  * reappearing on scroll-up.
  */
@@ -85,10 +84,6 @@ export function MarketplaceBanner() {
             title="Buy from real verified vendors"
             sub="Escrow-protected on every order"
           />
-          <div className="hidden md:flex items-stretch gap-3 lg:gap-6">
-            <Divider />
-            <Item Icon={Smartphone} title="Get the Oventric App" sub="iOS & Android" />
-          </div>
         </div>
       </div>
     </div>
