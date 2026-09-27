@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Link } from "@tanstack/react-router";
 import { Drawer as VaulDrawer } from "vaul";
 import { Drawer, DrawerOverlay, DrawerPortal } from "@/components/ui/drawer";
@@ -71,6 +71,29 @@ function formatTime(iso: string) {
   return d.toLocaleDateString();
 }
 
+// Grouping key + label for chat time dividers: one section per minute.
+function formatStamp(iso: string) {
+  const d = new Date(iso);
+  const now = new Date();
+  const time = d
+    .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    .toLowerCase()
+    .replace(/\s/g, " ");
+  if (d.toDateString() === now.toDateString()) return time;
+  const dayMs = 86400000;
+  if (now.getTime() - d.getTime() < 7 * dayMs)
+    return `${d.toLocaleDateString([], { weekday: "short" })} ${time}`;
+  return `${d.toLocaleDateString()} ${time}`;
+}
+
+function TimeDivider({ label }: { label: string }) {
+  return (
+    <div className="my-2.5 flex justify-center" aria-hidden="true">
+      <span className="text-[10px] font-medium tracking-wide text-[#E5484D]/80">{label}</span>
+    </div>
+  );
+}
+
 function relative(iso: string) {
   const t = new Date(iso).getTime();
   const s = Math.max(1, Math.floor((Date.now() - t) / 1000));
@@ -104,14 +127,13 @@ function Bubble({
           <ShieldCheck className="size-3.5" aria-hidden="true" /> Oventric update
         </div>
         <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">{msg.body}</div>
-        <div className="mt-2 text-[10px] text-slate-500">{formatTime(msg.created_at)}</div>
       </div>
     );
   }
   return (
     <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[78%] rounded-[22px] px-4 py-3 text-sm ${
+        className={`max-w-[78%] rounded-[22px] px-3.5 py-2 text-sm ${
           mine
             ? "rounded-br-lg bg-[#E5484D] text-white shadow-sm"
             : "rounded-bl-lg border border-white/10 bg-white/[0.06] text-slate-100 shadow-sm"
@@ -151,21 +173,17 @@ function Bubble({
             )}
           </div>
         )}
-        <div
-          className={`text-[10px] mt-1 flex items-center gap-1 ${
-            mine ? "justify-end text-white/70" : "text-slate-500"
-          }`}
-        >
-          <span>{formatTime(msg.created_at)}</span>
-          {mine && !msg.id.startsWith("tmp-") && (
+        {mine && !msg.id.startsWith("tmp-") && (
+          <div className="mt-0.5 flex justify-end">
             <span
+              className="text-[9px] leading-none text-white/60"
               title={msg.read_at ? `Read ${formatTime(msg.read_at)}` : "Sent"}
               aria-label={msg.read_at ? "Read" : "Sent"}
             >
               {msg.read_at ? "✓✓" : "✓"}
             </span>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -869,7 +887,7 @@ export function AppMessages({ initialThreadId, onClose }: AppMessagesProps) {
 
         <div
           ref={scrollRef}
-          className="flex-1 min-h-0 overflow-y-auto overscroll-y-contain px-4 py-5 space-y-3"
+          className="flex-1 min-h-0 overflow-y-auto overscroll-y-contain px-4 py-5 space-y-1.5"
         >
           {loadingMessages ? (
             <div className="text-xs text-slate-500 text-center py-8 flex items-center justify-center gap-2">
@@ -898,14 +916,20 @@ export function AppMessages({ initialThreadId, onClose }: AppMessagesProps) {
                   </button>
                 </div>
               )}
-              {messages.map((m) => (
-                <Bubble
-                  key={m.id}
-                  msg={m}
-                  mine={m.sender_id === me}
-                  attachmentUrl={m.media_path ? (attachmentUrls[m.media_path] ?? null) : null}
-                />
-              ))}
+              {messages.map((m, i) => {
+                const stamp = formatStamp(m.created_at);
+                const prevStamp = i > 0 ? formatStamp(messages[i - 1].created_at) : null;
+                return (
+                  <Fragment key={m.id}>
+                    {stamp !== prevStamp && <TimeDivider label={stamp} />}
+                    <Bubble
+                      msg={m}
+                      mine={m.sender_id === me}
+                      attachmentUrl={m.media_path ? (attachmentUrls[m.media_path] ?? null) : null}
+                    />
+                  </Fragment>
+                );
+              })}
             </>
           )}
           {peerTyping && (
