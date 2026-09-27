@@ -143,7 +143,7 @@ export function CreatorPostSheet({
       }
     >
       {post && (
-        <div className="pb-8">
+        <div className="pb-8" data-post-origin>
           <div className="px-4 pt-4">
             {/* Creator identity */}
             <button

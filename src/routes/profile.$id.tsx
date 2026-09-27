@@ -1,3 +1,4 @@
+import { useProfileVisit } from "@/lib/seller-views";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -384,6 +385,7 @@ function WebProfilePage() {
   const fetchSocialCounts = useServerFn(getProfileSocialCounts);
 
   const [realProfile, setRealProfile] = useState<RealProfileView | null>(null);
+  useProfileVisit(realProfile?.userId ?? null);
   const isViewedUserOnline = !!realProfile?.userId && onlineUsers.has(realProfile.userId);
   const [realProfileLoaded, setRealProfileLoaded] = useState(false);
   const [liveRep, setLiveRep] = useState<LiveReputation | null>(null);
