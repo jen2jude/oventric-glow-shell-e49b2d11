@@ -354,7 +354,6 @@ export function AppDashboard({ initialTab }: { initialTab?: string }) {
         )}
         {tab === "social" && <SocialPane data={social} />}
         {tab === "creator" && <SellerDashboard />}
-        {tab === "creatorhub" && <CreatorHub />}
       </main>
 
       {editing && (
