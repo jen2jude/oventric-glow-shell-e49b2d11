@@ -536,27 +536,19 @@ function KycLivenessModal({
     }
   }, [step, mode, onComplete, recordLiveness]);
 
-  const beginId = () => {
+  const beginSelfie = () => {
     setPhoneError(null);
     const trimmed = phone.trim();
     if (trimmed.length < 6 || !/^\+?[\d\s\-()]{6,24}$/.test(trimmed)) {
       setPhoneError("Enter a valid phone number with country code");
       return;
     }
-    setStep("id-camera");
+    setStep("selfie-camera");
   };
 
   const captureNow = () => {
     setCountdown(3);
-    setStep(step === "id-camera" ? "id-capturing" : "selfie-capturing");
-  };
-
-  const retakeId = () => {
-    setIdBlob(null);
-    if (idUrl) URL.revokeObjectURL(idUrl);
-    setIdUrl(null);
-    setError(null);
-    setStep("id-camera");
+    setStep("selfie-capturing");
   };
 
   const retakeSelfie = () => {
