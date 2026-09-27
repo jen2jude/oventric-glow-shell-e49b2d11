@@ -1357,6 +1357,9 @@
   background: var(--card);
   box-shadow: 0 -20px 60px oklch(0 0 0 / 50%);
 }
+.app-sell-asset > .absolute.inset-0 {
+  background: oklch(0 0 0 / 70%);
+}
 .app-sell-asset .sell-asset-scroll {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
