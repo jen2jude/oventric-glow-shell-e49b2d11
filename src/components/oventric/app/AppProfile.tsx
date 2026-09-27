@@ -351,6 +351,11 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
         <div className="mt-3 flex items-center gap-1.5">
           <h1 className="text-lg font-bold text-white">{profile.displayName}</h1>
           {verified && <BadgeCheck className="h-4.5 w-4.5 text-[#E5484D]" />}
+          {profile.isCreator && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#E5484D] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white" title="Oventric creator">
+              <Sparkles className="h-3 w-3" /> Creator
+            </span>
+          )}
         </div>
         {profile.username && (
           <p className="text-xs text-white/40">@{profile.username}</p>
