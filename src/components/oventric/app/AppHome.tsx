@@ -16,9 +16,10 @@ import { useServerFn } from "@tanstack/react-start";
 
 import { listProducts, type ProductDTO } from "@/lib/marketplace.functions";
 import { getWalletBalances } from "@/lib/wallet.functions";
-import { safeFormatDisplayPrice, formatMoney, type Currency } from "@/lib/fx-display";
+import { safeFormatDisplayPrice, formatMoney } from "@/lib/fx-display";
+import type { Currency } from "@/lib/onboarding/OnboardingContext";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
-import { useAuthGate } from "@/lib/auth-gate";
+import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
 import { haptic } from "@/lib/haptics";
 
