@@ -744,7 +744,7 @@ export function AppFeed() {
                         original_amount: pa.originalAmount ?? pa.priceUsd,
                         fx_snapshot: pa.fxSnapshot ?? null,
                       },
-                      homeCurrency,
+                      (homeCurrency ?? "USD") as Currency,
                       balancesHidden,
                     );
                     return (
