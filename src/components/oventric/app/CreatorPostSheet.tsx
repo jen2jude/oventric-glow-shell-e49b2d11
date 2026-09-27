@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
-import { BadgeCheck, Download, Eye, ShoppingBag } from "lucide-react";
+import { Download, Eye, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import { AppSheet } from "@/components/oventric/app/AppSheet";
 import { createOrder, getOrderWithDownload } from "@/lib/marketplace.functions";
@@ -157,7 +157,6 @@ export function CreatorPostSheet({
               <span className="min-w-0 flex-1">
                 <span className="flex items-center gap-1">
                   <span className="line-clamp-1 text-[14px] font-bold text-white">{post.author.name}</span>
-                  {post.author.verified && <BadgeCheck className="h-4 w-4 shrink-0 text-[#E5484D]" />}
                 </span>
                 <span className="mt-0.5 block text-[11px] text-white/40">
                   {ago(post.createdAt)} · {compact(post.viewCount)} views
