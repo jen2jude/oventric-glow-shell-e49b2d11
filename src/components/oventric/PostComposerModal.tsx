@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import {
   X,
@@ -492,9 +493,9 @@ export function PostComposerModal({
 
   if (!open) return null;
 
-  if (isApp) return (
+  if (isApp && typeof document !== "undefined") return createPortal((
     <div className="app-post-composer fixed inset-0 z-[60] flex items-end justify-center bg-background/75 backdrop-blur-sm" style={appViewport ? { top: appViewport.top, height: appViewport.height, bottom: "auto" } : undefined} onClick={onClose}>
-      <div ref={shellRef} role="dialog" aria-modal="true" aria-label="Create post" className={`slide-up relative flex w-full max-w-2xl flex-col overflow-hidden rounded-t-[24px] border border-b-0 border-border bg-card text-foreground shadow-2xl ${appViewport?.keyboardOpen ? "h-full max-h-[850px]" : "h-[min(94dvh,850px)]"}`} onClick={(event) => event.stopPropagation()}>
+      <div ref={shellRef} role="dialog" aria-modal="true" aria-label="Create post" className="slide-up relative flex w-full max-w-2xl flex-col overflow-hidden rounded-t-[24px] border border-b-0 border-border bg-card text-foreground shadow-2xl" style={{ height: appViewport ? Math.min(appViewport.keyboardOpen ? appViewport.height : appViewport.height * 0.94, 850) : "min(94dvh, 850px)" }} onClick={(event) => event.stopPropagation()}>
         <div className="app-profile-handle" aria-hidden="true" />
         <header className="flex h-14 shrink-0 items-center justify-between border-b border-border px-4">
           <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close post composer" title="Close"><X /></Button>
@@ -575,7 +576,7 @@ export function PostComposerModal({
         </div>
       </div>}
     </div>
-  );
+  ), document.body);
 
   return (
     <div className="modal-light fixed inset-0 z-[60] flex items-stretch sm:items-center justify-center">
