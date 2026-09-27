@@ -29,6 +29,8 @@ import { CommentsSheet } from "@/components/oventric/feed/CommentsSheet";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
+import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
+import { computeDisplayPrice } from "@/lib/fx-display";
 
 type Post = Awaited<ReturnType<typeof listPosts>>["posts"][number];
 
