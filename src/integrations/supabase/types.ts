@@ -4677,6 +4677,7 @@ export type Database = {
         }[]
       }
       purge_expired_stories: { Args: never; Returns: number }
+      purge_old_notifications: { Args: never; Returns: number }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {

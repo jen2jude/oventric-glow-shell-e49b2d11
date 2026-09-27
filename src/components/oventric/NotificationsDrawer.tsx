@@ -149,6 +149,7 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
   const isApp = useIsAppShell();
   const [channel, setChannel] = useState<Channel>("all");
   const [items, setItems] = useState<DbNotif[]>([]);
+  const [visibleCount, setVisibleCount] = useState(10);
   const [loading, setLoading] = useState(false);
   const [muted, setMuted] = useState(false);
   const [pushOn, setPushOn] = useState(false);
@@ -314,6 +315,8 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
     () => (channel === "all" ? items : items.filter((n) => channelForKind(n.kind) === channel)),
     [items, channel],
   );
+  const visible = filtered.slice(0, visibleCount);
+  const hasMore = filtered.length > visibleCount;
 
   const handleOpenItem = async (n: DbNotif) => {
     if (!n.read_at) {
@@ -340,6 +343,7 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
 
   const handleSelectChannel = async (next: Channel) => {
     setChannel(next);
+    setVisibleCount(10);
     const unread = items.filter(
       (n) => !n.read_at && (next === "all" || channelForKind(n.kind) === next),
     );
@@ -483,7 +487,7 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
               You're all caught up in this channel.
             </div>
           ) : (
-            filtered.map((n) => (
+            visible.map((n) => (
               <button
                 key={n.id}
                 onClick={() => void handleOpenItem(n)}
@@ -523,6 +527,14 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
                 </div>
               </button>
             ))
+          )}
+          {hasMore && (
+            <button
+              onClick={() => setVisibleCount((c) => c + 10)}
+              className="mt-1 w-full py-2.5 rounded-[10px] text-xs font-semibold text-muted-foreground border border-newsfeed-line bg-newsfeed-surface hover:text-foreground hover:border-primary/40 transition-colors"
+            >
+              Load more
+            </button>
           )}
         </div>
 
