@@ -28,7 +28,6 @@ const choices: Choice[] = [
     tier: 1,
     iconClass: "text-create-post",
     iconSurfaceClass: "bg-create-post-soft",
-    badge: "NEW",
   },
   {
     key: "sell",
@@ -150,13 +149,8 @@ export function CreatePanel({
                     <c.icon className="h-5 w-5" strokeWidth={2} />
                   </span>
                   <span className="min-w-0 flex-1 sm:mt-1">
-                    <span className="flex items-center gap-2 text-[15px] font-bold leading-tight text-create-title">
+                    <span className="text-[15px] font-bold leading-tight text-create-title">
                       {c.title}
-                      {c.badge && (
-                        <span className="rounded-full bg-create-brand-soft px-2 py-0.5 text-[9px] font-extrabold uppercase text-create-brand">
-                          {c.badge}
-                        </span>
-                      )}
                     </span>
                     <span className="mt-1 block text-[11.5px] font-normal leading-snug text-create-copy sm:text-xs">
                       {c.desc}
