@@ -332,6 +332,8 @@ export function AppFeed() {
       navigate({ to: "/profile/$id", params: { id: p.author_slug ?? p.author_id } });
   };
 
+  const swipeStart = useRef<{ x: number; y: number } | null>(null);
+
   if (!posts) {
     return (
       <div className="flex h-[calc(100dvh-80px)] items-center justify-center bg-[#070A08]">
@@ -360,7 +362,6 @@ export function AppFeed() {
 
   // Swipe left = next tab, swipe right = previous tab (For you ↔ Following ↔ Shop ↔ Creators).
   const FEED_TABS = ["foryou", "following", "shop", "creators"] as const;
-  const swipeStart = useRef<{ x: number; y: number } | null>(null);
   const onFeedTouchStart = (e: React.TouchEvent) => {
     const t = e.touches[0];
     swipeStart.current = { x: t.clientX, y: t.clientY };
