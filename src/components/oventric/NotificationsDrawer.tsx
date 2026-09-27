@@ -467,8 +467,10 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
         </div>
 
         <div
-          className="overflow-y-auto px-5 py-4"
-          style={{ maxHeight: "calc(100vh - 8.75rem - 3.75rem)" }}
+          className="overflow-y-auto overscroll-contain px-5 py-4 flex-1"
+          style={
+            isApp ? undefined : { maxHeight: "calc(100vh - 8.75rem - 3.75rem)" }
+          }
         >
           {!isAuthenticated ? (
             <div className="text-center text-xs text-muted-foreground py-12">
@@ -524,7 +526,13 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
           )}
         </div>
 
-        <div className="absolute bottom-0 inset-x-0 px-5 py-3 border-t bg-background">
+        <div
+          className={
+            isApp
+              ? "shrink-0 px-5 pt-3 border-t border-newsfeed-line bg-newsfeed-surface pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+              : "absolute bottom-0 inset-x-0 px-5 py-3 border-t bg-background"
+          }
+        >
           <button
             onClick={handleMarkAll}
             disabled={!isAuthenticated || items.every((n) => n.read_at)}
