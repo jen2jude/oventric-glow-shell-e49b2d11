@@ -76,6 +76,7 @@ import { NotificationsPanel } from "@/components/oventric/dashboard/Notification
 import { SalesFulfilmentList } from "@/components/oventric/SalesFulfilmentList";
 import { Truck } from "lucide-react";
 import { SellerDashboard } from "@/components/oventric/dashboard/SellerDashboard";
+import { AppDashboard } from "@/components/oventric/app/AppDashboard";
 
 
 function formatHomeCurrency(n: number, c: string): string {
@@ -331,6 +332,10 @@ function DashboardPage() {
         <Loader2 className="w-6 h-6 animate-spin text-slate-500" />
       </div>
     );
+  }
+
+  if (isAppShell) {
+    return <AppDashboard initialTab={tab} />;
   }
 
   return (
