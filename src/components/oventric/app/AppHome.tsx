@@ -25,7 +25,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 import { ProductQuickView } from "./ProductQuickView";
 import { AppSearchSheet } from "./AppSearchSheet";
-import { AddCapitalModal } from "@/components/oventric/wallet/AddCapitalModal";
+import { AppAddFundsSheet } from "@/components/oventric/app/AppAddFundsSheet";
 import { PayoutModal } from "@/components/oventric/wallet/PayoutModal";
 
 /**
@@ -355,7 +355,7 @@ export function AppHome({
         currency={currency}
         onClose={() => setQuickViewId(null)}
       />
-      {fundOpen && <AddCapitalModal onClose={() => setFundOpen(false)} />}
+      {fundOpen && <AppAddFundsSheet onClose={() => setFundOpen(false)} />}
       {payoutOpen && <PayoutModal onClose={() => setPayoutOpen(false)} />}
     </div>
   );
