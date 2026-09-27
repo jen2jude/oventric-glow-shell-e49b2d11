@@ -37,12 +37,20 @@ export function useSellerView(
 
 // Remember when the viewer last tapped inside a post (feed article or showcase sheet)
 let lastPostTap = 0;
+let lastPostProfilePath: string | null = null;
 if (typeof document !== "undefined") {
   document.addEventListener(
     "click",
     (e) => {
       const t = e.target as Element | null;
-      if (t?.closest?.("article, [data-post-origin]")) lastPostTap = Date.now();
+      if (!t?.closest?.("article, [data-post-origin]")) return;
+      lastPostTap = Date.now();
+      const a = t.closest("a[href]") as HTMLAnchorElement | null;
+      try {
+        lastPostProfilePath = a ? new URL(a.href, location.href).pathname : null;
+      } catch {
+        lastPostProfilePath = null;
+      }
     },
     true,
   );
@@ -52,8 +60,14 @@ if (typeof document !== "undefined") {
 export function useProfileVisit(profileUserId: string | null | undefined) {
   useEffect(() => {
     if (!profileUserId) return;
-    const fromPost = Date.now() - lastPostTap < 4000;
+    // Exact when the tap was on a link: it must lead to this very page.
+    // Button-driven navigation (no link) falls back to a short 1.5s window.
+    const age = Date.now() - lastPostTap;
+    const fromPost = lastPostProfilePath
+      ? age < 10000 && lastPostProfilePath === location.pathname
+      : age < 1500;
     lastPostTap = 0;
+    lastPostProfilePath = null;
     void supabase
       .rpc("log_seller_view", {
         _seller_id: profileUserId,

@@ -43,3 +43,10 @@
 
 - [x] Creator Coach AI (app-only): hub card + floating button, one saved conversation, real-stats answers — verified live
 - [x] Creator Coach one-time welcome for new and existing creators and once-per-local-hour greeting before the floating button
+
+## Polish fixes (1-5)
+- [x] Hold onboarding popups while a sheet is open
+- [x] Avatars on showcase comments
+- [x] View counts for older showcase posts
+- [x] Exact profile-visit tracking from posts
+- [x] Dashboard listing prices in home currency

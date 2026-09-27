@@ -150,6 +150,7 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
       onTouchEnd={onTouchEnd}
       aria-modal="true"
       role="dialog"
+      data-onboarding-popup
       aria-label="Welcome to Oventric"
     >
       {phase === "journey" && (
