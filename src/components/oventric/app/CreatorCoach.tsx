@@ -204,9 +204,14 @@ export function CreatorCoachDrawer({ open, onClose }: { open: boolean; onClose: 
 
 /** Floating coach button, available anywhere in the app for creators. */
 export function CreatorCoachLauncher() {
-  const { profile } = useOnboarding() as { profile?: { isCreator?: boolean } | null };
+  const loadProfile = useServerFn(getMyFullProfile);
+  const { data: prof } = useQuery({
+    queryKey: ["app-account-profile"],
+    queryFn: () => loadProfile(),
+    staleTime: 60_000,
+  });
   const [open, setOpen] = useState(false);
-  if (!profile?.isCreator) return null;
+  if (!prof?.profile?.isCreator) return null;
   return (
     <>
       {!open && (
