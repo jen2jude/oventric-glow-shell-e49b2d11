@@ -1,4 +1,3 @@
-import { CreatorHub } from "@/components/oventric/dashboard/CreatorHub";
 import { Sparkles as SparklesIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -58,7 +57,6 @@ import { QuickActions } from "@/components/oventric/dashboard/QuickActions";
 import { AnalyticsCharts } from "@/components/oventric/dashboard/AnalyticsCharts";
 import { AnalyticsWidget } from "@/components/oventric/dashboard/AnalyticsWidget";
 import { NotificationsPanel } from "@/components/oventric/dashboard/NotificationsPanel";
-import { SellerDashboard } from "@/components/oventric/dashboard/SellerDashboard";
 import { PhotoBatches } from "@/components/oventric/PhotoBatches";
 import { PhotoBatchManager } from "@/components/oventric/PhotoBatchManager";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
@@ -70,7 +68,6 @@ const TABS = [
   { key: "sales", label: "Sales", icon: Truck },
   { key: "listings", label: "Listings", icon: Store },
   { key: "social", label: "Social", icon: Users },
-  { key: "creator", label: "Seller Hub", icon: TrendingUp },
 ] as const;
 type Tab = (typeof TABS)[number]["key"];
 
@@ -353,7 +350,6 @@ export function AppDashboard({ initialTab }: { initialTab?: string }) {
           <ListingsList rows={listings} onEdit={(p) => setEditing(p)} />
         )}
         {tab === "social" && <SocialPane data={social} />}
-        {tab === "creator" && <SellerDashboard />}
       </main>
 
       {editing && (
