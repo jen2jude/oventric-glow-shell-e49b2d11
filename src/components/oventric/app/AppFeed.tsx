@@ -175,17 +175,53 @@ export function AppFeed() {
     );
   }
 
+  const visiblePosts = posts
+    .filter((p) => !hidden.has(p.id))
+    .filter((p) => {
+      if (tab !== "following") return true;
+      if (!followingIds || !followerIds) return true; // still loading
+      return followingIds.has(p.author_id) || followerIds.has(p.author_id);
+    });
+
   return (
     <div className="min-h-[calc(100dvh-80px)] bg-[#070A08] pb-24">
-      {/* Timeline header */}
-      <div className="sticky top-0 z-10 flex items-center justify-center border-b border-white/5 bg-[#070A08]/90 py-2.5 backdrop-blur">
-        <span className="text-[13px] font-bold tracking-wide" style={{ color: "#ffffff" }}>
-          For you
-        </span>
+      {/* Timeline header + tabs */}
+      <div className="sticky top-0 z-10 border-b border-white/5 bg-[#070A08]/90 backdrop-blur">
+        <div className="flex items-center justify-center gap-8 py-2.5">
+          {(
+            [
+              { key: "foryou", label: "For you" },
+              { key: "following", label: "Following" },
+            ] as const
+          ).map((t) => (
+            <button
+              key={t.key}
+              onClick={() => {
+                haptic("select");
+                setTab(t.key);
+              }}
+              className="relative pb-1 text-[13px] font-bold tracking-wide"
+              style={{ color: tab === t.key ? "#ffffff" : "rgba(255,255,255,0.4)" }}
+            >
+              {t.label}
+              {tab === t.key && (
+                <span className="absolute -bottom-[1px] left-1/2 h-[3px] w-8 -translate-x-1/2 rounded-full bg-[#E5484D]" />
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
+      {visiblePosts.length === 0 && (
+        <div className="flex items-center justify-center px-8 py-20 text-center text-[13px] text-white/50">
+          {tab === "following"
+            ? "No posts from people you follow yet — follow creators to fill this feed."
+            : "No posts yet — tap + to share the first one."}
+        </div>
+      )}
+
       <div className="divide-y divide-white/5">
-        {posts.filter((p) => !hidden.has(p.id)).map((p) => {
+        {visiblePosts.map((p) => {
           const img = p.media_type === "video" ? p.poster_url : p.media_url;
           return (
             <article key={p.id} className="px-4 py-3 active:bg-white/[0.02]">
