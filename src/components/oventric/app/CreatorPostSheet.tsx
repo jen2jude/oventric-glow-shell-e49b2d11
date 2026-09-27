@@ -104,32 +104,37 @@ export function CreatorPostSheet({
   };
 
   return (
-    <AppSheet open={!!post} onClose={onClose} tall>
+    <AppSheet
+      open={!!post}
+      onClose={onClose}
+      tall
+      header={
+        post && media ? (
+          /* Pinned media — stays put and keeps playing while the body scrolls */
+          <div className="bg-black">
+            {isVideo ? (
+              <video
+                key={post.id}
+                src={media.url}
+                poster={media.posterUrl ?? undefined}
+                autoPlay
+                controls
+                playsInline
+                className="max-h-[40dvh] w-full object-contain"
+              />
+            ) : (
+              <img
+                src={media.posterUrl ?? media.url}
+                alt={post.title}
+                className="max-h-[40dvh] w-full object-cover"
+              />
+            )}
+          </div>
+        ) : undefined
+      }
+    >
       {post && (
         <div className="pb-8">
-          {/* Media — video restarts with sound, images show full-bleed */}
-          {media && (
-            <div className="bg-black">
-              {isVideo ? (
-                <video
-                  key={post.id}
-                  src={media.url}
-                  poster={media.posterUrl ?? undefined}
-                  autoPlay
-                  controls
-                  playsInline
-                  className="max-h-[46dvh] w-full object-contain"
-                />
-              ) : (
-                <img
-                  src={media.posterUrl ?? media.url}
-                  alt={post.title}
-                  className="max-h-[46dvh] w-full object-cover"
-                />
-              )}
-            </div>
-          )}
-
           <div className="px-4 pt-4">
             {/* Creator identity */}
             <button
