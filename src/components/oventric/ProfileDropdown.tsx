@@ -1535,13 +1535,13 @@ function ProfileSettingsModal({
                 <ul className="text-[11px] text-slate-400 space-y-1 mb-3">
 
                   <li className="flex items-center justify-between">
-                    <span>Government ID</span>
+                    <span>Selfie verification</span>
                     <span
                       className={
-                        full?.kycIdUploaded ? "text-emerald-300 font-semibold" : "text-slate-500"
+                        full?.kycCompletedAt ? "text-emerald-300 font-semibold" : "text-slate-500"
                       }
                     >
-                      {full?.kycIdUploaded ? "Uploaded" : "Missing"}
+                      {full?.kycCompletedAt ? "On file" : "Not yet"}
                     </span>
                   </li>
                   <li className="flex items-center justify-between">

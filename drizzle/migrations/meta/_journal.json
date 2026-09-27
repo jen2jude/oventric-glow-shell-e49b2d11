@@ -393,6 +393,13 @@
       "when": 1790510168226,
       "tag": "0055_scope_showcase_engagement_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 56,
+      "version": "7",
+      "when": 1790510936183,
+      "tag": "0056_deprecate_kyc_id_path",
+      "breakpoints": true
     }
   ]
 }
