@@ -490,7 +490,6 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
           <MobileNav
             onCreate={() => {
               // Context-aware +: the screen decides what gets created.
-              console.log("DBG create", active, getCurrentFeedTab());
               if (active === "Marketplace") return handleCreate("sell");
               if (active === "Feed") {
                 const tab = getCurrentFeedTab();
