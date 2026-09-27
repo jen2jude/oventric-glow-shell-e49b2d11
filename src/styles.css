@@ -1322,6 +1322,88 @@
   }
 }
 
+/* App marketplace publisher: shared fields and submission, native sheet. */
+.app-sell-asset {
+  color-scheme: dark;
+  font-family: var(--font-wallet-body);
+  --background: oklch(0.13 0.005 270);
+  --foreground: oklch(0.97 0 0);
+  --card: oklch(0.16 0.006 270);
+  --card-foreground: var(--foreground);
+  --muted: oklch(0.22 0.006 270);
+  --muted-foreground: oklch(0.72 0.007 270);
+  --border: oklch(1 0 0 / 10%);
+  --input: var(--border);
+  --primary: oklch(0.63 0.2 22);
+  --primary-foreground: oklch(0.99 0 0);
+  --ring: var(--primary);
+  --contact-surface: var(--card);
+  --contact-field: var(--muted);
+  --contact-ink: var(--foreground);
+  --contact-copy: oklch(0.83 0.006 270);
+  --contact-muted: var(--muted-foreground);
+  --contact-line: var(--border);
+  --contact-violet: var(--primary);
+  --contact-blue: oklch(0.72 0.12 245);
+  --contact-gold: oklch(0.8 0.13 85);
+  --contact-coral: oklch(0.72 0.16 25);
+  --contact-whatsapp: oklch(0.72 0.13 155);
+  --contact-whatsapp-strong: var(--contact-whatsapp);
+  --contact-whatsapp-soft: oklch(0.72 0.13 155 / 10%);
+  --contact-on-whatsapp: var(--card);
+}
+.app-sell-asset .web-sell-panel {
+  border-bottom: 0;
+  background: var(--card);
+  box-shadow: 0 -20px 60px oklch(0 0 0 / 50%);
+}
+.app-sell-asset .sell-asset-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.app-sell-asset .sell-asset-header {
+  border-color: var(--border);
+  background: var(--card);
+}
+.app-sell-asset .sell-asset-header > div:first-child > span:first-child {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--primary) 14%, transparent);
+  color: var(--primary);
+}
+.app-sell-asset .sell-asset-header h2 {
+  font-family: var(--font-wallet-display);
+  font-size: 1rem;
+  letter-spacing: 0;
+}
+.app-sell-asset form > section {
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  padding: 0.5rem 0 1.5rem;
+}
+.app-sell-asset form > section > p:first-child {
+  margin-bottom: 1rem;
+  font-size: 0.7rem;
+  letter-spacing: 0;
+}
+.app-sell-asset form :is(input:not([type="checkbox"]):not([type="file"]), select, textarea) {
+  min-height: 2.9rem;
+  background: var(--muted);
+  color: var(--foreground);
+}
+.app-sell-asset form :is(input, textarea)::placeholder { color: var(--muted-foreground); }
+.app-sell-asset form :is(input, textarea, select):focus { border-color: var(--primary); outline: none; }
+.app-sell-asset form select option { background: var(--card); color: var(--foreground); }
+.app-sell-asset form input[type="checkbox"] { accent-color: var(--primary); }
+.app-sell-asset .app-sell-actions { box-shadow: 0 -10px 25px oklch(0 0 0 / 15%); }
+@media (prefers-reduced-motion: reduce) {
+  .app-sell-asset .slide-up { animation: none !important; }
+}
+
 /* Brand accent remap: green/emerald utilities resolve to the sharp hero blue. */
 
 @theme {

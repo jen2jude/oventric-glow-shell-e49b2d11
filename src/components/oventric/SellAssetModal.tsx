@@ -481,7 +481,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
 
   return (
     <div
-      className={`modal-light ${isApp ? "app-sell-asset" : "web-sell-asset"} fixed inset-0 z-[70] flex h-[100dvh] w-screen justify-center overflow-hidden ${
+      className={`${isApp ? "app-sell-asset" : "modal-light web-sell-asset"} fixed inset-0 z-[70] flex h-[100dvh] w-screen justify-center overflow-hidden ${
         success
           ? "items-center p-5 sm:p-6"
           : isApp ? "items-end p-0" : "items-start px-0 pt-3 sm:items-center sm:p-6"
@@ -816,7 +816,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
               </div>
               </section>
 
-              <StockToggleField inStock={inStock} onChange={setInStock} appearance={isApp ? "dark" : "light"} />
+              <StockToggleField inStock={inStock} onChange={setInStock} appearance="light" />
 
               <label className="block">
                 <span className={labelClass}>Stock available (optional)</span>
