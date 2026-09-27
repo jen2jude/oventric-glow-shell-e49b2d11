@@ -1323,6 +1323,11 @@ function WebProfilePage() {
                       className="h-5 w-5 shrink-0 text-[#2f6fed]"
                       aria-label={displayTierLabel}
                     />
+                    {realProfile?.isCreator && (
+                      <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#E5484D] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white" title="Oventric creator">
+                        <Sparkles className="h-3 w-3" /> Creator
+                      </span>
+                    )}
                   </div>
                   <p className="mt-0.5 text-sm font-semibold text-slate-400 md:text-slate-500">
                     {(realProfile?.skills ?? []).slice(0, 3).join(" • ") ||

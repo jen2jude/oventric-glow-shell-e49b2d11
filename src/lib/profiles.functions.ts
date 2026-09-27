@@ -248,6 +248,8 @@ export interface RealProfileView {
   tools: string[];
   /** Optional creator showcase links ("Work & portfolio"). */
   workLinks: string[];
+  /** True once the user finished the creator onboarding workflow. */
+  isCreator: boolean;
 
 
   verificationTier: string;
@@ -312,6 +314,8 @@ export const getProfileByIdOrSlug = createServerFn({ method: "GET" })
         skillLevels: normaliseSkillLevels((row as { skill_levels?: unknown }).skill_levels),
         tools: normaliseTools((row as { tools?: unknown }).tools),
         workLinks: readWorkLinks((row as { creator_profile?: unknown }).creator_profile),
+        isCreator:
+          ((row as { creator_profile?: { is_creator?: unknown } | null }).creator_profile?.is_creator) === true,
         verificationTier: row.verification_tier,
         reputationStars: Number(row.reputation_stars ?? 0),
         country: (row as { country?: string | null }).country ?? null,

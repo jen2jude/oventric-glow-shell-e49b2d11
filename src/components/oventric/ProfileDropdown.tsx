@@ -293,8 +293,8 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
   const tierLabel =
     tierNumeric === 0
       ? "Tier 0 · Guest"
-      : tierNumeric >= 5
-        ? "Tier 5 · Fully verified"
+      : tierNumeric >= 3
+        ? "Tier 3 · Fully verified"
         : tierNumeric >= 2
           ? "Tier 2 · Commerce ready"
           : "Tier 1 · Email verified";
@@ -915,8 +915,8 @@ function ProfileSettingsModal({
 
   const tierLabel = (t?: string) => {
     switch (t) {
-      case "TIER_5":
-        return { label: "Tier 5 · Fully verified", tone: "emerald" as const };
+      case "TIER_3":
+        return { label: "Tier 3 · Fully verified", tone: "emerald" as const };
       case "TIER_2":
         return { label: "Tier 2 · Commerce ready", tone: "sky" as const };
       case "TIER_1":
