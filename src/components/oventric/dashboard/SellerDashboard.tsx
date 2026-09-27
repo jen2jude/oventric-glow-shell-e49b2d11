@@ -14,6 +14,8 @@ import {
   Plus
 } from "lucide-react";
 import { getSellerMetrics } from "@/lib/dashboard/seller.functions";
+import { computeDisplayPrice } from "@/lib/fx-display";
+import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { AnalyticsWidget } from "./AnalyticsWidget";
 import { ProductManagement } from "./ProductManagement";
 import { ShopManagement } from "./ShopManagement";
