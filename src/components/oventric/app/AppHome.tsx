@@ -8,6 +8,7 @@ import {
   Compass,
   MessageCircle,
   Package,
+  Search,
   Sparkles,
   Store,
   User,
