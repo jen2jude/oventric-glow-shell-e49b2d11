@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -19,6 +19,10 @@ import {
   Flag,
   Pencil,
   Trash2,
+  Gift,
+  Sparkles,
+  Store,
+  LayoutGrid,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppSheet } from "@/components/oventric/app/AppSheet";
@@ -97,6 +101,29 @@ export function AppFeed() {
       },
       (baseCurrency ?? "USD") as Currency,
     );
+
+  // Shop tab sections, mirroring the web feed: Free downloads, Popular right
+  // now, then up to 6 category sections.
+  const shopSections = useMemo(() => {
+    const all = shopProducts ?? [];
+    const free = all.filter((p) => p.priceUSD <= 0).slice(0, 8);
+    const paid = all.filter((p) => p.priceUSD > 0);
+    const byCategory = new Map<string, ProductDTO[]>();
+    paid.forEach((p) => {
+      const key = p.category || "Other";
+      const list = byCategory.get(key) ?? [];
+      list.push(p);
+      byCategory.set(key, list);
+    });
+    return {
+      free,
+      popular: paid.slice(0, 8),
+      categories: Array.from(byCategory.entries())
+        .sort((a, b) => b[1].length - a[1].length)
+        .slice(0, 6)
+        .map(([name, items]) => [name, items.slice(0, 8)] as const),
+    };
+  }, [shopProducts]);
 
   const saveEdit = async () => {
     if (!editingPost) return;
@@ -269,6 +296,73 @@ export function AppFeed() {
               </button>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Shop tab: marketplace sections, mirroring the web feed */}
+      {tab === "shop" && (shopProducts?.length ?? 0) > 0 && (
+        <div className="space-y-5 border-b border-white/5 px-4 py-4">
+          {(
+            [
+              { title: "Free downloads", subtitle: "Grab these at no cost", icon: Gift, items: shopSections.free },
+              { title: "Popular right now", subtitle: "Top digital products on Oventric", icon: Sparkles, items: shopSections.popular },
+              ...shopSections.categories.map(([name, items], i) => ({
+                title: name,
+                subtitle: "Browse this category",
+                icon: i % 2 === 0 ? Store : LayoutGrid,
+                items,
+              })),
+            ] as const
+          )
+            .filter((s) => s.items.length > 0)
+            .map((s) => (
+              <section key={s.title} aria-label={s.title}>
+                <div className="mb-2.5 flex items-center gap-2.5">
+                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-xl border border-[#E5484D]/25 bg-[#E5484D]/10">
+                    <s.icon className="h-4 w-4 text-[#E5484D]" strokeWidth={2.2} />
+                  </span>
+                  <span className="min-w-0">
+                    <h2 className="truncate text-[13px] font-bold text-white">{s.title}</h2>
+                    <p className="truncate text-[10.5px] text-white/40">{s.subtitle}</p>
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-2.5">
+                  {s.items.map((sp) => {
+                    const free = sp.priceUSD <= 0;
+                    return (
+                      <button
+                        key={`${s.title}-${sp.id}`}
+                        onClick={() => {
+                          haptic("select");
+                          setQuickViewId(sp.id);
+                        }}
+                        className="overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] text-left active:bg-white/[0.06]"
+                      >
+                        <div className="relative h-24 w-full bg-neutral-900">
+                          {sp.coverUrl ? (
+                            <img src={sp.coverUrl} alt={sp.name} loading="lazy" className="h-full w-full object-cover" />
+                          ) : (
+                            <div className={`h-full w-full bg-gradient-to-br ${sp.hue}`} />
+                          )}
+                          {free && (
+                            <span className="absolute left-2 top-2 rounded-full bg-emerald-600 px-2 py-0.5 text-[9px] font-extrabold text-white">
+                              FREE
+                            </span>
+                          )}
+                        </div>
+                        <div className="p-2">
+                          <p className="line-clamp-2 text-[11.5px] font-semibold leading-snug text-white">{sp.name}</p>
+                          <p className="mt-0.5 truncate text-[10px] text-white/35">{sp.vendor}</p>
+                          <p className={`mt-0.5 text-[11px] font-bold ${free ? "text-emerald-400" : "text-[#E5484D]"}`}>
+                            {free ? "Free" : shopPriceOf(sp)}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+            ))}
         </div>
       )}
 
