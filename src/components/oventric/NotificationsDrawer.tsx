@@ -528,6 +528,14 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
               </button>
             ))
           )}
+          {hasMore && (
+            <button
+              onClick={() => setVisibleCount((c) => c + 10)}
+              className="mt-1 w-full py-2.5 rounded-[10px] text-xs font-semibold text-muted-foreground border border-newsfeed-line bg-newsfeed-surface hover:text-foreground hover:border-primary/40 transition-colors"
+            >
+              Load more
+            </button>
+          )}
         </div>
 
         <div
