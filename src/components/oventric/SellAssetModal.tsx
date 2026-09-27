@@ -27,6 +27,7 @@ import {
 import { snapshotFxRates } from "@/lib/fx.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { Button } from "@/components/ui/button";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 import {
   deleteProductDraft,
   loadProductDraft,
@@ -85,6 +86,7 @@ const fieldClass =
 const labelClass = "text-xs font-bold text-contact-ink";
 
 export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const isApp = useIsAppShell();
   const persist = useServerFn(createProduct);
   const snapshotFx = useServerFn(snapshotFxRates);
   const loadCats = useServerFn(listMarketplaceCategories);
@@ -479,10 +481,10 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
 
   return (
     <div
-      className={`modal-light web-sell-asset fixed inset-0 z-[70] flex h-[100dvh] w-screen justify-center overflow-hidden ${
+      className={`${isApp ? "app-sell-asset" : "modal-light web-sell-asset"} fixed inset-0 z-[70] flex h-[100dvh] w-screen justify-center overflow-hidden ${
         success
           ? "items-center p-5 sm:p-6"
-          : "items-start px-0 pt-3 sm:items-center sm:p-6"
+          : isApp ? "items-end p-0" : "items-start px-0 pt-3 sm:items-center sm:p-6"
       }`}
       role="dialog"
       aria-modal="true"
@@ -493,16 +495,17 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
         className={`web-sell-panel slide-up relative flex flex-col overflow-hidden border border-contact-line bg-contact-surface text-contact-ink shadow-contact-sheet ${
           success
              ? "sell-asset-success w-full max-w-[19rem] rounded-[18px] sm:max-w-sm"
-            : "max-h-[calc(100dvh-0.75rem)] max-w-3xl w-full rounded-t-[20px] sm:max-h-[calc(100dvh-3rem)] sm:rounded-[18px]"
+            : isApp ? "h-[94dvh] w-full max-w-2xl rounded-t-[24px]" : "max-h-[calc(100dvh-0.75rem)] max-w-3xl w-full rounded-t-[20px] sm:max-h-[calc(100dvh-3rem)] sm:rounded-[18px]"
         }`}
       >
-        <div className="grid h-1.5 shrink-0 grid-cols-5" aria-hidden="true">
+        {isApp && !success && <div className="app-profile-handle" aria-hidden="true" />}
+        {!isApp && <div className="grid h-1.5 shrink-0 grid-cols-5" aria-hidden="true">
           <span className="bg-contact-whatsapp" />
           <span className="bg-contact-blue" />
           <span className="bg-contact-violet" />
           <span className="bg-contact-gold" />
           <span className="bg-contact-coral" />
-        </div>
+        </div>}
         <div className="sell-asset-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain scroll-smooth">
         {success ? (
           <div className="px-5 py-10 text-center sm:px-8">
@@ -594,7 +597,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
               </p>
             </div>
 
-            <form onSubmit={submit} className="space-y-4 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4 sm:px-7 sm:pb-7">
+            <form id="sell-asset-form" onSubmit={submit} className="space-y-4 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4 sm:px-7 sm:pb-7">
               <section className="rounded-[10px] border border-contact-blue/20 bg-contact-blue/5 p-3.5 sm:p-4">
                 <p className="mb-3 text-[10px] font-extrabold uppercase text-contact-blue">Product details</p>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -1019,7 +1022,7 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                 </label>
               </div>
 
-              <div className="sticky bottom-0 z-10 -mx-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-t border-contact-line bg-contact-surface/95 px-4 pb-[max(0.25rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md sm:-mx-7 sm:px-7 sm:pb-0">
+              {!isApp && <div className="sticky bottom-0 z-10 -mx-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-t border-contact-line bg-contact-surface/95 px-4 pb-[max(0.25rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md sm:-mx-7 sm:px-7 sm:pb-0">
                 <div className="min-h-[1rem] truncate text-xs text-contact-muted">
                   {progress}
                 </div>
@@ -1042,11 +1045,21 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
                     {submitting ? "Submitting…" : "Submit for review"}
                   </Button>
                 </div>
-              </div>
+              </div>}
             </form>
           </>
         )}
         </div>
+        {isApp && !success && <div className="app-sell-actions shrink-0 border-t border-border bg-card px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
+          {progress && <p role="status" className="mb-2 truncate text-xs text-muted-foreground">{progress}</p>}
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" onClick={onClose} disabled={submitting} className="h-12 shrink-0 rounded-[10px] border-border bg-muted px-4 text-foreground">Cancel</Button>
+            <Button type="submit" form="sell-asset-form" disabled={submitting || (!isFree && !agreedToSplit)} className="h-12 min-w-0 flex-1 rounded-[10px] bg-primary font-bold text-primary-foreground">
+              {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
+              {submitting ? "Submitting…" : "Submit for review"}
+            </Button>
+          </div>
+        </div>}
       </div>
     </div>
   );

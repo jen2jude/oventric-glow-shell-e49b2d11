@@ -55,3 +55,6 @@
 
 ## Post composer layout
 - [x] Move post tools beneath the writing area in app and website, add selectable topics and accurate media guidance
+
+## App marketplace publishing
+- [x] Give digital product upload an app-native sheet without changing website publishing or submission rules
