@@ -27,6 +27,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ProfileSettingsLauncher } from "@/components/oventric/ProfileDropdown";
 import { LiveNotificationToasts } from "@/components/oventric/LiveNotificationToasts";
 import { PushOptInPrompt } from "@/components/oventric/PushOptInPrompt";
+import { AppBadgeSync } from "@/components/oventric/app/AppBadgeSync";
 import { BootSplash } from "@/components/oventric/BootSplash";
 
 import { OfflineBanner } from "@/components/oventric/pwa/OfflineBanner";
@@ -443,6 +444,7 @@ function RootComponent() {
               <Toaster position="top-center" richColors closeButton />
               <LiveNotificationToasts />
               <PushOptInPrompt />
+              <AppBadgeSync />
               <OfflineBanner />
               <ReferralCapture />
               <AppInstallPrompt />
