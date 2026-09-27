@@ -92,9 +92,11 @@ export function AppHome({
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
+  // In the app shell a product tap slides up the quick-view sheet instead of
+  // leaving the home screen; the full page is one tap deeper from the sheet.
   const openProduct = (p: ProductDTO) => {
     haptic("select");
-    navigate({ to: "/product/$id", params: { id: p.id } });
+    setQuickViewId(p.id);
   };
 
   // Own profile & shop are keyed by the auth user id (the routes resolve
