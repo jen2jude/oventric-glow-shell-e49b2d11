@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -21,6 +21,7 @@ import type { Currency } from "@/lib/onboarding/OnboardingContext";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
+import { NotificationsDrawer } from "@/components/oventric/NotificationsDrawer";
 import { haptic } from "@/lib/haptics";
 
 /**
@@ -42,6 +43,7 @@ export function AppHome({
   onOpenMessages: () => void;
 }) {
   const navigate = useNavigate();
+  const [notifOpen, setNotifOpen] = useState(false);
   const { baseCurrency } = useOnboarding();
   const { isAuthenticated } = useAuthGate();
   const { messages: unreadChats, total: unreadNotifs } = useUnreadCounts();
@@ -134,7 +136,7 @@ export function AppHome({
           type="button"
           onClick={() => {
             haptic("select");
-            onSelect("Notifications");
+            setNotifOpen(true);
           }}
           className="nav-tap relative flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.06]"
           aria-label="Notifications"
@@ -289,6 +291,7 @@ export function AppHome({
           </div>
         </div>
       )}
+      <NotificationsDrawer open={notifOpen} onClose={() => setNotifOpen(false)} />
     </div>
   );
 }
