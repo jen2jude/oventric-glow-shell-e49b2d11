@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 import { isSoundMuted, playNotificationSound, setSoundMuted } from "@/lib/notification-sound";
 import {
   disablePush,
@@ -145,6 +146,7 @@ function renderLinkified(text: string) {
 
 export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { isAuthenticated } = useAuthGate();
+  const isApp = useIsAppShell();
   const [channel, setChannel] = useState<Channel>("all");
   const [items, setItems] = useState<DbNotif[]>([]);
   const [loading, setLoading] = useState(false);
