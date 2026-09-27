@@ -142,18 +142,18 @@ export function ProductComments({ productId }: { productId: string }) {
       </div>
 
       {/* Review list */}
-      <div className="space-y-3">
+      <div className={isAppShell ? "space-y-2" : "space-y-3"}>
         {reviews.length === 0 ? (
-          <div className="text-center py-8 text-white/20 text-xs">
+          <div className="text-center py-6 text-white/20 text-xs">
             No reviews yet.
           </div>
         ) : (
           reviews.map((rev) => (
             <div 
               key={rev.id} 
-              className={`${isAppShell ? "bg-white/[0.02] border-white/[0.04]" : "bg-white border-slate-200 shadow-sm"} border rounded-2xl p-4`}
+              className={`${isAppShell ? "bg-white/[0.02] border-white/[0.04] rounded-[10px] p-3" : "bg-white border-slate-200 shadow-sm rounded-2xl p-4"} border`}
             >
-              <div className="flex items-start justify-between mb-3">
+              <div className={`flex items-start justify-between ${isAppShell ? "mb-2" : "mb-3"}`}>
                 <div className="flex items-center gap-2.5">
                   <div className={`w-8 h-8 rounded-full overflow-hidden ${isAppShell ? "bg-white/5 border-white/10" : "bg-slate-100 border-slate-200"} border`}>
                     <AvatarImage src={rev.user.avatarUrl} alt={rev.user.fullName || "User"} className="w-full h-full object-cover" />
