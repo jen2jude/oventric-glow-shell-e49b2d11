@@ -9,7 +9,6 @@ import {
   Settings, 
   ChevronRight,
   TrendingUp,
-  Users,
   Eye,
   MessageCircle,
   Heart,
