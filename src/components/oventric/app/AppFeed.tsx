@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
-import { Heart, MessageCircle, Share2, Play, Loader2 } from "lucide-react";
+import { Heart, MessageCircle, Share2, Play, Loader2, ShoppingBag } from "lucide-react";
 import { listPosts, toggleLike } from "@/lib/posts.functions";
 import { CommentsSheet } from "@/components/oventric/feed/CommentsSheet";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
@@ -21,7 +21,7 @@ function compact(n: number) {
   return n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : String(n);
 }
 
-/** Native app feed: full-screen snap cards, actions stacked on the right edge. */
+/** Native app feed: X-style vertical timeline of compact post cards. */
 export function AppFeed() {
   const fetchPosts = useServerFn(listPosts);
   const like = useServerFn(toggleLike);
@@ -69,6 +69,11 @@ export function AppFeed() {
     }
   };
 
+  const openAuthor = (p: Post) => {
+    if (p.author_slug || p.author_id)
+      navigate({ to: "/profile/$id", params: { id: p.author_slug ?? p.author_id } });
+  };
+
   if (!posts) {
     return (
       <div className="flex h-[calc(100dvh-80px)] items-center justify-center bg-[#070A08]">
@@ -86,85 +91,121 @@ export function AppFeed() {
   }
 
   return (
-    <div className="relative bg-[#070A08]">
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex justify-center pt-[max(env(safe-area-inset-top),12px)]">
-        <span className="rounded-full bg-black/40 px-3 py-1 text-[12px] font-semibold tracking-wide backdrop-blur" style={{ color: "#ffffff" }}>
+    <div className="min-h-[calc(100dvh-80px)] bg-[#070A08] pb-24">
+      {/* Timeline header */}
+      <div className="sticky top-0 z-10 flex items-center justify-center border-b border-white/5 bg-[#070A08]/90 py-2.5 backdrop-blur">
+        <span className="text-[13px] font-bold tracking-wide" style={{ color: "#ffffff" }}>
           For you
         </span>
       </div>
-      <div className="h-[calc(100dvh-80px)] snap-y snap-mandatory overflow-y-auto overscroll-contain [scrollbar-width:none]">
+
+      <div className="divide-y divide-white/5">
         {posts.map((p) => {
           const img = p.media_type === "video" ? p.poster_url : p.media_url;
           return (
-            <section key={p.id} className="relative h-[calc(100dvh-80px)] w-full snap-start overflow-hidden">
-              {img ? (
-                <img src={img} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
-              ) : (
-                <div className="absolute inset-0 flex items-center bg-gradient-to-br from-[#2A0E10] via-[#110A0B] to-[#070A08] px-8">
-                  <p className="line-clamp-[10] text-[22px] font-semibold leading-snug" style={{ color: "#ffffff" }}>
-                    {p.text}
-                  </p>
-                </div>
-              )}
-              {p.media_type === "video" && (
+            <article key={p.id} className="px-4 py-3 active:bg-white/[0.02]">
+              {/* Header row */}
+              <div className="flex items-start gap-3">
                 <button
-                  onClick={() => navigate({ to: "/post/$id", params: { id: p.id } })}
-                  className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 backdrop-blur"
-                  aria-label="Play video"
-                >
-                  <Play className="h-7 w-7 fill-current" style={{ color: "#ffffff" }} />
-                </button>
-              )}
-              <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-
-              {/* Right action rail */}
-              <div className="absolute bottom-24 right-3 z-10 flex flex-col items-center gap-5">
-                <button
-                  onClick={() =>
-                    p.author_slug || p.author_id
-                      ? navigate({ to: "/profile/$id", params: { id: p.author_slug ?? p.author_id } })
-                      : undefined
-                  }
-                  className="h-11 w-11 overflow-hidden rounded-full ring-2 ring-[#E5484D]"
+                  onClick={() => openAuthor(p)}
+                  className="h-10 w-10 shrink-0 overflow-hidden rounded-full"
                   aria-label={`Open ${p.author_name}`}
                 >
                   {p.author_avatar_url ? (
                     <img src={p.author_avatar_url} alt="" className="h-full w-full object-cover" />
                   ) : (
-                    <span className="flex h-full w-full items-center justify-center bg-[#E5484D] text-[13px] font-bold" style={{ color: "#ffffff" }}>
+                    <span
+                      className="flex h-full w-full items-center justify-center bg-[#E5484D] text-[12px] font-bold"
+                      style={{ color: "#ffffff" }}
+                    >
                       {p.initials}
                     </span>
                   )}
                 </button>
-                <Action label={compact(p.likes_count)} onClick={() => onLike(p)} aria="Like">
-                  <Heart className={`h-7 w-7 ${p.viewer_liked ? "fill-[#E5484D] text-[#E5484D]" : ""}`} style={p.viewer_liked ? undefined : { color: "#ffffff" }} />
-                </Action>
-                <Action label={compact(p.comments_count)} onClick={() => setCommentsFor(p)} aria="Comments">
-                  <MessageCircle className="h-7 w-7" style={{ color: "#ffffff" }} />
-                </Action>
-                <Action label="Share" onClick={() => onShare(p)} aria="Share">
-                  <Share2 className="h-7 w-7" style={{ color: "#ffffff" }} />
-                </Action>
-              </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-baseline gap-1.5">
+                    <button
+                      onClick={() => openAuthor(p)}
+                      className="truncate text-[14px] font-bold"
+                      style={{ color: "#ffffff" }}
+                    >
+                      {p.author_name}
+                    </button>
+                    <span className="shrink-0 text-[12px] text-white/40">· {ago(p.created_at)}</span>
+                  </div>
 
-              {/* Caption */}
-              <div className="absolute bottom-6 left-4 right-20 z-10">
-                <p className="text-[14px] font-bold" style={{ color: "#ffffff" }}>
-                  {p.author_name} <span className="font-normal text-white/50">· {ago(p.created_at)}</span>
-                </p>
-                {img && p.text && (
-                  <p className="mt-1 line-clamp-3 text-[13px] leading-snug text-white/85">{p.text}</p>
-                )}
-                {p.product_attachments?.[0] && (
-                  <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-[#E5484D]/90 px-2.5 py-1 text-[11px] font-semibold" style={{ color: "#ffffff" }}>
-                    Shop this post
-                  </span>
-                )}
+                  {/* Text */}
+                  {p.text && (
+                    <p className="mt-0.5 whitespace-pre-line text-[14px] leading-snug text-white/90">
+                      {p.text}
+                    </p>
+                  )}
+
+                  {/* Media */}
+                  {img && (
+                    <button
+                      onClick={() => navigate({ to: "/post/$id", params: { id: p.id } })}
+                      className="relative mt-2.5 block w-full overflow-hidden rounded-2xl border border-white/10"
+                      aria-label="Open post"
+                    >
+                      <img src={img} alt="" loading="lazy" className="w-full object-cover" />
+                      {p.media_type === "video" && (
+                        <span className="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/55 backdrop-blur">
+                          <Play className="h-5 w-5 fill-current" style={{ color: "#ffffff" }} />
+                        </span>
+                      )}
+                    </button>
+                  )}
+
+                  {/* Product attachment */}
+                  {p.product_attachments?.[0] && (
+                    <button
+                      onClick={() =>
+                        navigate({
+                          to: "/product/$id",
+                          params: { id: p.product_attachments![0].id },
+                        })
+                      }
+                      className="mt-2.5 inline-flex items-center gap-1.5 rounded-full bg-[#E5484D]/15 px-3 py-1.5 text-[12px] font-semibold text-[#E5484D]"
+                    >
+                      <ShoppingBag className="h-3.5 w-3.5" />
+                      Shop this post
+                    </button>
+                  )}
+
+                  {/* Action row */}
+                  <div className="mt-2 flex items-center justify-between pr-6">
+                    <button
+                      onClick={() => setCommentsFor(p)}
+                      className="flex items-center gap-1.5 text-white/45 active:text-[#E5484D]"
+                      aria-label="Comments"
+                    >
+                      <MessageCircle className="h-[18px] w-[18px]" />
+                      <span className="text-[12px] font-medium">{compact(p.comments_count)}</span>
+                    </button>
+                    <button
+                      onClick={() => onLike(p)}
+                      className={`flex items-center gap-1.5 ${p.viewer_liked ? "text-[#E5484D]" : "text-white/45"} active:text-[#E5484D]`}
+                      aria-label="Like"
+                    >
+                      <Heart className={`h-[18px] w-[18px] ${p.viewer_liked ? "fill-[#E5484D]" : ""}`} />
+                      <span className="text-[12px] font-medium">{compact(p.likes_count)}</span>
+                    </button>
+                    <button
+                      onClick={() => onShare(p)}
+                      className="flex items-center gap-1.5 text-white/45 active:text-[#E5484D]"
+                      aria-label="Share"
+                    >
+                      <Share2 className="h-[18px] w-[18px]" />
+                    </button>
+                  </div>
+                </div>
               </div>
-            </section>
+            </article>
           );
         })}
       </div>
+
       {commentsFor && (
         <CommentsSheet
           postId={commentsFor.id}
@@ -175,26 +216,5 @@ export function AppFeed() {
         />
       )}
     </div>
-  );
-}
-
-function Action({
-  children,
-  label,
-  onClick,
-  aria,
-}: {
-  children: React.ReactNode;
-  label: string;
-  onClick: () => void;
-  aria: string;
-}) {
-  return (
-    <button onClick={onClick} aria-label={aria} className="flex flex-col items-center gap-1 drop-shadow-lg active:scale-90 transition-transform">
-      {children}
-      <span className="text-[11px] font-semibold" style={{ color: "#ffffff" }}>
-        {label}
-      </span>
-    </button>
   );
 }
