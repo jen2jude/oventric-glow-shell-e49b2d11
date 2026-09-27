@@ -368,13 +368,21 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
         aria-hidden
       />
       <aside
-        className="web-notifications w-full sm:w-[420px] h-screen border-l shadow-2xl z-50 fixed right-0 top-0 animate-in slide-in-from-right duration-300"
+        className={
+          isApp
+            ? "app-notif-sheet slide-up fixed inset-x-0 bottom-0 top-auto z-50 flex h-[88dvh] w-full flex-col rounded-t-[24px] border border-newsfeed-line bg-newsfeed-surface shadow-newsfeed-panel"
+            : "web-notifications w-full sm:w-[420px] h-screen border-l shadow-2xl z-50 fixed right-0 top-0 animate-in slide-in-from-right duration-300"
+        }
         role="dialog"
         aria-modal="true"
         aria-label="Notifications"
       >
-        <div className="about-spectrum h-1 w-full" aria-hidden />
-        <div className="flex items-center justify-between px-5 h-16 border-b">
+        {isApp ? (
+          <div className="app-profile-handle mx-auto mt-3" aria-hidden />
+        ) : (
+          <div className="about-spectrum h-1 w-full" aria-hidden />
+        )}
+        <div className="flex items-center justify-between px-5 h-16 border-b border-newsfeed-line">
           <div>
             <h2 className="font-wallet-display text-foreground font-semibold text-base">
               Notifications
@@ -419,7 +427,7 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
           </div>
         </div>
 
-        <div className="px-5 pt-3 pb-3 flex items-center gap-2 overflow-x-auto no-scrollbar border-b">
+        <div className="px-5 pt-3 pb-3 flex items-center gap-2 overflow-x-auto no-scrollbar border-b border-newsfeed-line">
           {CHANNELS.map((c) => {
             const active = channel === c.key;
             const chanCount =
