@@ -13,6 +13,7 @@ import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SellersRouteImport } from './routes/sellers'
+import { Route as SellerHubRouteImport } from './routes/seller-hub'
 import { Route as ReportProblemRouteImport } from './routes/report-problem'
 import { Route as RefundsRouteImport } from './routes/refunds'
 import { Route as ReferralsRouteImport } from './routes/referrals'
@@ -125,6 +126,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const SellersRoute = SellersRouteImport.update({
   id: '/sellers',
   path: '/sellers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SellerHubRoute = SellerHubRouteImport.update({
+  id: '/seller-hub',
+  path: '/seller-hub',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReportProblemRoute = ReportProblemRouteImport.update({
@@ -627,6 +633,7 @@ export interface FileRoutesByFullPath {
   '/referrals': typeof ReferralsRoute
   '/refunds': typeof RefundsRoute
   '/report-problem': typeof ReportProblemRoute
+  '/seller-hub': typeof SellerHubRoute
   '/sellers': typeof SellersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -725,6 +732,7 @@ export interface FileRoutesByTo {
   '/referrals': typeof ReferralsRoute
   '/refunds': typeof RefundsRoute
   '/report-problem': typeof ReportProblemRoute
+  '/seller-hub': typeof SellerHubRoute
   '/sellers': typeof SellersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -823,6 +831,7 @@ export interface FileRoutesById {
   '/referrals': typeof ReferralsRoute
   '/refunds': typeof RefundsRoute
   '/report-problem': typeof ReportProblemRoute
+  '/seller-hub': typeof SellerHubRoute
   '/sellers': typeof SellersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -924,6 +933,7 @@ export interface FileRouteTypes {
     | '/referrals'
     | '/refunds'
     | '/report-problem'
+    | '/seller-hub'
     | '/sellers'
     | '/sitemap.xml'
     | '/terms'
@@ -1022,6 +1032,7 @@ export interface FileRouteTypes {
     | '/referrals'
     | '/refunds'
     | '/report-problem'
+    | '/seller-hub'
     | '/sellers'
     | '/sitemap.xml'
     | '/terms'
@@ -1119,6 +1130,7 @@ export interface FileRouteTypes {
     | '/referrals'
     | '/refunds'
     | '/report-problem'
+    | '/seller-hub'
     | '/sellers'
     | '/sitemap.xml'
     | '/terms'
@@ -1219,6 +1231,7 @@ export interface RootRouteChildren {
   ReferralsRoute: typeof ReferralsRoute
   RefundsRoute: typeof RefundsRoute
   ReportProblemRoute: typeof ReportProblemRoute
+  SellerHubRoute: typeof SellerHubRoute
   SellersRoute: typeof SellersRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
@@ -1278,6 +1291,13 @@ declare module '@tanstack/react-router' {
       path: '/sellers'
       fullPath: '/sellers'
       preLoaderRoute: typeof SellersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/seller-hub': {
+      id: '/seller-hub'
+      path: '/seller-hub'
+      fullPath: '/seller-hub'
+      preLoaderRoute: typeof SellerHubRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/report-problem': {
@@ -2094,6 +2114,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReferralsRoute: ReferralsRoute,
   RefundsRoute: RefundsRoute,
   ReportProblemRoute: ReportProblemRoute,
+  SellerHubRoute: SellerHubRoute,
   SellersRoute: SellersRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
