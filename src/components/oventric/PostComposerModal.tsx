@@ -44,6 +44,7 @@ type MobileVirtualKeyboard = EventTarget & {
 const MAX_MEDIA_BYTES = 50 * 1024 * 1024;
 const MAX_IMAGES = 10;
 const MAX_TEXT = 5000;
+const MEDIA_ACCEPT = ".jpg,.jpeg,.png,.mp4";
 const POST_TOPICS = [
   ["Designs", "Designs"], ["Development", "Development"], ["Marketing", "Marketing"],
   ["Emailing", "Emailing"], ["Business", "Business"], ["Video editing", "VideoEditing"],
@@ -324,10 +325,11 @@ export function PostComposerModal({
     const nextAttachments = [...attachments];
     let err: string | null = null;
     for (const file of files) {
-      const isImage = file.type.startsWith("image/");
-      const isVideo = file.type.startsWith("video/");
+      const extension = file.name.split(".").pop()?.toLowerCase();
+      const isImage = extension === "jpg" || extension === "jpeg" || extension === "png";
+      const isVideo = extension === "mp4";
       if (!isImage && !isVideo) {
-        err = "Only images or videos are allowed.";
+        err = "Choose a JPG, JPEG, PNG or MP4 file.";
         continue;
       }
       if (file.size > MAX_MEDIA_BYTES) {
@@ -590,7 +592,7 @@ export function PostComposerModal({
             </div>)}
             {!attachments.some((attachment) => attachment.kind === "video") && attachments.length < MAX_IMAGES && <Button variant="outline" onClick={onPickFile} aria-label="Add more media" className="h-32 w-24 shrink-0 flex-col rounded-[10px] border-dashed text-muted-foreground"><Plus /> Add</Button>}
           </div>}
-          <input ref={fileInputRef} type="file" accept="image/*,video/*" multiple className="hidden" onChange={onFile} />
+           <input ref={fileInputRef} type="file" accept={MEDIA_ACCEPT} multiple className="hidden" onChange={onFile} />
 
           {attachedProducts.length > 0 && <div className="mb-3 space-y-2">{attachedProducts.map((product) => <div key={product.id} className="flex items-center gap-3 rounded-[10px] border border-border bg-muted/40 p-2">
             <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-[8px] bg-muted">{product.coverUrl ? <img src={product.coverUrl} alt="" className="size-full object-cover" /> : <ShoppingBag className="size-5 text-muted-foreground" />}</div>
@@ -798,7 +800,7 @@ export function PostComposerModal({
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*,video/*"
+             accept={MEDIA_ACCEPT}
             multiple
             className="hidden"
             onChange={onFile}
