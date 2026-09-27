@@ -4728,6 +4728,15 @@ section + section {
   background-color: #eef1f6;
 }
 
+/* App product page: the light-site .oventric-web text-white ink overrides must
+   not leak into the dark app shell — restore the white-ink utilities there. */
+.app-product .text-white { color: #ffffff; }
+.app-product .text-white\/70 { color: rgb(255 255 255 / 0.7); }
+.app-product .text-white\/30 { color: rgb(255 255 255 / 0.3); }
+.app-product .text-white\/20 { color: rgb(255 255 255 / 0.2); }
+.app-product .text-white\/10 { color: rgb(255 255 255 / 0.1); }
+.app-product .text-white\/5 { color: rgb(255 255 255 / 0.05); }
+
 
 /* Chat drawer open — hide the mobile bottom navigation so the reply
    composer is fully reachable on small screens. */
