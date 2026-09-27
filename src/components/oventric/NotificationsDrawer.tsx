@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 import { isSoundMuted, playNotificationSound, setSoundMuted } from "@/lib/notification-sound";
 import {
   disablePush,
@@ -145,6 +146,7 @@ function renderLinkified(text: string) {
 
 export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { isAuthenticated } = useAuthGate();
+  const isApp = useIsAppShell();
   const [channel, setChannel] = useState<Channel>("all");
   const [items, setItems] = useState<DbNotif[]>([]);
   const [loading, setLoading] = useState(false);
@@ -366,13 +368,21 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
         aria-hidden
       />
       <aside
-        className="web-notifications w-full sm:w-[420px] h-screen border-l shadow-2xl z-50 fixed right-0 top-0 animate-in slide-in-from-right duration-300"
+        className={
+          isApp
+            ? "app-notif-sheet slide-up fixed inset-x-0 bottom-0 top-auto z-50 flex h-[88dvh] w-full flex-col rounded-t-[24px] border border-newsfeed-line bg-newsfeed-surface shadow-newsfeed-panel"
+            : "web-notifications w-full sm:w-[420px] h-screen border-l shadow-2xl z-50 fixed right-0 top-0 animate-in slide-in-from-right duration-300"
+        }
         role="dialog"
         aria-modal="true"
         aria-label="Notifications"
       >
-        <div className="about-spectrum h-1 w-full" aria-hidden />
-        <div className="flex items-center justify-between px-5 h-16 border-b">
+        {isApp ? (
+          <div className="app-profile-handle mx-auto mt-3" aria-hidden />
+        ) : (
+          <div className="about-spectrum h-1 w-full" aria-hidden />
+        )}
+        <div className="flex items-center justify-between px-5 h-16 border-b border-newsfeed-line">
           <div>
             <h2 className="font-wallet-display text-foreground font-semibold text-base">
               Notifications
@@ -417,7 +427,7 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
           </div>
         </div>
 
-        <div className="px-5 pt-3 pb-3 flex items-center gap-2 overflow-x-auto no-scrollbar border-b">
+        <div className="px-5 pt-3 pb-3 flex items-center gap-2 overflow-x-auto no-scrollbar border-b border-newsfeed-line">
           {CHANNELS.map((c) => {
             const active = channel === c.key;
             const chanCount =
@@ -457,8 +467,10 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
         </div>
 
         <div
-          className="overflow-y-auto px-5 py-4"
-          style={{ maxHeight: "calc(100vh - 8.75rem - 3.75rem)" }}
+          className="overflow-y-auto overscroll-contain px-5 py-4 flex-1"
+          style={
+            isApp ? undefined : { maxHeight: "calc(100vh - 8.75rem - 3.75rem)" }
+          }
         >
           {!isAuthenticated ? (
             <div className="text-center text-xs text-muted-foreground py-12">
@@ -514,7 +526,13 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
           )}
         </div>
 
-        <div className="absolute bottom-0 inset-x-0 px-5 py-3 border-t bg-background">
+        <div
+          className={
+            isApp
+              ? "shrink-0 px-5 pt-3 border-t border-newsfeed-line bg-newsfeed-surface pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+              : "absolute bottom-0 inset-x-0 px-5 py-3 border-t bg-background"
+          }
+        >
           <button
             onClick={handleMarkAll}
             disabled={!isAuthenticated || items.every((n) => n.read_at)}
@@ -536,7 +554,9 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
             aria-label={viewing.title}
           >
             <div
-              className="web-notifications w-full max-w-lg my-auto border rounded-2xl shadow-2xl overflow-hidden"
+              className={`web-notifications w-full max-w-lg my-auto border rounded-2xl shadow-2xl overflow-hidden ${
+                isApp ? "app-notif-sheet border-newsfeed-line bg-newsfeed-surface" : ""
+              }`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-start gap-3 px-5 py-4 border-b">
