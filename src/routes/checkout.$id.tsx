@@ -858,7 +858,7 @@ function CheckoutPage() {
                   className={`text-[11px] ${isAppShell ? "text-slate-400" : "text-slate-600"}`}
                 >
                   This payment is settled in US dollars — send{" "}
-                  <span className="font-bold">{blind(formatMoney(totalUSD, "USD"))}</span>, then upload your
+                  <span className="font-bold">{formatMoney(totalUSD, "USD")}</span>, then upload your
                   receipt.
                 </p>
               )}
@@ -893,7 +893,7 @@ function CheckoutPage() {
                   <div className="flex-1">
                     <div>
                       Wallet has {blind(fmtLocal(balanceUSD ?? 0, homeCurrency))} — you need{" "}
-                      {blind(fmtLocal(totalLocal, homeCurrency))}.
+                      {fmtLocal(totalLocal, homeCurrency)}.
                     </div>
                     <button
                       onClick={() => {
@@ -961,7 +961,7 @@ function CheckoutPage() {
                         <span
                           className={`shrink-0 text-sm font-black ${isAppShell ? "text-white" : "text-slate-900"}`}
                         >
-                          {blind(fmtPrice(unitUSD, homeCurrency, product, unitLocal))}
+                          {fmtPrice(unitUSD, homeCurrency, product, unitLocal)}
                         </span>
                       </div>
                     </div>
@@ -1169,7 +1169,7 @@ function CheckoutPage() {
                       </div>
                     ) : cashbackEarnUSD > 0 ? (
                       <div className={`text-[11px] mt-0.5 ${isAppShell ? "text-slate-400" : "text-slate-600"}`}>
-                        You earn back: + {blind(fmt(cashbackEarnUSD, homeCurrency))} ({cashbackRatePct}% seller cashback)
+                        You earn back: + {fmt(cashbackEarnUSD, homeCurrency)} ({cashbackRatePct}% seller cashback)
                       </div>
                     ) : null}
                   </div>
@@ -1183,19 +1183,19 @@ function CheckoutPage() {
               >
                 <div className={`flex justify-between ${isAppShell ? "text-slate-400" : "text-slate-500"}`}>
                   <span>Subtotal</span>
-                  <span>{blind(fmtPrice(subtotalUSD, homeCurrency, product, subtotalLocal))}</span>
+                  <span>{fmtPrice(subtotalUSD, homeCurrency, product, subtotalLocal)}</span>
                 </div>
                 {discountUSD > 0 && (
                   <div className="flex justify-between text-[#E5484D]">
                     <span>Coupon ({coupon?.code})</span>
-                    <span>− {blind(fmtPrice(discountUSD, homeCurrency, product, discountLocal))}</span>
+                    <span>− {fmtPrice(discountUSD, homeCurrency, product, discountLocal)}</span>
                   </div>
                 )}
                 {cashbackApplyUSD > 0 && (
                   <div className="flex justify-between text-[#E5484D]">
                     <span>Cashback applied</span>
                     <span>
-                      − {blind(fmtPrice(cashbackApplyUSD, homeCurrency, product, cashbackApplyLocal))}
+                      − {fmtPrice(cashbackApplyUSD, homeCurrency, product, cashbackApplyLocal)}
                     </span>
                   </div>
                 )}
@@ -1211,7 +1211,7 @@ function CheckoutPage() {
                   }`}
                 >
                   <span>Total</span>
-                  <span>{blind(payTotalLabel)}</span>
+                  <span>{payTotalLabel}</span>
                 </div>
               </div>
 
@@ -1219,7 +1219,7 @@ function CheckoutPage() {
                 <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#0A0A0B]/80 backdrop-blur-xl border-t border-white/5 p-4 flex flex-col gap-3 pb-safe">
                   <div className="flex justify-between items-center px-1">
                     <span className="text-xs text-slate-400">{isFree ? "Price" : "Total to pay"}</span>
-                    <span className="text-lg font-black text-white">{isFree ? "Free" : blind(payTotalLabel)}</span>
+                    <span className="text-lg font-black text-white">{isFree ? "Free" : payTotalLabel}</span>
                   </div>
                   <button
                     onClick={pay}
@@ -1236,13 +1236,13 @@ function CheckoutPage() {
                         <Download className="w-4 h-4" /> Download now
                       </>
                     ) : method === "wallet" ? (
-                      `Pay ${blind(payTotalLabel)}`
+                      `Pay ${payTotalLabel}`
                     ) : gateway === "minipay" ? (
-                      `Pay with MiniPay · ${blind(payTotalLabel)}`
+                      `Pay with MiniPay · ${payTotalLabel}`
                     ) : gateway === "binance" ? (
-                      `Pay with Binance · ${blind(payTotalLabel)}`
+                      `Pay with Binance · ${payTotalLabel}`
                     ) : (
-                      `Pay with Paystack · ${blind(payTotalLabel)}`
+                      `Pay with Paystack · ${payTotalLabel}`
                     )}
                   </button>
                   <div className="text-[10px] text-slate-500 flex items-center justify-center gap-1 opacity-60">
@@ -1267,12 +1267,12 @@ function CheckoutPage() {
                         <Download className="w-4 h-4" /> Download now
                       </>
                     ) : method === "wallet" ? (
-                      `Pay ${blind(payTotalLabel)}`
+                      `Pay ${payTotalLabel}`
                     ) : gateway === "minipay" || gateway === "binance" ? (
-                      `Pay with ${activeOption?.label ?? (gateway === "minipay" ? "MiniPay" : "Binance")} · ${blind(payTotalLabel)}`
+                      `Pay with ${activeOption?.label ?? (gateway === "minipay" ? "MiniPay" : "Binance")} · ${payTotalLabel}`
                     ) : (
                       <span className="inline-flex items-center gap-2">
-                         Pay with Paystack · {blind(payTotalLabel)}
+                         Pay with Paystack · {payTotalLabel}
                       </span>
                     )}
                   </button>
