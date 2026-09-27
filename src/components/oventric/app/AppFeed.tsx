@@ -23,11 +23,14 @@ import {
   Sparkles,
   Store,
   LayoutGrid,
+  BadgeCheck,
+  Clapperboard,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppSheet } from "@/components/oventric/app/AppSheet";
 import { listPosts, toggleLike, setPostSaved as setPostSavedFn, deletePost as deletePostFn, updatePostText as updatePostTextFn } from "@/lib/posts.functions";
 import { listFollowing, listFollowers } from "@/lib/follows.functions";
+import { listCreatorFeed, getTopCreators, type CreatorPostDTO } from "@/lib/creators.functions";
 import { listProducts } from "@/lib/marketplace.functions";
 import { ProductQuickView } from "./ProductQuickView";
 import { EDIT_WINDOW_MS } from "@/lib/post-edit";
@@ -78,7 +81,7 @@ export function AppFeed() {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [editingPost, setEditingPost] = useState<{ id: string; text: string } | null>(null);
   const [editSaving, setEditSaving] = useState(false);
-  const [tab, setTab] = useState<"foryou" | "following" | "shop">("foryou");
+  const [tab, setTab] = useState<"foryou" | "following" | "shop" | "creators">("foryou");
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
   const [followerIds, setFollowerIds] = useState<Set<string> | null>(null);
   const loadFollowing = useServerFn(listFollowing);
