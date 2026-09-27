@@ -378,7 +378,7 @@ function ProductPage() {
     const next = `/product/${routeSlug}${window.location.search}${window.location.hash}`;
     window.history.replaceState(window.history.state, "", next);
   }, [routeSlug, id]);
-  const { baseCurrency, require } = useOnboarding();
+  const { baseCurrency, balancesHidden, require } = useOnboarding();
   const load = useServerFn(getProduct);
   const loadRelated = useServerFn(getRelatedProducts);
   const [product, setProduct] = useState<ProductDTO | null>(null);
@@ -813,7 +813,7 @@ function ProductPage() {
                       return (
                         <>
                           <div className="text-3xl font-extrabold text-newsfeed-ink sm:text-4xl">
-                            {dp.formatted}
+                            {dp.value === 0 ? "Free" : balancesHidden ? "••••" : dp.formatted}
                           </div>
                         </>
                       );
@@ -882,7 +882,7 @@ function ProductPage() {
                             <span className={`shrink-0 font-black ${isAppShell ? "text-white" : "text-slate-900"}`}>
                               {pk.priceUsd === 0
                                 ? "Free"
-                                : formatMoney(
+                                : balancesHidden ? "••••" : formatMoney(
                                     pk.originalCurrency === baseCurrency
                                       ? pk.originalAmount
                                       : pk.priceUsd * usdRate(baseCurrency),
@@ -901,7 +901,7 @@ function ProductPage() {
                     <span className={`${isAppShell ? "text-white" : "text-slate-900"} md:text-slate-900 font-mono`}>
                       {productDisplay(product, baseCurrency).value === 0
                         ? "Free"
-                        : formatMoney(productDisplay(product, baseCurrency).value * qty, baseCurrency)}
+                        : balancesHidden ? "••••" : formatMoney(productDisplay(product, baseCurrency).value * qty, baseCurrency)}
                     </span>
                   </div>
                 )}
@@ -1114,7 +1114,7 @@ function ProductPage() {
                             {related.name}
                           </h3>
                           <div className="mt-3 text-base font-extrabold text-newsfeed-coral">
-                            {display.value === 0 ? "Free" : display.formatted}
+                            {display.value === 0 ? "Free" : balancesHidden ? "••••" : display.formatted}
                           </div>
                         </div>
                       </Link>
