@@ -25,6 +25,8 @@ import { useUnreadCounts } from "@/hooks/use-unread-counts";
 import { NotificationsDrawer } from "@/components/oventric/NotificationsDrawer";
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
+import { ProductQuickView } from "./ProductQuickView";
+import { AppSearchSheet } from "./AppSearchSheet";
 
 /**
  * Native app Home — a dark, compact dashboard that replaces the web marketing
@@ -46,6 +48,8 @@ export function AppHome({
 }) {
   const navigate = useNavigate();
   const [notifOpen, setNotifOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [quickViewId, setQuickViewId] = useState<string | null>(null);
   const { baseCurrency } = useOnboarding();
   const { isAuthenticated } = useAuthGate();
   const { messages: unreadChats, total: unreadNotifs } = useUnreadCounts();
