@@ -35,6 +35,10 @@ const CreatePanel = lazy(() =>
 const Messages = lazy(() =>
   import("@/components/oventric/Messages").then((m) => ({ default: m.Messages })),
 );
+const AppMessages = lazy(() =>
+  import("@/components/oventric/app/AppMessages").then((m) => ({ default: m.AppMessages })),
+
+);
 const MessagesDrawer = lazy(() =>
   import("@/components/oventric/MessagesDrawer").then((m) => ({ default: m.MessagesDrawer })),
 );
