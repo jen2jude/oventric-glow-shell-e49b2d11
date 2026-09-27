@@ -218,6 +218,29 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
         </button>
       )}
 
+      {/* Creator Hub spotlight */}
+      {p?.isCreator && (
+        <button
+          type="button"
+          onClick={() => {
+            haptic("select");
+            navigate({ to: "/dashboard", search: { tab: "creatorhub" } });
+          }}
+          className="mt-2 flex w-full items-center gap-3 rounded-[16px] border border-fuchsia-400/20 bg-gradient-to-br from-fuchsia-500/20 via-violet-500/10 to-transparent p-3.5 text-left active:bg-fuchsia-500/25"
+        >
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-gradient-to-br from-fuchsia-500 to-violet-500">
+            <Sparkles className="h-5 w-5 text-white" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[15px] font-semibold">Creator Hub</span>
+            <span className="block truncate text-[11px] text-white/50">
+              Audience, post performance, reach and sales from posts
+            </span>
+          </span>
+          <ChevronRight className="h-4 w-4 shrink-0 text-white/40" />
+        </button>
+      )}
+
       {groups.map((g) => (
         <section key={g.title} className="mt-5">
           <h2 className="mb-1.5 px-1 text-[11px] font-semibold uppercase tracking-wider text-white/35">{g.title}</h2>
