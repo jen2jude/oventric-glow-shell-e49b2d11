@@ -39,4 +39,4 @@
 - [x] Native app Account screen (identity, balances, shortcuts, settings, notifications, support, sign out) opened from the Home avatar
 
 - [x] Creator Coach AI (app-only): hub card + floating button, one saved conversation, real-stats answers — verified live
-- [x] Creator Coach onboarding welcome and once-per-local-hour greeting before the floating button
+- [x] Creator Coach one-time welcome for new and existing creators and once-per-local-hour greeting before the floating button
