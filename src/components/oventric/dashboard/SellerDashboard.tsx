@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { getSellerMetrics } from "@/lib/dashboard/seller.functions";
 import { computeDisplayPrice, formatMoney } from "@/lib/fx-display";
+import { visibleMoney } from "@/lib/money-visibility";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { AnalyticsWidget } from "./AnalyticsWidget";
 import { ProductManagement } from "./ProductManagement";
@@ -27,7 +28,7 @@ type SellerTab = "overview" | "products" | "orders" | "shop" | "earnings";
 export function SellerDashboard() {
   const [activeTab, setActiveTab] = useState<SellerTab>("overview");
   const fetchMetrics = useServerFn(getSellerMetrics);
-  const { baseCurrency } = useOnboarding();
+  const { baseCurrency, balancesHidden } = useOnboarding();
   const currency = (baseCurrency ?? "USD") as Currency;
 
   const { data: metrics } = useSuspenseQuery({
@@ -35,13 +36,14 @@ export function SellerDashboard() {
     queryFn: () => fetchMetrics({}),
   });
 
-  const revenueDisplay = computeDisplayPrice(
+  const revenueAmount = computeDisplayPrice(
     { original_currency: "USD", original_amount: metrics.totalRevenueUSD },
     currency,
-  ).formatted;
+  ).value;
+  const revenueDisplay = visibleMoney(revenueAmount, currency, balancesHidden);
 
   const usdPreview =
-    currency === "USD" ? null : formatMoney(metrics.totalRevenueUSD, "USD");
+    currency === "USD" ? null : visibleMoney(metrics.totalRevenueUSD, "USD", balancesHidden);
 
   const TABS = [
     { id: "overview", label: "Overview", icon: BarChart3 },

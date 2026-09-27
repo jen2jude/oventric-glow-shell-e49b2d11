@@ -19,6 +19,8 @@ import {
   Wallet as WalletIcon,
   FileText,
   LifeBuoy,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyFullProfile } from "@/lib/profiles.functions";
@@ -26,6 +28,7 @@ import { getWalletBalances } from "@/lib/wallet.functions";
 import { getSellerMetrics } from "@/lib/dashboard/seller.functions";
 import { getCreatorHub } from "@/lib/dashboard/creator.functions";
 import { formatMoney, computeDisplayPrice } from "@/lib/fx-display";
+import { usdEquivalent, visibleMoney } from "@/lib/money-visibility";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { OPEN_PROFILE_SETTINGS_EVENT } from "@/components/oventric/ProfileDropdown";
@@ -45,7 +48,7 @@ function tierInfo(tier: string | undefined) {
 export function AppAccount({ onSelect }: { onSelect: (section: string) => void }) {
   const navigate = useNavigate();
   const { isAuthenticated, openGate } = useAuthGate();
-  const { baseCurrency, balancesHidden } = useOnboarding();
+  const { baseCurrency, balancesHidden, toggleBalancesHidden } = useOnboarding();
   const currency = (baseCurrency ?? "USD") as Currency;
   const [notifOpen, setNotifOpen] = useState(false);
   const [sheet, setSheet] = useState<"wallet" | "seller" | "creator" | null>(null);
@@ -108,8 +111,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
   const verified = !!p?.verificationTier && p.verificationTier !== "TIER_0";
   const available = balances ? (balances.balances[currency] ?? 0) : null;
   const escrow = balances ? (balances.escrow[currency] ?? 0) : null;
-  const money = (n: number | null) =>
-    n == null ? "—" : balancesHidden ? "••••" : formatMoney(n, currency);
+  const money = (n: number | null) => n == null ? "—" : visibleMoney(n, currency, balancesHidden);
   const initials =
     (p?.displayName || "OV")
       .split(/\s+/)
@@ -166,7 +168,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
 
   return (
     <div className="px-4 pb-28 pt-[calc(1rem+env(safe-area-inset-top))] text-white">
-      <h1 className="mb-4 text-[20px] font-semibold tracking-tight">Account</h1>
+      <div className="mb-4 flex items-center justify-between"><h1 className="text-[20px] font-semibold tracking-tight">Account</h1><button type="button" onClick={toggleBalancesHidden} aria-label={balancesHidden ? "Show amounts" : "Hide amounts"} className="grid size-9 place-items-center rounded-full bg-white/[0.05] text-white/70">{balancesHidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}</button></div>
 
       {/* Identity card */}
       <button
@@ -208,10 +210,12 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
         <span className="px-4">
           <span className="block text-[10px] uppercase tracking-wider text-white/45">Available</span>
           <span className="block text-[16px] font-semibold tabular-nums">{money(available)}</span>
+          {available !== null && usdEquivalent(available, currency, balancesHidden) && <span className="block text-[10px] text-white/45">{usdEquivalent(available, currency, balancesHidden)}</span>}
         </span>
         <span className="px-4">
           <span className="block text-[10px] uppercase tracking-wider text-white/45">In escrow</span>
           <span className="block text-[16px] font-semibold tabular-nums">{money(escrow)}</span>
+          {escrow !== null && usdEquivalent(escrow, currency, balancesHidden) && <span className="block text-[10px] text-white/45">{usdEquivalent(escrow, currency, balancesHidden)}</span>}
         </span>
       </button>
 
@@ -305,10 +309,12 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
             <div className="rounded-[14px] border border-white/[0.06] bg-gradient-to-br from-[#E5484D]/15 to-transparent p-3.5">
               <div className="text-[10px] uppercase tracking-wider text-white/45">Available</div>
               <div className="mt-1 text-[18px] font-semibold tabular-nums">{money(available)}</div>
+              {available !== null && usdEquivalent(available, currency, balancesHidden) && <div className="text-[10px] text-white/45">{usdEquivalent(available, currency, balancesHidden)}</div>}
             </div>
             <div className="rounded-[14px] border border-white/[0.06] bg-white/[0.03] p-3.5">
               <div className="text-[10px] uppercase tracking-wider text-white/45">In escrow</div>
               <div className="mt-1 text-[18px] font-semibold tabular-nums">{money(escrow)}</div>
+              {escrow !== null && usdEquivalent(escrow, currency, balancesHidden) && <div className="text-[10px] text-white/45">{usdEquivalent(escrow, currency, balancesHidden)}</div>}
             </div>
           </div>
           <p className="mt-3 text-[12px] leading-relaxed text-white/45">
@@ -336,11 +342,11 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
             <div className="text-[10px] uppercase tracking-wider text-white/45">Total revenue</div>
             <div className="mt-1 text-[22px] font-bold tabular-nums">
               {sellerMetrics
-                ? formatMoney(computeDisplayPrice({ original_currency: "USD", original_amount: sellerMetrics.totalRevenueUSD }, currency).value, currency)
+                ? visibleMoney(computeDisplayPrice({ original_currency: "USD", original_amount: sellerMetrics.totalRevenueUSD }, currency).value, currency, balancesHidden)
                 : "—"}
             </div>
             {sellerMetrics && currency !== "USD" && (
-              <div className="text-[11px] text-white/45">≈ {formatMoney(sellerMetrics.totalRevenueUSD, "USD")}</div>
+              <div className="text-[11px] text-white/45">{balancesHidden ? "••••" : `≈ ${formatMoney(sellerMetrics.totalRevenueUSD, "USD")}`}</div>
             )}
           </div>
           <div className="mt-2.5 grid grid-cols-3 gap-2.5">
@@ -380,11 +386,11 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
             <div className="text-[10px] uppercase tracking-wider text-white/45">Sales from your showcase</div>
             <div className="mt-1 text-[22px] font-bold tabular-nums">
               {creatorHub
-                ? formatMoney(computeDisplayPrice({ original_currency: "USD", original_amount: creatorHub.postSales.revenueUSD }, currency).value, currency)
+                ? visibleMoney(computeDisplayPrice({ original_currency: "USD", original_amount: creatorHub.postSales.revenueUSD }, currency).value, currency, balancesHidden)
                 : "—"}
             </div>
             {creatorHub && currency !== "USD" && (
-              <div className="text-[11px] text-white/45">≈ {formatMoney(creatorHub.postSales.revenueUSD, "USD")}</div>
+              <div className="text-[11px] text-white/45">{balancesHidden ? "••••" : `≈ ${formatMoney(creatorHub.postSales.revenueUSD, "USD")}`}</div>
             )}
           </div>
           <div className="mt-2.5 grid grid-cols-3 gap-2.5">

@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Users, Eye, Heart, MessageCircle, Bookmark, Share2, Clock, Globe2, Sparkles, ShoppingBag, Film, TrendingUp, Loader2, ChevronRight } from "lucide-react";
 import { getCreatorHub } from "@/lib/dashboard/creator.functions";
 import { computeDisplayPrice, formatMoney } from "@/lib/fx-display";
+import { visibleMoney, usdEquivalent } from "@/lib/money-visibility";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 import { CreatorCoachDrawer } from "@/components/oventric/app/CreatorCoach";
@@ -16,7 +17,7 @@ export function CreatorHub() {
   const fetchHub = useServerFn(getCreatorHub);
   const isAppShell = useIsAppShell();
   const [coachOpen, setCoachOpen] = useState(false);
-  const { baseCurrency } = useOnboarding();
+  const { baseCurrency, balancesHidden } = useOnboarding();
   const currency = (baseCurrency ?? "USD") as Currency;
   const { data, isLoading, error } = useQuery({
     queryKey: ["creator-hub"],
@@ -26,8 +27,8 @@ export function CreatorHub() {
   if (isLoading) return <div className="grid place-items-center py-16"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
   if (error || !data) return <p className="py-10 text-center text-sm text-muted-foreground">Couldn't load your Creator Hub. Please try again.</p>;
 
-  const money = (usd: number) => computeDisplayPrice({ original_currency: "USD", original_amount: usd }, currency).formatted;
-  const usd = (v: number) => (currency === "USD" ? null : `≈ ${formatMoney(v, "USD")}`);
+  const money = (usd: number) => visibleMoney(computeDisplayPrice({ original_currency: "USD", original_amount: usd }, currency).value, currency, balancesHidden);
+  const usd = (v: number) => currency === "USD" ? null : balancesHidden ? "••••" : `≈ ${formatMoney(v, "USD")}`;
   const maxGrowth = Math.max(1, ...data.followerGrowth.map((g) => g.count));
   const maxHour = Math.max(1, ...data.bestHours.map((h) => h.count));
   const maxDay = Math.max(1, ...data.bestDays.map((d) => d.count));
@@ -212,7 +213,7 @@ export function CreatorHub() {
         {data.postSales.topProducts.length > 0 && (
           <ul className="mt-3 divide-y divide-border">
             {data.postSales.topProducts.map((p) => (
-              <li key={p.name} className="flex justify-between py-2 text-sm"><span className="truncate">{p.name}</span><span className="text-muted-foreground">{p.sales} · {money(p.revenueUSD)}</span></li>
+              <li key={p.name} className="flex justify-between py-2 text-sm"><span className="truncate">{p.name}</span><span className="text-right text-muted-foreground">{p.sales} · {money(p.revenueUSD)}{usd(p.revenueUSD) && <small className="block">{usd(p.revenueUSD)}</small>}</span></li>
             ))}
           </ul>
         )}
