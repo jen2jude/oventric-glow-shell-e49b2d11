@@ -101,8 +101,8 @@ export function ProductComments({ productId }: { productId: string }) {
       </div>
 
       {/* Write a review */}
-      <div className={`${isAppShell ? "bg-white/[0.03] border-white/[0.05]" : "bg-white border-slate-200 shadow-sm"} border rounded-2xl p-4`}>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <div className={`${isAppShell ? "bg-white/[0.03] border-white/[0.05] rounded-[10px] p-3" : "bg-white border-slate-200 shadow-sm rounded-2xl p-4"} border`}>
+        <form onSubmit={handleSubmit} className={isAppShell ? "space-y-2.5" : "space-y-4"}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((s) => (
@@ -112,7 +112,7 @@ export function ProductComments({ productId }: { productId: string }) {
                   onClick={() => setRating(s)}
                   className={`p-0.5 transition-transform active:scale-90 ${s <= rating ? "text-amber-400" : isAppShell ? "text-white/10" : "text-slate-200"}`}
                 >
-                  <Star className={`w-5 h-5 ${s <= rating ? 'fill-current' : ''}`} />
+                  <Star className={`${isAppShell ? "w-4 h-4" : "w-5 h-5"} ${s <= rating ? 'fill-current' : ''}`} />
                 </button>
               ))}
             </div>
@@ -126,14 +126,14 @@ export function ProductComments({ productId }: { productId: string }) {
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Write your experience..."
-              className={`w-full ${isAppShell ? "bg-black/20 border-white/[0.05] text-white placeholder:text-white/20" : "bg-slate-50 border-slate-200 text-slate-900"} border rounded-xl p-3 text-[13px] focus:ring-1 focus:ring-[#E5484D]/50 outline-none min-h-[80px] resize-none transition-all`}
+              className={`w-full ${isAppShell ? "bg-black/20 border-white/[0.05] text-white placeholder:text-white/20 rounded-[10px] p-2.5 min-h-[56px]" : "bg-slate-50 border-slate-200 text-slate-900 rounded-xl p-3 min-h-[80px]"} border text-[13px] focus:ring-1 focus:ring-[#E5484D]/50 outline-none resize-none transition-all`}
             />
           </div>
 
           <button
             type="submit"
             disabled={submitting}
-            className={`w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl ${isAppShell ? "bg-[#E5484D] text-white" : "bg-emerald-500 text-black"} font-black text-sm disabled:opacity-50 transition-all active:scale-[0.98]`}
+            className={`w-full inline-flex items-center justify-center gap-2 ${isAppShell ? "py-2.5 rounded-[10px] bg-[#E5484D] text-white text-[13px]" : "py-3 rounded-xl bg-emerald-500 text-black text-sm"} font-black disabled:opacity-50 transition-all active:scale-[0.98]`}
           >
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             {myRating ? "Update Review" : "Post Review"}
