@@ -843,7 +843,7 @@ function ProductPage() {
                   <span className="bg-newsfeed-coral" />
                   <span className="bg-newsfeed-gold" />
                   <span className="bg-newsfeed-blue" />
-                </div>}
+                           </div>
                  <div className={isAppShell ? "py-2" : "p-5 sm:p-6"}>
 
                  {!isAppShell && <div className="flex items-baseline justify-between mb-4">
@@ -876,7 +876,7 @@ function ProductPage() {
                       />
                     </div>
                   )}
-                </div>
+                 </div>}
                 {packages.length > 0 && (
                   <div className="mb-4 space-y-2">
                     <div className={`text-xs uppercase tracking-wide ${isAppShell ? "text-slate-400" : "text-slate-500"}`}>
