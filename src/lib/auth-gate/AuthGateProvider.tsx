@@ -562,7 +562,7 @@ function AuthGateModal({
               </button>
             </div>
           )}
-          <div className="relative bg-newsfeed-surface p-6 sm:p-8">
+          <div className="relative bg-newsfeed-surface p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:p-8">
             <button
               type="button"
               onClick={onClose}
