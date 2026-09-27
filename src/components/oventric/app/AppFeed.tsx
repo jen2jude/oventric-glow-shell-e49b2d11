@@ -1,9 +1,28 @@
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
-import { Heart, MessageCircle, Share2, Play, Loader2, ShoppingBag, MoreHorizontal, Eye, EyeOff, Link2 } from "lucide-react";
+import {
+  Heart,
+  MessageCircle,
+  Share2,
+  Play,
+  Loader2,
+  ShoppingBag,
+  MoreHorizontal,
+  Eye,
+  EyeOff,
+  Link2,
+  Bookmark,
+  ThumbsUp,
+  ThumbsDown,
+  Flag,
+  Trash2,
+} from "lucide-react";
+import { toast } from "sonner";
 import { AppSheet } from "@/components/oventric/app/AppSheet";
-import { listPosts, toggleLike } from "@/lib/posts.functions";
+import { listPosts, toggleLike, setPostSaved as setPostSavedFn, deletePost as deletePostFn } from "@/lib/posts.functions";
+import { togglePostSet, getSavedPosts } from "@/components/oventric/PostActionsMenu";
+import { ReportModal } from "@/components/oventric/ReportModal";
 import { CommentsSheet } from "@/components/oventric/feed/CommentsSheet";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { supabase } from "@/integrations/supabase/client";
