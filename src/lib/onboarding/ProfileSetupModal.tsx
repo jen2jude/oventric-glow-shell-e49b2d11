@@ -59,7 +59,14 @@ export function ProfileSetupModalHost() {
     if (lastCheckedRef.current === session.user.id) return;
     lastCheckedRef.current = session.user.id;
     setChecking(true);
-    getStatus()
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        // The screen's session can lag behind a sign-out; skip the call
+        // when there is no live token to avoid an Unauthorized error.
+        if (!data.session?.access_token) throw new Error("signed-out");
+        return getStatus();
+      })
       .then((s) => {
         if (!s.profileCompleted) setOpen(true);
       })
