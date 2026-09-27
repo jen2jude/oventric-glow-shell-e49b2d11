@@ -2,11 +2,11 @@ import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ShoppingBag } from "lucide-react";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
-import { computeDisplayPrice } from "@/lib/fx-display";
+import { visibleProductPrice } from "@/lib/money-visibility";
 import type { DiscoveryProduct } from "@/lib/discovery.functions";
 
-function productPrice(product: DiscoveryProduct, viewer: Currency): string {
-  return computeDisplayPrice(
+function productPrice(product: DiscoveryProduct, viewer: Currency, hidden: boolean): string {
+  return visibleProductPrice(
     {
       price_usd: product.priceUsd,
       original_currency: product.originalCurrency,
@@ -14,7 +14,8 @@ function productPrice(product: DiscoveryProduct, viewer: Currency): string {
       fx_snapshot: product.fxSnapshot,
     },
     viewer,
-  ).formatted;
+    hidden,
+  );
 }
 
 export function ShopTheFeedRail({
@@ -24,7 +25,7 @@ export function ShopTheFeedRail({
   products: DiscoveryProduct[];
   appShell?: boolean;
 }) {
-  const { baseCurrency } = useOnboarding();
+  const { baseCurrency, balancesHidden } = useOnboarding();
   const [pages, setPages] = useState(1);
   const pool = products.slice(0, 30);
 
@@ -105,7 +106,7 @@ export function ShopTheFeedRail({
                 {product.vendor}
               </p>
               <p className="mt-1 text-[12px] font-black text-[#E5484D]">
-                {productPrice(product, baseCurrency)}
+                {productPrice(product, baseCurrency, balancesHidden)}
               </p>
             </div>
           </Link>
