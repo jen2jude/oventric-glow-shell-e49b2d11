@@ -4,9 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   ArrowDownToLine,
   ArrowUpFromLine,
-  Bell,
   Compass,
-  MessageCircle,
   Package,
   Search,
   Sparkles,
@@ -23,8 +21,6 @@ import { usdEquivalent, visibleMoney, visibleProductPrice } from "@/lib/money-vi
 import type { Currency } from "@/lib/onboarding/OnboardingContext";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
-import { useUnreadCounts } from "@/hooks/use-unread-counts";
-import { NotificationsDrawer } from "@/components/oventric/NotificationsDrawer";
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 import { ProductQuickView } from "./ProductQuickView";
@@ -36,25 +32,17 @@ import { AppSearchSheet } from "./AppSearchSheet";
  * rails, no hero banners or footers.
  */
 export function AppHome({
-  name,
-  avatarUrl,
   onSelect,
   onCreate,
-  onOpenMessages,
 }: {
-  name: string;
-  avatarUrl: string | null;
   onSelect: (section: string) => void;
   onCreate: () => void;
-  onOpenMessages: () => void;
 }) {
   const navigate = useNavigate();
-  const [notifOpen, setNotifOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [quickViewId, setQuickViewId] = useState<string | null>(null);
   const { homeCurrency, balancesHidden, toggleBalancesHidden } = useOnboarding();
   const { isAuthenticated } = useAuthGate();
-  const { messages: unreadChats, total: unreadNotifs } = useUnreadCounts();
   const currency = (homeCurrency ?? "USD") as Currency;
 
   const priceOf = (p: ProductDTO) =>
@@ -108,10 +96,6 @@ export function AppHome({
     [products],
   );
 
-  const firstName = name.split(" ")[0] || "there";
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-
   // In the app shell a product tap slides up the quick-view sheet instead of
   // leaving the home screen; the full page is one tap deeper from the sheet.
   const openProduct = (p: ProductDTO) => {
@@ -133,63 +117,6 @@ export function AppHome({
 
   return (
     <div className="mx-auto w-full max-w-xl px-4 pb-28 pt-4 text-white">
-      {/* Top bar: identity + alerts */}
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={() => {
-            haptic("select");
-            void openOwn("profile");
-          }}
-          className="nav-tap flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white/[0.06]"
-          aria-label="Your social profile"
-        >
-          {avatarUrl ? (
-            <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
-          ) : (
-            <span className="text-sm font-bold text-white/70">
-              {firstName.slice(0, 1).toUpperCase()}
-            </span>
-          )}
-        </button>
-        <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-medium text-white/40">{greeting},</p>
-          <p className="truncate text-[15px] font-bold tracking-tight">{firstName}</p>
-        </div>
-        <button
-          type="button"
-          onClick={() => {
-            haptic("select");
-            onOpenMessages();
-          }}
-          className="nav-tap relative flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.06]"
-          aria-label="Chats"
-        >
-          <MessageCircle className="h-[18px] w-[18px] text-white/80" />
-          {(unreadChats ?? 0) > 0 && (
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#E5484D] px-1 text-[9px] font-bold text-white">
-              {unreadChats}
-            </span>
-          )}
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            haptic("select");
-            setNotifOpen(true);
-          }}
-          className="nav-tap relative flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.06]"
-          aria-label="Notifications"
-        >
-          <Bell className="h-[18px] w-[18px] text-white/80" />
-          {(unreadNotifs ?? 0) > 0 && (
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#E5484D] px-1 text-[9px] font-bold text-white">
-              {unreadNotifs}
-            </span>
-          )}
-        </button>
-      </div>
-
       {/* Search pill — opens the search sheet */}
       <button
         type="button"
@@ -410,7 +337,6 @@ export function AppHome({
           </div>
         </div>
       )}
-      <NotificationsDrawer open={notifOpen} onClose={() => setNotifOpen(false)} />
       <AppSearchSheet
         open={searchOpen}
         onClose={() => setSearchOpen(false)}

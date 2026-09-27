@@ -60,7 +60,6 @@ export function AppPurchases() {
   if (!session) {
     return (
       <div className="min-h-full bg-[#070A08] text-white px-5 pt-16 pb-28">
-        <h1 className="text-[22px] font-bold tracking-tight">Purchases</h1>
         <div className="mt-10 rounded-3xl border border-white/[0.06] bg-white/[0.03] p-8 text-center">
           <Package className="mx-auto h-8 w-8 text-white/25" />
           <p className="mt-3 text-[13.5px] font-semibold text-white/70">Sign in to see your orders</p>
@@ -80,7 +79,6 @@ export function AppPurchases() {
 
   return (
     <div className="min-h-full bg-[#070A08] text-white px-4 pt-6 pb-28">
-      <h1 className="px-1 text-[22px] font-bold tracking-tight">Purchases</h1>
 
       {/* Buying / Selling toggle */}
       <div className="mt-4 flex rounded-full border border-white/[0.07] bg-white/[0.03] p-1">

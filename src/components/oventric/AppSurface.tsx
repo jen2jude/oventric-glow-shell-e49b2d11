@@ -63,6 +63,7 @@ import { HomeHub } from "@/components/oventric/HomeHub";
 import { DesktopHome } from "@/components/oventric/desktop/DesktopHome";
 import { OventricHome } from "@/components/oventric/home/OventricHome";
 import { AppHome } from "@/components/oventric/app/AppHome";
+import { AppPageHeader } from "@/components/oventric/app/AppPageHeader";
 import { DesktopAppSidebar } from "@/components/oventric/desktop/DesktopAppSidebar";
 import { SiteFooterAuto } from "@/components/oventric/desktop/SiteFooterAuto";
 import { SiteNavbar } from "@/components/oventric/desktop/SiteNavbar";
@@ -355,11 +356,8 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   const rawView =
     active === "Home" && isAppShell && !isDesktop ? (
       <AppHome
-        name={name}
-        avatarUrl={avatarUrl}
         onSelect={setActive}
         onCreate={() => handleCreate("sell")}
-        onOpenMessages={() => setMessagesOpen(true)}
       />
     ) : active === "Home" ? (
       <OventricHome onSelect={setActive} onCreate={() => handleCreate("sell")} />
@@ -469,6 +467,10 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
             />
           )
         ) : null}
+
+        {isAppShell && !isDesktop && !isMessages && (
+          <AppPageHeader section={active} name={name} avatarUrl={avatarUrl} onOpenMessages={() => setMessagesOpen(true)} />
+        )}
 
         <div
           className={`flex flex-1 min-h-0 ${desktopLanding && active === "Marketplace" && !isDesktop ? "pt-0" : ""}`}

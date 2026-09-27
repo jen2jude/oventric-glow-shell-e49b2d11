@@ -168,7 +168,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
 
   return (
     <div className="px-4 pb-28 pt-[calc(1rem+env(safe-area-inset-top))] text-white">
-      <div className="mb-4 flex items-center justify-between"><h1 className="text-[20px] font-semibold tracking-tight">Account</h1><button type="button" onClick={toggleBalancesHidden} aria-label={balancesHidden ? "Show amounts" : "Hide amounts"} className="grid size-9 place-items-center rounded-full bg-white/[0.05] text-white/70">{balancesHidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}</button></div>
+      <div className="mb-4 flex justify-end"><button type="button" onClick={toggleBalancesHidden} aria-label={balancesHidden ? "Show amounts" : "Hide amounts"} className="grid size-9 place-items-center rounded-full bg-white/[0.05] text-white/70">{balancesHidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}</button></div>
 
       {/* Identity card */}
       <button

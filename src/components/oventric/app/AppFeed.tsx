@@ -407,7 +407,7 @@ export function AppFeed() {
 
   return (
     <div
-      className="min-h-[calc(100dvh-80px)] bg-[#070A08] pb-24 pt-[calc(3rem+env(safe-area-inset-top))]"
+      className="min-h-[calc(100dvh-80px)] bg-[#070A08] pb-24 pt-12"
       onTouchStart={onFeedTouchStart}
       onTouchMove={onFeedTouchMove}
       onTouchEnd={onFeedTouchEnd}
@@ -421,7 +421,7 @@ export function AppFeed() {
       />
       {/* Keep feed sections outside the scrolling timeline so restored scroll
           positions can never move them off screen. */}
-      <div className="fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-[#070A08]/95 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_rgba(0,0,0,0.24)] backdrop-blur-xl">
+      <div className="fixed inset-x-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-30 border-b border-white/10 bg-[#070A08]/95 shadow-[0_8px_24px_rgba(0,0,0,0.24)] backdrop-blur-xl">
         <div className="mx-auto flex h-12 w-full max-w-md items-center justify-evenly px-2">
           {(
             [
