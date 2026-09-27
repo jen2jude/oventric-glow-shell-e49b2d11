@@ -119,7 +119,7 @@ export function AppHome({
           type="button"
           onClick={() => {
             haptic("select");
-            openOwn("profile");
+            onSelect("Profile");
           }}
           className="nav-tap flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white/[0.06]"
           aria-label="Your profile"

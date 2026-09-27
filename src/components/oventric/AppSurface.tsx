@@ -315,6 +315,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
     const section = params.get("section");
     const dmPeer = params.get("dm");
     const allowed = [
+      "Profile",
       "Home",
       "Explore",
       "Feed",
