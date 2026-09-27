@@ -13,6 +13,7 @@ import {
   Package,
   Settings,
   ShieldCheck,
+  Sparkles,
   Store,
   User,
   Wallet as WalletIcon,
@@ -193,6 +194,29 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
           <span className="block text-[16px] font-semibold tabular-nums">{money(escrow)}</span>
         </span>
       </button>
+
+      {/* Creator Hub spotlight */}
+      {p?.isCreator && (
+        <button
+          type="button"
+          onClick={() => {
+            haptic("select");
+            navigate({ to: "/dashboard", search: { tab: "creator" } });
+          }}
+          className="mt-3 flex w-full items-center gap-3 rounded-[16px] border border-violet-400/20 bg-gradient-to-br from-violet-500/20 via-[#E5484D]/10 to-transparent p-3.5 text-left active:bg-violet-500/25"
+        >
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-gradient-to-br from-violet-500 to-[#E5484D]">
+            <Sparkles className="h-5 w-5 text-white" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[15px] font-semibold">Creator Hub</span>
+            <span className="block truncate text-[11px] text-white/50">
+              Revenue, shop visits, engagement and growth
+            </span>
+          </span>
+          <ChevronRight className="h-4 w-4 shrink-0 text-white/40" />
+        </button>
+      )}
 
       {groups.map((g) => (
         <section key={g.title} className="mt-5">
