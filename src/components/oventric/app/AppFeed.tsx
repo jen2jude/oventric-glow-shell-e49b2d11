@@ -163,7 +163,7 @@ export function AppFeed() {
                       onClick={() =>
                         navigate({
                           to: "/product/$id",
-                          params: { id: p.product_attachments![0].product_id },
+                          params: { id: p.product_attachments![0].id },
                         })
                       }
                       className="mt-2.5 inline-flex items-center gap-1.5 rounded-full bg-[#E5484D]/15 px-3 py-1.5 text-[12px] font-semibold text-[#E5484D]"
