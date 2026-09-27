@@ -333,6 +333,8 @@ export function AppFeed() {
   };
 
   const swipeStart = useRef<{ x: number; y: number } | null>(null);
+  const [dragX, setDragX] = useState<number | null>(null);
+  const [enterDir, setEnterDir] = useState<"left" | "right" | null>(null);
 
   if (!posts) {
     return (
