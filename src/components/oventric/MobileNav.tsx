@@ -1,18 +1,15 @@
-import { Home, MessageCircle, Plus, ShoppingBag, Wallet } from "lucide-react";
+import { Home, Images, MessageCircle, Plus, ShoppingBag, Wallet } from "lucide-react";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
 import { CountBadge } from "@/components/oventric/CountBadge";
 import { haptic } from "@/lib/haptics";
 import { useChatOpen } from "@/hooks/use-chat-open";
 import { useChromeHidden } from "@/hooks/use-chrome-hide";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 
 
 const left = [
   { icon: Home, label: "Home" },
   { icon: ShoppingBag, label: "Market" },
-];
-const right = [
-  { icon: MessageCircle, label: "Chats" },
-  { icon: Wallet, label: "Wallet" },
 ];
 
 export type MobileNavCounts = Partial<
@@ -30,6 +27,18 @@ export function MobileNav({
   onSelect: (label: string) => void;
   counts?: MobileNavCounts;
 }) {
+  const isAppShell = useIsAppShell();
+  // In the app shell, chats live in the top bar — the dock carries the feed
+  // instead. The website keeps its chat tab in the footer.
+  const right = isAppShell
+    ? [
+        { icon: Images, label: "Feed" },
+        { icon: Wallet, label: "Wallet" },
+      ]
+    : [
+        { icon: MessageCircle, label: "Chats" },
+        { icon: Wallet, label: "Wallet" },
+      ];
   const chatOpen = useChatOpen();
   const chromeHidden = useChromeHidden();
   const { messages } = useUnreadCounts();
@@ -46,7 +55,7 @@ export function MobileNav({
           onSelect(it.label);
         }}
         className={`nav-tap relative flex flex-col items-center justify-center gap-0.5 flex-1 py-1 min-w-0 ${
-           isActive ? "text-[#FF3EB5]" : "text-white/45"
+           isActive ? "text-[#E5484D]" : "text-white/45"
         }`}
       >
         <span className="relative">
@@ -81,11 +90,11 @@ export function MobileNav({
           haptic("medium");
           onCreate();
         }}
-        className="nav-tap relative -mt-8 mx-1 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#FF3EB5] shadow-[0_8px_24px_rgba(255,62,181,0.35)]"
+        className="nav-tap relative -mt-8 mx-1 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#E5484D] shadow-[0_8px_24px_rgba(229,72,77,0.45)]"
         aria-label="Create"
       >
         <span className="flex h-full w-full items-center justify-center rounded-full">
-          <Plus className="h-6 w-6 text-[#070A08]" strokeWidth={2.8} />
+          <Plus className="h-6 w-6 text-white" strokeWidth={2.8} />
         </span>
       </button>
       {right.map(Item)}

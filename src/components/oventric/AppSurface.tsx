@@ -455,7 +455,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         {isAppShell && !desktopLanding && !isMessages && (
           <MobileNav
             onCreate={handleCreate}
-            active={active === "Marketplace" ? "Market" : active === "Feed" ? "Home" : active}
+            active={active === "Marketplace" ? "Market" : active}
             onSelect={(l) => {
               if (l === "Chats") setMessagesOpen(true);
               else setActive(l === "Market" ? "Marketplace" : l);
