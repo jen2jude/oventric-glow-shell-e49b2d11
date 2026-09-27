@@ -12,6 +12,8 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@ai-sdk/openai": "^4.0.78",
+    "@ai-sdk/react": "^4.0.119",
     "@block65/webcrypto-web-push": "^1.0.2",
     "@hookform/resolvers": "^5.2.2",
     "@lovable.dev/email-js": "^0.3.0",

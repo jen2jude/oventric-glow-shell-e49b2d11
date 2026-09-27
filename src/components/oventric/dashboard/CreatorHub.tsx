@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Users, Eye, Heart, MessageCircle, Bookmark, Share2, Clock, Globe2, Sparkles, ShoppingBag, Film, TrendingUp, Loader2 } from "lucide-react";
+import { Users, Eye, Heart, MessageCircle, Bookmark, Share2, Clock, Globe2, Sparkles, ShoppingBag, Film, TrendingUp, Loader2, ChevronRight } from "lucide-react";
 import { getCreatorHub } from "@/lib/dashboard/creator.functions";
 import { computeDisplayPrice, formatMoney } from "@/lib/fx-display";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
+import { useIsAppShell } from "@/hooks/use-launch-context";
+import { CreatorCoachDrawer } from "@/components/oventric/app/CreatorCoach";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const n = (v: number) => (v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `${(v / 1e3).toFixed(1)}K` : String(v));
@@ -11,6 +14,8 @@ const hourLabel = (h: number) => `${h % 12 === 0 ? 12 : h % 12}${h < 12 ? "am" :
 
 export function CreatorHub() {
   const fetchHub = useServerFn(getCreatorHub);
+  const isAppShell = useIsAppShell();
+  const [coachOpen, setCoachOpen] = useState(false);
   const { baseCurrency } = useOnboarding();
   const currency = (baseCurrency ?? "USD") as Currency;
   const { data, isLoading, error } = useQuery({
@@ -32,6 +37,23 @@ export function CreatorHub() {
 
   return (
     <div className="space-y-5 pb-24">
+      {isAppShell && (
+        <button
+          type="button"
+          onClick={() => setCoachOpen(true)}
+          className="flex w-full items-center gap-3 rounded-[14px] border border-violet-500/30 bg-gradient-to-r from-violet-500/15 to-[#E5484D]/15 p-4 text-left active:scale-[0.99]"
+        >
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-violet-500 to-[#E5484D]">
+            <Sparkles className="h-5 w-5 text-white" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-bold">Creator Coach</span>
+            <span className="block truncate text-[11px] text-muted-foreground">Your AI coach — it knows these numbers. Ask what to post, when, and how to grow.</span>
+          </span>
+          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+        </button>
+      )}
+      {isAppShell && <CreatorCoachDrawer open={coachOpen} onClose={() => setCoachOpen(false)} />}
       <div className="rounded-[14px] bg-gradient-to-br from-violet-500 to-[#E5484D] p-4 text-white">
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider opacity-90"><Sparkles className="h-4 w-4" /> Creator Hub</div>
         <div className="mt-2 flex items-end gap-6">

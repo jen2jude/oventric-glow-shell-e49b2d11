@@ -42,8 +42,9 @@ const PAID = ["paid", "delivered", "completed", "released"];
 export const getCreatorHub = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ tzOffset: z.number().min(-900).max(900).default(0) }).parse(d ?? {}))
-  .handler(async ({ context, data }): Promise<CreatorHubData> => {
-    const me = context.userId;
+  .handler(async ({ context, data }): Promise<CreatorHubData> => buildCreatorHubData(context.userId, data.tzOffset));
+
+export async function buildCreatorHubData(me: string, tzOffset: number): Promise<CreatorHubData> {
     // Privileged reads, strictly scoped to the signed-in creator's own content.
     const { supabaseAdmin: sb } = await import("@/integrations/supabase/client.server");
 
@@ -146,7 +147,7 @@ export const getCreatorHub = createServerFn({ method: "GET" })
     // Timing (viewer local time via tzOffset minutes, JS getTimezoneOffset sign)
     const hours = Array(24).fill(0), days = Array(7).fill(0);
     for (const r of [...likes, ...comments, ...saves, ...shares]) {
-      const d = new Date(+new Date(r.created_at) - data.tzOffset * 60000);
+      const d = new Date(+new Date(r.created_at) - tzOffset * 60000);
       hours[d.getUTCHours()]++; days[d.getUTCDay()]++;
     }
 
@@ -235,4 +236,4 @@ export const getCreatorHub = createServerFn({ method: "GET" })
         topProducts: [...byProd.values()].sort((a, b) => b.revenueUSD - a.revenueUSD).slice(0, 5),
       },
     };
-  });
+}

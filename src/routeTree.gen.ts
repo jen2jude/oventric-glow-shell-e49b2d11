@@ -49,6 +49,7 @@ import { Route as PaymentReturnRouteImport } from './routes/payment.return'
 import { Route as OrderIdRouteImport } from './routes/order.$id'
 import { Route as CheckoutIdRouteImport } from './routes/checkout.$id'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as ApiCreatorCoachRouteImport } from './routes/api/creator-coach'
 import { Route as AdsManagerIdRouteImport } from './routes/ads-manager.$id'
 import { Route as AdminVisitorsRouteImport } from './routes/admin.visitors'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
@@ -303,6 +304,11 @@ const CheckoutIdRoute = CheckoutIdRouteImport.update({
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/blog/$slug',
   path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCreatorCoachRoute = ApiCreatorCoachRouteImport.update({
+  id: '/api/creator-coach',
+  path: '/api/creator-coach',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdsManagerIdRoute = AdsManagerIdRouteImport.update({
@@ -657,6 +663,7 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AdminUsersRoute
   '/admin/visitors': typeof AdminVisitorsRoute
   '/ads-manager/$id': typeof AdsManagerIdRoute
+  '/api/creator-coach': typeof ApiCreatorCoachRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/checkout/$id': typeof CheckoutIdRoute
   '/order/$id': typeof OrderIdRoute
@@ -751,6 +758,7 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AdminUsersRoute
   '/admin/visitors': typeof AdminVisitorsRoute
   '/ads-manager/$id': typeof AdsManagerIdRoute
+  '/api/creator-coach': typeof ApiCreatorCoachRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/checkout/$id': typeof CheckoutIdRoute
   '/order/$id': typeof OrderIdRoute
@@ -849,6 +857,7 @@ export interface FileRoutesById {
   '/admin/users': typeof AdminUsersRoute
   '/admin/visitors': typeof AdminVisitorsRoute
   '/ads-manager/$id': typeof AdsManagerIdRoute
+  '/api/creator-coach': typeof ApiCreatorCoachRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/checkout/$id': typeof CheckoutIdRoute
   '/order/$id': typeof OrderIdRoute
@@ -948,6 +957,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/admin/visitors'
     | '/ads-manager/$id'
+    | '/api/creator-coach'
     | '/blog/$slug'
     | '/checkout/$id'
     | '/order/$id'
@@ -1042,6 +1052,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/admin/visitors'
     | '/ads-manager/$id'
+    | '/api/creator-coach'
     | '/blog/$slug'
     | '/checkout/$id'
     | '/order/$id'
@@ -1139,6 +1150,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/admin/visitors'
     | '/ads-manager/$id'
+    | '/api/creator-coach'
     | '/blog/$slug'
     | '/checkout/$id'
     | '/order/$id'
@@ -1200,6 +1212,7 @@ export interface RootRouteChildren {
   WalletRoute: typeof WalletRouteWithChildren
   DotwellKnownAppleAppSiteAssociationRoute: typeof DotwellKnownAppleAppSiteAssociationRoute
   DotwellKnownAssetlinksDotjsonRoute: typeof DotwellKnownAssetlinksDotjsonRoute
+  ApiCreatorCoachRoute: typeof ApiCreatorCoachRoute
   BlogSlugRoute: typeof BlogSlugRoute
   CheckoutIdRoute: typeof CheckoutIdRoute
   OrderIdRoute: typeof OrderIdRoute
@@ -1504,6 +1517,13 @@ declare module '@tanstack/react-router' {
       path: '/blog/$slug'
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/creator-coach': {
+      id: '/api/creator-coach'
+      path: '/api/creator-coach'
+      fullPath: '/api/creator-coach'
+      preLoaderRoute: typeof ApiCreatorCoachRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ads-manager/$id': {
@@ -2060,6 +2080,7 @@ const rootRouteChildren: RootRouteChildren = {
   DotwellKnownAppleAppSiteAssociationRoute:
     DotwellKnownAppleAppSiteAssociationRoute,
   DotwellKnownAssetlinksDotjsonRoute: DotwellKnownAssetlinksDotjsonRoute,
+  ApiCreatorCoachRoute: ApiCreatorCoachRoute,
   BlogSlugRoute: BlogSlugRoute,
   CheckoutIdRoute: CheckoutIdRoute,
   OrderIdRoute: OrderIdRoute,
