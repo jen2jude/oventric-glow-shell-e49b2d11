@@ -272,13 +272,13 @@ export function AppFeed() {
       </div>
 
       {/* Shop tab: product rail above the shoppable posts */}
-      {tab === "shop" && (shopProducts?.length ?? 0) > 0 && (
+      {tab === "shop" && shopSections.trending.length > 0 && (
         <div className="border-b border-white/5 py-3">
           <p className="px-4 text-[11px] font-bold uppercase tracking-wider text-white/40">
             Trending in the market
           </p>
           <div className="mt-2 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-4 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {shopProducts!.slice(0, 10).map((sp) => (
+            {shopSections.trending.map((sp) => (
               <button
                 key={sp.id}
                 onClick={() => {
