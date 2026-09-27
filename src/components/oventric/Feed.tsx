@@ -2451,13 +2451,23 @@ export function Feed({ homepageMenuVisible = false }: { homepageMenuVisible?: bo
         open={creatorOnboardOpen}
         onClose={() => setCreatorOnboardOpen(false)}
         onDone={() => {
+          if (isAppShell && meId) {
+            window.sessionStorage.setItem(`oventric:coach-welcome-pending:${meId}`, "waiting");
+            window.dispatchEvent(new Event("oventric:creator-onboarded"));
+          }
           setCreatorOnboardOpen(false);
           setCreatorPublishOpen(true);
         }}
       />
       <CreatorPublishModal
         open={creatorPublishOpen}
-        onClose={() => setCreatorPublishOpen(false)}
+        onClose={() => {
+          setCreatorPublishOpen(false);
+          if (isAppShell && meId && window.sessionStorage.getItem(`oventric:coach-welcome-pending:${meId}`) === "waiting") {
+            window.sessionStorage.setItem(`oventric:coach-welcome-pending:${meId}`, "ready");
+            window.dispatchEvent(new Event("oventric:creator-welcome-ready"));
+          }
+        }}
         onPublished={() => setCreatorReloadKey((k) => k + 1)}
       />
     </div>
