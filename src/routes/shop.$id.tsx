@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Header } from "@/components/oventric/Header";
 import { useIsAppShell } from "@/hooks/use-launch-context";
+import { AppShop } from "@/components/oventric/app/AppShop";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -145,6 +146,13 @@ function Rail({ children, web = false }: { children: React.ReactNode; web?: bool
 }
 
 function ShopPage() {
+  const isAppShell = useIsAppShell();
+  const { id } = Route.useParams();
+  if (isAppShell) return <AppShop idOrSlug={id} />;
+  return <WebShopPage />;
+}
+
+function WebShopPage() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const { baseCurrency } = useOnboarding();

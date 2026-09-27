@@ -141,6 +141,7 @@ import {
 import { usePresence } from "@/hooks/use-presence";
 import { FollowButton } from "@/components/oventric/FollowButton";
 import { useIsAppShell } from "@/hooks/use-launch-context";
+import { AppProfile } from "@/components/oventric/app/AppProfile";
 import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { Button } from "@/components/ui/button";
 import { useScrollRestoration } from "@/hooks/useScrollRestoration";
@@ -257,6 +258,13 @@ const SEARCH_PLACEHOLDER: Record<Tab, string> = {
 };
 
 function ProfilePage() {
+  const isAppShell = useIsAppShell();
+  const { id } = Route.useParams();
+  if (isAppShell) return <AppProfile idOrSlug={id} />;
+  return <WebProfilePage />;
+}
+
+function WebProfilePage() {
   const { id } = Route.useParams();
   const isAppShellView = useIsAppShell();
   const navigate = useNavigate();
