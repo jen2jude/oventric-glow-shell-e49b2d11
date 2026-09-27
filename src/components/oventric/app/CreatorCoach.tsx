@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { getCreatorCoachHistory } from "@/lib/dashboard/coach.functions";
 import { getMyFullProfile } from "@/lib/profiles.functions";
+import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { Conversation, ConversationContent, ConversationScrollButton } from "@/components/ai-elements/conversation";
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import { PromptInput, PromptInputBody, PromptInputTextarea, PromptInputFooter, PromptInputSubmit } from "@/components/ai-elements/prompt-input";
@@ -207,9 +208,11 @@ export function CreatorCoachDrawer({ open, onClose }: { open: boolean; onClose: 
 /** Floating coach button, available anywhere in the app for creators. */
 export function CreatorCoachLauncher() {
   const loadProfile = useServerFn(getMyFullProfile);
+  const { isAuthenticated } = useAuthGate();
   const { data: prof, refetch } = useQuery({
     queryKey: ["app-account-profile"],
     queryFn: () => loadProfile(),
+    enabled: isAuthenticated,
     staleTime: 60_000,
     refetchOnWindowFocus: true,
   });
