@@ -132,7 +132,7 @@ export function AppHome({
 
       {mode === "seller" ? (
         /* Sellers: wallet-forward card — money in is the point for them */
-        <div className="relative mt-5 overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#17171B] to-[#0C0C0E] p-5">
+        <div className="relative mt-5 overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#17171B] to-[#0C0C0E] p-4">
           <div
             className="pointer-events-none absolute -right-16 -top-24 h-56 w-56 rounded-full blur-3xl"
             style={{ background: "radial-gradient(circle, rgba(229,72,77,0.35), transparent 70%)" }}
@@ -140,20 +140,25 @@ export function AppHome({
           <div className="relative">
             <div className="flex items-center justify-between gap-3">
               <p className="text-[11px] font-medium uppercase tracking-widest text-white/40">Wallet balance</p>
-              <button type="button" onClick={toggleBalancesHidden} aria-label={balancesHidden ? "Show amounts" : "Hide amounts"} className="grid size-8 place-items-center rounded-full text-white/60 hover:bg-white/10">
+              <button type="button" onClick={toggleBalancesHidden} aria-label={balancesHidden ? "Show amounts" : "Hide amounts"} className="grid size-7 place-items-center rounded-full text-white/60 hover:bg-white/10">
                 {balancesHidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
               </button>
             </div>
-            <p className="mt-1 text-[28px] font-extrabold tracking-tight">
-              {available === null ? "—" : visibleMoney(available, currency, balancesHidden)}
-            </p>
-            {available !== null && usdEquivalent(available, currency, balancesHidden) && <p className="text-[11px] text-white/45">{usdEquivalent(available, currency, balancesHidden)}</p>}
-            {inEscrow !== null && inEscrow > 0 && (
-              <p className="mt-0.5 text-[11px] font-medium text-white/45">
-                {visibleMoney(inEscrow, currency, balancesHidden)} in escrow
-              </p>
-            )}
-            <div className="mt-4 flex gap-2">
+            <div className="mt-1.5 flex items-end justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate text-[24px] font-extrabold leading-none tracking-tight">
+                  {available === null ? "—" : visibleMoney(available, currency, balancesHidden)}
+                </p>
+                {available !== null && usdEquivalent(available, currency, balancesHidden) && <p className="mt-1 truncate text-[11px] text-white/45">{usdEquivalent(available, currency, balancesHidden)}</p>}
+              </div>
+              {inEscrow !== null && inEscrow > 0 && (
+                <div className="shrink-0 rounded-lg border border-white/[0.08] bg-white/[0.05] px-2.5 py-1.5 text-right">
+                  <p className="text-[9px] font-medium uppercase tracking-widest text-white/40">In escrow</p>
+                  <p className="mt-0.5 text-[12px] font-bold text-white/85">{visibleMoney(inEscrow, currency, balancesHidden)}</p>
+                </div>
+              )}
+            </div>
+            <div className="mt-3 flex gap-2">
               <button
                 type="button"
                 onClick={() => {
