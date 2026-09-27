@@ -57,8 +57,6 @@ export function BootSplash() {
   const routeLoading = useRouterState({ select: (s) => s.isLoading || s.status === "pending" });
 
   useEffect(() => {
-    // Hand off from the server-rendered pre-hydration splash.
-    document.getElementById("oventric-boot")?.remove();
     setHydrated(true);
     if (!splashConsumed && isStandaloneLaunch()) {
       splashConsumed = true;

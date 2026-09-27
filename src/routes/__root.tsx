@@ -334,24 +334,10 @@ function RootShell({ children }: { children: ReactNode }) {
         />
       </head>
       <body style={{ background: "#121214" }}>
-        {/* Standalone-launch splash: mirrors the React BootSplash until hydration. */}
-        <div id="oventric-boot" aria-hidden suppressHydrationWarning>
-          <img loading="lazy" decoding="async"
-            src="/oventric-full-transparent.png"
-            className="ob-wordmark"
-            alt="Oventric"
-            draggable={false}
-          />
-          <style
-            dangerouslySetInnerHTML={{
-              __html: `#oventric-boot{position:fixed;inset:0;z-index:99998;display:none;flex-direction:column;align-items:center;justify-content:center;background:#121214;transition:opacity .3s}
-#oventric-boot .ob-wordmark{height:40px;width:auto;user-select:none}`,
-            }}
-          />
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `(function(){try{
-  var root=document.getElementById('oventric-boot');if(!root)return;
+        {/* Mark app launches before hydration; the animated React splash is the only visible splash. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{
   var appShell=false;
   try{
     var params=new URLSearchParams(window.location.search);
@@ -364,11 +350,10 @@ function RootShell({ children }: { children: ReactNode }) {
      appShell=review?true:(forced==='app'&&(native||standalone));
   }catch(e){}
   window.__oventricStandalone=!!appShell;
-  if(appShell){document.documentElement.classList.add('standalone-app');root.style.display='flex';}else{root.style.display='none';}
+  if(appShell)document.documentElement.classList.add('standalone-app');
 }catch(e){}})();`,
-            }}
-          />
-        </div>
+          }}
+        />
         {children}
         <Scripts />
       </body>
