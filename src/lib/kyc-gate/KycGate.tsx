@@ -881,56 +881,22 @@ function KycLivenessModal({
   );
 }
 
-function FallbackIdPreview({ path }: { path: string }) {
-  const [url, setUrl] = useState<string | null>(null);
-  useEffect(() => {
-    supabase.storage
-      .from("kyc-selfies")
-      .createSignedUrl(path, 120)
-      .then(({ data }) => {
-        if (data?.signedUrl) setUrl(data.signedUrl);
-      });
-  }, [path]);
-  if (!url) return null;
-  return (
-    <div>
-      <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1.5">
-        Your stored ID on file
-      </div>
-      <div className="rounded-lg overflow-hidden border border-white/10 bg-black">
-        <ResponsiveImage
-          sizes="(min-width: 640px) 480px, 100vw"
-          src={url}
-          alt="Stored ID document"
-          className="w-full aspect-[16/10] object-cover"
-          loading="lazy"
-          decoding="async"
-        />
-      </div>
-    </div>
-  );
-}
-
 // ---------------------------------------------------------------------------
-// Fallback: contact admin form after selfie + ID both fail.
+// Fallback: contact admin form after repeated selfie-match failures.
 // ---------------------------------------------------------------------------
 
 function FallbackSupport({
-  idReferencePath,
   selfieAttempts,
-  idAttempts,
   matchDebug,
   onSubmit,
   onReset,
 }: {
-  idReferencePath: string | null;
   selfieAttempts: number;
-  idAttempts: number;
   matchDebug: string | null;
   onSubmit: (payload: { reason: string; contact: string; message: string }) => Promise<void>;
   onReset: () => void;
 }) {
-  const [reason, setReason] = useState("Face + ID match failed");
+  const [reason, setReason] = useState("Face match failed");
   const [contact, setContact] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
@@ -977,17 +943,15 @@ function FallbackSupport({
     <div className="space-y-4">
       <div className="flex items-center gap-3">
         <div className="w-11 h-11 rounded-full bg-amber-500/15 border border-amber-500/40 flex items-center justify-center shrink-0">
-          <IdCard className="w-6 h-6 text-amber-300" />
+          <LifeBuoy className="w-6 h-6 text-amber-300" />
         </div>
         <div>
           <div className="text-white font-black text-sm">Manual review needed</div>
           <p className="text-[11px] text-slate-400 leading-snug">
-            Face match failed {selfieAttempts}× and ID match failed {idAttempts}×. Contact an admin
-            to verify your identity.
+            Face match failed {selfieAttempts}×. Contact an admin to verify your identity.
           </p>
         </div>
       </div>
-      {idReferencePath && <FallbackIdPreview path={idReferencePath} />}
       <div className="space-y-2">
         <input
           type="text"
@@ -999,7 +963,7 @@ function FallbackSupport({
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="What happened? (e.g. new haircut, damaged ID, wrong ID stored)"
+          placeholder="What happened? (e.g. new haircut, different lighting, old selfie)"
           rows={3}
           className="w-full px-3 py-2 bg-[#121214] border border-white/10 rounded-lg text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/60 resize-none"
         />
