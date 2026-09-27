@@ -949,13 +949,12 @@ function ListingsList({ rows, onEdit }: { rows: ProductDTO[] | null; onEdit: (p:
 /* ------------------------------ Social ------------------------------ */
 
 function SocialPane({ data }: { data: DashboardSocial | null }) {
-  const [sub, setSub] = useState<"followers" | "following" | "circles" | "memories">("followers");
+  const [sub, setSub] = useState<"followers" | "following" | "memories">("followers");
   if (!data) return <Spinner />;
   const rows = sub === "followers" ? data.followers : sub === "following" ? data.following : [];
   const subs = [
     { key: "followers", label: `Followers (${data.followers.length})` },
     { key: "following", label: `Following (${data.following.length})` },
-    { key: "circles", label: `Circles (${data.circles.length})` },
     { key: "memories", label: "Memories" },
   ] as const;
   return (
@@ -998,27 +997,6 @@ function SocialPane({ data }: { data: DashboardSocial | null }) {
                   <div className="text-[11px] text-white/40 truncate">@{u.slug}</div>
                 </div>
               </Link>
-            ))}
-          </div>
-        ))}
-      {sub === "circles" &&
-        (data.circles.length === 0 ? (
-          <EmptyState icon={Users} title="No circles yet" hint="Join or create a circle to collaborate with peers." />
-        ) : (
-          <div className="space-y-2">
-            {data.circles.map((c) => (
-              <Card key={c.id} className="p-3 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg">
-                    {c.emoji ?? "◎"}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="font-semibold text-sm truncate">{c.name}</div>
-                    <div className="text-[11px] text-white/40">Joined {new Date(c.joinedAt).toLocaleDateString()}</div>
-                  </div>
-                </div>
-                <span className="text-[10px] font-bold uppercase text-white/50">{c.role}</span>
-              </Card>
             ))}
           </div>
         ))}

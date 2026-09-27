@@ -1259,7 +1259,7 @@ function WalletPane({
 }
 
 function SocialPane({ data }: { data: DashboardSocial | null }) {
-  const [sub, setSub] = useState<"followers" | "following" | "circles" | "memories">("followers");
+  const [sub, setSub] = useState<"followers" | "following" | "memories">("followers");
   if (!data) return <SocialSkeleton />;
   const rows = sub === "followers" ? data.followers : sub === "following" ? data.following : [];
   return (
@@ -1271,9 +1271,6 @@ function SocialPane({ data }: { data: DashboardSocial | null }) {
           </TabButton>
           <TabButton active={sub === "following"} onClick={() => setSub("following")}>
             Following ({data.following.length})
-          </TabButton>
-          <TabButton active={sub === "circles"} onClick={() => setSub("circles")}>
-            Circles ({data.circles.length})
           </TabButton>
           <TabButton active={sub === "memories"} onClick={() => setSub("memories")}>
             Memories
@@ -1307,40 +1304,6 @@ function SocialPane({ data }: { data: DashboardSocial | null }) {
                   <div className="text-[11px] text-slate-500 truncate">@{u.slug}</div>
                 </div>
               </Link>
-            ))}
-          </div>
-        ))}
-      {sub === "circles" &&
-        (data.circles.length === 0 ? (
-          <EmptyState
-            icon={Users}
-            title="No circles yet"
-            hint="Join or create a circle to collaborate with peers."
-          />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            {data.circles.map((c) => (
-              <div
-                key={c.id}
-                className="rounded-xl border border-white/10 md:border-slate-200 bg-[#141418] md:bg-white md:shadow-sm p-3 flex items-center justify-between gap-3"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-[10px] bg-white/5 md:bg-slate-50 border border-white/10 md:border-slate-200 flex items-center justify-center text-lg">
-                    {c.emoji ?? "◎"}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-white md:text-slate-900 font-semibold text-sm truncate">
-                      {c.name}
-                    </div>
-                    <div className="text-[11px] text-slate-500">
-                      Joined {new Date(c.joinedAt).toLocaleDateString()}
-                    </div>
-                  </div>
-                </div>
-                <span className="text-[10px] font-bold uppercase text-slate-300 md:text-slate-600">
-                  {c.role}
-                </span>
-              </div>
             ))}
           </div>
         ))}
