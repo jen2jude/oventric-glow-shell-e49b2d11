@@ -62,7 +62,7 @@ async function buildCoachContext(userId: string): Promise<string> {
     creator: {
       name: profile?.display_name || profile?.username || "Creator",
       country: profile?.country ?? null,
-      homeCurrency: profile?.base_currency ?? "USD",
+      homeCurrency,
     },
     audience: {
       followers: hub.followers,
