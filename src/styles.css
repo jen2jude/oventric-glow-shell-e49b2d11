@@ -870,6 +870,15 @@
   backdrop-filter: blur(12px);
 }
 
+.app-profile-settings {
+  color-scheme: light;
+  --background: oklch(0.975 0.006 235);
+  --foreground: oklch(0.24 0.018 250);
+  --card: oklch(1 0 0);
+  --muted-foreground: oklch(0.5 0.025 250);
+  --border: oklch(0.885 0.015 235);
+}
+
 .app-profile-settings > [role="dialog"],
 .app-profile-editor > [role="dialog"] {
   width: 100%;
@@ -925,14 +934,33 @@
   padding-bottom: 0;
 }
 
+.app-profile-editor > [role="dialog"] > form > section:first-child,
+.app-profile-editor > [role="dialog"] > form > div:last-child {
+  flex: none;
+}
+
+.app-profile-editor > [role="dialog"] > form > section:first-child {
+  border-color: var(--border);
+}
+
 .app-profile-editor > [role="dialog"] > form > div:last-child {
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
 }
 
 .app-profile-editor :is(input, textarea) {
-  background: var(--background);
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+}
+
+.app-profile-editor > [role="dialog"] > form > section:first-child > div:nth-child(2),
+.app-profile-editor > [role="dialog"] > form > div:last-child {
+  background: var(--card);
+}
+
+.app-profile-editor > [role="dialog"] > form > section:first-child :is(.text-white, .text-slate-400),
+.app-profile-editor > [role="dialog"] > div:nth-child(2) h2 {
   color: var(--foreground);
-  border-color: var(--border);
 }
 
 .app-profile-editor > [role="dialog"] > form > section:first-child {
