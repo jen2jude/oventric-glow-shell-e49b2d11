@@ -540,6 +540,20 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
       )}
 
       {/* Skills */}
+      {/* Collections — curated boards + saved items */}
+      {tab === "collections" && (
+        <div className="px-4 pt-4">
+          <ProfileCollectionsTab
+            idOrSlug={idOrSlug}
+            name={profile.displayName}
+            isOwner={isOwn}
+          />
+        </div>
+      )}
+
+      {/* Photos — every image they've uploaded across the platform */}
+      {tab === "photos" && <AppPhotosGallery idOrSlug={idOrSlug} />}
+
       {tab === "skills" && (
         <div className="space-y-5 p-4">
           {profile.skills.length === 0 && profile.tools.length === 0 ? (
