@@ -320,10 +320,11 @@ export function AppFeed() {
     });
 
   return (
-    <div className="min-h-[calc(100dvh-80px)] bg-[#070A08] pb-24">
-      {/* Timeline header + tabs */}
-      <div className="sticky top-0 z-10 border-b border-white/5 bg-[#070A08]/90 backdrop-blur">
-        <div className="flex items-center justify-center gap-5 py-2.5">
+    <div className="min-h-[calc(100dvh-80px)] bg-[#070A08] pb-24 pt-[calc(3rem+env(safe-area-inset-top))]">
+      {/* Keep feed sections outside the scrolling timeline so restored scroll
+          positions can never move them off screen. */}
+      <div className="fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-[#070A08]/95 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_rgba(0,0,0,0.24)] backdrop-blur-xl">
+        <div className="mx-auto flex h-12 w-full max-w-md items-center justify-evenly px-2">
           {(
             [
               { key: "foryou", label: "For you" },
@@ -338,12 +339,12 @@ export function AppFeed() {
                 haptic("select");
                 setTab(t.key);
               }}
-              className="relative pb-1 text-[13px] font-bold tracking-wide"
+              className="relative flex h-full min-w-0 flex-1 items-center justify-center px-1 text-[12px] font-bold"
               style={{ color: tab === t.key ? "#ffffff" : "rgba(255,255,255,0.4)" }}
             >
               {t.label}
               {tab === t.key && (
-                <span className="absolute -bottom-[1px] left-1/2 h-[3px] w-8 -translate-x-1/2 rounded-full bg-[#E5484D]" />
+                <span className="absolute bottom-0 left-1/2 h-[3px] w-8 -translate-x-1/2 rounded-full bg-[#E5484D]" />
               )}
             </button>
           ))}
