@@ -506,9 +506,9 @@ export function SellAssetModal({ open, onClose }: { open: boolean; onClose: () =
       aria-modal="true"
       aria-label="Sell an asset"
     >
-      <div className="absolute inset-0 bg-foreground/55 backdrop-blur-[2px]" onClick={submitting ? undefined : onClose} />
+      <div className={`absolute inset-0 bg-foreground/55 backdrop-blur-[2px] transition-opacity duration-300 ${closing ? "opacity-0" : "opacity-100"}`} onClick={submitting ? undefined : onClose} />
       <div
-        className={`web-sell-panel slide-up relative flex flex-col overflow-hidden border border-contact-line bg-contact-surface text-contact-ink shadow-contact-sheet ${
+        className={`web-sell-panel ${closing ? "slide-down" : "slide-up"} relative flex flex-col overflow-hidden border border-contact-line bg-contact-surface text-contact-ink shadow-contact-sheet ${
           success
              ? "sell-asset-success w-full max-w-[19rem] rounded-[18px] sm:max-w-sm"
             : isApp ? "h-[94dvh] w-full max-w-2xl rounded-t-[24px]" : "max-h-[calc(100dvh-0.75rem)] max-w-3xl w-full rounded-t-[20px] sm:max-h-[calc(100dvh-3rem)] sm:rounded-[18px]"
