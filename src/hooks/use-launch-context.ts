@@ -1,4 +1,24 @@
 import { useEffect, useState } from "react";
+import { createIsomorphicFn } from "@tanstack/react-start";
+import { getRequestHost } from "@tanstack/react-start/server";
+
+const PUBLIC_HOSTS = new Set(["oventric.com", "www.oventric.com", "oventric-glow-shell.lovable.app"]);
+
+/**
+ * First-render context, identical on server and client: review hosts render
+ * the app shell straight from the server so the website never shows while
+ * the preview's scripts are still loading.
+ */
+const getInitialContext = createIsomorphicFn()
+  .server((): LaunchContext => {
+    try {
+      const host = (getRequestHost({ xForwardedHost: true }) || "").split(":")[0].toLowerCase();
+      return PUBLIC_HOSTS.has(host) ? "browser" : "app";
+    } catch {
+      return "browser";
+    }
+  })
+  .client((): LaunchContext => (isAppReviewPreview() ? "app" : "browser"));
 
 /**
  * Oventric runs as one codebase with two presentations:
@@ -20,10 +40,7 @@ export const APP_MODE_KEY = "oventric:launch-mode";
 export function isAppReviewPreview(): boolean {
   if (typeof window === "undefined") return false;
   const host = window.location.hostname.toLowerCase();
-  const isPublicHost = host === "oventric.com" ||
-    host === "www.oventric.com" ||
-    host === "oventric-glow-shell.lovable.app";
-  return !isPublicHost;
+  return !PUBLIC_HOSTS.has(host);
 }
 
 /** True when the page is running in an installed / standalone window. */
@@ -97,7 +114,7 @@ export function useLaunchContext(): LaunchContext | null {
   // review previews hydrate website markup as app markup, leaving the website
   // shell behind when React abandoned hydration. The splash covers this brief
   // null state until the effect selects the presentation.
-  const [ctx, setCtx] = useState<LaunchContext | null>(() => hydratedContext);
+  const [ctx, setCtx] = useState<LaunchContext | null>(() => hydratedContext ?? getInitialContext());
   useEffect(() => {
     const next = resolveLaunchContext();
     hydratedContext = next;
