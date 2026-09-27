@@ -24,7 +24,6 @@ import {
   Store,
   LayoutGrid,
   BadgeCheck,
-  Clapperboard,
   Download,
 } from "lucide-react";
 import { toast } from "sonner";
