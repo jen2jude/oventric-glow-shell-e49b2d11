@@ -508,9 +508,25 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
           </div>
         ))}
 
-      {/* About */}
-      {tab === "about" && (
+      {/* Services */}
+      {tab === "services" && (
+        <div className="p-4">
+          <ProfileServicesTab
+            items={services}
+            isOwner={isOwn}
+            price={(usd) => (usd <= 0 ? "Free" : `$${usd.toFixed(2)}`)}
+          />
+        </div>
+      )}
+
+      {/* Skills */}
+      {tab === "skills" && (
         <div className="space-y-5 p-4">
+          {profile.skills.length === 0 && profile.tools.length === 0 ? (
+            <p className="px-4 py-10 text-center text-xs text-white/35">
+              No skills listed yet.
+            </p>
+          ) : null}
           {profile.skills.length > 0 && (
             <section>
               <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wider text-white/40">
