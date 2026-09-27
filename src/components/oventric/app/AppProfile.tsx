@@ -6,30 +6,43 @@ import {
   ArrowLeft,
   BadgeCheck,
   CalendarDays,
+  Flag,
   Link2,
   MapPin,
   MessageCircle,
+  MoreHorizontal,
+  Share2,
   ShoppingBag,
   UserPlus,
   UserCheck,
+  Users,
   Clock,
 } from "lucide-react";
+import { toast } from "sonner";
 import {
   getProfileByIdOrSlug,
   getProfileSocialCounts,
+  getProfileTab,
 } from "@/lib/profiles.functions";
 import {
   getFollowStatus,
   sendFollowRequest,
   unfollow,
+  listIncomingFollowRequests,
 } from "@/lib/follows.functions";
 import { listPosts, type FeedPost } from "@/lib/posts.functions";
 import { listProducts, type ProductDTO } from "@/lib/marketplace.functions";
+import type { ProfileListing } from "@/lib/profiles/mockProfiles";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { haptic } from "@/lib/haptics";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { ProductQuickView } from "./ProductQuickView";
+import { AppSheet } from "./AppSheet";
+import { ConnectionsDialog } from "@/components/oventric/profile/ConnectionsDialog";
+import { FollowRequestsDrawer } from "@/components/oventric/FollowRequestsDrawer";
+import { ReportModal } from "@/components/oventric/ReportModal";
+import { ProfileServicesTab } from "@/components/oventric/profile/ProfileServicesTab";
 
 function ago(iso: string) {
   const s = (Date.now() - new Date(iso).getTime()) / 1000;
@@ -43,7 +56,7 @@ function compact(n: number) {
   return n >= 1000 ? `${(n / 1000).toFixed(1).replace(/\.0$/, "")}k` : `${n}`;
 }
 
-type Tab = "posts" | "shop" | "about";
+type Tab = "posts" | "shop" | "services" | "skills" | "about";
 
 function priceOf(p: ProductDTO): string {
   return `$${p.priceUSD.toFixed(2)}`;
@@ -55,6 +68,13 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
   const [tab, setTab] = useState<Tab>("posts");
   const [quickViewId, setQuickViewId] = useState<string | null>(null);
   const [followBusy, setFollowBusy] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [followReqOpen, setFollowReqOpen] = useState(false);
+  const [connectionsOpen, setConnectionsOpen] = useState(false);
+  const [connectionsTab, setConnectionsTab] = useState<
+    "all" | "following" | "followers" | "suggested"
+  >("followers");
   const { baseCurrency } = useOnboarding();
   const currency = (baseCurrency ?? "USD") as Currency;
 
