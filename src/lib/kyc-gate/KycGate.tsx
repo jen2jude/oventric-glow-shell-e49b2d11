@@ -418,7 +418,7 @@ function KycLivenessModal({
 
   // Countdown → capture frame
   useEffect(() => {
-    if (step !== "id-capturing" && step !== "selfie-capturing") return;
+    if (step !== "selfie-capturing") return;
     if (countdown <= 0) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
@@ -427,32 +427,22 @@ function KycLivenessModal({
       canvas.height = video.videoHeight || 480;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
-      if (step === "selfie-capturing") {
-        ctx.save();
-        ctx.translate(canvas.width, 0);
-        ctx.scale(-1, 1);
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        ctx.restore();
-      } else {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      }
+      ctx.save();
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.restore();
       canvas.toBlob(
         (blob) => {
           if (!blob) {
             setError("Capture failed. Try again.");
-            setStep(step === "id-capturing" ? "id-camera" : "selfie-camera");
+            setStep("selfie-camera");
             return;
           }
           streamRef.current?.getTracks().forEach((t) => t.stop());
-          if (step === "id-capturing") {
-            setIdBlob(blob);
-            setIdUrl(URL.createObjectURL(blob));
-            setStep(mode === "enroll" ? "id-review" : "id-matching");
-          } else {
-            setSelfieBlob(blob);
-            setSelfieUrl(URL.createObjectURL(blob));
-            setStep(mode === "enroll" ? "review" : "matching");
-          }
+          setSelfieBlob(blob);
+          setSelfieUrl(URL.createObjectURL(blob));
+          setStep(mode === "enroll" ? "review" : "matching");
         },
         "image/jpeg",
         0.85,
