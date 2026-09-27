@@ -1,3 +1,4 @@
+import { navigateInApp } from "@/lib/navigate-in-app";
 import { useEffect, useState, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import {
@@ -227,7 +228,7 @@ export function Header({
       <SiteNavbar
         onSelect={siteNavbarOnSelect ?? ((section) => {
           if (section === "Home") {
-            window.location.href = "/";
+            navigateInApp("/");
             return;
           }
           window.dispatchEvent(new CustomEvent("oventric:navigate", { detail: { section } }));

@@ -1,3 +1,4 @@
+import { navigateInApp } from "@/lib/navigate-in-app";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -197,7 +198,7 @@ export function SalesFulfilmentList({
 
   const messageBuyer = (buyerId: string) => {
     if (typeof window === "undefined") return;
-    window.location.href = `/?dm=${buyerId}`;
+    navigateInApp(`/?dm=${buyerId}`);
   };
 
   return (

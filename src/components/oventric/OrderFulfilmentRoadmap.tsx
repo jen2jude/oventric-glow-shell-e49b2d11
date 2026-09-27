@@ -1,3 +1,4 @@
+import { navigateInApp } from "@/lib/navigate-in-app";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useServerFn } from "@tanstack/react-start";
@@ -117,7 +118,7 @@ export function OrderFulfilmentRoadmap({
     if (window.location.pathname === "/") {
       window.dispatchEvent(new CustomEvent("oventric:open-dm", { detail: { peerId } }));
     } else {
-      window.location.href = `/?dm=${peerId}`;
+      navigateInApp(`/?dm=${peerId}`);
     }
   };
 

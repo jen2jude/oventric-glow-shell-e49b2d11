@@ -1,3 +1,4 @@
+import { navigateInApp } from "@/lib/navigate-in-app";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -798,9 +799,7 @@ function WatercoolerPost({
         )}
         <button
           onClick={() =>
-            (window.location.href = p.authorSlug
-              ? `/profile/${p.authorSlug}`
-              : `/profile/${p.authorId}`)
+            navigateInApp(p.authorSlug ? `/profile/${p.authorSlug}` : `/profile/${p.authorId}`)
           }
           className="text-sm font-semibold text-white hover:text-emerald-300 md:text-slate-900"
         >
@@ -886,7 +885,7 @@ function MembersTab({ circle }: { circle: CircleSummary }) {
           )}
           <button
             onClick={() =>
-              (window.location.href = m.slug ? `/profile/${m.slug}` : `/profile/${m.userId}`)
+              navigateInApp(m.slug ? `/profile/${m.slug}` : `/profile/${m.userId}`)
             }
             className="min-w-0 flex-1 text-left"
           >

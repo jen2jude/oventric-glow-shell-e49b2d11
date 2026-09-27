@@ -1,3 +1,4 @@
+import { navigateInApp } from "@/lib/navigate-in-app";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useServerFn } from "@tanstack/react-start";
@@ -153,7 +154,7 @@ export function StoryViewerModal({
         const res: any = await react({ data: { storyId: item.id, clipOnly: true } });
         if (res?.peerId && !res.skipped) {
           onClose();
-          window.location.href = `/?section=Messages&dm=${res.peerId}`;
+          navigateInApp(`/?section=Messages&dm=${res.peerId}`);
         }
       } catch {
         /* silent */

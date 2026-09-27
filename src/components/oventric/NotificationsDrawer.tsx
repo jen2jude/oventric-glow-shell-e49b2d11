@@ -20,6 +20,7 @@ import {
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
+import { navigateInApp } from "@/lib/navigate-in-app";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 import { isSoundMuted, playNotificationSound, setSoundMuted } from "@/lib/notification-sound";
@@ -662,11 +663,7 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
                       const url = viewing.link!;
                       setViewing(null);
                       onClose();
-                      if (/^https?:\/\//i.test(url)) {
-                        window.open(url, "_blank", "noopener,noreferrer");
-                      } else {
-                        window.location.href = url;
-                      }
+                      navigateInApp(url);
                     }}
                     className="w-full py-2.5 rounded-[10px] bg-primary hover:opacity-90 text-primary-foreground text-sm font-semibold flex items-center justify-center gap-2 transition-opacity"
                   >
