@@ -15,6 +15,7 @@ import { CreatePanel } from "@/components/oventric/CreatePanel";
 import { Button } from "@/components/ui/button";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { computeDisplayPrice, formatMoney } from "@/lib/fx-display";
+import { visibleMoney } from "@/lib/money-visibility";
 import {
   listProducts,
   listMarketplaceCategories,
@@ -53,7 +54,7 @@ interface Discovery {
  */
 export function WebMarketplace() {
   const navigate = useNavigate();
-  const { baseCurrency, require } = useOnboarding();
+  const { baseCurrency, homeCurrency, balancesHidden, require } = useOnboarding();
   const [sellPanelOpen, setSellPanelOpen] = useState(false);
 
   const loadDiscovery = useServerFn(getMarketplaceDiscovery);
@@ -306,9 +307,9 @@ export function WebMarketplace() {
           className="w-full accent-[#E5484D]"
         />
         <div className="mt-1 flex items-center justify-between text-[11.5px] font-bold text-slate-500">
-          <span>{formatMoney(0, baseCurrency)}</span>
+          <span>{visibleMoney(0, baseCurrency, balancesHidden)}</span>
           <span className="text-slate-900">
-            {formatMoney(maxPrice ?? priceCeiling, baseCurrency)}
+            {visibleMoney(maxPrice ?? priceCeiling, baseCurrency, balancesHidden)}
           </span>
         </div>
       </div>
@@ -396,7 +397,7 @@ export function WebMarketplace() {
             <h2 className="font-wallet-display text-[24px] font-bold">Featured digital products</h2>
             <p className="mt-1 text-[13px] text-muted-foreground">Popular picks from Oventric sellers.</p>
             <div className="no-scrollbar -mx-4 mt-5 flex snap-x gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:px-0 lg:grid-cols-4">
-              {movingPool.slice(0, 4).map((product) => <SellerProductCard key={product.id} product={product} seller={sellerById.get(product.sellerId)} price={priceOf(product).formatted} onClick={() => openProduct(product)} />)}
+              {movingPool.slice(0, 4).map((product) => <SellerProductCard key={product.id} product={product} seller={sellerById.get(product.sellerId)} price={priceOf(product).value === 0 ? "Free" : visibleMoney(priceOf(product).value, baseCurrency, balancesHidden)} onClick={() => openProduct(product)} />)}
             </div>
           </section>
         )}
@@ -441,7 +442,7 @@ export function WebMarketplace() {
                     key={p.id}
                     product={p}
                     seller={sellerById.get(p.sellerId)}
-                    price={priceOf(p).formatted}
+                    price={priceOf(p).value === 0 ? "Free" : visibleMoney(priceOf(p).value, baseCurrency, balancesHidden)}
                     onClick={() => openProduct(p)}
                   />
                 ))}
