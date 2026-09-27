@@ -6,30 +6,43 @@ import {
   ArrowLeft,
   BadgeCheck,
   CalendarDays,
+  Flag,
   Link2,
   MapPin,
   MessageCircle,
+  MoreHorizontal,
+  Share2,
   ShoppingBag,
   UserPlus,
   UserCheck,
+  Users,
   Clock,
 } from "lucide-react";
+import { toast } from "sonner";
 import {
   getProfileByIdOrSlug,
   getProfileSocialCounts,
+  getProfileTab,
 } from "@/lib/profiles.functions";
 import {
   getFollowStatus,
   sendFollowRequest,
   unfollow,
+  listIncomingFollowRequests,
 } from "@/lib/follows.functions";
 import { listPosts, type FeedPost } from "@/lib/posts.functions";
 import { listProducts, type ProductDTO } from "@/lib/marketplace.functions";
+import type { ProfileListing } from "@/lib/profiles/mockProfiles";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { haptic } from "@/lib/haptics";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { ProductQuickView } from "./ProductQuickView";
+import { AppSheet } from "./AppSheet";
+import { ConnectionsDialog } from "@/components/oventric/profile/ConnectionsDialog";
+import { FollowRequestsDrawer } from "@/components/oventric/FollowRequestsDrawer";
+import { ReportModal } from "@/components/oventric/ReportModal";
+import { ProfileServicesTab } from "@/components/oventric/profile/ProfileServicesTab";
 
 function ago(iso: string) {
   const s = (Date.now() - new Date(iso).getTime()) / 1000;
@@ -43,7 +56,7 @@ function compact(n: number) {
   return n >= 1000 ? `${(n / 1000).toFixed(1).replace(/\.0$/, "")}k` : `${n}`;
 }
 
-type Tab = "posts" | "shop" | "about";
+type Tab = "posts" | "shop" | "services" | "skills" | "about";
 
 function priceOf(p: ProductDTO): string {
   return `$${p.priceUSD.toFixed(2)}`;
@@ -55,6 +68,13 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
   const [tab, setTab] = useState<Tab>("posts");
   const [quickViewId, setQuickViewId] = useState<string | null>(null);
   const [followBusy, setFollowBusy] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [followReqOpen, setFollowReqOpen] = useState(false);
+  const [connectionsOpen, setConnectionsOpen] = useState(false);
+  const [connectionsTab, setConnectionsTab] = useState<
+    "all" | "following" | "followers" | "suggested"
+  >("followers");
   const { baseCurrency } = useOnboarding();
   const currency = (baseCurrency ?? "USD") as Currency;
 
@@ -65,6 +85,8 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
   const unfollowFn = useServerFn(unfollow);
   const fetchPosts = useServerFn(listPosts);
   const fetchProducts = useServerFn(listProducts);
+  const fetchServices = useServerFn(getProfileTab);
+  const fetchFollowReqs = useServerFn(listIncomingFollowRequests);
 
   const { data: profileData, isLoading } = useQuery({
     queryKey: ["app-profile", idOrSlug],
@@ -119,6 +141,38 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
       ),
     [productsData, userId],
   );
+
+  const { data: servicesData } = useQuery({
+    queryKey: ["app-profile-services", idOrSlug],
+    queryFn: () =>
+      fetchServices({
+        data: { profileId: idOrSlug, tab: "services", page: 1, pageSize: 24 },
+      }),
+    staleTime: 60_000,
+  });
+  const services = (servicesData?.items ?? []) as ProfileListing[];
+
+  const { data: followReqData } = useQuery({
+    queryKey: ["app-profile-follow-requests"],
+    queryFn: () => fetchFollowReqs(),
+    enabled: isOwn,
+    staleTime: 30_000,
+  });
+  const pendingFollowReqCount = followReqData?.length ?? 0;
+
+  const shareProfile = async () => {
+    const url = `${window.location.origin}/profile/${idOrSlug}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: profile?.displayName ?? "Profile", url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        toast.success("Profile link copied");
+      }
+    } catch {
+      /* dismissed */
+    }
+  };
 
   const toggleFollow = async () => {
     if (!userId) return;
@@ -263,6 +317,16 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
                 </button>
               </>
             )}
+            <button
+              onClick={() => {
+                haptic("select");
+                setMenuOpen(true);
+              }}
+              aria-label="More options"
+              className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/15"
+            >
+              <MoreHorizontal className="h-4 w-4 text-white/80" />
+            </button>
           </div>
         </div>
 
@@ -298,14 +362,26 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
 
         {/* Stats */}
         <div className="mt-3 flex gap-5 text-[13px]">
-          <span className="text-white/50">
+          <button
+            onClick={() => {
+              setConnectionsTab("followers");
+              setConnectionsOpen(true);
+            }}
+            className="text-white/50"
+          >
             <b className="text-white">{compact(counts?.followers ?? 0)}</b>{" "}
             Followers
-          </span>
-          <span className="text-white/50">
+          </button>
+          <button
+            onClick={() => {
+              setConnectionsTab("following");
+              setConnectionsOpen(true);
+            }}
+            className="text-white/50"
+          >
             <b className="text-white">{compact(counts?.following ?? 0)}</b>{" "}
             Following
-          </span>
+          </button>
           <span className="text-white/50">
             <b className="text-white">{posts.length}</b> Posts
           </span>
@@ -316,11 +392,13 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
       </div>
 
       {/* Tabs */}
-      <div className="mt-4 flex border-b border-white/[0.06]">
+      <div className="mt-4 flex overflow-x-auto no-scrollbar border-b border-white/[0.06]">
         {(
           [
             ["posts", "Posts"],
             ["shop", "Shop"],
+            ["services", "Services"],
+            ["skills", "Skills"],
             ["about", "About"],
           ] as [Tab, string][]
         ).map(([key, label]) => (
@@ -330,7 +408,7 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
               haptic("select");
               setTab(key);
             }}
-            className={`relative flex-1 py-2.5 text-[13px] font-semibold ${
+            className={`relative flex-1 shrink-0 px-4 py-2.5 text-[13px] font-semibold ${
               tab === key ? "text-white" : "text-white/40"
             }`}
           >
@@ -430,9 +508,25 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
           </div>
         ))}
 
-      {/* About */}
-      {tab === "about" && (
+      {/* Services */}
+      {tab === "services" && (
+        <div className="p-4">
+          <ProfileServicesTab
+            items={services}
+            isOwner={isOwn}
+            price={(usd) => (usd <= 0 ? "Free" : `$${usd.toFixed(2)}`)}
+          />
+        </div>
+      )}
+
+      {/* Skills */}
+      {tab === "skills" && (
         <div className="space-y-5 p-4">
+          {profile.skills.length === 0 && profile.tools.length === 0 ? (
+            <p className="px-4 py-10 text-center text-xs text-white/35">
+              No skills listed yet.
+            </p>
+          ) : null}
           {profile.skills.length > 0 && (
             <section>
               <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wider text-white/40">
@@ -467,6 +561,18 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
               </div>
             </section>
           )}
+        </div>
+      )}
+
+      {/* About */}
+      {tab === "about" && (
+        <div className="space-y-5 p-4">
+          {profile.interests.length === 0 &&
+          !Object.values(profile.socialLinks ?? {}).some(Boolean) ? (
+            <p className="px-4 py-10 text-center text-xs text-white/35">
+              Nothing here yet.
+            </p>
+          ) : null}
           {profile.interests.length > 0 && (
             <section>
               <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wider text-white/40">
@@ -507,13 +613,6 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
                 </div>
               </section>
             )}
-          {profile.skills.length === 0 &&
-            profile.tools.length === 0 &&
-            profile.interests.length === 0 && (
-              <p className="py-10 text-center text-xs text-white/35">
-                Nothing shared here yet.
-              </p>
-            )}
         </div>
       )}
 
@@ -521,6 +620,81 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
         productId={quickViewId}
         currency={currency}
         onClose={() => setQuickViewId(null)}
+      />
+
+      {/* More options */}
+      <AppSheet open={menuOpen} onClose={() => setMenuOpen(false)}>
+        <div className="space-y-1 p-4">
+          <button
+            onClick={() => {
+              setMenuOpen(false);
+              void shareProfile();
+            }}
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[13px] font-semibold text-white/85 active:bg-white/[0.04]"
+          >
+            <Share2 className="h-4 w-4 text-white/50" /> Share profile
+          </button>
+          <button
+            onClick={() => {
+              setMenuOpen(false);
+              setConnectionsTab("all");
+              setConnectionsOpen(true);
+            }}
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[13px] font-semibold text-white/85 active:bg-white/[0.04]"
+          >
+            <Users className="h-4 w-4 text-white/50" /> Connections
+          </button>
+          {isOwn && (
+            <button
+              onClick={() => {
+                setMenuOpen(false);
+                setFollowReqOpen(true);
+              }}
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[13px] font-semibold text-white/85 active:bg-white/[0.04]"
+            >
+              <UserPlus className="h-4 w-4 text-white/50" /> Follow requests
+              {pendingFollowReqCount > 0 && (
+                <span className="ml-auto rounded-full bg-[#E5484D] px-2 py-0.5 text-[10px] font-bold text-white">
+                  {pendingFollowReqCount}
+                </span>
+              )}
+            </button>
+          )}
+          {!isOwn && (
+            <button
+              onClick={() => {
+                setMenuOpen(false);
+                setReportOpen(true);
+              }}
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[13px] font-semibold text-[#E5484D] active:bg-white/[0.04]"
+            >
+              <Flag className="h-4 w-4" /> Report profile
+            </button>
+          )}
+        </div>
+      </AppSheet>
+
+      {userId && (
+        <ConnectionsDialog
+          open={connectionsOpen}
+          onOpenChange={setConnectionsOpen}
+          userId={userId}
+          name={profile.displayName}
+          viewerId={me}
+          initialTab={connectionsTab}
+        />
+      )}
+      <FollowRequestsDrawer
+        open={followReqOpen}
+        onClose={() => setFollowReqOpen(false)}
+      />
+      <ReportModal
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        target="profile"
+        targetKind="profile"
+        targetId={userId ?? idOrSlug}
+        onReported={() => setReportOpen(false)}
       />
     </div>
   );
