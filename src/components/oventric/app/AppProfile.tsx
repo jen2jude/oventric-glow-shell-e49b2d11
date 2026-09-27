@@ -354,10 +354,10 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
                     {p.text}
                   </p>
                 )}
-                {p.media_paths && p.media_paths.length > 0 && (
+                {p.media && p.media.length > 0 && (
                   <div className="mt-2 overflow-hidden rounded-xl border border-white/[0.06]">
                     <img
-                      src={p.media_paths[0]}
+                      src={p.media[0].poster_url ?? p.media[0].url}
                       alt=""
                       className="max-h-56 w-full object-cover"
                     />
