@@ -175,7 +175,7 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
   return (
     <div className="min-h-dvh bg-[#0A0A0B] pb-32">
       {/* Cover */}
-      <div className="relative h-40 overflow-hidden">
+      <div className="relative h-28 overflow-hidden">
         {profile.coverUrl ? (
           <img
             src={profile.coverUrl}
@@ -185,7 +185,6 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
         ) : (
           <div className="h-full w-full bg-gradient-to-br from-[#E5484D]/40 via-[#17171B] to-[#0A0A0B]" />
         )}
-        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#0A0A0B] to-transparent" />
         <button
           onClick={() => window.history.back()}
           aria-label="Back"
@@ -196,25 +195,25 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
       </div>
 
       {/* Identity */}
-      <div className="px-4">
-        <div className="-mt-12 flex items-end justify-between">
-          <div className="relative">
-            <div className="h-24 w-24 rounded-full border-4 border-[#0A0A0B] bg-[#17171B] overflow-hidden">
+      <div className="relative z-10 px-4">
+        <div className="-mt-9 flex items-end justify-between">
+          <div className="relative shrink-0">
+            <div className="h-20 w-20 rounded-full border-4 border-[#0A0A0B] bg-[#17171B] shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
               {profile.avatarUrl ? (
                 <img
                   src={profile.avatarUrl}
                   alt=""
-                  className="h-full w-full object-cover"
+                  className="h-full w-full rounded-full object-cover"
                 />
               ) : (
-                <div className="grid h-full w-full place-items-center bg-[#E5484D] text-3xl font-bold text-white">
+                <div className="grid h-full w-full place-items-center rounded-full bg-[#E5484D] text-2xl font-bold text-white">
                   {profile.displayName.charAt(0).toUpperCase()}
                 </div>
               )}
             </div>
             {verified && (
-              <span className="absolute -bottom-0.5 -right-0.5 grid h-7 w-7 place-items-center rounded-full border-[3px] border-[#0A0A0B] bg-[#1D9BF0]">
-                <BadgeCheck className="h-4 w-4 text-white" />
+              <span className="absolute -bottom-0.5 -right-0.5 z-10 grid h-6 w-6 place-items-center rounded-full border-[3px] border-[#0A0A0B] bg-[#1D9BF0]">
+                <BadgeCheck className="h-3.5 w-3.5 text-white" />
               </span>
             )}
           </div>
