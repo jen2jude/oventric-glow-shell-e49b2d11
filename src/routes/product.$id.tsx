@@ -378,7 +378,7 @@ function ProductPage() {
     const next = `/product/${routeSlug}${window.location.search}${window.location.hash}`;
     window.history.replaceState(window.history.state, "", next);
   }, [routeSlug, id]);
-  const { baseCurrency, balancesHidden, require } = useOnboarding();
+  const { baseCurrency, require } = useOnboarding();
   const load = useServerFn(getProduct);
   const loadRelated = useServerFn(getRelatedProducts);
   const [product, setProduct] = useState<ProductDTO | null>(null);
@@ -504,10 +504,10 @@ function ProductPage() {
   return (
     <div
       style={{ touchAction: "pan-y", overscrollBehaviorY: "auto" }}
-      className="web-product oventric-web min-h-screen bg-newsfeed-canvas text-newsfeed-ink"
+      className={`web-product oventric-web min-h-screen bg-newsfeed-canvas text-newsfeed-ink ${isAppShell ? "app-product" : ""}`}
     >
       {!isAppShell && <Header onOpenMessages={() => {}} forceSiteNavbar={!isAppShell} />}
-      <main className="mx-auto w-full max-w-[1440px] px-3 pb-32 pt-3 sm:px-6 sm:pt-6 lg:px-11 lg:pt-8">
+      <main className={`mx-auto w-full max-w-[1440px] pb-32 sm:px-6 lg:px-11 lg:pt-8 ${isAppShell ? "px-0 pt-0" : "px-3 pt-3 sm:pt-6"}`}>
         {!isAppShell && (
           <div className="mb-5 flex items-center gap-3">
             <button
@@ -571,7 +571,7 @@ function ProductPage() {
         )}
 
         {product && (
-          <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12 lg:gap-12">
+          <div className={`grid grid-cols-1 items-start lg:grid-cols-12 lg:gap-12 ${isAppShell ? "gap-0" : "gap-6"}`}>
             <div className="flex flex-col gap-6 lg:col-span-7">
               <div>
                 {(() => {
@@ -585,7 +585,7 @@ function ProductPage() {
                   const cur = gallery[activeImage] ?? gallery[0];
                   return (
                     <>
-                        <div className="product-gallery relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-[10px] border border-newsfeed-line bg-newsfeed-coral-soft">
+                        <div className={`product-gallery relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden bg-newsfeed-coral-soft ${isAppShell ? "rounded-none border-0 sm:rounded-[10px]" : "rounded-[10px] border border-newsfeed-line"}`}>
                           {cur ? (
                             <ResponsiveImage
                               sizes="(min-width: 1024px) 640px, 100vw"
@@ -603,16 +603,11 @@ function ProductPage() {
                             <>
                               <button
                                 type="button"
-                                onClick={() => {
-                                  navigate({ to: "/" });
-                                  setTimeout(
-                                    () =>
-                                      window.dispatchEvent(
-                                        new CustomEvent("oventric:navigate", { detail: { section: "Marketplace" } }),
-                                      ),
-                                    100,
-                                  );
-                                }}
+                                 onClick={() => {
+                                   if (window.history.length > 1) navigate({ to: "/marketplace" });
+                                   else navigate({ to: "/marketplace" });
+                                 }}
+                                 aria-label="Back to marketplace"
                                  className="absolute left-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-full border border-newsfeed-line bg-newsfeed-surface/90 text-newsfeed-ink shadow-sm backdrop-blur-xl-md"
                               >
                                 <ArrowLeft className="w-[18px] h-[18px]" />
@@ -652,7 +647,7 @@ function ProductPage() {
                           )}
                         </div>
                       {gallery.length > 1 && (
-                        <div className="mt-3 flex gap-3 overflow-x-auto scrollbar-none">
+                        <div className={`mt-3 flex gap-3 overflow-x-auto scrollbar-none ${isAppShell ? "px-4 sm:px-0" : ""}`}>
                           {gallery.map((url, i) => (
                             <button
                               key={url}
@@ -683,8 +678,8 @@ function ProductPage() {
               )}
             </div>
 
-            <div className="product-summary lg:col-span-5">
-              <div className={`${isAppShell ? "pb-28" : ""} lg:sticky lg:top-24`}>
+            <div className={`product-summary lg:col-span-5 ${isAppShell ? "px-4 pt-5 sm:px-0" : ""}`}>
+              <div className={`${isAppShell ? "flex flex-col pb-28" : ""} lg:sticky lg:top-24`}>
               <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-newsfeed-coral-soft px-3 py-1.5 text-[10px] font-extrabold uppercase text-newsfeed-coral">
                 <span className="h-1.5 w-1.5 rounded-full bg-newsfeed-coral" />
 
@@ -713,7 +708,7 @@ function ProductPage() {
                     : `${product.stockQuantity} in stock`}
                 </div>
               ) : null}
-              <div className="mb-4 space-y-2 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-3">
+              <div className="product-seller mb-4 space-y-2 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-3">
                 <CreatorChip
                   idOrSlug={product.sellerSlug ?? product.sellerId}
                   name={product.vendor}
@@ -727,7 +722,7 @@ function ProductPage() {
                 />
               </div>
 
-              <div className="mb-4 flex flex-wrap items-center gap-2">
+              <div className="product-reviews mb-4 flex flex-wrap items-center gap-2">
                 <ProductRating
                   productId={product.id}
                   initialAverage={product.rating}
@@ -737,7 +732,7 @@ function ProductPage() {
                 />
               </div>
 
-              <div className="mb-5 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface px-4">
+              <div className="product-details mb-5 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface px-4">
                 <Accordion type="single" collapsible className="w-full">
                   <AccordionItem value="about" className={`${isAppShell ? "border-white/5" : "border-slate-200"}`}>
                     <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold py-3 hover:no-underline`}>
@@ -799,11 +794,11 @@ function ProductPage() {
               </div>
 
               <div className="product-purchase mb-5 overflow-hidden rounded-[10px] border border-newsfeed-line bg-newsfeed-surface shadow-newsfeed-panel">
-                <div className="grid h-1.5 grid-cols-3" aria-hidden="true">
+                {!isAppShell && <div className="grid h-1.5 grid-cols-3" aria-hidden="true">
                   <span className="bg-newsfeed-coral" />
                   <span className="bg-newsfeed-gold" />
                   <span className="bg-newsfeed-blue" />
-                </div>
+                </div>}
                 <div className="p-5 sm:p-6">
 
                 <div className="flex items-baseline justify-between mb-4">
@@ -813,7 +808,7 @@ function ProductPage() {
                       return (
                         <>
                           <div className="text-3xl font-extrabold text-newsfeed-ink sm:text-4xl">
-                            {dp.value === 0 ? "Free" : balancesHidden ? "••••" : dp.formatted}
+                            {dp.value === 0 ? "Free" : dp.formatted}
                           </div>
                         </>
                       );
@@ -851,7 +846,7 @@ function ProductPage() {
                           onClick={() => setSelectedPkg(pk.id)}
                           className={`w-full rounded-[10px] border p-3 text-left transition-colors ${
                             active
-                              ? "border-emerald-500 bg-emerald-500/10"
+                              ? "border-newsfeed-coral bg-newsfeed-coral-soft"
                               : isAppShell
                                 ? "border-white/10 bg-[#121214] hover:bg-[#17171B]"
                                 : "border-slate-200 bg-white hover:bg-slate-50"
@@ -882,7 +877,7 @@ function ProductPage() {
                             <span className={`shrink-0 font-black ${isAppShell ? "text-white" : "text-slate-900"}`}>
                               {pk.priceUsd === 0
                                 ? "Free"
-                                : balancesHidden ? "••••" : formatMoney(
+                                : formatMoney(
                                     pk.originalCurrency === baseCurrency
                                       ? pk.originalAmount
                                       : pk.priceUsd * usdRate(baseCurrency),
@@ -901,7 +896,7 @@ function ProductPage() {
                     <span className={`${isAppShell ? "text-white" : "text-slate-900"} md:text-slate-900 font-mono`}>
                       {productDisplay(product, baseCurrency).value === 0
                         ? "Free"
-                        : balancesHidden ? "••••" : formatMoney(productDisplay(product, baseCurrency).value * qty, baseCurrency)}
+                         : formatMoney(productDisplay(product, baseCurrency).value * qty, baseCurrency)}
                     </span>
                   </div>
                 )}
@@ -1039,20 +1034,20 @@ function ProductPage() {
             </div>
 
             {/* Review and Comment Section (Mobile/App fallback) */}
-            <div className={`lg:col-span-2 ${!isAppShell ? "lg:hidden" : "px-4"}`}>
+             <div className={`lg:col-span-2 ${!isAppShell ? "lg:hidden" : "px-4 pt-5"}`}>
               <ProductComments productId={product.id} />
             </div>
 
             {relatedProducts.length > 0 && (
-              <section className={`lg:col-span-12 ${isAppShell ? "px-1" : ""}`} aria-labelledby="related-products-title">
+               <section className={`lg:col-span-12 ${isAppShell ? "px-4 pt-6 sm:px-0" : ""}`} aria-labelledby="related-products-title">
                 <div className="mb-4 flex items-end justify-between gap-4 border-t border-newsfeed-line pt-7 sm:pt-9">
                   <div>
-                    <div className="mb-2 flex h-1.5 w-24 overflow-hidden rounded-full" aria-hidden="true">
+                     {!isAppShell && <div className="mb-2 flex h-1.5 w-24 overflow-hidden rounded-full" aria-hidden="true">
                       <span className="flex-1 bg-newsfeed-coral" />
                       <span className="flex-1 bg-newsfeed-gold" />
                       <span className="flex-1 bg-newsfeed-blue" />
                       <span className="flex-1 bg-newsfeed-violet" />
-                    </div>
+                     </div>}
                     <h2 id="related-products-title" className="text-xl font-extrabold text-newsfeed-ink sm:text-2xl">
                       You might also like
                     </h2>
@@ -1114,7 +1109,7 @@ function ProductPage() {
                             {related.name}
                           </h3>
                           <div className="mt-3 text-base font-extrabold text-newsfeed-coral">
-                            {display.value === 0 ? "Free" : balancesHidden ? "••••" : display.formatted}
+                             {display.value === 0 ? "Free" : display.formatted}
                           </div>
                         </div>
                       </Link>

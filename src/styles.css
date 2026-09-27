@@ -1237,17 +1237,58 @@
   letter-spacing: 0;
 }
 
-.web-product .product-summary :is(.text-white, .text-slate-200, .text-slate-300, .text-slate-400, .text-slate-500, .text-slate-600, .text-slate-700, .text-slate-800, .text-slate-900) {
+.web-product:not(.app-product) .product-summary :is(.text-white, .text-slate-200, .text-slate-300, .text-slate-400, .text-slate-500, .text-slate-600, .text-slate-700, .text-slate-800, .text-slate-900) {
   color: var(--newsfeed-ink) !important;
 }
 
-.web-product .product-summary [class*="border-white/"] {
+.web-product:not(.app-product) .product-summary [class*="border-white/"] {
   border-color: var(--newsfeed-line) !important;
 }
 
-.web-product .product-summary [class*="bg-[#12"],
-.web-product .product-summary [class*="bg-[#17"] {
+.web-product:not(.app-product) .product-summary [class*="bg-[#12"],
+.web-product:not(.app-product) .product-summary [class*="bg-[#17"] {
   background: var(--newsfeed-surface) !important;
+}
+
+/* The app's product detail is a native dark canvas; web keeps its editorial skin. */
+.web-product.app-product {
+  color-scheme: dark;
+  --newsfeed-canvas: #0a0a0b;
+  --newsfeed-surface: #171719;
+  --newsfeed-ink: #f7f7f8;
+  --newsfeed-line: #303034;
+  --newsfeed-muted: #aaaab2;
+  --newsfeed-coral: #e5484d;
+  --newsfeed-coral-soft: #2a1a1d;
+  --newsfeed-blue-soft: #212226;
+  --newsfeed-gold-soft: #29261f;
+  --newsfeed-on-accent: #fff;
+  --background: var(--newsfeed-canvas);
+  --foreground: var(--newsfeed-ink);
+  --card: var(--newsfeed-surface);
+  --card-foreground: var(--newsfeed-ink);
+  --muted-foreground: var(--newsfeed-muted);
+  --border: var(--newsfeed-line);
+  --input: var(--newsfeed-line);
+}
+.app-product .product-summary > div > .product-purchase { order: 1; }
+.app-product .product-summary > div > .product-details { order: 2; }
+.app-product .product-summary > div > .product-reviews { order: 3; }
+.app-product .product-summary > div > button { order: 4; }
+.app-product .product-summary > div > .inline-flex:last-child { order: 5; }
+.app-product .product-purchase { box-shadow: none; }
+.app-product .product-summary .text-slate-900,
+.app-product .product-summary .text-slate-800 { color: var(--newsfeed-ink); }
+.app-product .product-summary .text-slate-400,
+.app-product .product-summary .text-slate-500 { color: var(--newsfeed-muted); }
+.app-product .product-summary .border-slate-200 { border-color: var(--newsfeed-line); }
+.app-product .product-summary .bg-white { background-color: var(--newsfeed-surface); }
+.app-product .product-summary .bg-newsfeed-surface\/95 {
+  background-color: color-mix(in oklab, var(--newsfeed-surface) 95%, transparent);
+}
+.app-product .product-gallery img { transition: none; }
+@media (hover: hover) {
+  .app-product .product-gallery:hover img { transform: none; }
 }
 
 .web-product .product-gallery img {
