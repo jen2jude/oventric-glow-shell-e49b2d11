@@ -87,16 +87,16 @@ export function ProductComments({ productId }: { productId: string }) {
   }
 
   return (
-    <div className={`${isAppShell ? "mt-8" : "mt-0"} space-y-6 pb-12`}>
-      <div className={`flex items-center justify-between border-b ${isAppShell ? "border-white/5" : "border-slate-200"} pb-3`}>
-        <h2 className={`text-[15px] font-black ${isAppShell ? "text-white" : "text-slate-900"} flex items-center gap-2`}>
+    <div className={`${isAppShell ? "mt-5 space-y-3 pb-6" : "mt-0 space-y-6 pb-12"}`}>
+      <div className={`flex items-center justify-between border-b ${isAppShell ? "border-white/5" : "border-slate-200"} pb-2.5`}>
+        <h2 className={`${isAppShell ? "text-[13px] font-black uppercase tracking-wider text-white/90" : "text-[15px] font-black text-slate-900"} flex items-center gap-2`}>
           Reviews ({count})
         </h2>
         <div className="flex items-center gap-1.5">
           <div className="flex text-amber-400">
-            <Star className="w-3.5 h-3.5 fill-current" />
+            <Star className={isAppShell ? "w-3 h-3 fill-current" : "w-3.5 h-3.5 fill-current"} />
           </div>
-          <span className={`text-[15px] font-black ${isAppShell ? "text-white" : "text-slate-900"}`}>{average.toFixed(1)}</span>
+          <span className={`font-black ${isAppShell ? "text-[12.5px] text-white" : "text-[15px] text-slate-900"}`}>{average.toFixed(1)}</span>
         </div>
       </div>
 
