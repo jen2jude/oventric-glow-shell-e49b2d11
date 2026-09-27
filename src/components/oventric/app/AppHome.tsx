@@ -43,8 +43,19 @@ export function AppHome({
   const navigate = useNavigate();
   const { baseCurrency } = useOnboarding();
   const { isAuthenticated } = useAuthGate();
-  const { messages: unreadChats, notifications: unreadNotifs } = useUnreadCounts();
+  const { messages: unreadChats, total: unreadNotifs } = useUnreadCounts();
   const currency = (baseCurrency ?? "USD") as Currency;
+
+  const priceOf = (p: ProductDTO) =>
+    safeFormatDisplayPrice(
+      {
+        price_usd: p.priceUSD,
+        original_currency: p.originalCurrency,
+        original_amount: p.originalAmount,
+        fx_snapshot: p.fxSnapshot,
+      },
+      currency,
+    );
 
   const fetchProducts = useServerFn(listProducts);
   const fetchBalances = useServerFn(getWalletBalances);
