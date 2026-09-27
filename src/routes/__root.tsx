@@ -31,13 +31,12 @@ import { AppBadgeSync } from "@/components/oventric/app/AppBadgeSync";
 import { BootSplash } from "@/components/oventric/BootSplash";
 
 import { OfflineBanner } from "@/components/oventric/pwa/OfflineBanner";
-import { AppInstallPrompt } from "@/components/oventric/app/AppInstallPrompt";
 import { ReferralCapture } from "@/components/oventric/ReferralCapture";
 
 import { useLiveFx } from "@/lib/useLiveFx";
 import { FeatureCarousel } from "@/components/oventric/FeatureCarousel";
 import { useFirstLaunch } from "@/hooks/useFirstLaunch";
-import { useLaunchContext } from "@/hooks/use-launch-context";
+import { isAppReviewPreview, useLaunchContext } from "@/hooks/use-launch-context";
 import { unlockNotificationSound } from "@/lib/notification-sound";
 
 function NotFoundComponent() {
@@ -150,7 +149,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap",
       },
-      { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       // Warm the media/storage origin so the first image/video byte arrives sooner.
@@ -355,10 +353,12 @@ function RootShell({ children }: { children: ReactNode }) {
   var appShell=false;
   try{
     var params=new URLSearchParams(window.location.search);
-    var forced=params.get('mode');
+     var host=window.location.hostname;
+     var review=host==='localhost'||host==='127.0.0.1'||host.indexOf('id-preview--')===0||host.indexOf('preview--')===0||host.endsWith('.lovableproject-dev.com');
+     var forced=params.get('mode');
     var native=!!(window.Capacitor&&(typeof window.Capacitor.isNativePlatform==='function'?window.Capacitor.isNativePlatform():window.Capacitor.isNative));
     var standalone=((window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true)&&window.matchMedia('(max-width: 767px)').matches;
-    appShell=forced==='app'?true:forced==='web'?false:(native||standalone);
+     appShell=review&&(forced==='app'?true:forced==='web'?false:(native||standalone));
   }catch(e){}
   window.__oventricStandalone=!!appShell;
   if(appShell){document.documentElement.classList.add('standalone-app');root.style.display='flex';}else{root.style.display='none';}
@@ -413,7 +413,7 @@ function RootComponent() {
   }, []);
 
   // Mode switcher for preview environment
-  const isPreview = typeof window !== "undefined" && (window.location.hostname.includes("lovable.app") || window.location.hostname.includes("lovableproject.com") || window.location.hostname === "localhost");
+  const isPreview = isAppReviewPreview();
   const toggleMode = () => {
     const url = new URL(window.location.href);
     if (launchCtx === "browser") {
@@ -447,7 +447,6 @@ function RootComponent() {
               <AppBadgeSync />
               <OfflineBanner />
               <ReferralCapture />
-              <AppInstallPrompt />
 
               <BootSplash />
                {show && hydrated && !isPc && isAppShell && <FeatureCarousel onComplete={markSeen} />}

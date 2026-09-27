@@ -30,6 +30,8 @@ export function PushOptInPrompt() {
       return;
     }
     if (!pushSupported() || !pushAllowedHere()) return;
+    // iPhone browser alerts require installation; do not suggest it during the app pause.
+    if (needsHomeScreenInstall()) return;
 
     let cancelled = false;
     const timer = window.setTimeout(() => {
