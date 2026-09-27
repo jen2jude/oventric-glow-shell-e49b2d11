@@ -27,7 +27,9 @@ App conversations open in a sheet over the mounted inbox; web stays separate. Re
 
 App profile editing reuses web forms with app-scoped sheets. Reason: parity without duplicating profile writes.
 
+App post composer shares web publishing logic with a distinct sheet. Reason: one post flow, app-native editing.
+
 ## Creator Coach (AI)
 - Creator Coach is app-exclusive: chat UI in `src/components/oventric/app/CreatorCoach.tsx`, streaming route `src/routes/api/creator-coach.ts` (openai/gpt-6-astra via Responses, reasoning low), history in `creator_coach_messages` (one conversation per creator, account-saved). Reason: a real reason to install the app; web stays without it.
 - Coach answers from live stats: route builds context via `buildCreatorHubData` (exported from creator.functions.ts) + seller snapshot; never invent numbers.
-- Coach greetings are app-only and local-time based: the onboarding welcome waits for publishing to close, existing creators get a one-time welcome on their device, then greetings are deduped hourly per account/device. Reason: orient every creator without interrupting publishing or greeting repeatedly across navigation.
+- Coach greetings use local time: onboarding waits for publishing, existing creators get a device welcome, then dedupe hourly per account/device. Reason: orient creators without interruption.
