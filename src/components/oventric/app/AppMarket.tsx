@@ -106,8 +106,6 @@ export function AppMarket() {
 
   return (
     <div className="mx-auto w-full max-w-xl pb-28 pt-4 text-white">
-      <h1 className="px-4 text-[18px] font-extrabold tracking-tight">Market</h1>
-
       {/* Search pill */}
       <div className="px-4">
         <button

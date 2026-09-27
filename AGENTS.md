@@ -10,28 +10,21 @@
 <!-- LOVABLE:END -->
 
 ## App shell vs website
-Oventric renders two presentations from one codebase. `useIsAppShell()` in
-`src/hooks/use-launch-context.ts` is the single source of truth: review hosts
-always use the app shell; Oventric's public hosts use the website. Reason: one
-codebase, two experiences, without duplicating routes or data logic.
+`useIsAppShell()` chooses app on review hosts and web on public hosts. Reason: one codebase, shared routes and data.
 
-Installability is manifest-only (`public/manifest.webmanifest`). No app-shell
-service worker is registered — `public/push-sw.js` is messaging-only. Reason:
-cached app shells serve stale pages in Lovable previews.
+Installability is manifest-only; `push-sw.js` is messaging-only. Reason: avoid stale previews.
 
-App launch/install promotion stays paused publicly: no manifest or invites;
-every non-public review host uses app mode until owner reactivation. Reason:
-Lovable embeds previews on changing internal hosts that cannot be allow-listed.
+Public install promotion stays paused; review hosts use app mode. Reason: changing preview hosts.
 
-App conversations sheet over the inbox; web separate. Reason: closing restores inbox position.
+App conversations sheet over inbox; web separate. Reason: preserve inbox scroll.
 
 App profile forms use app-scoped sheets. Reason: shared writes.
 
-App post composer shares web logic in its own sheet. Reason: one publishing flow.
+App post composer shares web logic in a keyboard-safe root sheet. Reason: one publishing flow.
 
-App post composer mounts at document root, sized to visible viewport. Reason: keyboard-safe controls.
+App product upload shares web fields in a fixed-action sheet. Reason: preserve selling rules.
 
-App product upload shares web fields and submission in an app-scoped sheet with fixed actions. Reason: native feel without diverging selling rules.
+Main mobile app sections share `AppPageHeader` in `AppSurface`; detail pages and Messages keep contextual headers. Reason: consistent access without duplicate chrome.
 
 ## Creator Coach (AI)
 - Creator Coach is app-exclusive: chat UI in `src/components/oventric/app/CreatorCoach.tsx`, streaming route `src/routes/api/creator-coach.ts` (openai/gpt-6-astra via Responses, reasoning low), history in `creator_coach_messages` (one conversation per creator, account-saved). Reason: a real reason to install the app; web stays without it.
