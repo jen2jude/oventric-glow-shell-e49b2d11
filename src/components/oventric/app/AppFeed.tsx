@@ -145,6 +145,7 @@ export function AppFeed() {
   const loadFollowing = useServerFn(listFollowing);
   const loadFollowers = useServerFn(listFollowers);
   const [quickViewId, setQuickViewId] = useState<string | null>(null);
+  const [creatorSheet, setCreatorSheet] = useState<CreatorPostDTO | null>(null);
   const fetchProducts = useServerFn(listProducts);
   const fetchCreatorFeed = useServerFn(listCreatorFeed);
   const fetchTopCreators = useServerFn(getTopCreators);
@@ -553,7 +554,7 @@ export function AppFeed() {
 
                   {thumb && thumb.type === "video" ? (
                     <div className="mt-2">
-                      <AppPreviewVideo src={thumb.url} poster={thumb.posterUrl ?? null} />
+                      <AppPreviewVideo src={thumb.url} poster={thumb.posterUrl ?? null} onTap={() => setCreatorSheet(cp)} />
                     </div>
                   ) : thumb ? (
                     <button
@@ -590,7 +591,32 @@ export function AppFeed() {
                     </button>
                   ) : null}
 
-                  {cp.asset && <AppAssetCta asset={cp.asset} />}
+                  {cp.asset &&
+                    (cp.asset.available ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          haptic("select");
+                          setCreatorSheet(cp);
+                        }}
+                        className={`mt-2 inline-flex h-8 items-center gap-2 rounded-full border px-3 text-[11px] font-black active:opacity-80 ${
+                          cp.asset.isFree
+                            ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
+                            : "border-[#E5484D]/40 bg-[#E5484D]/15 text-[#FF7A7E]"
+                        }`}
+                      >
+                        <span className="text-[10px] font-black">{compact(cp.asset.downloadCount)}</span>
+                        {cp.asset.isFree ? <Download className="h-3.5 w-3.5" /> : <ShoppingBag className="h-3.5 w-3.5" />}
+                        {cp.asset.isFree ? "Get it free" : "Buy"}
+                        {!cp.asset.isFree && price && (
+                          <span className="border-l border-[#E5484D]/30 pl-2 text-[10px]">{price}</span>
+                        )}
+                      </button>
+                    ) : (
+                      <span className="mt-2 inline-flex rounded-full border border-white/10 px-3 py-1.5 text-[10.5px] font-bold text-white/40">
+                        Asset pending review
+                      </span>
+                    ))}
                 </article>
               );
             })}
