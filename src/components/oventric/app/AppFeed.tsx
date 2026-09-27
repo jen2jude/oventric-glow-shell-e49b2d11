@@ -657,12 +657,17 @@ export function AppFeed() {
                     <p className="mt-0.5 line-clamp-2 text-[12px] text-white/55">{cp.caption}</p>
                   )}
 
-                  {thumb && (
+                  {thumb && thumb.type === "video" ? (
+                    <div className="mt-2">
+                      <AppPreviewVideo src={thumb.url} poster={thumb.posterUrl ?? null} />
+                    </div>
+                  ) : thumb ? (
                     <button
                       onClick={() => {
-                        haptic("select");
-                        if (cp.asset?.available) setQuickViewId(cp.asset.productId);
-                        else if (cp.externalUrl) window.open(cp.externalUrl, "_blank", "noopener");
+                        if (cp.externalUrl) {
+                          haptic("select");
+                          window.open(cp.externalUrl, "_blank", "noopener");
+                        }
                       }}
                       className="relative mt-2 block w-full overflow-hidden rounded-2xl border border-white/[0.08]"
                     >
@@ -689,21 +694,9 @@ export function AppFeed() {
                         </span>
                       )}
                     </button>
-                  )}
+                  ) : null}
 
-                  {cp.asset?.available && (
-                    <button
-                      onClick={() => {
-                        haptic("select");
-                        setQuickViewId(cp.asset!.productId);
-                      }}
-                      className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-full bg-[#E5484D] py-2 text-[12px] font-bold active:opacity-80"
-                      style={{ color: "#ffffff" }}
-                    >
-                      <Clapperboard className="h-3.5 w-3.5" />
-                      {cp.asset.isFree ? "Get it free" : "View this asset"}
-                    </button>
-                  )}
+                  {cp.asset && <AppAssetCta asset={cp.asset} />}
                 </article>
               );
             })}
