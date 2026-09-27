@@ -685,26 +685,26 @@ function ProductPage() {
               )}
             </div>
 
-             <div className={`product-summary lg:col-span-5 ${isAppShell ? "px-4 pt-2 sm:px-0" : ""}`}>
+             <div className={`product-summary lg:col-span-5 ${isAppShell ? "px-4 pt-1 sm:px-0" : ""}`}>
                <div className={`${isAppShell ? "flex flex-col pb-16" : ""} lg:sticky lg:top-24`}>
-               <div className={`product-category mb-3 inline-flex items-center gap-2 text-[10px] font-extrabold uppercase text-newsfeed-coral ${isAppShell ? "" : "rounded-full bg-newsfeed-coral-soft px-3 py-1.5"}`}>
+               <div className={`product-category mb-1.5 inline-flex items-center gap-2 text-[10px] font-extrabold uppercase text-newsfeed-coral ${isAppShell ? "" : "rounded-full bg-newsfeed-coral-soft px-3 py-1.5"}`}>
                 <span className="h-1.5 w-1.5 rounded-full bg-newsfeed-coral" />
 
                 {product.category}
                 {product.subcategory ? ` · ${product.subcategory}` : ""}
               </div>
-               <h1 className={`product-title mb-3 min-w-0 font-extrabold leading-tight text-newsfeed-ink ${isAppShell ? "text-[24px] sm:text-3xl lg:text-4xl" : "text-3xl sm:text-4xl lg:text-5xl"}`}>
+               <h1 className={`product-title mb-2 min-w-0 font-extrabold leading-tight text-newsfeed-ink ${isAppShell ? "text-[18px] sm:text-3xl lg:text-4xl" : "text-3xl sm:text-4xl lg:text-5xl"}`}>
                 {product.name}
               </h1>
                {isAppShell && (
-                 <div className="product-app-intro mb-6 flex items-center gap-3 text-xs text-newsfeed-muted">
+                 <div className="product-app-intro mb-3 flex items-center gap-3 text-[11px] text-newsfeed-muted">
                    <span className="inline-flex items-center gap-1.5"><Star className="h-3.5 w-3.5 fill-current text-newsfeed-gold" />{product.rating.toFixed(1)} ({product.reviews})</span>
                    <span className="h-1 w-1 rounded-full bg-newsfeed-line" />
                    <span>{product.kind === "service" ? "Service" : "Digital download"}</span>
                  </div>
                )}
                {isAppShell && product.kind === "digital" && packages.length === 0 && (
-                 <div className="product-app-quantity mb-5 flex items-center justify-between border-t border-newsfeed-line py-3">
+                 <div className="product-app-quantity mb-3 flex items-center justify-between border-t border-newsfeed-line py-2">
                    <span className="text-[13px] text-newsfeed-muted">Quantity</span>
                    <div className="flex h-9 items-center rounded-[10px] border border-newsfeed-line bg-newsfeed-surface">
                      <button type="button" aria-label="Decrease quantity" disabled={qty <= 1} onClick={() => setQty((v) => Math.max(1, v - 1))} className="h-9 w-10 text-lg text-newsfeed-ink disabled:opacity-30">−</button>
