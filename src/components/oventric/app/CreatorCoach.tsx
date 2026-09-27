@@ -281,7 +281,7 @@ export function CreatorCoachLauncher() {
       {!open && (
         <motion.div
           initial={false}
-          animate={{ width: greeting ? "min(320px, calc(100vw - 32px))" : 48, height: greeting ? 116 : 48, borderRadius: greeting ? 58 : 999 }}
+          animate={{ width: greeting ? "min(320px, calc(100vw - 32px))" : 48, height: greeting ? 116 : 48, borderRadius: greeting ? 22 : 999 }}
           transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 210, damping: 24 }}
           className="fixed bottom-24 right-4 z-[70] overflow-hidden border border-newsfeed-violet/35 bg-card text-card-foreground shadow-xl shadow-newsfeed-violet/20"
         >
