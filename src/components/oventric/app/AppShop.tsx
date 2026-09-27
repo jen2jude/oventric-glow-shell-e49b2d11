@@ -14,12 +14,15 @@ import {
 import { getShopBranding } from "@/lib/shop.functions";
 import { listProducts, type ProductDTO } from "@/lib/marketplace.functions";
 import { haptic } from "@/lib/haptics";
+import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { ProductQuickView } from "./ProductQuickView";
 
 export function AppShop({ idOrSlug }: { idOrSlug: string }) {
   const navigate = useNavigate();
   const [quickViewId, setQuickViewId] = useState<string | null>(null);
   const [category, setCategory] = useState<string | null>(null);
+  const { baseCurrency } = useOnboarding();
+  const currency = (baseCurrency ?? "USD") as Currency;
 
   const fetchShop = useServerFn(getShopBranding);
   const fetchProducts = useServerFn(listProducts);
@@ -39,7 +42,7 @@ export function AppShop({ idOrSlug }: { idOrSlug: string }) {
 
   const products = useMemo(
     () =>
-      (productsData?.products ?? []).filter(
+      (productsData ?? []).filter(
         (p: ProductDTO) => p.sellerId === shop?.userId && p.status === "active",
       ),
     [productsData, shop],
@@ -240,7 +243,11 @@ export function AppShop({ idOrSlug }: { idOrSlug: string }) {
         </div>
       )}
 
-      <ProductQuickView productId={quickViewId} onClose={() => setQuickViewId(null)} />
+      <ProductQuickView
+        productId={quickViewId}
+        currency={currency}
+        onClose={() => setQuickViewId(null)}
+      />
     </div>
   );
 }

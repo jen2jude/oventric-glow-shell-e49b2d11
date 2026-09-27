@@ -13,7 +13,6 @@ import {
   UserPlus,
   UserCheck,
   Clock,
-  Pencil,
 } from "lucide-react";
 import {
   getProfileByIdOrSlug,
@@ -29,6 +28,7 @@ import { listProducts, type ProductDTO } from "@/lib/marketplace.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { haptic } from "@/lib/haptics";
+import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { ProductQuickView } from "./ProductQuickView";
 
 function ago(iso: string) {
@@ -55,6 +55,8 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
   const [tab, setTab] = useState<Tab>("posts");
   const [quickViewId, setQuickViewId] = useState<string | null>(null);
   const [followBusy, setFollowBusy] = useState(false);
+  const { baseCurrency } = useOnboarding();
+  const currency = (baseCurrency ?? "USD") as Currency;
 
   const fetchProfile = useServerFn(getProfileByIdOrSlug);
   const fetchCounts = useServerFn(getProfileSocialCounts);
@@ -502,6 +504,7 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
 
       <ProductQuickView
         productId={quickViewId}
+        currency={currency}
         onClose={() => setQuickViewId(null)}
       />
     </div>
