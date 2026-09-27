@@ -25,6 +25,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 import { ProductQuickView } from "./ProductQuickView";
 import { AppSearchSheet } from "./AppSearchSheet";
+import { AddCapitalModal } from "@/components/oventric/wallet/AddCapitalModal";
+import { PayoutModal } from "@/components/oventric/wallet/PayoutModal";
 
 /**
  * Native app Home — a dark, compact dashboard that replaces the web marketing
@@ -41,6 +43,8 @@ export function AppHome({
   const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
   const [quickViewId, setQuickViewId] = useState<string | null>(null);
+  const [fundOpen, setFundOpen] = useState(false);
+  const [payoutOpen, setPayoutOpen] = useState(false);
   const { homeCurrency, balancesHidden, toggleBalancesHidden } = useOnboarding();
   const { isAuthenticated } = useAuthGate();
   const currency = (homeCurrency ?? "USD") as Currency;
@@ -161,20 +165,14 @@ export function AppHome({
             <div className="mt-3 flex gap-2">
               <button
                 type="button"
-                onClick={() => {
-                  haptic("select");
-                  onSelect("Wallet");
-                }}
+                onClick={() => { haptic("select"); setFundOpen(true); }}
                 className="nav-tap flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-[#E5484D] py-2.5 text-[13px] font-bold text-white shadow-[0_8px_24px_-8px_rgba(229,72,77,0.6)]"
               >
                 <ArrowDownToLine className="h-4 w-4" /> Top up
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  haptic("select");
-                  onSelect("Wallet");
-                }}
+                onClick={() => { haptic("select"); setPayoutOpen(true); }}
                 className="nav-tap flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.06] py-2.5 text-[13px] font-bold text-white"
               >
                 <ArrowUpFromLine className="h-4 w-4" /> Withdraw
@@ -357,6 +355,8 @@ export function AppHome({
         currency={currency}
         onClose={() => setQuickViewId(null)}
       />
+      {fundOpen && <AddCapitalModal onClose={() => setFundOpen(false)} />}
+      {payoutOpen && <PayoutModal onClose={() => setPayoutOpen(false)} />}
     </div>
   );
 }

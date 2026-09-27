@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { AddCapitalModal } from "@/components/oventric/wallet/AddCapitalModal";
+import { PayoutModal } from "@/components/oventric/wallet/PayoutModal";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import {
@@ -32,6 +35,8 @@ export function AppWallet() {
   const { isAuthenticated, openGate } = useAuthGate();
   const currency = (homeCurrency ?? "USD") as Currency;
 
+  const [fundOpen, setFundOpen] = useState(false);
+  const [payoutOpen, setPayoutOpen] = useState(false);
   const fetchBalances = useServerFn(getWalletBalances);
   const fetchTx = useServerFn(listWalletTransactions);
 
@@ -83,14 +88,14 @@ export function AppWallet() {
           <div className="mt-4 flex gap-2">
             <button
               type="button"
-              onClick={guard(() => navigate({ to: "/wallet" }))}
+              onClick={guard(() => setFundOpen(true))}
               className="nav-tap flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-[#E5484D] py-2.5 text-[13px] font-bold text-white shadow-[0_8px_24px_-8px_rgba(229,72,77,0.6)]"
             >
               <ArrowDownToLine className="h-4 w-4" /> Top up
             </button>
             <button
               type="button"
-              onClick={guard(() => navigate({ to: "/wallet" }))}
+              onClick={guard(() => setPayoutOpen(true))}
               className="nav-tap flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.06] py-2.5 text-[13px] font-bold text-white"
             >
               <ArrowUpFromLine className="h-4 w-4" /> Withdraw
@@ -176,6 +181,8 @@ export function AppWallet() {
           ))}
         </div>
       )}
+      {fundOpen && <AddCapitalModal onClose={() => setFundOpen(false)} />}
+      {payoutOpen && <PayoutModal onClose={() => setPayoutOpen(false)} />}
     </div>
   );
 }
