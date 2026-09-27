@@ -5473,3 +5473,18 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
     transition: none;
   }
 }
+
+/* Auth gate: dressed in the dark native app style when the sheet opens in the app shell. */
+.app-auth-sheet {
+  background: oklch(0 0 0 / 55%) !important;
+  backdrop-filter: blur(12px);
+  --newsfeed-surface: oklch(0.19 0.005 270);
+  --newsfeed-ink: oklch(0.97 0 0);
+  --newsfeed-muted: oklch(1 0 0 / 55%);
+  --newsfeed-line: oklch(1 0 0 / 10%);
+  --newsfeed-blue-soft: oklch(0.7 0.12 245 / 12%);
+  --newsfeed-violet-soft: oklch(0.7 0.15 300 / 14%);
+  --newsfeed-coral-soft: oklch(0.7 0.15 22 / 12%);
+  --newsfeed-panel-shadow: 0 -20px 60px oklch(0 0 0 / 55%);
+  color-scheme: dark;
+}

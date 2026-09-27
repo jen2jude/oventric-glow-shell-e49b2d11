@@ -27,6 +27,7 @@ import {
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 import {
   sendLoginOtpByIdentifier as sendLoginOtpByIdentifierFn,
   signInWithIdentifierPassword as signInWithIdentifierPasswordFn,
@@ -335,6 +336,7 @@ function AuthGateModal({
   linkError: string | null;
   onClearLinkError: () => void;
 }) {
+  const isAppShell = useIsAppShell();
   const [mode, setMode] = useState<Mode>("new");
   const [stage, setStage] = useState<Stage>("email");
   const [returningMethod, setReturningMethod] = useState<"password" | "otp">("password");
@@ -513,7 +515,7 @@ function AuthGateModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[200] flex items-start justify-center bg-wallet-copy/55 p-3 pt-5 backdrop-blur-sm sm:items-center sm:p-6"
+      className={`fixed inset-0 z-[200] flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm sm:items-center sm:bg-wallet-copy/55 sm:p-6 ${isAppShell ? "app-auth-sheet" : ""}`}
       role="dialog"
       aria-modal="true"
       aria-label={copy.title}
@@ -521,8 +523,9 @@ function AuthGateModal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="relative w-full max-w-[400px]">
-        <div className="max-h-[calc(100dvh-2.5rem)] overflow-y-auto rounded-[10px] border border-newsfeed-line bg-newsfeed-surface shadow-newsfeed-panel sm:max-h-[calc(100dvh-3rem)]">
+      <div className="w-full sm:max-w-[400px]">
+        <div className="slide-up max-h-[94dvh] overflow-y-auto overscroll-contain rounded-t-[24px] border border-newsfeed-line bg-newsfeed-surface shadow-newsfeed-panel sm:max-h-[calc(100dvh-3rem)] sm:rounded-[24px]">
+          {isAppShell && <div className="app-profile-handle" aria-hidden="true" />}
           <div className="grid h-1.5 grid-cols-5" aria-hidden>
             <span className="bg-newsfeed-coral" />
             <span className="bg-newsfeed-gold" />
@@ -559,7 +562,7 @@ function AuthGateModal({
               </button>
             </div>
           )}
-          <div className="relative bg-newsfeed-surface p-6 sm:p-8">
+          <div className="relative bg-newsfeed-surface p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:p-8">
             <button
               type="button"
               onClick={onClose}
