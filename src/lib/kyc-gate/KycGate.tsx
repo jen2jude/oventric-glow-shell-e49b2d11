@@ -599,16 +599,8 @@ function KycLivenessModal({
 
         {mode === "enroll" && step !== "success" && (
           <div className="flex items-center gap-1.5 mb-5">
-            {(["phone", "id-camera", "selfie-camera", "review"] as Step[]).map((s, i) => {
-              const order: Step[] = [
-                "phone",
-                "id-camera",
-                "id-capturing",
-                "id-review",
-                "selfie-camera",
-                "selfie-capturing",
-                "review",
-              ];
+            {(["phone", "selfie-camera", "review"] as Step[]).map((s, i) => {
+              const order: Step[] = ["phone", "selfie-camera", "selfie-capturing", "review"];
               const doneUpTo = order.indexOf(step);
               const stageIndex = order.indexOf(s);
               const active = doneUpTo >= stageIndex;
@@ -626,9 +618,8 @@ function KycLivenessModal({
         {step === "phone" && (
           <div className="space-y-4">
             <p className="text-xs text-slate-400 leading-relaxed">
-              Wallet funding and payouts require a one-time identity check. We'll capture your
-              government-issued ID and a quick liveness selfie — both use your live camera only.
-              Photos from your gallery are not accepted.
+              Wallet funding and payouts require a one-time identity check. We'll capture a quick
+              liveness selfie with your live camera — photos from your gallery are not accepted.
             </p>
             <div>
               <label
@@ -659,10 +650,10 @@ function KycLivenessModal({
               )}
             </div>
             <button
-              onClick={beginId}
+              onClick={beginSelfie}
               className=" w-full h-11 rounded-lg bg-[#121214] text-white font-black text-sm inline-flex items-center justify-center gap-2"
             >
-              <IdCard className="w-4 h-4" /> Continue to ID capture
+              <ScanFace className="w-4 h-4 text-emerald-300" /> Continue to selfie
             </button>
           </div>
         )}
