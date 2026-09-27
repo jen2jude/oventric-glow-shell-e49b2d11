@@ -283,14 +283,14 @@ export const saveContactNumbers = createServerFn({ method: "POST" })
 const SaveKycInput = z.object({
   phone: z.string().trim().min(6).max(24),
   selfiePath: z.string().trim().min(1).max(400),
-  idPath: z.string().trim().min(1).max(400),
+  // Legacy: government ID capture was removed; Tier 3 is phone + selfie only.
+  idPath: z.string().trim().min(1).max(400).optional(),
 });
 
 /**
- * Persists the KYC selfie + government ID paths and phone, marks
- * kyc_completed_at, and promotes verification_tier to TIER_3.
- * Both images are uploaded from the browser to the private `kyc-selfies`
- * bucket (paths: `<user_id>/selfie_<ts>.jpg` and `<user_id>/id_<ts>.jpg`).
+ * Persists the KYC selfie path and phone, marks kyc_completed_at, and
+ * promotes verification_tier to TIER_3. The selfie is uploaded from the
+ * browser to the private `kyc-selfies` bucket (path: `<user_id>/selfie_<ts>.jpg`).
  */
 export const saveKyc = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -304,7 +304,8 @@ export const saveKyc = createServerFn({ method: "POST" })
       .update({
         phone: data.phone,
         kyc_selfie_path: data.selfiePath,
-        kyc_id_path: data.idPath,
+        // Only touch the legacy ID column when a legacy client still sends one.
+        ...(data.idPath ? { kyc_id_path: data.idPath } : {}),
         kyc_completed_at: new Date().toISOString(),
         verification_tier: "TIER_3",
       })

@@ -1,0 +1,1 @@
+COMMENT ON COLUMN public.profiles.kyc_id_path IS 'DEPRECATED: Tier 3 verification is phone + selfie only; government ID capture removed. Column retained for historical rows.';

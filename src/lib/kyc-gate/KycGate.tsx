@@ -20,7 +20,6 @@ import {
   X,
   AlertTriangle,
   Phone,
-  IdCard,
   LifeBuoy,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -244,7 +243,6 @@ export function KycGateProvider({ children }: { children: ReactNode }) {
   const [kycCompleted, setKycCompleted] = useState(false);
   const [mode, setMode] = useState<KycMode | null>(null);
   const [referencePath, setReferencePath] = useState<string | null>(null);
-  const [idPath, setIdPath] = useState<string | null>(null);
   const pendingRef = useRef<null | (() => void | Promise<void>)>(null);
   const getStatus = useServerFn(getStatusFn);
   const lastCheckedRef = useRef<string | null>(null);
@@ -253,7 +251,6 @@ export function KycGateProvider({ children }: { children: ReactNode }) {
     if (!checked || !session?.user?.id) {
       setKycCompleted(false);
       setReferencePath(null);
-      setIdPath(null);
       return;
     }
     if (lastCheckedRef.current === session.user.id) return;
@@ -262,7 +259,6 @@ export function KycGateProvider({ children }: { children: ReactNode }) {
       .then((s) => {
         setKycCompleted(s.kycCompleted);
         setReferencePath(s.kycSelfiePath);
-        setIdPath(s.kycIdPath ?? null);
       })
       .catch(() => {
         /* fail closed: user will re-enrol */
@@ -281,12 +277,11 @@ export function KycGateProvider({ children }: { children: ReactNode }) {
   }, []);
 
 
-  const handleComplete = useCallback((paths?: { selfie: string; id: string }) => {
+  const handleComplete = useCallback((paths?: { selfie: string }) => {
     setMode(null);
     if (paths) {
       setKycCompleted(true);
       setReferencePath(paths.selfie);
-      setIdPath(paths.id);
     }
     const cb = pendingRef.current;
     pendingRef.current = null;
@@ -310,7 +305,6 @@ export function KycGateProvider({ children }: { children: ReactNode }) {
         <KycLivenessModal
           mode={mode}
           referencePath={referencePath}
-          idReferencePath={idPath}
           onComplete={handleComplete}
           onClose={handleClose}
         />
@@ -325,32 +319,23 @@ export function KycGateProvider({ children }: { children: ReactNode }) {
 
 type Step =
   | "phone"
-  | "id-camera"
-  | "id-capturing"
-  | "id-review"
   | "selfie-camera"
   | "selfie-capturing"
   | "review"
   | "matching"
-  | "id-matching"
   | "success"
   | "mismatch"
-  | "id-mismatch"
   | "fallback";
-
-type MatchPhase = "selfie" | "id";
 
 function KycLivenessModal({
   mode,
   referencePath,
-  idReferencePath,
   onComplete,
   onClose,
 }: {
   mode: KycMode;
   referencePath: string | null;
-  idReferencePath: string | null;
-  onComplete: (paths?: { selfie: string; id: string }) => void;
+  onComplete: (paths?: { selfie: string }) => void;
   onClose: () => void;
 }) {
   const [step, setStep] = useState<Step>(mode === "enroll" ? "phone" : "selfie-camera");
@@ -359,15 +344,10 @@ function KycLivenessModal({
   const [countdown, setCountdown] = useState(3);
   const [selfieBlob, setSelfieBlob] = useState<Blob | null>(null);
   const [selfieUrl, setSelfieUrl] = useState<string | null>(null);
-  const [idBlob, setIdBlob] = useState<Blob | null>(null);
-  const [idUrl, setIdUrl] = useState<string | null>(null);
   const [referenceUrl, setReferenceUrl] = useState<string | null>(null);
-  const [idReferenceUrl, setIdReferenceUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [selfieAttempts, setSelfieAttempts] = useState(0);
-  const [idAttempts, setIdAttempts] = useState(0);
-  const [matchPhase, setMatchPhase] = useState<MatchPhase>("selfie");
   const [matchDebug, setMatchDebug] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -376,7 +356,6 @@ function KycLivenessModal({
   const recordLiveness = useServerFn(recordLivenessFn);
   const submitSupport = useServerFn(submitKycSupportFn);
 
-  const isIdStep = step === "id-camera" || step === "id-capturing";
   const isSelfieStep = step === "selfie-camera" || step === "selfie-capturing";
 
   useEffect(() => {
@@ -399,26 +378,17 @@ function KycLivenessModal({
           if (data?.signedUrl) setReferenceUrl(data.signedUrl);
         });
     }
-    if (idReferencePath) {
-      supabase.storage
-        .from("kyc-selfies")
-        .createSignedUrl(idReferencePath, 300)
-        .then(({ data }) => {
-          if (data?.signedUrl) setIdReferenceUrl(data.signedUrl);
-        });
-    }
-  }, [mode, referencePath, idReferencePath]);
+  }, [mode, referencePath]);
 
-  // Start camera when entering an id-camera or selfie-camera step.
+  // Start camera when entering the selfie-camera step.
   useEffect(() => {
-    if (!isIdStep && !isSelfieStep) return;
-    const facing = isIdStep ? "environment" : "user";
+    if (!isSelfieStep) return;
     let cancelled = false;
     const start = async () => {
       setError(null);
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: facing, width: { ideal: 1280 }, height: { ideal: 720 } },
+          video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
           audio: false,
         });
         if (cancelled) {
@@ -434,7 +404,7 @@ function KycLivenessModal({
         setError(
           e instanceof Error && e.name === "NotAllowedError"
             ? "Camera permission denied. Enable camera access in your browser to continue."
-            : "Could not access your camera. Only live capture is accepted for KYC.",
+            : "Could not access your camera. Only live capture is accepted for verification.",
         );
       }
     };
@@ -444,11 +414,11 @@ function KycLivenessModal({
       streamRef.current?.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
     };
-  }, [isIdStep, isSelfieStep]);
+  }, [isSelfieStep]);
 
   // Countdown → capture frame
   useEffect(() => {
-    if (step !== "id-capturing" && step !== "selfie-capturing") return;
+    if (step !== "selfie-capturing") return;
     if (countdown <= 0) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
@@ -457,32 +427,22 @@ function KycLivenessModal({
       canvas.height = video.videoHeight || 480;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
-      if (step === "selfie-capturing") {
-        ctx.save();
-        ctx.translate(canvas.width, 0);
-        ctx.scale(-1, 1);
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        ctx.restore();
-      } else {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      }
+      ctx.save();
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.restore();
       canvas.toBlob(
         (blob) => {
           if (!blob) {
             setError("Capture failed. Try again.");
-            setStep(step === "id-capturing" ? "id-camera" : "selfie-camera");
+            setStep("selfie-camera");
             return;
           }
           streamRef.current?.getTracks().forEach((t) => t.stop());
-          if (step === "id-capturing") {
-            setIdBlob(blob);
-            setIdUrl(URL.createObjectURL(blob));
-            setStep(mode === "enroll" ? "id-review" : "id-matching");
-          } else {
-            setSelfieBlob(blob);
-            setSelfieUrl(URL.createObjectURL(blob));
-            setStep(mode === "enroll" ? "review" : "matching");
-          }
+          setSelfieBlob(blob);
+          setSelfieUrl(URL.createObjectURL(blob));
+          setStep(mode === "enroll" ? "review" : "matching");
         },
         "image/jpeg",
         0.85,
@@ -514,64 +474,22 @@ function KycLivenessModal({
 
         const next = selfieAttempts + 1;
         setSelfieAttempts(next);
-        if (next >= 2) {
-          // After 2 selfie failures, ask for the government ID on file.
-          setMatchPhase("id");
-          setIdBlob(null);
-          if (idUrl) URL.revokeObjectURL(idUrl);
-          setIdUrl(null);
-          setError(null);
-          setStep("id-camera");
-        } else {
-          setStep("mismatch");
-        }
+        // After 2 selfie failures, offer manual review instead of more attempts.
+        setStep(next >= 2 ? "fallback" : "mismatch");
       } catch {
         if (cancelled) return;
         const next = selfieAttempts + 1;
         setSelfieAttempts(next);
-        setStep(next >= 2 ? "id-camera" : "mismatch");
-        if (next >= 2) setMatchPhase("id");
+        setStep(next >= 2 ? "fallback" : "mismatch");
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [step, selfieBlob, referenceUrl, selfieAttempts, idUrl]);
-
-  // Real ID-match against the stored government ID snapshot.
-  useEffect(() => {
-    if (step !== "id-matching") return;
-    let cancelled = false;
-    (async () => {
-      try {
-        if (!idBlob || !idReferenceUrl) throw new Error("Missing capture or ID reference");
-        const [refHash, liveHash] = await Promise.all([
-          computeFaceHash(idReferenceUrl),
-          computeFaceHash(idBlob),
-        ]);
-        if (cancelled) return;
-        const { score, dSim, ok } = evaluateMatch(refHash, liveHash);
-        setMatchDebug(`id score=${score.toFixed(2)} d=${dSim.toFixed(2)}`);
-        if (ok) {
-          setStep("success");
-          return;
-        }
-
-        setIdAttempts((n) => n + 1);
-        setStep("fallback");
-      } catch {
-        if (cancelled) return;
-        setIdAttempts((n) => n + 1);
-        setStep("fallback");
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [step, idBlob, idReferenceUrl]);
+  }, [step, selfieBlob, referenceUrl, selfieAttempts]);
 
   const submitEnrollment = useCallback(async () => {
-    if (!selfieBlob || !idBlob) return;
+    if (!selfieBlob) return;
     setError(null);
     setBusy(true);
     try {
@@ -580,29 +498,24 @@ function KycLivenessModal({
       if (!uid) throw new Error("Not signed in");
       const ts = Date.now();
       const selfiePath = `${uid}/selfie_${ts}.jpg`;
-      const idPath = `${uid}/id_${ts}.jpg`;
       const upSelfie = await supabase.storage
         .from("kyc-selfies")
         .upload(selfiePath, selfieBlob, { contentType: "image/jpeg", upsert: true });
       if (upSelfie.error) throw upSelfie.error;
-      const upId = await supabase.storage
-        .from("kyc-selfies")
-        .upload(idPath, idBlob, { contentType: "image/jpeg", upsert: true });
-      if (upId.error) throw upId.error;
-      await saveKyc({ data: { phone: phone.trim(), selfiePath, idPath } });
+      await saveKyc({ data: { phone: phone.trim(), selfiePath } });
       try {
         window.dispatchEvent(new CustomEvent("oventric:profile-updated"));
       } catch {
         /* noop */
       }
       setStep("success");
-      setTimeout(() => onComplete({ selfie: selfiePath, id: idPath }), 1100);
+      setTimeout(() => onComplete({ selfie: selfiePath }), 1100);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not save KYC");
+      setError(e instanceof Error ? e.message : "Could not save verification");
     } finally {
       setBusy(false);
     }
-  }, [selfieBlob, idBlob, phone, saveKyc, onComplete]);
+  }, [selfieBlob, phone, saveKyc, onComplete]);
 
   useEffect(() => {
     if (step === "success" && mode === "match") {
@@ -623,27 +536,19 @@ function KycLivenessModal({
     }
   }, [step, mode, onComplete, recordLiveness]);
 
-  const beginId = () => {
+  const beginSelfie = () => {
     setPhoneError(null);
     const trimmed = phone.trim();
     if (trimmed.length < 6 || !/^\+?[\d\s\-()]{6,24}$/.test(trimmed)) {
       setPhoneError("Enter a valid phone number with country code");
       return;
     }
-    setStep("id-camera");
+    setStep("selfie-camera");
   };
 
   const captureNow = () => {
     setCountdown(3);
-    setStep(step === "id-camera" ? "id-capturing" : "selfie-capturing");
-  };
-
-  const retakeId = () => {
-    setIdBlob(null);
-    if (idUrl) URL.revokeObjectURL(idUrl);
-    setIdUrl(null);
-    setError(null);
-    setStep("id-camera");
+    setStep("selfie-capturing");
   };
 
   const retakeSelfie = () => {
@@ -694,16 +599,8 @@ function KycLivenessModal({
 
         {mode === "enroll" && step !== "success" && (
           <div className="flex items-center gap-1.5 mb-5">
-            {(["phone", "id-camera", "selfie-camera", "review"] as Step[]).map((s, i) => {
-              const order: Step[] = [
-                "phone",
-                "id-camera",
-                "id-capturing",
-                "id-review",
-                "selfie-camera",
-                "selfie-capturing",
-                "review",
-              ];
+            {(["phone", "selfie-camera", "review"] as Step[]).map((s, i) => {
+              const order: Step[] = ["phone", "selfie-camera", "selfie-capturing", "review"];
               const doneUpTo = order.indexOf(step);
               const stageIndex = order.indexOf(s);
               const active = doneUpTo >= stageIndex;
@@ -721,9 +618,8 @@ function KycLivenessModal({
         {step === "phone" && (
           <div className="space-y-4">
             <p className="text-xs text-slate-400 leading-relaxed">
-              Wallet funding and payouts require a one-time identity check. We'll capture your
-              government-issued ID and a quick liveness selfie — both use your live camera only.
-              Photos from your gallery are not accepted.
+              Wallet funding and payouts require a one-time identity check. We'll capture a quick
+              liveness selfie with your live camera — photos from your gallery are not accepted.
             </p>
             <div>
               <label
@@ -754,96 +650,11 @@ function KycLivenessModal({
               )}
             </div>
             <button
-              onClick={beginId}
+              onClick={beginSelfie}
               className=" w-full h-11 rounded-lg bg-[#121214] text-white font-black text-sm inline-flex items-center justify-center gap-2"
             >
-              <IdCard className="w-4 h-4" /> Continue to ID capture
+              <ScanFace className="w-4 h-4 text-emerald-300" /> Continue to selfie
             </button>
-          </div>
-        )}
-
-        {(step === "id-camera" || step === "id-capturing") && (
-          <div className="flex flex-col items-center">
-            <p className="text-[11px] text-slate-400 text-center mb-3 max-w-xs">
-              {mode === "match"
-                ? "Face match failed twice. Hold the same government ID you registered during KYC inside the frame — flat, well-lit, no glare."
-                : "Hold your government-issued ID (passport, national ID, or driver's licence) inside the frame. Keep it flat, well-lit, and readable — no glare."}
-            </p>
-            <div className=" rounded-2xl p-[3px] mb-4 w-full">
-              <div className="relative w-full aspect-[16/10] rounded-2xl bg-black overflow-hidden flex items-center justify-center">
-                <video
-                  ref={videoRef}
-                  playsInline
-                  muted
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-                {!streamRef.current && !error && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/60">
-                    <Loader2 className="w-8 h-8 animate-spin text-emerald-300" />
-                  </div>
-                )}
-                <div className="pointer-events-none absolute inset-4 border-2 border-dashed border-emerald-400/70 rounded-xl" />
-                {step === "id-capturing" && (
-                  <div className="absolute inset-x-4 top-1/2 h-[2px] bg-emerald-400/70 shadow-sm animate-pulse" />
-                )}
-                <IdCard className="absolute w-10 h-10 text-emerald-300/30 pointer-events-none" />
-              </div>
-            </div>
-            {error ? (
-              <div
-                role="alert"
-                className="text-sm text-red-400 mb-3 text-center inline-flex items-start gap-2"
-              >
-                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>{error}</span>
-              </div>
-            ) : step === "id-capturing" ? (
-              <p className="text-4xl font-black text-white tabular-nums">{countdown}</p>
-            ) : null}
-            {step === "id-camera" && !error && (
-              <button
-                onClick={captureNow}
-                className="mt-2 w-full h-11 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm inline-flex items-center justify-center gap-2"
-              >
-                <Camera className="w-4 h-4" /> Capture ID
-              </button>
-            )}
-            <canvas ref={canvasRef} className="hidden" />
-          </div>
-        )}
-
-        {step === "id-review" && idUrl && (
-          <div className="space-y-4">
-            <div className=" rounded-2xl p-[2px]">
-              <div className="bg-black rounded-2xl overflow-hidden">
-                <ResponsiveImage
-                  sizes="(min-width: 640px) 480px, 100vw"
-                  src={idUrl}
-                  alt="Captured ID document"
-                  className="w-full aspect-[16/10] object-cover"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            </div>
-            <p className="text-xs text-slate-400 text-center">
-              Check the ID is readable and the country matches your profile. This ID locks your
-              country — you'll need to contact admin to change it later.
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={retakeId}
-                className="h-11 rounded-lg border border-white/10 bg-[#121214] text-slate-200 font-bold text-sm inline-flex items-center justify-center gap-2 hover:border-emerald-500/40"
-              >
-                <RotateCw className="w-4 h-4" /> Retake ID
-              </button>
-              <button
-                onClick={() => setStep("selfie-camera")}
-                className=" h-11 rounded-lg bg-[#121214] text-white font-black text-sm inline-flex items-center justify-center gap-2"
-              >
-                <ScanFace className="w-4 h-4 text-emerald-300" /> Next: liveness
-              </button>
-            </div>
           </div>
         )}
 
@@ -903,43 +714,25 @@ function KycLivenessModal({
           </div>
         )}
 
-        {step === "review" && selfieUrl && idUrl && (
+        {step === "review" && selfieUrl && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1.5 text-center">
-                  Government ID
-                </div>
-                <div className="rounded-lg overflow-hidden border border-white/10 bg-black">
-                  <ResponsiveImage
-                    sizes="(min-width: 640px) 240px, 50vw"
-                    src={idUrl}
-                    alt="ID document"
-                    className="w-full aspect-square object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
+            <div className="max-w-[240px] mx-auto">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-1.5 text-center">
+                Liveness selfie
               </div>
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-1.5 text-center">
-                  Liveness
-                </div>
-                <div className="rounded-lg overflow-hidden border border-emerald-500/40 bg-black">
-                  <ResponsiveImage
-                    sizes="(min-width: 640px) 240px, 50vw"
-                    src={selfieUrl}
-                    alt="Captured selfie"
-                    className="w-full aspect-square object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
+              <div className="rounded-lg overflow-hidden border border-emerald-500/40 bg-black">
+                <ResponsiveImage
+                  sizes="240px"
+                  src={selfieUrl}
+                  alt="Captured selfie"
+                  className="w-full aspect-square object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
               </div>
             </div>
             <p className="text-xs text-slate-400 text-center">
-              We'll match against your liveness before every payout. Your country is now locked to
-              your ID.
+              We'll match against this selfie before every payout.
             </p>
             {error && (
               <p role="alert" className="text-xs text-red-400 border-l-2 border-red-500 pl-2">
@@ -1046,7 +839,7 @@ function KycLivenessModal({
             <p className="text-xs text-slate-400 mt-1 text-center">
               We couldn't confirm your identity. Move to bright, even light and try again.
               <span className="block mt-1 text-amber-300/80">
-                Attempt {selfieAttempts} of 2 — one more failure will require your government ID.
+                Attempt {selfieAttempts} of 2 — one more failure will ask you to contact support.
               </span>
               {matchDebug && (
                 <span className="block mt-1 text-[10px] text-slate-500">{matchDebug}</span>
@@ -1061,22 +854,9 @@ function KycLivenessModal({
           </div>
         )}
 
-        {step === "id-matching" && (
-          <div className="flex flex-col items-center py-6">
-            <div className="inline-flex items-center gap-2 text-sm text-emerald-300">
-              <Loader2 className="w-4 h-4 animate-spin" /> Matching your government ID…
-            </div>
-            <p className="text-[11px] text-slate-500 mt-2 text-center max-w-xs">
-              Comparing your capture with the ID you registered during KYC.
-            </p>
-          </div>
-        )}
-
         {step === "fallback" && (
           <FallbackSupport
-            idReferencePath={idReferencePath}
             selfieAttempts={selfieAttempts}
-            idAttempts={idAttempts}
             matchDebug={matchDebug}
             onSubmit={async (payload) => {
               await submitSupport({
@@ -1085,14 +865,11 @@ function KycLivenessModal({
                   contact: payload.contact,
                   message: payload.message,
                   selfieAttempts,
-                  idAttempts,
                 },
               });
             }}
             onReset={() => {
               setSelfieAttempts(0);
-              setIdAttempts(0);
-              setMatchPhase("selfie");
               setError(null);
               setStep("selfie-camera");
             }}
@@ -1104,56 +881,22 @@ function KycLivenessModal({
   );
 }
 
-function FallbackIdPreview({ path }: { path: string }) {
-  const [url, setUrl] = useState<string | null>(null);
-  useEffect(() => {
-    supabase.storage
-      .from("kyc-selfies")
-      .createSignedUrl(path, 120)
-      .then(({ data }) => {
-        if (data?.signedUrl) setUrl(data.signedUrl);
-      });
-  }, [path]);
-  if (!url) return null;
-  return (
-    <div>
-      <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1.5">
-        Your stored ID on file
-      </div>
-      <div className="rounded-lg overflow-hidden border border-white/10 bg-black">
-        <ResponsiveImage
-          sizes="(min-width: 640px) 480px, 100vw"
-          src={url}
-          alt="Stored ID document"
-          className="w-full aspect-[16/10] object-cover"
-          loading="lazy"
-          decoding="async"
-        />
-      </div>
-    </div>
-  );
-}
-
 // ---------------------------------------------------------------------------
-// Fallback: contact admin form after selfie + ID both fail.
+// Fallback: contact admin form after repeated selfie-match failures.
 // ---------------------------------------------------------------------------
 
 function FallbackSupport({
-  idReferencePath,
   selfieAttempts,
-  idAttempts,
   matchDebug,
   onSubmit,
   onReset,
 }: {
-  idReferencePath: string | null;
   selfieAttempts: number;
-  idAttempts: number;
   matchDebug: string | null;
   onSubmit: (payload: { reason: string; contact: string; message: string }) => Promise<void>;
   onReset: () => void;
 }) {
-  const [reason, setReason] = useState("Face + ID match failed");
+  const [reason, setReason] = useState("Face match failed");
   const [contact, setContact] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
@@ -1200,17 +943,15 @@ function FallbackSupport({
     <div className="space-y-4">
       <div className="flex items-center gap-3">
         <div className="w-11 h-11 rounded-full bg-amber-500/15 border border-amber-500/40 flex items-center justify-center shrink-0">
-          <IdCard className="w-6 h-6 text-amber-300" />
+          <LifeBuoy className="w-6 h-6 text-amber-300" />
         </div>
         <div>
           <div className="text-white font-black text-sm">Manual review needed</div>
           <p className="text-[11px] text-slate-400 leading-snug">
-            Face match failed {selfieAttempts}× and ID match failed {idAttempts}×. Contact an admin
-            to verify your identity.
+            Face match failed {selfieAttempts}×. Contact an admin to verify your identity.
           </p>
         </div>
       </div>
-      {idReferencePath && <FallbackIdPreview path={idReferencePath} />}
       <div className="space-y-2">
         <input
           type="text"
@@ -1222,7 +963,7 @@ function FallbackSupport({
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="What happened? (e.g. new haircut, damaged ID, wrong ID stored)"
+          placeholder="What happened? (e.g. new haircut, different lighting, old selfie)"
           rows={3}
           className="w-full px-3 py-2 bg-[#121214] border border-white/10 rounded-lg text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/60 resize-none"
         />
