@@ -1330,23 +1330,24 @@ function CheckoutPage() {
 
       {topUpOpen && (
         <div
-           className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4"
+          className={`fixed inset-0 z-[70] flex bg-black/70 ${isAppShell ? "items-end justify-center p-0" : "items-center justify-center p-4"}`}
           onClick={() => !topUpBusy && setTopUpOpen(false)}
         >
           <div
-             className={`checkout-topup w-full max-w-md border rounded-[10px] p-6 ${
-               isAppShell ? "border-checkout-line bg-checkout-surface" : "bg-white shadow-sm border-slate-200"
+            className={`checkout-topup w-full max-w-md border p-6 ${
+              isAppShell ? "rounded-t-3xl border-checkout-line bg-checkout-surface pb-[max(1.5rem,env(safe-area-inset-bottom))]" : "rounded-[10px] bg-white shadow-sm border-slate-200"
             }`}
             onClick={(e) => e.stopPropagation()}
           >
+            {isAppShell && <div className="mx-auto mb-5 h-1 w-10 rounded-full bg-white/20" />}
             <h3 className={`font-black text-lg mb-1 ${isAppShell ? "text-white" : "text-slate-900"}`}>
               Fund your wallet
             </h3>
-            <p className="text-xs text-slate-400 md:text-slate-500 mb-4">
+            <p className={`mb-4 text-xs ${isAppShell ? "text-slate-400" : "text-slate-500"}`}>
               Add {shortfallUSD ? fmt(shortfallUSD, homeCurrency) : "credit"} or more to complete
               this purchase.
             </p>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 md:text-slate-500 mb-1.5">
+            <label className={`mb-1.5 block text-xs font-semibold uppercase tracking-wider ${isAppShell ? "text-slate-400" : "text-slate-500"}`}>
               Amount ({homeCurrency})
             </label>
             <input
@@ -1358,7 +1359,7 @@ function CheckoutPage() {
                 isAppShell ? "bg-white/[0.03] border-white/10 text-white focus:border-[#E5484D]/60" : "bg-slate-50 border-slate-200 text-slate-900"
               }`}
             />
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 md:text-slate-500 mb-1.5">
+            <label className={`mb-1.5 block text-xs font-semibold uppercase tracking-wider ${isAppShell ? "text-slate-400" : "text-slate-500"}`}>
               Fund via
             </label>
             <div className="space-y-2 mb-5">
@@ -1391,14 +1392,14 @@ function CheckoutPage() {
               <button
                 onClick={() => setTopUpOpen(false)}
                 disabled={topUpBusy}
-                className="flex-1 py-2 rounded-[10px] bg-white/5 md:bg-slate-100 hover:bg-white/10 text-slate-200 md:text-slate-700 text-sm font-semibold"
+                className={`flex-1 rounded-[10px] py-2 text-sm font-semibold ${isAppShell ? "bg-white/5 text-slate-200 hover:bg-white/10" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}
               >
                 Cancel
               </button>
               <button
                 onClick={runTopUp}
                 disabled={topUpBusy}
-                className="flex-1 py-2 rounded-[10px] bg-[#E5484D] hover:bg-[#d13a3f] text-black text-sm font-black inline-flex items-center justify-center gap-2"
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-[10px] bg-[#E5484D] py-2 text-sm font-black text-white hover:bg-[#d13a3f]"
               >
                 {topUpBusy ? (
                   <>
