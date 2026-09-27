@@ -288,7 +288,7 @@ const SaveKycInput = z.object({
 
 /**
  * Persists the KYC selfie + government ID paths and phone, marks
- * kyc_completed_at, and promotes verification_tier to TIER_5.
+ * kyc_completed_at, and promotes verification_tier to TIER_3.
  * Both images are uploaded from the browser to the private `kyc-selfies`
  * bucket (paths: `<user_id>/selfie_<ts>.jpg` and `<user_id>/id_<ts>.jpg`).
  */
