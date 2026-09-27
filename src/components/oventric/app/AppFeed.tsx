@@ -47,6 +47,7 @@ import type { Currency } from "@/lib/onboarding/OnboardingContext";
 import { visibleProductPrice } from "@/lib/money-visibility";
 import { trackPostView } from "@/lib/post-views";
 import type { ProductDTO } from "@/lib/marketplace.functions";
+import { PostComposerModal } from "@/components/oventric/PostComposerModal";
 
 type Post = Awaited<ReturnType<typeof listPosts>>["posts"][number];
 
@@ -130,6 +131,7 @@ export function AppFeed() {
   const { openGate } = useAuthGate() as any;
   const { homeCurrency, balancesHidden } = useOnboarding();
   const [posts, setPosts] = useState<Post[] | null>(null);
+  const [composerOpen, setComposerOpen] = useState(false);
   const [signedIn, setSignedIn] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [savedIds, setSavedIds] = useState<Set<string>>(() =>
@@ -227,6 +229,20 @@ export function AppFeed() {
       setEditSaving(false);
     }
   };
+
+  const reloadPosts = () =>
+    fetchPosts()
+      .then((r) => setPosts(r.posts.filter((p) => !p.repost_of || p.text || p.media_url)))
+      .catch(() => {});
+
+  // "Drop a Post" from the create menu opens the composer on the app feed.
+  useEffect(() => {
+    const onCreate = (e: Event) => {
+      if ((e as CustomEvent<{ kind?: string }>).detail?.kind === "post") setComposerOpen(true);
+    };
+    window.addEventListener("oventric:create", onCreate);
+    return () => window.removeEventListener("oventric:create", onCreate);
+  }, []);
 
   useEffect(() => {
     fetchPosts()
