@@ -365,6 +365,8 @@ export function AppFeed() {
             ))}
         </div>
       )}
+
+      {visiblePosts.length === 0 && (
         <div className="flex items-center justify-center px-8 py-20 text-center text-[13px] text-white/50">
           {tab === "following"
             ? "No posts from people you follow yet — follow creators to fill this feed."
