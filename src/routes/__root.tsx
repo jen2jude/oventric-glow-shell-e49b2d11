@@ -8,7 +8,6 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { Monitor, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import appCss from "../styles.css?url";
@@ -38,7 +37,7 @@ import { ReferralCapture } from "@/components/oventric/ReferralCapture";
 import { useLiveFx } from "@/lib/useLiveFx";
 import { FeatureCarousel } from "@/components/oventric/FeatureCarousel";
 import { useFirstLaunch } from "@/hooks/useFirstLaunch";
-import { isAppReviewPreview, useLaunchContext } from "@/hooks/use-launch-context";
+import { useLaunchContext } from "@/hooks/use-launch-context";
 import { unlockNotificationSound } from "@/lib/notification-sound";
 
 function NotFoundComponent() {
@@ -380,8 +379,6 @@ function RootComponent() {
   const appRouter = useRouter();
 
   const { show, markSeen, hydrated } = useFirstLaunch();
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => setIsMounted(true), []);
   // Welcome slides belong to the app shell (native build / installed PWA);
   // plain browser visitors get the marketing site instead.
   const launchCtx = useLaunchContext();
@@ -413,18 +410,6 @@ function RootComponent() {
       window.removeEventListener("touchstart", unlock);
     };
   }, []);
-
-  // Mode switcher for preview environment
-  const isPreview = isAppReviewPreview();
-  const toggleMode = () => {
-    const url = new URL(window.location.href);
-    if (launchCtx === "browser") {
-      url.searchParams.set("mode", "app");
-    } else {
-      url.searchParams.set("mode", "web");
-    }
-    window.location.href = url.toString();
-  };
 
   return (
     <QueryClientProvider client={queryClient}>
