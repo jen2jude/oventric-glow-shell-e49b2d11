@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -7,7 +7,10 @@ import {
   BadgeCheck,
   CalendarDays,
   Flag,
+  Images,
   Link2,
+  Loader2,
+  PlayCircle,
   MapPin,
   MessageCircle,
   MoreHorizontal,
@@ -30,7 +33,12 @@ import {
   unfollow,
   listIncomingFollowRequests,
 } from "@/lib/follows.functions";
-import { listPosts, type FeedPost } from "@/lib/posts.functions";
+import {
+  listPosts,
+  listUserPhotos,
+  type FeedPost,
+  type UserPhoto,
+} from "@/lib/posts.functions";
 import { listProducts, type ProductDTO } from "@/lib/marketplace.functions";
 import type { ProfileListing } from "@/lib/profiles/mockProfiles";
 import { supabase } from "@/integrations/supabase/client";
@@ -43,6 +51,9 @@ import { ConnectionsDialog } from "@/components/oventric/profile/ConnectionsDial
 import { FollowRequestsDrawer } from "@/components/oventric/FollowRequestsDrawer";
 import { ReportModal } from "@/components/oventric/ReportModal";
 import { ProfileServicesTab } from "@/components/oventric/profile/ProfileServicesTab";
+import { ProfileCollectionsTab } from "@/components/oventric/profile/ProfileCollectionsTab";
+import { PhotoBatches } from "@/components/oventric/PhotoBatches";
+import { ReelsGrid, useReels } from "@/components/oventric/feed/ReelsShelf";
 
 function ago(iso: string) {
   const s = (Date.now() - new Date(iso).getTime()) / 1000;
@@ -56,7 +67,14 @@ function compact(n: number) {
   return n >= 1000 ? `${(n / 1000).toFixed(1).replace(/\.0$/, "")}k` : `${n}`;
 }
 
-type Tab = "posts" | "shop" | "services" | "skills" | "about";
+type Tab =
+  | "posts"
+  | "shop"
+  | "services"
+  | "collections"
+  | "photos"
+  | "skills"
+  | "about";
 
 function priceOf(p: ProductDTO): string {
   return `$${p.priceUSD.toFixed(2)}`;
@@ -398,6 +416,8 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
             ["posts", "Posts"],
             ["shop", "Shop"],
             ["services", "Services"],
+            ["collections", "Collections"],
+            ["photos", "Photos"],
             ["skills", "Skills"],
             ["about", "About"],
           ] as [Tab, string][]
@@ -520,6 +540,20 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
       )}
 
       {/* Skills */}
+      {/* Collections — curated boards + saved items */}
+      {tab === "collections" && (
+        <div className="px-4 pt-4">
+          <ProfileCollectionsTab
+            idOrSlug={idOrSlug}
+            name={profile.displayName}
+            isOwner={isOwn}
+          />
+        </div>
+      )}
+
+      {/* Photos — every image they've uploaded across the platform */}
+      {tab === "photos" && <AppPhotosGallery idOrSlug={idOrSlug} />}
+
       {tab === "skills" && (
         <div className="space-y-5 p-4">
           {profile.skills.length === 0 && profile.tools.length === 0 ? (
@@ -696,6 +730,104 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
         targetId={userId ?? idOrSlug}
         onReported={() => setReportOpen(false)}
       />
+    </div>
+  );
+}
+
+/** Photos tab — every image the member has uploaded (posts, avatar, cover) plus reels. */
+function AppPhotosGallery({ idOrSlug }: { idOrSlug: string }) {
+  const fetchPhotos = useServerFn(listUserPhotos);
+  const [photos, setPhotos] = useState<UserPhoto[] | null>(null);
+  const [filter, setFilter] = useState<"all" | "avatar" | "cover" | "post" | "reels">(
+    "all",
+  );
+  const reels = useReels(true, idOrSlug, 60);
+
+  useEffect(() => {
+    let cancel = false;
+    (async () => {
+      try {
+        const r = await fetchPhotos({ data: { slugOrId: idOrSlug } });
+        if (!cancel) setPhotos(r.photos);
+      } catch {
+        if (!cancel) setPhotos([]);
+      }
+    })();
+    return () => {
+      cancel = true;
+    };
+  }, [fetchPhotos, idOrSlug]);
+
+  if (photos === null) {
+    return (
+      <div className="flex justify-center py-16">
+        <Loader2 className="h-5 w-5 animate-spin text-white/40" />
+      </div>
+    );
+  }
+
+  const filtered =
+    filter === "all" || filter === "reels"
+      ? photos
+      : photos.filter((p) => p.source === filter);
+
+  const chip = (v: typeof filter, label: string) => (
+    <button
+      key={v}
+      onClick={() => {
+        haptic("select");
+        setFilter(v);
+      }}
+      className={`rounded-full border px-3 py-1 text-xs font-semibold ${
+        filter === v
+          ? "border-[#E5484D]/50 bg-[#E5484D]/15 text-[#E5484D]"
+          : "border-white/10 text-white/45"
+      }`}
+    >
+      {label}
+    </button>
+  );
+
+  return (
+    <div className="space-y-4 px-4 pt-4">
+      <div className="flex flex-wrap items-center gap-2">
+        {chip("all", "All")}
+        {chip("reels", "Reels")}
+        {chip("post", "Posts")}
+        {chip("avatar", "Profile")}
+        {chip("cover", "Cover")}
+      </div>
+      {filter === "reels" ? (
+        reels === null ? (
+          <div className="flex justify-center py-16">
+            <Loader2 className="h-5 w-5 animate-spin text-white/40" />
+          </div>
+        ) : reels.length === 0 ? (
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-16 text-center">
+            <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full border border-[#E5484D]/30 bg-[#E5484D]/10 text-[#E5484D]">
+              <PlayCircle className="h-4 w-4" />
+            </div>
+            <div className="text-sm font-semibold text-white/80">No reels yet</div>
+            <p className="mx-auto mt-1 max-w-sm text-xs text-white/40">
+              Short videos and stories stay here after 24 hours and keep collecting views.
+            </p>
+          </div>
+        ) : (
+          <ReelsGrid reels={reels} />
+        )
+      ) : filtered.length === 0 ? (
+        <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-16 text-center">
+          <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full border border-[#E5484D]/30 bg-[#E5484D]/10 text-[#E5484D]">
+            <Images className="h-4 w-4" />
+          </div>
+          <div className="text-sm font-semibold text-white/80">No photos yet</div>
+          <p className="mx-auto mt-1 max-w-sm text-xs text-white/40">
+            Photos from posts, profile picture and cover image will show up here.
+          </p>
+        </div>
+      ) : (
+        <PhotoBatches photos={filtered} dense />
+      )}
     </div>
   );
 }
