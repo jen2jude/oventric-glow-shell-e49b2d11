@@ -1071,8 +1071,8 @@ function ProductPage() {
             </div>
 
             {relatedProducts.length > 0 && (
-               <section className={`lg:col-span-12 ${isAppShell ? "px-4 pt-6 sm:px-0" : ""}`} aria-labelledby="related-products-title">
-                <div className="mb-4 flex items-end justify-between gap-4 border-t border-newsfeed-line pt-7 sm:pt-9">
+               <section className={`lg:col-span-12 ${isAppShell ? "px-4 pt-5 sm:px-0" : ""}`} aria-labelledby="related-products-title">
+                <div className={`${isAppShell ? "mb-3 pt-5" : "mb-4 pt-7 sm:pt-9"} flex items-end justify-between gap-4 border-t border-newsfeed-line`}>
                   <div>
                      {!isAppShell && <div className="mb-2 flex h-1.5 w-24 overflow-hidden rounded-full" aria-hidden="true">
                       <span className="flex-1 bg-newsfeed-coral" />
@@ -1080,23 +1080,23 @@ function ProductPage() {
                       <span className="flex-1 bg-newsfeed-blue" />
                       <span className="flex-1 bg-newsfeed-violet" />
                      </div>}
-                    <h2 id="related-products-title" className="text-xl font-extrabold text-newsfeed-ink sm:text-2xl">
+                    <h2 id="related-products-title" className={isAppShell ? "text-[15px] font-black text-newsfeed-ink" : "text-xl font-extrabold text-newsfeed-ink sm:text-2xl"}>
                       You might also like
                     </h2>
-                    <p className="mt-1 text-sm font-medium text-newsfeed-muted">
+                    {!isAppShell && <p className="mt-1 text-sm font-medium text-newsfeed-muted">
                       More from {product.category}
-                    </p>
+                    </p>}
                   </div>
                   <Link
                     to="/marketplace"
-                    className="shrink-0 text-sm font-bold text-newsfeed-coral hover:underline"
+                    className={`shrink-0 font-bold text-newsfeed-coral hover:underline ${isAppShell ? "text-[12.5px]" : "text-sm"}`}
                   >
                     Browse all
                   </Link>
                 </div>
 
                 <div className="flex snap-x gap-3 overflow-x-auto pb-2 scrollbar-none sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-4 lg:gap-4">
-                  {relatedProducts.slice(0, 4).map((related) => {
+                  {relatedProducts.slice(0, isAppShell ? 8 : 4).map((related) => {
                     const display = productDisplay(related, baseCurrency);
                     return (
                       <Link
