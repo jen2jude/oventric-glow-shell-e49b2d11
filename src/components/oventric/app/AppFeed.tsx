@@ -358,8 +358,34 @@ export function AppFeed() {
       return followingIds.has(p.author_id) || followerIds.has(p.author_id);
     });
 
+  // Swipe left = next tab, swipe right = previous tab (For you ↔ Following ↔ Shop ↔ Creators).
+  const FEED_TABS = ["foryou", "following", "shop", "creators"] as const;
+  const swipeStart = useRef<{ x: number; y: number } | null>(null);
+  const onFeedTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    swipeStart.current = { x: t.clientX, y: t.clientY };
+  };
+  const onFeedTouchEnd = (e: React.TouchEvent) => {
+    const start = swipeStart.current;
+    swipeStart.current = null;
+    if (!start) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    if (Math.abs(dx) < 64 || Math.abs(dx) < Math.abs(dy) * 1.4) return; // vertical scroll stays scrolling
+    const idx = FEED_TABS.indexOf(tab);
+    const next = dx < 0 ? idx + 1 : idx - 1;
+    if (next < 0 || next >= FEED_TABS.length) return;
+    haptic("select");
+    setTab(FEED_TABS[next]);
+  };
+
   return (
-    <div className="min-h-[calc(100dvh-80px)] bg-[#070A08] pb-24 pt-[calc(3rem+env(safe-area-inset-top))]">
+    <div
+      className="min-h-[calc(100dvh-80px)] bg-[#070A08] pb-24 pt-[calc(3rem+env(safe-area-inset-top))]"
+      onTouchStart={onFeedTouchStart}
+      onTouchEnd={onFeedTouchEnd}
+    >
       <PostComposerModal
         open={composerOpen}
         onClose={() => setComposerOpen(false)}
