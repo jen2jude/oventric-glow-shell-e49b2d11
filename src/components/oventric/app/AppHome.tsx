@@ -112,7 +112,7 @@ export function AppHome({
           type="button"
           onClick={() => {
             haptic("select");
-            onSelect("Profile");
+            openOwn("profile");
           }}
           className="nav-tap flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white/[0.06]"
           aria-label="Your profile"
@@ -209,10 +209,10 @@ export function AppHome({
       {/* Quick actions — everything the bottom dock doesn't already cover */}
       <div className="mt-5 grid grid-cols-4 gap-2">
         {[
-          { icon: Package, label: "Orders", run: () => navigate({ to: "/escrow" }) },
-          { icon: Images, label: "Showcase", run: () => onSelect("Feed") },
-          { icon: Plus, label: "Sell", run: onCreate },
-          { icon: Store, label: "My shop", run: () => onSelect("Profile") },
+          { icon: Package, label: "Purchases", run: () => navigate({ to: "/escrow" }) },
+          { icon: User, label: "Profile", run: () => openOwn("profile") },
+          { icon: Store, label: "My shop", run: () => openOwn("shop") },
+          { icon: Compass, label: "Explore", run: () => onSelect("Explore") },
         ].map((a) => (
           <button
             key={a.label}
