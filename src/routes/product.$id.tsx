@@ -733,8 +733,8 @@ function ProductPage() {
                 </div>
               ) : null}
                {isAppShell && (
-                 <section className="product-app-about border-t border-newsfeed-line py-5" aria-label="About this product">
-                   <h2 className="mb-3 text-base font-bold text-newsfeed-ink">About this {product.kind === "service" ? "service" : "product"}</h2>
+                 <section className="product-app-about border-t border-newsfeed-line py-3" aria-label="About this product">
+                   <h2 className="mb-2 text-[14px] font-bold text-newsfeed-ink">About this {product.kind === "service" ? "service" : "product"}</h2>
                    <p className="whitespace-pre-line text-[13px] leading-6 text-newsfeed-muted">
                      {product.description ? (showFullDescription || product.description.length <= 280 ? product.description : `${product.description.slice(0, 280).trimEnd()}…`) : "No description provided."}
                    </p>
@@ -745,7 +745,7 @@ function ProductPage() {
                    )}
                  </section>
                )}
-               <div className="product-seller mb-4 space-y-2 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-3">
+               <div className="product-seller mb-3 space-y-2 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-2.5">
                 <CreatorChip
                   idOrSlug={product.sellerSlug ?? product.sellerId}
                   name={product.vendor}
@@ -765,7 +765,7 @@ function ProductPage() {
                  )}
               </div>
 
-              <div className="product-reviews mb-4 flex flex-wrap items-center gap-2">
+              <div className="product-reviews mb-3 flex flex-wrap items-center gap-2">
                 <ProductRating
                   productId={product.id}
                   initialAverage={product.rating}
@@ -775,7 +775,7 @@ function ProductPage() {
                 />
               </div>
 
-              <div className="product-details mb-5 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface px-4">
+              <div className="product-details mb-4 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface px-3.5">
                 <Accordion type="single" collapsible className="w-full">
                    {!isAppShell && <AccordionItem value="about" className="border-slate-200">
                     <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold py-3 hover:no-underline`}>
