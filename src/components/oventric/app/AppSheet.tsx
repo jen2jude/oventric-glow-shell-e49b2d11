@@ -15,12 +15,15 @@ export function AppSheet({
   onClose,
   children,
   tall = false,
+  header,
 }: {
   open: boolean;
   onClose: () => void;
   children: React.ReactNode;
   /** Tall sheets rise to ~92% of the screen; default sheets hug content up to 80%. */
   tall?: boolean;
+  /** Pinned above the scrollable body — stays put while children scroll. */
+  header?: React.ReactNode;
 }) {
   return (
     <Drawer open={open} onOpenChange={(o) => !o && onClose()}>
@@ -33,6 +36,7 @@ export function AppSheet({
         >
           {/* Drag handle */}
           <div className="mx-auto mt-2.5 mb-1 h-1.5 w-10 shrink-0 rounded-full bg-white/15" />
+          {header && <div className="shrink-0">{header}</div>}
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
             {children}
           </div>
