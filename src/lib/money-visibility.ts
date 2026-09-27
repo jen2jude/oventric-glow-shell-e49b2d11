@@ -12,8 +12,12 @@ export function usdEquivalent(amount: number, currency: Currency, hidden: boolea
   return hidden ? "••••" : `≈ ${formatMoney(amount / usdRate(currency), "USD")}`;
 }
 
-/** Apply display-only privacy to a listing, without changing its checkout price. */
-export function visibleProductPrice(row: PriceableRow, currency: Currency, hidden: boolean): string {
+/**
+ * Product prices are always shown — the wallet blind only covers the user's
+ * OWN money (balance, escrow, earnings, transactions), never listing prices.
+ * The `hidden` param is kept for call-site compatibility but ignored.
+ */
+export function visibleProductPrice(row: PriceableRow, currency: Currency, _hidden: boolean): string {
   const price = computeDisplayPrice(row, currency);
-  return price.originalAmount === 0 ? "Free" : visibleMoney(price.value, currency, hidden);
+  return price.originalAmount === 0 ? "Free" : formatMoney(price.value, currency);
 }

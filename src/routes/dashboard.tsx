@@ -902,11 +902,13 @@ function ListingsList({
                       {p.name}
                     </Link>
                     <div className="text-xs text-slate-400 md:text-slate-500">
-                      {visibleProductPrice(
-                        { price_usd: p.priceUSD, original_currency: p.originalCurrency, original_amount: p.originalAmount, fx_snapshot: p.fxSnapshot },
-                        (homeCurrency ?? "USD") as Currency,
-                        balancesHidden,
-                      )}
+                      {balancesHidden
+                        ? "••••"
+                        : visibleProductPrice(
+                            { price_usd: p.priceUSD, original_currency: p.originalCurrency, original_amount: p.originalAmount, fx_snapshot: p.fxSnapshot },
+                            (homeCurrency ?? "USD") as Currency,
+                            false,
+                          )}
                       {p.location ? (
                         <span className="ml-2 inline-flex items-center gap-1">
                           <MapPin className="w-3 h-3" /> {p.location}
