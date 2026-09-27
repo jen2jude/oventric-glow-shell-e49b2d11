@@ -21,3 +21,7 @@ service worker is registered — `public/push-sw.js` is messaging-only. Reason:
 cached app shells serve stale pages in Lovable previews.
 
 App-mode conversations open in a slide-up drawer above the mounted Messages inbox; the website message layout stays separate. Reason: closing or swiping away a conversation should return to the same inbox position without losing chat state.
+
+## Creator Coach (AI)
+- Creator Coach is app-exclusive: chat UI in `src/components/oventric/app/CreatorCoach.tsx`, streaming route `src/routes/api/creator-coach.ts` (openai/gpt-6-astra via Responses, reasoning low), history in `creator_coach_messages` (one conversation per creator, account-saved). Reason: a real reason to install the app; web stays without it.
+- Coach answers from live stats: route builds context via `buildCreatorHubData` (exported from creator.functions.ts) + seller snapshot; never invent numbers.
