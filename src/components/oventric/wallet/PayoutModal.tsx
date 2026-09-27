@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -19,6 +19,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 import wallet3d from "@/assets/wallet-hero-3d.png.asset.json";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { currencySymbol, usdRate } from "@/lib/fx-display";
@@ -70,6 +71,7 @@ function kindOf(r: PayoutRecipientDTO): MethodKind {
 }
 
 export function PayoutModal({ onClose }: { onClose: () => void }) {
+  const isApp = useIsAppShell();
   const { balances, homeCurrency, setBalances } = useOnboarding();
   const qc = useQueryClient();
 
@@ -268,23 +270,24 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
     }
   }
 
-  return (
-    <div className="fixed inset-0 z-[60] bg-[#0A0A0B] flex flex-col">
-      {/* Header */}
-      <div className="shrink-0 bg-[#0A0A0B]/95 backdrop-blur border-b border-white/5">
-        <div className="flex items-center justify-between px-4 py-4">
-          <button onClick={onClose} className="p-2 -ml-2 text-white">
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="text-base font-black text-white">Withdraw Funds</h1>
-          <span className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400">
-            <HelpCircle className="w-4 h-4" />
-          </span>
-        </div>
+  const cta = (
+    <>
+      <button
+        onClick={openReview}
+        disabled={submitting}
+        className="w-full bg-[#E5484D] text-white font-black py-3.5 rounded-[10px] disabled:opacity-50"
+      >
+        Review Withdrawal
+      </button>
+      <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 mt-2">
+        <Lock className="w-3 h-3" /> Secured by Oventric
       </div>
+    </>
+  );
 
-      <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-6 pt-4">
-        {/* Balance card */}
+  const form = (
+    <>
+      {/* Balance card */}
         <div className="rounded-[10px] border border-[#E5484D]/25 bg-gradient-to-br from-[#17171C] to-[#101014] p-4 relative overflow-hidden">
           <div className="flex items-start justify-between">
             <div>
@@ -548,23 +551,11 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
             )}
           </div>
         </div>
-      </div>
+    </>
+  );
 
-      {/* Bottom CTA */}
-      <div className="shrink-0 bg-[#0A0A0B]/95 backdrop-blur border-t border-white/5 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))]">
-        <button
-          onClick={openReview}
-          disabled={submitting}
-          className="w-full bg-[#E5484D] text-white font-black py-3.5 rounded-[10px] disabled:opacity-50"
-        >
-          Review Withdrawal
-        </button>
-        <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 mt-2">
-          <Lock className="w-3 h-3" /> Secured by Oventric
-        </div>
-      </div>
-
-
+  const overlays = (
+    <>
       {addKind && (
         <AddMethodSheet
           kind={addKind}
@@ -588,6 +579,7 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
           accountName={usdName}
           network={usdChannel === "wallet" ? usdNetwork : ""}
           submitting={submitting}
+          sheet={isApp}
           onClose={() => setReview(false)}
           onConfirm={() => setPinMode(pinQ.data?.hasPin ? "verify" : "create")}
         />
@@ -601,12 +593,13 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
           net={net}
           recipient={activeRecipient}
           submitting={submitting}
+          sheet={isApp}
           onClose={() => setReview(false)}
           onConfirm={() => setPinMode(pinQ.data?.hasPin ? "verify" : "create")}
         />
       )}
 
-      {done && <SuccessSplash detail={done} onClose={onClose} />}
+      {done && <SuccessSplash detail={done} sheet={isApp} onClose={onClose} />}
 
       {pinMode && (
         <PinSheet
@@ -618,7 +611,45 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
           }}
         />
       )}
-    </div>
+    </>
+  );
+
+  // The website keeps its full-page withdrawal screen; the app gets the
+  // signature slide-up sheet, matching Add funds.
+  if (!isApp) {
+    return (
+      <div className="fixed inset-0 z-[60] bg-[#0A0A0B] flex flex-col">
+        {/* Header */}
+        <div className="shrink-0 bg-[#0A0A0B]/95 backdrop-blur border-b border-white/5">
+          <div className="flex items-center justify-between px-4 py-4">
+            <button onClick={onClose} className="p-2 -ml-2 text-white" aria-label="Back">
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h1 className="text-base font-black text-white">Withdraw Funds</h1>
+            <span className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400">
+              <HelpCircle className="w-4 h-4" />
+            </span>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-6 pt-4">{form}</div>
+
+        <div className="shrink-0 bg-[#0A0A0B]/95 backdrop-blur border-t border-white/5 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))]">
+          {cta}
+        </div>
+
+        {overlays}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <SlideSheet title="Withdraw funds" onClose={onClose} footer={cta}>
+        {form}
+      </SlideSheet>
+      {overlays}
+    </>
   );
 }
 
@@ -638,6 +669,7 @@ function ReviewSheet({
   net,
   recipient,
   submitting,
+  sheet,
   onClose,
   onConfirm,
 }: {
@@ -647,9 +679,75 @@ function ReviewSheet({
   net: number;
   recipient: PayoutRecipientDTO;
   submitting: boolean;
+  sheet?: boolean;
   onClose: () => void;
   onConfirm: () => void;
 }) {
+  const footer = (
+    <>
+      <button
+        onClick={onConfirm}
+        disabled={submitting}
+        className="w-full bg-[#E5484D] text-white font-black py-3.5 rounded-[10px] disabled:opacity-50 flex items-center justify-center gap-2"
+      >
+        {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
+        <span>
+          Confirm Withdrawal
+          <span className="block text-[11px] font-semibold opacity-80">
+            {money(net, sym)} will be sent
+          </span>
+        </span>
+      </button>
+      <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 mt-2">
+        <Lock className="w-3 h-3" /> Secured by Oventric
+      </div>
+    </>
+  );
+
+  const content = (
+    <div className="space-y-4">
+      <div className="rounded-[10px] border border-white/8 bg-white/[0.03] p-4 space-y-3">
+        <div className="text-sm font-black text-white">Review Details</div>
+        <div className="flex items-start justify-between gap-4">
+          <span className="text-xs text-slate-400">Withdraw To</span>
+          <span className="text-right">
+            <span className="block text-sm font-black text-white">
+              {recipient.method === "momo" ? "Mobile Money" : recipient.bank_name}
+            </span>
+            <span className="block text-[11px] text-slate-500">
+              {recipient.momo_network ?? recipient.bank_name} ·{" "}
+              {recipient.phone ?? recipient.account_number}
+            </span>
+            <span className="block text-[11px] text-slate-500">{recipient.account_name}</span>
+          </span>
+        </div>
+        <div className="h-px bg-white/8" />
+        <Row label="Amount" value={money(amount, sym)} />
+        <Row label="Withdrawal Fee" value={money(fee, sym)} />
+        <Row label="You will receive" value={money(net, sym)} strong />
+        <Row label="Processing Time" value="5 - 30 mins" />
+      </div>
+
+      <div className="flex gap-2 rounded-[10px] border border-sky-500/20 bg-sky-500/[0.07] p-3">
+        <ShieldCheck className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
+        <div>
+          <div className="text-xs font-black text-white">Secure Withdrawal</div>
+          <p className="text-[11px] text-slate-400">
+            Your funds are safe with bank-level security and encryption.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (sheet) {
+    return (
+      <SlideSheet title="Review withdrawal" z={80} onClose={onClose} footer={footer}>
+        {content}
+      </SlideSheet>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-[70] bg-[#0A0A0B] overflow-y-auto">
       <div className="flex items-center justify-between px-4 py-4 border-b border-white/5">
@@ -660,63 +758,53 @@ function ReviewSheet({
         <span className="w-9" />
       </div>
 
-      <div className="p-4 space-y-4 pb-28">
-        <div className="rounded-[10px] border border-white/8 bg-white/[0.03] p-4 space-y-3">
-          <div className="text-sm font-black text-white">Review Details</div>
-          <div className="flex items-start justify-between gap-4">
-            <span className="text-xs text-slate-400">Withdraw To</span>
-            <span className="text-right">
-              <span className="block text-sm font-black text-white">
-                {recipient.method === "momo" ? "Mobile Money" : recipient.bank_name}
-              </span>
-              <span className="block text-[11px] text-slate-500">
-                {recipient.momo_network ?? recipient.bank_name} ·{" "}
-                {recipient.phone ?? recipient.account_number}
-              </span>
-              <span className="block text-[11px] text-slate-500">{recipient.account_name}</span>
-            </span>
-          </div>
-          <div className="h-px bg-white/8" />
-          <Row label="Amount" value={money(amount, sym)} />
-          <Row label="Withdrawal Fee" value={money(fee, sym)} />
-          <Row label="You will receive" value={money(net, sym)} strong />
-          <Row label="Processing Time" value="5 - 30 mins" />
-        </div>
-
-        <div className="flex gap-2 rounded-[10px] border border-sky-500/20 bg-sky-500/[0.07] p-3">
-          <ShieldCheck className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
-          <div>
-            <div className="text-xs font-black text-white">Secure Withdrawal</div>
-            <p className="text-[11px] text-slate-400">
-              Your funds are safe with bank-level security and encryption.
-            </p>
-          </div>
-        </div>
-      </div>
+      <div className="p-4 space-y-4 pb-28">{content}</div>
 
       <div className="fixed bottom-0 inset-x-0 bg-[#0A0A0B]/95 backdrop-blur border-t border-white/5 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))]">
-        <button
-          onClick={onConfirm}
-          disabled={submitting}
-          className="w-full bg-[#E5484D] text-white font-black py-3.5 rounded-[10px] disabled:opacity-50 flex items-center justify-center gap-2"
-        >
-          {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
-          <span>
-            Confirm Withdrawal
-            <span className="block text-[11px] font-semibold opacity-80">
-              {money(net, sym)} will be sent
-            </span>
-          </span>
-        </button>
-        <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 mt-2">
-          <Lock className="w-3 h-3" /> Secured by Oventric
-        </div>
+        {footer}
       </div>
     </div>
   );
 }
 
-function SuccessSplash({ detail, onClose }: { detail: string; onClose: () => void }) {
+function SuccessSplash({
+  detail,
+  sheet,
+  onClose,
+}: {
+  detail: string;
+  sheet?: boolean;
+  onClose: () => void;
+}) {
+  if (sheet) {
+    return (
+      <SlideSheet
+        title="Withdrawal submitted"
+        z={90}
+        onClose={onClose}
+        footer={
+          <button
+            onClick={onClose}
+            className="w-full bg-[#E5484D] text-white font-black py-3.5 rounded-[10px]"
+          >
+            Done
+          </button>
+        }
+      >
+        <div className="flex flex-col items-center py-6 text-center">
+          <span className="w-20 h-20 rounded-full bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center">
+            <CheckCircle2 className="w-10 h-10 text-emerald-400" />
+          </span>
+          <p className="mt-5 text-sm text-slate-400 max-w-xs">{detail}</p>
+          <p className="mt-3 text-[12px] text-slate-500 max-w-xs">
+            Your request is being processed and can take up to 3 working days. We&apos;ll notify you
+            as soon as it&apos;s paid out.
+          </p>
+        </div>
+      </SlideSheet>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-[80] bg-[#0A0A0B] flex flex-col items-center justify-center px-6 text-center">
       <span className="w-20 h-20 rounded-full bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center">
@@ -748,6 +836,7 @@ function UsdReviewSheet({
   accountName,
   network,
   submitting,
+  sheet,
   onClose,
   onConfirm,
 }: {
@@ -760,9 +849,57 @@ function UsdReviewSheet({
   accountName: string;
   network: string;
   submitting: boolean;
+  sheet?: boolean;
   onClose: () => void;
   onConfirm: () => void;
 }) {
+  const footer = (
+    <button
+      onClick={onConfirm}
+      disabled={submitting}
+      className="w-full bg-[#E5484D] text-white font-black py-3.5 rounded-[10px] disabled:opacity-50 flex items-center justify-center gap-2"
+    >
+      {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
+      <span>Confirm Withdrawal</span>
+    </button>
+  );
+
+  const content = (
+    <div className="space-y-4">
+      <div className="rounded-[10px] border border-white/8 bg-white/[0.03] p-4 space-y-3">
+        <div className="flex items-start justify-between gap-4">
+          <span className="text-xs text-slate-400">Withdraw To</span>
+          <span className="text-right">
+            <span className="block text-sm font-black text-white">{channelLabel}</span>
+            <span className="block text-[11px] text-slate-500 break-all">{identifier}</span>
+            {accountName && <span className="block text-[11px] text-slate-500">{accountName}</span>}
+            {network && <span className="block text-[11px] text-slate-500">{network}</span>}
+          </span>
+        </div>
+        <div className="h-px bg-white/8" />
+        <Row label="You will receive" value={money(amount, "$")} strong />
+        <Row label={`Debited from ${currency} wallet`} value={money(localAmount, sym)} />
+        <Row label="Processing Time" value="Up to 3 working days" />
+      </div>
+
+      <div className="flex gap-2 rounded-[10px] border border-amber-500/20 bg-amber-500/[0.07] p-3">
+        <Info className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+        <p className="text-[11px] text-slate-400">
+          Double-check your account ID or wallet address. Payouts sent to a wrong destination cannot
+          be reversed.
+        </p>
+      </div>
+    </div>
+  );
+
+  if (sheet) {
+    return (
+      <SlideSheet title="Review USD withdrawal" z={80} onClose={onClose} footer={footer}>
+        {content}
+      </SlideSheet>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-[70] bg-[#0A0A0B] overflow-y-auto">
       <div className="flex items-center justify-between px-4 py-4 border-b border-white/5">
@@ -773,41 +910,84 @@ function UsdReviewSheet({
         <span className="w-9" />
       </div>
 
-      <div className="p-4 space-y-4 pb-28">
-        <div className="rounded-[10px] border border-white/8 bg-white/[0.03] p-4 space-y-3">
-          <div className="flex items-start justify-between gap-4">
-            <span className="text-xs text-slate-400">Withdraw To</span>
-            <span className="text-right">
-              <span className="block text-sm font-black text-white">{channelLabel}</span>
-              <span className="block text-[11px] text-slate-500 break-all">{identifier}</span>
-              {accountName && <span className="block text-[11px] text-slate-500">{accountName}</span>}
-              {network && <span className="block text-[11px] text-slate-500">{network}</span>}
-            </span>
-          </div>
-          <div className="h-px bg-white/8" />
-          <Row label="You will receive" value={money(amount, "$")} strong />
-          <Row label={`Debited from ${currency} wallet`} value={money(localAmount, sym)} />
-          <Row label="Processing Time" value="Up to 3 working days" />
-        </div>
-
-        <div className="flex gap-2 rounded-[10px] border border-amber-500/20 bg-amber-500/[0.07] p-3">
-          <Info className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-          <p className="text-[11px] text-slate-400">
-            Double-check your account ID or wallet address. Payouts sent to a wrong destination cannot
-            be reversed.
-          </p>
-        </div>
-      </div>
+      <div className="p-4 space-y-4 pb-28">{content}</div>
 
       <div className="fixed bottom-0 inset-x-0 bg-[#0A0A0B]/95 backdrop-blur border-t border-white/5 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))]">
-        <button
-          onClick={onConfirm}
-          disabled={submitting}
-          className="w-full bg-[#E5484D] text-white font-black py-3.5 rounded-[10px] disabled:opacity-50 flex items-center justify-center gap-2"
-        >
-          {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
-          <span>Confirm Withdrawal</span>
-        </button>
+        {footer}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Signature dark slide-up sheet for the app withdrawal flow — same motion as
+ * the Add funds sheet: backdrop fade, panel rises from the bottom, smooth
+ * slide-out on close, background scroll locked.
+ */
+function SlideSheet({
+  title,
+  onClose,
+  children,
+  footer,
+  z = 70,
+}: {
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+  footer?: React.ReactNode;
+  z?: number;
+}) {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setVisible(true));
+    const prevBody = document.body.style.overflow;
+    const prevHtml = document.documentElement.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      cancelAnimationFrame(raf);
+      document.body.style.overflow = prevBody;
+      document.documentElement.style.overflow = prevHtml;
+    };
+  }, []);
+
+  const close = () => {
+    setVisible(false);
+    window.setTimeout(onClose, 280);
+  };
+
+  return (
+    <div className="fixed inset-0" style={{ zIndex: z }} role="dialog" aria-modal="true" aria-label={title}>
+      <button
+        type="button"
+        aria-label="Close"
+        onClick={close}
+        className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
+      />
+      <div
+        className={`absolute inset-x-0 bottom-0 mx-auto flex max-h-[92dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-3xl border-t border-white/[0.08] bg-[#101013] text-white shadow-[0_-20px_60px_-20px_rgba(0,0,0,0.8)] transition-transform duration-300 ease-out ${visible ? "translate-y-0" : "translate-y-full"}`}
+      >
+        <div className="shrink-0 pt-2.5">
+          <div className="mx-auto h-1 w-10 rounded-full bg-white/15" />
+          <div className="flex items-center justify-between px-5 pb-1 pt-3">
+            <p className="text-[15px] font-bold tracking-tight">{title}</p>
+            <button
+              type="button"
+              onClick={close}
+              aria-label="Close"
+              className="nav-tap grid size-8 place-items-center rounded-full bg-white/[0.06] text-white/60"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-6 pt-2">{children}</div>
+        {footer && (
+          <div className="shrink-0 border-t border-white/[0.06] bg-[#101013] px-5 pb-[max(env(safe-area-inset-bottom),1rem)] pt-3">
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   );
