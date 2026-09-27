@@ -1,3 +1,5 @@
+import { CreatorHub } from "@/components/oventric/dashboard/CreatorHub";
+import { Sparkles as SparklesIcon } from "lucide-react";
 import { MessagesDrawer } from "@/components/oventric/MessagesDrawer";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -91,6 +93,7 @@ const TAB_VALUES = [
   "sales",
   "listings",
   "creator",
+  "creatorhub",
 ] as const;
 type Tab = (typeof TAB_VALUES)[number];
 
@@ -414,6 +417,9 @@ function DashboardPage() {
           <TabButton active={tab === "creator"} onClick={() => setTab("creator")}>
             <TrendingUp className="w-5 h-5 shrink-0" /> <span className="truncate">Seller Hub</span>
           </TabButton>
+          <TabButton active={tab === "creatorhub"} onClick={() => setTab("creatorhub")}>
+            <SparklesIcon className="w-5 h-5 shrink-0" /> <span className="truncate">Creator Hub</span>
+          </TabButton>
         </nav>
 
 
@@ -481,6 +487,7 @@ function DashboardPage() {
         )}
         {tab === "social" && <SocialPane data={social} />}
         {tab === "creator" && <SellerDashboard />}
+        {tab === "creatorhub" && <CreatorHub />}
 
       </div>
 
