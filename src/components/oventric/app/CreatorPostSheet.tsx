@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { logCreatorEvent, useWatchTime } from "@/lib/creator-events";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
 import { Download, Eye, ShoppingBag } from "lucide-react";
@@ -45,6 +46,13 @@ export function CreatorPostSheet({
   const asset = post?.asset ?? null;
   const media = post?.media[0] ?? null;
   const isVideo = media?.type === "video";
+  const videoRef = useRef<HTMLVideoElement>(null);
+  useWatchTime(videoRef, post?.id, !!post && isVideo);
+  const links: { href: string; label: string; kind: "link_click" | "full_video_click" }[] = [];
+  if (post?.fullVideoUrl) links.push({ href: post.fullVideoUrl, label: "Full video", kind: "full_video_click" });
+  if (post?.communityLink) links.push({ href: post.communityLink, label: "Community", kind: "link_click" });
+  if (post?.externalUrl && !post.externalEmbedUrl) links.push({ href: post.externalUrl, label: "Watch", kind: "link_click" });
+  for (const w of post?.author.workLinks ?? []) if (w && !links.some((l) => l.href === w)) links.push({ href: w, label: "View work", kind: "link_click" });
 
   const price = asset
     ? asset.isFree
@@ -114,6 +122,7 @@ export function CreatorPostSheet({
           <div className="bg-black">
             {isVideo ? (
               <video
+                ref={videoRef}
                 key={post.id}
                 src={media.url}
                 poster={media.posterUrl ?? undefined}
@@ -200,6 +209,23 @@ export function CreatorPostSheet({
                 </span>
               )}
             </div>
+
+            {links.length > 0 && (
+              <div className="mt-3 flex gap-2 overflow-x-auto [scrollbar-width:none]">
+                {links.map((l) => (
+                  <a
+                    key={l.href}
+                    href={l.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => { haptic("select"); logCreatorEvent(post.id, l.kind, { target: l.href }); }}
+                    className="shrink-0 rounded-full border border-white/10 px-3 py-1.5 text-[11px] font-bold text-white/70"
+                  >
+                    {l.label} ↗
+                  </a>
+                ))}
+              </div>
+            )}
 
             {/* Final CTA */}
             {asset &&
