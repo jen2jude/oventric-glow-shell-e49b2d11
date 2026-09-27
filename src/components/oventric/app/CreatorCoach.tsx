@@ -228,6 +228,8 @@ export function CreatorCoachLauncher() {
     if (!user?.isCreator) { setGreeting(null); return; }
     const chooseGreeting = () => {
       if (document.visibilityState !== "visible" || open) return;
+      // Don't spend the greeting's five seconds behind the launch screen or a modal.
+      if (document.querySelector('[data-oventric-boot="react"], [aria-label="Cashback offer: the more you shop, the less you pay"]')) return;
       const pendingKey = `oventric:coach-welcome-pending:${user.userId}`;
       const hourKey = `oventric:coach-hour:${user.userId}`;
       const now = new Date();
@@ -249,7 +251,7 @@ export function CreatorCoachLauncher() {
     chooseGreeting();
     document.addEventListener("visibilitychange", chooseGreeting);
     window.addEventListener("oventric:creator-welcome-ready", chooseGreeting);
-    const interval = window.setInterval(chooseGreeting, 60_000);
+    const interval = window.setInterval(chooseGreeting, 1_000);
     return () => {
       document.removeEventListener("visibilitychange", chooseGreeting);
       window.removeEventListener("oventric:creator-welcome-ready", chooseGreeting);
@@ -280,7 +282,7 @@ export function CreatorCoachLauncher() {
             <motion.div
               initial={reducedMotion ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="absolute inset-0 flex flex-col justify-center px-4 pr-14"
+              className="pointer-events-none absolute inset-0 flex flex-col justify-center px-4 pr-14"
             >
               <span className="text-[13px] font-bold leading-tight text-foreground">
                 {greeting === "welcome" ? `Hi ${name}, welcome to your Creator Hub!` : `Good ${timeOfDay}, ${name}.`}
