@@ -115,7 +115,7 @@ const SECTION_PATHS: Record<string, string> = {
   Feed: "/feed",
   Marketplace: "/marketplace",
   Wallet: "/wallet",
-  Purchases: "/escrow",
+  Purchases: "/",
 };
 
 /**
