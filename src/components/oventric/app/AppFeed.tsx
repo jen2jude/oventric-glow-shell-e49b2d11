@@ -201,6 +201,7 @@ export function AppFeed() {
   const visiblePosts = posts
     .filter((p) => !hidden.has(p.id))
     .filter((p) => {
+      if (tab === "shop") return (p.product_attachments?.length ?? 0) > 0;
       if (tab !== "following") return true;
       if (!followingIds || !followerIds) return true; // still loading
       return followingIds.has(p.author_id) || followerIds.has(p.author_id);
@@ -215,6 +216,7 @@ export function AppFeed() {
             [
               { key: "foryou", label: "For you" },
               { key: "following", label: "Following" },
+              { key: "shop", label: "Shop" },
             ] as const
           ).map((t) => (
             <button
