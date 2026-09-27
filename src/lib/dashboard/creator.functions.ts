@@ -169,6 +169,11 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
     const showFirst = new Map<string, number>();
     for (const s of shows) if (s.product_id) { const t = +new Date(s.created_at); if (!showFirst.has(s.product_id) || t < showFirst.get(s.product_id)!) showFirst.set(s.product_id, t); }
     const showOrders = orders.filter((o) => showFirst.has(o.product_id) && +new Date(o.created_at) >= showFirst.get(o.product_id)!);
+    const byProd = new Map<string, { name: string; sales: number; revenueUSD: number }>();
+    for (const o of showOrders) {
+      const e = byProd.get(o.product_id) ?? { name: o.product_name_snapshot || "Product", sales: 0, revenueUSD: 0 };
+      e.sales++; e.revenueUSD += Number(o.total_usd || 0); byProd.set(o.product_id, e);
+    }
 
     // Creators-tab engagement: real watch time (user-initiated plays only), link clicks, downloads
     const evRes = showIds.length
