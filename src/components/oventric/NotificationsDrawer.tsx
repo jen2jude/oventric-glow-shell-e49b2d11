@@ -554,7 +554,9 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
             aria-label={viewing.title}
           >
             <div
-              className="web-notifications w-full max-w-lg my-auto border rounded-2xl shadow-2xl overflow-hidden"
+              className={`web-notifications w-full max-w-lg my-auto border rounded-2xl shadow-2xl overflow-hidden ${
+                isApp ? "app-notif-sheet border-newsfeed-line bg-newsfeed-surface" : ""
+              }`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-start gap-3 px-5 py-4 border-b">
