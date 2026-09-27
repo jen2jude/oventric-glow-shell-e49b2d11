@@ -23,11 +23,14 @@ import {
   Sparkles,
   Store,
   LayoutGrid,
+  BadgeCheck,
+  Clapperboard,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppSheet } from "@/components/oventric/app/AppSheet";
 import { listPosts, toggleLike, setPostSaved as setPostSavedFn, deletePost as deletePostFn, updatePostText as updatePostTextFn } from "@/lib/posts.functions";
 import { listFollowing, listFollowers } from "@/lib/follows.functions";
+import { listCreatorFeed, getTopCreators, type CreatorPostDTO } from "@/lib/creators.functions";
 import { listProducts } from "@/lib/marketplace.functions";
 import { ProductQuickView } from "./ProductQuickView";
 import { EDIT_WINDOW_MS } from "@/lib/post-edit";
@@ -78,13 +81,27 @@ export function AppFeed() {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [editingPost, setEditingPost] = useState<{ id: string; text: string } | null>(null);
   const [editSaving, setEditSaving] = useState(false);
-  const [tab, setTab] = useState<"foryou" | "following" | "shop">("foryou");
+  const [tab, setTab] = useState<"foryou" | "following" | "shop" | "creators">("foryou");
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
   const [followerIds, setFollowerIds] = useState<Set<string> | null>(null);
   const loadFollowing = useServerFn(listFollowing);
   const loadFollowers = useServerFn(listFollowers);
   const [quickViewId, setQuickViewId] = useState<string | null>(null);
   const fetchProducts = useServerFn(listProducts);
+  const fetchCreatorFeed = useServerFn(listCreatorFeed);
+  const fetchTopCreators = useServerFn(getTopCreators);
+  const { data: creatorPosts } = useQuery({
+    queryKey: ["app-feed-creator-posts"],
+    queryFn: () => fetchCreatorFeed(),
+    staleTime: 60_000,
+    enabled: tab === "creators",
+  });
+  const { data: topCreators } = useQuery({
+    queryKey: ["app-feed-top-creators"],
+    queryFn: () => fetchTopCreators(),
+    staleTime: 120_000,
+    enabled: tab === "creators",
+  });
   const { data: shopProducts } = useQuery({
     queryKey: ["app-feed-shop-products"],
     queryFn: () => fetchProducts(),
@@ -235,6 +252,7 @@ export function AppFeed() {
   const visiblePosts = posts
     .filter((p) => !hidden.has(p.id))
     .filter((p) => {
+      if (tab === "creators") return false; // creators tab renders its own section
       if (tab === "shop") return (p.product_attachments?.length ?? 0) > 0;
       if (tab !== "following") return true;
       if (!followingIds || !followerIds) return true; // still loading
@@ -245,12 +263,13 @@ export function AppFeed() {
     <div className="min-h-[calc(100dvh-80px)] bg-[#070A08] pb-24">
       {/* Timeline header + tabs */}
       <div className="sticky top-0 z-10 border-b border-white/5 bg-[#070A08]/90 backdrop-blur">
-        <div className="flex items-center justify-center gap-8 py-2.5">
+        <div className="flex items-center justify-center gap-5 py-2.5">
           {(
             [
               { key: "foryou", label: "For you" },
               { key: "following", label: "Following" },
               { key: "shop", label: "Shop" },
+              { key: "creators", label: "Creators" },
             ] as const
           ).map((t) => (
             <button
@@ -378,7 +397,157 @@ export function AppFeed() {
         </div>
       )}
 
-      {visiblePosts.length === 0 && (
+      {/* Creators tab: top creators rail + showcase posts */}
+      {tab === "creators" && (
+        <div className="pb-4">
+          {(topCreators?.length ?? 0) > 0 && (
+            <div className="border-b border-white/5 py-3">
+              <p className="px-4 text-[11px] font-bold uppercase tracking-wider text-white/40">
+                Top creators
+              </p>
+              <div className="mt-2 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {topCreators!.slice(0, 12).map((c) => (
+                  <button
+                    key={c.id}
+                    onClick={() => {
+                      haptic("select");
+                      if (c.slug) navigate({ to: "/profile/$id", params: { id: c.slug } });
+                    }}
+                    className="flex w-[72px] shrink-0 snap-start flex-col items-center gap-1.5"
+                  >
+                    <span className="relative h-14 w-14 overflow-hidden rounded-full border border-white/10">
+                      {c.avatarUrl ? (
+                        <img src={c.avatarUrl} alt={c.name} loading="lazy" className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="flex h-full w-full items-center justify-center bg-[#E5484D] text-[14px] font-bold" style={{ color: "#ffffff" }}>
+                          {c.name.slice(0, 1).toUpperCase()}
+                        </span>
+                      )}
+                    </span>
+                    <span className="flex w-full items-center justify-center gap-0.5">
+                      <span className="line-clamp-1 text-[10.5px] font-semibold text-white">{c.name.split(" ")[0]}</span>
+                      {c.verified && <BadgeCheck className="h-3 w-3 shrink-0 text-[#E5484D]" />}
+                    </span>
+                    <span className="text-[9.5px] text-white/35">{compact(c.followersCount)} followers</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {!creatorPosts && (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="h-5 w-5 animate-spin text-white/30" />
+            </div>
+          )}
+          {creatorPosts && creatorPosts.length === 0 && (
+            <div className="flex items-center justify-center px-8 py-20 text-center text-[13px] text-white/50">
+              No creator showcases yet — creators can publish their work from the + button.
+            </div>
+          )}
+
+          <div className="divide-y divide-white/5">
+            {(creatorPosts ?? []).map((cp: CreatorPostDTO) => {
+              const thumb = cp.media[0];
+              const isVideo = thumb?.type === "video" || !!cp.externalEmbedUrl;
+              const price = cp.asset
+                ? cp.asset.isFree
+                  ? "Free"
+                  : computeDisplayPrice(
+                      {
+                        price_usd: cp.asset.priceUsd,
+                        original_currency: cp.asset.originalCurrency ?? "USD",
+                        original_amount: cp.asset.originalAmount ?? cp.asset.priceUsd,
+                        fx_snapshot: cp.asset.fxSnapshot,
+                      },
+                      (baseCurrency ?? "USD") as Currency,
+                    ).formatted
+                : null;
+              return (
+                <article key={cp.id} className="px-4 py-3 active:bg-white/[0.02]">
+                  <div className="flex items-center gap-2.5">
+                    <span className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                      {cp.author.avatarUrl ? (
+                        <img src={cp.author.avatarUrl} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="flex h-full w-full items-center justify-center bg-[#E5484D] text-[11px] font-bold" style={{ color: "#ffffff" }}>
+                          {cp.author.name.slice(0, 1).toUpperCase()}
+                        </span>
+                      )}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="line-clamp-1 text-[12.5px] font-bold text-white">{cp.author.name}</p>
+                      <p className="text-[10.5px] text-white/35">
+                        {ago(cp.createdAt)} · {compact(cp.viewCount)} views
+                      </p>
+                    </div>
+                    {cp.fields[0] && (
+                      <span className="rounded-full border border-white/10 px-2 py-0.5 text-[9.5px] font-semibold text-white/50">
+                        {cp.fields[0]}
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="mt-2 line-clamp-1 text-[13px] font-semibold text-white">{cp.title}</p>
+                  {cp.caption && (
+                    <p className="mt-0.5 line-clamp-2 text-[12px] text-white/55">{cp.caption}</p>
+                  )}
+
+                  {thumb && (
+                    <button
+                      onClick={() => {
+                        haptic("select");
+                        if (cp.asset?.available) setQuickViewId(cp.asset.productId);
+                        else if (cp.externalUrl) window.open(cp.externalUrl, "_blank", "noopener");
+                      }}
+                      className="relative mt-2 block w-full overflow-hidden rounded-2xl border border-white/[0.08]"
+                    >
+                      <div className="aspect-video w-full bg-neutral-900">
+                        {(thumb.posterUrl ?? thumb.url) && (
+                          <img
+                            src={thumb.posterUrl ?? thumb.url}
+                            alt={cp.title}
+                            loading="lazy"
+                            className="h-full w-full object-cover"
+                          />
+                        )}
+                      </div>
+                      {isVideo && (
+                        <span className="absolute inset-0 flex items-center justify-center">
+                          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/60 backdrop-blur">
+                            <Play className="ml-0.5 h-5 w-5" style={{ color: "#ffffff" }} />
+                          </span>
+                        </span>
+                      )}
+                      {price && (
+                        <span className="absolute bottom-2 right-2 rounded-full bg-black/70 px-2.5 py-1 text-[11px] font-bold backdrop-blur" style={{ color: cp.asset?.isFree ? "#4ADE80" : "#E5484D" }}>
+                          {price}
+                        </span>
+                      )}
+                    </button>
+                  )}
+
+                  {cp.asset?.available && (
+                    <button
+                      onClick={() => {
+                        haptic("select");
+                        setQuickViewId(cp.asset!.productId);
+                      }}
+                      className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-full bg-[#E5484D] py-2 text-[12px] font-bold active:opacity-80"
+                      style={{ color: "#ffffff" }}
+                    >
+                      <Clapperboard className="h-3.5 w-3.5" />
+                      {cp.asset.isFree ? "Get it free" : "View this asset"}
+                    </button>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {tab !== "creators" && visiblePosts.length === 0 && (
         <div className="flex items-center justify-center px-8 py-20 text-center text-[13px] text-white/50">
           {tab === "following"
             ? "No posts from people you follow yet — follow creators to fill this feed."
