@@ -136,7 +136,7 @@ export function CreatorHub() {
                 <li key={f.userId} className="flex items-center gap-3">
                   <span className="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-violet-500 to-[#E5484D] text-xs font-bold text-white">{f.name.slice(0, 1).toUpperCase()}</span>
                   <span className="flex-1 truncate text-sm">{f.name}</span>
-                  <span className="text-xs text-muted-foreground">{f.interactions} interactions</span>
+                  <span className="text-xs text-muted-foreground">{f.interactions} interaction{f.interactions === 1 ? "" : "s"}</span>
                 </li>
               ))}
             </ul>
