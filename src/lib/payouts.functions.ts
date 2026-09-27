@@ -713,8 +713,8 @@ export interface CreateUsdPayoutInput {
   accountName?: string;
   /** Optional network label for raw wallet payouts, e.g. TRC20. */
   network?: string;
-  /** Amount in USD the user wants to receive. */
-  amountUsd: number;
+  /** Home-currency amount the user spends to buy USD (debited from wallet). */
+  amountLocal: number;
 }
 
 export const createUsdPayoutRequest = createServerFn({ method: "POST" })
@@ -726,21 +726,22 @@ export const createUsdPayoutRequest = createServerFn({ method: "POST" })
     }
     const identifier = String(input?.identifier ?? "").trim().slice(0, 200);
     if (identifier.length < 4) throw new Error("Enter a valid account ID or wallet address");
-    const amountUsd = Math.round(Number(input?.amountUsd ?? 0) * 100) / 100;
-    if (!Number.isFinite(amountUsd) || amountUsd <= 0) throw new Error("Amount must be positive");
-    if (amountUsd < 5) throw new Error("Minimum USD withdrawal is $5");
+    const amountLocal = Math.round(Number(input?.amountLocal ?? 0) * 100) / 100;
+    if (!Number.isFinite(amountLocal) || amountLocal <= 0) throw new Error("Amount must be positive");
     return {
       channel: channel as UsdPayoutChannel,
       identifier,
       accountName: String(input?.accountName ?? "").trim().slice(0, 200),
       network: String(input?.network ?? "").trim().slice(0, 40),
-      amountUsd,
+      amountLocal,
     };
   })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const { currencyForCountry } = await import("@/lib/currency/africa");
     const { resolveFxRates } = await import("./fx.server");
+    const { estimateTransferFee } = await import("./paystack-transfers.server");
+    const { usdSellRate, usdReceived, USD_MIN_WITHDRAWAL } = await import("./usd-sell-rate");
 
     const { data: prof } = await supabase
       .from("profiles")
@@ -750,28 +751,38 @@ export const createUsdPayoutRequest = createServerFn({ method: "POST" })
     const homeCurrency = currencyForCountry((prof?.country as string) ?? null);
 
     const fx = await resolveFxRates();
-    const rate = homeCurrency === "USD" ? 1 : Number(fx.rates?.[homeCurrency] ?? 0);
-    if (!(rate > 0)) throw new Error("Exchange rate unavailable, please try again shortly");
-    const sourceAmount = Math.round(data.amountUsd * rate * 100) / 100;
+    const midRate = homeCurrency === "USD" ? 1 : Number(fx.rates?.[homeCurrency] ?? 0);
+    if (!(midRate > 0)) throw new Error("Exchange rate unavailable, please try again shortly");
+
+    const fee =
+      homeCurrency === "NGN" || homeCurrency === "GHS"
+        ? estimateTransferFee(homeCurrency, "bank", data.amountLocal)
+        : 0;
+    const amountUsd = usdReceived(data.amountLocal, fee, midRate);
+    if (amountUsd < USD_MIN_WITHDRAWAL) throw new Error(`Minimum USD withdrawal is $${USD_MIN_WITHDRAWAL}`);
+    const sellRate = usdSellRate(midRate);
 
     const { data: newId, error } = await supabase.rpc("payout_request_create_usd", {
-      _usd_amount: data.amountUsd,
+      _usd_amount: amountUsd,
       _source_currency: homeCurrency,
-      _source_amount: sourceAmount,
+      _source_amount: data.amountLocal,
       _channel: data.channel,
       _destination: {
         identifier: data.identifier,
         account_name: data.accountName || null,
         network: data.network || null,
-        rate_used: rate,
+        rate_used: sellRate,
+        mid_rate: midRate,
+        fee_local: fee,
       } as never,
     });
     if (error) throw new Error(error.message);
     return {
       id: newId as unknown as string,
-      amountUsd: data.amountUsd,
+      amountUsd,
       sourceCurrency: homeCurrency,
-      sourceAmount,
-      rate,
+      sourceAmount: data.amountLocal,
+      rate: sellRate,
+      fee,
     };
   });
