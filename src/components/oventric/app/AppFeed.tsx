@@ -407,7 +407,7 @@ export function AppFeed() {
 
   return (
     <div
-      className="min-h-[calc(100dvh-80px)] bg-[#070A08] pb-24 pt-12"
+      className="min-h-[calc(100dvh-80px)] bg-[#070A08] pb-24"
       onTouchStart={onFeedTouchStart}
       onTouchMove={onFeedTouchMove}
       onTouchEnd={onFeedTouchEnd}
@@ -419,9 +419,9 @@ export function AppFeed() {
           await reloadPosts();
         }}
       />
-      {/* Keep feed sections outside the scrolling timeline so restored scroll
-          positions can never move them off screen. */}
-      <div className="fixed inset-x-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-30 border-b border-white/10 bg-[#070A08]/95 shadow-[0_8px_24px_rgba(0,0,0,0.24)] backdrop-blur-xl">
+      {/* Stick within the feed's scroll area, directly beneath the app header.
+          Unlike a viewport-fixed bar, this occupies space above the first post. */}
+      <div className="sticky top-0 z-30 w-full border-b border-white/10 bg-[#070A08]/95 shadow-[0_8px_24px_rgba(0,0,0,0.24)] backdrop-blur-xl">
         <div className="mx-auto flex h-12 w-full max-w-md items-center justify-evenly px-2">
           {(
             [
