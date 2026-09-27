@@ -949,13 +949,12 @@ function ListingsList({ rows, onEdit }: { rows: ProductDTO[] | null; onEdit: (p:
 /* ------------------------------ Social ------------------------------ */
 
 function SocialPane({ data }: { data: DashboardSocial | null }) {
-  const [sub, setSub] = useState<"followers" | "following" | "circles" | "memories">("followers");
+  const [sub, setSub] = useState<"followers" | "following" | "memories">("followers");
   if (!data) return <Spinner />;
   const rows = sub === "followers" ? data.followers : sub === "following" ? data.following : [];
   const subs = [
     { key: "followers", label: `Followers (${data.followers.length})` },
     { key: "following", label: `Following (${data.following.length})` },
-    { key: "circles", label: `Circles (${data.circles.length})` },
     { key: "memories", label: "Memories" },
   ] as const;
   return (
