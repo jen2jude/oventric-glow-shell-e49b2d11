@@ -287,9 +287,7 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
 
   const form = (
     <>
-
-      <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-6 pt-4">
-        {/* Balance card */}
+      {/* Balance card */}
         <div className="rounded-[10px] border border-[#E5484D]/25 bg-gradient-to-br from-[#17171C] to-[#101014] p-4 relative overflow-hidden">
           <div className="flex items-start justify-between">
             <div>
