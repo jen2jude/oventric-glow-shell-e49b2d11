@@ -703,6 +703,16 @@ function ProductPage() {
                    <span>{product.kind === "service" ? "Service" : "Digital download"}</span>
                  </div>
                )}
+               {isAppShell && product.kind === "digital" && packages.length === 0 && (
+                 <div className="product-app-quantity mb-5 flex items-center justify-between border-t border-newsfeed-line py-3">
+                   <span className="text-[13px] text-newsfeed-muted">Quantity</span>
+                   <div className="flex h-9 items-center rounded-[10px] border border-newsfeed-line bg-newsfeed-surface">
+                     <button type="button" aria-label="Decrease quantity" disabled={qty <= 1} onClick={() => setQty((v) => Math.max(1, v - 1))} className="h-9 w-10 text-lg text-newsfeed-ink disabled:opacity-30">−</button>
+                     <span className="w-6 text-center text-sm font-bold text-newsfeed-ink">{qty}</span>
+                     <button type="button" aria-label="Increase quantity" disabled={qty >= 20} onClick={() => setQty((v) => Math.min(20, v + 1))} className="h-9 w-10 text-lg text-newsfeed-ink disabled:opacity-30">+</button>
+                   </div>
+                 </div>
+               )}
               {outOfStock ? (
                 <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-[#E5484D]/12 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#E5484D]">
                   Out of stock
@@ -836,7 +846,7 @@ function ProductPage() {
                 </div>}
                  <div className={isAppShell ? "py-2" : "p-5 sm:p-6"}>
 
-                <div className="flex items-baseline justify-between mb-4">
+                 {!isAppShell && <div className="flex items-baseline justify-between mb-4">
                   <div>
                     {(() => {
                       const dp = productDisplay(product, baseCurrency);
@@ -844,7 +854,7 @@ function ProductPage() {
                         <>
                            <div className={`${isAppShell ? "hidden" : "text-3xl text-newsfeed-ink sm:text-4xl"} font-extrabold`}>
                             {dp.value === 0 ? "Free" : dp.formatted}
-                          </div>
+                 </div>}
                         </>
                       );
                     })()}
@@ -925,7 +935,7 @@ function ProductPage() {
                     })}
                   </div>
                 )}
-                {product.kind === "digital" && packages.length === 0 && (
+                 {!isAppShell && product.kind === "digital" && packages.length === 0 && (
                   <div className={`flex items-center justify-between text-xs ${isAppShell ? "text-slate-500" : "text-slate-400"} md:text-slate-500 mb-4`}>
                     <span>Line total</span>
                     <span className={`${isAppShell ? "text-white" : "text-slate-900"} md:text-slate-900 font-mono`}>
