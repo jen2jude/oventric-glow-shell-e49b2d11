@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
-import { Heart, MessageCircle, Share2, Play, Loader2, ShoppingBag } from "lucide-react";
+import { Heart, MessageCircle, Share2, Play, Loader2, ShoppingBag, MoreHorizontal, Eye, EyeOff, Link2 } from "lucide-react";
+import { AppSheet } from "@/components/oventric/app/AppSheet";
 import { listPosts, toggleLike } from "@/lib/posts.functions";
 import { CommentsSheet } from "@/components/oventric/feed/CommentsSheet";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
@@ -30,6 +31,9 @@ export function AppFeed() {
   const [posts, setPosts] = useState<Post[] | null>(null);
   const [signedIn, setSignedIn] = useState(false);
   const [commentsFor, setCommentsFor] = useState<Post | null>(null);
+  const [menuFor, setMenuFor] = useState<Post | null>(null);
+  const [hidden, setHidden] = useState<Set<string>>(new Set());
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetchPosts()
@@ -100,7 +104,7 @@ export function AppFeed() {
       </div>
 
       <div className="divide-y divide-white/5">
-        {posts.map((p) => {
+        {posts.filter((p) => !hidden.has(p.id)).map((p) => {
           const img = p.media_type === "video" ? p.poster_url : p.media_url;
           return (
             <article key={p.id} className="px-4 py-3 active:bg-white/[0.02]">
@@ -134,12 +138,36 @@ export function AppFeed() {
                     <span className="shrink-0 text-[12px] text-white/40">· {ago(p.created_at)}</span>
                   </div>
 
-                  {/* Text */}
-                  {p.text && (
-                    <p className="mt-0.5 whitespace-pre-line text-[14px] leading-snug text-white/90">
-                      {p.text}
-                    </p>
-                  )}
+                  {/* Text — long posts truncate with a View more toggle */}
+                  {p.text &&
+                    (p.text.length > 240 ? (
+                      <div className="mt-0.5">
+                        <p
+                          className={`whitespace-pre-line text-[14px] leading-snug text-white/90 ${
+                            expanded.has(p.id) ? "" : "line-clamp-5"
+                          }`}
+                        >
+                          {p.text}
+                        </p>
+                        <button
+                          onClick={() =>
+                            setExpanded((s) => {
+                              const n = new Set(s);
+                              if (n.has(p.id)) n.delete(p.id);
+                              else n.add(p.id);
+                              return n;
+                            })
+                          }
+                          className="mt-1 text-[13px] font-semibold text-[#E5484D]"
+                        >
+                          {expanded.has(p.id) ? "Show less" : "View more"}
+                        </button>
+                      </div>
+                    ) : (
+                      <p className="mt-0.5 whitespace-pre-line text-[14px] leading-snug text-white/90">
+                        {p.text}
+                      </p>
+                    ))}
 
                   {/* Media */}
                   {img && (
@@ -174,7 +202,7 @@ export function AppFeed() {
                   )}
 
                   {/* Action row */}
-                  <div className="mt-2 flex items-center justify-between pr-6">
+                  <div className="mt-2 flex items-center justify-between pr-2">
                     <button
                       onClick={() => setCommentsFor(p)}
                       className="flex items-center gap-1.5 text-white/45 active:text-[#E5484D]"
@@ -183,6 +211,10 @@ export function AppFeed() {
                       <MessageCircle className="h-[18px] w-[18px]" />
                       <span className="text-[12px] font-medium">{compact(p.comments_count)}</span>
                     </button>
+                    <span className="flex items-center gap-1.5 text-white/45" aria-label="Views">
+                      <Eye className="h-[18px] w-[18px]" />
+                      <span className="text-[12px] font-medium">{compact(p.views_count)}</span>
+                    </span>
                     <button
                       onClick={() => onLike(p)}
                       className={`flex items-center gap-1.5 ${p.viewer_liked ? "text-[#E5484D]" : "text-white/45"} active:text-[#E5484D]`}
@@ -200,11 +232,65 @@ export function AppFeed() {
                     </button>
                   </div>
                 </div>
+                <button
+                  onClick={() => setMenuFor(p)}
+                  className="-mr-2 shrink-0 rounded-full p-1.5 text-white/40 active:bg-white/10"
+                  aria-label="More options"
+                >
+                  <MoreHorizontal className="h-[18px] w-[18px]" />
+                </button>
               </div>
             </article>
           );
         })}
       </div>
+
+      {menuFor && (
+        <AppSheet open onClose={() => setMenuFor(null)}>
+          <div className="px-2 pb-10 pt-1">
+            <div className="px-4 pb-1 pt-2 text-[12px] font-semibold uppercase tracking-wide text-white/40">
+              More options
+            </div>
+            {[
+              {
+                icon: Link2,
+                label: "Copy link",
+                action: () => {
+                  haptic("light");
+                  navigator.clipboard
+                    .writeText(`${window.location.origin}/post/${menuFor.id}`)
+                    .catch(() => {});
+                },
+              },
+              {
+                icon: Eye,
+                label: "View post",
+                action: () => navigate({ to: "/post/$id", params: { id: menuFor.id } }),
+              },
+              {
+                icon: EyeOff,
+                label: "Not interested",
+                action: () => {
+                  setHidden((s) => new Set(s).add(menuFor.id));
+                  haptic("select");
+                },
+              },
+            ].map(({ icon: Icon, label, action }) => (
+              <button
+                key={label}
+                onClick={() => {
+                  setMenuFor(null);
+                  action();
+                }}
+                className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-[14px] font-medium text-white/85 active:bg-white/10"
+              >
+                <Icon className="h-[18px] w-[18px] text-white/50" />
+                {label}
+              </button>
+            ))}
+          </div>
+        </AppSheet>
+      )}
 
       {commentsFor && (
         <CommentsSheet
