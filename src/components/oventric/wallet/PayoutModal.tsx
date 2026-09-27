@@ -134,7 +134,8 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
   });
   const fee = feeQ.data?.fee ?? 0;
   const net = Math.max(0, amount - fee);
-  const usdOut = usdReceived(amount, fee, rate);
+  const usdFee = currency === "NGN" || currency === "GHS" ? fee : 0;
+  const usdOut = usdReceived(amount, usdFee, rate);
 
   const presets = currency === "NGN" ? [10000, 20000, 50000] : [100, 500, 1000];
 
@@ -539,7 +540,7 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
             {mode === "usd" ? (
               <>
                 <Row label={`Debited from ${currency} wallet`} value={money(amount, sym)} />
-                <Row label="Withdrawal Fee" value={money(fee, sym)} />
+                <Row label="Withdrawal Fee" value={money(usdFee, sym)} />
                 <Row label="Sell rate" value={`${money(sellRate, sym)} = $1`} />
                 <Row label="You will receive" value={money(usdOut, "$")} strong />
               </>
@@ -573,7 +574,7 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
         <UsdReviewSheet
           amount={usdOut}
           localAmount={amount}
-          fee={fee}
+          fee={usdFee}
           sellRate={sellRate}
           sym={sym}
           currency={currency}
