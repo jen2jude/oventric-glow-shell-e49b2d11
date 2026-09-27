@@ -30,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { usePresence } from "@/hooks/use-presence";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 import { Button } from "@/components/ui/button";
 
 export type ConnectionsTab = "all" | "following" | "followers" | "suggested";
@@ -63,6 +64,7 @@ export function ConnectionsDialog({
   viewerId,
   initialTab = "followers",
 }: Props) {
+  const isApp = useIsAppShell();
   const navigate = useNavigate();
   const presence = usePresence();
   const online = presence.online;
@@ -212,23 +214,41 @@ export function ConnectionsDialog({
 
   const onlineCount = rows.filter((person) => online.has(person.userId)).length;
 
+  const searchField = (
+    <label className="flex items-center gap-2 rounded-[10px] border border-border bg-background px-3 py-2.5 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10">
+      <Search className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+      <input
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder="Search people"
+        aria-label="Search people"
+        className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+      />
+    </label>
+  );
+
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-label={`${name}'s connections`}
-      className="web-connections fixed inset-0 z-[80] overflow-y-auto bg-newsfeed-canvas/95 px-3 py-3 text-newsfeed-ink sm:px-6 sm:py-8"
+      className={`${isApp ? "app-connections flex items-end bg-background/70 backdrop-blur-sm" : "web-connections overflow-y-auto bg-newsfeed-canvas/95 px-3 py-3 text-newsfeed-ink sm:px-6 sm:py-8"} fixed inset-0 z-[80]`}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onOpenChange(false);
+      }}
     >
-      <div className="mx-auto flex min-h-[min(760px,calc(100dvh-1.5rem))] w-full max-w-2xl flex-col overflow-hidden rounded-[10px] border border-border bg-background shadow-xl sm:min-h-0 sm:max-h-[calc(100dvh-4rem)]">
-        <div className="about-spectrum h-1 w-full shrink-0" aria-hidden />
-        <header className="border-b border-border px-4 pt-4 sm:px-6 sm:pt-6">
-          <div className="mb-5 flex items-center gap-3">
-            <div className="grid size-10 shrink-0 place-items-center rounded-[10px] bg-newsfeed-violet-soft text-newsfeed-violet">
-              <UsersRound className="size-5" aria-hidden />
-            </div>
+      <div className={`${isApp ? "slide-up h-[88dvh] rounded-t-[24px] border-b-0 shadow-newsfeed-panel" : "mx-auto min-h-[min(760px,calc(100dvh-1.5rem))] rounded-[10px] shadow-xl sm:min-h-0 sm:max-h-[calc(100dvh-4rem)]"} flex w-full max-w-2xl flex-col overflow-hidden border border-border bg-background`}>
+        {isApp ? <div className="app-profile-handle mx-auto mt-3 shrink-0" aria-hidden /> : <div className="about-spectrum h-1 w-full shrink-0" aria-hidden />}
+        <header className={`${isApp ? "px-4 pt-3" : "border-b border-border px-4 pt-4 sm:px-6 sm:pt-6"}`}>
+          <div className={`${isApp ? "mb-4" : "mb-5"} flex items-center gap-3`}>
+            {!isApp && (
+              <div className="grid size-10 shrink-0 place-items-center rounded-[10px] bg-newsfeed-violet-soft text-newsfeed-violet">
+                <UsersRound className="size-5" aria-hidden />
+              </div>
+            )}
             <div className="min-w-0 flex-1">
-              <h2 className="font-wallet-display truncate text-xl font-bold sm:text-2xl">Connections</h2>
-              <p className="truncate text-xs font-medium text-muted-foreground">{name}&apos;s network</p>
+              <h2 className={`${isApp ? "text-xl font-semibold" : "font-wallet-display text-xl font-bold sm:text-2xl"} truncate`}>Connections</h2>
+              {!isApp && <p className="truncate text-xs font-medium text-muted-foreground">{name}&apos;s network</p>}
             </div>
             <div className="hidden items-center gap-2 text-xs font-bold text-muted-foreground sm:flex">
               <span className="size-2 rounded-full bg-online" aria-hidden />
@@ -246,6 +266,8 @@ export function ConnectionsDialog({
             </Button>
           </div>
 
+          {isApp && <div className="mb-4">{searchField}</div>}
+
           <div role="tablist" aria-label="Connection lists" className="flex gap-6 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {TABS.map((t) => {
               const active = t.key === tab;
@@ -258,7 +280,9 @@ export function ConnectionsDialog({
                   onClick={() => setTab(t.key)}
                   className={`shrink-0 border-b-2 pb-3 text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
                     active
-                      ? t.key === "following"
+                      ? isApp
+                        ? "border-foreground text-foreground"
+                        : t.key === "following"
                         ? "border-newsfeed-green text-newsfeed-green"
                         : t.key === "followers"
                           ? "border-newsfeed-blue text-newsfeed-blue"
@@ -275,18 +299,7 @@ export function ConnectionsDialog({
           </div>
         </header>
 
-        <div className="border-b border-newsfeed-line bg-newsfeed-blue-soft/45 p-3 sm:p-4">
-          <label className="flex items-center gap-2 rounded-[10px] border border-border bg-background px-3 py-2.5 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10">
-            <Search className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Search people"
-              aria-label="Search people"
-              className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
-            />
-          </label>
-        </div>
+        {!isApp && <div className="border-b border-newsfeed-line bg-newsfeed-blue-soft/45 p-3 sm:p-4">{searchField}</div>}
 
         <div className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
@@ -317,13 +330,13 @@ export function ConnectionsDialog({
             </p>
           </div>
         ) : (
-          <ul className="divide-y divide-border">
+          <ul className={isApp ? "space-y-1 px-4 py-2" : "divide-y divide-border"}>
             {rows.map((p) => {
               const to = p.slug || p.userId;
               return (
                 <li
                   key={p.userId}
-                  className="group flex items-center gap-3 px-4 py-4 transition-colors hover:bg-muted/50 sm:gap-4 sm:px-5"
+                  className={`${isApp ? "rounded-[10px] px-0 py-3" : "px-4 py-4 sm:gap-4 sm:px-5"} group flex items-center gap-3 transition-colors hover:bg-muted/50`}
                 >
                   <Link
                     to="/profile/$id"
@@ -447,7 +460,7 @@ export function ConnectionsDialog({
         )}
         </div>
 
-        <footer className="flex items-center justify-between gap-3 border-t border-border bg-muted/30 px-4 py-3 sm:px-6 sm:py-4">
+        <footer className={`${isApp ? "bg-background px-4 pb-[calc(.75rem+env(safe-area-inset-bottom))] pt-3" : "bg-muted/30 px-4 py-3 sm:px-6 sm:py-4"} flex items-center justify-between gap-3 border-t border-border`}>
           <p className="text-xs font-semibold text-muted-foreground">
             {rows.length.toLocaleString()} {tab === "all" ? "connections" : tab}
           </p>
