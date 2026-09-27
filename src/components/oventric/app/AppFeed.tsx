@@ -340,6 +340,13 @@ export function AppFeed() {
 
   return (
     <div className="min-h-[calc(100dvh-80px)] bg-[#070A08] pb-24 pt-[calc(3rem+env(safe-area-inset-top))]">
+      <PostComposerModal
+        open={composerOpen}
+        onClose={() => setComposerOpen(false)}
+        onPosted={async () => {
+          await reloadPosts();
+        }}
+      />
       {/* Keep feed sections outside the scrolling timeline so restored scroll
           positions can never move them off screen. */}
       <div className="fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-[#070A08]/95 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_rgba(0,0,0,0.24)] backdrop-blur-xl">
