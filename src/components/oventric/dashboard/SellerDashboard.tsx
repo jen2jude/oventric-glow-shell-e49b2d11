@@ -9,9 +9,9 @@ import {
   Settings, 
   ChevronRight,
   TrendingUp,
-  Users,
   Eye,
-  Plus
+  MessageCircle,
+  Heart,
 } from "lucide-react";
 import { getSellerMetrics } from "@/lib/dashboard/seller.functions";
 import { computeDisplayPrice, formatMoney } from "@/lib/fx-display";
@@ -52,83 +52,61 @@ export function SellerDashboard() {
   ] as const;
 
   return (
-    <div className="space-y-6 pb-24">
-      {/* Tab Navigation */}
-      <div className="flex items-center gap-1 overflow-x-auto no-scrollbar -mx-4 px-4 py-1">
+    <div className="space-y-5 pb-24">
+      <div className="flex gap-1 overflow-x-auto no-scrollbar rounded-full border border-border bg-card p-1">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as SellerTab)}
-            className={`
-              flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-bold whitespace-nowrap transition-all
-              ${activeTab === tab.id 
-                ? "bg-primary text-primary-foreground shadow-sm" 
-                : "border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"}
-            `}
+            className={`flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2 text-xs font-semibold transition-all ${
+              activeTab === tab.id
+                ? "bg-gradient-to-r from-emerald-500 to-sky-500 text-white shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
           >
-            <tab.icon className="w-4 h-4" />
+            <tab.icon className="h-3.5 w-3.5" />
             {tab.label}
           </button>
         ))}
       </div>
 
-      {/* Main Content Area */}
       <div className="min-h-[400px]">
         {activeTab === "overview" && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-            {/* Top Metrics Row */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              <MetricCard 
-                label="Sales" 
-                value={metrics.totalSales} 
-                icon={TrendingUp} 
-                color="text-primary"
-              />
-              <MetricCard 
-                label="Revenue" 
-                value={revenueDisplay} 
-                subValue={usdPreview}
-                icon={TrendingUp} 
-                color="text-primary"
-              />
-              <MetricCard 
-                label="Followers" 
-                value={metrics.totalFollowers} 
-                icon={Users} 
-                color="text-primary"
-              />
-              <MetricCard 
-                label="Product views" 
-                value={metrics.totalViews} 
-                icon={Eye} 
-                color="text-primary"
-              />
+          <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="rounded-[14px] bg-gradient-to-br from-emerald-500 to-sky-500 p-4 text-white">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider opacity-90"><TrendingUp className="h-4 w-4" /> Seller Hub</div>
+              <div className="mt-2">
+                <div className="text-3xl font-bold">{revenueDisplay}</div>
+                <div className="text-xs opacity-85">Revenue{usdPreview ? ` · ≈ ${usdPreview}` : ""}</div>
+              </div>
+              <div className="mt-3 flex items-end gap-6">
+                <div><div className="text-xl font-bold">{metrics.totalSales}</div><div className="text-xs opacity-85">Sales</div></div>
+                <div><div className="text-xl font-bold">{metrics.conversionRate}%</div><div className="text-xs opacity-85">Conversion</div></div>
+                <div><div className="text-xl font-bold">{metrics.totalFollowers}</div><div className="text-xs opacity-85">Followers</div></div>
+              </div>
             </div>
 
-            {/* Engagement Metrics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <MiniMetric label="Shop Visits" value={metrics.shopVisits} />
-              <MiniMetric label="Conversations" value={metrics.conversations} />
-              <MiniMetric label="Conversion" value={`${metrics.conversionRate}%`} />
-              <MiniMetric label="Engagement" value={`${metrics.engagementRate}%`} />
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+              <Mini icon={Store} label="Shop visits" value={metrics.shopVisits} />
+              <Mini icon={Eye} label="Product views" value={metrics.totalViews} />
+              <Mini icon={MessageCircle} label="Conversations" value={metrics.conversations} />
+              <Mini icon={Heart} label="Engagement" value={`${metrics.engagementRate}%`} />
+              <Mini icon={ShoppingCart} label="Orders" value={metrics.totalOrders} />
+              <Mini icon={Package} label="Products" value={metrics.totalProducts} />
             </div>
 
-            <AnalyticsWidget />
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <QuickManagementCard 
-                title="Recent Orders" 
-                count={metrics.totalOrders}
-                actionLabel="View all orders"
-                onClick={() => setActiveTab("orders")}
-              />
-              <QuickManagementCard 
-                title="Active Products" 
-                count={metrics.totalProducts}
-                actionLabel="Manage products"
-                onClick={() => setActiveTab("products")}
-              />
-            </div>
+            <HubCard title="Performance" hint="Sales and traffic over time" icon={BarChart3}>
+              <AnalyticsWidget />
+            </HubCard>
+
+            <HubCard title="Manage" hint="Jump into your orders, products and shop" icon={Settings}>
+              <div className="divide-y divide-border">
+                <Row label="Orders" meta={`${metrics.totalOrders} total`} onClick={() => setActiveTab("orders")} />
+                <Row label="Products" meta={`${metrics.totalProducts} listed`} onClick={() => setActiveTab("products")} />
+                <Row label="Earnings" meta="Payouts & history" onClick={() => setActiveTab("earnings")} />
+                <Row label="Shop settings" meta="Branding & details" onClick={() => setActiveTab("shop")} />
+              </div>
+            </HubCard>
           </div>
         )}
 
@@ -141,46 +119,29 @@ export function SellerDashboard() {
   );
 }
 
-function MetricCard({ label, value, subValue, icon: Icon, color }: { label: string, value: string | number, subValue?: string | null, icon: any, color: string }) {
+function HubCard({ title, hint, icon: Icon, children }: { title: string; hint?: string; icon: any; children: React.ReactNode }) {
   return (
-    <div className="rounded-[10px] border border-border bg-card p-4 shadow-sm">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] font-bold uppercase text-muted-foreground">{label}</span>
-        <Icon className={`w-4 h-4 ${color}`} />
-      </div>
-      <div className="text-2xl font-black text-foreground">{value}</div>
-      {subValue ? (
-        <div className="mt-0.5 text-[11px] font-medium text-muted-foreground">≈ {subValue}</div>
-      ) : null}
+    <section className="rounded-[10px] border border-border bg-card p-4 shadow-sm">
+      <div className="mb-3 flex items-center gap-2"><Icon className="h-4 w-4 text-emerald-500" /><h3 className="text-sm font-semibold">{title}</h3></div>
+      {hint && <p className="-mt-2 mb-3 text-[11px] text-muted-foreground">{hint}</p>}
+      {children}
+    </section>
+  );
+}
+function Mini({ icon: Icon, label, value }: { icon: any; label: string; value: string | number }) {
+  return (
+    <div className="rounded-[10px] border border-border bg-card p-3">
+      <div className="flex items-center justify-between"><span className="text-[10px] font-bold uppercase text-muted-foreground">{label}</span><Icon className="h-3.5 w-3.5 text-emerald-500" /></div>
+      <div className="mt-1 text-lg font-bold">{value}</div>
     </div>
   );
 }
-
-function MiniMetric({ label, value }: { label: string, value: string | number }) {
+function Row({ label, meta, onClick }: { label: string; meta: string; onClick: () => void }) {
   return (
-    <div className="flex items-center justify-between rounded-[10px] border border-border bg-muted px-4 py-3">
-      <span className="text-xs font-medium text-muted-foreground">{label}</span>
-      <span className="text-sm font-bold text-foreground">{value}</span>
-    </div>
-  );
-}
-
-function QuickManagementCard({ title, count, actionLabel, onClick }: { title: string, count: number, actionLabel: string, onClick: () => void }) {
-  return (
-    <div className="rounded-[10px] border border-border bg-card p-5 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-bold text-foreground">{title}</h3>
-        <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold text-foreground">
-          {count} Total
-        </span>
-      </div>
-      <button 
-        onClick={onClick}
-        className="group flex w-full items-center justify-between rounded-[10px] border border-border bg-muted p-3 transition hover:bg-card"
-      >
-        <span className="text-sm font-medium text-foreground">{actionLabel}</span>
-        <ChevronRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary" />
-      </button>
-    </div>
+    <button onClick={onClick} className="flex w-full items-center gap-3 py-3 text-left">
+      <span className="flex-1 text-sm font-medium">{label}</span>
+      <span className="text-[11px] text-muted-foreground">{meta}</span>
+      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+    </button>
   );
 }
