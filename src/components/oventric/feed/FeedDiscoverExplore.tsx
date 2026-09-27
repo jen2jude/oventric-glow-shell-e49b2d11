@@ -7,15 +7,16 @@ import type { FeedPost } from "@/lib/posts.functions";
 import { ExploreHeader, type ExploreTab } from "./ExploreHeader";
 import { PeopleExploreList } from "./PeopleExploreList";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
-import { computeDisplayPrice } from "@/lib/fx-display";
+import { visibleProductPrice } from "@/lib/money-visibility";
 import { PeopleSuggestionsRail } from "./PeopleSuggestionsRail";
 
 
-function fmtUsd(usd: number, viewer: Currency): string {
-  return computeDisplayPrice(
+function fmtUsd(usd: number, viewer: Currency, hidden: boolean): string {
+  return visibleProductPrice(
     { price_usd: usd, original_currency: "USD", original_amount: usd, fx_snapshot: null },
     viewer,
-  ).formatted;
+    hidden,
+  );
 }
 
 
@@ -78,7 +79,7 @@ export function FeedDiscoverExplore({
   followingIds?: Set<string> | null;
 }) {
   const { peers, products, bounties, courses, circles, loading } = useFeedDiscovery(true);
-  const { baseCurrency } = useOnboarding();
+  const { baseCurrency, balancesHidden } = useOnboarding();
   const [activeTab, setActiveTab] = useState<ExploreTab | "Discovery">("Discovery");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -148,7 +149,7 @@ export function FeedDiscoverExplore({
                   <div className="p-2.5">
                     <p className="line-clamp-2 text-[12.5px] font-medium text-white">{p.title}</p>
                     <p className="mt-1 text-[12.5px] font-bold text-[#E5484D]">
-                      {fmtUsd(p.priceUsd, baseCurrency)}
+                      {fmtUsd(p.priceUsd, baseCurrency, balancesHidden)}
                     </p>
                   </div>
                 </Link>
@@ -196,7 +197,7 @@ export function FeedDiscoverExplore({
                 <div className="p-2.5">
                   <p className="line-clamp-2 text-[12.5px] font-medium text-white">{p.title}</p>
                   <p className="mt-1 text-[12.5px] font-bold text-[#E5484D]">
-                    {fmtUsd(p.priceUsd, baseCurrency)}
+                    {fmtUsd(p.priceUsd, baseCurrency, balancesHidden)}
                   </p>
                 </div>
               </Link>

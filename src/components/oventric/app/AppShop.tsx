@@ -15,7 +15,7 @@ import {
 import { getShopBranding, getShopDiscovery } from "@/lib/shop.functions";
 import { getLiveProfileTab, getProfileSocialCounts } from "@/lib/profiles.functions";
 import type { ProfileListing } from "@/lib/profiles/mockProfiles";
-import { computeDisplayPrice } from "@/lib/fx-display";
+import { visibleProductPrice } from "@/lib/money-visibility";
 import { haptic } from "@/lib/haptics";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { ProductQuickView } from "./ProductQuickView";
@@ -33,8 +33,8 @@ export function AppShop({ idOrSlug }: { idOrSlug: string }) {
   const [quickViewId, setQuickViewId] = useState<string | null>(null);
   const [category, setCategory] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>("shop");
-  const { baseCurrency } = useOnboarding();
-  const currency = (baseCurrency ?? "USD") as Currency;
+  const { homeCurrency, balancesHidden } = useOnboarding();
+  const currency = (homeCurrency ?? "USD") as Currency;
 
   const fetchShop = useServerFn(getShopBranding);
   const fetchCounts = useServerFn(getProfileSocialCounts);
@@ -89,15 +89,16 @@ export function AppShop({ idOrSlug }: { idOrSlug: string }) {
   const price = (usd: number, l?: Partial<ProfileListing>) =>
     usd <= 0
       ? "Free"
-      : computeDisplayPrice(
+       : visibleProductPrice(
           {
             price_usd: usd,
             original_currency: (l?.originalCurrency ?? "USD") as never,
             original_amount: l?.originalAmount ?? usd,
             fx_snapshot: (l?.fxSnapshot ?? null) as never,
           },
-          baseCurrency,
-        ).formatted;
+           currency,
+           balancesHidden,
+         );
 
   const sales = useMemo(() => products.reduce((a, p) => a + (p.sales ?? 0), 0), [products]);
   const rating = useMemo(() => {

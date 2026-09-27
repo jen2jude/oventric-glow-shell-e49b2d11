@@ -12,12 +12,14 @@ import {
   Sparkles,
   Store,
   User,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 
 import { listProducts, type ProductDTO } from "@/lib/marketplace.functions";
 import { getWalletBalances } from "@/lib/wallet.functions";
-import { safeFormatDisplayPrice, formatMoney } from "@/lib/fx-display";
+import { usdEquivalent, visibleMoney, visibleProductPrice } from "@/lib/money-visibility";
 import type { Currency } from "@/lib/onboarding/OnboardingContext";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
@@ -50,13 +52,13 @@ export function AppHome({
   const [notifOpen, setNotifOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [quickViewId, setQuickViewId] = useState<string | null>(null);
-  const { baseCurrency } = useOnboarding();
+  const { homeCurrency, balancesHidden, toggleBalancesHidden } = useOnboarding();
   const { isAuthenticated } = useAuthGate();
   const { messages: unreadChats, total: unreadNotifs } = useUnreadCounts();
-  const currency = (baseCurrency ?? "USD") as Currency;
+  const currency = (homeCurrency ?? "USD") as Currency;
 
   const priceOf = (p: ProductDTO) =>
-    safeFormatDisplayPrice(
+    visibleProductPrice(
       {
         price_usd: p.priceUSD,
         original_currency: p.originalCurrency,
@@ -64,6 +66,7 @@ export function AppHome({
         fx_snapshot: p.fxSnapshot,
       },
       currency,
+      balancesHidden,
     );
 
   const fetchProducts = useServerFn(listProducts);
@@ -208,15 +211,19 @@ export function AppHome({
             style={{ background: "radial-gradient(circle, rgba(229,72,77,0.35), transparent 70%)" }}
           />
           <div className="relative">
-            <p className="text-[11px] font-medium uppercase tracking-widest text-white/40">
-              Wallet balance
-            </p>
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[11px] font-medium uppercase tracking-widest text-white/40">Wallet balance</p>
+              <button type="button" onClick={toggleBalancesHidden} aria-label={balancesHidden ? "Show amounts" : "Hide amounts"} className="grid size-8 place-items-center rounded-full text-white/60 hover:bg-white/10">
+                {balancesHidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              </button>
+            </div>
             <p className="mt-1 text-[28px] font-extrabold tracking-tight">
-              {available === null ? "—" : formatMoney(available, currency)}
+              {available === null ? "—" : visibleMoney(available, currency, balancesHidden)}
             </p>
+            {available !== null && usdEquivalent(available, currency, balancesHidden) && <p className="text-[11px] text-white/45">{usdEquivalent(available, currency, balancesHidden)}</p>}
             {inEscrow !== null && inEscrow > 0 && (
               <p className="mt-0.5 text-[11px] font-medium text-white/45">
-                {formatMoney(inEscrow, currency)} in escrow
+                {visibleMoney(inEscrow, currency, balancesHidden)} in escrow
               </p>
             )}
             <div className="mt-4 flex gap-2">
@@ -261,17 +268,13 @@ export function AppHome({
                 </p>
               </div>
               {mode === "buyer" && available !== null && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    haptic("select");
-                    onSelect("Wallet");
-                  }}
-                  className="nav-tap shrink-0 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-[11px] font-bold text-white/80"
-                  aria-label="Open wallet"
-                >
-                  {formatMoney(available, currency)}
-                </button>
+                <div className="flex shrink-0 flex-col items-end gap-0.5">
+                  <div className="flex items-center rounded-full border border-white/10 bg-white/[0.06]">
+                    <button type="button" onClick={() => onSelect("Wallet")} className="nav-tap px-2.5 py-1.5 text-[11px] font-bold text-white/80" aria-label="Open wallet">{visibleMoney(available, currency, balancesHidden)}</button>
+                    <button type="button" onClick={toggleBalancesHidden} className="pr-2 text-white/60" aria-label={balancesHidden ? "Show amounts" : "Hide amounts"}>{balancesHidden ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}</button>
+                  </div>
+                  {usdEquivalent(available, currency, balancesHidden) && <span className="text-[10px] text-white/45">{usdEquivalent(available, currency, balancesHidden)}</span>}
+                </div>
               )}
             </div>
             {categories.length > 0 && (

@@ -7,7 +7,8 @@ import { CheckCircle2, Loader2, MessageCircle, ShieldAlert, Truck, ExternalLink 
 import { AppSheet } from "./AppSheet";
 import { buyerConfirmReceipt, markOrderDelivered, openOrderDispute } from "@/lib/fulfilment.functions";
 import type { EscrowInboxItem } from "@/lib/escrow-inbox.functions";
-import { formatMoney } from "@/lib/fx-display";
+import { visibleMoney, usdEquivalent } from "@/lib/money-visibility";
+import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { haptic } from "@/lib/haptics";
 
 const REASONS = [
@@ -25,6 +26,7 @@ function when(iso: string | null) {
 
 /** Native order detail sheet: timeline + confirm / deliver / dispute without leaving the list. */
 export function AppOrderSheet({ order, onClose }: { order: EscrowInboxItem | null; onClose: () => void }) {
+  const { balancesHidden } = useOnboarding();
   const qc = useQueryClient();
   const confirm = useServerFn(buyerConfirmReceipt);
   const deliver = useServerFn(markOrderDelivered);
@@ -83,7 +85,8 @@ export function AppOrderSheet({ order, onClose }: { order: EscrowInboxItem | nul
             {o.role === "buyer" ? "Seller" : "Buyer"} · {o.counterpartyName}
             {o.quantity > 1 ? ` · ×${o.quantity}` : ""}
           </p>
-          <p className="mt-3 text-[22px] font-bold text-[#E5484D]">{formatMoney(o.displayTotal, o.displayCurrency)}</p>
+          <p className="mt-3 text-[22px] font-bold text-[#E5484D]">{visibleMoney(o.displayTotal, o.displayCurrency, balancesHidden)}</p>
+          <p className="text-[11px] text-white/45">{usdEquivalent(o.displayTotal, o.displayCurrency, balancesHidden)}</p>
 
           {disputeOpen && (
             <div className="mt-4 flex gap-2 rounded-2xl border border-[#E5484D]/25 bg-[#E5484D]/10 p-3 text-[12px] text-[#ff8a8e]">

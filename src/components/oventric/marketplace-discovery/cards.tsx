@@ -1,13 +1,13 @@
 import { Star, ShoppingCart, BadgeCheck } from "lucide-react";
 import type { ProductDTO } from "@/lib/marketplace.functions";
-import { computeDisplayPrice } from "@/lib/fx-display";
+import { visibleProductPrice } from "@/lib/money-visibility";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { CashbackBadge } from "@/components/oventric/CashbackBadge";
 
 export function usePrice() {
-  const { baseCurrency } = useOnboarding();
+  const { baseCurrency, balancesHidden } = useOnboarding();
   return (p: ProductDTO) =>
-    computeDisplayPrice(
+    visibleProductPrice(
       {
         price_usd: p.priceUSD,
         original_currency: p.originalCurrency,
@@ -15,7 +15,8 @@ export function usePrice() {
         fx_snapshot: p.fxSnapshot,
       },
       baseCurrency,
-    ).formatted;
+      balancesHidden,
+    );
 }
 
 function Cover({ src, alt, className }: { src: string | null; alt: string; className?: string }) {

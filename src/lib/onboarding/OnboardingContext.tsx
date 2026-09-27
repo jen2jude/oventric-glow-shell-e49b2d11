@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useAuthGate, type AuthGateContextKey } from "@/lib/auth-gate/AuthGateProvider";
 import { currencyForCountry, normalizeCountryCode, zeroAmounts } from "@/lib/currency/africa";
 
@@ -105,6 +105,13 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const [usdPreview, setUsdPreview] = useState(false);
   const [pending, setPending] = useState<{ minTier: Tier; cb?: () => void } | null>(null);
 
+  // Read after hydration so server and browser render the same first frame.
+  useEffect(() => {
+    try {
+      setState((s) => ({ ...s, balancesHidden: localStorage.getItem("oventric:money-hidden") === "true" }));
+    } catch { /* Storage may be unavailable in private browsing. */ }
+  }, []);
+
 
   const { ensureUserAuthenticated } = useAuthGate();
 
@@ -184,11 +191,18 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     [],
   );
   const setBalancesHidden = useCallback(
-    (hidden: boolean) => setState((s) => ({ ...s, balancesHidden: hidden })),
+    (hidden: boolean) => {
+      setState((s) => ({ ...s, balancesHidden: hidden }));
+      try { localStorage.setItem("oventric:money-hidden", String(hidden)); } catch { /* optional */ }
+    },
     [],
   );
   const toggleBalancesHidden = useCallback(
-    () => setState((s) => ({ ...s, balancesHidden: !s.balancesHidden })),
+    () => setState((s) => {
+      const hidden = !s.balancesHidden;
+      try { localStorage.setItem("oventric:money-hidden", String(hidden)); } catch { /* optional */ }
+      return { ...s, balancesHidden: hidden };
+    }),
     [],
   );
 

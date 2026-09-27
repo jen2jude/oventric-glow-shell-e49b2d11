@@ -47,6 +47,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { haptic } from "@/lib/haptics";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
+import { visibleProductPrice } from "@/lib/money-visibility";
 import { ProductQuickView } from "./ProductQuickView";
 import { AppSheet } from "./AppSheet";
 import { ConnectionsDialog } from "@/components/oventric/profile/ConnectionsDialog";
@@ -78,10 +79,6 @@ type Tab =
   | "skills"
   | "about";
 
-function priceOf(p: ProductDTO): string {
-  return `$${p.priceUSD.toFixed(2)}`;
-}
-
 export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
   const navigate = useNavigate();
   const { openGate } = useAuthGate();
@@ -95,8 +92,9 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
   const [connectionsTab, setConnectionsTab] = useState<
     "all" | "following" | "followers" | "suggested"
   >("followers");
-  const { baseCurrency } = useOnboarding();
-  const currency = (baseCurrency ?? "USD") as Currency;
+  const { homeCurrency, balancesHidden } = useOnboarding();
+  const currency = (homeCurrency ?? "USD") as Currency;
+  const priceOf = (p: ProductDTO) => visibleProductPrice({ price_usd: p.priceUSD, original_currency: p.originalCurrency, original_amount: p.originalAmount, fx_snapshot: p.fxSnapshot }, currency, balancesHidden);
 
   const fetchProfile = useServerFn(getProfileByIdOrSlug);
   const fetchCounts = useServerFn(getProfileSocialCounts);

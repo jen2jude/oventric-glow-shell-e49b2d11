@@ -47,6 +47,9 @@ import {
 import { listMySales, type SaleDTO } from "@/lib/fulfilment.functions";
 import { listUserPhotos, type UserPhoto } from "@/lib/posts.functions";
 import { formatMoney } from "@/lib/fx-display";
+import { computeDisplayPrice } from "@/lib/fx-display";
+import { visibleMoney, usdEquivalent } from "@/lib/money-visibility";
+import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { haptic } from "@/lib/haptics";
 import { EditListingModal } from "@/components/oventric/EditListingModal";
 import { SellSwitcherModal } from "@/components/oventric/SellSwitcherModal";
@@ -407,6 +410,7 @@ function Spinner() {
 /* ------------------------------ Overview ------------------------------ */
 
 function OverviewPane({ overview, onGoto }: { overview: DashboardOverview | null; onGoto: (t: Tab) => void }) {
+  const { balancesHidden } = useOnboarding();
   if (!overview) return <Spinner />;
   const wallet = overview.wallet;
   const home = overview.homeCurrency;
@@ -423,8 +427,8 @@ function OverviewPane({ overview, onGoto }: { overview: DashboardOverview | null
     {
       icon: TrendingUp,
       label: "Released revenue",
-      value: fmt(overview.revenue.gross, home),
-      detail: `${fmt(overview.revenue.last30, home)} in the last 30 days`,
+      value: visibleMoney(overview.revenue.gross, home, balancesHidden),
+      detail: `${visibleMoney(overview.revenue.last30, home, balancesHidden)} in the last 30 days`,
       go: "wallet",
     },
     {
@@ -460,10 +464,11 @@ function OverviewPane({ overview, onGoto }: { overview: DashboardOverview | null
           </span>
         </div>
         <div className="mt-3 text-3xl font-black">
-          {wallet ? fmt(wallet.available, home) : "—"}
+          {wallet ? visibleMoney(wallet.available, home, balancesHidden) : "—"}
         </div>
+        {wallet && usdEquivalent(wallet.available, home, balancesHidden) && <p className="text-xs text-white/40">{usdEquivalent(wallet.available, home, balancesHidden)}</p>}
         <p className="mt-1 text-xs text-white/50">
-          {wallet ? `${fmt(wallet.escrow, home)} held in escrow` : "Wallet is not initialized"}
+          {wallet ? `${visibleMoney(wallet.escrow, home, balancesHidden)} held in escrow` : "Wallet is not initialized"}
         </p>
       </button>
 
@@ -485,6 +490,7 @@ function OverviewPane({ overview, onGoto }: { overview: DashboardOverview | null
                 <Icon className="size-4 text-white/40" />
               </div>
               <div className="mt-2 text-xl font-black truncate">{m.value}</div>
+              {m.label === "Released revenue" && <span className="text-[10px] text-white/40">{usdEquivalent(overview.revenue.gross, home, balancesHidden)}</span>}
               <p className="mt-0.5 text-[11px] text-white/40 line-clamp-2">{m.detail}</p>
             </button>
           );
@@ -513,6 +519,7 @@ function WalletPane({
   page: number;
   onPage: (p: number) => void;
 }) {
+  const { balancesHidden } = useOnboarding();
   if (!data) return <Spinner />;
   const home = data.homeCurrency;
   const totalPages = Math.max(1, Math.ceil(data.recentTotal / data.pageSize));
@@ -522,20 +529,22 @@ function WalletPane({
         <div className="text-[10px] uppercase tracking-widest text-white/50 font-bold">
           Wallet balance ({home})
         </div>
-        <div className="mt-2 text-3xl font-black">{fmt(data.mainBalance, home)}</div>
+        <div className="mt-2 text-3xl font-black">{visibleMoney(data.mainBalance, home, balancesHidden)}</div>
         <div className="text-xs text-white/40 mt-1">
-          {home === "USD" ? "USD account" : <>≈ {fmt(data.mainBalanceUSD, "USD")} USD equivalent</>}
+          {home === "USD" ? "USD account" : balancesHidden ? "••••" : <>≈ {fmt(data.mainBalanceUSD, "USD")} USD equivalent</>}
         </div>
       </Card>
 
       <div className="grid grid-cols-2 gap-3">
         <Card className="p-4">
           <div className="text-[10px] uppercase tracking-widest text-white/50 font-bold">Cashback earned</div>
-          <div className="mt-1.5 text-xl font-black">{fmt(data.cashback, home)}</div>
+          <div className="mt-1.5 text-xl font-black">{visibleMoney(data.cashback, home, balancesHidden)}</div>
+          <div className="text-[10px] text-white/40">{usdEquivalent(data.cashback, home, balancesHidden)}</div>
         </Card>
         <Card className="p-4">
           <div className="text-[10px] uppercase tracking-widest text-white/50 font-bold">Escrow balance</div>
-          <div className="mt-1.5 text-xl font-black">{fmt(data.escrow, home)}</div>
+          <div className="mt-1.5 text-xl font-black">{visibleMoney(data.escrow, home, balancesHidden)}</div>
+          <div className="text-[10px] text-white/40">{usdEquivalent(data.escrow, home, balancesHidden)}</div>
         </Card>
       </div>
 
@@ -549,8 +558,9 @@ function WalletPane({
               <Card key={p.id} className="p-3 flex items-center justify-between">
                 <div>
                   <div className="font-semibold">
-                    {p.currency} {p.amount.toFixed(2)}
+                    {visibleMoney(p.amount, p.currency, balancesHidden)}
                   </div>
+                  <div className="text-[10px] text-white/40">{usdEquivalent(p.amount, p.currency, balancesHidden)}</div>
                   <div className="text-xs text-white/40 mt-0.5">
                     {p.method.toUpperCase()} · Requested {new Date(p.createdAt).toLocaleDateString()}
                   </div>
@@ -598,11 +608,12 @@ function WalletPane({
                   <div className="text-right shrink-0">
                     <div className={`font-black text-sm ${r.inflow ? "text-emerald-400" : ""}`}>
                       {r.inflow ? "+" : "-"}
-                      {fmt(r.amountHome, home)}
+                      {visibleMoney(r.amountHome, home, balancesHidden)}
                     </div>
+                    <div className="text-[10px] text-white/40">{usdEquivalent(r.amountHome, home, balancesHidden)}</div>
                     {r.currency !== home && (
                       <div className="text-[10px] text-white/40 mt-0.5">
-                        {r.currency} {r.amount.toFixed(2)}
+                        {visibleMoney(r.amount, r.currency, balancesHidden)}
                       </div>
                     )}
                   </div>
@@ -799,6 +810,7 @@ function ListingStatusBadge({ status }: { status: ProductDTO["status"] }) {
 }
 
 function ListingsList({ rows, onEdit }: { rows: ProductDTO[] | null; onEdit: (p: ProductDTO) => void }) {
+  const { homeCurrency, balancesHidden } = useOnboarding();
   const [filter, setFilter] = useState<"all" | "pending" | "active" | "rejected">("all");
   const [sellOpen, setSellOpen] = useState(false);
 
@@ -890,7 +902,7 @@ function ListingsList({ rows, onEdit }: { rows: ProductDTO[] | null; onEdit: (p:
                       {p.name}
                     </Link>
                     <div className="text-xs text-white/40">
-                      ${p.priceUSD.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                      {visibleMoney(computeDisplayPrice({ original_currency: "USD", original_amount: p.priceUSD }, homeCurrency).value, homeCurrency, balancesHidden)}
                       {p.location ? (
                         <span className="ml-2 inline-flex items-center gap-1">
                           <MapPin className="w-3 h-3" /> {p.location}

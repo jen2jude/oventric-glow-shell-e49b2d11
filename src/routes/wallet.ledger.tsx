@@ -23,7 +23,7 @@ import {
 } from "@/lib/wallet.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { downloadWalletCsv, printWalletPdf } from "@/components/oventric/wallet/export";
-import { formatMoney } from "@/lib/fx-display";
+import { visibleMoney, usdEquivalent } from "@/lib/money-visibility";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/wallet/ledger")({
@@ -74,7 +74,7 @@ function txStyle(type: WalletTxType, inflow: boolean) {
 
 function WalletLedgerPage() {
   const router = useRouter();
-  const { homeCurrency } = useOnboarding();
+  const { homeCurrency, balancesHidden } = useOnboarding();
   const [userId, setUserId] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>("All");
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -178,13 +178,13 @@ function WalletLedgerPage() {
                 <div className="rounded-[10px] border border-border bg-muted/55 px-4 py-3 sm:min-w-40">
                   <p className="text-xs font-bold uppercase text-muted-foreground">Money in</p>
                   <p className="mt-1 font-wallet-display text-sm font-bold text-ledger-positive sm:text-base">
-                    {totals.currency ? `+${formatMoney(totals.incomingAmount, totals.currency)}` : `${totals.incomingCount} entries`}
+                    {totals.currency ? `+${visibleMoney(totals.incomingAmount, totals.currency, balancesHidden)}` : `${totals.incomingCount} entries`}
                   </p>
                 </div>
                 <div className="rounded-[10px] border border-border bg-muted/55 px-4 py-3 sm:min-w-40">
                   <p className="text-xs font-bold uppercase text-muted-foreground">Money out</p>
                   <p className="mt-1 font-wallet-display text-sm font-bold sm:text-base">
-                    {totals.currency ? `−${formatMoney(totals.outgoingAmount, totals.currency)}` : `${totals.outgoingCount} entries`}
+                    {totals.currency ? `−${visibleMoney(totals.outgoingAmount, totals.currency, balancesHidden)}` : `${totals.outgoingCount} entries`}
                   </p>
                 </div>
               </div>
@@ -272,8 +272,9 @@ function WalletLedgerPage() {
                       </div>
                       <div className="w-auto shrink-0 text-right sm:w-40">
                         <div className={`font-wallet-display text-sm font-bold tabular-nums sm:text-base ${t.inflow ? "text-ledger-positive" : "text-foreground"}`}>
-                          {t.inflow ? "+ " : "− "}{formatMoney(t.amount, t.currency)}
+                          {t.inflow ? "+ " : "− "}{visibleMoney(t.amount, t.currency, balancesHidden)}
                         </div>
+                        <div className="text-[10px] text-muted-foreground">{usdEquivalent(t.amount, t.currency, balancesHidden)}</div>
                         <div className="mt-1 text-xs text-muted-foreground">
                           {new Date(t.occurredAt).toLocaleDateString(undefined, {
                             month: "short",

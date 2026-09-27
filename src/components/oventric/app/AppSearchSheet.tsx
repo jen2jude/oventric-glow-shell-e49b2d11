@@ -2,8 +2,9 @@ import { useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
 
 import type { ProductDTO } from "@/lib/marketplace.functions";
-import { safeFormatDisplayPrice } from "@/lib/fx-display";
+import { visibleProductPrice } from "@/lib/money-visibility";
 import type { Currency } from "@/lib/onboarding/OnboardingContext";
+import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { haptic } from "@/lib/haptics";
 import { AppSheet } from "./AppSheet";
 
@@ -26,6 +27,7 @@ export function AppSearchSheet({
   onPick: (id: string) => void;
 }) {
   const [q, setQ] = useState("");
+  const { balancesHidden } = useOnboarding();
 
   const results = useMemo(() => {
     const term = q.trim().toLowerCase();
@@ -41,7 +43,7 @@ export function AppSearchSheet({
   }, [q, products]);
 
   const priceOf = (p: ProductDTO) =>
-    safeFormatDisplayPrice(
+    visibleProductPrice(
       {
         price_usd: p.priceUSD,
         original_currency: p.originalCurrency,
@@ -49,6 +51,7 @@ export function AppSearchSheet({
         fx_snapshot: p.fxSnapshot,
       },
       currency,
+      balancesHidden,
     );
 
   return (

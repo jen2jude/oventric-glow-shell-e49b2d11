@@ -15,6 +15,7 @@ import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { usdRate, formatMoney } from "@/lib/fx-display";
+import { usdEquivalent } from "@/lib/money-visibility";
 import { dbCurrency } from "@/lib/currency/africa";
 
 function fmt(n: number, c: Currency) {
@@ -164,6 +165,7 @@ export function HeaderWalletChip({
           <div className="text-[11px] uppercase tracking-wide text-slate-500 px-1 pb-2">
             Sub-wallets · {displayCurrency}
           </div>
+          {usdEquivalent(mainDisplay, displayCurrency, balancesHidden) && <div className="px-1 pb-2 text-[11px] text-slate-400">{usdEquivalent(mainDisplay, displayCurrency, balancesHidden)} USD equivalent</div>}
           <div className="grid grid-cols-2 gap-2">
             <SubTile
               icon={<Lock className="w-4 h-4" />}

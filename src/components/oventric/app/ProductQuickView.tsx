@@ -5,8 +5,9 @@ import { useNavigate } from "@tanstack/react-router";
 import { ShoppingBag, Star, Store, X } from "lucide-react";
 
 import { getProduct, type ProductDTO } from "@/lib/marketplace.functions";
-import { safeFormatDisplayPrice } from "@/lib/fx-display";
+import { visibleProductPrice } from "@/lib/money-visibility";
 import type { Currency } from "@/lib/onboarding/OnboardingContext";
+import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { haptic } from "@/lib/haptics";
 import { AppSheet } from "./AppSheet";
 
@@ -25,6 +26,7 @@ export function ProductQuickView({
   onClose: () => void;
 }) {
   const navigate = useNavigate();
+  const { balancesHidden } = useOnboarding();
   const fetchProduct = useServerFn(getProduct);
 
   const { data: p, isLoading } = useQuery({
@@ -36,7 +38,7 @@ export function ProductQuickView({
   useSellerView("product_view", p?.sellerId, p?.id);
 
   const price = (prod: ProductDTO) =>
-    safeFormatDisplayPrice(
+    visibleProductPrice(
       {
         price_usd: prod.priceUSD,
         original_currency: prod.originalCurrency,
@@ -44,6 +46,7 @@ export function ProductQuickView({
         fx_snapshot: prod.fxSnapshot,
       },
       currency,
+      balancesHidden,
     );
 
   const go = (to: "/product/$id" | "/checkout/$id") => {

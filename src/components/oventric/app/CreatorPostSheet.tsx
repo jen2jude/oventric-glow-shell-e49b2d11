@@ -12,7 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import type { Currency } from "@/lib/onboarding/OnboardingContext";
-import { computeDisplayPrice } from "@/lib/fx-display";
+import { visibleProductPrice } from "@/lib/money-visibility";
 
 function compact(n: number) {
   return n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : String(n);
@@ -38,7 +38,7 @@ export function CreatorPostSheet({
   post: CreatorPostDTO | null;
   onClose: () => void;
 }) {
-  const { baseCurrency } = useOnboarding();
+  const { baseCurrency, homeCurrency, balancesHidden } = useOnboarding();
   const navigate = useNavigate();
   const createFreeOrder = useServerFn(createOrder);
   const loadDownload = useServerFn(getOrderWithDownload);
@@ -58,15 +58,16 @@ export function CreatorPostSheet({
   const price = asset
     ? asset.isFree
       ? "Free"
-      : computeDisplayPrice(
+       : visibleProductPrice(
           {
             price_usd: asset.priceUsd,
             original_currency: asset.originalCurrency ?? "USD",
             original_amount: asset.originalAmount ?? asset.priceUsd,
             fx_snapshot: asset.fxSnapshot,
           },
-          (baseCurrency ?? "USD") as Currency,
-        ).formatted
+           (homeCurrency ?? "USD") as Currency,
+           balancesHidden,
+         )
     : null;
 
   const downloadAsset = async () => {

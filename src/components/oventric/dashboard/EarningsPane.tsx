@@ -10,9 +10,11 @@ import {
   Wallet,
   ArrowRight
 } from "lucide-react";
-import { formatMoney } from "@/lib/fx-display";
+import { visibleMoney, usdEquivalent } from "@/lib/money-visibility";
+import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 
 export function EarningsPane() {
+  const { balancesHidden } = useOnboarding();
   const fetchWallet = useServerFn(getMyWalletSummary);
 
   const { data: wallet } = useSuspenseQuery({
@@ -37,8 +39,9 @@ export function EarningsPane() {
             <Wallet className="w-4 h-4 text-emerald-400" />
           </div>
           <div className="text-3xl font-black text-white">
-            {formatMoney(wallet.mainBalance, wallet.homeCurrency)}
+            {visibleMoney(wallet.mainBalance, wallet.homeCurrency, balancesHidden)}
           </div>
+          <div className="text-xs text-slate-500">{usdEquivalent(wallet.mainBalance, wallet.homeCurrency, balancesHidden)}</div>
           <div className="mt-2 text-xs text-slate-500">
             Ready for withdrawal to your bank account.
           </div>
@@ -53,8 +56,9 @@ export function EarningsPane() {
             <Clock className="w-4 h-4 text-amber-400" />
           </div>
           <div className="text-3xl font-black text-white">
-            {formatMoney(wallet.escrow, wallet.homeCurrency)}
+            {visibleMoney(wallet.escrow, wallet.homeCurrency, balancesHidden)}
           </div>
+          <div className="text-xs text-slate-500">{usdEquivalent(wallet.escrow, wallet.homeCurrency, balancesHidden)}</div>
           <div className="mt-2 text-xs text-slate-500">
             Funds held securely until buyer confirmation.
           </div>
@@ -88,8 +92,9 @@ export function EarningsPane() {
               </div>
               <div className="text-right">
                 <div className={`text-sm font-black ${tx.inflow ? "text-emerald-400" : "text-white"}`}>
-                  {tx.inflow ? "+" : "-"}{formatMoney(tx.amountHome, wallet.homeCurrency)}
+                  {tx.inflow ? "+" : "-"}{visibleMoney(tx.amountHome, wallet.homeCurrency, balancesHidden)}
                 </div>
+                <div className="text-[10px] text-slate-500">{usdEquivalent(tx.amountHome, wallet.homeCurrency, balancesHidden)}</div>
               </div>
             </div>
           ))}

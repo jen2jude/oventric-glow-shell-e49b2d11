@@ -7,7 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { listEscrowInbox, type EscrowInboxItem } from "@/lib/escrow-inbox.functions";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { haptic } from "@/lib/haptics";
-import { formatMoney } from "@/lib/fx-display";
+import { visibleMoney, usdEquivalent } from "@/lib/money-visibility";
+import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { AppOrderSheet } from "./AppOrderSheet";
 
 /**
@@ -31,6 +32,7 @@ function statusOf(o: EscrowInboxItem) {
 }
 
 export function AppPurchases() {
+  const { balancesHidden } = useOnboarding();
   const navigate = useNavigate();
   const { openGate } = useAuthGate();
   const fetchInbox = useServerFn(listEscrowInbox);
@@ -153,8 +155,9 @@ export function AppPurchases() {
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-1">
                   <p className="text-[13.5px] font-bold text-[#E5484D]">
-                    {formatMoney(o.displayTotal, o.displayCurrency)}
+                    {visibleMoney(o.displayTotal, o.displayCurrency, balancesHidden)}
                   </p>
+                  <span className="text-[10px] text-white/40">{usdEquivalent(o.displayTotal, o.displayCurrency, balancesHidden)}</span>
                   <ChevronRight className="h-4 w-4 text-white/20" />
                 </div>
               </button>

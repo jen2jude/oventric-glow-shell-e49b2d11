@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { Gift, LayoutGrid, Sparkles, Store } from "lucide-react";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
-import { computeDisplayPrice } from "@/lib/fx-display";
+import { visibleProductPrice } from "@/lib/money-visibility";
 import type { DiscoveryProduct } from "@/lib/discovery.functions";
 
 const SECTION_TINTS = [
@@ -14,9 +14,8 @@ const SECTION_TINTS = [
   "border-teal-100 bg-teal-50/60 text-teal-700",
 ];
 
-function priceLabel(product: DiscoveryProduct, viewer: Currency): string {
-  if (product.priceUsd <= 0) return "Free";
-  return computeDisplayPrice(
+function priceLabel(product: DiscoveryProduct, viewer: Currency, hidden: boolean): string {
+  return visibleProductPrice(
     {
       price_usd: product.priceUsd,
       original_currency: product.originalCurrency,
@@ -24,11 +23,12 @@ function priceLabel(product: DiscoveryProduct, viewer: Currency): string {
       fx_snapshot: product.fxSnapshot,
     },
     viewer,
-  ).formatted;
+    hidden,
+  );
 }
 
 function ProductGridCard({ product }: { product: DiscoveryProduct }) {
-  const { baseCurrency } = useOnboarding();
+  const { homeCurrency, balancesHidden } = useOnboarding();
   const free = product.priceUsd <= 0;
   return (
     <Link
@@ -61,7 +61,7 @@ function ProductGridCard({ product }: { product: DiscoveryProduct }) {
         <p className="line-clamp-2 text-[12.5px] font-bold leading-snug text-slate-950">{product.title}</p>
         <p className="mt-1 truncate text-[10.5px] text-slate-500">{product.vendor}</p>
         <p className={`mt-1 text-[12px] font-black ${free ? "text-emerald-600" : "text-[#E5484D]"}`}>
-          {priceLabel(product, baseCurrency)}
+          {priceLabel(product, homeCurrency, balancesHidden)}
         </p>
       </div>
     </Link>

@@ -1,13 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { Star, ShoppingCart } from "lucide-react";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
-import { computeDisplayPrice } from "@/lib/fx-display";
+import { visibleProductPrice } from "@/lib/money-visibility";
 import type { ProductDTO } from "@/lib/marketplace.functions";
 import { CashbackBadge } from "@/components/oventric/CashbackBadge";
 
 export function FeaturedProductCard({ product }: { product: ProductDTO }) {
-  const { baseCurrency } = useOnboarding();
-  const price = computeDisplayPrice(
+  const { baseCurrency, balancesHidden } = useOnboarding();
+  const price = visibleProductPrice(
     {
       price_usd: product.priceUSD,
       original_currency: product.originalCurrency,
@@ -15,7 +15,8 @@ export function FeaturedProductCard({ product }: { product: ProductDTO }) {
       fx_snapshot: product.fxSnapshot,
     },
     baseCurrency,
-  ).formatted;
+    balancesHidden,
+  );
 
   const rating = Number(product.rating ?? 0);
   const isDigital = product.kind === "digital";

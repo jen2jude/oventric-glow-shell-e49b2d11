@@ -6,6 +6,8 @@ import {
   ChevronRight,
   History,
   ReceiptText,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 
@@ -13,7 +15,7 @@ import {
   getWalletBalances,
   listWalletTransactions,
 } from "@/lib/wallet.functions";
-import { formatMoney } from "@/lib/fx-display";
+import { usdEquivalent, visibleMoney } from "@/lib/money-visibility";
 import type { Currency } from "@/lib/onboarding/OnboardingContext";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
@@ -26,9 +28,9 @@ import { haptic } from "@/lib/haptics";
  */
 export function AppWallet() {
   const navigate = useNavigate();
-  const { baseCurrency } = useOnboarding();
+  const { homeCurrency, balancesHidden, toggleBalancesHidden } = useOnboarding();
   const { isAuthenticated, openGate } = useAuthGate();
-  const currency = (baseCurrency ?? "USD") as Currency;
+  const currency = (homeCurrency ?? "USD") as Currency;
 
   const fetchBalances = useServerFn(getWalletBalances);
   const fetchTx = useServerFn(listWalletTransactions);
@@ -70,15 +72,14 @@ export function AppWallet() {
           style={{ background: "radial-gradient(circle, rgba(229,72,77,0.35), transparent 70%)" }}
         />
         <div className="relative">
-          <p className="text-[11px] font-medium uppercase tracking-widest text-white/40">
-            Available balance
-          </p>
+          <div className="flex items-center justify-between"><p className="text-[11px] font-medium uppercase tracking-widest text-white/40">Available balance</p><button type="button" onClick={toggleBalancesHidden} aria-label={balancesHidden ? "Show amounts" : "Hide amounts"} className="grid size-8 place-items-center text-white/60">{balancesHidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}</button></div>
           <p className="mt-1 text-[30px] font-extrabold tracking-tight">
-            {available === null ? "—" : formatMoney(available, currency)}
+            {available === null ? "—" : visibleMoney(available, currency, balancesHidden)}
           </p>
+          {available !== null && usdEquivalent(available, currency, balancesHidden) && <p className="text-[11px] text-white/45">{usdEquivalent(available, currency, balancesHidden)}</p>}
           {inEscrow !== null && inEscrow > 0 && (
             <p className="mt-0.5 text-[11px] font-medium text-white/45">
-              {formatMoney(inEscrow, currency)} held in escrow
+              {visibleMoney(inEscrow, currency, balancesHidden)} held in escrow
             </p>
           )}
           <div className="mt-4 flex gap-2">
@@ -164,14 +165,15 @@ export function AppWallet() {
                   })}
                 </p>
               </div>
-              <p
+              <div
                 className={`text-[12px] font-bold tabular-nums ${
                   t.inflow ? "text-emerald-400" : "text-white/80"
                 }`}
               >
                 {t.inflow ? "+" : "−"}
-                {formatMoney(t.amount, t.currency as Currency)}
-              </p>
+                {visibleMoney(t.amount, t.currency as Currency, balancesHidden)}
+                {usdEquivalent(t.amount, t.currency as Currency, balancesHidden) && <span className="block text-[10px] font-normal text-white/40">{usdEquivalent(t.amount, t.currency as Currency, balancesHidden)}</span>}
+              </div>
             </div>
           ))}
         </div>
