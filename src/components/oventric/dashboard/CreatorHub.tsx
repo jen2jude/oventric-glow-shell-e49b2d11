@@ -14,6 +14,8 @@ const hourLabel = (h: number) => `${h % 12 === 0 ? 12 : h % 12}${h < 12 ? "am" :
 
 export function CreatorHub() {
   const fetchHub = useServerFn(getCreatorHub);
+  const isAppShell = useIsAppShell();
+  const [coachOpen, setCoachOpen] = useState(false);
   const { baseCurrency } = useOnboarding();
   const currency = (baseCurrency ?? "USD") as Currency;
   const { data, isLoading, error } = useQuery({

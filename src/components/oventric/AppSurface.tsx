@@ -4,6 +4,7 @@ import { useRouterState } from "@tanstack/react-router";
 
 import { Sidebar } from "@/components/oventric/Sidebar";
 import { MobileNav } from "@/components/oventric/MobileNav";
+import { CreatorCoachLauncher } from "@/components/oventric/app/CreatorCoach";
 const AppFeed = lazy(() => import("@/components/oventric/app/AppFeed").then((m) => ({ default: m.AppFeed })));
 const Feed = lazy(() => import("@/components/oventric/Feed").then((m) => ({ default: m.Feed })));
 const Wallet = lazy(() =>
