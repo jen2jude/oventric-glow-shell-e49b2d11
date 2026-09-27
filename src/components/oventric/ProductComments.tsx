@@ -89,7 +89,7 @@ export function ProductComments({ productId }: { productId: string }) {
   return (
     <div className={`${isAppShell ? "mt-5 space-y-3 pb-6" : "mt-0 space-y-6 pb-12"}`}>
       <div className={`flex items-center justify-between border-b ${isAppShell ? "border-white/5" : "border-slate-200"} pb-2.5`}>
-        <h2 className={`${isAppShell ? "text-[13px] font-black uppercase tracking-wider text-white/90" : "text-[15px] font-black text-slate-900"} flex items-center gap-2`}>
+        <h2 className={`${isAppShell ? "text-[13px] font-black uppercase tracking-wider text-newsfeed-ink" : "text-[15px] font-black text-slate-900"} flex items-center gap-2`}>
           Reviews ({count})
         </h2>
         <div className="flex items-center gap-1.5">
@@ -116,7 +116,7 @@ export function ProductComments({ productId }: { productId: string }) {
                 </button>
               ))}
             </div>
-            <span className={`text-[10px] font-bold uppercase tracking-wider ${isAppShell ? "text-white/30" : "text-slate-400"}`}>
+            <span className={`text-[10px] font-bold uppercase tracking-wider ${isAppShell ? "text-newsfeed-line" : "text-slate-400"}`}>
               {rating === 5 ? "Excellent" : rating === 4 ? "Very Good" : rating === 3 ? "Good" : rating === 2 ? "Fair" : "Poor"}
             </span>
           </div>
@@ -188,7 +188,7 @@ export function ProductComments({ productId }: { productId: string }) {
               </p>
               {rev.sellerReply && (
                 <div className={`mt-3 border-l-2 border-[#E5484D] pl-3 ${isAppShell ? "" : ""}`}>
-                  <div className={`text-[10px] font-black uppercase tracking-wider ${isAppShell ? "text-white/40" : "text-slate-500"}`}>
+                  <div className={`text-[10px] font-black uppercase tracking-wider ${isAppShell ? "text-newsfeed-muted" : "text-slate-500"}`}>
                     Seller response
                   </div>
                   <p className={`mt-1 text-[13px] ${isAppShell ? "text-white/70" : "text-slate-600"} leading-snug whitespace-pre-wrap`}>
