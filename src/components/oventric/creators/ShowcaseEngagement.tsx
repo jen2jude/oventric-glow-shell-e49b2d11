@@ -27,10 +27,21 @@ export function ShowcaseEngagement({ postId, authorId, dark = false }: { postId:
     const names = new Map<string, string>();
     const avatars = new Map<string, string | null>();
     if (ids.length) {
-      const { data: ps } = await supabase.from("profiles").select("user_id, display_name, username, avatar_url").in("user_id", ids);
+      const { data: ps } = await supabase.from("profiles").select("user_id, display_name, username, avatar_path").in("user_id", ids);
+      const pathByUser = new Map<string, string>();
       for (const p of ps ?? []) {
         names.set(p.user_id, p.display_name || p.username || "Member");
-        avatars.set(p.user_id, p.avatar_url ?? null);
+        if (p.avatar_path) pathByUser.set(p.user_id, p.avatar_path);
+      }
+      const paths = [...new Set(pathByUser.values())];
+      if (paths.length) {
+        try {
+          const { data: signed } = await supabase.storage.from("avatars").createSignedUrls(paths, 60 * 60 * 6);
+          const urlByPath = new Map((signed ?? []).filter((x) => x.path && x.signedUrl).map((x) => [x.path as string, x.signedUrl]));
+          for (const [uid, path] of pathByUser) avatars.set(uid, urlByPath.get(path) ?? null);
+        } catch {
+          /* avatars are decorative */
+        }
       }
     }
     setComments(rows.map((r) => ({ ...r, name: names.get(r.user_id) ?? "Member", avatar: avatars.get(r.user_id) ?? null })));
