@@ -731,6 +731,25 @@ export const createPost = createServerFn({ method: "POST" })
       if (notifErr) console.error("[createPost] mention notif insert failed", notifErr);
     }
 
+    // Wall post: tell the wall owner someone posted on their profile.
+    if (wallUserId && wallUserId !== context.userId) {
+      const { data: me } = await context.supabase
+        .from("profiles")
+        .select("display_name, username")
+        .eq("user_id", context.userId)
+        .maybeSingle();
+      const authorName = me?.display_name || me?.username || "Someone";
+      const { error: wallErr } = await context.supabase.from("notifications").insert({
+        user_id: wallUserId,
+        from_user_id: context.userId,
+        kind: "wall_post",
+        title: `${authorName} posted on your wall`,
+        body: (data.text || "Shared a new post").slice(0, 140),
+        link: `/profile/${wallUserId}?tab=posts`,
+      });
+      if (wallErr) console.error("[createPost] wall notif insert failed", wallErr);
+    }
+
     return { post: row };
   });
 

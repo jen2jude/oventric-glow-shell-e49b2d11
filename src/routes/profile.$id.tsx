@@ -1225,12 +1225,6 @@ function WebProfilePage() {
                         aria-label="Online now"
                       />
                     )}
-                    <span
-                       className="profile-tier-dot absolute bottom-1 right-1 grid h-8 w-8 place-items-center rounded-full"
-                      aria-label={displayTierLabel}
-                    >
-                      <Check className="h-3.5 w-3.5 text-white" strokeWidth={3.5} />
-                    </span>
                     {isOwnProfile && (
                        <Button
                          variant="ghost"
