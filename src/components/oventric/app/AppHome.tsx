@@ -139,10 +139,10 @@ export function AppHome({
           type="button"
           onClick={() => {
             haptic("select");
-            onSelect("Profile");
+            void openOwn("profile");
           }}
           className="nav-tap flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white/[0.06]"
-          aria-label="Your account"
+          aria-label="Your social profile"
         >
           {avatarUrl ? (
             <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
