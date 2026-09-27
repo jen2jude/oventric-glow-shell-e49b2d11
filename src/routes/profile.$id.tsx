@@ -1520,7 +1520,7 @@ function WebProfilePage() {
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={() => navigate({ to: "/shop/$id", params: { id: realProfile?.userId ?? idOrSlug } })}
+                      onClick={() => navigate({ to: "/shop/$id", params: { id: realProfile?.userId ?? id } })}
                       className="h-11 rounded-[10px] border-white/12 bg-[#1A1A1F] px-5 text-sm font-bold text-[#E5484D] hover:bg-[#232329] md:w-36 md:border-slate-300 md:bg-white md:text-[#C43D42]"
                     >
                       <ShoppingBag className="h-4 w-4" /> View shop
