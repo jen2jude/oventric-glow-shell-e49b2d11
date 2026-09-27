@@ -106,8 +106,14 @@ export function AppFeed() {
   // now, then up to 6 category sections.
   const shopSections = useMemo(() => {
     const all = shopProducts ?? [];
+    const bySales = (a: ProductDTO, b: ProductDTO) =>
+      (b.salesCount ?? 0) - (a.salesCount ?? 0);
     const free = all.filter((p) => p.priceUSD <= 0).slice(0, 8);
     const paid = all.filter((p) => p.priceUSD > 0);
+    // Trending rail: most-bought first; if nothing has sold yet, fall back to
+    // the newest paid products so the rail is never empty.
+    const sold = paid.filter((p) => (p.salesCount ?? 0) > 0).sort(bySales);
+    const trending = (sold.length > 0 ? sold : [...paid]).slice(0, 10);
     const byCategory = new Map<string, ProductDTO[]>();
     paid.forEach((p) => {
       const key = p.category || "Other";
@@ -117,7 +123,8 @@ export function AppFeed() {
     });
     return {
       free,
-      popular: paid.slice(0, 8),
+      trending,
+      popular: [...paid].sort(bySales).slice(0, 8),
       categories: Array.from(byCategory.entries())
         .sort((a, b) => b[1].length - a[1].length)
         .slice(0, 6)
@@ -265,13 +272,13 @@ export function AppFeed() {
       </div>
 
       {/* Shop tab: product rail above the shoppable posts */}
-      {tab === "shop" && (shopProducts?.length ?? 0) > 0 && (
+      {tab === "shop" && shopSections.trending.length > 0 && (
         <div className="border-b border-white/5 py-3">
           <p className="px-4 text-[11px] font-bold uppercase tracking-wider text-white/40">
             Trending in the market
           </p>
           <div className="mt-2 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-4 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {shopProducts!.slice(0, 10).map((sp) => (
+            {shopSections.trending.map((sp) => (
               <button
                 key={sp.id}
                 onClick={() => {
@@ -292,6 +299,11 @@ export function AppFeed() {
                 <div className="p-2">
                   <p className="line-clamp-1 text-[11px] font-semibold text-white">{sp.name}</p>
                   <p className="mt-0.5 text-[11px] font-bold text-[#E5484D]">{shopPriceOf(sp)}</p>
+                  {(sp.salesCount ?? 0) > 0 && (
+                    <p className="mt-0.5 text-[10px] font-medium text-white/35">
+                      {sp.salesCount} sold
+                    </p>
+                  )}
                 </div>
               </button>
             ))}
