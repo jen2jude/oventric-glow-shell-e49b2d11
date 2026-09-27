@@ -61,7 +61,7 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
     const showIds = shows.map((s) => s.id);
 
     const empty = { data: [] as any[] };
-    const [likesRes, commentsRes, savesRes, sharesRes, showViewsRes, attachRes] = await Promise.all([
+    const [likesRes, commentsRes, savesRes, sharesRes, showViewsRes] = await Promise.all([
       postIds.length ? sb.from("post_likes").select("post_id, user_id, created_at").in("post_id", postIds).limit(50000) : empty,
       postIds.length ? sb.from("post_comments").select("post_id, author_id, created_at").in("post_id", postIds).limit(50000) : empty,
       postIds.length ? sb.from("post_saves").select("post_id, user_id, created_at").in("post_id", postIds).limit(50000) : empty,
