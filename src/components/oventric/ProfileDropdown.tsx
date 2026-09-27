@@ -36,6 +36,7 @@ import { ResponsiveImage } from "@/components/ui/responsive-image";
 import { currencySymbol } from "@/lib/fx-display";
 import { currencyDecimals } from "@/lib/currency/africa";
 import { AFRICA_COUNTRIES, COUNTRY_META } from "@/lib/currency/africa";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 
 const CURRENCY_SYMBOL = new Proxy({} as Record<Currency, string>, {
   get: (_t, key: string) => currencySymbol(key),
@@ -681,6 +682,7 @@ function ProfileSettingsModal({
   userId: string;
   onSave: (next: ProfileState) => void;
 }) {
+  const isAppShell = useIsAppShell();
   const persistProfileRemote = useServerFn(updateMyProfile);
   const loadFullProfile = useServerFn(getMyFullProfile);
   const { ensureKyc, kycCompleted } = useKycGate();
@@ -980,7 +982,7 @@ function ProfileSettingsModal({
 
   return createPortal(
     <div
-      className="web-identity-kyc fixed inset-0 z-[110] flex items-start justify-center overflow-y-auto bg-foreground/20 px-3 py-4 backdrop-blur-[2px] sm:px-6 sm:py-8"
+      className={`web-identity-kyc fixed inset-0 z-[110] flex items-start justify-center overflow-y-auto bg-foreground/20 px-3 py-4 backdrop-blur-[2px] sm:px-6 sm:py-8 ${isAppShell ? "app-profile-settings" : ""}`}
       onClick={saving ? undefined : onClose}
     >
       <div
@@ -993,6 +995,7 @@ function ProfileSettingsModal({
         onClick={(e) => e.stopPropagation()}
         className="relative my-auto flex max-h-[calc(100vh-2rem)] w-full max-w-3xl flex-col overflow-hidden rounded-[10px] border border-border bg-card shadow-2xl focus:outline-none sm:max-h-[calc(100vh-4rem)]"
       >
+        {isAppShell && <div className="app-profile-handle" aria-hidden="true" />}
         <header className="flex items-start justify-between gap-5 border-b border-border px-5 py-5 sm:px-8 sm:py-7">
           <div>
             <div
@@ -1001,10 +1004,10 @@ function ProfileSettingsModal({
               <ShieldCheck className="w-3 h-3" aria-hidden /> {tier.label}
             </div>
             <h2 id={titleId} className="font-wallet-display text-xl font-bold text-foreground sm:text-2xl">
-              Identity &amp; KYC
+              {isAppShell ? "Edit profile" : "Identity & KYC"}
             </h2>
             <p id={descId} className="mt-1 text-xs text-muted-foreground sm:text-sm">
-              Manage your public profile, verification, privacy and account security.
+              {isAppShell ? "Your details, privacy and security" : "Manage your public profile, verification, privacy and account security."}
             </p>
           </div>
           <button

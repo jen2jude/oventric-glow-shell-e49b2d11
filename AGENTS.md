@@ -25,7 +25,9 @@ the website omits the manifest link and install invitations, and app mode is
 limited to preview hosts until the owner explicitly reactivates it. Reason:
 the unfinished app must remain reviewable without inviting public use.
 
-App-mode conversations open in a slide-up drawer above the mounted Messages inbox; the website message layout stays separate. Reason: closing or swiping away a conversation should return to the same inbox position without losing chat state.
+App conversations open in a sheet over the mounted inbox; web stays separate. Reason: closing returns to the same inbox position.
+
+App profile editing reuses web forms with app-scoped sheets. Reason: parity without duplicating profile writes.
 
 ## Creator Coach (AI)
 - Creator Coach is app-exclusive: chat UI in `src/components/oventric/app/CreatorCoach.tsx`, streaming route `src/routes/api/creator-coach.ts` (openai/gpt-6-astra via Responses, reasoning low), history in `creator_coach_messages` (one conversation per creator, account-saved). Reason: a real reason to install the app; web stays without it.
