@@ -4233,13 +4233,11 @@ section + section {
 .app-checkout .checkout-app-header { padding-top: max(0.75rem, env(safe-area-inset-top)); }
 .app-checkout .checkout-shell { max-width: 620px; padding-top: 0; padding-bottom: calc(9rem + env(safe-area-inset-bottom)); }
 .app-checkout .checkout-flow { gap: 0; display: flex; flex-direction: column; }
-.app-checkout .checkout-summary { order: -1; margin: 0; padding: 1.25rem 0.35rem 1rem; border: 0; border-radius: 0; background: transparent; backdrop-filter: none; }
+.app-checkout .checkout-product-hero { order: -2; }
+.app-checkout .checkout-summary { order: 1; margin: 0; padding: 1.25rem 0.35rem 1rem; border: 0; border-radius: 0; background: transparent; backdrop-filter: none; }
 .app-checkout .checkout-summary .checkout-spectrum-strip,
 .app-checkout .checkout-intro .checkout-spectrum-strip { display: none; }
-.app-checkout .checkout-summary img { height: 5rem; width: 5rem; flex: none; float: left; margin: 0 0.85rem 0.85rem 0; }
 .app-checkout .checkout-summary > div:nth-child(2) { margin-bottom: 0.9rem; }
-.app-checkout .checkout-summary > div:nth-child(2) + img + div,
-.app-checkout .checkout-summary > div:nth-child(2) + div + div { min-height: 1.75rem; }
 .app-checkout .checkout-intro { border: 0; border-radius: 0; box-shadow: none; background: transparent; backdrop-filter: none; }
 .app-checkout .checkout-intro > div:last-child { padding: 1rem 0.35rem 0.75rem; }
 .app-checkout .checkout-intro h1 { font-size: 1.35rem; }
@@ -4256,9 +4254,6 @@ section + section {
 .app-checkout .checkout-flow .text-emerald-200 { color: var(--checkout-ink); }
 .app-checkout .checkout-flow .text-amber-700,
 .app-checkout .checkout-flow .text-emerald-700 { color: var(--checkout-gold-ink); }
-.app-checkout .checkout-summary > div:not(:first-child) { clear: both; }
-.app-checkout .checkout-summary > img + div { clear: none; }
-.app-checkout .checkout-summary > img + div + div { clear: none; }
 .app-checkout .checkout-pay-button { box-shadow: none; }
 .app-checkout .checkout-app-actions { background: color-mix(in oklab, var(--checkout-canvas) 94%, transparent); border-color: var(--checkout-line); padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
 .app-checkout .checkout-topup { background: var(--checkout-surface); border-color: var(--checkout-line); }
