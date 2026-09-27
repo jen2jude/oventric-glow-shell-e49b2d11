@@ -315,6 +315,8 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
     () => (channel === "all" ? items : items.filter((n) => channelForKind(n.kind) === channel)),
     [items, channel],
   );
+  const visible = filtered.slice(0, visibleCount);
+  const hasMore = filtered.length > visibleCount;
 
   const handleOpenItem = async (n: DbNotif) => {
     if (!n.read_at) {
