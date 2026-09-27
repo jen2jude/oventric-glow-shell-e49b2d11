@@ -31,7 +31,8 @@ import { AppSheet } from "@/components/oventric/app/AppSheet";
 import { listPosts, toggleLike, setPostSaved as setPostSavedFn, deletePost as deletePostFn, updatePostText as updatePostTextFn } from "@/lib/posts.functions";
 import { listFollowing, listFollowers } from "@/lib/follows.functions";
 import { listCreatorFeed, getTopCreators, type CreatorPostDTO } from "@/lib/creators.functions";
-import { listProducts, createOrder, getOrderWithDownload } from "@/lib/marketplace.functions";
+import { listProducts } from "@/lib/marketplace.functions";
+import { CreatorPostSheet } from "@/components/oventric/app/CreatorPostSheet";
 import { ProductQuickView } from "./ProductQuickView";
 import { EDIT_WINDOW_MS } from "@/lib/post-edit";
 import { togglePostSet, getSavedPosts } from "@/components/oventric/PostActionsMenu";
@@ -58,14 +59,13 @@ function compact(n: number) {
   return n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : String(n);
 }
 
-/** Muted looping 10s preview that starts when scrolled into view; tap plays it fully with sound. */
-function AppPreviewVideo({ src, poster }: { src: string; poster: string | null }) {
+/** Muted looping 10s preview that starts when scrolled into view; tap opens the detail panel. */
+function AppPreviewVideo({ src, poster, onTap }: { src: string; poster: string | null; onTap: () => void }) {
   const ref = useRef<HTMLVideoElement>(null);
-  const [full, setFull] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || full) return;
+    if (!el) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let timer: ReturnType<typeof setInterval> | undefined;
     const io = new IntersectionObserver(
@@ -88,7 +88,7 @@ function AppPreviewVideo({ src, poster }: { src: string; poster: string | null }
       io.disconnect();
       if (timer) clearInterval(timer);
     };
-  }, [full]);
+  }, []);
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-neutral-900">
@@ -96,128 +96,24 @@ function AppPreviewVideo({ src, poster }: { src: string; poster: string | null }
         ref={ref}
         src={src}
         poster={poster ?? undefined}
-        muted={!full}
-        loop={!full}
+        muted
+        loop
         playsInline
-        controls={full}
-        className="aspect-video w-full object-cover"
-        onClick={() => {
-          if (full) return;
-          haptic("select");
-          setFull(true);
-          const el = ref.current;
-          if (el) {
-            el.muted = false;
-            el.currentTime = 0;
-            void el.play().catch(() => {});
-          }
-        }}
+        className="pointer-events-none aspect-video w-full object-cover"
       />
-      {!full && (
-        <span className="pointer-events-none absolute bottom-2 left-2 flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-[10.5px] font-bold backdrop-blur" style={{ color: "#ffffff" }}>
-          <Play className="h-3 w-3" /> Tap to play
-        </span>
-      )}
-    </div>
-  );
-}
-
-/** Web-parity asset CTA: free assets download instantly; paid assets link to the product page. */
-function AppAssetCta({ asset }: { asset: NonNullable<CreatorPostDTO["asset"]> }) {
-  const { baseCurrency } = useOnboarding();
-  const navigate = useNavigate();
-  const createFreeOrder = useServerFn(createOrder);
-  const loadDownload = useServerFn(getOrderWithDownload);
-  const [downloading, setDownloading] = useState(false);
-
-  if (!asset.available) {
-    return (
-      <span className="mt-2 inline-flex rounded-full border border-white/10 px-3 py-1.5 text-[10.5px] font-bold text-white/40">
-        Asset pending review
+      <button
+        type="button"
+        aria-label="Open showcase"
+        onClick={() => {
+          haptic("select");
+          onTap();
+        }}
+        className="absolute inset-0"
+      />
+      <span className="pointer-events-none absolute bottom-2 left-2 flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-[10.5px] font-bold backdrop-blur" style={{ color: "#ffffff" }}>
+        <Play className="h-3 w-3" /> Tap to watch
       </span>
-    );
-  }
-
-  const price = computeDisplayPrice(
-    {
-      price_usd: asset.priceUsd,
-      original_currency: asset.originalCurrency ?? "USD",
-      original_amount: asset.originalAmount ?? asset.priceUsd,
-      fx_snapshot: asset.fxSnapshot,
-    },
-    (baseCurrency ?? "USD") as Currency,
-  ).formatted;
-
-  const downloadAsset = async () => {
-    if (downloading) return;
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) {
-      toast.error("Sign in to download this asset");
-      return;
-    }
-    setDownloading(true);
-    try {
-      const result = await createFreeOrder({
-        data: {
-          productId: asset.productId,
-          quantity: 1,
-          displayCurrency: baseCurrency,
-          paymentMethod: "wallet",
-          couponCode: null,
-          deliveryEmail: null,
-          deliveryWhatsapp: null,
-          applyCashbackUSD: 0,
-        },
-      });
-      const downloadable = await loadDownload({ data: { orderId: result.order.id } });
-      const href = downloadable.downloadUrl ?? downloadable.order.externalUrl;
-      if (!href) throw new Error("This download is not available yet");
-      const anchor = document.createElement("a");
-      anchor.href = href;
-      anchor.download = "";
-      anchor.target = "_blank";
-      anchor.rel = "noopener noreferrer";
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-      toast.success("Download started", {
-        description: "This asset is saved in your dashboard for later.",
-      });
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Couldn't start the download");
-    } finally {
-      setDownloading(false);
-    }
-  };
-
-  return asset.isFree ? (
-    <button
-      type="button"
-      disabled={downloading}
-      onClick={() => {
-        haptic("select");
-        void downloadAsset();
-      }}
-      className="mt-2 inline-flex h-8 items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 text-[11px] font-black text-emerald-300 active:opacity-80 disabled:opacity-50"
-    >
-      <span className="text-[10px] font-black">{compact(asset.downloadCount)}</span>
-      <Download className="h-3.5 w-3.5" />
-      {downloading ? "Starting…" : "Get it free"}
-    </button>
-  ) : (
-    <button
-      type="button"
-      onClick={() => {
-        haptic("select");
-        navigate({ to: "/product/$id", params: { id: asset.productId } });
-      }}
-      className="mt-2 inline-flex h-8 items-center gap-2 rounded-full border border-[#E5484D]/40 bg-[#E5484D]/15 px-3 text-[11px] font-black text-[#FF7A7E] active:opacity-80"
-    >
-      <span className="text-[10px] font-black">{compact(asset.downloadCount)}</span>
-      <ShoppingBag className="h-3.5 w-3.5" />
-      <span>Buy</span>
-      <span className="border-l border-[#E5484D]/30 pl-2 text-[10px]">{price}</span>
-    </button>
+    </div>
   );
 }
 
@@ -250,6 +146,7 @@ export function AppFeed() {
   const loadFollowing = useServerFn(listFollowing);
   const loadFollowers = useServerFn(listFollowers);
   const [quickViewId, setQuickViewId] = useState<string | null>(null);
+  const [creatorSheet, setCreatorSheet] = useState<CreatorPostDTO | null>(null);
   const fetchProducts = useServerFn(listProducts);
   const fetchCreatorFeed = useServerFn(listCreatorFeed);
   const fetchTopCreators = useServerFn(getTopCreators);
@@ -658,7 +555,7 @@ export function AppFeed() {
 
                   {thumb && thumb.type === "video" ? (
                     <div className="mt-2">
-                      <AppPreviewVideo src={thumb.url} poster={thumb.posterUrl ?? null} />
+                      <AppPreviewVideo src={thumb.url} poster={thumb.posterUrl ?? null} onTap={() => setCreatorSheet(cp)} />
                     </div>
                   ) : thumb ? (
                     <button
@@ -695,7 +592,32 @@ export function AppFeed() {
                     </button>
                   ) : null}
 
-                  {cp.asset && <AppAssetCta asset={cp.asset} />}
+                  {cp.asset &&
+                    (cp.asset.available ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          haptic("select");
+                          setCreatorSheet(cp);
+                        }}
+                        className={`mt-2 inline-flex h-8 items-center gap-2 rounded-full border px-3 text-[11px] font-black active:opacity-80 ${
+                          cp.asset.isFree
+                            ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
+                            : "border-[#E5484D]/40 bg-[#E5484D]/15 text-[#FF7A7E]"
+                        }`}
+                      >
+                        <span className="text-[10px] font-black">{compact(cp.asset.downloadCount)}</span>
+                        {cp.asset.isFree ? <Download className="h-3.5 w-3.5" /> : <ShoppingBag className="h-3.5 w-3.5" />}
+                        {cp.asset.isFree ? "Get it free" : "Buy"}
+                        {!cp.asset.isFree && price && (
+                          <span className="border-l border-[#E5484D]/30 pl-2 text-[10px]">{price}</span>
+                        )}
+                      </button>
+                    ) : (
+                      <span className="mt-2 inline-flex rounded-full border border-white/10 px-3 py-1.5 text-[10.5px] font-bold text-white/40">
+                        Asset pending review
+                      </span>
+                    ))}
                 </article>
               );
             })}
@@ -1102,6 +1024,8 @@ export function AppFeed() {
           viewerInitials="OV"
         />
       )}
+
+      <CreatorPostSheet post={creatorSheet} onClose={() => setCreatorSheet(null)} />
 
       <ProductQuickView
         productId={quickViewId}
