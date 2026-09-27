@@ -513,7 +513,7 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
         <div className="min-w-0">
           <div className="font-semibold truncate">Profile Settings & KYC Edit</div>
           <div className="truncate text-[10px] text-newsfeed-muted">
-            Name, bio, avatar, verification docs
+            Name, bio, avatar, verification
           </div>
         </div>
       </button>
