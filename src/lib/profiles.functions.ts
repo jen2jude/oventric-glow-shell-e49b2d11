@@ -535,6 +535,8 @@ export interface MyFullProfile {
   tools: string[];
 
   avatarUrl: string | null;
+  /** True once the user finished the creator onboarding workflow. */
+  isCreator: boolean;
   verificationTier: string;
   reputationStars: number;
   kycCompletedAt: string | null;
@@ -557,7 +559,7 @@ export const getMyFullProfile = createServerFn({ method: "GET" })
     const { data: row, error } = await supabaseAdmin
       .from("profiles")
       .select(
-        "user_id, slug, display_name, username, bio, phone, country, address, address_public, date_of_birth, dob_public, avatar_path, social_links, skills, interests, skill_levels, tools, verification_tier, reputation_stars, kyc_completed_at, kyc_selfie_path, kyc_id_path, profile_completed_at, notification_preferences, created_at",
+        "user_id, slug, display_name, username, bio, phone, country, address, address_public, date_of_birth, dob_public, avatar_path, social_links, skills, interests, skill_levels, tools, creator_profile, verification_tier, reputation_stars, kyc_completed_at, kyc_selfie_path, kyc_id_path, profile_completed_at, notification_preferences, created_at",
       )
       .eq("user_id", userId)
       .maybeSingle();
@@ -590,6 +592,8 @@ export const getMyFullProfile = createServerFn({ method: "GET" })
         skillLevels: normaliseSkillLevels((row as { skill_levels?: unknown }).skill_levels),
         tools: normaliseTools((row as { tools?: unknown }).tools),
         avatarUrl,
+        isCreator:
+          ((row as { creator_profile?: { is_creator?: unknown } | null }).creator_profile?.is_creator) === true,
         verificationTier: row.verification_tier,
         reputationStars: Number(row.reputation_stars ?? 0),
         kycCompletedAt: row.kyc_completed_at,
