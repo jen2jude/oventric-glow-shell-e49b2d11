@@ -1,18 +1,15 @@
-import { Home, MessageCircle, Plus, ShoppingBag, Wallet } from "lucide-react";
+import { Home, Images, MessageCircle, Plus, ShoppingBag, Wallet } from "lucide-react";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
 import { CountBadge } from "@/components/oventric/CountBadge";
 import { haptic } from "@/lib/haptics";
 import { useChatOpen } from "@/hooks/use-chat-open";
 import { useChromeHidden } from "@/hooks/use-chrome-hide";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 
 
 const left = [
   { icon: Home, label: "Home" },
   { icon: ShoppingBag, label: "Market" },
-];
-const right = [
-  { icon: MessageCircle, label: "Chats" },
-  { icon: Wallet, label: "Wallet" },
 ];
 
 export type MobileNavCounts = Partial<
@@ -30,8 +27,18 @@ export function MobileNav({
   onSelect: (label: string) => void;
   counts?: MobileNavCounts;
 }) {
-  const chatOpen = useChatOpen();
-  const chromeHidden = useChromeHidden();
+  const isAppShell = useIsAppShell();
+  // In the app shell, chats live in the top bar — the dock carries the feed
+  // instead. The website keeps its chat tab in the footer.
+  const right = isAppShell
+    ? [
+        { icon: Images, label: "Feed" },
+        { icon: Wallet, label: "Wallet" },
+      ]
+    : [
+        { icon: MessageCircle, label: "Chats" },
+        { icon: Wallet, label: "Wallet" },
+      ];
   const { messages } = useUnreadCounts();
   const Item = (it: { icon: typeof Home; label: string }) => {
 
