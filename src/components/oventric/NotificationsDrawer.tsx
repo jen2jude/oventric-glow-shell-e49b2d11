@@ -149,6 +149,7 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
   const isApp = useIsAppShell();
   const [channel, setChannel] = useState<Channel>("all");
   const [items, setItems] = useState<DbNotif[]>([]);
+  const [visibleCount, setVisibleCount] = useState(10);
   const [loading, setLoading] = useState(false);
   const [muted, setMuted] = useState(false);
   const [pushOn, setPushOn] = useState(false);
