@@ -839,7 +839,7 @@ function KycLivenessModal({
             <p className="text-xs text-slate-400 mt-1 text-center">
               We couldn't confirm your identity. Move to bright, even light and try again.
               <span className="block mt-1 text-amber-300/80">
-                Attempt {selfieAttempts} of 2 — one more failure will require your government ID.
+                Attempt {selfieAttempts} of 2 — one more failure will ask you to contact support.
               </span>
               {matchDebug && (
                 <span className="block mt-1 text-[10px] text-slate-500">{matchDebug}</span>
@@ -854,22 +854,9 @@ function KycLivenessModal({
           </div>
         )}
 
-        {step === "id-matching" && (
-          <div className="flex flex-col items-center py-6">
-            <div className="inline-flex items-center gap-2 text-sm text-emerald-300">
-              <Loader2 className="w-4 h-4 animate-spin" /> Matching your government ID…
-            </div>
-            <p className="text-[11px] text-slate-500 mt-2 text-center max-w-xs">
-              Comparing your capture with the ID you registered during KYC.
-            </p>
-          </div>
-        )}
-
         {step === "fallback" && (
           <FallbackSupport
-            idReferencePath={idReferencePath}
             selfieAttempts={selfieAttempts}
-            idAttempts={idAttempts}
             matchDebug={matchDebug}
             onSubmit={async (payload) => {
               await submitSupport({
@@ -878,14 +865,11 @@ function KycLivenessModal({
                   contact: payload.contact,
                   message: payload.message,
                   selfieAttempts,
-                  idAttempts,
                 },
               });
             }}
             onReset={() => {
               setSelfieAttempts(0);
-              setIdAttempts(0);
-              setMatchPhase("selfie");
               setError(null);
               setStep("selfie-camera");
             }}
