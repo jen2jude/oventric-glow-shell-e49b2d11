@@ -840,6 +840,7 @@ function UsdReviewSheet({
   accountName,
   network,
   submitting,
+  sheet,
   onClose,
   onConfirm,
 }: {
@@ -852,9 +853,57 @@ function UsdReviewSheet({
   accountName: string;
   network: string;
   submitting: boolean;
+  sheet?: boolean;
   onClose: () => void;
   onConfirm: () => void;
 }) {
+  const footer = (
+    <button
+      onClick={onConfirm}
+      disabled={submitting}
+      className="w-full bg-[#E5484D] text-white font-black py-3.5 rounded-[10px] disabled:opacity-50 flex items-center justify-center gap-2"
+    >
+      {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
+      <span>Confirm Withdrawal</span>
+    </button>
+  );
+
+  const content = (
+    <div className="space-y-4">
+      <div className="rounded-[10px] border border-white/8 bg-white/[0.03] p-4 space-y-3">
+        <div className="flex items-start justify-between gap-4">
+          <span className="text-xs text-slate-400">Withdraw To</span>
+          <span className="text-right">
+            <span className="block text-sm font-black text-white">{channelLabel}</span>
+            <span className="block text-[11px] text-slate-500 break-all">{identifier}</span>
+            {accountName && <span className="block text-[11px] text-slate-500">{accountName}</span>}
+            {network && <span className="block text-[11px] text-slate-500">{network}</span>}
+          </span>
+        </div>
+        <div className="h-px bg-white/8" />
+        <Row label="You will receive" value={money(amount, "$")} strong />
+        <Row label={`Debited from ${currency} wallet`} value={money(localAmount, sym)} />
+        <Row label="Processing Time" value="Up to 3 working days" />
+      </div>
+
+      <div className="flex gap-2 rounded-[10px] border border-amber-500/20 bg-amber-500/[0.07] p-3">
+        <Info className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+        <p className="text-[11px] text-slate-400">
+          Double-check your account ID or wallet address. Payouts sent to a wrong destination cannot
+          be reversed.
+        </p>
+      </div>
+    </div>
+  );
+
+  if (sheet) {
+    return (
+      <SlideSheet title="Review USD withdrawal" z={80} onClose={onClose} footer={footer}>
+        {content}
+      </SlideSheet>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-[70] bg-[#0A0A0B] overflow-y-auto">
       <div className="flex items-center justify-between px-4 py-4 border-b border-white/5">
@@ -865,41 +914,84 @@ function UsdReviewSheet({
         <span className="w-9" />
       </div>
 
-      <div className="p-4 space-y-4 pb-28">
-        <div className="rounded-[10px] border border-white/8 bg-white/[0.03] p-4 space-y-3">
-          <div className="flex items-start justify-between gap-4">
-            <span className="text-xs text-slate-400">Withdraw To</span>
-            <span className="text-right">
-              <span className="block text-sm font-black text-white">{channelLabel}</span>
-              <span className="block text-[11px] text-slate-500 break-all">{identifier}</span>
-              {accountName && <span className="block text-[11px] text-slate-500">{accountName}</span>}
-              {network && <span className="block text-[11px] text-slate-500">{network}</span>}
-            </span>
-          </div>
-          <div className="h-px bg-white/8" />
-          <Row label="You will receive" value={money(amount, "$")} strong />
-          <Row label={`Debited from ${currency} wallet`} value={money(localAmount, sym)} />
-          <Row label="Processing Time" value="Up to 3 working days" />
-        </div>
-
-        <div className="flex gap-2 rounded-[10px] border border-amber-500/20 bg-amber-500/[0.07] p-3">
-          <Info className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-          <p className="text-[11px] text-slate-400">
-            Double-check your account ID or wallet address. Payouts sent to a wrong destination cannot
-            be reversed.
-          </p>
-        </div>
-      </div>
+      <div className="p-4 space-y-4 pb-28">{content}</div>
 
       <div className="fixed bottom-0 inset-x-0 bg-[#0A0A0B]/95 backdrop-blur border-t border-white/5 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))]">
-        <button
-          onClick={onConfirm}
-          disabled={submitting}
-          className="w-full bg-[#E5484D] text-white font-black py-3.5 rounded-[10px] disabled:opacity-50 flex items-center justify-center gap-2"
-        >
-          {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
-          <span>Confirm Withdrawal</span>
-        </button>
+        {footer}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Signature dark slide-up sheet for the app withdrawal flow — same motion as
+ * the Add funds sheet: backdrop fade, panel rises from the bottom, smooth
+ * slide-out on close, background scroll locked.
+ */
+function SlideSheet({
+  title,
+  onClose,
+  children,
+  footer,
+  z = 70,
+}: {
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+  footer?: React.ReactNode;
+  z?: number;
+}) {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setVisible(true));
+    const prevBody = document.body.style.overflow;
+    const prevHtml = document.documentElement.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      cancelAnimationFrame(raf);
+      document.body.style.overflow = prevBody;
+      document.documentElement.style.overflow = prevHtml;
+    };
+  }, []);
+
+  const close = () => {
+    setVisible(false);
+    window.setTimeout(onClose, 280);
+  };
+
+  return (
+    <div className="fixed inset-0" style={{ zIndex: z }} role="dialog" aria-modal="true" aria-label={title}>
+      <button
+        type="button"
+        aria-label="Close"
+        onClick={close}
+        className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
+      />
+      <div
+        className={`absolute inset-x-0 bottom-0 mx-auto flex max-h-[92dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-3xl border-t border-white/[0.08] bg-[#101013] text-white shadow-[0_-20px_60px_-20px_rgba(0,0,0,0.8)] transition-transform duration-300 ease-out ${visible ? "translate-y-0" : "translate-y-full"}`}
+      >
+        <div className="shrink-0 pt-2.5">
+          <div className="mx-auto h-1 w-10 rounded-full bg-white/15" />
+          <div className="flex items-center justify-between px-5 pb-1 pt-3">
+            <p className="text-[15px] font-bold tracking-tight">{title}</p>
+            <button
+              type="button"
+              onClick={close}
+              aria-label="Close"
+              className="nav-tap grid size-8 place-items-center rounded-full bg-white/[0.06] text-white/60"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-6 pt-2">{children}</div>
+        {footer && (
+          <div className="shrink-0 border-t border-white/[0.06] bg-[#101013] px-5 pb-[max(env(safe-area-inset-bottom),1rem)] pt-3">
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   );
