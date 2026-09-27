@@ -17,6 +17,9 @@ const AppMarket = lazy(() =>
 const AppWallet = lazy(() =>
   import("@/components/oventric/app/AppWallet").then((m) => ({ default: m.AppWallet })),
 );
+const AppPurchases = lazy(() =>
+  import("@/components/oventric/app/AppPurchases").then((m) => ({ default: m.AppPurchases })),
+);
 const Academy = lazy(() =>
   import("@/components/oventric/Academy").then((m) => ({ default: m.Academy })),
 );
@@ -112,6 +115,7 @@ const SECTION_PATHS: Record<string, string> = {
   Feed: "/feed",
   Marketplace: "/marketplace",
   Wallet: "/wallet",
+  Purchases: "/",
 };
 
 /**
@@ -377,6 +381,8 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
       </AppOnlyGate>
     ) : active === "Marketplace" ? (
       isAppShell ? <AppMarket /> : <Marketplace />
+    ) : active === "Purchases" ? (
+      isAppShell ? <AppPurchases /> : <OventricHome onSelect={setActive} onCreate={() => handleCreate("sell")} />
     ) : active === "Academy" ? (
       <Academy hubMode={active === "Academy"} />
     ) : active === "Bounties" ? (

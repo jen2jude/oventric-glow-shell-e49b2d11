@@ -229,7 +229,7 @@ export function AppHome({
       {/* Quick actions — everything the bottom dock doesn't already cover */}
       <div className="mt-5 grid grid-cols-4 gap-2">
         {[
-          { icon: Package, label: "Purchases", run: () => navigate({ to: "/escrow" }) },
+          { icon: Package, label: "Purchases", run: () => onSelect("Purchases") },
           { icon: User, label: "Profile", run: () => openOwn("profile") },
           { icon: Store, label: "My shop", run: () => openOwn("shop") },
           { icon: Compass, label: "Explore", run: () => onSelect("Explore") },
