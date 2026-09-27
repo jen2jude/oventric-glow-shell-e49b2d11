@@ -304,7 +304,8 @@ export const saveKyc = createServerFn({ method: "POST" })
       .update({
         phone: data.phone,
         kyc_selfie_path: data.selfiePath,
-        kyc_id_path: data.idPath,
+        // Only touch the legacy ID column when a legacy client still sends one.
+        ...(data.idPath ? { kyc_id_path: data.idPath } : {}),
         kyc_completed_at: new Date().toISOString(),
         verification_tier: "TIER_3",
       })
