@@ -35,6 +35,9 @@ const CreatePanel = lazy(() =>
 const Messages = lazy(() =>
   import("@/components/oventric/Messages").then((m) => ({ default: m.Messages })),
 );
+const AppAccount = lazy(() =>
+  import("@/components/oventric/app/AppAccount").then((m) => ({ default: m.AppAccount })),
+);
 const AppMessages = lazy(() =>
   import("@/components/oventric/app/AppMessages").then((m) => ({ default: m.AppMessages })),
 
@@ -399,6 +402,8 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
       >
         <Bounties />
       </AppOnlyGate>
+    ) : active === "Profile" && isAppShell && !isDesktop ? (
+      <AppAccount onSelect={setActive} />
     ) : active === "Messages" ? (
       isAppShell ? <AppMessages /> : <Messages variant="page" />
     ) : active === "Circles" ? (
