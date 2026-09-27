@@ -4,7 +4,9 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Drawer as VaulDrawer } from "vaul";
+import { motion, useReducedMotion } from "motion/react";
 import { Sparkles, X, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { getCreatorCoachHistory } from "@/lib/dashboard/coach.functions";
 import { getMyFullProfile } from "@/lib/profiles.functions";
@@ -205,24 +207,102 @@ export function CreatorCoachDrawer({ open, onClose }: { open: boolean; onClose: 
 /** Floating coach button, available anywhere in the app for creators. */
 export function CreatorCoachLauncher() {
   const loadProfile = useServerFn(getMyFullProfile);
-  const { data: prof } = useQuery({
+  const { data: prof, refetch } = useQuery({
     queryKey: ["app-account-profile"],
     queryFn: () => loadProfile(),
     staleTime: 60_000,
+    refetchOnWindowFocus: true,
   });
   const [open, setOpen] = useState(false);
+  const [greeting, setGreeting] = useState<"welcome" | "hourly" | null>(null);
+  const reducedMotion = useReducedMotion();
+  const user = prof?.profile;
+
+  useEffect(() => {
+    const onComplete = () => { void refetch(); };
+    window.addEventListener("oventric:creator-onboarded", onComplete);
+    return () => window.removeEventListener("oventric:creator-onboarded", onComplete);
+  }, [refetch]);
+
+  useEffect(() => {
+    if (!user?.isCreator) { setGreeting(null); return; }
+    const chooseGreeting = () => {
+      if (document.visibilityState !== "visible" || open) return;
+      const pendingKey = `oventric:coach-welcome-pending:${user.userId}`;
+      const hourKey = `oventric:coach-hour:${user.userId}`;
+      const now = new Date();
+      const currentHour = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}-${now.getHours()}`;
+      try {
+        if (window.sessionStorage.getItem(pendingKey) === "waiting") return;
+        if (window.sessionStorage.getItem(pendingKey) === "ready") {
+          window.sessionStorage.removeItem(pendingKey);
+          window.localStorage.setItem(hourKey, currentHour);
+          setGreeting("welcome");
+        } else if (window.localStorage.getItem(hourKey) !== currentHour) {
+          window.localStorage.setItem(hourKey, currentHour);
+          setGreeting("hourly");
+        }
+      } catch {
+        // Storage may be disabled; the button still opens the coach.
+      }
+    };
+    chooseGreeting();
+    document.addEventListener("visibilitychange", chooseGreeting);
+    window.addEventListener("oventric:creator-welcome-ready", chooseGreeting);
+    const interval = window.setInterval(chooseGreeting, 60_000);
+    return () => {
+      document.removeEventListener("visibilitychange", chooseGreeting);
+      window.removeEventListener("oventric:creator-welcome-ready", chooseGreeting);
+      window.clearInterval(interval);
+    };
+  }, [user?.userId, user?.isCreator, open]);
+
+  useEffect(() => {
+    if (!greeting) return;
+    const timeout = window.setTimeout(() => setGreeting(null), 5_000);
+    return () => window.clearTimeout(timeout);
+  }, [greeting]);
+
   if (!prof?.profile?.isCreator) return null;
+  const hour = new Date().getHours();
+  const timeOfDay = hour >= 5 && hour < 12 ? "morning" : hour >= 12 && hour < 17 ? "afternoon" : hour >= 17 && hour < 21 ? "evening" : "night";
+  const name = user?.displayName?.trim().split(/\s+/)[0] || "creator";
   return (
     <>
       {!open && (
-        <button
-          type="button"
-          aria-label="Open Creator Coach"
-          onClick={() => setOpen(true)}
-          className="fixed bottom-24 right-4 z-[70] grid h-12 w-12 place-items-center rounded-full bg-gradient-to-br from-violet-500 to-[#E5484D] shadow-lg shadow-violet-500/30 active:scale-95"
+        <motion.div
+          initial={false}
+          animate={{ width: greeting ? "min(320px, calc(100vw - 32px))" : 48, height: greeting ? 116 : 48, borderRadius: greeting ? 10 : 999 }}
+          transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 210, damping: 24 }}
+          className="fixed bottom-24 right-4 z-[70] overflow-hidden border border-newsfeed-violet/35 bg-card text-card-foreground shadow-xl shadow-newsfeed-violet/20"
         >
-          <Sparkles className="h-5 w-5 text-white" />
-        </button>
+          {greeting && (
+            <motion.div
+              initial={reducedMotion ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="absolute inset-0 flex flex-col justify-center px-4 pr-14"
+            >
+              <span className="text-[13px] font-bold leading-tight text-foreground">
+                {greeting === "welcome" ? `Hi ${name}, welcome to your Creator Hub!` : `Good ${timeOfDay}, ${name}.`}
+              </span>
+              <span className="mt-1 text-[11px] leading-snug text-muted-foreground">
+                {greeting === "welcome"
+                  ? "I’m your Creator Coach. I’m here to help you make the most of your work."
+                  : "I’m here whenever you need a hand with your creative goals."}
+              </span>
+            </motion.div>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Open Creator Coach"
+            title="Open Creator Coach"
+            onClick={() => { setGreeting(null); setOpen(true); }}
+            className="absolute bottom-0 right-0 h-12 w-12 rounded-full bg-gradient-to-br from-newsfeed-violet to-newsfeed-coral text-primary-foreground hover:opacity-90"
+          >
+            <Sparkles className="h-5 w-5" />
+          </Button>
+        </motion.div>
       )}
       <CreatorCoachDrawer open={open} onClose={() => setOpen(false)} />
     </>
