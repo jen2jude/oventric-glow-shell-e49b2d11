@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ShoppingBag, CheckCircle2 } from "lucide-react";
 import type { ProductAttachment } from "@/lib/posts.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
-import { computeDisplayPrice } from "@/lib/fx-display";
+import { visibleProductPrice } from "@/lib/money-visibility";
 
 export function ProductAttachmentCard({ 
   product, 
@@ -13,7 +13,7 @@ export function ProductAttachmentCard({
   isAppShell?: boolean;
   className?: string;
 }) {
-  const { baseCurrency } = useOnboarding();
+  const { baseCurrency, balancesHidden } = useOnboarding();
   if (product.available === false) {
     return (
       <div className={`mt-3 ${isAppShell ? "mx-4 md:mx-0" : ""}`}>
@@ -31,7 +31,7 @@ export function ProductAttachmentCard({
   }
   // Use the product's publish-time currency + FX snapshot so the feed price is
   // identical to the marketplace and product page.
-  const priceLabel = computeDisplayPrice(
+  const priceLabel = visibleProductPrice(
     {
       price_usd: product.priceUsd,
       original_currency: (product.originalCurrency ?? "USD") as any,
@@ -39,7 +39,8 @@ export function ProductAttachmentCard({
       fx_snapshot: product.fxSnapshot ?? null,
     },
     baseCurrency,
-  ).formatted;
+    balancesHidden,
+  );
   const cardClass = "flex h-full items-stretch bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] rounded-[10px] overflow-hidden transition-colors group";
   const body = (
     <>
