@@ -49,6 +49,7 @@ export function AppFeed() {
   const like = useServerFn(toggleLike);
   const saveFn = useServerFn(setPostSavedFn);
   const deleteFn = useServerFn(deletePostFn);
+  const updateText = useServerFn(updatePostTextFn);
   const navigate = useNavigate();
   const { openGate } = useAuthGate() as any;
   const [posts, setPosts] = useState<Post[] | null>(null);
@@ -62,6 +63,24 @@ export function AppFeed() {
   const [reportFor, setReportFor] = useState<Post | null>(null);
   const [hidden, setHidden] = useState<Set<string>>(new Set());
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [editingPost, setEditingPost] = useState<{ id: string; text: string } | null>(null);
+  const [editSaving, setEditSaving] = useState(false);
+
+  const saveEdit = async () => {
+    if (!editingPost) return;
+    const { id, text } = editingPost;
+    setEditSaving(true);
+    try {
+      await updateText({ data: { id, text: text.trim() } });
+      setPosts((xs) => xs!.map((x) => (x.id === id ? { ...x, text: text.trim() } : x)));
+      setEditingPost(null);
+      toast.success("Post updated");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't update this post");
+    } finally {
+      setEditSaving(false);
+    }
+  };
 
   useEffect(() => {
     fetchPosts()
