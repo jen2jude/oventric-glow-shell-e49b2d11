@@ -175,11 +175,21 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
       e.sales++; e.revenueUSD += Number(o.total_usd || 0); byProd.set(o.product_id, e);
     }
 
-    // Creators-tab engagement: real watch time (user-initiated plays only), link clicks, downloads
-    const evRes = showIds.length
-      ? await sb.from("creator_post_events").select("post_id, kind, seconds, target").eq("author_id", me).limit(50000)
-      : { data: [] as any[] };
+    // Creators-tab engagement: real watch time (user-initiated plays only), link clicks, downloads, likes, comments
+    const [evRes, likeRes, comRes, visRes] = await Promise.all([
+      showIds.length
+        ? sb.from("creator_post_events").select("post_id, kind, seconds, target").eq("author_id", me).limit(50000)
+        : Promise.resolve({ data: [] as any[] }),
+      showIds.length ? sb.from("creator_post_likes").select("post_id").in("post_id", showIds).limit(50000) : Promise.resolve({ data: [] as any[] }),
+      showIds.length ? sb.from("creator_post_comments").select("post_id").in("post_id", showIds).neq("user_id", me).limit(50000) : Promise.resolve({ data: [] as any[] }),
+      sb.from("seller_view_events").select("kind").eq("seller_id", me).in("kind", ["profile_visit", "profile_visit_post"]).limit(50000),
+    ]);
     const events = (evRes.data ?? []) as { post_id: string; kind: string; seconds: number; target: string | null }[];
+    const showLikes = (likeRes.data ?? []) as { post_id: string }[];
+    const showComments = (comRes.data ?? []) as { post_id: string }[];
+    const visits = (visRes.data ?? []) as { kind: string }[];
+    const profileVisits = visits.length;
+    const profileVisitsFromPosts = visits.filter((v) => v.kind === "profile_visit_post").length;
     const plays = events.filter((e) => e.kind === "play");
     const clicks = events.filter((e) => e.kind !== "play");
     const watchSeconds = Math.round(plays.reduce((a, e) => a + Number(e.seconds || 0), 0));
@@ -202,9 +212,11 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
         freeDownloads: ords.filter((o) => Number(o.total_usd || 0) === 0).length,
         paidDownloads: ords.filter((o) => Number(o.total_usd || 0) > 0).length,
         clicks: mine.filter((e) => e.kind !== "play").length,
+        likes: showLikes.filter((l) => l.post_id === sh.id).length,
+        comments: showComments.filter((c) => c.post_id === sh.id).length,
       };
-    }).sort((a, b) => (b.plays + b.clicks + b.freeDownloads + b.paidDownloads) - (a.plays + a.clicks + a.freeDownloads + a.paidDownloads)).slice(0, 10);
-    const showActions = plays.length + clicks.length + showOrders.length;
+    }).sort((a, b) => (b.plays + b.clicks + b.freeDownloads + b.paidDownloads + b.likes + b.comments) - (a.plays + a.clicks + a.freeDownloads + a.paidDownloads + a.likes + a.comments)).slice(0, 10);
+    const showActions = plays.length + clicks.length + showOrders.length + showLikes.length + showComments.length;
 
     return {
       followers: followerIds.size,
