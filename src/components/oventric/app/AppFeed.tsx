@@ -45,6 +45,7 @@ import { haptic } from "@/lib/haptics";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import type { Currency } from "@/lib/onboarding/OnboardingContext";
 import { visibleProductPrice } from "@/lib/money-visibility";
+import { trackPostView } from "@/lib/post-views";
 import type { ProductDTO } from "@/lib/marketplace.functions";
 
 type Post = Awaited<ReturnType<typeof listPosts>>["posts"][number];
@@ -644,7 +645,7 @@ export function AppFeed() {
         {visiblePosts.map((p) => {
           const img = p.media_type === "video" ? p.poster_url : p.media_url;
           return (
-            <article key={p.id} className="px-4 py-3 active:bg-white/[0.02]">
+            <article key={p.id} ref={trackPostView(p.id)} className="px-4 py-3 active:bg-white/[0.02]">
               {/* Header row */}
               <div className="flex items-start gap-3">
                 <button

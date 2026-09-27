@@ -66,8 +66,8 @@ import {
   PhotoGridSkeleton,
 } from "@/components/oventric/skeletons";
 import { formatMoney } from "@/lib/fx-display";
-import { visibleMoney, usdEquivalent } from "@/lib/money-visibility";
-import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
+import { visibleMoney, usdEquivalent, visibleProductPrice } from "@/lib/money-visibility";
+import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { PurchaseAssistantPanel } from "@/components/oventric/PurchaseAssistantPanel";
 import { listMySales, type SaleDTO } from "@/lib/fulfilment.functions";
 import { OrderFulfilmentRoadmap } from "@/components/oventric/OrderFulfilmentRoadmap";
@@ -738,6 +738,7 @@ function ListingsList({
 }) {
   const [filter, setFilter] = useState<"all" | "pending" | "active" | "rejected">("all");
   const [sellOpen, setSellOpen] = useState(false);
+  const { homeCurrency, balancesHidden } = useOnboarding();
 
   if (rows === null) {
     return <ListingsSkeleton />;
@@ -901,7 +902,11 @@ function ListingsList({
                       {p.name}
                     </Link>
                     <div className="text-xs text-slate-400 md:text-slate-500">
-                      ${p.priceUSD.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                      {visibleProductPrice(
+                        { price_usd: p.priceUSD, original_currency: p.originalCurrency, original_amount: p.originalAmount, fx_snapshot: p.fxSnapshot },
+                        (homeCurrency ?? "USD") as Currency,
+                        balancesHidden,
+                      )}
                       {p.location ? (
                         <span className="ml-2 inline-flex items-center gap-1">
                           <MapPin className="w-3 h-3" /> {p.location}
