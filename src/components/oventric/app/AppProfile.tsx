@@ -170,8 +170,7 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
   }
 
   const verified =
-    profile.verificationTier === "verified" ||
-    profile.verificationTier === "pro";
+    !!profile.verificationTier && profile.verificationTier !== "TIER_0";
 
   return (
     <div className="min-h-dvh bg-[#0A0A0B] pb-32">
