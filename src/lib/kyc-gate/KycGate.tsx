@@ -20,7 +20,6 @@ import {
   X,
   AlertTriangle,
   Phone,
-  IdCard,
   LifeBuoy,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -244,7 +243,6 @@ export function KycGateProvider({ children }: { children: ReactNode }) {
   const [kycCompleted, setKycCompleted] = useState(false);
   const [mode, setMode] = useState<KycMode | null>(null);
   const [referencePath, setReferencePath] = useState<string | null>(null);
-  const [idPath, setIdPath] = useState<string | null>(null);
   const pendingRef = useRef<null | (() => void | Promise<void>)>(null);
   const getStatus = useServerFn(getStatusFn);
   const lastCheckedRef = useRef<string | null>(null);
@@ -253,7 +251,6 @@ export function KycGateProvider({ children }: { children: ReactNode }) {
     if (!checked || !session?.user?.id) {
       setKycCompleted(false);
       setReferencePath(null);
-      setIdPath(null);
       return;
     }
     if (lastCheckedRef.current === session.user.id) return;
@@ -262,7 +259,6 @@ export function KycGateProvider({ children }: { children: ReactNode }) {
       .then((s) => {
         setKycCompleted(s.kycCompleted);
         setReferencePath(s.kycSelfiePath);
-        setIdPath(s.kycIdPath ?? null);
       })
       .catch(() => {
         /* fail closed: user will re-enrol */
@@ -281,12 +277,11 @@ export function KycGateProvider({ children }: { children: ReactNode }) {
   }, []);
 
 
-  const handleComplete = useCallback((paths?: { selfie: string; id: string }) => {
+  const handleComplete = useCallback((paths?: { selfie: string }) => {
     setMode(null);
     if (paths) {
       setKycCompleted(true);
       setReferencePath(paths.selfie);
-      setIdPath(paths.id);
     }
     const cb = pendingRef.current;
     pendingRef.current = null;
@@ -310,7 +305,6 @@ export function KycGateProvider({ children }: { children: ReactNode }) {
         <KycLivenessModal
           mode={mode}
           referencePath={referencePath}
-          idReferencePath={idPath}
           onComplete={handleComplete}
           onClose={handleClose}
         />
@@ -325,32 +319,23 @@ export function KycGateProvider({ children }: { children: ReactNode }) {
 
 type Step =
   | "phone"
-  | "id-camera"
-  | "id-capturing"
-  | "id-review"
   | "selfie-camera"
   | "selfie-capturing"
   | "review"
   | "matching"
-  | "id-matching"
   | "success"
   | "mismatch"
-  | "id-mismatch"
   | "fallback";
-
-type MatchPhase = "selfie" | "id";
 
 function KycLivenessModal({
   mode,
   referencePath,
-  idReferencePath,
   onComplete,
   onClose,
 }: {
   mode: KycMode;
   referencePath: string | null;
-  idReferencePath: string | null;
-  onComplete: (paths?: { selfie: string; id: string }) => void;
+  onComplete: (paths?: { selfie: string }) => void;
   onClose: () => void;
 }) {
   const [step, setStep] = useState<Step>(mode === "enroll" ? "phone" : "selfie-camera");
@@ -359,15 +344,10 @@ function KycLivenessModal({
   const [countdown, setCountdown] = useState(3);
   const [selfieBlob, setSelfieBlob] = useState<Blob | null>(null);
   const [selfieUrl, setSelfieUrl] = useState<string | null>(null);
-  const [idBlob, setIdBlob] = useState<Blob | null>(null);
-  const [idUrl, setIdUrl] = useState<string | null>(null);
   const [referenceUrl, setReferenceUrl] = useState<string | null>(null);
-  const [idReferenceUrl, setIdReferenceUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [selfieAttempts, setSelfieAttempts] = useState(0);
-  const [idAttempts, setIdAttempts] = useState(0);
-  const [matchPhase, setMatchPhase] = useState<MatchPhase>("selfie");
   const [matchDebug, setMatchDebug] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -376,7 +356,6 @@ function KycLivenessModal({
   const recordLiveness = useServerFn(recordLivenessFn);
   const submitSupport = useServerFn(submitKycSupportFn);
 
-  const isIdStep = step === "id-camera" || step === "id-capturing";
   const isSelfieStep = step === "selfie-camera" || step === "selfie-capturing";
 
   useEffect(() => {
@@ -399,26 +378,17 @@ function KycLivenessModal({
           if (data?.signedUrl) setReferenceUrl(data.signedUrl);
         });
     }
-    if (idReferencePath) {
-      supabase.storage
-        .from("kyc-selfies")
-        .createSignedUrl(idReferencePath, 300)
-        .then(({ data }) => {
-          if (data?.signedUrl) setIdReferenceUrl(data.signedUrl);
-        });
-    }
-  }, [mode, referencePath, idReferencePath]);
+  }, [mode, referencePath]);
 
-  // Start camera when entering an id-camera or selfie-camera step.
+  // Start camera when entering the selfie-camera step.
   useEffect(() => {
-    if (!isIdStep && !isSelfieStep) return;
-    const facing = isIdStep ? "environment" : "user";
+    if (!isSelfieStep) return;
     let cancelled = false;
     const start = async () => {
       setError(null);
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: facing, width: { ideal: 1280 }, height: { ideal: 720 } },
+          video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
           audio: false,
         });
         if (cancelled) {
@@ -434,7 +404,7 @@ function KycLivenessModal({
         setError(
           e instanceof Error && e.name === "NotAllowedError"
             ? "Camera permission denied. Enable camera access in your browser to continue."
-            : "Could not access your camera. Only live capture is accepted for KYC.",
+            : "Could not access your camera. Only live capture is accepted for verification.",
         );
       }
     };
@@ -444,7 +414,7 @@ function KycLivenessModal({
       streamRef.current?.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
     };
-  }, [isIdStep, isSelfieStep]);
+  }, [isSelfieStep]);
 
   // Countdown → capture frame
   useEffect(() => {
