@@ -547,7 +547,7 @@ export function ProfileDropdown({ trigger = "dropdown" }: { trigger?: "dropdown"
         >
           <span className="grid size-8 shrink-0 place-items-center rounded-[8px] bg-gradient-to-br from-newsfeed-violet to-newsfeed-coral text-white"><Sparkles className="h-4 w-4" aria-hidden /></span>
           <div className="min-w-0">
-            <div className="font-semibold truncate">Creator Hub</div>
+            <div className="font-semibold truncate">Seller Hub</div>
             <div className="truncate text-[10px] text-newsfeed-muted">
               Revenue, shop visits, engagement and growth
             </div>

@@ -412,7 +412,7 @@ function DashboardPage() {
             <Users className="w-5 h-5 shrink-0" /> <span className="truncate">Social</span>
           </TabButton>
           <TabButton active={tab === "creator"} onClick={() => setTab("creator")}>
-            <TrendingUp className="w-5 h-5 shrink-0" /> <span className="truncate">Creator Hub</span>
+            <TrendingUp className="w-5 h-5 shrink-0" /> <span className="truncate">Seller Hub</span>
           </TabButton>
         </nav>
 

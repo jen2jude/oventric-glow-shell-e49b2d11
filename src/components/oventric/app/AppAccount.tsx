@@ -195,7 +195,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
         </span>
       </button>
 
-      {/* Creator Hub spotlight */}
+      {/* Seller Hub spotlight */}
       {p?.isCreator && (
         <button
           type="button"
@@ -209,7 +209,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
             <Sparkles className="h-5 w-5 text-white" />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-[15px] font-semibold">Creator Hub</span>
+            <span className="block text-[15px] font-semibold">Seller Hub</span>
             <span className="block truncate text-[11px] text-white/50">
               Revenue, shop visits, engagement and growth
             </span>
