@@ -133,7 +133,7 @@ function Bubble({
   return (
     <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[78%] rounded-[22px] px-4 py-3 text-sm ${
+        className={`max-w-[78%] rounded-[22px] px-3.5 py-2 text-sm ${
           mine
             ? "rounded-br-lg bg-[#E5484D] text-white shadow-sm"
             : "rounded-bl-lg border border-white/10 bg-white/[0.06] text-slate-100 shadow-sm"
@@ -887,7 +887,7 @@ export function AppMessages({ initialThreadId, onClose }: AppMessagesProps) {
 
         <div
           ref={scrollRef}
-          className="flex-1 min-h-0 overflow-y-auto overscroll-y-contain px-4 py-5 space-y-3"
+          className="flex-1 min-h-0 overflow-y-auto overscroll-y-contain px-4 py-5 space-y-1.5"
         >
           {loadingMessages ? (
             <div className="text-xs text-slate-500 text-center py-8 flex items-center justify-center gap-2">
