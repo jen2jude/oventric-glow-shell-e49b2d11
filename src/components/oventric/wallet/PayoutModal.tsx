@@ -553,20 +553,8 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
             )}
           </div>
         </div>
-      </div>
-
-      {/* Bottom CTA */}
-      <div className="shrink-0 bg-[#0A0A0B]/95 backdrop-blur border-t border-white/5 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))]">
-        <button
-          onClick={openReview}
-          disabled={submitting}
-          className="w-full bg-[#E5484D] text-white font-black py-3.5 rounded-[10px] disabled:opacity-50"
-        >
-          Review Withdrawal
-        </button>
-        <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 mt-2">
-          <Lock className="w-3 h-3" /> Secured by Oventric
-        </div>
+    </>
+  );
     </>
   );
 
