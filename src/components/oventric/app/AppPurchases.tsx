@@ -7,7 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { listEscrowInbox, type EscrowInboxItem } from "@/lib/escrow-inbox.functions";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { haptic } from "@/lib/haptics";
-import { formatMoney } from "@/lib/fx-display";
 import { visibleMoney, usdEquivalent } from "@/lib/money-visibility";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { AppOrderSheet } from "./AppOrderSheet";

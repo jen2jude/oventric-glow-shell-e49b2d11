@@ -28,9 +28,9 @@ import { haptic } from "@/lib/haptics";
  */
 export function AppWallet() {
   const navigate = useNavigate();
-  const { baseCurrency, balancesHidden, toggleBalancesHidden } = useOnboarding();
+  const { homeCurrency, balancesHidden, toggleBalancesHidden } = useOnboarding();
   const { isAuthenticated, openGate } = useAuthGate();
-  const currency = (baseCurrency ?? "USD") as Currency;
+  const currency = (homeCurrency ?? "USD") as Currency;
 
   const fetchBalances = useServerFn(getWalletBalances);
   const fetchTx = useServerFn(listWalletTransactions);

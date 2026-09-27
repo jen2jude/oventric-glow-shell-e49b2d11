@@ -7,7 +7,6 @@ import { CheckCircle2, Loader2, MessageCircle, ShieldAlert, Truck, ExternalLink 
 import { AppSheet } from "./AppSheet";
 import { buyerConfirmReceipt, markOrderDelivered, openOrderDispute } from "@/lib/fulfilment.functions";
 import type { EscrowInboxItem } from "@/lib/escrow-inbox.functions";
-import { formatMoney } from "@/lib/fx-display";
 import { visibleMoney, usdEquivalent } from "@/lib/money-visibility";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { haptic } from "@/lib/haptics";

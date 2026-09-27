@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { Header } from "@/components/oventric/Header";
 import { listEscrowInbox, type EscrowInboxItem } from "@/lib/escrow-inbox.functions";
-import { formatMoney } from "@/lib/fx-display";
 import { visibleMoney, usdEquivalent } from "@/lib/money-visibility";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 
@@ -293,6 +292,7 @@ function EscrowInboxPage() {
                   <span className="font-bold text-slate-900">
                     {visibleMoney(o.displayTotal, o.displayCurrency, balancesHidden)}
                   </span>
+                  <span className="text-[10px] text-slate-500">{usdEquivalent(o.displayTotal, o.displayCurrency, balancesHidden)}</span>
                   <span className="inline-flex items-center gap-1">
                     {o.escrowStatus === "held" ? (
                       <Clock className="h-3.5 w-3.5 text-amber-500" />

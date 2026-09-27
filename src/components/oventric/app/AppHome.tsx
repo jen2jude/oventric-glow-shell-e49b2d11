@@ -19,7 +19,7 @@ import { useServerFn } from "@tanstack/react-start";
 
 import { listProducts, type ProductDTO } from "@/lib/marketplace.functions";
 import { getWalletBalances } from "@/lib/wallet.functions";
-import { safeFormatDisplayPrice } from "@/lib/fx-display";
+import { computeDisplayPrice } from "@/lib/fx-display";
 import { usdEquivalent, visibleMoney } from "@/lib/money-visibility";
 import type { Currency } from "@/lib/onboarding/OnboardingContext";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
@@ -53,13 +53,13 @@ export function AppHome({
   const [notifOpen, setNotifOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [quickViewId, setQuickViewId] = useState<string | null>(null);
-  const { baseCurrency, balancesHidden, toggleBalancesHidden } = useOnboarding();
+  const { homeCurrency, balancesHidden, toggleBalancesHidden } = useOnboarding();
   const { isAuthenticated } = useAuthGate();
   const { messages: unreadChats, total: unreadNotifs } = useUnreadCounts();
-  const currency = (baseCurrency ?? "USD") as Currency;
+  const currency = (homeCurrency ?? "USD") as Currency;
 
   const priceOf = (p: ProductDTO) =>
-    safeFormatDisplayPrice(
+    p.priceUSD === 0 ? "Free" : visibleMoney(computeDisplayPrice(
       {
         price_usd: p.priceUSD,
         original_currency: p.originalCurrency,
@@ -67,7 +67,7 @@ export function AppHome({
         fx_snapshot: p.fxSnapshot,
       },
       currency,
-    );
+    ).value, currency, balancesHidden);
 
   const fetchProducts = useServerFn(listProducts);
   const fetchBalances = useServerFn(getWalletBalances);
