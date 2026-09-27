@@ -224,7 +224,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
           type="button"
           onClick={() => {
             haptic("select");
-            navigate({ to: "/dashboard", search: { tab: "creatorhub" } });
+            navigate({ to: "/creator-hub" });
           }}
           className="mt-2 flex w-full items-center gap-3 rounded-[16px] border border-fuchsia-400/20 bg-gradient-to-br from-fuchsia-500/20 via-violet-500/10 to-transparent p-3.5 text-left active:bg-fuchsia-500/25"
         >
