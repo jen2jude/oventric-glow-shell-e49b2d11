@@ -285,7 +285,8 @@ function BoardSheet({
                 if (savedCreatorPostId) {
                   setCreatorPostId(savedCreatorPostId);
                 } else if (it.url) {
-                  window.location.assign(it.url);
+                  if (it.url.startsWith("/")) navigateInApp(it.url);
+                  else window.location.assign(it.url);
                 }
               }}
             >

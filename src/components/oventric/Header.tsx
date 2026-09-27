@@ -227,7 +227,7 @@ export function Header({
       <SiteNavbar
         onSelect={siteNavbarOnSelect ?? ((section) => {
           if (section === "Home") {
-            window.location.href = "/";
+            navigateInApp("/");
             return;
           }
           window.dispatchEvent(new CustomEvent("oventric:navigate", { detail: { section } }));

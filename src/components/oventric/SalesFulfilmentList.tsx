@@ -197,7 +197,7 @@ export function SalesFulfilmentList({
 
   const messageBuyer = (buyerId: string) => {
     if (typeof window === "undefined") return;
-    window.location.href = `/?dm=${buyerId}`;
+    navigateInApp(`/?dm=${buyerId}`);
   };
 
   return (

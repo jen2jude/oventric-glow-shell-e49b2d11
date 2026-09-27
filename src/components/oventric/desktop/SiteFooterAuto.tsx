@@ -24,7 +24,7 @@ export function SiteFooterAuto({ className = "" }: { className?: string }) {
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
-    window.location.href = `/?section=${encodeURIComponent(section)}`;
+    navigateInApp(`/?section=${encodeURIComponent(section)}`);
   };
 
   return (

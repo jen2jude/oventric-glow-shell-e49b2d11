@@ -798,9 +798,7 @@ function WatercoolerPost({
         )}
         <button
           onClick={() =>
-            (window.location.href = p.authorSlug
-              ? `/profile/${p.authorSlug}`
-              : `/profile/${p.authorId}`)
+            navigateInApp(p.authorSlug ? `/profile/${p.authorSlug}` : `/profile/${p.authorId}`)
           }
           className="text-sm font-semibold text-white hover:text-emerald-300 md:text-slate-900"
         >
@@ -886,7 +884,7 @@ function MembersTab({ circle }: { circle: CircleSummary }) {
           )}
           <button
             onClick={() =>
-              (window.location.href = m.slug ? `/profile/${m.slug}` : `/profile/${m.userId}`)
+              navigateInApp(m.slug ? `/profile/${m.slug}` : `/profile/${m.userId}`)
             }
             className="min-w-0 flex-1 text-left"
           >

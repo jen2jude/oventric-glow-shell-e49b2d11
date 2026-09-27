@@ -117,7 +117,7 @@ export function OrderFulfilmentRoadmap({
     if (window.location.pathname === "/") {
       window.dispatchEvent(new CustomEvent("oventric:open-dm", { detail: { peerId } }));
     } else {
-      window.location.href = `/?dm=${peerId}`;
+      navigateInApp(`/?dm=${peerId}`);
     }
   };
 

@@ -153,7 +153,7 @@ export function StoryViewerModal({
         const res: any = await react({ data: { storyId: item.id, clipOnly: true } });
         if (res?.peerId && !res.skipped) {
           onClose();
-          window.location.href = `/?section=Messages&dm=${res.peerId}`;
+          navigateInApp(`/?section=Messages&dm=${res.peerId}`);
         }
       } catch {
         /* silent */
