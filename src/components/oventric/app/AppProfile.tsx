@@ -158,7 +158,7 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
     enabled: isOwn,
     staleTime: 30_000,
   });
-  const pendingFollowReqCount = followReqData?.requests?.length ?? 0;
+  const pendingFollowReqCount = followReqData?.length ?? 0;
 
   const shareProfile = async () => {
     const url = `${window.location.origin}/profile/${idOrSlug}`;
