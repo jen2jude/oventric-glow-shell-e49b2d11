@@ -77,11 +77,12 @@ export function resolveLaunchContext(): LaunchContext {
   // 2. Installed to the home screen (and not the editor iframe).
   if (!inIframe() && isStandaloneDisplay()) return "app";
 
-  // 3. Sticky choice from earlier in this session.
+  // 3. Sticky choice from earlier in this session. A stored "browser" pick
+  //    from the old preview switch is cleared so the app default wins.
   try {
     const stored = window.sessionStorage.getItem(APP_MODE_KEY);
     if (stored === "app") return "app";
-    if (stored === "browser") return "browser";
+    if (stored === "browser") window.sessionStorage.removeItem(APP_MODE_KEY);
   } catch {
     /* ignore */
   }
