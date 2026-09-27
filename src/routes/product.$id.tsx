@@ -586,13 +586,13 @@ function ProductPage() {
                   const cur = gallery[activeImage] ?? gallery[0];
                   return (
                     <>
-                         <div className={`product-gallery relative flex w-full items-center justify-center overflow-hidden bg-newsfeed-coral-soft ${isAppShell ? "aspect-[16/10] rounded-none border-0 sm:rounded-[10px]" : "aspect-[4/3] rounded-[10px] border border-newsfeed-line"}`}>
+                         <div className={`product-gallery relative flex w-full items-center justify-center overflow-hidden bg-newsfeed-coral-soft ${isAppShell ? "aspect-[16/9] rounded-none border-0 sm:rounded-[10px]" : "aspect-[4/3] rounded-[10px] border border-newsfeed-line"}`}>
                           {cur ? (
                             <ResponsiveImage
                               sizes="(min-width: 1024px) 640px, 100vw"
                               src={cur}
                               alt={product.name}
-                               className={`absolute inset-0 w-full h-full ${isAppShell ? "object-contain" : "object-cover"}`}
+                               className={`absolute inset-0 w-full h-full object-cover`}
                               loading="eager"
                               fetchPriority="high"
                               decoding="async"
@@ -654,12 +654,12 @@ function ProductPage() {
                           )}
                         </div>
                          {gallery.length > 1 && (
-                          <div className={`flex overflow-x-auto scrollbar-none ${isAppShell ? "gap-2 px-4 py-3 sm:px-0" : "mt-3 gap-3"}`}>
+                          <div className={`flex overflow-x-auto scrollbar-none ${isAppShell ? "gap-1.5 px-4 py-2 sm:px-0" : "mt-3 gap-3"}`}>
                           {gallery.map((url, i) => (
                             <button
                               key={url}
                               onClick={() => setActiveImage(i)}
-                               className={`${isAppShell ? "h-12 w-12 rounded-md" : "h-16 w-16 rounded-[10px]"} shrink-0 overflow-hidden border-2 bg-newsfeed-surface ${i === activeImage ? "border-newsfeed-coral" : "border-newsfeed-line"}`}
+                               className={`${isAppShell ? "h-10 w-10 rounded-md" : "h-16 w-16 rounded-[10px]"} shrink-0 overflow-hidden border-2 bg-newsfeed-surface ${i === activeImage ? "border-newsfeed-coral" : "border-newsfeed-line"}`}
                             >
                               <img
                                 src={url}
