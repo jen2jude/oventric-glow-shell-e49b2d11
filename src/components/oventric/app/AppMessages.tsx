@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Link } from "@tanstack/react-router";
 import { Drawer as VaulDrawer } from "vaul";
 import { Drawer, DrawerOverlay, DrawerPortal } from "@/components/ui/drawer";
@@ -69,6 +69,29 @@ function formatTime(iso: string) {
   if (now.getTime() - d.getTime() < 7 * dayMs)
     return d.toLocaleDateString([], { weekday: "short" });
   return d.toLocaleDateString();
+}
+
+// Grouping key + label for chat time dividers: one section per minute.
+function formatStamp(iso: string) {
+  const d = new Date(iso);
+  const now = new Date();
+  const time = d
+    .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    .toLowerCase()
+    .replace(/\s/g, " ");
+  if (d.toDateString() === now.toDateString()) return time;
+  const dayMs = 86400000;
+  if (now.getTime() - d.getTime() < 7 * dayMs)
+    return `${d.toLocaleDateString([], { weekday: "short" })} ${time}`;
+  return `${d.toLocaleDateString()} ${time}`;
+}
+
+function TimeDivider({ label }: { label: string }) {
+  return (
+    <div className="my-2.5 flex justify-center" aria-hidden="true">
+      <span className="text-[10px] font-medium tracking-wide text-[#E5484D]/80">{label}</span>
+    </div>
+  );
 }
 
 function relative(iso: string) {
