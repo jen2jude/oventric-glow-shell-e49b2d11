@@ -567,9 +567,11 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
         <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 mt-2">
           <Lock className="w-3 h-3" /> Secured by Oventric
         </div>
-      </div>
+    </>
+  );
 
-
+  const overlays = (
+    <>
       {addKind && (
         <AddMethodSheet
           kind={addKind}
@@ -593,6 +595,7 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
           accountName={usdName}
           network={usdChannel === "wallet" ? usdNetwork : ""}
           submitting={submitting}
+          sheet={isApp}
           onClose={() => setReview(false)}
           onConfirm={() => setPinMode(pinQ.data?.hasPin ? "verify" : "create")}
         />
@@ -606,12 +609,13 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
           net={net}
           recipient={activeRecipient}
           submitting={submitting}
+          sheet={isApp}
           onClose={() => setReview(false)}
           onConfirm={() => setPinMode(pinQ.data?.hasPin ? "verify" : "create")}
         />
       )}
 
-      {done && <SuccessSplash detail={done} onClose={onClose} />}
+      {done && <SuccessSplash detail={done} sheet={isApp} onClose={onClose} />}
 
       {pinMode && (
         <PinSheet
@@ -623,7 +627,45 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
           }}
         />
       )}
-    </div>
+    </>
+  );
+
+  // The website keeps its full-page withdrawal screen; the app gets the
+  // signature slide-up sheet, matching Add funds.
+  if (!isApp) {
+    return (
+      <div className="fixed inset-0 z-[60] bg-[#0A0A0B] flex flex-col">
+        {/* Header */}
+        <div className="shrink-0 bg-[#0A0A0B]/95 backdrop-blur border-b border-white/5">
+          <div className="flex items-center justify-between px-4 py-4">
+            <button onClick={onClose} className="p-2 -ml-2 text-white" aria-label="Back">
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h1 className="text-base font-black text-white">Withdraw Funds</h1>
+            <span className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400">
+              <HelpCircle className="w-4 h-4" />
+            </span>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-6 pt-4">{form}</div>
+
+        <div className="shrink-0 bg-[#0A0A0B]/95 backdrop-blur border-t border-white/5 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))]">
+          {cta}
+        </div>
+
+        {overlays}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <SlideSheet title="Withdraw funds" onClose={onClose} footer={cta}>
+        {form}
+      </SlideSheet>
+      {overlays}
+    </>
   );
 }
 
