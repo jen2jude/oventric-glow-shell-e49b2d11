@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   Heart,
   MessageCircle,
@@ -23,6 +24,8 @@ import { toast } from "sonner";
 import { AppSheet } from "@/components/oventric/app/AppSheet";
 import { listPosts, toggleLike, setPostSaved as setPostSavedFn, deletePost as deletePostFn, updatePostText as updatePostTextFn } from "@/lib/posts.functions";
 import { listFollowing, listFollowers } from "@/lib/follows.functions";
+import { listProducts } from "@/lib/marketplace.functions";
+import { ProductQuickView } from "./ProductQuickView";
 import { EDIT_WINDOW_MS } from "@/lib/post-edit";
 import { togglePostSet, getSavedPosts } from "@/components/oventric/PostActionsMenu";
 import { ReportModal } from "@/components/oventric/ReportModal";
@@ -31,7 +34,9 @@ import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
-import { computeDisplayPrice } from "@/lib/fx-display";
+import type { Currency } from "@/lib/onboarding/OnboardingContext";
+import { computeDisplayPrice, safeFormatDisplayPrice } from "@/lib/fx-display";
+import type { ProductDTO } from "@/lib/marketplace.functions";
 
 type Post = Awaited<ReturnType<typeof listPosts>>["posts"][number];
 
@@ -69,11 +74,29 @@ export function AppFeed() {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [editingPost, setEditingPost] = useState<{ id: string; text: string } | null>(null);
   const [editSaving, setEditSaving] = useState(false);
-  const [tab, setTab] = useState<"foryou" | "following">("foryou");
+  const [tab, setTab] = useState<"foryou" | "following" | "shop">("foryou");
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
   const [followerIds, setFollowerIds] = useState<Set<string> | null>(null);
   const loadFollowing = useServerFn(listFollowing);
   const loadFollowers = useServerFn(listFollowers);
+  const [quickViewId, setQuickViewId] = useState<string | null>(null);
+  const fetchProducts = useServerFn(listProducts);
+  const { data: shopProducts } = useQuery({
+    queryKey: ["app-feed-shop-products"],
+    queryFn: () => fetchProducts(),
+    staleTime: 60_000,
+    enabled: tab === "shop",
+  });
+  const shopPriceOf = (p: ProductDTO) =>
+    safeFormatDisplayPrice(
+      {
+        price_usd: p.priceUSD,
+        original_currency: p.originalCurrency,
+        original_amount: p.originalAmount,
+        fx_snapshot: p.fxSnapshot,
+      },
+      (baseCurrency ?? "USD") as Currency,
+    );
 
   const saveEdit = async () => {
     if (!editingPost) return;
@@ -178,6 +201,7 @@ export function AppFeed() {
   const visiblePosts = posts
     .filter((p) => !hidden.has(p.id))
     .filter((p) => {
+      if (tab === "shop") return (p.product_attachments?.length ?? 0) > 0;
       if (tab !== "following") return true;
       if (!followingIds || !followerIds) return true; // still loading
       return followingIds.has(p.author_id) || followerIds.has(p.author_id);
@@ -192,6 +216,7 @@ export function AppFeed() {
             [
               { key: "foryou", label: "For you" },
               { key: "following", label: "Following" },
+              { key: "shop", label: "Shop" },
             ] as const
           ).map((t) => (
             <button
@@ -212,11 +237,48 @@ export function AppFeed() {
         </div>
       </div>
 
+      {/* Shop tab: product rail above the shoppable posts */}
+      {tab === "shop" && (shopProducts?.length ?? 0) > 0 && (
+        <div className="border-b border-white/5 py-3">
+          <p className="px-4 text-[11px] font-bold uppercase tracking-wider text-white/40">
+            Trending in the market
+          </p>
+          <div className="mt-2 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-4 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {shopProducts!.slice(0, 10).map((sp) => (
+              <button
+                key={sp.id}
+                onClick={() => {
+                  haptic("select");
+                  setQuickViewId(sp.id);
+                }}
+                className="w-[130px] shrink-0 snap-start overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] text-left active:bg-white/[0.06]"
+              >
+                <div className="aspect-square w-full bg-neutral-900">
+                  {sp.coverUrl ? (
+                    <img src={sp.coverUrl} alt={sp.name} loading="lazy" className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <ShoppingBag className="h-5 w-5 text-white/10" />
+                    </div>
+                  )}
+                </div>
+                <div className="p-2">
+                  <p className="line-clamp-1 text-[11px] font-semibold text-white">{sp.name}</p>
+                  <p className="mt-0.5 text-[11px] font-bold text-[#E5484D]">{shopPriceOf(sp)}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {visiblePosts.length === 0 && (
         <div className="flex items-center justify-center px-8 py-20 text-center text-[13px] text-white/50">
           {tab === "following"
             ? "No posts from people you follow yet — follow creators to fill this feed."
-            : "No posts yet — tap + to share the first one."}
+            : tab === "shop"
+              ? "No shoppable posts yet — sellers can attach products to their posts."
+              : "No posts yet — tap + to share the first one."}
         </div>
       )}
 
@@ -609,6 +671,12 @@ export function AppFeed() {
           viewerInitials="OV"
         />
       )}
+
+      <ProductQuickView
+        productId={quickViewId}
+        currency={(baseCurrency ?? "USD") as string}
+        onClose={() => setQuickViewId(null)}
+      />
     </div>
   );
 }
