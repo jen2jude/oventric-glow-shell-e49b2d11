@@ -4,7 +4,7 @@
  * USD_SELL_MARGIN worse than the live mid-market rate. The usual withdrawal
  * fee is deducted in home currency first.
  */
-export const USD_SELL_MARGIN = 0.01;
+export const USD_SELL_MARGIN = 0.03;
 export const USD_MIN_WITHDRAWAL = 5;
 
 /** Home-currency units per 1 USD that the user pays. */
