@@ -14,6 +14,8 @@ import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { Conversation, ConversationContent, ConversationScrollButton } from "@/components/ai-elements/conversation";
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import { PromptInput, PromptInputBody, PromptInputTextarea, PromptInputFooter, PromptInputSubmit } from "@/components/ai-elements/prompt-input";
+import { coachPageKey, pickCoachPrompt, type CoachPrompt } from "@/lib/coach-page-prompts";
+import { playNotificationSound } from "@/lib/notification-sound";
 
 const SUGGESTIONS = [
   "How did I do this week?",
@@ -41,7 +43,7 @@ function useAccessToken() {
   return token;
 }
 
-export function CreatorCoachChat() {
+export function CreatorCoachChat({ starter }: { starter?: string | null } = {}) {
   const token = useAccessToken();
   const fetchHistory = useServerFn(getCreatorCoachHistory);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -82,6 +84,15 @@ export function CreatorCoachChat() {
   }, [historyQuery.data, setMessages]);
 
   const busy = status === "submitted" || status === "streaming";
+
+  // Tapping a page nudge starts the conversation once history is ready.
+  const starterSent = useRef(false);
+  useEffect(() => {
+    if (!starter || starterSent.current || !transport || historyQuery.isLoading) return;
+    if (historyQuery.data && !historyLoaded.current) return;
+    starterSent.current = true;
+    sendMessage({ text: starter });
+  }, [starter, transport, historyQuery.isLoading, historyQuery.data, sendMessage]);
 
   // Keep the composer focused during normal chat use.
   useEffect(() => {
@@ -179,7 +190,7 @@ export function CreatorCoachChat() {
   );
 }
 
-export function CreatorCoachDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function CreatorCoachDrawer({ open, onClose, starter }: { open: boolean; onClose: () => void; starter?: string | null }) {
   return (
     <VaulDrawer.Root open={open} onOpenChange={(o) => !o && onClose()}>
       <VaulDrawer.Portal>
@@ -191,22 +202,22 @@ export function CreatorCoachDrawer({ open, onClose }: { open: boolean; onClose: 
               <Sparkles className="h-4 w-4 text-white" />
             </span>
             <div className="flex-1">
-              <p className="text-sm font-bold text-white">Creator Coach</p>
+              <p className="text-sm font-bold text-white">Oventric Coach</p>
               <p className="text-[11px] text-white/45">Knows your real numbers</p>
             </div>
             <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-full bg-white/5 text-white/60">
               <X className="h-4 w-4" />
             </button>
           </div>
-          <div className="min-h-0 flex-1">{open && <CreatorCoachChat />}</div>
+          <div className="min-h-0 flex-1">{open && <CreatorCoachChat starter={starter} />}</div>
         </VaulDrawer.Content>
       </VaulDrawer.Portal>
     </VaulDrawer.Root>
   );
 }
 
-/** Floating coach button, available anywhere in the app for creators. */
-export function CreatorCoachLauncher() {
+/** Floating coach button, available anywhere in the app for every signed-in user. */
+export function CreatorCoachLauncher({ section = "Home" }: { section?: string }) {
   const loadProfile = useServerFn(getMyFullProfile);
   const { isAuthenticated } = useAuthGate();
   const { data: prof, refetch } = useQuery({
@@ -218,8 +229,19 @@ export function CreatorCoachLauncher() {
   });
   const [open, setOpen] = useState(false);
   const [greeting, setGreeting] = useState<"welcome" | "hourly" | null>(null);
+  const [nudge, setNudge] = useState<CoachPrompt | null>(null);
+  const [starter, setStarter] = useState<string | null>(null);
+  const [feedTab, setFeedTab] = useState<string | null>(null);
   const reducedMotion = useReducedMotion();
   const user = prof?.profile;
+  const name = user?.displayName?.trim().split(/\s+/)[0] || "there";
+
+  useEffect(() => {
+    setFeedTab((window as unknown as { __oventricFeedTab?: string }).__oventricFeedTab ?? null);
+    const onTab = (e: Event) => setFeedTab((e as CustomEvent<string | null>).detail ?? null);
+    window.addEventListener("oventric:feed-tab", onTab);
+    return () => window.removeEventListener("oventric:feed-tab", onTab);
+  }, []);
 
   useEffect(() => {
     const onComplete = () => { void refetch(); };
@@ -231,7 +253,6 @@ export function CreatorCoachLauncher() {
     if (!user?.isCreator) { setGreeting(null); return; }
     const chooseGreeting = () => {
       if (document.visibilityState !== "visible" || open) return;
-      // Don't spend the greeting's ten seconds behind the launch screen or a modal.
       if (document.querySelector('[data-oventric-boot="react"], [aria-label="Cashback offer: the more you shop, the less you pay"]')) return;
       const pendingKey = `oventric:coach-welcome-pending:${user.userId}`;
       const welcomedKey = `oventric:coach-welcomed:v2:${user.userId}`;
@@ -246,13 +267,9 @@ export function CreatorCoachLauncher() {
           window.localStorage.setItem(hourKey, currentHour);
           setGreeting("welcome");
         } else if (window.localStorage.getItem(welcomedKey) !== "1") {
-          // Give existing creators their first welcome too, not just new sign-ups.
           window.localStorage.setItem(welcomedKey, "1");
           window.localStorage.setItem(hourKey, currentHour);
           setGreeting("welcome");
-        } else if (window.localStorage.getItem(hourKey) !== currentHour) {
-          window.localStorage.setItem(hourKey, currentHour);
-          setGreeting("hourly");
         }
       } catch {
         // Storage may be disabled; the button still opens the coach.
@@ -269,26 +286,67 @@ export function CreatorCoachLauncher() {
     };
   }, [user?.userId, user?.isCreator, open]);
 
+  // Page-aware nudge: after 5s on a page, once per page per session.
+  const pageKey = coachPageKey(section, feedTab);
   useEffect(() => {
-    if (!greeting) return;
-    const timeout = window.setTimeout(() => setGreeting(null), 10_000);
+    setNudge(null);
+    if (!user?.userId || open) return;
+    const seenKey = `oventric:coach-page-seen:${user.userId}:${pageKey}`;
+    try { if (window.sessionStorage.getItem(seenKey)) return; } catch { /* ignore */ }
+    let timer = window.setTimeout(function tryShow() {
+      const blocked =
+        document.visibilityState !== "visible" ||
+        document.querySelector('[data-oventric-boot="react"], [aria-label="Cashback offer: the more you shop, the less you pay"], [role="dialog"], [vaul-drawer]');
+      if (blocked) { timer = window.setTimeout(tryShow, 2_000); return; }
+      try { window.sessionStorage.setItem(seenKey, "1"); } catch { /* ignore */ }
+      setGreeting(null);
+      setNudge(pickCoachPrompt(pageKey, name));
+      playNotificationSound("coach");
+    }, 5_000);
+    return () => window.clearTimeout(timer);
+  }, [pageKey, user?.userId, open, name]);
+
+  useEffect(() => {
+    if (!greeting && !nudge) return;
+    const timeout = window.setTimeout(() => { setGreeting(null); setNudge(null); }, 10_000);
     return () => window.clearTimeout(timeout);
+  }, [greeting, nudge]);
+
+  useEffect(() => {
+    if (greeting) playNotificationSound("coach");
   }, [greeting]);
 
-  if (!prof?.profile?.isCreator) return null;
+  if (!user) return null;
   const hour = new Date().getHours();
   const timeOfDay = hour >= 5 && hour < 12 ? "morning" : hour >= 12 && hour < 17 ? "afternoon" : hour >= 17 && hour < 21 ? "evening" : "night";
-  const name = user?.displayName?.trim().split(/\s+/)[0] || "creator";
+  const bubble = nudge || greeting;
+  const openCoach = () => {
+    setStarter(nudge?.reply ?? null);
+    setGreeting(null);
+    setNudge(null);
+    setOpen(true);
+  };
   return (
     <>
       {!open && (
         <motion.div
           initial={false}
-          animate={{ width: greeting ? "min(320px, calc(100vw - 32px))" : 48, height: greeting ? 116 : 48, borderRadius: greeting ? 22 : 999 }}
+          animate={{ width: bubble ? "min(320px, calc(100vw - 32px))" : 48, height: bubble ? (nudge ? 96 : 116) : 48, borderRadius: bubble ? 22 : 999 }}
           transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 210, damping: 24 }}
           className="fixed bottom-24 right-4 z-[70] overflow-hidden border border-newsfeed-violet/35 bg-card text-card-foreground shadow-xl shadow-newsfeed-violet/20"
         >
-          {greeting && (
+          {nudge ? (
+            <motion.button
+              type="button"
+              onClick={openCoach}
+              initial={reducedMotion ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="absolute inset-0 flex flex-col justify-center px-4 pr-14 text-left"
+            >
+              <span className="text-[13px] font-semibold leading-snug text-foreground">{nudge.ask}</span>
+              <span className="mt-1 text-[11px] text-muted-foreground">Tap to chat with your Coach</span>
+            </motion.button>
+          ) : greeting ? (
             <motion.div
               initial={reducedMotion ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -298,25 +356,23 @@ export function CreatorCoachLauncher() {
                 {greeting === "welcome" ? `Hi ${name}, welcome to your Creator Hub!` : `Good ${timeOfDay}, ${name}.`}
               </span>
               <span className="mt-1 text-[11px] leading-snug text-muted-foreground">
-                {greeting === "welcome"
-                  ? "I’m your Creator Coach. I’m here to help you make the most of your work."
-                  : "I’m here whenever you need a hand with your creative goals."}
+                I’m your Coach. I’m here to help you make the most of your work.
               </span>
             </motion.div>
-          )}
+          ) : null}
           <Button
             variant="ghost"
             size="icon"
-            aria-label="Open Creator Coach"
-            title="Open Creator Coach"
-            onClick={() => { setGreeting(null); setOpen(true); }}
+            aria-label="Open Oventric Coach"
+            title="Open Oventric Coach"
+            onClick={openCoach}
             className="absolute bottom-0 right-0 h-12 w-12 rounded-full bg-gradient-to-br from-newsfeed-violet to-newsfeed-coral text-primary-foreground hover:opacity-90"
           >
             <Sparkles className="h-5 w-5" />
           </Button>
         </motion.div>
       )}
-      <CreatorCoachDrawer open={open} onClose={() => setOpen(false)} />
+      <CreatorCoachDrawer open={open} starter={starter} onClose={() => { setOpen(false); setStarter(null); }} />
     </>
   );
 }
