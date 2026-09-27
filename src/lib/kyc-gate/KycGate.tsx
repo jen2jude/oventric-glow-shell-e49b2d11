@@ -474,64 +474,22 @@ function KycLivenessModal({
 
         const next = selfieAttempts + 1;
         setSelfieAttempts(next);
-        if (next >= 2) {
-          // After 2 selfie failures, ask for the government ID on file.
-          setMatchPhase("id");
-          setIdBlob(null);
-          if (idUrl) URL.revokeObjectURL(idUrl);
-          setIdUrl(null);
-          setError(null);
-          setStep("id-camera");
-        } else {
-          setStep("mismatch");
-        }
+        // After 2 selfie failures, offer manual review instead of more attempts.
+        setStep(next >= 2 ? "fallback" : "mismatch");
       } catch {
         if (cancelled) return;
         const next = selfieAttempts + 1;
         setSelfieAttempts(next);
-        setStep(next >= 2 ? "id-camera" : "mismatch");
-        if (next >= 2) setMatchPhase("id");
+        setStep(next >= 2 ? "fallback" : "mismatch");
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [step, selfieBlob, referenceUrl, selfieAttempts, idUrl]);
-
-  // Real ID-match against the stored government ID snapshot.
-  useEffect(() => {
-    if (step !== "id-matching") return;
-    let cancelled = false;
-    (async () => {
-      try {
-        if (!idBlob || !idReferenceUrl) throw new Error("Missing capture or ID reference");
-        const [refHash, liveHash] = await Promise.all([
-          computeFaceHash(idReferenceUrl),
-          computeFaceHash(idBlob),
-        ]);
-        if (cancelled) return;
-        const { score, dSim, ok } = evaluateMatch(refHash, liveHash);
-        setMatchDebug(`id score=${score.toFixed(2)} d=${dSim.toFixed(2)}`);
-        if (ok) {
-          setStep("success");
-          return;
-        }
-
-        setIdAttempts((n) => n + 1);
-        setStep("fallback");
-      } catch {
-        if (cancelled) return;
-        setIdAttempts((n) => n + 1);
-        setStep("fallback");
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [step, idBlob, idReferenceUrl]);
+  }, [step, selfieBlob, referenceUrl, selfieAttempts]);
 
   const submitEnrollment = useCallback(async () => {
-    if (!selfieBlob || !idBlob) return;
+    if (!selfieBlob) return;
     setError(null);
     setBusy(true);
     try {
@@ -540,29 +498,24 @@ function KycLivenessModal({
       if (!uid) throw new Error("Not signed in");
       const ts = Date.now();
       const selfiePath = `${uid}/selfie_${ts}.jpg`;
-      const idPath = `${uid}/id_${ts}.jpg`;
       const upSelfie = await supabase.storage
         .from("kyc-selfies")
         .upload(selfiePath, selfieBlob, { contentType: "image/jpeg", upsert: true });
       if (upSelfie.error) throw upSelfie.error;
-      const upId = await supabase.storage
-        .from("kyc-selfies")
-        .upload(idPath, idBlob, { contentType: "image/jpeg", upsert: true });
-      if (upId.error) throw upId.error;
-      await saveKyc({ data: { phone: phone.trim(), selfiePath, idPath } });
+      await saveKyc({ data: { phone: phone.trim(), selfiePath } });
       try {
         window.dispatchEvent(new CustomEvent("oventric:profile-updated"));
       } catch {
         /* noop */
       }
       setStep("success");
-      setTimeout(() => onComplete({ selfie: selfiePath, id: idPath }), 1100);
+      setTimeout(() => onComplete({ selfie: selfiePath }), 1100);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not save KYC");
+      setError(e instanceof Error ? e.message : "Could not save verification");
     } finally {
       setBusy(false);
     }
-  }, [selfieBlob, idBlob, phone, saveKyc, onComplete]);
+  }, [selfieBlob, phone, saveKyc, onComplete]);
 
   useEffect(() => {
     if (step === "success" && mode === "match") {
