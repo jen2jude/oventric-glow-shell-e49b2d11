@@ -1644,6 +1644,38 @@ export type Database = {
         }
         Relationships: []
       }
+      creator_post_comments: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_post_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "creator_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       creator_post_events: {
         Row: {
           author_id: string
@@ -1681,6 +1713,32 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "creator_post_events_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "creator_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_post_likes: {
+        Row: {
+          created_at: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_post_likes_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "creator_posts"

@@ -1,3 +1,4 @@
+import { ShowcaseEngagement } from "@/components/oventric/creators/ShowcaseEngagement";
 import { useRef, useState } from "react";
 import { logCreatorEvent, useWatchTime } from "@/lib/creator-events";
 import { useServerFn } from "@tanstack/react-start";
@@ -143,7 +144,7 @@ export function CreatorPostSheet({
       }
     >
       {post && (
-        <div className="pb-8">
+        <div className="pb-8" data-post-origin>
           <div className="px-4 pt-4">
             {/* Creator identity */}
             <button
@@ -209,6 +210,8 @@ export function CreatorPostSheet({
                 </span>
               )}
             </div>
+
+            <ShowcaseEngagement postId={post.id} authorId={post.author.userId} dark />
 
             {links.length > 0 && (
               <div className="mt-3 flex gap-2 overflow-x-auto [scrollbar-width:none]">

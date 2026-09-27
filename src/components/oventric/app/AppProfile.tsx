@@ -1,3 +1,4 @@
+import { useProfileVisit } from "@/lib/seller-views";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -114,6 +115,7 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
   });
   const profile = profileData?.profile ?? null;
   const userId = profile?.userId ?? null;
+  useProfileVisit(userId);
 
   const { data: counts } = useQuery({
     queryKey: ["app-profile-counts", idOrSlug],

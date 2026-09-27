@@ -83,6 +83,8 @@ export function CreatorHub() {
         <Mini icon={Share2} label="Shares" value={n(data.totals.shares)} />
         <Mini icon={Film} label="Posts" value={n(data.totals.posts)} />
         <Mini icon={Globe2} label="Beyond followers" value={`${data.reach.nonFollowerShare}%`} />
+        <Mini icon={Globe2} label="Profile visits" value={n(data.reach.profileVisits)} />
+        <Mini icon={Globe2} label="Visits from posts" value={n(data.reach.profileVisitsFromPosts)} />
         <Mini icon={Users} label="Showcase viewers" value={n(data.reach.uniqueShowcaseViewers)} />
       </div>
 
@@ -171,6 +173,8 @@ export function CreatorHub() {
           <Stat label="Avg. watch per play" value={dur(data.showcase.avgWatchSeconds)} />
           <Stat label="Link clicks" value={n(data.showcase.linkClicks)} />
           <Stat label="Full-video clicks" value={n(data.showcase.fullVideoClicks)} />
+          <Stat label="Likes" value={n(data.showcase.likes)} />
+          <Stat label="Comments" value={n(data.showcase.comments)} />
           <Stat label="Showcase engagement" value={`${data.showcase.engagementRate}%`} />
         </div>
         <div className="mt-3 text-sm">Revenue from showcase: <b>{money(data.showcase.linkedRevenueUSD)}</b> <span className="text-xs text-muted-foreground">{usd(data.showcase.linkedRevenueUSD)}</span></div>
@@ -192,7 +196,7 @@ export function CreatorHub() {
               {data.showcase.perItem.map((it) => (
                 <li key={it.id} className="py-2 text-sm">
                   <div className="truncate font-medium">{it.title}</div>
-                  <div className="text-xs text-muted-foreground">{n(it.views)} views · {n(it.plays)} plays · {dur(it.watchSeconds)} watched · {it.freeDownloads} free / {it.paidDownloads} paid downloads · {it.clicks} clicks</div>
+                  <div className="text-xs text-muted-foreground">{n(it.views)} views · {n(it.plays)} plays · {dur(it.watchSeconds)} watched · {it.freeDownloads} free / {it.paidDownloads} paid downloads · {it.clicks} clicks · {it.likes} likes · {it.comments} comments</div>
                 </li>
               ))}
             </ul>

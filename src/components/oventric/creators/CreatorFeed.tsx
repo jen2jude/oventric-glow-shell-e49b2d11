@@ -1,3 +1,4 @@
+import { ShowcaseEngagement } from "@/components/oventric/creators/ShowcaseEngagement";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -480,6 +481,7 @@ export function CreatorCard({
         )}
 
       <LinkDock post={post} />
+      <ShowcaseEngagement postId={post.id} authorId={post.author.userId} />
       </div>
     </article>
   );

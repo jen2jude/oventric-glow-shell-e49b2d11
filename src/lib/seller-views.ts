@@ -34,3 +34,33 @@ export function useSellerView(
       .then(() => undefined, () => undefined);
   }, [kind, sellerId, productId]);
 }
+
+// Remember when the viewer last tapped inside a post (feed article or showcase sheet)
+let lastPostTap = 0;
+if (typeof document !== "undefined") {
+  document.addEventListener(
+    "click",
+    (e) => {
+      const t = e.target as Element | null;
+      if (t?.closest?.("article, [data-post-origin]")) lastPostTap = Date.now();
+    },
+    true,
+  );
+}
+
+/** Records a profile visit; flagged "from a post" when the visitor arrived by tapping inside a post. */
+export function useProfileVisit(profileUserId: string | null | undefined) {
+  useEffect(() => {
+    if (!profileUserId) return;
+    const fromPost = Date.now() - lastPostTap < 4000;
+    lastPostTap = 0;
+    void supabase
+      .rpc("log_seller_view", {
+        _seller_id: profileUserId,
+        _product_id: null as unknown as string,
+        _kind: fromPost ? "profile_visit_post" : "profile_visit",
+        _viewer_key: viewerKey(),
+      })
+      .then(() => undefined, () => undefined);
+  }, [profileUserId]);
+}

@@ -37,7 +37,7 @@ export const getSellerMetrics = createServerFn({ method: "GET" })
       sb.from("direct_messages").select("sender_id").eq("recipient_id", me).eq("is_system", false).limit(50000),
       sb.from("posts").select("id, views_count").eq("author_id", me).limit(5000),
     ]);
-    const views = (viewsRes.data ?? []) as Array<{ kind: string; viewer_key: string }>;
+    const views = ((viewsRes.data ?? []) as Array<{ kind: string; viewer_key: string }>).filter(v => v.kind === "product_view" || v.kind === "shop_visit");
     const productViews = views.filter(v => v.kind === "product_view").length;
     const shopVisits = views.filter(v => v.kind === "shop_visit").length;
     const uniqueVisitors = new Set(views.map(v => v.viewer_key)).size;

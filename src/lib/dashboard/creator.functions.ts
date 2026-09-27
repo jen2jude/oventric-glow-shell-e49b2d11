@@ -23,16 +23,16 @@ export interface CreatorHubData {
   topFans: { userId: string; name: string; avatarPath: string | null; interactions: number }[];
   totals: { posts: number; showcases: number; views: number; likes: number; comments: number; saves: number; shares: number };
   engagementRate: number;
-  reach: { postViews: number; showcaseViews: number; uniqueShowcaseViewers: number; nonFollowerShare: number };
+  reach: { postViews: number; showcaseViews: number; uniqueShowcaseViewers: number; nonFollowerShare: number; profileVisits: number; profileVisitsFromPosts: number };
   bestHours: { hour: number; count: number }[];
   bestDays: { day: number; count: number }[];
   posts: CreatorPostStat[];
   showcase: {
     items: number; views: number; uniqueViewers: number; linkedSales: number; linkedRevenueUSD: number;
     freeDownloads: number; paidDownloads: number; plays: number; watchSeconds: number; avgWatchSeconds: number;
-    linkClicks: number; fullVideoClicks: number; engagementRate: number;
+    linkClicks: number; fullVideoClicks: number; engagementRate: number; likes: number; comments: number;
     topLinks: { target: string; clicks: number }[];
-    perItem: { id: string; title: string; views: number; plays: number; watchSeconds: number; freeDownloads: number; paidDownloads: number; clicks: number }[];
+    perItem: { id: string; title: string; views: number; plays: number; watchSeconds: number; freeDownloads: number; paidDownloads: number; clicks: number; likes: number; comments: number }[];
   };
   postSales: { sales: number; revenueUSD: number; topProducts: { name: string; sales: number; revenueUSD: number }[] };
 }
@@ -175,11 +175,21 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
       e.sales++; e.revenueUSD += Number(o.total_usd || 0); byProd.set(o.product_id, e);
     }
 
-    // Creators-tab engagement: real watch time (user-initiated plays only), link clicks, downloads
-    const evRes = showIds.length
-      ? await sb.from("creator_post_events").select("post_id, kind, seconds, target").eq("author_id", me).limit(50000)
-      : { data: [] as any[] };
+    // Creators-tab engagement: real watch time (user-initiated plays only), link clicks, downloads, likes, comments
+    const [evRes, likeRes, comRes, visRes] = await Promise.all([
+      showIds.length
+        ? sb.from("creator_post_events").select("post_id, kind, seconds, target").eq("author_id", me).limit(50000)
+        : Promise.resolve({ data: [] as any[] }),
+      showIds.length ? sb.from("creator_post_likes").select("post_id").in("post_id", showIds).limit(50000) : Promise.resolve({ data: [] as any[] }),
+      showIds.length ? sb.from("creator_post_comments").select("post_id").in("post_id", showIds).neq("user_id", me).limit(50000) : Promise.resolve({ data: [] as any[] }),
+      sb.from("seller_view_events").select("kind").eq("seller_id", me).in("kind", ["profile_visit", "profile_visit_post"]).limit(50000),
+    ]);
     const events = (evRes.data ?? []) as { post_id: string; kind: string; seconds: number; target: string | null }[];
+    const showLikes = (likeRes.data ?? []) as { post_id: string }[];
+    const showComments = (comRes.data ?? []) as { post_id: string }[];
+    const visits = (visRes.data ?? []) as { kind: string }[];
+    const profileVisits = visits.length;
+    const profileVisitsFromPosts = visits.filter((v) => v.kind === "profile_visit_post").length;
     const plays = events.filter((e) => e.kind === "play");
     const clicks = events.filter((e) => e.kind !== "play");
     const watchSeconds = Math.round(plays.reduce((a, e) => a + Number(e.seconds || 0), 0));
@@ -202,9 +212,11 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
         freeDownloads: ords.filter((o) => Number(o.total_usd || 0) === 0).length,
         paidDownloads: ords.filter((o) => Number(o.total_usd || 0) > 0).length,
         clicks: mine.filter((e) => e.kind !== "play").length,
+        likes: showLikes.filter((l) => l.post_id === sh.id).length,
+        comments: showComments.filter((c) => c.post_id === sh.id).length,
       };
-    }).sort((a, b) => (b.plays + b.clicks + b.freeDownloads + b.paidDownloads) - (a.plays + a.clicks + a.freeDownloads + a.paidDownloads)).slice(0, 10);
-    const showActions = plays.length + clicks.length + showOrders.length;
+    }).sort((a, b) => (b.plays + b.clicks + b.freeDownloads + b.paidDownloads + b.likes + b.comments) - (a.plays + a.clicks + a.freeDownloads + a.paidDownloads + a.likes + a.comments)).slice(0, 10);
+    const showActions = plays.length + clicks.length + showOrders.length + showLikes.length + showComments.length;
 
     return {
       followers: followerIds.size,
@@ -214,7 +226,7 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
       topFans,
       totals,
       engagementRate,
-      reach: { postViews, showcaseViews: shows.reduce((a, s) => a + Math.max(Number(s.view_count || 0), svm.get(s.id) ?? 0), 0), uniqueShowcaseViewers: viewerKeys.size, nonFollowerShare },
+      reach: { postViews, showcaseViews: shows.reduce((a, s) => a + Math.max(Number(s.view_count || 0), svm.get(s.id) ?? 0), 0), uniqueShowcaseViewers: viewerKeys.size, nonFollowerShare, profileVisits, profileVisitsFromPosts },
       bestHours: hours.map((count, hour) => ({ hour, count })),
       bestDays: days.map((count, day) => ({ day, count })),
       posts: postStats.slice(0, 10),
@@ -231,6 +243,8 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
         avgWatchSeconds: plays.length ? Math.round(watchSeconds / plays.length) : 0,
         linkClicks: clicks.filter((c) => c.kind === "link_click").length,
         fullVideoClicks: clicks.filter((c) => c.kind === "full_video_click").length,
+        likes: showLikes.length,
+        comments: showComments.length,
         engagementRate: showViewTotal ? Math.min(100, Number(((showActions / showViewTotal) * 100).toFixed(1))) : 0,
         topLinks: [...linkMap.entries()].map(([target, c]) => ({ target, clicks: c })).sort((a, b) => b.clicks - a.clicks).slice(0, 5),
         perItem,
