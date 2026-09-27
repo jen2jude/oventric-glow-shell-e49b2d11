@@ -74,8 +74,8 @@ export function AppSearchSheet({
           </button>
         </div>
 
-        {/* Results */}
-        <div className="mt-4 grid flex-1 grid-cols-2 content-start gap-3 overflow-y-auto pb-4">
+        {/* Compact result rows — reshuffle live as the user types */}
+        <div className="mt-3 flex flex-1 flex-col gap-1.5 overflow-y-auto pb-4">
           {results.map((p) => (
             <button
               key={p.id}
@@ -84,26 +84,26 @@ export function AppSearchSheet({
                 haptic("select");
                 onPick(p.id);
               }}
-              className="nav-tap overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.03] text-left"
+              className="nav-tap flex items-center gap-3 rounded-xl border border-white/[0.05] bg-white/[0.03] px-2.5 py-2 text-left active:bg-white/[0.06]"
             >
-              <div className="aspect-[4/3] w-full overflow-hidden bg-white/[0.04]">
+              <div className="h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-white/[0.04]">
                 {p.coverUrl ? (
                   <img src={p.coverUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-[10px] text-white/25">
-                    No cover
+                  <div className="flex h-full w-full items-center justify-center text-[9px] text-white/25">
+                    —
                   </div>
                 )}
               </div>
-              <div className="p-2.5">
-                <p className="line-clamp-1 text-[12px] font-semibold">{p.name}</p>
-                <p className="mt-0.5 line-clamp-1 text-[10px] text-white/35">{p.vendor}</p>
-                <p className="mt-1 text-[12px] font-bold text-[#E5484D]">{priceOf(p)}</p>
+              <div className="min-w-0 flex-1">
+                <p className="line-clamp-1 text-[12.5px] font-semibold leading-tight">{p.name}</p>
+                <p className="mt-0.5 line-clamp-1 text-[10.5px] text-white/35">{p.vendor}</p>
               </div>
+              <p className="shrink-0 text-[12px] font-bold text-[#E5484D]">{priceOf(p)}</p>
             </button>
           ))}
           {results.length === 0 && (
-            <p className="col-span-2 py-10 text-center text-[13px] text-white/40">
+            <p className="py-10 text-center text-[13px] text-white/40">
               Nothing matches “{q}” yet.
             </p>
           )}
