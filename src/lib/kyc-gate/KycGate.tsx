@@ -714,43 +714,25 @@ function KycLivenessModal({
           </div>
         )}
 
-        {step === "review" && selfieUrl && idUrl && (
+        {step === "review" && selfieUrl && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1.5 text-center">
-                  Government ID
-                </div>
-                <div className="rounded-lg overflow-hidden border border-white/10 bg-black">
-                  <ResponsiveImage
-                    sizes="(min-width: 640px) 240px, 50vw"
-                    src={idUrl}
-                    alt="ID document"
-                    className="w-full aspect-square object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
+            <div className="max-w-[240px] mx-auto">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-1.5 text-center">
+                Liveness selfie
               </div>
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-1.5 text-center">
-                  Liveness
-                </div>
-                <div className="rounded-lg overflow-hidden border border-emerald-500/40 bg-black">
-                  <ResponsiveImage
-                    sizes="(min-width: 640px) 240px, 50vw"
-                    src={selfieUrl}
-                    alt="Captured selfie"
-                    className="w-full aspect-square object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
+              <div className="rounded-lg overflow-hidden border border-emerald-500/40 bg-black">
+                <ResponsiveImage
+                  sizes="240px"
+                  src={selfieUrl}
+                  alt="Captured selfie"
+                  className="w-full aspect-square object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
               </div>
             </div>
             <p className="text-xs text-slate-400 text-center">
-              We'll match against your liveness before every payout. Your country is now locked to
-              your ID.
+              We'll match against this selfie before every payout.
             </p>
             {error && (
               <p role="alert" className="text-xs text-red-400 border-l-2 border-red-500 pl-2">
