@@ -170,6 +170,19 @@ export function AppHome({
         </button>
       </div>
 
+      {/* Search pill — opens the search sheet */}
+      <button
+        type="button"
+        onClick={() => {
+          haptic("select");
+          setSearchOpen(true);
+        }}
+        className="nav-tap mt-4 flex w-full items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2.5 text-left"
+      >
+        <Search className="h-4 w-4 shrink-0 text-white/40" />
+        <span className="text-[13px] text-white/35">Search products, shops, categories</span>
+      </button>
+
       {/* Wallet card with crimson glow */}
       <div className="relative mt-5 overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#17171B] to-[#0C0C0E] p-5">
         <div
@@ -312,6 +325,21 @@ export function AppHome({
         </div>
       )}
       <NotificationsDrawer open={notifOpen} onClose={() => setNotifOpen(false)} />
+      <AppSearchSheet
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        products={products ?? []}
+        currency={currency}
+        onPick={(id) => {
+          setSearchOpen(false);
+          setQuickViewId(id);
+        }}
+      />
+      <ProductQuickView
+        productId={quickViewId}
+        currency={currency}
+        onClose={() => setQuickViewId(null)}
+      />
     </div>
   );
 }
