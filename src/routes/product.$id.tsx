@@ -843,7 +843,7 @@ function ProductPage() {
                   <span className="bg-newsfeed-coral" />
                   <span className="bg-newsfeed-gold" />
                   <span className="bg-newsfeed-blue" />
-                           </div>
+                 </div>}
                  <div className={isAppShell ? "py-2" : "p-5 sm:p-6"}>
 
                  {!isAppShell && <div className="flex items-baseline justify-between mb-4">
@@ -854,7 +854,7 @@ function ProductPage() {
                         <>
                            <div className={`${isAppShell ? "hidden" : "text-3xl text-newsfeed-ink sm:text-4xl"} font-extrabold`}>
                             {dp.value === 0 ? "Free" : dp.formatted}
-                 </div>}
+                           </div>
                         </>
                       );
                     })()}
