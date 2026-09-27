@@ -22,6 +22,7 @@ import {
 import { toast } from "sonner";
 import { AppSheet } from "@/components/oventric/app/AppSheet";
 import { listPosts, toggleLike, setPostSaved as setPostSavedFn, deletePost as deletePostFn, updatePostText as updatePostTextFn } from "@/lib/posts.functions";
+import { listFollowing, listFollowers } from "@/lib/follows.functions";
 import { EDIT_WINDOW_MS } from "@/lib/post-edit";
 import { togglePostSet, getSavedPosts } from "@/components/oventric/PostActionsMenu";
 import { ReportModal } from "@/components/oventric/ReportModal";
@@ -68,6 +69,11 @@ export function AppFeed() {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [editingPost, setEditingPost] = useState<{ id: string; text: string } | null>(null);
   const [editSaving, setEditSaving] = useState(false);
+  const [tab, setTab] = useState<"foryou" | "following">("foryou");
+  const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
+  const [followerIds, setFollowerIds] = useState<Set<string> | null>(null);
+  const loadFollowing = useServerFn(listFollowing);
+  const loadFollowers = useServerFn(listFollowers);
 
   const saveEdit = async () => {
     if (!editingPost) return;
