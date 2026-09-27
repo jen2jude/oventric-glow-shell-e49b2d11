@@ -236,8 +236,8 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
         perItem,
       },
       postSales: {
-        sales: postOrders.length,
-        revenueUSD: Number(postOrders.reduce((a, o) => a + Number(o.total_usd || 0), 0).toFixed(2)),
+        sales: showOrders.length,
+        revenueUSD: Number(showOrders.reduce((a, o) => a + Number(o.total_usd || 0), 0).toFixed(2)),
         topProducts: [...byProd.values()].sort((a, b) => b.revenueUSD - a.revenueUSD).slice(0, 5),
       },
     };
