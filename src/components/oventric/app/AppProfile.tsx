@@ -747,6 +747,11 @@ function AppPhotosGallery({ idOrSlug }: { idOrSlug: string }) {
     let cancel = false;
     (async () => {
       try {
+        const { data: s } = await supabase.auth.getSession();
+        if (!s.session) {
+          if (!cancel) setPhotos([]);
+          return;
+        }
         const r = await fetchPhotos({ data: { slugOrId: idOrSlug } });
         if (!cancel) setPhotos(r.photos);
       } catch {

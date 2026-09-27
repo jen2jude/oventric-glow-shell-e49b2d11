@@ -2356,6 +2356,11 @@ function ProfilePhotosGallery({ slug }: { slug: string }) {
     let cancel = false;
     (async () => {
       try {
+        const { data: s } = await supabase.auth.getSession();
+        if (!s.session) {
+          if (!cancel) setPhotos([]);
+          return;
+        }
         const r = await fetchPhotos({ data: { slugOrId: slug } });
         if (!cancel) setPhotos(r.photos);
       } catch {
