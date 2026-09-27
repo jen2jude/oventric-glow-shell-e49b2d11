@@ -237,13 +237,17 @@ export function PostComposerModal({
       .catch(() => setCircles([]));
   }, [open, listCircles]);
 
-  // Prevent body scroll
+  // Prevent background scroll — freeze both scroll layers so swipes inside
+  // the sheet can never leak through to the page behind.
   useEffect(() => {
     if (!open) return;
-    const prev = document.body.style.overflow;
+    const prevBody = document.body.style.overflow;
+    const prevHtml = document.documentElement.style.overflow;
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = prev;
+      document.body.style.overflow = prevBody;
+      document.documentElement.style.overflow = prevHtml;
     };
   }, [open]);
 
