@@ -7,6 +7,7 @@ import type { Currency } from "@/lib/onboarding/OnboardingContext";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { haptic } from "@/lib/haptics";
 import { AppSheet } from "./AppSheet";
+import { AppSearchSuggestions, rememberSearch } from "./AppSearchSuggestions";
 
 /**
  * Search-first bottom sheet for the app shell: a big search pill with live
@@ -79,11 +80,25 @@ export function AppSearchSheet({
 
         {/* Compact result rows — reshuffle live as the user types */}
         <div className="mt-3 flex flex-1 flex-col gap-1.5 overflow-y-auto pb-4">
+          {!q.trim() && (
+            <>
+              <AppSearchSuggestions
+                names={products.map((p) => p.name)}
+                vendors={products.map((p) => p.vendor)}
+                categories={products.map((p) => p.category ?? "").filter(Boolean)}
+                onPick={setQ}
+              />
+              <p className="mt-1 text-[11px] font-bold uppercase tracking-wider text-white/45">
+                Products
+              </p>
+            </>
+          )}
           {results.map((p) => (
             <button
               key={p.id}
               type="button"
               onClick={() => {
+                rememberSearch(q);
                 haptic("select");
                 onPick(p.id);
               }}
