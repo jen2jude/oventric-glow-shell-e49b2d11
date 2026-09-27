@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   Heart,
   MessageCircle,
@@ -23,6 +24,8 @@ import { toast } from "sonner";
 import { AppSheet } from "@/components/oventric/app/AppSheet";
 import { listPosts, toggleLike, setPostSaved as setPostSavedFn, deletePost as deletePostFn, updatePostText as updatePostTextFn } from "@/lib/posts.functions";
 import { listFollowing, listFollowers } from "@/lib/follows.functions";
+import { listProducts } from "@/lib/marketplace.functions";
+import { ProductQuickView } from "./ProductQuickView";
 import { EDIT_WINDOW_MS } from "@/lib/post-edit";
 import { togglePostSet, getSavedPosts } from "@/components/oventric/PostActionsMenu";
 import { ReportModal } from "@/components/oventric/ReportModal";
