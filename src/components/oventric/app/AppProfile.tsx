@@ -85,6 +85,8 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
   const unfollowFn = useServerFn(unfollow);
   const fetchPosts = useServerFn(listPosts);
   const fetchProducts = useServerFn(listProducts);
+  const fetchServices = useServerFn(getProfileTab);
+  const fetchFollowReqs = useServerFn(listIncomingFollowRequests);
 
   const { data: profileData, isLoading } = useQuery({
     queryKey: ["app-profile", idOrSlug],
@@ -139,6 +141,38 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
       ),
     [productsData, userId],
   );
+
+  const { data: servicesData } = useQuery({
+    queryKey: ["app-profile-services", idOrSlug],
+    queryFn: () =>
+      fetchServices({
+        data: { profileId: idOrSlug, tab: "services", page: 1, pageSize: 24 },
+      }),
+    staleTime: 60_000,
+  });
+  const services = (servicesData?.items ?? []) as ProfileListing[];
+
+  const { data: followReqData } = useQuery({
+    queryKey: ["app-profile-follow-requests"],
+    queryFn: () => fetchFollowReqs(),
+    enabled: isOwn,
+    staleTime: 30_000,
+  });
+  const pendingFollowReqCount = followReqData?.requests?.length ?? 0;
+
+  const shareProfile = async () => {
+    const url = `${window.location.origin}/profile/${idOrSlug}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: profile?.displayName ?? "Profile", url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        toast.success("Profile link copied");
+      }
+    } catch {
+      /* dismissed */
+    }
+  };
 
   const toggleFollow = async () => {
     if (!userId) return;
