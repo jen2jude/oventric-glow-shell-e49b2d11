@@ -219,8 +219,8 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
         </span>
       </button>
 
-      {/* Seller Hub spotlight */}
-      {p?.isCreator && (
+      {/* Seller Hub spotlight — visible to any signed-in user */}
+      {isAuthenticated && (
         <button
           type="button"
           onClick={() => {

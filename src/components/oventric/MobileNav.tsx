@@ -1,4 +1,4 @@
-import { Home, Images, MessageCircle, Plus, ShoppingBag, Wallet } from "lucide-react";
+import { Home, Images, MessageCircle, Plus, ShoppingBag, UserRound, Wallet } from "lucide-react";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
 import { CountBadge } from "@/components/oventric/CountBadge";
 import { haptic } from "@/lib/haptics";
@@ -33,7 +33,7 @@ export function MobileNav({
   const right = isAppShell
     ? [
         { icon: Images, label: "Feed" },
-        { icon: Wallet, label: "Wallet" },
+        { icon: UserRound, label: "Profile" },
       ]
     : [
         { icon: MessageCircle, label: "Chats" },
