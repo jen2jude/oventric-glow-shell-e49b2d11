@@ -386,6 +386,13 @@
       "when": 1790502598259,
       "tag": "0054_showcase_likes_comments_profile_visits",
       "breakpoints": true
+    },
+    {
+      "idx": 55,
+      "version": "7",
+      "when": 1790510168226,
+      "tag": "0055_scope_showcase_engagement_reads",
+      "breakpoints": true
     }
   ]
 }
