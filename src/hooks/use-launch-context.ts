@@ -16,14 +16,14 @@ export type LaunchContext = "browser" | "app";
 
 export const APP_MODE_KEY = "oventric:launch-mode";
 
-/** Keep the unfinished app presentation available only for internal previews. */
+/** Keep the unfinished app presentation off Oventric's public addresses. */
 export function isAppReviewPreview(): boolean {
   if (typeof window === "undefined") return false;
-  const host = window.location.hostname;
-  return host === "localhost" || host === "127.0.0.1" ||
-    host.startsWith("id-preview--") || host.startsWith("preview--") ||
-    (host.startsWith("project--") && host.endsWith("-dev.lovable.app")) ||
-    host.endsWith(".lovableproject-dev.com");
+  const host = window.location.hostname.toLowerCase();
+  const isPublicHost = host === "oventric.com" ||
+    host === "www.oventric.com" ||
+    host === "oventric-glow-shell.lovable.app";
+  return !isPublicHost;
 }
 
 /** True when the page is running in an installed / standalone window. */
@@ -54,7 +54,9 @@ export function resolveLaunchContext(): LaunchContext {
   if (typeof window === "undefined") return "browser";
   if (!isAppReviewPreview()) return "browser";
 
-  // 1. Explicit request via the URL wins and is remembered for the session.
+  // 1. Review environments are app-only while the app is being tightened.
+  // Ignore old URL and session overrides so the Lovable iframe cannot get
+  // stuck in the website presentation.
   const params = new URLSearchParams(window.location.search);
   const requested = params.get("mode");
   if (requested === "app") {
@@ -64,14 +66,6 @@ export function resolveLaunchContext(): LaunchContext {
       /* ignore */
     }
     return "app";
-  }
-  if (requested === "web") {
-    try {
-      window.sessionStorage.setItem(APP_MODE_KEY, "browser");
-    } catch {
-      /* ignore */
-    }
-    return "browser";
   }
 
   // 2. Installed to the home screen (and not the editor iframe).

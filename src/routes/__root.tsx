@@ -355,11 +355,12 @@ function RootShell({ children }: { children: ReactNode }) {
   try{
     var params=new URLSearchParams(window.location.search);
      var host=window.location.hostname;
-     var review=host==='localhost'||host==='127.0.0.1'||host.indexOf('id-preview--')===0||host.indexOf('preview--')===0||(host.indexOf('project--')===0&&host.endsWith('-dev.lovable.app'))||host.endsWith('.lovableproject-dev.com');
+     var publicHost=host==='oventric.com'||host==='www.oventric.com'||host==='oventric-glow-shell.lovable.app';
+     var review=!publicHost;
      var forced=params.get('mode');
     var native=!!(window.Capacitor&&(typeof window.Capacitor.isNativePlatform==='function'?window.Capacitor.isNativePlatform():window.Capacitor.isNative));
     var standalone=((window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true)&&window.matchMedia('(max-width: 767px)').matches;
-     appShell=review&&(forced==='app'?true:forced==='web'?false:(native||standalone));
+     appShell=review?true:(forced==='app'&&(native||standalone));
   }catch(e){}
   window.__oventricStandalone=!!appShell;
   if(appShell){document.documentElement.classList.add('standalone-app');root.style.display='flex';}else{root.style.display='none';}
