@@ -329,7 +329,13 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
 
   const rawView =
     active === "Home" && isAppShell && !isDesktop ? (
-      <Feed />
+      <AppHome
+        name={name}
+        avatarUrl={avatarUrl}
+        onSelect={setActive}
+        onCreate={() => handleCreate("sell")}
+        onOpenMessages={() => setMessagesOpen(true)}
+      />
     ) : active === "Home" ? (
       <OventricHome onSelect={setActive} onCreate={() => handleCreate("sell")} />
     ) : active === "__legacy_home" ? (
