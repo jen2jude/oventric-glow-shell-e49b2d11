@@ -102,6 +102,29 @@ export function AppFeed() {
       (baseCurrency ?? "USD") as Currency,
     );
 
+  // Shop tab sections, mirroring the web feed: Free downloads, Popular right
+  // now, then up to 6 category sections.
+  const shopSections = useMemo(() => {
+    const all = shopProducts ?? [];
+    const free = all.filter((p) => p.priceUSD <= 0).slice(0, 8);
+    const paid = all.filter((p) => p.priceUSD > 0);
+    const byCategory = new Map<string, ProductDTO[]>();
+    paid.forEach((p) => {
+      const key = p.category || "Other";
+      const list = byCategory.get(key) ?? [];
+      list.push(p);
+      byCategory.set(key, list);
+    });
+    return {
+      free,
+      popular: paid.slice(0, 8),
+      categories: Array.from(byCategory.entries())
+        .sort((a, b) => b[1].length - a[1].length)
+        .slice(0, 6)
+        .map(([name, items]) => [name, items.slice(0, 8)] as const),
+    };
+  }, [shopProducts]);
+
   const saveEdit = async () => {
     if (!editingPost) return;
     const { id, text } = editingPost;
