@@ -365,6 +365,13 @@
       "when": 1790435994865,
       "tag": "0051_creator_posts_full_video_url",
       "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1790495637051,
+      "tag": "0052_seller_view_events",
+      "breakpoints": true
     }
   ]
 }

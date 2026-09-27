@@ -1,3 +1,4 @@
+import { useSellerView } from "@/lib/seller-views";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
@@ -32,6 +33,7 @@ export function ProductQuickView({
     enabled: !!productId,
     staleTime: 60_000,
   });
+  useSellerView("product_view", p?.sellerId, p?.id);
 
   const price = (prod: ProductDTO) =>
     safeFormatDisplayPrice(

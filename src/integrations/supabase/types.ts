@@ -3634,6 +3634,36 @@ export type Database = {
           },
         ]
       }
+      seller_view_events: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          product_id: string | null
+          seller_id: string
+          viewer_id: string | null
+          viewer_key: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          product_id?: string | null
+          seller_id: string
+          viewer_id?: string | null
+          viewer_key: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          product_id?: string | null
+          seller_id?: string
+          viewer_id?: string | null
+          viewer_key?: string
+        }
+        Relationships: []
+      }
       service_packages: {
         Row: {
           created_at: string
@@ -4413,6 +4443,15 @@ export type Database = {
           _kind: string
           _placement: string
           _session: string
+        }
+        Returns: undefined
+      }
+      log_seller_view: {
+        Args: {
+          _kind: string
+          _product_id: string
+          _seller_id: string
+          _viewer_key: string
         }
         Returns: undefined
       }

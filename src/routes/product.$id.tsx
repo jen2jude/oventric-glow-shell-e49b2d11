@@ -1,3 +1,4 @@
+import { useSellerView } from "@/lib/seller-views";
 import { useIsAppShell } from "@/hooks/use-launch-context";
 import { CreatorChip, EcosystemLinks } from "@/components/oventric/ecosystem/CreatorChip";
 
@@ -76,6 +77,7 @@ function ProductRating({
   const [replySaving, setReplySaving] = useState(false);
   const [viewerId, setViewerId] = useState<string | null>(null);
   const isSeller = !!viewerId && viewerId === sellerId;
+  useSellerView("product_view", sellerId, productId);
   const [reviews, setReviews] = useState<
     { id: string; rating: number; comment: string | null; createdAt: string; sellerReply?: string | null; sellerReplyAt?: string | null; user: { fullName: string | null; avatarUrl: string | null } }[]
   >([]);

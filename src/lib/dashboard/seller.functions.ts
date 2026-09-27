@@ -12,6 +12,7 @@ export interface DashboardMetrics {
   engagementRate: number;
   shopVisits: number;
   conversionRate: number;
+  conversations: number;
 }
 
 export const getSellerMetrics = createServerFn({ method: "GET" })
@@ -28,19 +29,49 @@ export const getSellerMetrics = createServerFn({ method: "GET" })
 
     const orders = (ordersRes.data ?? []) as Array<{ total_usd: number; status: string }>;
     const paidOrders = orders.filter(o => ["paid", "delivered", "completed", "released"].includes(o.status));
-    
     const totalRevenueUSD = paidOrders.reduce((sum, o) => sum + Number(o.total_usd || 0), 0);
+    const followers = followersRes.count ?? 0;
+
+    const [viewsRes, dmRes, postsRes] = await Promise.all([
+      sb.from("seller_view_events").select("kind, viewer_key").eq("seller_id", me).limit(50000),
+      sb.from("direct_messages").select("sender_id").eq("recipient_id", me).eq("is_system", false).limit(50000),
+      sb.from("posts").select("id, views_count").eq("author_id", me).limit(5000),
+    ]);
+    const views = (viewsRes.data ?? []) as Array<{ kind: string; viewer_key: string }>;
+    const productViews = views.filter(v => v.kind === "product_view").length;
+    const shopVisits = views.filter(v => v.kind === "shop_visit").length;
+    const uniqueVisitors = new Set(views.map(v => v.viewer_key)).size;
+    const conversations = new Set((dmRes.data ?? []).map((d: { sender_id: string }) => d.sender_id)).size;
+
+    const posts = (postsRes.data ?? []) as Array<{ id: string; views_count: number | null }>;
+    let engagementRate = 0;
+    if (posts.length) {
+      const ids = posts.map(p => p.id);
+      const [l, c, sv] = await Promise.all([
+        sb.from("post_likes").select("post_id", { count: "exact", head: true }).in("post_id", ids),
+        sb.from("post_comments").select("id", { count: "exact", head: true }).in("post_id", ids),
+        sb.from("post_saves").select("post_id", { count: "exact", head: true }).in("post_id", ids),
+      ]);
+      const interactions = (l.count ?? 0) + (c.count ?? 0) + (sv.count ?? 0);
+      const postViews = posts.reduce((s, p) => s + Number(p.views_count || 0), 0);
+      const base = postViews > 0 ? postViews : Math.max(followers, 1) * posts.length;
+      engagementRate = Math.min(100, Number(((interactions / base) * 100).toFixed(1)));
+    }
+    const conversionRate = uniqueVisitors > 0
+      ? Math.min(100, Number(((paidOrders.length / uniqueVisitors) * 100).toFixed(1)))
+      : 0;
 
     return {
       totalSales: paidOrders.length,
       totalOrders: orders.length,
       totalRevenueUSD: Number(totalRevenueUSD.toFixed(2)),
       totalProducts: productsRes.count ?? 0,
-      totalFollowers: followersRes.count ?? 0,
-      totalViews: 0,
-      engagementRate: 0,
-      shopVisits: 0,
-      conversionRate: 0
+      totalFollowers: followers,
+      totalViews: productViews,
+      engagementRate,
+      shopVisits,
+      conversionRate,
+      conversations,
     };
   });
 

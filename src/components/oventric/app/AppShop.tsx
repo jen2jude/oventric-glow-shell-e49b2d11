@@ -1,3 +1,4 @@
+import { useSellerView } from "@/lib/seller-views";
 import { useMemo, useState, type ReactNode } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -46,6 +47,7 @@ export function AppShop({ idOrSlug }: { idOrSlug: string }) {
     staleTime: 60_000,
   });
   const shop = shopData?.shop ?? null;
+  useSellerView("shop_visit", shop?.userId);
 
   const { data: counts } = useQuery({
     queryKey: ["app-shop-counts", idOrSlug],
