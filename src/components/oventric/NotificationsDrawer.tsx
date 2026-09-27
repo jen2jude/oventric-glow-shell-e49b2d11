@@ -487,7 +487,7 @@ export function NotificationsDrawer({ open, onClose }: { open: boolean; onClose:
               You're all caught up in this channel.
             </div>
           ) : (
-            filtered.map((n) => (
+            visible.map((n) => (
               <button
                 key={n.id}
                 onClick={() => void handleOpenItem(n)}
