@@ -861,22 +861,32 @@
   }
 }
 
-/* App-only profile sheets: the same forms, with compact mobile presentation. */
+/* App-only profile sheets: same forms, dressed in the dark native app style. */
 .app-profile-settings,
 .app-profile-editor {
   align-items: flex-end;
   padding: 0;
-  background: oklch(0.12 0.01 260 / 48%);
+  background: oklch(0 0 0 / 45%);
   backdrop-filter: blur(12px);
 }
 
-.app-profile-settings {
-  color-scheme: light;
-  --background: oklch(0.975 0.006 235);
-  --foreground: oklch(0.24 0.018 250);
-  --card: oklch(1 0 0);
-  --muted-foreground: oklch(0.5 0.025 250);
-  --border: oklch(0.885 0.015 235);
+.web-identity-kyc.app-profile-settings,
+.app-profile-editor {
+  color-scheme: dark;
+  --background: oklch(0.2 0.006 270);
+  --foreground: oklch(0.97 0 0);
+  --card: oklch(0.17 0.005 270);
+  --card-foreground: oklch(0.97 0 0);
+  --primary: oklch(0.63 0.2 22);
+  --primary-foreground: oklch(0.99 0 0);
+  --muted: oklch(0.22 0.006 270);
+  --muted-foreground: oklch(0.97 0 0 / 55%);
+  --accent: oklch(0.63 0.2 22 / 14%);
+  --accent-foreground: oklch(0.75 0.16 22);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 10%);
+  --ring: oklch(0.63 0.2 22);
+  font-family: var(--font-wallet-body);
 }
 
 .app-profile-settings > [role="dialog"],
@@ -886,38 +896,102 @@
   height: 94dvh;
   max-height: 94dvh;
   margin: 0 auto;
-  border-radius: 10px 10px 0 0;
-  border-bottom: 0;
-  background: var(--card);
+  border-radius: 24px 24px 0 0 !important;
+  border: 1px solid var(--border) !important;
+  border-bottom: 0 !important;
+  background: var(--card) !important;
   color: var(--foreground);
-  box-shadow: 0 -16px 48px oklch(0.12 0.01 260 / 16%);
+  box-shadow: 0 -20px 60px oklch(0 0 0 / 50%);
 }
 
 .app-profile-handle {
   flex: none;
   width: 2.5rem;
-  height: 0.25rem;
-  margin: 0.65rem auto 0;
+  height: 0.375rem;
+  margin: 0.65rem auto 0.25rem;
   border-radius: 999px;
-  background: var(--border);
+  background: oklch(1 0 0 / 15%);
 }
 
 .app-profile-settings header,
-.app-profile-editor > [role="dialog"] > div:nth-child(2) {
-  background: var(--card);
+.app-profile-settings footer,
+.app-profile-editor > [role="dialog"] > div:nth-child(2),
+.app-profile-editor > [role="dialog"] > form > div:last-child {
+  background: var(--card) !important;
+  border-color: var(--border) !important;
 }
 
 .app-profile-settings header {
-  padding: 0.75rem 1.25rem 1rem;
+  padding: 0.5rem 1.25rem 1rem;
 }
 
 .app-profile-settings .identity-form {
-  padding: 1.25rem 1.25rem 2rem;
+  padding: 1.25rem 1rem 2rem;
   overscroll-behavior: contain;
 }
 
 .app-profile-settings footer {
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+/* Sections become rounded dark cards, like the Account screen groups. */
+.app-profile-settings .identity-section {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: oklch(1 0 0 / 3%);
+  padding: 1rem;
+}
+
+.app-profile-settings .identity-section-title {
+  border-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  color: oklch(1 0 0 / 40%) !important;
+  letter-spacing: 0.06em !important;
+}
+
+.app-profile-settings :is(.text-foreground, .text-slate-900, .text-slate-800, .text-slate-700) {
+  color: var(--foreground) !important;
+}
+
+.app-profile-settings :is(.text-slate-600, .text-slate-500, .text-slate-400) {
+  color: var(--muted-foreground) !important;
+}
+
+.app-profile-settings :is(.bg-white, .bg-slate-50, .bg-slate-100, .bg-background, .bg-muted, .bg-muted\/60) {
+  background: oklch(1 0 0 / 5%) !important;
+}
+
+.app-profile-settings :is(.border-slate-200, .border-slate-300, .border-border) {
+  border-color: var(--border) !important;
+}
+
+.app-profile-settings .bg-emerald-50 { background: oklch(0.7 0.15 160 / 12%) !important; }
+.app-profile-settings .bg-sky-50 { background: oklch(0.7 0.12 230 / 12%) !important; }
+.app-profile-settings .bg-amber-50 { background: oklch(0.8 0.14 80 / 12%) !important; }
+.app-profile-settings .border-emerald-200,
+.app-profile-settings .border-sky-200,
+.app-profile-settings .border-amber-200 { border-color: transparent !important; }
+.app-profile-settings .text-emerald-700 { color: oklch(0.82 0.14 160) !important; }
+.app-profile-settings .text-sky-700 { color: oklch(0.8 0.11 230) !important; }
+.app-profile-settings .text-amber-700 { color: oklch(0.85 0.13 80) !important; }
+
+.app-profile-settings .identity-form :is(input, textarea, select),
+.app-profile-editor :is(input, textarea, select) {
+  background: oklch(1 0 0 / 5%) !important;
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+  border-radius: 12px !important;
+}
+
+.app-profile-settings .identity-form :is(input, textarea, select):focus,
+.app-profile-editor :is(input, textarea, select):focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px oklch(0.63 0.2 22 / 20%) !important;
+}
+
+.app-profile-settings :is(input, textarea)::placeholder,
+.app-profile-editor :is(input, textarea)::placeholder {
+  color: oklch(1 0 0 / 35%) !important;
 }
 
 .app-profile-editor > [role="dialog"] {
@@ -939,32 +1013,32 @@
   flex: none;
 }
 
-.app-profile-editor > [role="dialog"] > form > section:first-child {
-  border-color: var(--border);
-}
-
 .app-profile-editor > [role="dialog"] > form > div:last-child {
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
 }
 
-.app-profile-editor :is(input, textarea) {
-  background: var(--background) !important;
-  color: var(--foreground) !important;
+.app-profile-editor :is(.md\:bg-white, .md\:bg-slate-50) {
+  background: oklch(1 0 0 / 4%) !important;
+}
+
+.app-profile-editor :is(.md\:border-slate-200, .md\:border-slate-300) {
   border-color: var(--border) !important;
 }
 
-.app-profile-editor > [role="dialog"] > form > section:first-child > div:nth-child(2),
-.app-profile-editor > [role="dialog"] > form > div:last-child {
-  background: var(--card);
+.app-profile-editor :is(.md\:border-white) {
+  border-color: var(--card) !important;
 }
 
-.app-profile-editor > [role="dialog"] > form > section:first-child :is(.text-white, .text-slate-400),
-.app-profile-editor > [role="dialog"] > div:nth-child(2) h2 {
-  color: var(--foreground);
+.app-profile-editor :is(.md\:text-slate-900, .md\:text-slate-800, .md\:text-slate-700, .text-slate-900) {
+  color: var(--foreground) !important;
 }
 
-.app-profile-editor > [role="dialog"] > form > section:first-child {
-  border-radius: 8px;
+.app-profile-editor :is(.md\:text-slate-600, .md\:text-slate-500) {
+  color: var(--muted-foreground) !important;
+}
+
+.app-profile-editor .md\:text-emerald-700 {
+  color: oklch(0.82 0.14 160) !important;
 }
 
 @media (min-width: 768px) {
@@ -976,7 +1050,8 @@
   .app-profile-settings > [role="dialog"],
   .app-profile-editor > [role="dialog"] {
     height: min(94dvh, 52rem);
-    border-radius: 10px;
+    border-radius: 24px !important;
+    border-bottom: 1px solid var(--border) !important;
   }
 }
 
