@@ -28,6 +28,8 @@ import {
   listMyPostableCircles as listCirclesFn,
 } from "@/lib/posts.functions";
 import { searchMyProductsForTagging as searchProductsFn } from "@/lib/marketplace.functions";
+import { useIsAppShell } from "@/hooks/use-launch-context";
+import { Button } from "@/components/ui/button";
 
 type Audience = "public" | "circle" | "followers";
 type Mention = {
@@ -84,6 +86,7 @@ export function PostComposerModal({
   wallOwnerName?: string | null;
 }) {
   const isWall = !!wallUserId;
+  const isApp = useIsAppShell();
   const createPost = useServerFn(createPostFn);
   const searchMentions = useServerFn(searchMentionsFn);
   const searchProducts = useServerFn(searchProductsFn);
@@ -466,6 +469,91 @@ export function PostComposerModal({
   };
 
   if (!open) return null;
+
+  if (isApp) return (
+    <div className="app-post-composer fixed inset-0 z-[60] flex items-end justify-center bg-background/75 backdrop-blur-sm" onClick={onClose}>
+      <div ref={shellRef} role="dialog" aria-modal="true" aria-label="Create post" className="slide-up relative flex h-[min(94dvh,850px)] w-full max-w-2xl flex-col overflow-hidden rounded-t-[24px] border border-b-0 border-border bg-card text-foreground shadow-2xl" onClick={(event) => event.stopPropagation()}>
+        <div className="app-profile-handle" aria-hidden="true" />
+        <header className="flex h-14 shrink-0 items-center justify-between border-b border-border px-4">
+          <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close post composer" title="Close"><X /></Button>
+          <h2 className="font-semibold text-[15px]">New post</h2>
+          <Button onClick={doPost} disabled={posting || hasBlockingError} className="h-9 rounded-full px-5 font-semibold">{posting ? "Posting…" : "Post"}</Button>
+        </header>
+
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-5 pt-5">
+          <div className="flex shrink-0 items-center gap-3">
+            <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-muted"><AvatarImage src={meAvatarUrl} alt={meName} initials={initialsOf(meName)} /></div>
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-sm font-semibold">{meName}</div>
+              {isWall ? <div className="text-xs text-muted-foreground">Posting to {wallOwnerName || "this profile"}</div> : (
+                <div className="relative mt-1 w-fit">
+                  <Button variant="outline" size="sm" onClick={() => setAudienceOpen((value) => !value)} aria-expanded={audienceOpen} className="h-7 gap-1.5 rounded-full border-border bg-muted/40 px-2.5 text-[11px] text-foreground">
+                    {audience === "public" ? <Globe2 /> : <Users />} {audienceLabel} <ChevronDown />
+                  </Button>
+                  {audienceOpen && <div className="absolute left-0 top-full z-30 mt-2 w-60 max-w-[calc(100vw-3rem)] overflow-auto rounded-[10px] border border-border bg-card p-1 shadow-2xl">
+                    {([
+                      { key: "public" as const, label: "Public", icon: <Globe2 className="size-4" />, detail: "Everyone on Oventric" },
+                      { key: "followers" as const, label: "Followers", icon: <UsersRound className="size-4" />, detail: "People who follow you" },
+                    ]).map((item) => <Button key={item.key} variant="ghost" onClick={() => { setAudience(item.key); setCircleId(null); setAudienceOpen(false); }} className="h-auto w-full justify-start gap-3 px-3 py-2 text-left text-foreground">{item.icon}<span className="flex-1"><span className="block text-sm">{item.label}</span><span className="block text-[11px] font-normal text-muted-foreground">{item.detail}</span></span>{audience === item.key && <Check />}</Button>)}
+                    {circles.length > 0 && <div className="border-t border-border pt-1">{circles.map((circle) => <Button key={circle.id} variant="ghost" onClick={() => { setAudience("circle"); setCircleId(circle.id); setAudienceOpen(false); }} className="h-auto w-full justify-start gap-3 px-3 py-2 text-left text-foreground"><Users className="size-4" /><span className="min-w-0 flex-1 truncate text-sm">{circle.name}</span>{audience === "circle" && circleId === circle.id && <Check />}</Button>)}</div>}
+                  </div>}
+                </div>
+              )}
+            </div>
+          </div>
+          {showAudienceError && <FieldError>{audienceError}</FieldError>}
+
+          <textarea ref={textareaRef} value={text} onChange={(event) => setText(event.target.value)} aria-label="Write your post" aria-invalid={showTextError} placeholder="What would you like to share?" className="mt-5 min-h-[160px] w-full resize-none bg-transparent text-[17px] leading-relaxed text-foreground outline-none placeholder:text-muted-foreground" />
+          {showTextError && <FieldError>{textError}</FieldError>}
+
+          {attachments.length > 0 && <div className="mb-4 flex shrink-0 gap-2 overflow-x-auto pb-1">
+            {attachments.map((attachment, index) => <div key={attachment.previewUrl} className="relative h-32 w-32 shrink-0 overflow-hidden rounded-[10px] bg-muted">
+              {attachment.kind === "image" ? <img src={attachment.previewUrl} alt={`Attachment ${index + 1}`} className="h-full w-full object-cover" /> : <video src={attachment.previewUrl} className="h-full w-full object-cover" />}
+              <Button size="icon-sm" variant="secondary" onClick={() => removeAttachmentAt(index)} aria-label={`Remove attachment ${index + 1}`} className="absolute right-1.5 top-1.5 h-7 w-7 rounded-full"><X /></Button>
+            </div>)}
+            {!attachments.some((attachment) => attachment.kind === "video") && attachments.length < MAX_IMAGES && <Button variant="outline" onClick={onPickFile} aria-label="Add more media" className="h-32 w-24 shrink-0 flex-col rounded-[10px] border-dashed text-muted-foreground"><Plus /> Add</Button>}
+          </div>}
+          <input ref={fileInputRef} type="file" accept="image/*,video/*" multiple className="hidden" onChange={onFile} />
+
+          {attachedProducts.length > 0 && <div className="mb-3 space-y-2">{attachedProducts.map((product) => <div key={product.id} className="flex items-center gap-3 rounded-[10px] border border-border bg-muted/40 p-2">
+            <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-[8px] bg-muted">{product.coverUrl ? <img src={product.coverUrl} alt="" className="size-full object-cover" /> : <ShoppingBag className="size-5 text-muted-foreground" />}</div>
+            <span className="min-w-0 flex-1 truncate text-sm font-medium">{product.name}</span>
+            <Button variant="ghost" size="icon-sm" onClick={() => removeProductAttachment(product.id)} aria-label={`Remove ${product.name}`}><X /></Button>
+          </div>)}</div>}
+          {mentions.length > 0 && <div className="mb-3 flex flex-wrap gap-2">{mentions.map((mention) => <span key={mention.userId} className="flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-xs text-primary">@{mention.username || mention.name}<Button variant="ghost" size="icon-sm" className="size-5 rounded-full text-primary" onClick={() => removeMention(mention.userId)} aria-label={`Remove mention ${mention.name}`}><X /></Button></span>)}</div>}
+          {mediaError && <FieldError>{mediaError}</FieldError>}
+          {error && <FieldError>{error}</FieldError>}
+          <div className="flex-1" />
+        </div>
+
+        <footer className="shrink-0 border-t border-border bg-card px-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3">
+          <div className="mb-3 flex items-center justify-between gap-2 text-xs text-muted-foreground"><span>Add to your post</span><span className={textError ? "text-destructive" : ""}>{trimmed.length.toLocaleString()} / {MAX_TEXT.toLocaleString()}</span></div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={onPickFile} className="min-w-0 flex-1 rounded-[10px] border-border bg-muted/40 text-foreground" title="Add photo or video"><ImageIcon className="text-primary" /><span className="hidden min-[350px]:inline">Media</span></Button>
+            <Button variant="outline" onClick={() => setMentionPickerOpen(true)} className="min-w-0 flex-1 rounded-[10px] border-border bg-muted/40 text-foreground" title="Mention someone"><AtSign className="text-primary" /><span className="hidden min-[350px]:inline">Mention</span></Button>
+            <Button variant="outline" onClick={() => setProductPickerOpen(true)} className="min-w-0 flex-1 rounded-[10px] border-border bg-muted/40 text-foreground" title="Add a product"><ShoppingBag className="text-primary" /><span className="hidden min-[350px]:inline">Product</span></Button>
+          </div>
+        </footer>
+      </div>
+
+      {(productPickerOpen || mentionPickerOpen) && <div className="fixed inset-0 z-[70] flex items-center justify-center bg-background/80 px-5 backdrop-blur-sm" onClick={() => { setProductPickerOpen(false); setMentionPickerOpen(false); }}>
+        <div role="dialog" aria-modal="true" aria-label={productPickerOpen ? "Choose products" : "Mention people"} className="flex max-h-[65dvh] w-full max-w-sm flex-col overflow-hidden rounded-[10px] border border-border bg-card shadow-2xl" onClick={(event) => event.stopPropagation()}>
+          <div className="flex items-center gap-2 border-b border-border p-3">{productPickerOpen ? <ShoppingBag className="size-4 text-primary" /> : <AtSign className="size-4 text-primary" />}
+            <input autoFocus value={productPickerOpen ? productQuery : mentionQuery} onChange={(event) => productPickerOpen ? setProductQuery(event.target.value) : setMentionQuery(event.target.value)} placeholder={productPickerOpen ? "Search your products" : "Search people"} className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
+            <Button variant="ghost" size="icon-sm" onClick={() => { setProductPickerOpen(false); setMentionPickerOpen(false); }} aria-label="Close search"><X /></Button>
+          </div>
+          {productPickerOpen && attachedProducts.length > 0 && <div className="flex items-center justify-between border-b border-border px-3 py-2 text-xs text-muted-foreground"><span>{attachedProducts.length} selected</span><Button size="sm" onClick={() => setProductPickerOpen(false)}>Done</Button></div>}
+          <div className="min-h-24 overflow-y-auto p-2">
+            {(productPickerOpen ? productLoading : mentionLoading) && <div className="flex justify-center py-5"><Loader2 className="size-5 animate-spin text-primary" /></div>}
+            {productPickerOpen && !productLoading && productResults.length === 0 && <p className="py-5 text-center text-xs text-muted-foreground">{productQuery ? "No products found" : "Search your products"}</p>}
+            {productPickerOpen && productResults.map((product) => <Button key={product.id} variant="ghost" onClick={() => addProductTag(product)} className="h-14 w-full justify-start gap-3 text-left text-foreground"><span className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-[8px] bg-muted">{product.coverUrl ? <img src={product.coverUrl} alt="" className="size-full object-cover" /> : <ShoppingBag />}</span><span className="min-w-0 flex-1 truncate">{product.name}</span>{attachedProducts.some((item) => item.id === product.id) && <Check className="text-primary" />}</Button>)}
+            {!productPickerOpen && !mentionLoading && mentionResults.length === 0 && <p className="py-5 text-center text-xs text-muted-foreground">{mentionQuery ? "No matches" : "Search by name or username"}</p>}
+            {!productPickerOpen && mentionResults.map((person) => <Button key={person.userId} variant="ghost" onClick={() => addMention(person)} className="h-14 w-full justify-start gap-3 text-left text-foreground"><span className="size-9 shrink-0 overflow-hidden rounded-full bg-muted"><AvatarImage src={person.avatarUrl} alt={person.name} initials={initialsOf(person.name)} /></span><span className="min-w-0 flex-1 truncate">{person.name}</span></Button>)}
+          </div>
+        </div>
+      </div>}
+    </div>
+  );
 
   return (
     <div className="modal-light fixed inset-0 z-[60] flex items-stretch sm:items-center justify-center">
