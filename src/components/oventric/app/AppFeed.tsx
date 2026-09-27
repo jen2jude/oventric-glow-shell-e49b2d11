@@ -72,11 +72,19 @@ export function AppFeed() {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [editingPost, setEditingPost] = useState<{ id: string; text: string } | null>(null);
   const [editSaving, setEditSaving] = useState(false);
-  const [tab, setTab] = useState<"foryou" | "following">("foryou");
+  const [tab, setTab] = useState<"foryou" | "following" | "shop">("foryou");
   const [followingIds, setFollowingIds] = useState<Set<string> | null>(null);
   const [followerIds, setFollowerIds] = useState<Set<string> | null>(null);
   const loadFollowing = useServerFn(listFollowing);
   const loadFollowers = useServerFn(listFollowers);
+  const [quickViewId, setQuickViewId] = useState<string | null>(null);
+  const fetchProducts = useServerFn(listProducts);
+  const { data: shopProducts } = useQuery({
+    queryKey: ["app-feed-shop-products"],
+    queryFn: () => fetchProducts({ data: {} }),
+    staleTime: 60_000,
+    enabled: tab === "shop",
+  });
 
   const saveEdit = async () => {
     if (!editingPost) return;
