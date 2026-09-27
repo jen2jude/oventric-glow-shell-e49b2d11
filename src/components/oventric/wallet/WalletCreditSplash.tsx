@@ -7,8 +7,8 @@ import {
   markWalletCreditsSeen,
   type WalletCreditSplashItem,
 } from "@/lib/wallet.functions";
-import { formatMoney } from "@/lib/fx-display";
-import type { Currency } from "@/lib/onboarding/OnboardingContext";
+import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
+import { usdEquivalent, visibleMoney } from "@/lib/money-visibility";
 import { walletTxLabel } from "@/lib/wallet-tx-labels";
 import { Button } from "@/components/ui/button";
 
@@ -31,6 +31,7 @@ const CONFETTI: { left: string; color: string; delay: string; duration: string; 
  * splash_seen flag, so each credit is celebrated exactly once across devices.
  */
 export function WalletCreditSplash({ enabled }: { enabled: boolean }) {
+  const { balancesHidden } = useOnboarding();
   const [dismissed, setDismissed] = useState(false);
 
   const fetchCredits = useServerFn(getUnseenWalletCredits);
@@ -133,12 +134,12 @@ export function WalletCreditSplash({ enabled }: { enabled: boolean }) {
         <div className="relative px-6 pb-6">
           <div className="-mt-5 space-y-1 rounded-[10px] border border-border bg-card px-4 py-3 shadow-sm">
             {[...totals.entries()].map(([currency, amount]) => (
-              <p
-                key={currency}
-                className="wallet-amount-pop bg-gradient-to-r from-fuchsia-600 via-rose-500 to-amber-500 bg-clip-text text-3xl font-extrabold tracking-tight text-transparent"
-              >
-                +{formatMoney(amount, currency as Currency)}
-              </p>
+              <div key={currency}>
+                <p className="wallet-amount-pop bg-gradient-to-r from-fuchsia-600 via-rose-500 to-amber-500 bg-clip-text text-3xl font-extrabold tracking-tight text-transparent">
+                  +{visibleMoney(amount, currency as Currency, balancesHidden)}
+                </p>
+                <p className="text-xs text-muted-foreground">{usdEquivalent(amount, currency as Currency, balancesHidden)}</p>
+              </div>
             ))}
           </div>
 
@@ -154,7 +155,7 @@ export function WalletCreditSplash({ enabled }: { enabled: boolean }) {
                   {walletTxLabel(item.type)}
                 </span>
                 <span className="shrink-0 text-xs font-semibold text-foreground">
-                  +{formatMoney(item.amount, item.currency as Currency)}
+                  +{visibleMoney(item.amount, item.currency as Currency, balancesHidden)}
                 </span>
               </li>
             ))}
