@@ -23,7 +23,7 @@ import {
   sendFollowRequest,
   unfollow,
 } from "@/lib/follows.functions";
-import { listPosts, type PostDTO } from "@/lib/posts.functions";
+import { listPosts, type FeedPost } from "@/lib/posts.functions";
 import { listProducts, type ProductDTO } from "@/lib/marketplace.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
@@ -103,7 +103,7 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
   });
   const posts = useMemo(
     () =>
-      (postsData?.posts ?? []).filter((p: PostDTO) => p.author_id === userId),
+      (postsData?.posts ?? []).filter((p: FeedPost) => p.author_id === userId),
     [postsData, userId],
   );
 
@@ -335,7 +335,7 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
           </p>
         ) : (
           <div className="divide-y divide-white/[0.05]">
-            {posts.map((p: PostDTO) => (
+            {posts.map((p: FeedPost) => (
               <button
                 key={p.id}
                 onClick={() => navigate({ to: "/post/$id", params: { id: p.id } })}
