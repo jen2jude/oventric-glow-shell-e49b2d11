@@ -1494,6 +1494,14 @@ function WebProfilePage() {
                     />
                     <Button
                       variant="outline"
+                      onClick={() => navigate({ to: "/shop/$id", params: { id: realProfile.userId } })}
+                      aria-label={`View ${displayName}'s shop`}
+                      className="h-11 rounded-[10px] border-white/12 bg-[#1A1A1F] px-4 text-sm font-bold text-[#E5484D] hover:bg-[#232329] hover:text-[#E5484D] md:w-36 md:border-slate-300 md:bg-white md:text-[#C43D42] md:hover:bg-slate-100"
+                    >
+                      <ShoppingBag className="h-4 w-4" /> View shop
+                    </Button>
+                    <Button
+                      variant="outline"
                       onClick={handleChat}
                       aria-label={`Message ${displayName}`}
                       className="h-11 rounded-[10px] border-white/12 bg-[#1A1A1F] px-4 text-sm font-bold text-white hover:bg-[#232329] hover:text-white md:w-36 md:border-slate-300 md:bg-white md:text-slate-900 md:hover:bg-slate-100"
@@ -1509,6 +1517,13 @@ function WebProfilePage() {
                       className="h-11 rounded-[10px] bg-[#E5484D] px-5 text-sm font-black text-white hover:bg-[#C43D42] md:w-44"
                     >
                       <Pencil className="h-4 w-4" strokeWidth={2.5} /> Edit profile
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => navigate({ to: "/shop/$id", params: { id: realProfile?.userId ?? id } })}
+                      className="h-11 rounded-[10px] border-white/12 bg-[#1A1A1F] px-5 text-sm font-bold text-[#E5484D] hover:bg-[#232329] md:w-36 md:border-slate-300 md:bg-white md:text-[#C43D42]"
+                    >
+                      <ShoppingBag className="h-4 w-4" /> View shop
                     </Button>
                     <Button
                       variant="outline"
