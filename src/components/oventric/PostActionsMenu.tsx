@@ -244,14 +244,28 @@ export function PostActionsMenu({
     return (
       <button
         onClick={() => run(action)}
-        className="w-full flex items-start gap-4 px-5 py-3.5 text-left active:bg-slate-100"
+        className={`w-full flex items-start gap-4 px-5 py-3.5 text-left ${
+          isApp ? "active:bg-white/10" : "active:bg-slate-100"
+        }`}
       >
-        <Icon className={`w-5 h-5 mt-0.5 shrink-0 ${danger ? "text-red-600" : "text-slate-500"}`} />
+        <Icon
+          className={`w-5 h-5 mt-0.5 shrink-0 ${
+            danger ? "text-red-500" : isApp ? "text-white/50" : "text-slate-500"
+          }`}
+        />
         <span className="min-w-0">
-          <span className={`block text-[15px] ${danger ? "text-red-600" : "text-slate-900"}`}>
+          <span
+            className={`block text-[15px] ${
+              danger ? "text-red-500" : isApp ? "text-white" : "text-slate-900"
+            }`}
+          >
             {label}
           </span>
-          {sub ? <span className="block text-[12px] text-slate-500 mt-0.5">{sub}</span> : null}
+          {sub ? (
+            <span className={`block text-[12px] mt-0.5 ${isApp ? "text-white/45" : "text-slate-500"}`}>
+              {sub}
+            </span>
+          ) : null}
         </span>
       </button>
     );
@@ -261,7 +275,11 @@ export function PostActionsMenu({
     <div ref={ref} className={open ? "relative z-[300]" : "relative"}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="p-1.5 rounded-[10px] text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+        className={`p-1.5 rounded-[10px] transition-colors ${
+          isApp
+            ? "text-white/50 hover:text-white hover:bg-white/10"
+            : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
+        }`}
         aria-label="More"
       >
         <MoreHorizontal className="w-4 h-4" />
