@@ -17,7 +17,6 @@ const AppMarket = lazy(() =>
 const AppWallet = lazy(() =>
   import("@/components/oventric/app/AppWallet").then((m) => ({ default: m.AppWallet })),
 );
-);
 const Academy = lazy(() =>
   import("@/components/oventric/Academy").then((m) => ({ default: m.Academy })),
 );
