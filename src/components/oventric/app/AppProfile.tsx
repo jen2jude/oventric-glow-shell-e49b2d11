@@ -29,8 +29,19 @@ import { listProducts, type ProductDTO } from "@/lib/marketplace.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { haptic } from "@/lib/haptics";
-import { ago, compact } from "@/lib/feed-utils";
 import { ProductQuickView } from "./ProductQuickView";
+
+function ago(iso: string) {
+  const s = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (s < 60) return "now";
+  if (s < 3600) return `${Math.floor(s / 60)}m`;
+  if (s < 86400) return `${Math.floor(s / 3600)}h`;
+  return `${Math.floor(s / 86400)}d`;
+}
+
+function compact(n: number) {
+  return n >= 1000 ? `${(n / 1000).toFixed(1).replace(/\.0$/, "")}k` : `${n}`;
+}
 
 type Tab = "posts" | "shop" | "about";
 
