@@ -32,6 +32,7 @@ export function ProductQuickView({
     enabled: !!productId,
     staleTime: 60_000,
   });
+  useSellerView("product_view", p?.sellerId, p?.id);
 
   const price = (prod: ProductDTO) =>
     safeFormatDisplayPrice(

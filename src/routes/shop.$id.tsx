@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Header } from "@/components/oventric/Header";
 import { useIsAppShell } from "@/hooks/use-launch-context";
+import { useSellerView } from "@/lib/seller-views";
 import { AppShop } from "@/components/oventric/app/AppShop";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -303,6 +304,7 @@ function WebShopPage() {
   const name = shop?.shopName ?? id;
   const verified = shop?.verified === true;
   const isOwner = !!meId && !!shop && meId === shop.userId;
+  useSellerView("shop_visit", isAppShell ? null : shop?.userId);
 
   const handleBack = () => {
     if (typeof window !== "undefined" && window.history.length > 1) {

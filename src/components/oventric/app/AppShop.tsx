@@ -46,6 +46,7 @@ export function AppShop({ idOrSlug }: { idOrSlug: string }) {
     staleTime: 60_000,
   });
   const shop = shopData?.shop ?? null;
+  useSellerView("shop_visit", shop?.userId);
 
   const { data: counts } = useQuery({
     queryKey: ["app-shop-counts", idOrSlug],
