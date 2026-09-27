@@ -374,6 +374,16 @@ export function AppFeed() {
           { icon: Flag, label: "Report this", danger: true, action: () => setReportFor(post) },
         ];
         if (isOwn) {
+          const withinEditWindow =
+            Date.now() - new Date(post.created_at).getTime() < EDIT_WINDOW_MS;
+          if (withinEditWindow) {
+            items.push({
+              icon: Pencil,
+              label: "Edit post",
+              sub: "You can edit within 10 minutes of sharing",
+              action: () => setEditingPost({ id: post.id, text: post.text ?? "" }),
+            });
+          }
           items.push({
             icon: Trash2,
             label: "Delete post",
