@@ -58,14 +58,13 @@ function compact(n: number) {
   return n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : String(n);
 }
 
-/** Muted looping 10s preview that starts when scrolled into view; tap plays it fully with sound. */
-function AppPreviewVideo({ src, poster }: { src: string; poster: string | null }) {
+/** Muted looping 10s preview that starts when scrolled into view; tap opens the detail panel. */
+function AppPreviewVideo({ src, poster, onTap }: { src: string; poster: string | null; onTap: () => void }) {
   const ref = useRef<HTMLVideoElement>(null);
-  const [full, setFull] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || full) return;
+    if (!el) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let timer: ReturnType<typeof setInterval> | undefined;
     const io = new IntersectionObserver(
@@ -88,7 +87,7 @@ function AppPreviewVideo({ src, poster }: { src: string; poster: string | null }
       io.disconnect();
       if (timer) clearInterval(timer);
     };
-  }, [full]);
+  }, []);
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-neutral-900">
@@ -96,28 +95,23 @@ function AppPreviewVideo({ src, poster }: { src: string; poster: string | null }
         ref={ref}
         src={src}
         poster={poster ?? undefined}
-        muted={!full}
-        loop={!full}
+        muted
+        loop
         playsInline
-        controls={full}
-        className="aspect-video w-full object-cover"
-        onClick={() => {
-          if (full) return;
-          haptic("select");
-          setFull(true);
-          const el = ref.current;
-          if (el) {
-            el.muted = false;
-            el.currentTime = 0;
-            void el.play().catch(() => {});
-          }
-        }}
+        className="pointer-events-none aspect-video w-full object-cover"
       />
-      {!full && (
-        <span className="pointer-events-none absolute bottom-2 left-2 flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-[10.5px] font-bold backdrop-blur" style={{ color: "#ffffff" }}>
-          <Play className="h-3 w-3" /> Tap to play
-        </span>
-      )}
+      <button
+        type="button"
+        aria-label="Open showcase"
+        onClick={() => {
+          haptic("select");
+          onTap();
+        }}
+        className="absolute inset-0"
+      />
+      <span className="pointer-events-none absolute bottom-2 left-2 flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-[10.5px] font-bold backdrop-blur" style={{ color: "#ffffff" }}>
+        <Play className="h-3 w-3" /> Tap to watch
+      </span>
     </div>
   );
 }
