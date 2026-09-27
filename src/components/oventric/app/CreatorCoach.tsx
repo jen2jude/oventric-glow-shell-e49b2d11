@@ -182,7 +182,7 @@ export function CreatorCoachDrawer({ open, onClose }: { open: boolean; onClose: 
   return (
     <VaulDrawer.Root open={open} onOpenChange={(o) => !o && onClose()}>
       <VaulDrawer.Portal>
-        <VaulDrawer.Overlay className="fixed inset-0 z-[90] bg-black/60" />
+        <VaulDrawer.Overlay className="fixed inset-0 z-[90] bg-black/40 backdrop-blur-md" />
         <VaulDrawer.Content className="fixed inset-x-0 bottom-0 z-[91] flex h-[92dvh] flex-col rounded-t-3xl border-t border-white/10 bg-[#070A08] outline-none">
           <div className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-full bg-white/20" />
           <div className="flex shrink-0 items-center gap-2.5 border-b border-white/10 px-4 py-3">

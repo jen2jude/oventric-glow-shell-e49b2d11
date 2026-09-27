@@ -1216,7 +1216,7 @@ export function AppMessages({ initialThreadId, onClose }: AppMessagesProps) {
       </div>
       <Drawer open={!!activePeer} onOpenChange={(open) => { if (!open) setActivePeer(null); }}>
         <DrawerPortal>
-          <DrawerOverlay className="fixed inset-0 z-[90] bg-background/75 backdrop-blur-[2px]" />
+          <DrawerOverlay className="fixed inset-0 z-[90] bg-black/40 backdrop-blur-md" />
           <VaulDrawer.Content
             aria-label="Conversation"
             className="fixed inset-x-0 bottom-0 z-[91] mx-auto flex h-[94dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-3xl border border-b-0 border-white/10 bg-[#070A08] outline-none"
