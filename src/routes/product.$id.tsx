@@ -388,6 +388,7 @@ function ProductPage() {
   const [contactOpen, setContactOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
+  const [showFullDescription, setShowFullDescription] = useState(false);
   const loadPackages = useServerFn(getServicePackages);
   const [packages, setPackages] = useState<ServicePackage[]>([]);
   const [selectedPkg, setSelectedPkg] = useState<string | null>(null);
@@ -585,13 +586,13 @@ function ProductPage() {
                   const cur = gallery[activeImage] ?? gallery[0];
                   return (
                     <>
-                         <div className={`product-gallery relative flex w-full items-center justify-center overflow-hidden bg-newsfeed-coral-soft ${isAppShell ? "aspect-[16/11] rounded-none border-0 sm:rounded-[10px]" : "aspect-[4/3] rounded-[10px] border border-newsfeed-line"}`}>
+                         <div className={`product-gallery relative flex w-full items-center justify-center overflow-hidden bg-newsfeed-coral-soft ${isAppShell ? "aspect-[16/10] rounded-none border-0 sm:rounded-[10px]" : "aspect-[4/3] rounded-[10px] border border-newsfeed-line"}`}>
                           {cur ? (
                             <ResponsiveImage
                               sizes="(min-width: 1024px) 640px, 100vw"
                               src={cur}
                               alt={product.name}
-                              className="absolute inset-0 w-full h-full object-cover"
+                               className={`absolute inset-0 w-full h-full ${isAppShell ? "object-contain" : "object-cover"}`}
                               loading="eager"
                               fetchPriority="high"
                               decoding="async"
@@ -652,8 +653,8 @@ function ProductPage() {
                             </span>
                           )}
                         </div>
-                       {gallery.length > 1 && (
-                         <div className={`flex overflow-x-auto scrollbar-none ${isAppShell ? "gap-2 px-4 py-3 sm:px-0" : "mt-3 gap-3"}`}>
+                         {gallery.length > 1 && (
+                          <div className={`flex overflow-x-auto scrollbar-none ${isAppShell ? "gap-2 px-4 py-3 sm:px-0" : "mt-3 gap-3"}`}>
                           {gallery.map((url, i) => (
                             <button
                               key={url}
@@ -685,7 +686,7 @@ function ProductPage() {
             </div>
 
              <div className={`product-summary lg:col-span-5 ${isAppShell ? "px-4 pt-2 sm:px-0" : ""}`}>
-               <div className={`${isAppShell ? "flex flex-col pb-28" : ""} lg:sticky lg:top-24`}>
+               <div className={`${isAppShell ? "flex flex-col pb-16" : ""} lg:sticky lg:top-24`}>
                <div className={`product-category mb-3 inline-flex items-center gap-2 text-[10px] font-extrabold uppercase text-newsfeed-coral ${isAppShell ? "" : "rounded-full bg-newsfeed-coral-soft px-3 py-1.5"}`}>
                 <span className="h-1.5 w-1.5 rounded-full bg-newsfeed-coral" />
 
@@ -695,6 +696,23 @@ function ProductPage() {
                <h1 className={`product-title mb-3 min-w-0 font-extrabold leading-tight text-newsfeed-ink ${isAppShell ? "text-[24px] sm:text-3xl lg:text-4xl" : "text-3xl sm:text-4xl lg:text-5xl"}`}>
                 {product.name}
               </h1>
+               {isAppShell && (
+                 <div className="product-app-intro mb-6 flex items-center gap-3 text-xs text-newsfeed-muted">
+                   <span className="inline-flex items-center gap-1.5"><Star className="h-3.5 w-3.5 fill-current text-newsfeed-gold" />{product.rating.toFixed(1)} ({product.reviews})</span>
+                   <span className="h-1 w-1 rounded-full bg-newsfeed-line" />
+                   <span>{product.kind === "service" ? "Service" : "Digital download"}</span>
+                 </div>
+               )}
+               {isAppShell && product.kind === "digital" && packages.length === 0 && (
+                 <div className="product-app-quantity mb-5 flex items-center justify-between border-t border-newsfeed-line py-3">
+                   <span className="text-[13px] text-newsfeed-muted">Quantity</span>
+                   <div className="flex h-9 items-center rounded-[10px] border border-newsfeed-line bg-newsfeed-surface">
+                     <button type="button" aria-label="Decrease quantity" disabled={qty <= 1} onClick={() => setQty((v) => Math.max(1, v - 1))} className="h-9 w-10 text-lg text-newsfeed-ink disabled:opacity-30">−</button>
+                     <span className="w-6 text-center text-sm font-bold text-newsfeed-ink">{qty}</span>
+                     <button type="button" aria-label="Increase quantity" disabled={qty >= 20} onClick={() => setQty((v) => Math.min(20, v + 1))} className="h-9 w-10 text-lg text-newsfeed-ink disabled:opacity-30">+</button>
+                   </div>
+                 </div>
+               )}
               {outOfStock ? (
                 <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-[#E5484D]/12 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#E5484D]">
                   Out of stock
@@ -714,6 +732,19 @@ function ProductPage() {
                     : `${product.stockQuantity} in stock`}
                 </div>
               ) : null}
+               {isAppShell && (
+                 <section className="product-app-about border-t border-newsfeed-line py-5" aria-label="About this product">
+                   <h2 className="mb-3 text-base font-bold text-newsfeed-ink">About this {product.kind === "service" ? "service" : "product"}</h2>
+                   <p className="whitespace-pre-line text-[13px] leading-6 text-newsfeed-muted">
+                     {product.description ? (showFullDescription || product.description.length <= 280 ? product.description : `${product.description.slice(0, 280).trimEnd()}…`) : "No description provided."}
+                   </p>
+                   {product.description && product.description.length > 280 && (
+                     <button type="button" onClick={() => setShowFullDescription((v) => !v)} className="mt-2 text-xs font-bold text-newsfeed-coral">
+                       {showFullDescription ? "Show less" : "Read more"}
+                     </button>
+                   )}
+                 </section>
+               )}
                <div className="product-seller mb-4 space-y-2 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-3">
                 <CreatorChip
                   idOrSlug={product.sellerSlug ?? product.sellerId}
@@ -726,6 +757,12 @@ function ProductPage() {
                   exclude={["marketplace"]}
                   dark={isAppShell}
                 />
+                 {isAppShell && (
+                   <div className="flex gap-4 pt-2 text-xs font-bold text-newsfeed-coral">
+                     <Link to="/shop/$id" params={{ id: product.sellerSlug ?? product.sellerId }} className="inline-flex items-center gap-1.5"><ShoppingBag className="h-4 w-4" /> Visit shop</Link>
+                     <button type="button" onClick={openSellerChat} className="inline-flex items-center gap-1.5"><MessageCircle className="h-4 w-4" /> Chat with seller</button>
+                   </div>
+                 )}
               </div>
 
               <div className="product-reviews mb-4 flex flex-wrap items-center gap-2">
@@ -740,7 +777,7 @@ function ProductPage() {
 
               <div className="product-details mb-5 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface px-4">
                 <Accordion type="single" collapsible className="w-full">
-                  <AccordionItem value="about" className={`${isAppShell ? "border-white/5" : "border-slate-200"}`}>
+                   {!isAppShell && <AccordionItem value="about" className="border-slate-200">
                     <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold py-3 hover:no-underline`}>
                       About Item
                     </AccordionTrigger>
@@ -769,6 +806,7 @@ function ProductPage() {
                       })()}
                     </AccordionContent>
                   </AccordionItem>
+                   }
 
                   <AccordionItem value="basic" className={`${isAppShell ? "border-white/5" : "border-slate-200"}`}>
                     <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold py-3 hover:no-underline`}>
@@ -779,7 +817,7 @@ function ProductPage() {
                     </AccordionContent>
                   </AccordionItem>
 
-                  <AccordionItem value="description" className={`${isAppShell ? "border-white/5" : "border-slate-200"}`}>
+                   {!isAppShell && <AccordionItem value="description" className="border-slate-200">
                     <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold py-3 hover:no-underline`}>
                       Description
                     </AccordionTrigger>
@@ -787,6 +825,7 @@ function ProductPage() {
                       {product.description || "No description provided."}
                     </AccordionContent>
                   </AccordionItem>
+                   }
 
                   <AccordionItem value="activation" className={`${isAppShell ? "border-white/5" : "border-slate-200"}`}>
                     <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold py-3 hover:no-underline`}>
@@ -804,23 +843,23 @@ function ProductPage() {
                   <span className="bg-newsfeed-coral" />
                   <span className="bg-newsfeed-gold" />
                   <span className="bg-newsfeed-blue" />
-                </div>}
+                 </div>}
                  <div className={isAppShell ? "py-2" : "p-5 sm:p-6"}>
 
-                <div className="flex items-baseline justify-between mb-4">
+                 {!isAppShell && <div className="flex items-baseline justify-between mb-4">
                   <div>
                     {(() => {
                       const dp = productDisplay(product, baseCurrency);
                       return (
                         <>
-                           <div className={`${isAppShell ? "text-[27px] text-newsfeed-coral" : "text-3xl text-newsfeed-ink sm:text-4xl"} font-extrabold`}>
+                           <div className={`${isAppShell ? "hidden" : "text-3xl text-newsfeed-ink sm:text-4xl"} font-extrabold`}>
                             {dp.value === 0 ? "Free" : dp.formatted}
-                          </div>
+                           </div>
                         </>
                       );
                     })()}
                   </div>
-                  {product.kind === "digital" && packages.length === 0 && (
+                 {!isAppShell && product.kind === "digital" && packages.length === 0 && (
                     <div className="flex items-center gap-2">
                       <label className="text-xs text-slate-400 md:text-slate-500 uppercase tracking-wide">
                         Qty
@@ -837,7 +876,7 @@ function ProductPage() {
                       />
                     </div>
                   )}
-                </div>
+                 </div>}
                 {packages.length > 0 && (
                   <div className="mb-4 space-y-2">
                     <div className={`text-xs uppercase tracking-wide ${isAppShell ? "text-slate-400" : "text-slate-500"}`}>
@@ -896,7 +935,7 @@ function ProductPage() {
                     })}
                   </div>
                 )}
-                {product.kind === "digital" && packages.length === 0 && (
+                 {!isAppShell && product.kind === "digital" && packages.length === 0 && (
                   <div className={`flex items-center justify-between text-xs ${isAppShell ? "text-slate-500" : "text-slate-400"} md:text-slate-500 mb-4`}>
                     <span>Line total</span>
                     <span className={`${isAppShell ? "text-white" : "text-slate-900"} md:text-slate-900 font-mono`}>
@@ -909,6 +948,7 @@ function ProductPage() {
                 {product.kind === "service" ? (
                   isAppShell ? (
                    <div className="product-fixed-actions fixed bottom-[76px] left-0 right-0 z-20 border-t border-newsfeed-line bg-newsfeed-surface/95 px-4 py-3 pb-safe backdrop-blur-xl">
+                     <div className="mb-2 text-xl font-extrabold text-newsfeed-ink">{productDisplay(product, baseCurrency).value === 0 ? "Free" : productDisplay(product, baseCurrency).formatted}</div>
                       <button
                         onClick={openSellerChat}
                         className="inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-newsfeed-coral py-3.5 text-[14px] font-black text-newsfeed-on-accent transition-colors hover:bg-newsfeed-coral/90"
@@ -926,28 +966,15 @@ function ProductPage() {
                   )
                 ) : isAppShell ? (
                    <div className="product-fixed-actions fixed bottom-[76px] left-0 right-0 z-20 border-t border-newsfeed-line bg-newsfeed-surface/95 px-4 py-3 pb-safe backdrop-blur-xl">
-                    <div className="flex items-center gap-2">
-                      <Link
-                        to="/shop/$id"
-                        params={{ id: product.sellerSlug ?? product.sellerId }}
-                          className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-[10px] border border-newsfeed-line bg-newsfeed-surface text-[13px] font-bold text-newsfeed-ink transition-colors"
-                          aria-label="Visit shop"
-                      >
-                        <ShoppingBag className="w-4 h-4" />
-                      </Link>
-                      
-                      <button
-                        onClick={openSellerChat}
-                         className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-[10px] border border-newsfeed-line bg-newsfeed-surface text-[13px] font-bold text-newsfeed-ink transition-colors"
-                         aria-label="Chat with seller"
-                      >
-                        <MessageCircle className="w-4 h-4" />
-                      </button>
-
+                     <div className="flex items-center gap-4">
+                       <div className="min-w-0 flex-1">
+                         <span className="block text-[10px] font-semibold uppercase text-newsfeed-muted">{qty > 1 ? `Total · ${qty} items` : "Price"}</span>
+                         <span className="block truncate text-[21px] font-extrabold text-newsfeed-ink">{productDisplay(product, baseCurrency).value === 0 ? "Free" : formatMoney(productDisplay(product, baseCurrency).value * qty, baseCurrency)}</span>
+                       </div>
                       <button
                         onClick={startCheckout}
                         disabled={outOfStock}
-                         className={`inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-[10px] text-[13px] font-black transition-colors ${outOfStock ? "cursor-not-allowed bg-newsfeed-line text-newsfeed-muted" : "bg-newsfeed-coral text-newsfeed-on-accent hover:bg-newsfeed-coral/90"}`}
+                          className={`inline-flex h-12 min-w-36 items-center justify-center gap-2 rounded-[10px] px-5 text-[13px] font-black transition-colors ${outOfStock ? "cursor-not-allowed bg-newsfeed-line text-newsfeed-muted" : "bg-newsfeed-coral text-newsfeed-on-accent hover:bg-newsfeed-coral/90"}`}
                       >
                         <ShoppingCart className="w-4 h-4" />
                         <span>{outOfStock ? "Out of Stock" : isFree ? "Download" : "Buy Now"}</span>

@@ -1305,17 +1305,21 @@
 .app-product section[aria-labelledby="related-products-title"] .text-newsfeed-coral { color: var(--newsfeed-coral); }
 .app-product .product-summary > div > .product-category { order: 0; }
 .app-product .product-summary > div > .product-title { order: 1; }
-.app-product .product-summary > div > .product-purchase { order: 2; }
-.app-product .product-summary > div > .product-seller { order: 3; }
-.app-product .product-summary > div > .product-details { order: 4; }
-.app-product .product-summary > div > .product-reviews { order: 5; }
-.app-product .product-summary > div > button { order: 6; }
-.app-product .product-summary > div > .inline-flex:last-child { order: 7; }
+.app-product .product-summary > div > .product-app-intro { order: 2; }
+.app-product .product-summary > div > .product-app-quantity { order: 3; }
+.app-product .product-summary > div > .product-app-about { order: 4; }
+.app-product .product-summary > div > .product-purchase { order: 5; }
+.app-product .product-summary > div > .product-seller { order: 6; }
+.app-product .product-summary > div > .product-details { order: 7; }
+.app-product .product-summary > div > .product-reviews { order: 8; }
+.app-product .product-summary > div > button { order: 9; }
+.app-product .product-summary > div > .inline-flex:last-child { order: 10; }
 .app-product .product-purchase { box-shadow: none; }
-.app-product .product-purchase { background: transparent !important; border: 0 !important; border-radius: 0; border-bottom: 1px solid var(--newsfeed-line) !important; margin-bottom: 16px; }
+.app-product .product-purchase { background: transparent !important; border: 0 !important; border-radius: 0; margin: 0; }
 .app-product .product-seller { background: transparent !important; border: 0 !important; border-bottom: 1px solid var(--newsfeed-line) !important; border-radius: 0; padding: 4px 0 16px; }
 .app-product .product-details { background: transparent !important; border: 0 !important; border-top: 1px solid var(--newsfeed-line) !important; border-bottom: 1px solid var(--newsfeed-line) !important; border-radius: 0; padding: 0; }
 .app-product .product-summary .product-category { background: transparent !important; }
+.app-product .product-app-about p { overflow-wrap: anywhere; }
 .app-product .product-summary > div > .product-reviews { border-bottom: 1px solid var(--newsfeed-line); padding-bottom: 12px; }
 .app-product .product-fixed-actions { background-color: color-mix(in oklab, var(--newsfeed-surface) 96%, transparent); }
 .app-product .product-summary .text-slate-900,
