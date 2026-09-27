@@ -147,7 +147,7 @@ export async function buildCreatorHubData(me: string, tzOffset: number): Promise
     // Timing (viewer local time via tzOffset minutes, JS getTimezoneOffset sign)
     const hours = Array(24).fill(0), days = Array(7).fill(0);
     for (const r of [...likes, ...comments, ...saves, ...shares]) {
-      const d = new Date(+new Date(r.created_at) - data.tzOffset * 60000);
+      const d = new Date(+new Date(r.created_at) - tzOffset * 60000);
       hours[d.getUTCHours()]++; days[d.getUTCDay()]++;
     }
 
