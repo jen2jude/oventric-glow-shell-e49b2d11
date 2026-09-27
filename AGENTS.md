@@ -23,13 +23,15 @@ App launch/install promotion stays paused publicly: no manifest or invites;
 every non-public review host uses app mode until owner reactivation. Reason:
 Lovable embeds previews on changing internal hosts that cannot be allow-listed.
 
-App conversations open in a sheet over the mounted inbox; web stays separate. Reason: closing returns to the same inbox position.
+App conversations sheet over the inbox; web separate. Reason: closing restores inbox position.
 
-App profile editing reuses web forms with app-scoped sheets. Reason: parity without duplicating profile writes.
+App profile forms use app-scoped sheets. Reason: shared writes.
 
-App post composer shares web publishing logic with a distinct sheet. Reason: one post flow, app-native editing.
+App post composer shares web logic in its own sheet. Reason: one publishing flow.
 
-App post composer renders at the document root and sizes against the visible viewport. Reason: the keyboard must not clip its action rail inside the feed's scrolling container.
+App post composer mounts at document root, sized to visible viewport. Reason: keyboard-safe controls.
+
+App product upload shares web fields and submission in an app-scoped sheet with fixed actions. Reason: native feel without diverging selling rules.
 
 ## Creator Coach (AI)
 - Creator Coach is app-exclusive: chat UI in `src/components/oventric/app/CreatorCoach.tsx`, streaming route `src/routes/api/creator-coach.ts` (openai/gpt-6-astra via Responses, reasoning low), history in `creator_coach_messages` (one conversation per creator, account-saved). Reason: a real reason to install the app; web stays without it.
