@@ -215,6 +215,154 @@ export function ProfilePostsFeed({
             const meta = p.viewer_reaction ? REACTION_META[p.viewer_reaction] : null;
             const shareHref = `${typeof window !== "undefined" ? window.location.origin : ""}/profile/${wallUserId}/item/post/${p.id}`;
             const images = p.media.filter((item) => item.type === "image");
+            if (isApp) {
+              const img = p.media_type === "video" ? p.poster_url : p.media_url;
+              const liked = !!p.viewer_reaction;
+              const expandedOn = expanded.has(p.id);
+              const pa = p.product_attachments?.[0];
+              return (
+                <article key={p.id} ref={trackPostView(p.id)} className="px-4 py-3 active:bg-white/[0.02]">
+                  <div className="flex items-start gap-3">
+                    <Link
+                      to="/profile/$id"
+                      params={{ id: p.author_slug || p.author_id }}
+                      className="h-10 w-10 shrink-0 overflow-hidden rounded-full"
+                      aria-label={`Open ${p.author_name}`}
+                    >
+                      <AvatarImage src={p.author_avatar_url} alt={p.author_name} initials={p.initials} />
+                    </Link>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline gap-1.5">
+                        <Link
+                          to="/profile/$id"
+                          params={{ id: p.author_slug || p.author_id }}
+                          className="truncate text-[14px] font-bold text-white"
+                        >
+                          {p.author_name}
+                        </Link>
+                        <span className="shrink-0 text-[12px] text-white/40">· {timeAgo(p.created_at)}</span>
+                      </div>
+                      {p.text && (
+                        <div className="mt-0.5">
+                          <p className={`whitespace-pre-line text-[14px] leading-snug text-white/90 ${p.text.length > 240 && !expandedOn ? "line-clamp-5" : ""}`}>
+                            {p.text}
+                          </p>
+                          {p.text.length > 240 && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setExpanded((s) => {
+                                  const n = new Set(s);
+                                  if (n.has(p.id)) n.delete(p.id);
+                                  else n.add(p.id);
+                                  return n;
+                                })
+                              }
+                              className="mt-1 text-[13px] font-semibold text-[#E5484D]"
+                            >
+                              {expandedOn ? "Show less" : "View more"}
+                            </button>
+                          )}
+                        </div>
+                      )}
+                      {img && (
+                        <button
+                          type="button"
+                          onClick={() => navigate({ to: "/post/$id", params: { id: p.id } })}
+                          className="relative mt-2.5 block w-full overflow-hidden rounded-2xl border border-white/10"
+                          aria-label="Open post"
+                        >
+                          <img src={img} alt="" loading="lazy" className="w-full object-cover" />
+                          {p.media_type === "video" && (
+                            <span className="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/55 backdrop-blur">
+                              <Play className="h-5 w-5 fill-current text-white" />
+                            </span>
+                          )}
+                        </button>
+                      )}
+                      {pa && (pa.available === false ? (
+                        <div className="mt-2.5 flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-3">
+                          <ShoppingBag className="h-4 w-4 text-white/20" />
+                          <p className="text-[12px] font-semibold text-white/60">This product is no longer available</p>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => navigate({ to: "/product/$id", params: { id: pa.id } })}
+                          className="mt-2.5 flex w-full items-stretch overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] text-left active:bg-white/[0.06]"
+                        >
+                          <div className="w-20 shrink-0 bg-neutral-900">
+                            {pa.coverUrl ? (
+                              <img src={pa.coverUrl} alt={pa.name} loading="lazy" className="h-full w-full object-cover" />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center"><ShoppingBag className="h-5 w-5 text-white/10" /></div>
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1 p-2.5">
+                            <div className="flex items-start justify-between gap-2">
+                              <p className="line-clamp-1 text-[13px] font-bold text-white">{pa.name}</p>
+                              <span className="shrink-0 text-[13px] font-black text-[#E5484D]">
+                                {visibleProductPrice(
+                                  {
+                                    price_usd: pa.priceUsd,
+                                    original_currency: (pa.originalCurrency ?? "USD") as any,
+                                    original_amount: pa.originalAmount ?? pa.priceUsd,
+                                    fx_snapshot: (pa.fxSnapshot ?? null) as any,
+                                  },
+                                  (homeCurrency ?? "USD") as Currency,
+                                  balancesHidden,
+                                )}
+                              </span>
+                            </div>
+                            <p className="mt-0.5 line-clamp-1 text-[11px] text-white/45">{pa.shortDescription || pa.vendor}</p>
+                            {!!pa.cashbackPct && pa.cashbackPct > 0 && (
+                              <span className="mt-1 inline-block rounded-md border border-emerald-400/25 bg-emerald-400/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-300">
+                                {pa.cashbackPct}% cashback
+                              </span>
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                      <div className="mt-2 flex items-center justify-between pr-2">
+                        <button type="button" onClick={() => setCommentsFor(p)} className="flex items-center gap-1.5 text-white/45 active:text-[#E5484D]" aria-label="Comments">
+                          <MessageCircle className="h-[18px] w-[18px]" />
+                          <span className="text-[12px] font-medium">{compact(p.comments_count)}</span>
+                        </button>
+                        <span className="flex items-center gap-1.5 text-white/45" aria-label="Views">
+                          <Eye className="h-[18px] w-[18px]" />
+                          <span className="text-[12px] font-medium">{compact(p.views_count)}</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            haptic("select");
+                            void onReact(p, liked ? null : "love");
+                          }}
+                          className={`flex items-center gap-1.5 ${liked ? "text-[#E5484D]" : "text-white/45"} active:text-[#E5484D]`}
+                          aria-label="Like"
+                        >
+                          <Heart className={`h-[18px] w-[18px] ${liked ? "fill-[#E5484D]" : ""}`} />
+                          <span className="text-[12px] font-medium">{compact(p.likes_count)}</span>
+                        </button>
+                        <button type="button" onClick={() => void shareUrl(shareHref, `${p.author_name} on Oventric`)} className="flex items-center gap-1.5 text-white/45 active:text-[#E5484D]" aria-label="Share">
+                          <Share2 className="h-[18px] w-[18px]" />
+                        </button>
+                      </div>
+                    </div>
+                    <PostActionsMenu
+                      postId={p.id}
+                      shareTitle={`${p.author_name} on Oventric`}
+                      shareHref={shareHref}
+                      onReport={() => setReportFor(p.id)}
+                      isOwn={p.author_id === viewerId}
+                      onDelete={() => void onDelete(p)}
+                      authorId={p.author_id}
+                      authorName={p.author_name}
+                    />
+                  </div>
+                </article>
+              );
+            }
             return (
               <article
                 key={p.id}
