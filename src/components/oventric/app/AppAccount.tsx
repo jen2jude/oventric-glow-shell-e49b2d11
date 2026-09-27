@@ -199,7 +199,10 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
       {/* Balance strip */}
       <button
         type="button"
-        onClick={() => onSelect("Wallet")}
+        onClick={() => {
+          haptic("select");
+          setSheet("wallet");
+        }}
         className="mt-3 grid w-full grid-cols-2 divide-x divide-white/[0.06] rounded-[16px] border border-white/[0.06] bg-gradient-to-br from-[#E5484D]/15 to-transparent py-3 text-left"
       >
         <span className="px-4">
@@ -218,7 +221,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
           type="button"
           onClick={() => {
             haptic("select");
-            navigate({ to: "/seller-hub" });
+            setSheet("seller");
           }}
           className="mt-3 flex w-full items-center gap-3 rounded-[16px] border border-violet-400/20 bg-gradient-to-br from-violet-500/20 via-[#E5484D]/10 to-transparent p-3.5 text-left active:bg-violet-500/25"
         >
@@ -241,7 +244,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
           type="button"
           onClick={() => {
             haptic("select");
-            navigate({ to: "/creator-hub" });
+            setSheet("creator");
           }}
           className="mt-2 flex w-full items-center gap-3 rounded-[16px] border border-fuchsia-400/20 bg-gradient-to-br from-fuchsia-500/20 via-violet-500/10 to-transparent p-3.5 text-left active:bg-fuchsia-500/25"
         >
