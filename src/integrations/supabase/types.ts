@@ -1620,6 +1620,50 @@ export type Database = {
         }
         Relationships: []
       }
+      creator_post_events: {
+        Row: {
+          author_id: string
+          created_at: string
+          id: string
+          kind: string
+          post_id: string
+          seconds: number
+          session_key: string | null
+          target: string | null
+          viewer_id: string | null
+        }
+        Insert: {
+          author_id: string
+          created_at?: string
+          id?: string
+          kind: string
+          post_id: string
+          seconds?: number
+          session_key?: string | null
+          target?: string | null
+          viewer_id?: string | null
+        }
+        Update: {
+          author_id?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          post_id?: string
+          seconds?: number
+          session_key?: string | null
+          target?: string | null
+          viewer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_post_events_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "creator_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       creator_post_views: {
         Row: {
           created_at: string
@@ -4443,6 +4487,16 @@ export type Database = {
           _kind: string
           _placement: string
           _session: string
+        }
+        Returns: undefined
+      }
+      log_creator_post_event: {
+        Args: {
+          _kind: string
+          _post_id: string
+          _seconds: number
+          _session: string
+          _target: string
         }
         Returns: undefined
       }

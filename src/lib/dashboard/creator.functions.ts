@@ -27,7 +27,13 @@ export interface CreatorHubData {
   bestHours: { hour: number; count: number }[];
   bestDays: { day: number; count: number }[];
   posts: CreatorPostStat[];
-  showcase: { items: number; views: number; uniqueViewers: number; linkedSales: number; linkedRevenueUSD: number };
+  showcase: {
+    items: number; views: number; uniqueViewers: number; linkedSales: number; linkedRevenueUSD: number;
+    freeDownloads: number; paidDownloads: number; plays: number; watchSeconds: number; avgWatchSeconds: number;
+    linkClicks: number; fullVideoClicks: number; engagementRate: number;
+    topLinks: { target: string; clicks: number }[];
+    perItem: { id: string; title: string; views: number; plays: number; watchSeconds: number; freeDownloads: number; paidDownloads: number; clicks: number }[];
+  };
   postSales: { sales: number; revenueUSD: number; topProducts: { name: string; sales: number; revenueUSD: number }[] };
 }
 
@@ -163,6 +169,37 @@ export const getCreatorHub = createServerFn({ method: "GET" })
     for (const s of shows) if (s.product_id) { const t = +new Date(s.created_at); if (!showFirst.has(s.product_id) || t < showFirst.get(s.product_id)!) showFirst.set(s.product_id, t); }
     const showOrders = orders.filter((o) => showFirst.has(o.product_id) && +new Date(o.created_at) >= showFirst.get(o.product_id)!);
 
+    // Creators-tab engagement: real watch time (user-initiated plays only), link clicks, downloads
+    const evRes = showIds.length
+      ? await sb.from("creator_post_events").select("post_id, kind, seconds, target").eq("author_id", me).limit(50000)
+      : { data: [] as any[] };
+    const events = (evRes.data ?? []) as { post_id: string; kind: string; seconds: number; target: string | null }[];
+    const plays = events.filter((e) => e.kind === "play");
+    const clicks = events.filter((e) => e.kind !== "play");
+    const watchSeconds = Math.round(plays.reduce((a, e) => a + Number(e.seconds || 0), 0));
+    const prodToShow = new Map<string, string>();
+    for (const sh of shows) if (sh.product_id) prodToShow.set(sh.product_id, sh.id);
+    const freeDl = showOrders.filter((o) => Number(o.total_usd || 0) === 0);
+    const paidDl = showOrders.filter((o) => Number(o.total_usd || 0) > 0);
+    const linkMap = new Map<string, number>();
+    for (const c of clicks) if (c.target) linkMap.set(c.target, (linkMap.get(c.target) ?? 0) + 1);
+    const showViewTotal = shows.reduce((a, s) => a + Math.max(Number(s.view_count || 0), svm.get(s.id) ?? 0), 0);
+    const perItem = shows.map((sh) => {
+      const mine = events.filter((e) => e.post_id === sh.id);
+      const ords = showOrders.filter((o) => prodToShow.get(o.product_id) === sh.id);
+      return {
+        id: sh.id,
+        title: sh.title,
+        views: Math.max(Number(sh.view_count || 0), svm.get(sh.id) ?? 0),
+        plays: mine.filter((e) => e.kind === "play").length,
+        watchSeconds: Math.round(mine.filter((e) => e.kind === "play").reduce((a, e) => a + Number(e.seconds || 0), 0)),
+        freeDownloads: ords.filter((o) => Number(o.total_usd || 0) === 0).length,
+        paidDownloads: ords.filter((o) => Number(o.total_usd || 0) > 0).length,
+        clicks: mine.filter((e) => e.kind !== "play").length,
+      };
+    }).sort((a, b) => (b.plays + b.clicks + b.freeDownloads + b.paidDownloads) - (a.plays + a.clicks + a.freeDownloads + a.paidDownloads)).slice(0, 10);
+    const showActions = plays.length + clicks.length + showOrders.length;
+
     return {
       followers: followerIds.size,
       newFollowers7d,
@@ -181,6 +218,16 @@ export const getCreatorHub = createServerFn({ method: "GET" })
         uniqueViewers: viewerKeys.size,
         linkedSales: showOrders.length,
         linkedRevenueUSD: Number(showOrders.reduce((a, o) => a + Number(o.total_usd || 0), 0).toFixed(2)),
+        freeDownloads: freeDl.length,
+        paidDownloads: paidDl.length,
+        plays: plays.length,
+        watchSeconds,
+        avgWatchSeconds: plays.length ? Math.round(watchSeconds / plays.length) : 0,
+        linkClicks: clicks.filter((c) => c.kind === "link_click").length,
+        fullVideoClicks: clicks.filter((c) => c.kind === "full_video_click").length,
+        engagementRate: showViewTotal ? Math.min(100, Number(((showActions / showViewTotal) * 100).toFixed(1))) : 0,
+        topLinks: [...linkMap.entries()].map(([target, c]) => ({ target, clicks: c })).sort((a, b) => b.clicks - a.clicks).slice(0, 5),
+        perItem,
       },
       postSales: {
         sales: postOrders.length,

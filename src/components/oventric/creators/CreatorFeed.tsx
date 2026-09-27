@@ -10,6 +10,7 @@ import { computeDisplayPrice } from "@/lib/fx-display";
 import { createOrder, getOrderWithDownload } from "@/lib/marketplace.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { CreatorPostMenu } from "./CreatorPostMenu";
+import { logCreatorEvent, useWatchTime } from "@/lib/creator-events";
 import { getHiddenPosts } from "@/components/oventric/PostActionsMenu";
 
 
@@ -58,9 +59,10 @@ const TINTS = [
 ];
 
 /** Muted 10s looping preview that starts when scrolled into view; click plays it fully. */
-function PreviewVideo({ src, poster }: { src: string; poster: string | null }) {
+function PreviewVideo({ src, poster, postId }: { src: string; poster: string | null; postId?: string }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [full, setFull] = useState(false);
+  useWatchTime(ref, postId, full);
 
   useEffect(() => {
     const el = ref.current;
@@ -296,6 +298,7 @@ function LinkDock({ post }: { post: CreatorPostDTO }) {
           <a
             key={l.href}
             href={l.href}
+            onClick={() => logCreatorEvent(post.id, "link_click", { target: l.href })}
             target="_blank"
             rel="noreferrer noopener"
             className={`group flex shrink-0 items-center gap-2 rounded-[10px] border border-slate-200 bg-white py-1.5 pl-2.5 pr-2 transition-colors ${l.tone}`}
@@ -437,11 +440,12 @@ export function CreatorCard({
           <div className="mt-3 overflow-hidden rounded-[10px] border border-slate-100">
             {post.media[0].type === "video" ? (
               <>
-                <PreviewVideo src={post.media[0].url} poster={post.media[0].posterUrl} />
+                <PreviewVideo src={post.media[0].url} poster={post.media[0].posterUrl} postId={post.id} />
                 {post.fullVideoUrl && (
                   <div className="flex justify-end border-t border-slate-100 bg-white px-3 py-2">
                     <a
                       href={post.fullVideoUrl}
+                      onClick={() => logCreatorEvent(post.id, "full_video_click", { target: post.fullVideoUrl ?? undefined })}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-[11px] font-bold text-violet-700 transition-colors hover:bg-violet-100"

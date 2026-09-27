@@ -1,3 +1,4 @@
+import { logCreatorEvent } from "@/lib/creator-events";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
@@ -563,6 +564,7 @@ export function AppFeed() {
                       onClick={() => {
                         if (cp.externalUrl) {
                           haptic("select");
+                          logCreatorEvent(cp.id, "link_click", { target: cp.externalUrl });
                           window.open(cp.externalUrl, "_blank", "noopener");
                         }
                       }}
