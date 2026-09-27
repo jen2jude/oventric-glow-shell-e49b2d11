@@ -1,3 +1,4 @@
+import { navigateInApp } from "@/lib/navigate-in-app";
 import { SiteFooter } from "@/components/oventric/desktop/SiteFooter";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { COUNTRY_META } from "@/lib/currency/africa";

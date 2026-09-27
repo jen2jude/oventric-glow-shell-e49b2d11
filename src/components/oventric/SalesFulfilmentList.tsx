@@ -1,3 +1,4 @@
+import { navigateInApp } from "@/lib/navigate-in-app";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";

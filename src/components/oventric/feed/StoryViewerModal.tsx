@@ -1,3 +1,4 @@
+import { navigateInApp } from "@/lib/navigate-in-app";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useServerFn } from "@tanstack/react-start";
