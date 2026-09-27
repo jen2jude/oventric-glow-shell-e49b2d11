@@ -8,6 +8,7 @@ import { listEscrowInbox, type EscrowInboxItem } from "@/lib/escrow-inbox.functi
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { haptic } from "@/lib/haptics";
 import { formatMoney } from "@/lib/fx-display";
+import { AppOrderSheet } from "./AppOrderSheet";
 
 /**
  * App-shell Purchases screen: a compact native inbox of every order the
@@ -34,6 +35,7 @@ export function AppPurchases() {
   const { openGate } = useAuthGate();
   const fetchInbox = useServerFn(listEscrowInbox);
   const [tab, setTab] = useState<Tab>("buying");
+  const [selected, setSelected] = useState<EscrowInboxItem | null>(null);
 
   const { data: session } = useQuery({
     queryKey: ["app-purchases-session"],
@@ -124,7 +126,7 @@ export function AppPurchases() {
                 key={o.orderId}
                 onClick={() => {
                   haptic("select");
-                  navigate({ to: "/escrow" });
+                  setSelected(o);
                 }}
                 className="flex w-full items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-3.5 text-left active:scale-[0.98] transition-transform"
               >
@@ -160,6 +162,7 @@ export function AppPurchases() {
           })}
         </div>
       )}
+      <AppOrderSheet order={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }
