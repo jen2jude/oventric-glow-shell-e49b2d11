@@ -231,6 +231,7 @@ export function CreatorCoachLauncher() {
       // Don't spend the greeting's five seconds behind the launch screen or a modal.
       if (document.querySelector('[data-oventric-boot="react"], [aria-label="Cashback offer: the more you shop, the less you pay"]')) return;
       const pendingKey = `oventric:coach-welcome-pending:${user.userId}`;
+      const welcomedKey = `oventric:coach-welcomed:${user.userId}`;
       const hourKey = `oventric:coach-hour:${user.userId}`;
       const now = new Date();
       const currentHour = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}-${now.getHours()}`;
@@ -238,6 +239,12 @@ export function CreatorCoachLauncher() {
         if (window.sessionStorage.getItem(pendingKey) === "waiting") return;
         if (window.sessionStorage.getItem(pendingKey) === "ready") {
           window.sessionStorage.removeItem(pendingKey);
+          window.localStorage.setItem(welcomedKey, "1");
+          window.localStorage.setItem(hourKey, currentHour);
+          setGreeting("welcome");
+        } else if (window.localStorage.getItem(welcomedKey) !== "1") {
+          // Give existing creators their first welcome too, not just new sign-ups.
+          window.localStorage.setItem(welcomedKey, "1");
           window.localStorage.setItem(hourKey, currentHour);
           setGreeting("welcome");
         } else if (window.localStorage.getItem(hourKey) !== currentHour) {
