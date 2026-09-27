@@ -489,6 +489,7 @@ function OverviewPane({ overview, onGoto }: { overview: DashboardOverview | null
                 <Icon className="size-4 text-white/40" />
               </div>
               <div className="mt-2 text-xl font-black truncate">{m.value}</div>
+              {m.label === "Released revenue" && <span className="text-[10px] text-white/40">{usdEquivalent(overview.revenue.gross, home, balancesHidden)}</span>}
               <p className="mt-0.5 text-[11px] text-white/40 line-clamp-2">{m.detail}</p>
             </button>
           );
@@ -606,11 +607,12 @@ function WalletPane({
                   <div className="text-right shrink-0">
                     <div className={`font-black text-sm ${r.inflow ? "text-emerald-400" : ""}`}>
                       {r.inflow ? "+" : "-"}
-                      {fmt(r.amountHome, home)}
+                      {visibleMoney(r.amountHome, home, balancesHidden)}
                     </div>
+                    <div className="text-[10px] text-white/40">{usdEquivalent(r.amountHome, home, balancesHidden)}</div>
                     {r.currency !== home && (
                       <div className="text-[10px] text-white/40 mt-0.5">
-                        {r.currency} {r.amount.toFixed(2)}
+                        {visibleMoney(r.amount, r.currency, balancesHidden)}
                       </div>
                     )}
                   </div>
