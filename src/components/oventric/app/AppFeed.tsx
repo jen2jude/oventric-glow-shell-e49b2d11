@@ -101,6 +101,28 @@ export function AppFeed() {
     });
   }, [fetchPosts]);
 
+  // Both sides of the user's network power the Following tab (same as web).
+  useEffect(() => {
+    if (!userId) return;
+    let cancelled = false;
+    Promise.all([
+      loadFollowing({ data: { userId } }),
+      loadFollowers({ data: { userId } }),
+    ])
+      .then(([following, followers]) => {
+        if (cancelled) return;
+        setFollowingIds(new Set((following ?? []).map((r: any) => r.userId ?? r.user_id ?? r.id)));
+        setFollowerIds(new Set((followers ?? []).map((r: any) => r.userId ?? r.user_id ?? r.id)));
+      })
+      .catch(() => {
+        setFollowingIds(new Set());
+        setFollowerIds(new Set());
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, loadFollowing, loadFollowers]);
+
   const onLike = async (p: Post) => {
     if (!signedIn) return openGate?.("generic");
     haptic("select");
