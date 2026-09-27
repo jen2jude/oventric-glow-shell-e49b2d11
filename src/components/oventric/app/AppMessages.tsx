@@ -127,7 +127,6 @@ function Bubble({
           <ShieldCheck className="size-3.5" aria-hidden="true" /> Oventric update
         </div>
         <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">{msg.body}</div>
-        <div className="mt-2 text-[10px] text-slate-500">{formatTime(msg.created_at)}</div>
       </div>
     );
   }
@@ -174,21 +173,17 @@ function Bubble({
             )}
           </div>
         )}
-        <div
-          className={`text-[10px] mt-1 flex items-center gap-1 ${
-            mine ? "justify-end text-white/70" : "text-slate-500"
-          }`}
-        >
-          <span>{formatTime(msg.created_at)}</span>
-          {mine && !msg.id.startsWith("tmp-") && (
+        {mine && !msg.id.startsWith("tmp-") && (
+          <div className="mt-0.5 flex justify-end">
             <span
+              className="text-[9px] leading-none text-white/60"
               title={msg.read_at ? `Read ${formatTime(msg.read_at)}` : "Sent"}
               aria-label={msg.read_at ? "Read" : "Sent"}
             >
               {msg.read_at ? "✓✓" : "✓"}
             </span>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -921,14 +916,20 @@ export function AppMessages({ initialThreadId, onClose }: AppMessagesProps) {
                   </button>
                 </div>
               )}
-              {messages.map((m) => (
-                <Bubble
-                  key={m.id}
-                  msg={m}
-                  mine={m.sender_id === me}
-                  attachmentUrl={m.media_path ? (attachmentUrls[m.media_path] ?? null) : null}
-                />
-              ))}
+              {messages.map((m, i) => {
+                const stamp = formatStamp(m.created_at);
+                const prevStamp = i > 0 ? formatStamp(messages[i - 1].created_at) : null;
+                return (
+                  <Fragment key={m.id}>
+                    {stamp !== prevStamp && <TimeDivider label={stamp} />}
+                    <Bubble
+                      msg={m}
+                      mine={m.sender_id === me}
+                      attachmentUrl={m.media_path ? (attachmentUrls[m.media_path] ?? null) : null}
+                    />
+                  </Fragment>
+                );
+              })}
             </>
           )}
           {peerTyping && (
