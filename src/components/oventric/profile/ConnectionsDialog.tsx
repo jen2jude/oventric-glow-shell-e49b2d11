@@ -90,14 +90,17 @@ export function ConnectionsDialog({
 
   useEffect(() => {
     if (!open) return;
-    const previousOverflow = document.body.style.overflow;
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") onOpenChange(false);
     };
     window.addEventListener("keydown", closeOnEscape);
     return () => {
-      document.body.style.overflow = previousOverflow;
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
       window.removeEventListener("keydown", closeOnEscape);
     };
   }, [onOpenChange, open]);
@@ -301,7 +304,7 @@ export function ConnectionsDialog({
 
         {!isApp && <div className="border-b border-newsfeed-line bg-newsfeed-blue-soft/45 p-3 sm:p-4">{searchField}</div>}
 
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="min-h-0 flex-1 overscroll-contain overflow-y-auto">
         {error ? (
           <div className="p-10 text-center text-sm text-muted-foreground">
             {error}
