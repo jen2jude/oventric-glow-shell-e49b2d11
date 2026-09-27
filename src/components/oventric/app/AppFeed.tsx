@@ -123,7 +123,8 @@ export function AppFeed() {
     });
     return {
       free,
-      popular: paid.slice(0, 8),
+      trending,
+      popular: [...paid].sort(bySales).slice(0, 8),
       categories: Array.from(byCategory.entries())
         .sort((a, b) => b[1].length - a[1].length)
         .slice(0, 6)
