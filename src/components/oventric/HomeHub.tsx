@@ -21,6 +21,7 @@ import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext
 import { getMyFullProfile } from "@/lib/profiles.functions";
 import { getDiscoveryFeed } from "@/lib/discovery.functions";
 import { safeFormatDisplayPrice, formatMoney, usdRate } from "@/lib/fx-display";
+import { visibleMoney, usdEquivalent } from "@/lib/money-visibility";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { SellSwitcherModal } from "@/components/oventric/SellSwitcherModal";
 import type { ChoiceKey } from "@/components/oventric/CreatePanel";
@@ -95,6 +96,7 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
   const {
     baseCurrency,
     homeCurrency,
+    balancesHidden,
     country,
     fullName,
     storeName,
@@ -270,8 +272,9 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
                 Oventric Wallet
               </div>
               <div className="text-[15px] font-black text-slate-900 tracking-tight truncate">
-                {isAuthenticated ? formatMoney(main, walletCurrency) : formatMoney(0, walletCurrency)}
+                 {visibleMoney(isAuthenticated ? main : 0, walletCurrency, balancesHidden)}
               </div>
+               {usdEquivalent(isAuthenticated ? main : 0, walletCurrency, balancesHidden) && <div className="text-[9px] text-slate-500">{usdEquivalent(isAuthenticated ? main : 0, walletCurrency, balancesHidden)}</div>}
             </div>
             <div className="shrink-0 h-8 w-8 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center">
               <WalletIcon className="w-4 h-4 text-emerald-600" strokeWidth={2} />
@@ -480,9 +483,9 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
       <WalletDetailModal
         open={walletOpen}
         onClose={() => setWalletOpen(false)}
-        balanceLabel={formatMoney(main, walletCurrency)}
-        cashbackLabel={formatMoney(fromUSD(cashback, walletCurrency), walletCurrency)}
-        escrowLabel={formatMoney(escrow, walletCurrency)}
+         balanceLabel={visibleMoney(main, walletCurrency, balancesHidden)}
+         cashbackLabel={visibleMoney(fromUSD(cashback, walletCurrency), walletCurrency, balancesHidden)}
+         escrowLabel={visibleMoney(escrow, walletCurrency, balancesHidden)}
         onAddFunds={() => {
           setWalletOpen(false);
           setAddFundsOpen(true);
