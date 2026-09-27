@@ -228,10 +228,10 @@ export function CreatorCoachLauncher() {
     if (!user?.isCreator) { setGreeting(null); return; }
     const chooseGreeting = () => {
       if (document.visibilityState !== "visible" || open) return;
-      // Don't spend the greeting's five seconds behind the launch screen or a modal.
+      // Don't spend the greeting's ten seconds behind the launch screen or a modal.
       if (document.querySelector('[data-oventric-boot="react"], [aria-label="Cashback offer: the more you shop, the less you pay"]')) return;
       const pendingKey = `oventric:coach-welcome-pending:${user.userId}`;
-      const welcomedKey = `oventric:coach-welcomed:${user.userId}`;
+      const welcomedKey = `oventric:coach-welcomed:v2:${user.userId}`;
       const hourKey = `oventric:coach-hour:${user.userId}`;
       const now = new Date();
       const currentHour = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}-${now.getHours()}`;
@@ -268,7 +268,7 @@ export function CreatorCoachLauncher() {
 
   useEffect(() => {
     if (!greeting) return;
-    const timeout = window.setTimeout(() => setGreeting(null), 5_000);
+    const timeout = window.setTimeout(() => setGreeting(null), 10_000);
     return () => window.clearTimeout(timeout);
   }, [greeting]);
 
