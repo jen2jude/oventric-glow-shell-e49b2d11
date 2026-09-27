@@ -168,9 +168,15 @@ export function AppOrderSheet({ order, onClose }: { order: EscrowInboxItem | nul
                 <Link to="/messages" className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-white/10 py-3 text-[12.5px] font-semibold text-white/75">
                   <MessageCircle className="h-4 w-4" /> Chat
                 </Link>
-                <Link to="/order/$id" params={{ id: o.orderId }} className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-white/10 py-3 text-[12.5px] font-semibold text-white/75">
-                  <ExternalLink className="h-4 w-4" /> Full order
-                </Link>
+                {o.role === "buyer" ? (
+                  <Link to="/order/$id" params={{ id: o.orderId }} className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-white/10 py-3 text-[12.5px] font-semibold text-white/75">
+                    <ExternalLink className="h-4 w-4" /> Full order
+                  </Link>
+                ) : (
+                  <Link to="/escrow" className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-white/10 py-3 text-[12.5px] font-semibold text-white/75">
+                    <ExternalLink className="h-4 w-4" /> Sale details
+                  </Link>
+                )}
               </div>
               {canDispute && (
                 <button onClick={() => setDisputing(true)} className="w-full py-2 text-[12px] font-semibold text-white/40">
