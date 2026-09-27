@@ -438,6 +438,50 @@ export function AppFeed() {
         }}
       />
 
+      {editingPost && (
+        <AppSheet open onClose={() => (editSaving ? null : setEditingPost(null))}>
+          <div className="px-4 pb-10 pt-1">
+            <div className="px-1 pb-1 pt-2 text-[15px] font-bold" style={{ color: "#ffffff" }}>
+              Edit post
+            </div>
+            <p className="px-1 pb-3 text-[12px] text-white/40">
+              You can edit a post within 10 minutes of sharing it.
+            </p>
+            <textarea
+              value={editingPost.text}
+              onChange={(e) =>
+                setEditingPost((prev) => (prev ? { ...prev, text: e.target.value } : prev))
+              }
+              rows={5}
+              maxLength={4000}
+              autoFocus
+              className="w-full resize-none rounded-[10px] border border-white/10 bg-white/[0.06] p-3 text-[14px] leading-snug outline-none focus:border-[#E5484D]"
+              style={{ color: "#ffffff" }}
+            />
+            <div className="mt-3 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                disabled={editSaving}
+                onClick={() => setEditingPost(null)}
+                className="rounded-[10px] px-4 py-2 text-[13px] font-semibold text-white/60 active:bg-white/10 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={editSaving || !editingPost.text.trim()}
+                onClick={() => void saveEdit()}
+                className="flex items-center gap-1.5 rounded-[10px] bg-[#E5484D] px-4 py-2 text-[13px] font-semibold hover:brightness-95 disabled:opacity-50"
+                style={{ color: "#ffffff" }}
+              >
+                {editSaving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                {editSaving ? "Saving…" : "Save changes"}
+              </button>
+            </div>
+          </div>
+        </AppSheet>
+      )}
+
       {commentsFor && (
         <CommentsSheet
           postId={commentsFor.id}
