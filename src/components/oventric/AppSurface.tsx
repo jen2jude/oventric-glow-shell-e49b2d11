@@ -55,6 +55,9 @@ const DiscoveryPanel = lazy(() =>
 const ExplorePage = lazy(() =>
   import("@/components/oventric/explore/ExplorePage").then((m) => ({ default: m.ExplorePage })),
 );
+const AppExplore = lazy(() =>
+  import("@/components/oventric/app/AppExplore").then((m) => ({ default: m.AppExplore })),
+);
 import { HomeHub } from "@/components/oventric/HomeHub";
 import { DesktopHome } from "@/components/oventric/desktop/DesktopHome";
 import { OventricHome } from "@/components/oventric/home/OventricHome";
@@ -380,7 +383,11 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         />
       )
     ) : active === "Explore" ? (
-      <ExplorePage onSelect={setActive} />
+      isAppShell && !isDesktop ? (
+        <AppExplore onSelect={setActive} />
+      ) : (
+        <ExplorePage onSelect={setActive} />
+      )
     ) : active === "Wallet" ? (
       <AppOnlyGate
         title="Your wallet lives in the app"
