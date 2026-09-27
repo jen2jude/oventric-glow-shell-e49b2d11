@@ -15,6 +15,8 @@ import {
 import { Header } from "@/components/oventric/Header";
 import { listEscrowInbox, type EscrowInboxItem } from "@/lib/escrow-inbox.functions";
 import { formatMoney } from "@/lib/fx-display";
+import { visibleMoney, usdEquivalent } from "@/lib/money-visibility";
+import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 
 export const Route = createFileRoute("/escrow")({
   ssr: false,
@@ -153,6 +155,7 @@ function bucketOf(o: EscrowInboxItem, s: Stage): Tab {
 }
 
 function EscrowInboxPage() {
+  const { balancesHidden } = useOnboarding();
   const load = useServerFn(listEscrowInbox);
   const [rows, setRows] = useState<EscrowInboxItem[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -288,7 +291,7 @@ function EscrowInboxPage() {
 
                 <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
                   <span className="font-bold text-slate-900">
-                    {formatMoney(o.displayTotal, o.displayCurrency)}
+                    {visibleMoney(o.displayTotal, o.displayCurrency, balancesHidden)}
                   </span>
                   <span className="inline-flex items-center gap-1">
                     {o.escrowStatus === "held" ? (
