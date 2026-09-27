@@ -16,11 +16,13 @@ import {
   ThumbsUp,
   ThumbsDown,
   Flag,
+  Pencil,
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppSheet } from "@/components/oventric/app/AppSheet";
-import { listPosts, toggleLike, setPostSaved as setPostSavedFn, deletePost as deletePostFn } from "@/lib/posts.functions";
+import { listPosts, toggleLike, setPostSaved as setPostSavedFn, deletePost as deletePostFn, updatePostText as updatePostTextFn } from "@/lib/posts.functions";
+import { EDIT_WINDOW_MS } from "@/lib/post-edit";
 import { togglePostSet, getSavedPosts } from "@/components/oventric/PostActionsMenu";
 import { ReportModal } from "@/components/oventric/ReportModal";
 import { CommentsSheet } from "@/components/oventric/feed/CommentsSheet";
