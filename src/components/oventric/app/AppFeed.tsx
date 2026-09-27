@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -19,6 +19,10 @@ import {
   Flag,
   Pencil,
   Trash2,
+  Gift,
+  Sparkles,
+  Store,
+  LayoutGrid,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppSheet } from "@/components/oventric/app/AppSheet";
