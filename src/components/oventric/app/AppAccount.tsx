@@ -25,7 +25,7 @@ import { getMyFullProfile } from "@/lib/profiles.functions";
 import { getWalletBalances } from "@/lib/wallet.functions";
 import { getSellerMetrics } from "@/lib/dashboard/seller.functions";
 import { getCreatorHub } from "@/lib/dashboard/creator.functions";
-import { formatMoney, safeFormatDisplayPrice } from "@/lib/fx-display";
+import { formatMoney, computeDisplayPrice } from "@/lib/fx-display";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { OPEN_PROFILE_SETTINGS_EVENT } from "@/components/oventric/ProfileDropdown";
