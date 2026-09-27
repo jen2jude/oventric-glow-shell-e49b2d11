@@ -407,7 +407,7 @@ export function AppFeed() {
 
   return (
     <div
-      className="min-h-[calc(100dvh-80px)] bg-[#070A08] pb-24 pt-12 md:pt-12"
+      className="min-h-[calc(100dvh-80px)] bg-[#070A08] pb-24 pt-12"
       onTouchStart={onFeedTouchStart}
       onTouchMove={onFeedTouchMove}
       onTouchEnd={onFeedTouchEnd}
