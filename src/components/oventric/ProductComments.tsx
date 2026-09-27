@@ -87,22 +87,22 @@ export function ProductComments({ productId }: { productId: string }) {
   }
 
   return (
-    <div className={`${isAppShell ? "mt-8" : "mt-0"} space-y-6 pb-12`}>
-      <div className={`flex items-center justify-between border-b ${isAppShell ? "border-white/5" : "border-slate-200"} pb-3`}>
-        <h2 className={`text-[15px] font-black ${isAppShell ? "text-white" : "text-slate-900"} flex items-center gap-2`}>
+    <div className={`${isAppShell ? "mt-5 space-y-3 pb-6" : "mt-0 space-y-6 pb-12"}`}>
+      <div className={`flex items-center justify-between border-b ${isAppShell ? "border-white/5" : "border-slate-200"} pb-2.5`}>
+        <h2 className={`${isAppShell ? "text-[13px] font-black uppercase tracking-wider text-newsfeed-ink" : "text-[15px] font-black text-slate-900"} flex items-center gap-2`}>
           Reviews ({count})
         </h2>
         <div className="flex items-center gap-1.5">
           <div className="flex text-amber-400">
-            <Star className="w-3.5 h-3.5 fill-current" />
+            <Star className={isAppShell ? "w-3 h-3 fill-current" : "w-3.5 h-3.5 fill-current"} />
           </div>
-          <span className={`text-[15px] font-black ${isAppShell ? "text-white" : "text-slate-900"}`}>{average.toFixed(1)}</span>
+          <span className={`font-black ${isAppShell ? "text-[12.5px] text-white" : "text-[15px] text-slate-900"}`}>{average.toFixed(1)}</span>
         </div>
       </div>
 
       {/* Write a review */}
-      <div className={`${isAppShell ? "bg-white/[0.03] border-white/[0.05]" : "bg-white border-slate-200 shadow-sm"} border rounded-2xl p-4`}>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <div className={`${isAppShell ? "bg-white/[0.03] border-white/[0.05] rounded-[10px] p-3" : "bg-white border-slate-200 shadow-sm rounded-2xl p-4"} border`}>
+        <form onSubmit={handleSubmit} className={isAppShell ? "space-y-2.5" : "space-y-4"}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((s) => (
@@ -112,11 +112,11 @@ export function ProductComments({ productId }: { productId: string }) {
                   onClick={() => setRating(s)}
                   className={`p-0.5 transition-transform active:scale-90 ${s <= rating ? "text-amber-400" : isAppShell ? "text-white/10" : "text-slate-200"}`}
                 >
-                  <Star className={`w-5 h-5 ${s <= rating ? 'fill-current' : ''}`} />
+                  <Star className={`${isAppShell ? "w-4 h-4" : "w-5 h-5"} ${s <= rating ? 'fill-current' : ''}`} />
                 </button>
               ))}
             </div>
-            <span className={`text-[10px] font-bold uppercase tracking-wider ${isAppShell ? "text-white/30" : "text-slate-400"}`}>
+            <span className={`text-[10px] font-bold uppercase tracking-wider ${isAppShell ? "text-newsfeed-line" : "text-slate-400"}`}>
               {rating === 5 ? "Excellent" : rating === 4 ? "Very Good" : rating === 3 ? "Good" : rating === 2 ? "Fair" : "Poor"}
             </span>
           </div>
@@ -126,14 +126,14 @@ export function ProductComments({ productId }: { productId: string }) {
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Write your experience..."
-              className={`w-full ${isAppShell ? "bg-black/20 border-white/[0.05] text-white placeholder:text-white/20" : "bg-slate-50 border-slate-200 text-slate-900"} border rounded-xl p-3 text-[13px] focus:ring-1 focus:ring-[#E5484D]/50 outline-none min-h-[80px] resize-none transition-all`}
+              className={`w-full ${isAppShell ? "bg-black/20 border-white/[0.05] text-white placeholder:text-white/20 rounded-[10px] p-2.5 min-h-[56px]" : "bg-slate-50 border-slate-200 text-slate-900 rounded-xl p-3 min-h-[80px]"} border text-[13px] focus:ring-1 focus:ring-[#E5484D]/50 outline-none resize-none transition-all`}
             />
           </div>
 
           <button
             type="submit"
             disabled={submitting}
-            className={`w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl ${isAppShell ? "bg-[#E5484D] text-white" : "bg-emerald-500 text-black"} font-black text-sm disabled:opacity-50 transition-all active:scale-[0.98]`}
+            className={`w-full inline-flex items-center justify-center gap-2 ${isAppShell ? "py-2.5 rounded-[10px] bg-[#E5484D] text-white text-[13px]" : "py-3 rounded-xl bg-emerald-500 text-black text-sm"} font-black disabled:opacity-50 transition-all active:scale-[0.98]`}
           >
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             {myRating ? "Update Review" : "Post Review"}
@@ -142,18 +142,18 @@ export function ProductComments({ productId }: { productId: string }) {
       </div>
 
       {/* Review list */}
-      <div className="space-y-3">
+      <div className={isAppShell ? "space-y-2" : "space-y-3"}>
         {reviews.length === 0 ? (
-          <div className="text-center py-8 text-white/20 text-xs">
+          <div className="text-center py-6 text-white/20 text-xs">
             No reviews yet.
           </div>
         ) : (
           reviews.map((rev) => (
             <div 
               key={rev.id} 
-              className={`${isAppShell ? "bg-white/[0.02] border-white/[0.04]" : "bg-white border-slate-200 shadow-sm"} border rounded-2xl p-4`}
+              className={`${isAppShell ? "bg-white/[0.02] border-white/[0.04] rounded-[10px] p-3" : "bg-white border-slate-200 shadow-sm rounded-2xl p-4"} border`}
             >
-              <div className="flex items-start justify-between mb-3">
+              <div className={`flex items-start justify-between ${isAppShell ? "mb-2" : "mb-3"}`}>
                 <div className="flex items-center gap-2.5">
                   <div className={`w-8 h-8 rounded-full overflow-hidden ${isAppShell ? "bg-white/5 border-white/10" : "bg-slate-100 border-slate-200"} border`}>
                     <AvatarImage src={rev.user.avatarUrl} alt={rev.user.fullName || "User"} className="w-full h-full object-cover" />
@@ -188,7 +188,7 @@ export function ProductComments({ productId }: { productId: string }) {
               </p>
               {rev.sellerReply && (
                 <div className={`mt-3 border-l-2 border-[#E5484D] pl-3 ${isAppShell ? "" : ""}`}>
-                  <div className={`text-[10px] font-black uppercase tracking-wider ${isAppShell ? "text-white/40" : "text-slate-500"}`}>
+                  <div className={`text-[10px] font-black uppercase tracking-wider ${isAppShell ? "text-newsfeed-muted" : "text-slate-500"}`}>
                     Seller response
                   </div>
                   <p className={`mt-1 text-[13px] ${isAppShell ? "text-white/70" : "text-slate-600"} leading-snug whitespace-pre-wrap`}>

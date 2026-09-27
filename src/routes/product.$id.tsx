@@ -1071,8 +1071,8 @@ function ProductPage() {
             </div>
 
             {relatedProducts.length > 0 && (
-               <section className={`lg:col-span-12 ${isAppShell ? "px-4 pt-6 sm:px-0" : ""}`} aria-labelledby="related-products-title">
-                <div className="mb-4 flex items-end justify-between gap-4 border-t border-newsfeed-line pt-7 sm:pt-9">
+               <section className={`lg:col-span-12 ${isAppShell ? "px-4 pt-5 sm:px-0" : ""}`} aria-labelledby="related-products-title">
+                <div className={`${isAppShell ? "mb-3 pt-5" : "mb-4 pt-7 sm:pt-9"} flex items-end justify-between gap-4 border-t border-newsfeed-line`}>
                   <div>
                      {!isAppShell && <div className="mb-2 flex h-1.5 w-24 overflow-hidden rounded-full" aria-hidden="true">
                       <span className="flex-1 bg-newsfeed-coral" />
@@ -1080,23 +1080,23 @@ function ProductPage() {
                       <span className="flex-1 bg-newsfeed-blue" />
                       <span className="flex-1 bg-newsfeed-violet" />
                      </div>}
-                    <h2 id="related-products-title" className="text-xl font-extrabold text-newsfeed-ink sm:text-2xl">
+                    <h2 id="related-products-title" className={isAppShell ? "text-[15px] font-black text-newsfeed-ink" : "text-xl font-extrabold text-newsfeed-ink sm:text-2xl"}>
                       You might also like
                     </h2>
-                    <p className="mt-1 text-sm font-medium text-newsfeed-muted">
+                    {!isAppShell && <p className="mt-1 text-sm font-medium text-newsfeed-muted">
                       More from {product.category}
-                    </p>
+                    </p>}
                   </div>
                   <Link
                     to="/marketplace"
-                    className="shrink-0 text-sm font-bold text-newsfeed-coral hover:underline"
+                    className={`shrink-0 font-bold text-newsfeed-coral hover:underline ${isAppShell ? "text-[12.5px]" : "text-sm"}`}
                   >
                     Browse all
                   </Link>
                 </div>
 
                 <div className="flex snap-x gap-3 overflow-x-auto pb-2 scrollbar-none sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-4 lg:gap-4">
-                  {relatedProducts.slice(0, 4).map((related) => {
+                  {relatedProducts.slice(0, isAppShell ? 8 : 4).map((related) => {
                     const display = productDisplay(related, baseCurrency);
                     return (
                       <Link
@@ -1104,43 +1104,43 @@ function ProductPage() {
                         to="/product/$id"
                         params={{ id: related.slug ?? related.id }}
                         search={{ qty: 1 }}
-                        className="group w-[72vw] max-w-[270px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-newsfeed-line bg-newsfeed-surface shadow-sm transition-transform hover:-translate-y-0.5 sm:w-auto sm:max-w-none"
+                        className={`group shrink-0 snap-start overflow-hidden rounded-[10px] border border-newsfeed-line bg-newsfeed-surface shadow-sm transition-transform hover:-translate-y-0.5 sm:w-auto sm:max-w-none ${isAppShell ? "w-[44vw] max-w-[176px]" : "w-[72vw] max-w-[270px]"}`}
                       >
                         <div className="relative aspect-[4/3] overflow-hidden bg-newsfeed-blue-soft">
                           {related.coverUrl ? (
                             <ResponsiveImage
                               src={related.coverUrl}
                               alt={related.name}
-                              sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 72vw"
+                              sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 44vw"
                               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                               loading="lazy"
                               decoding="async"
                             />
                           ) : (
                             <div className="grid h-full place-items-center">
-                              <ShoppingBag className="h-8 w-8 text-newsfeed-blue/35" />
+                              <ShoppingBag className={isAppShell ? "h-6 w-6 text-newsfeed-blue/35" : "h-8 w-8 text-newsfeed-blue/35"} />
                             </div>
                           )}
                           {related.promoted && (
-                            <span className="absolute left-2.5 top-2.5 rounded-full bg-newsfeed-gold-soft px-2 py-1 text-[10px] font-extrabold text-newsfeed-ink">
+                            <span className="absolute left-2 top-2 rounded-full bg-newsfeed-gold-soft px-1.5 py-0.5 text-[9px] font-extrabold text-newsfeed-ink">
                               Featured
                             </span>
                           )}
                         </div>
-                        <div className="p-3.5">
-                          <div className="mb-1 flex items-center justify-between gap-2 text-[11px] font-bold text-newsfeed-muted">
+                        <div className={isAppShell ? "p-2.5" : "p-3.5"}>
+                          <div className={`mb-1 flex items-center justify-between gap-2 text-[10px] font-bold text-newsfeed-muted ${isAppShell ? "" : "text-[11px]"}`}>
                             <span className="truncate">{related.vendor}</span>
                             {related.reviews > 0 && (
                               <span className="flex shrink-0 items-center gap-1 text-newsfeed-ink">
-                                <Star className="h-3.5 w-3.5 fill-newsfeed-gold text-newsfeed-gold" />
+                                <Star className={isAppShell ? "h-3 w-3 fill-newsfeed-gold text-newsfeed-gold" : "h-3.5 w-3.5 fill-newsfeed-gold text-newsfeed-gold"} />
                                 {related.rating.toFixed(1)}
                               </span>
                             )}
                           </div>
-                          <h3 className="line-clamp-2 min-h-10 text-sm font-extrabold leading-5 text-newsfeed-ink">
+                          <h3 className={`line-clamp-2 font-extrabold leading-4 text-newsfeed-ink ${isAppShell ? "min-h-8 text-[12px]" : "min-h-10 text-sm leading-5"}`}>
                             {related.name}
                           </h3>
-                          <div className="mt-3 text-base font-extrabold text-newsfeed-coral">
+                          <div className={isAppShell ? "mt-1.5 text-[13px] font-extrabold text-newsfeed-coral" : "mt-3 text-base font-extrabold text-newsfeed-coral"}>
                              {display.value === 0 ? "Free" : display.formatted}
                           </div>
                         </div>
