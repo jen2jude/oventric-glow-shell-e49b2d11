@@ -392,11 +392,13 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
       </div>
 
       {/* Tabs */}
-      <div className="mt-4 flex border-b border-white/[0.06]">
+      <div className="mt-4 flex overflow-x-auto no-scrollbar border-b border-white/[0.06]">
         {(
           [
             ["posts", "Posts"],
             ["shop", "Shop"],
+            ["services", "Services"],
+            ["skills", "Skills"],
             ["about", "About"],
           ] as [Tab, string][]
         ).map(([key, label]) => (
@@ -406,7 +408,7 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
               haptic("select");
               setTab(key);
             }}
-            className={`relative flex-1 py-2.5 text-[13px] font-semibold ${
+            className={`relative flex-1 shrink-0 px-4 py-2.5 text-[13px] font-semibold ${
               tab === key ? "text-white" : "text-white/40"
             }`}
           >
