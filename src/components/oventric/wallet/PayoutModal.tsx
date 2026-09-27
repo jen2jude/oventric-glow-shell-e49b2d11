@@ -673,6 +673,7 @@ function ReviewSheet({
   net,
   recipient,
   submitting,
+  sheet,
   onClose,
   onConfirm,
 }: {
@@ -682,9 +683,75 @@ function ReviewSheet({
   net: number;
   recipient: PayoutRecipientDTO;
   submitting: boolean;
+  sheet?: boolean;
   onClose: () => void;
   onConfirm: () => void;
 }) {
+  const footer = (
+    <>
+      <button
+        onClick={onConfirm}
+        disabled={submitting}
+        className="w-full bg-[#E5484D] text-white font-black py-3.5 rounded-[10px] disabled:opacity-50 flex items-center justify-center gap-2"
+      >
+        {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
+        <span>
+          Confirm Withdrawal
+          <span className="block text-[11px] font-semibold opacity-80">
+            {money(net, sym)} will be sent
+          </span>
+        </span>
+      </button>
+      <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 mt-2">
+        <Lock className="w-3 h-3" /> Secured by Oventric
+      </div>
+    </>
+  );
+
+  const content = (
+    <div className="space-y-4">
+      <div className="rounded-[10px] border border-white/8 bg-white/[0.03] p-4 space-y-3">
+        <div className="text-sm font-black text-white">Review Details</div>
+        <div className="flex items-start justify-between gap-4">
+          <span className="text-xs text-slate-400">Withdraw To</span>
+          <span className="text-right">
+            <span className="block text-sm font-black text-white">
+              {recipient.method === "momo" ? "Mobile Money" : recipient.bank_name}
+            </span>
+            <span className="block text-[11px] text-slate-500">
+              {recipient.momo_network ?? recipient.bank_name} ·{" "}
+              {recipient.phone ?? recipient.account_number}
+            </span>
+            <span className="block text-[11px] text-slate-500">{recipient.account_name}</span>
+          </span>
+        </div>
+        <div className="h-px bg-white/8" />
+        <Row label="Amount" value={money(amount, sym)} />
+        <Row label="Withdrawal Fee" value={money(fee, sym)} />
+        <Row label="You will receive" value={money(net, sym)} strong />
+        <Row label="Processing Time" value="5 - 30 mins" />
+      </div>
+
+      <div className="flex gap-2 rounded-[10px] border border-sky-500/20 bg-sky-500/[0.07] p-3">
+        <ShieldCheck className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
+        <div>
+          <div className="text-xs font-black text-white">Secure Withdrawal</div>
+          <p className="text-[11px] text-slate-400">
+            Your funds are safe with bank-level security and encryption.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (sheet) {
+    return (
+      <SlideSheet title="Review withdrawal" z={80} onClose={onClose} footer={footer}>
+        {content}
+      </SlideSheet>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-[70] bg-[#0A0A0B] overflow-y-auto">
       <div className="flex items-center justify-between px-4 py-4 border-b border-white/5">
@@ -695,63 +762,53 @@ function ReviewSheet({
         <span className="w-9" />
       </div>
 
-      <div className="p-4 space-y-4 pb-28">
-        <div className="rounded-[10px] border border-white/8 bg-white/[0.03] p-4 space-y-3">
-          <div className="text-sm font-black text-white">Review Details</div>
-          <div className="flex items-start justify-between gap-4">
-            <span className="text-xs text-slate-400">Withdraw To</span>
-            <span className="text-right">
-              <span className="block text-sm font-black text-white">
-                {recipient.method === "momo" ? "Mobile Money" : recipient.bank_name}
-              </span>
-              <span className="block text-[11px] text-slate-500">
-                {recipient.momo_network ?? recipient.bank_name} ·{" "}
-                {recipient.phone ?? recipient.account_number}
-              </span>
-              <span className="block text-[11px] text-slate-500">{recipient.account_name}</span>
-            </span>
-          </div>
-          <div className="h-px bg-white/8" />
-          <Row label="Amount" value={money(amount, sym)} />
-          <Row label="Withdrawal Fee" value={money(fee, sym)} />
-          <Row label="You will receive" value={money(net, sym)} strong />
-          <Row label="Processing Time" value="5 - 30 mins" />
-        </div>
-
-        <div className="flex gap-2 rounded-[10px] border border-sky-500/20 bg-sky-500/[0.07] p-3">
-          <ShieldCheck className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
-          <div>
-            <div className="text-xs font-black text-white">Secure Withdrawal</div>
-            <p className="text-[11px] text-slate-400">
-              Your funds are safe with bank-level security and encryption.
-            </p>
-          </div>
-        </div>
-      </div>
+      <div className="p-4 space-y-4 pb-28">{content}</div>
 
       <div className="fixed bottom-0 inset-x-0 bg-[#0A0A0B]/95 backdrop-blur border-t border-white/5 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))]">
-        <button
-          onClick={onConfirm}
-          disabled={submitting}
-          className="w-full bg-[#E5484D] text-white font-black py-3.5 rounded-[10px] disabled:opacity-50 flex items-center justify-center gap-2"
-        >
-          {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
-          <span>
-            Confirm Withdrawal
-            <span className="block text-[11px] font-semibold opacity-80">
-              {money(net, sym)} will be sent
-            </span>
-          </span>
-        </button>
-        <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 mt-2">
-          <Lock className="w-3 h-3" /> Secured by Oventric
-        </div>
+        {footer}
       </div>
     </div>
   );
 }
 
-function SuccessSplash({ detail, onClose }: { detail: string; onClose: () => void }) {
+function SuccessSplash({
+  detail,
+  sheet,
+  onClose,
+}: {
+  detail: string;
+  sheet?: boolean;
+  onClose: () => void;
+}) {
+  if (sheet) {
+    return (
+      <SlideSheet
+        title="Withdrawal submitted"
+        z={90}
+        onClose={onClose}
+        footer={
+          <button
+            onClick={onClose}
+            className="w-full bg-[#E5484D] text-white font-black py-3.5 rounded-[10px]"
+          >
+            Done
+          </button>
+        }
+      >
+        <div className="flex flex-col items-center py-6 text-center">
+          <span className="w-20 h-20 rounded-full bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center">
+            <CheckCircle2 className="w-10 h-10 text-emerald-400" />
+          </span>
+          <p className="mt-5 text-sm text-slate-400 max-w-xs">{detail}</p>
+          <p className="mt-3 text-[12px] text-slate-500 max-w-xs">
+            Your request is being processed and can take up to 3 working days. We&apos;ll notify you
+            as soon as it&apos;s paid out.
+          </p>
+        </div>
+      </SlideSheet>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-[80] bg-[#0A0A0B] flex flex-col items-center justify-center px-6 text-center">
       <span className="w-20 h-20 rounded-full bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center">
