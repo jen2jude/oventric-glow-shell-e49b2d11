@@ -48,9 +48,12 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
   const { baseCurrency, balancesHidden } = useOnboarding();
   const currency = (baseCurrency ?? "USD") as Currency;
   const [notifOpen, setNotifOpen] = useState(false);
+  const [sheet, setSheet] = useState<"wallet" | "seller" | "creator" | null>(null);
 
   const loadProfile = useServerFn(getMyFullProfile);
   const fetchBalances = useServerFn(getWalletBalances);
+  const fetchSellerMetrics = useServerFn(getSellerMetrics);
+  const fetchCreatorHub = useServerFn(getCreatorHub);
 
   const { data: prof } = useQuery({
     queryKey: ["app-account-profile"],
@@ -63,6 +66,18 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
     queryFn: () => fetchBalances(),
     enabled: isAuthenticated,
     staleTime: 30_000,
+  });
+  const { data: sellerMetrics } = useQuery({
+    queryKey: ["app-seller-metrics"],
+    queryFn: () => fetchSellerMetrics(),
+    enabled: isAuthenticated && sheet === "seller",
+    staleTime: 60_000,
+  });
+  const { data: creatorHub } = useQuery({
+    queryKey: ["app-creator-hub-summary"],
+    queryFn: () => fetchCreatorHub({ data: { tzOffset: -new Date().getTimezoneOffset() } }),
+    enabled: isAuthenticated && sheet === "creator",
+    staleTime: 60_000,
   });
 
   if (!isAuthenticated) {
