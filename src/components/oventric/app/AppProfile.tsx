@@ -112,7 +112,7 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
   });
   const products = useMemo(
     () =>
-      (productsData?.products ?? []).filter(
+      (productsData ?? []).filter(
         (p: ProductDTO) => p.sellerId === userId && p.status === "active",
       ),
     [productsData, userId],
@@ -210,14 +210,7 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
             )}
           </div>
           <div className="flex gap-2 pb-1">
-            {isOwn ? (
-              <button
-                onClick={() => navigate({ to: "/settings" })}
-                className="flex items-center gap-1.5 rounded-full border border-white/15 px-4 py-2 text-xs font-semibold text-white/80"
-              >
-                <Pencil className="h-3.5 w-3.5" /> Edit profile
-              </button>
-            ) : (
+            {isOwn ? null : (
               <>
                 <button
                   onClick={() => navigate({ to: "/messages" })}
