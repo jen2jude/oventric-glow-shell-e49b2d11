@@ -861,6 +861,97 @@
   }
 }
 
+/* App-only profile sheets: the same forms, with compact mobile presentation. */
+.app-profile-settings,
+.app-profile-editor {
+  align-items: flex-end;
+  padding: 0;
+  background: oklch(0.12 0.01 260 / 48%);
+  backdrop-filter: blur(12px);
+}
+
+.app-profile-settings > [role="dialog"],
+.app-profile-editor > [role="dialog"] {
+  width: 100%;
+  max-width: 40rem;
+  height: 94dvh;
+  max-height: 94dvh;
+  margin: 0 auto;
+  border-radius: 10px 10px 0 0;
+  border-bottom: 0;
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: 0 -16px 48px oklch(0.12 0.01 260 / 16%);
+}
+
+.app-profile-handle {
+  flex: none;
+  width: 2.5rem;
+  height: 0.25rem;
+  margin: 0.65rem auto 0;
+  border-radius: 999px;
+  background: var(--border);
+}
+
+.app-profile-settings header,
+.app-profile-editor > [role="dialog"] > div:nth-child(2) {
+  background: var(--card);
+}
+
+.app-profile-settings header {
+  padding: 0.75rem 1.25rem 1rem;
+}
+
+.app-profile-settings .identity-form {
+  padding: 1.25rem 1.25rem 2rem;
+  overscroll-behavior: contain;
+}
+
+.app-profile-settings footer {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.app-profile-editor > [role="dialog"] {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.app-profile-editor > [role="dialog"] > form {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: 0;
+}
+
+.app-profile-editor > [role="dialog"] > form > div:last-child {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+.app-profile-editor :is(input, textarea) {
+  background: var(--background);
+  color: var(--foreground);
+  border-color: var(--border);
+}
+
+.app-profile-editor > [role="dialog"] > form > section:first-child {
+  border-radius: 8px;
+}
+
+@media (min-width: 768px) {
+  .app-profile-settings,
+  .app-profile-editor {
+    align-items: center;
+    padding: 1.5rem;
+  }
+  .app-profile-settings > [role="dialog"],
+  .app-profile-editor > [role="dialog"] {
+    height: min(94dvh, 52rem);
+    border-radius: 10px;
+  }
+}
+
 /* Seller-led light marketplace. */
 .web-marketplace {
   color-scheme: light;
