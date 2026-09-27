@@ -8,7 +8,7 @@ import {
   listMarketplaceCategories,
   type ProductDTO,
 } from "@/lib/marketplace.functions";
-import { safeFormatDisplayPrice } from "@/lib/fx-display";
+import { visibleProductPrice } from "@/lib/money-visibility";
 import type { Currency } from "@/lib/onboarding/OnboardingContext";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { haptic } from "@/lib/haptics";
@@ -24,8 +24,8 @@ export function AppMarket() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [quickViewId, setQuickViewId] = useState<string | null>(null);
   const [cat, setCat] = useState<string>("all");
-  const { baseCurrency } = useOnboarding();
-  const currency = (baseCurrency ?? "USD") as Currency;
+  const { homeCurrency, balancesHidden } = useOnboarding();
+  const currency = (homeCurrency ?? "USD") as Currency;
 
   const fetchProducts = useServerFn(listProducts);
   const fetchCategories = useServerFn(listMarketplaceCategories);
@@ -43,7 +43,7 @@ export function AppMarket() {
   });
 
   const priceOf = (p: ProductDTO) =>
-    safeFormatDisplayPrice(
+    visibleProductPrice(
       {
         price_usd: p.priceUSD,
         original_currency: p.originalCurrency,
@@ -51,6 +51,7 @@ export function AppMarket() {
         fx_snapshot: p.fxSnapshot,
       },
       currency,
+      balancesHidden,
     );
 
   const all = useMemo(() => products ?? [], [products]);

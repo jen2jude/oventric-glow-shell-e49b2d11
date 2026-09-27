@@ -19,8 +19,7 @@ import { useServerFn } from "@tanstack/react-start";
 
 import { listProducts, type ProductDTO } from "@/lib/marketplace.functions";
 import { getWalletBalances } from "@/lib/wallet.functions";
-import { computeDisplayPrice } from "@/lib/fx-display";
-import { usdEquivalent, visibleMoney } from "@/lib/money-visibility";
+import { usdEquivalent, visibleMoney, visibleProductPrice } from "@/lib/money-visibility";
 import type { Currency } from "@/lib/onboarding/OnboardingContext";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
@@ -59,7 +58,7 @@ export function AppHome({
   const currency = (homeCurrency ?? "USD") as Currency;
 
   const priceOf = (p: ProductDTO) =>
-    p.priceUSD === 0 ? "Free" : visibleMoney(computeDisplayPrice(
+    visibleProductPrice(
       {
         price_usd: p.priceUSD,
         original_currency: p.originalCurrency,
@@ -67,7 +66,8 @@ export function AppHome({
         fx_snapshot: p.fxSnapshot,
       },
       currency,
-    ).value, currency, balancesHidden);
+      balancesHidden,
+    );
 
   const fetchProducts = useServerFn(listProducts);
   const fetchBalances = useServerFn(getWalletBalances);
