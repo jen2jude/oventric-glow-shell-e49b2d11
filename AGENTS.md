@@ -19,3 +19,5 @@ duplicating routes or data logic.
 Installability is manifest-only (`public/manifest.webmanifest`). No app-shell
 service worker is registered — `public/push-sw.js` is messaging-only. Reason:
 cached app shells serve stale pages in Lovable previews.
+
+App-mode conversations open in a slide-up drawer above the mounted Messages inbox; the website message layout stays separate. Reason: closing or swiping away a conversation should return to the same inbox position without losing chat state.
