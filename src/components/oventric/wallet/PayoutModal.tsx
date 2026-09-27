@@ -261,6 +261,9 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
       void Promise.all([
         qc.invalidateQueries({ queryKey: ["wallet-balances"] }),
         qc.invalidateQueries({ queryKey: ["wallet-recent-tx"] }),
+        qc.invalidateQueries({ queryKey: ["app-home-wallet"] }),
+        qc.invalidateQueries({ queryKey: ["app-wallet-balances"] }),
+        qc.invalidateQueries({ queryKey: ["app-wallet-tx"] }),
       ]);
       setReview(false);
     } catch (e) {
