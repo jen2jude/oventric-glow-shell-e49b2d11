@@ -775,9 +775,10 @@ function ProductPage() {
                 />
               </div>
 
-              <div className="product-details mb-4 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface px-3.5">
+               <div className="product-details mb-4 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface px-3.5">
+                 {isAppShell && <h2 className="pt-4 pb-1 text-[13px] font-bold text-newsfeed-ink">Product information</h2>}
                 <Accordion type="single" collapsible className="w-full">
-                   {!isAppShell && <AccordionItem value="about" className="border-slate-200">
+                    <AccordionItem value="about" className={`${isAppShell ? "border-newsfeed-line" : "border-slate-200"}`}>
                     <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold ${isAppShell ? "py-2.5 text-[13px]" : "py-3"} hover:no-underline`}>
                       About Item
                     </AccordionTrigger>
@@ -806,9 +807,8 @@ function ProductPage() {
                       })()}
                     </AccordionContent>
                   </AccordionItem>
-                   }
 
-                  <AccordionItem value="basic" className={`${isAppShell ? "border-white/5" : "border-slate-200"}`}>
+                  <AccordionItem value="basic" className={`${isAppShell ? "border-newsfeed-line" : "border-slate-200"}`}>
                     <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold ${isAppShell ? "py-2.5 text-[13px]" : "py-3"} hover:no-underline`}>
                       Basic Info
                     </AccordionTrigger>
@@ -817,7 +817,7 @@ function ProductPage() {
                     </AccordionContent>
                   </AccordionItem>
 
-                   {!isAppShell && <AccordionItem value="description" className="border-slate-200">
+                   <AccordionItem value="description" className={`${isAppShell ? "border-newsfeed-line" : "border-slate-200"}`}>
                     <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold ${isAppShell ? "py-2.5 text-[13px]" : "py-3"} hover:no-underline`}>
                       Description
                     </AccordionTrigger>
@@ -825,9 +825,8 @@ function ProductPage() {
                       {product.description || "No description provided."}
                     </AccordionContent>
                   </AccordionItem>
-                   }
 
-                  <AccordionItem value="activation" className={`${isAppShell ? "border-white/5" : "border-slate-200"}`}>
+                  <AccordionItem value="activation" className={`${isAppShell ? "border-newsfeed-line" : "border-slate-200"}`}>
                     <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold ${isAppShell ? "py-2.5 text-[13px]" : "py-3"} hover:no-underline`}>
                       Activation Guide
                     </AccordionTrigger>
