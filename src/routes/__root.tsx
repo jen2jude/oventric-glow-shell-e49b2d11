@@ -450,21 +450,8 @@ function RootComponent() {
               <OfflineBanner />
               <ReferralCapture />
 
-              <BootSplash />
-               {show && hydrated && !isPc && isAppShell && <FeatureCarousel onComplete={markSeen} />}
-              
-              {isPreview && isMounted && (
-                 <Button
-                   type="button"
-                   variant="default"
-                  onClick={toggleMode}
-                   className="fixed bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] right-4 z-[9999] h-10 gap-2 rounded-[10px] bg-primary px-3 text-primary-foreground shadow-lg hover:bg-primary/90 md:bottom-6 md:right-6"
-                   aria-label={launchCtx === "browser" ? "View app mode" : "View website mode"}
-                >
-                   {launchCtx === "browser" ? <Smartphone className="size-4" aria-hidden="true" /> : <Monitor className="size-4" aria-hidden="true" />}
-                   {launchCtx === "browser" ? "View app" : "View website"}
-                 </Button>
-              )}
+               <BootSplash />
+                {show && hydrated && !isPc && isAppShell && <FeatureCarousel onComplete={markSeen} />}
             </KycGateProvider>
           </OnboardingProvider>
         </AuthGateProvider>
