@@ -29,6 +29,8 @@ App profile editing reuses web forms with app-scoped sheets. Reason: parity with
 
 App post composer shares web publishing logic with a distinct sheet. Reason: one post flow, app-native editing.
 
+App post composer renders at the document root and sizes against the visible viewport. Reason: the keyboard must not clip its action rail inside the feed's scrolling container.
+
 ## Creator Coach (AI)
 - Creator Coach is app-exclusive: chat UI in `src/components/oventric/app/CreatorCoach.tsx`, streaming route `src/routes/api/creator-coach.ts` (openai/gpt-6-astra via Responses, reasoning low), history in `creator_coach_messages` (one conversation per creator, account-saved). Reason: a real reason to install the app; web stays without it.
 - Coach answers from live stats: route builds context via `buildCreatorHubData` (exported from creator.functions.ts) + seller snapshot; never invent numbers.

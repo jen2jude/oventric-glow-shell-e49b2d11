@@ -871,7 +871,8 @@
 }
 
 .web-identity-kyc.app-profile-settings,
-.app-profile-editor {
+.app-profile-editor,
+.app-post-composer {
   color-scheme: dark;
   --background: oklch(0.2 0.006 270);
   --foreground: oklch(0.97 0 0);
