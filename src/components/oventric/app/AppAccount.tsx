@@ -23,7 +23,9 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { getMyFullProfile } from "@/lib/profiles.functions";
 import { getWalletBalances } from "@/lib/wallet.functions";
-import { formatMoney } from "@/lib/fx-display";
+import { getSellerMetrics } from "@/lib/dashboard/seller.functions";
+import { getCreatorHub } from "@/lib/dashboard/creator.functions";
+import { formatMoney, safeFormatDisplayPrice } from "@/lib/fx-display";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { OPEN_PROFILE_SETTINGS_EVENT } from "@/components/oventric/ProfileDropdown";
@@ -46,9 +48,12 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
   const { baseCurrency, balancesHidden } = useOnboarding();
   const currency = (baseCurrency ?? "USD") as Currency;
   const [notifOpen, setNotifOpen] = useState(false);
+  const [sheet, setSheet] = useState<"wallet" | "seller" | "creator" | null>(null);
 
   const loadProfile = useServerFn(getMyFullProfile);
   const fetchBalances = useServerFn(getWalletBalances);
+  const fetchSellerMetrics = useServerFn(getSellerMetrics);
+  const fetchCreatorHub = useServerFn(getCreatorHub);
 
   const { data: prof } = useQuery({
     queryKey: ["app-account-profile"],
@@ -61,6 +66,18 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
     queryFn: () => fetchBalances(),
     enabled: isAuthenticated,
     staleTime: 30_000,
+  });
+  const { data: sellerMetrics } = useQuery({
+    queryKey: ["app-seller-metrics"],
+    queryFn: () => fetchSellerMetrics(),
+    enabled: isAuthenticated && sheet === "seller",
+    staleTime: 60_000,
+  });
+  const { data: creatorHub } = useQuery({
+    queryKey: ["app-creator-hub-summary"],
+    queryFn: () => fetchCreatorHub({ data: { tzOffset: -new Date().getTimezoneOffset() } }),
+    enabled: isAuthenticated && sheet === "creator",
+    staleTime: 60_000,
   });
 
   if (!isAuthenticated) {
@@ -182,7 +199,10 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
       {/* Balance strip */}
       <button
         type="button"
-        onClick={() => onSelect("Wallet")}
+        onClick={() => {
+          haptic("select");
+          setSheet("wallet");
+        }}
         className="mt-3 grid w-full grid-cols-2 divide-x divide-white/[0.06] rounded-[16px] border border-white/[0.06] bg-gradient-to-br from-[#E5484D]/15 to-transparent py-3 text-left"
       >
         <span className="px-4">
@@ -201,7 +221,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
           type="button"
           onClick={() => {
             haptic("select");
-            navigate({ to: "/seller-hub" });
+            setSheet("seller");
           }}
           className="mt-3 flex w-full items-center gap-3 rounded-[16px] border border-violet-400/20 bg-gradient-to-br from-violet-500/20 via-[#E5484D]/10 to-transparent p-3.5 text-left active:bg-violet-500/25"
         >
@@ -224,7 +244,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
           type="button"
           onClick={() => {
             haptic("select");
-            navigate({ to: "/creator-hub" });
+            setSheet("creator");
           }}
           className="mt-2 flex w-full items-center gap-3 rounded-[16px] border border-fuchsia-400/20 bg-gradient-to-br from-fuchsia-500/20 via-violet-500/10 to-transparent p-3.5 text-left active:bg-fuchsia-500/25"
         >
@@ -276,6 +296,125 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
       >
         <LogOut className="h-4 w-4" /> Sign out
       </button>
+
+      {/* Wallet quick glance */}
+      <AppSheet open={sheet === "wallet"} onClose={() => setSheet(null)}
+        header={<h2 className="px-4 pb-2 text-[15px] font-semibold text-white">Your wallet</h2>}>
+        <div className="px-4 pb-8">
+          <div className="grid grid-cols-2 gap-2.5">
+            <div className="rounded-[14px] border border-white/[0.06] bg-gradient-to-br from-[#E5484D]/15 to-transparent p-3.5">
+              <div className="text-[10px] uppercase tracking-wider text-white/45">Available</div>
+              <div className="mt-1 text-[18px] font-semibold tabular-nums">{money(available)}</div>
+            </div>
+            <div className="rounded-[14px] border border-white/[0.06] bg-white/[0.03] p-3.5">
+              <div className="text-[10px] uppercase tracking-wider text-white/45">In escrow</div>
+              <div className="mt-1 text-[18px] font-semibold tabular-nums">{money(escrow)}</div>
+            </div>
+          </div>
+          <p className="mt-3 text-[12px] leading-relaxed text-white/45">
+            Top up, withdraw, set your payout details and see every transaction in your full wallet.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              haptic("select");
+              setSheet(null);
+              onSelect("Wallet");
+            }}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-[12px] bg-[#E5484D] py-3 text-[14px] font-semibold text-white active:bg-[#E5484D]/85"
+          >
+            Explore your wallet <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+      </AppSheet>
+
+      {/* Seller Hub quick glance */}
+      <AppSheet open={sheet === "seller"} onClose={() => setSheet(null)}
+        header={<h2 className="px-4 pb-2 text-[15px] font-semibold text-white">Seller Hub</h2>}>
+        <div className="px-4 pb-8">
+          <div className="rounded-[14px] border border-violet-400/20 bg-gradient-to-br from-violet-500/20 via-[#E5484D]/10 to-transparent p-4">
+            <div className="text-[10px] uppercase tracking-wider text-white/45">Total revenue</div>
+            <div className="mt-1 text-[22px] font-bold tabular-nums">
+              {sellerMetrics
+                ? safeFormatDisplayPrice({ original_currency: "USD", original_amount: sellerMetrics.totalRevenueUSD }, currency)
+                : "—"}
+            </div>
+            {sellerMetrics && currency !== "USD" && (
+              <div className="text-[11px] text-white/45">≈ {formatMoney(sellerMetrics.totalRevenueUSD, "USD")}</div>
+            )}
+          </div>
+          <div className="mt-2.5 grid grid-cols-3 gap-2.5">
+            {[
+              { label: "Sales", value: sellerMetrics?.totalSales },
+              { label: "Shop visits", value: sellerMetrics?.shopVisits },
+              { label: "Products", value: sellerMetrics?.totalProducts },
+              { label: "Product views", value: sellerMetrics?.totalViews },
+              { label: "Conversations", value: sellerMetrics?.conversations },
+              { label: "Conversion", value: sellerMetrics ? `${sellerMetrics.conversionRate}%` : undefined },
+            ].map((s) => (
+              <div key={s.label} className="rounded-[12px] border border-white/[0.06] bg-white/[0.03] p-3">
+                <div className="text-[15px] font-semibold tabular-nums">{s.value ?? "—"}</div>
+                <div className="mt-0.5 text-[10px] uppercase tracking-wider text-white/40">{s.label}</div>
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              haptic("select");
+              setSheet(null);
+              navigate({ to: "/seller-hub" });
+            }}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-[12px] bg-gradient-to-r from-violet-500 to-[#E5484D] py-3 text-[14px] font-semibold text-white active:opacity-85"
+          >
+            Explore your Seller Hub <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+      </AppSheet>
+
+      {/* Creator Hub quick glance */}
+      <AppSheet open={sheet === "creator"} onClose={() => setSheet(null)}
+        header={<h2 className="px-4 pb-2 text-[15px] font-semibold text-white">Creator Hub</h2>}>
+        <div className="px-4 pb-8">
+          <div className="rounded-[14px] border border-fuchsia-400/20 bg-gradient-to-br from-fuchsia-500/20 via-violet-500/10 to-transparent p-4">
+            <div className="text-[10px] uppercase tracking-wider text-white/45">Sales from your posts</div>
+            <div className="mt-1 text-[22px] font-bold tabular-nums">
+              {creatorHub
+                ? safeFormatDisplayPrice({ original_currency: "USD", original_amount: creatorHub.postSales.revenueUSD }, currency)
+                : "—"}
+            </div>
+            {creatorHub && currency !== "USD" && (
+              <div className="text-[11px] text-white/45">≈ {formatMoney(creatorHub.postSales.revenueUSD, "USD")}</div>
+            )}
+          </div>
+          <div className="mt-2.5 grid grid-cols-3 gap-2.5">
+            {[
+              { label: "Followers", value: creatorHub?.followers },
+              { label: "New this week", value: creatorHub?.newFollowers7d },
+              { label: "Engagement", value: creatorHub ? `${creatorHub.engagementRate}%` : undefined },
+              { label: "Post views", value: creatorHub?.reach.postViews },
+              { label: "Showcase views", value: creatorHub?.showcase.views },
+              { label: "Watch time", value: creatorHub ? `${Math.round(creatorHub.showcase.watchSeconds / 60)}m` : undefined },
+            ].map((s) => (
+              <div key={s.label} className="rounded-[12px] border border-white/[0.06] bg-white/[0.03] p-3">
+                <div className="text-[15px] font-semibold tabular-nums">{s.value ?? "—"}</div>
+                <div className="mt-0.5 text-[10px] uppercase tracking-wider text-white/40">{s.label}</div>
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              haptic("select");
+              setSheet(null);
+              navigate({ to: "/creator-hub" });
+            }}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-[12px] bg-gradient-to-r from-fuchsia-500 to-violet-500 py-3 text-[14px] font-semibold text-white active:opacity-85"
+          >
+            Explore your Creator Hub <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+      </AppSheet>
 
       <AppSheet open={notifOpen} onClose={() => setNotifOpen(false)} tall
         header={<h2 className="px-4 pb-2 text-[15px] font-semibold text-white">Notifications</h2>}>
