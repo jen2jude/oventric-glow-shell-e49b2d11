@@ -333,6 +333,8 @@ export function AppFeed() {
   };
 
   const swipeStart = useRef<{ x: number; y: number } | null>(null);
+  const [dragX, setDragX] = useState<number | null>(null);
+  const [enterDir, setEnterDir] = useState<"left" | "right" | null>(null);
 
   if (!posts) {
     return (
@@ -366,18 +368,31 @@ export function AppFeed() {
     const t = e.touches[0];
     swipeStart.current = { x: t.clientX, y: t.clientY };
   };
+  const onFeedTouchMove = (e: React.TouchEvent) => {
+    const start = swipeStart.current;
+    if (!start) return;
+    const t = e.touches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    if (dragX === null && (Math.abs(dx) < 12 || Math.abs(dx) < Math.abs(dy))) return; // vertical scroll stays scrolling
+    const idx = FEED_TABS.indexOf(tab);
+    const atEdge = (dx < 0 && idx === FEED_TABS.length - 1) || (dx > 0 && idx === 0);
+    setDragX(atEdge ? dx * 0.25 : dx); // damped resistance at the first/last tab
+  };
   const onFeedTouchEnd = (e: React.TouchEvent) => {
     const start = swipeStart.current;
     swipeStart.current = null;
+    const dx = dragX ?? 0;
+    setDragX(null);
     if (!start) return;
     const t = e.changedTouches[0];
-    const dx = t.clientX - start.x;
     const dy = t.clientY - start.y;
-    if (Math.abs(dx) < 64 || Math.abs(dx) < Math.abs(dy) * 1.4) return; // vertical scroll stays scrolling
+    if (Math.abs(dx) < 64 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
     const idx = FEED_TABS.indexOf(tab);
     const next = dx < 0 ? idx + 1 : idx - 1;
     if (next < 0 || next >= FEED_TABS.length) return;
     haptic("select");
+    setEnterDir(dx < 0 ? "left" : "right");
     setTab(FEED_TABS[next]);
   };
 
@@ -385,6 +400,7 @@ export function AppFeed() {
     <div
       className="min-h-[calc(100dvh-80px)] bg-[#070A08] pb-24 pt-[calc(3rem+env(safe-area-inset-top))]"
       onTouchStart={onFeedTouchStart}
+      onTouchMove={onFeedTouchMove}
       onTouchEnd={onFeedTouchEnd}
     >
       <PostComposerModal
@@ -424,6 +440,23 @@ export function AppFeed() {
         </div>
       </div>
 
+      {/* Tab content: follows the finger while swiping, slides in on tab change */}
+      <div
+        key={tab}
+        className={
+          enterDir === "left"
+            ? "animate-[feed-slide-left_0.28s_ease-out]"
+            : enterDir === "right"
+              ? "animate-[feed-slide-right_0.28s_ease-out]"
+              : undefined
+        }
+        style={
+          dragX !== null
+            ? { transform: `translateX(${dragX}px)`, transition: "none" }
+            : { transition: "transform 0.22s ease-out" }
+        }
+        onAnimationEnd={() => setEnterDir(null)}
+      >
       {/* Shop tab: product rail above the shoppable posts */}
       {tab === "shop" && shopSections.trending.length > 0 && (
         <div className="border-b border-white/5 py-3">
@@ -903,6 +936,7 @@ export function AppFeed() {
             </article>
           );
         })}
+      </div>
       </div>
 
       {menuFor && (() => {
