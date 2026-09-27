@@ -34,7 +34,9 @@ import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
-import { computeDisplayPrice } from "@/lib/fx-display";
+import type { Currency } from "@/lib/onboarding/OnboardingContext";
+import { computeDisplayPrice, safeFormatDisplayPrice } from "@/lib/fx-display";
+import type { ProductDTO } from "@/lib/marketplace.functions";
 
 type Post = Awaited<ReturnType<typeof listPosts>>["posts"][number];
 
@@ -81,10 +83,20 @@ export function AppFeed() {
   const fetchProducts = useServerFn(listProducts);
   const { data: shopProducts } = useQuery({
     queryKey: ["app-feed-shop-products"],
-    queryFn: () => fetchProducts({ data: {} }),
+    queryFn: () => fetchProducts(),
     staleTime: 60_000,
     enabled: tab === "shop",
   });
+  const shopPriceOf = (p: ProductDTO) =>
+    safeFormatDisplayPrice(
+      {
+        price_usd: p.priceUSD,
+        original_currency: p.originalCurrency,
+        original_amount: p.originalAmount,
+        fx_snapshot: p.fxSnapshot,
+      },
+      (baseCurrency ?? "USD") as Currency,
+    );
 
   const saveEdit = async () => {
     if (!editingPost) return;
