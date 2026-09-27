@@ -11,7 +11,7 @@ import {
   Search,
   Sparkles,
   Store,
-  User,
+  Wallet,
   Eye,
   EyeOff,
 } from "lucide-react";
@@ -313,7 +313,7 @@ export function AppHome({
         <div className="mt-5 grid grid-cols-4 gap-2">
           {[
             { icon: Package, label: "Purchases", run: () => onSelect("Purchases") },
-            { icon: User, label: "Profile", run: () => openOwn("profile") },
+            { icon: Wallet, label: "Wallet", run: () => onSelect("Wallet") },
             mode === "seller"
               ? { icon: Store, label: "My shop", run: () => openOwn("shop") }
               : { icon: Store, label: "Market", run: () => onSelect("Marketplace") },
