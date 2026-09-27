@@ -268,7 +268,7 @@ export function CreatorCoachLauncher() {
 
   useEffect(() => {
     if (!greeting) return;
-    const timeout = window.setTimeout(() => setGreeting(null), 5_000);
+    const timeout = window.setTimeout(() => setGreeting(null), 10_000);
     return () => window.clearTimeout(timeout);
   }, [greeting]);
 
