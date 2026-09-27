@@ -14,7 +14,7 @@ import {
 import { CreatePanel } from "@/components/oventric/CreatePanel";
 import { Button } from "@/components/ui/button";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
-import { computeDisplayPrice, formatMoney } from "@/lib/fx-display";
+import { computeDisplayPrice } from "@/lib/fx-display";
 import { visibleMoney } from "@/lib/money-visibility";
 import {
   listProducts,
@@ -54,7 +54,7 @@ interface Discovery {
  */
 export function WebMarketplace() {
   const navigate = useNavigate();
-  const { baseCurrency, homeCurrency, balancesHidden, require } = useOnboarding();
+  const { baseCurrency, balancesHidden, require } = useOnboarding();
   const [sellPanelOpen, setSellPanelOpen] = useState(false);
 
   const loadDiscovery = useServerFn(getMarketplaceDiscovery);
