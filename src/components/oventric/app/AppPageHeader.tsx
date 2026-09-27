@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Bell, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NotificationsDrawer } from "@/components/oventric/NotificationsDrawer";
@@ -7,6 +7,7 @@ import { useUnreadCounts } from "@/hooks/use-unread-counts";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
+import logoFull from "@/assets/oventric-full-transparent.png";
 
 const TITLES: Record<string, string> = {
   Feed: "Newsfeed", Marketplace: "Market", Explore: "Explore",
@@ -24,6 +25,7 @@ export function AppPageHeader({ section, name, avatarUrl, onOpenMessages }: {
   const { messages, total } = useUnreadCounts();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const firstName = name.split(" ")[0] || "there";
+  const showBrand = section === "Marketplace" || section === "Feed";
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
@@ -38,12 +40,20 @@ export function AppPageHeader({ section, name, avatarUrl, onOpenMessages }: {
   return (
     <>
       <header className="relative z-40 flex h-[calc(3.5rem+env(safe-area-inset-top))] shrink-0 items-center gap-3 border-b border-white/10 bg-[#070A08]/95 px-4 pt-[env(safe-area-inset-top)] text-white backdrop-blur-xl">
-        <Button variant="ghost" size="icon" onClick={() => void openProfile()} aria-label="Your social profile" className="nav-tap h-10 w-10 shrink-0 overflow-hidden rounded-full border border-white/10 bg-white/[0.06] p-0 text-white/70 hover:bg-white/10 hover:text-white">
-          {avatarUrl ? <img src={avatarUrl} alt="" className="h-full w-full object-cover" /> : <span className="text-sm font-bold">{firstName.slice(0, 1).toUpperCase()}</span>}
-        </Button>
-        <div className="min-w-0 flex-1">
-          {section === "Home" ? <><p className="text-[11px] font-medium text-white/40">{greeting},</p><p className="truncate text-[15px] font-bold">{firstName}</p></> : <p className="truncate text-[17px] font-bold">{TITLES[section] ?? section}</p>}
-        </div>
+        {showBrand ? (
+          <Link to="/" aria-label="Oventric home" className="nav-tap flex min-w-0 flex-1 items-center">
+            <img src={logoFull} alt="Oventric" className="h-8 w-auto max-w-full object-contain" />
+          </Link>
+        ) : (
+          <>
+            <Button variant="ghost" size="icon" onClick={() => void openProfile()} aria-label="Your social profile" className="nav-tap h-10 w-10 shrink-0 overflow-hidden rounded-full border border-white/10 bg-white/[0.06] p-0 text-white/70 hover:bg-white/10 hover:text-white">
+              {avatarUrl ? <img src={avatarUrl} alt="" className="h-full w-full object-cover" /> : <span className="text-sm font-bold">{firstName.slice(0, 1).toUpperCase()}</span>}
+            </Button>
+            <div className="min-w-0 flex-1">
+              {section === "Home" ? <><p className="text-[11px] font-medium text-white/40">{greeting},</p><p className="truncate text-[15px] font-bold">{firstName}</p></> : <p className="truncate text-[17px] font-bold">{TITLES[section] ?? section}</p>}
+            </div>
+          </>
+        )}
         <Button variant="ghost" size="icon" onClick={() => { haptic("select"); onOpenMessages(); }} aria-label="Chats" className="nav-tap relative h-10 w-10 rounded-full border border-white/10 bg-white/[0.06] text-white/80 hover:bg-white/10 hover:text-white">
           <MessageCircle className="h-[18px] w-[18px]" />
           {(messages ?? 0) > 0 && <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-primary-foreground">{messages}</span>}
