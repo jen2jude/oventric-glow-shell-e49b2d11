@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import {
   X,
   Image as ImageIcon,
-  Video as VideoIcon,
   AtSign,
   Users,
   Globe2,
@@ -13,9 +12,6 @@ import {
   Check,
   Loader2,
   AlertCircle,
-  BarChart3,
-  Smile,
-  MapPin,
   ShoppingBag,
   Plus,
 } from "lucide-react";
@@ -48,6 +44,25 @@ type MobileVirtualKeyboard = EventTarget & {
 const MAX_MEDIA_BYTES = 50 * 1024 * 1024;
 const MAX_IMAGES = 10;
 const MAX_TEXT = 5000;
+const MEDIA_ACCEPT = ".jpg,.jpeg,.png,.mp4";
+const POST_TOPICS = [
+  ["Designs", "Designs"], ["Development", "Development"], ["Marketing", "Marketing"],
+  ["Emailing", "Emailing"], ["Business", "Business"], ["Video editing", "VideoEditing"],
+  ["Vibe coding", "VibeCoding"], ["Productivity", "Productivity"], ["Training", "Training"],
+] as const;
+
+function TopicChoices({ selected, onToggle }: { selected: string[]; onToggle: (topic: string) => void }) {
+  return <div className="mt-5 pb-5">
+    <p className="mb-2 text-xs font-medium text-muted-foreground">Topics</p>
+    <div className="flex flex-wrap gap-2">
+      {POST_TOPICS.map(([label, tag]) => <Button key={tag} type="button" size="sm" variant={selected.includes(tag) ? "default" : "outline"} aria-pressed={selected.includes(tag)} onClick={() => onToggle(tag)} className="h-8 rounded-full px-3 text-xs">{label}</Button>)}
+    </div>
+  </div>;
+}
+
+function MediaGuidance() {
+  return <p className="mt-2 text-[11px] leading-4 text-muted-foreground">Media: JPG, JPEG, PNG, MP4 · 50 MB max per file. AVI and M4A aren't supported for posts.</p>;
+}
 
 /** Small inline field error row. */
 function FieldError({ children }: { children: React.ReactNode }) {
@@ -98,6 +113,7 @@ export function PostComposerModal({
   const listCircles = useServerFn(listCirclesFn);
 
   const [text, setText] = useState("");
+  const [topics, setTopics] = useState<string[]>([]);
   const [mentions, setMentions] = useState<Mention[]>([]);
   const [audience, setAudience] = useState<Audience>("public");
   const [circleId, setCircleId] = useState<string | null>(null);
@@ -309,10 +325,11 @@ export function PostComposerModal({
     const nextAttachments = [...attachments];
     let err: string | null = null;
     for (const file of files) {
-      const isImage = file.type.startsWith("image/");
-      const isVideo = file.type.startsWith("video/");
+      const extension = file.name.split(".").pop()?.toLowerCase();
+      const isImage = extension === "jpg" || extension === "jpeg" || extension === "png";
+      const isVideo = extension === "mp4";
       if (!isImage && !isVideo) {
-        err = "Only images or videos are allowed.";
+        err = "Choose a JPG, JPEG, PNG or MP4 file.";
         continue;
       }
       if (file.size > MAX_MEDIA_BYTES) {
@@ -378,7 +395,8 @@ export function PostComposerModal({
   }, [audience, circleId, circles]);
 
   const hasMedia = attachments.length > 0;
-  const trimmed = text.trim();
+  const trimmed = [text.trim(), ...topics.map((topic) => `#${topic}`)].filter(Boolean).join(" ");
+  const toggleTopic = (topic: string) => setTopics((current) => current.includes(topic) ? current.filter((item) => item !== topic) : [...current, topic]);
 
   const textError = useMemo(() => {
     if (trimmed.length > MAX_TEXT)
@@ -410,7 +428,7 @@ export function PostComposerModal({
     // close the composer and finish uploading/creating in the background.
     const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     const snapshot = {
-      text: text.trim(),
+       text: trimmed,
       attachments: attachments.slice(),
       audience: isWall ? ("public" as Audience) : audience,
       circleId: isWall ? null : audience === "circle" ? circleId : null,
@@ -428,6 +446,7 @@ export function PostComposerModal({
 
     // Reset composer state without revoking the previews the feed now owns.
     setText("");
+    setTopics([]);
     setMentions([]);
     setAudience("public");
     setCircleId(null);
@@ -552,8 +571,19 @@ export function PostComposerModal({
           </div>
           {showAudienceError && <FieldError>{audienceError}</FieldError>}
 
-          <textarea ref={textareaRef} value={text} onChange={(event) => setText(event.target.value)} aria-label="Write your post" aria-invalid={showTextError} placeholder="What would you like to share?" className="mt-5 min-h-[160px] w-full resize-none bg-transparent text-[17px] leading-relaxed text-foreground outline-none placeholder:text-muted-foreground" />
+          <textarea ref={textareaRef} value={text} onChange={(event) => setText(event.target.value)} aria-label="Write your post" aria-invalid={showTextError} placeholder="What would you like to share?" className="mt-5 min-h-[136px] w-full resize-none bg-transparent text-[17px] leading-relaxed text-foreground outline-none placeholder:text-muted-foreground" />
           {showTextError && <FieldError>{textError}</FieldError>}
+
+          <div className="border-t border-border pt-4">
+            <div className="mb-3 flex items-center justify-between gap-2 text-xs text-muted-foreground"><span>Add to your post</span><span className={textError ? "text-destructive" : ""}>{trimmed.length.toLocaleString()} / {MAX_TEXT.toLocaleString()}</span></div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" onClick={onPickFile} className="min-w-0 flex-1 rounded-[10px] border-border bg-muted/40 text-foreground" title="Add photo or video"><ImageIcon className="text-primary" /><span>Media</span></Button>
+              <Button variant="outline" onClick={() => setMentionPickerOpen(true)} className="min-w-0 flex-1 rounded-[10px] border-border bg-muted/40 text-foreground" title="Mention someone"><AtSign className="text-primary" /><span>Mention</span></Button>
+              <Button variant="outline" onClick={() => setProductPickerOpen(true)} className="min-w-0 flex-1 rounded-[10px] border-border bg-muted/40 text-foreground" title="Add a product"><ShoppingBag className="text-primary" /><span>Product</span></Button>
+            </div>
+            <MediaGuidance />
+          </div>
+          <TopicChoices selected={topics} onToggle={toggleTopic} />
 
           {attachments.length > 0 && <div className="mb-4 flex shrink-0 gap-2 overflow-x-auto pb-1">
             {attachments.map((attachment, index) => <div key={attachment.previewUrl} className="relative h-32 w-32 shrink-0 overflow-hidden rounded-[10px] bg-muted">
@@ -562,7 +592,7 @@ export function PostComposerModal({
             </div>)}
             {!attachments.some((attachment) => attachment.kind === "video") && attachments.length < MAX_IMAGES && <Button variant="outline" onClick={onPickFile} aria-label="Add more media" className="h-32 w-24 shrink-0 flex-col rounded-[10px] border-dashed text-muted-foreground"><Plus /> Add</Button>}
           </div>}
-          <input ref={fileInputRef} type="file" accept="image/*,video/*" multiple className="hidden" onChange={onFile} />
+           <input ref={fileInputRef} type="file" accept={MEDIA_ACCEPT} multiple className="hidden" onChange={onFile} />
 
           {attachedProducts.length > 0 && <div className="mb-3 space-y-2">{attachedProducts.map((product) => <div key={product.id} className="flex items-center gap-3 rounded-[10px] border border-border bg-muted/40 p-2">
             <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-[8px] bg-muted">{product.coverUrl ? <img src={product.coverUrl} alt="" className="size-full object-cover" /> : <ShoppingBag className="size-5 text-muted-foreground" />}</div>
@@ -572,17 +602,7 @@ export function PostComposerModal({
           {mentions.length > 0 && <div className="mb-3 flex flex-wrap gap-2">{mentions.map((mention) => <span key={mention.userId} className="flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-xs text-primary">@{mention.username || mention.name}<Button variant="ghost" size="icon-sm" className="size-5 rounded-full text-primary" onClick={() => removeMention(mention.userId)} aria-label={`Remove mention ${mention.name}`}><X /></Button></span>)}</div>}
           {mediaError && <FieldError>{mediaError}</FieldError>}
           {error && <FieldError>{error}</FieldError>}
-          <div className="flex-1" />
         </div>
-
-        <footer className={`shrink-0 border-t border-border bg-card px-5 pt-3 ${appViewport?.keyboardOpen ? "pb-3" : "pb-[calc(1rem+env(safe-area-inset-bottom))]"}`}>
-          <div className="mb-3 flex items-center justify-between gap-2 text-xs text-muted-foreground"><span>Add to your post</span><span className={textError ? "text-destructive" : ""}>{trimmed.length.toLocaleString()} / {MAX_TEXT.toLocaleString()}</span></div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={onPickFile} className="min-w-0 flex-1 rounded-[10px] border-border bg-muted/40 text-foreground" title="Add photo or video"><ImageIcon className="text-primary" /><span className="hidden min-[350px]:inline">Media</span></Button>
-            <Button variant="outline" onClick={() => setMentionPickerOpen(true)} className="min-w-0 flex-1 rounded-[10px] border-border bg-muted/40 text-foreground" title="Mention someone"><AtSign className="text-primary" /><span className="hidden min-[350px]:inline">Mention</span></Button>
-            <Button variant="outline" onClick={() => setProductPickerOpen(true)} className="min-w-0 flex-1 rounded-[10px] border-border bg-muted/40 text-foreground" title="Add a product"><ShoppingBag className="text-primary" /><span className="hidden min-[350px]:inline">Product</span></Button>
-          </div>
-        </footer>
       </div>
 
       {(productPickerOpen || mentionPickerOpen) && <div className="fixed inset-0 z-[70] flex items-center justify-center bg-background/80 px-5 backdrop-blur-sm" style={appViewport ? { top: `${appViewport.top}px`, height: `${appViewport.height}px`, bottom: "auto" } : undefined} onClick={() => { setProductPickerOpen(false); setMentionPickerOpen(false); }}>
@@ -723,7 +743,8 @@ export function PostComposerModal({
             aria-invalid={showTextError}
             aria-describedby={showTextError ? "composer-text-error" : undefined}
             placeholder="What's on your mind?"
-            className={`w-full bg-transparent text-slate-800 placeholder:text-slate-400 resize-none focus:outline-none text-base mt-3 min-h-[100px] rounded-[10px] px-0 ${
+            aria-label="Write your post"
+            className={`w-full bg-transparent text-slate-800 placeholder:text-slate-400 resize-none focus:outline-none text-base mt-3 min-h-[136px] rounded-[10px] px-0 ${
               showTextError ? "ring-1 ring-red-500/60" : ""
             }`}
           />
@@ -733,6 +754,17 @@ export function PostComposerModal({
               {showTextError && <FieldError>{textError}</FieldError>}
             </div>
           </div>
+
+          <div className="border-t border-border pt-4">
+            <div className="mb-3 flex items-center justify-between gap-2 text-xs text-muted-foreground"><span>Add to your post</span><span>{trimmed.length.toLocaleString()} / {MAX_TEXT.toLocaleString()}</span></div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" onClick={onPickFile} className="min-w-0 flex-1 rounded-[10px]" title="Add photo or video"><ImageIcon className="text-primary" /><span>Media</span></Button>
+              <Button variant="outline" onClick={() => setMentionPickerOpen(true)} className="min-w-0 flex-1 rounded-[10px]" title="Mention someone"><AtSign className="text-primary" /><span>Mention</span></Button>
+              <Button variant="outline" onClick={() => setProductPickerOpen(true)} className="min-w-0 flex-1 rounded-[10px]" title="Add a product"><ShoppingBag className="text-primary" /><span>Product</span></Button>
+            </div>
+            <MediaGuidance />
+          </div>
+          <TopicChoices selected={topics} onToggle={toggleTopic} />
 
           {/* Media Rail / Horizontal Grid */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
@@ -768,7 +800,7 @@ export function PostComposerModal({
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*,video/*"
+             accept={MEDIA_ACCEPT}
             multiple
             className="hidden"
             onChange={onFile}
@@ -824,31 +856,6 @@ export function PostComposerModal({
             {error && <FieldError>{error}</FieldError>}
           </div>
 
-          {/* Toolbar Icons - Moved INSIDE scroll area */}
-          <div className="py-3 border-t border-slate-200 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button onClick={onPickFile} className="text-slate-400 hover:text-[#E5484D] transition-colors"><ImageIcon className="w-5 h-5" /></button>
-              <button onClick={onPickFile} className="text-slate-400 hover:text-[#E5484D] transition-colors"><VideoIcon className="w-5 h-5" /></button>
-              <button className="text-slate-400 hover:text-[#E5484D] transition-colors"><BarChart3 className="w-5 h-5" /></button>
-              <button className="text-slate-400 hover:text-[#E5484D] transition-colors"><Smile className="w-5 h-5" /></button>
-              <button className="text-slate-400 hover:text-[#E5484D] transition-colors"><MapPin className="w-5 h-5" /></button>
-              <button className="text-slate-400 hover:text-[#E5484D] transition-colors"><ShoppingBag className="w-5 h-5" /></button>
-            </div>
-            <div className="text-[10px] text-slate-500 font-medium tracking-wide uppercase">
-              {trimmed.length}/{MAX_TEXT}
-            </div>
-          </div>
-
-          {/* Action List - Moved INSIDE scroll area */}
-          <div className="bg-transparent border-t border-slate-200 pt-2 pb-6">
-            <div className="py-3 text-[10px] text-slate-500 font-semibold tracking-wider uppercase">Add to your post</div>
-            <div className="flex flex-col">
-              <ActionButton icon={<ImageIcon className="w-5 h-5 text-sky-400" />} label="Photo/Video" onClick={onPickFile} />
-              <ActionButton icon={<AtSign className="w-5 h-5 text-indigo-400" />} label="Mention People" onClick={() => setMentionPickerOpen(true)} />
-              <ActionButton icon={<Plus className="w-5 h-5 text-[#E5484D]" />} label="Topic / Hashtag" />
-              <ActionButton icon={<ShoppingBag className="w-5 h-5 text-amber-400" />} label="Product from my shop" onClick={() => setProductPickerOpen(true)} />
-            </div>
-          </div>
         </div>
       </div>
 
@@ -1002,27 +1009,6 @@ export function PostComposerModal({
         </div>
       )}
     </div>
-  );
-}
-
-function ActionButton({
-  icon,
-  label,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  onClick?: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-left"
-    >
-      <span className="shrink-0">{icon}</span>
-      <span className="text-sm font-medium text-slate-700">{label}</span>
-    </button>
   );
 }
 

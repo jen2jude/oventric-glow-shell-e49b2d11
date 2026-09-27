@@ -52,3 +52,6 @@
 - [x] Dashboard listing prices in home currency
 - [x] Seller Hub visible to any signed-in user (was creator-only)
 - [x] App footer: Wallet tab replaced with Profile tab (opens Account screen)
+
+## Post composer layout
+- [x] Move post tools beneath the writing area in app and website, add selectable topics and accurate media guidance
