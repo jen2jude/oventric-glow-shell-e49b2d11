@@ -29,6 +29,11 @@ function isStandaloneLaunch() {
   };
   if (typeof w.__oventricStandalone === "boolean") return w.__oventricStandalone;
   try {
+    const host = window.location.hostname.toLowerCase();
+    const publicHost = host === "oventric.com" ||
+      host === "www.oventric.com" ||
+      host === "oventric-glow-shell.lovable.app";
+    if (!publicHost) return true;
     const standalone =
       window.matchMedia?.("(display-mode: standalone)").matches || w.navigator.standalone === true;
     // Mobile only — no splash on desktop or tablet.
@@ -57,8 +62,6 @@ export function BootSplash() {
   const routeLoading = useRouterState({ select: (s) => s.isLoading || s.status === "pending" });
 
   useEffect(() => {
-    // Hand off from the server-rendered pre-hydration splash.
-    document.getElementById("oventric-boot")?.remove();
     setHydrated(true);
     if (!splashConsumed && isStandaloneLaunch()) {
       splashConsumed = true;
