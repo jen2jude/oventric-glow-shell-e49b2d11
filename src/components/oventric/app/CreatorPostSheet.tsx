@@ -1,0 +1,242 @@
+import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useNavigate } from "@tanstack/react-router";
+import { BadgeCheck, Download, Eye, ShoppingBag } from "lucide-react";
+import { toast } from "sonner";
+import { AppSheet } from "@/components/oventric/app/AppSheet";
+import { createOrder, getOrderWithDownload } from "@/lib/marketplace.functions";
+import type { CreatorPostDTO } from "@/lib/creators.functions";
+import { supabase } from "@/integrations/supabase/client";
+import { haptic } from "@/lib/haptics";
+import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
+import type { Currency } from "@/lib/onboarding/OnboardingContext";
+import { computeDisplayPrice } from "@/lib/fx-display";
+
+function compact(n: number) {
+  return n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : String(n);
+}
+
+function ago(iso: string) {
+  const s = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (s < 3600) return `${Math.max(1, Math.floor(s / 60))}m ago`;
+  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
+  return `${Math.floor(s / 86400)}d ago`;
+}
+
+/**
+ * Creator showcase detail panel — slides up when a creator post's media or CTA
+ * is tapped. The video restarts with sound at the top; creator identity,
+ * caption and stats sit below; the final button downloads free assets
+ * instantly or sends paid ones to checkout.
+ */
+export function CreatorPostSheet({
+  post,
+  onClose,
+}: {
+  post: CreatorPostDTO | null;
+  onClose: () => void;
+}) {
+  const { baseCurrency } = useOnboarding();
+  const navigate = useNavigate();
+  const createFreeOrder = useServerFn(createOrder);
+  const loadDownload = useServerFn(getOrderWithDownload);
+  const [downloading, setDownloading] = useState(false);
+
+  const asset = post?.asset ?? null;
+  const media = post?.media[0] ?? null;
+  const isVideo = media?.type === "video";
+
+  const price = asset
+    ? asset.isFree
+      ? "Free"
+      : computeDisplayPrice(
+          {
+            price_usd: asset.priceUsd,
+            original_currency: asset.originalCurrency ?? "USD",
+            original_amount: asset.originalAmount ?? asset.priceUsd,
+            fx_snapshot: asset.fxSnapshot,
+          },
+          (baseCurrency ?? "USD") as Currency,
+        ).formatted
+    : null;
+
+  const downloadAsset = async () => {
+    if (!asset || downloading) return;
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) {
+      toast.error("Sign in to download this asset");
+      return;
+    }
+    setDownloading(true);
+    try {
+      const result = await createFreeOrder({
+        data: {
+          productId: asset.productId,
+          quantity: 1,
+          displayCurrency: baseCurrency,
+          paymentMethod: "wallet",
+          couponCode: null,
+          deliveryEmail: null,
+          deliveryWhatsapp: null,
+          applyCashbackUSD: 0,
+        },
+      });
+      const downloadable = await loadDownload({ data: { orderId: result.order.id } });
+      const href = downloadable.downloadUrl ?? downloadable.order.externalUrl;
+      if (!href) throw new Error("This download is not available yet");
+      const anchor = document.createElement("a");
+      anchor.href = href;
+      anchor.download = "";
+      anchor.target = "_blank";
+      anchor.rel = "noopener noreferrer";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      toast.success("Download started", {
+        description: "This asset is saved in your dashboard for later.",
+      });
+      onClose();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Couldn't start the download");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  return (
+    <AppSheet open={!!post} onClose={onClose} tall>
+      {post && (
+        <div className="pb-8">
+          {/* Media — video restarts with sound, images show full-bleed */}
+          {media && (
+            <div className="bg-black">
+              {isVideo ? (
+                <video
+                  key={post.id}
+                  src={media.url}
+                  poster={media.posterUrl ?? undefined}
+                  autoPlay
+                  controls
+                  playsInline
+                  className="max-h-[46dvh] w-full object-contain"
+                />
+              ) : (
+                <img
+                  src={media.posterUrl ?? media.url}
+                  alt={post.title}
+                  className="max-h-[46dvh] w-full object-cover"
+                />
+              )}
+            </div>
+          )}
+
+          <div className="px-4 pt-4">
+            {/* Creator identity */}
+            <button
+              onClick={() => {
+                haptic("select");
+                if (post.author.slug) {
+                  onClose();
+                  navigate({ to: "/profile/$id", params: { id: post.author.slug } });
+                }
+              }}
+              className="flex w-full items-center gap-3 text-left"
+            >
+              <span className="h-11 w-11 shrink-0 overflow-hidden rounded-full border border-white/10">
+                {post.author.avatarUrl ? (
+                  <img src={post.author.avatarUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <span
+                    className="flex h-full w-full items-center justify-center bg-[#E5484D] text-[14px] font-bold"
+                    style={{ color: "#ffffff" }}
+                  >
+                    {post.author.name.slice(0, 1).toUpperCase()}
+                  </span>
+                )}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="flex items-center gap-1">
+                  <span className="line-clamp-1 text-[14px] font-bold text-white">{post.author.name}</span>
+                  {post.author.verified && <BadgeCheck className="h-4 w-4 shrink-0 text-[#E5484D]" />}
+                </span>
+                <span className="mt-0.5 block text-[11px] text-white/40">
+                  {ago(post.createdAt)} · {compact(post.viewCount)} views
+                </span>
+              </span>
+            </button>
+
+            {/* Creator fields */}
+            {post.fields.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {post.fields.map((f) => (
+                  <span
+                    key={f}
+                    className="rounded-full border border-[#E5484D]/30 bg-[#E5484D]/10 px-2.5 py-1 text-[10px] font-bold text-[#FF7A7E]"
+                  >
+                    {f}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Post details */}
+            <h2 className="mt-3 text-[16px] font-bold leading-snug text-white">{post.title}</h2>
+            {post.caption && (
+              <p className="mt-1.5 text-[13px] leading-relaxed text-white/60">{post.caption}</p>
+            )}
+
+            {/* Stats */}
+            <div className="mt-3 flex items-center gap-4 text-[11px] font-semibold text-white/40">
+              <span className="flex items-center gap-1.5">
+                <Eye className="h-3.5 w-3.5" /> {compact(post.viewCount)} views
+              </span>
+              {asset && (
+                <span className="flex items-center gap-1.5">
+                  <Download className="h-3.5 w-3.5" /> {compact(asset.downloadCount)} downloads
+                </span>
+              )}
+            </div>
+
+            {/* Final CTA */}
+            {asset &&
+              (asset.available ? (
+                asset.isFree ? (
+                  <button
+                    type="button"
+                    disabled={downloading}
+                    onClick={() => {
+                      haptic("select");
+                      void downloadAsset();
+                    }}
+                    className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#E5484D] py-3 text-[13.5px] font-bold active:opacity-80 disabled:opacity-50"
+                    style={{ color: "#ffffff" }}
+                  >
+                    <Download className="h-4 w-4" />
+                    {downloading ? "Starting download…" : "Get it free"}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      haptic("select");
+                      onClose();
+                      navigate({ to: "/product/$id", params: { id: asset.productId } });
+                    }}
+                    className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#E5484D] py-3 text-[13.5px] font-bold active:opacity-80"
+                    style={{ color: "#ffffff" }}
+                  >
+                    <ShoppingBag className="h-4 w-4" />
+                    Buy now · {price}
+                  </button>
+                )
+              ) : (
+                <div className="mt-5 rounded-2xl border border-white/10 px-4 py-3 text-center text-[12px] font-semibold text-white/40">
+                  This asset is pending review
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
+    </AppSheet>
+  );
+}
