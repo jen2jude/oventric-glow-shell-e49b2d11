@@ -778,7 +778,7 @@ function ProductPage() {
               <div className="product-details mb-4 rounded-[10px] border border-newsfeed-line bg-newsfeed-surface px-3.5">
                 <Accordion type="single" collapsible className="w-full">
                    {!isAppShell && <AccordionItem value="about" className="border-slate-200">
-                    <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold py-3 hover:no-underline`}>
+                    <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold ${isAppShell ? "py-2.5 text-[13px]" : "py-3"} hover:no-underline`}>
                       About Item
                     </AccordionTrigger>
                     <AccordionContent className={`${isAppShell ? "text-slate-400" : "text-slate-600"} text-sm leading-relaxed`}>
@@ -809,7 +809,7 @@ function ProductPage() {
                    }
 
                   <AccordionItem value="basic" className={`${isAppShell ? "border-white/5" : "border-slate-200"}`}>
-                    <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold py-3 hover:no-underline`}>
+                    <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold ${isAppShell ? "py-2.5 text-[13px]" : "py-3"} hover:no-underline`}>
                       Basic Info
                     </AccordionTrigger>
                     <AccordionContent className={`${isAppShell ? "text-slate-400" : "text-slate-600"} text-sm leading-relaxed`}>
@@ -818,7 +818,7 @@ function ProductPage() {
                   </AccordionItem>
 
                    {!isAppShell && <AccordionItem value="description" className="border-slate-200">
-                    <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold py-3 hover:no-underline`}>
+                    <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold ${isAppShell ? "py-2.5 text-[13px]" : "py-3"} hover:no-underline`}>
                       Description
                     </AccordionTrigger>
                     <AccordionContent className={`${isAppShell ? "text-slate-400" : "text-slate-600"} text-sm leading-relaxed whitespace-pre-wrap`}>
@@ -828,7 +828,7 @@ function ProductPage() {
                    }
 
                   <AccordionItem value="activation" className={`${isAppShell ? "border-white/5" : "border-slate-200"}`}>
-                    <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold py-3 hover:no-underline`}>
+                    <AccordionTrigger className={`${isAppShell ? "text-white" : "text-slate-900"} font-bold ${isAppShell ? "py-2.5 text-[13px]" : "py-3"} hover:no-underline`}>
                       Activation Guide
                     </AccordionTrigger>
                     <AccordionContent className={`${isAppShell ? "text-slate-400" : "text-slate-600"} text-sm leading-relaxed whitespace-pre-wrap`}>
@@ -947,8 +947,8 @@ function ProductPage() {
                 )}
                 {product.kind === "service" ? (
                   isAppShell ? (
-                   <div className="product-fixed-actions fixed bottom-[76px] left-0 right-0 z-20 border-t border-newsfeed-line bg-newsfeed-surface/95 px-4 py-3 pb-safe backdrop-blur-xl">
-                     <div className="mb-2 text-xl font-extrabold text-newsfeed-ink">{productDisplay(product, baseCurrency).value === 0 ? "Free" : productDisplay(product, baseCurrency).formatted}</div>
+                   <div className="product-fixed-actions fixed bottom-[76px] left-0 right-0 z-20 border-t border-newsfeed-line bg-newsfeed-surface/95 px-4 py-2.5 pb-safe backdrop-blur-xl">
+                     <div className="mb-1.5 text-lg font-extrabold text-newsfeed-ink">{productDisplay(product, baseCurrency).value === 0 ? "Free" : productDisplay(product, baseCurrency).formatted}</div>
                       <button
                         onClick={openSellerChat}
                         className="inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-newsfeed-coral py-3.5 text-[14px] font-black text-newsfeed-on-accent transition-colors hover:bg-newsfeed-coral/90"
@@ -965,16 +965,16 @@ function ProductPage() {
                     </button>
                   )
                 ) : isAppShell ? (
-                   <div className="product-fixed-actions fixed bottom-[76px] left-0 right-0 z-20 border-t border-newsfeed-line bg-newsfeed-surface/95 px-4 py-3 pb-safe backdrop-blur-xl">
+                   <div className="product-fixed-actions fixed bottom-[76px] left-0 right-0 z-20 border-t border-newsfeed-line bg-newsfeed-surface/95 px-4 py-2.5 pb-safe backdrop-blur-xl">
                      <div className="flex items-center gap-4">
                        <div className="min-w-0 flex-1">
                          <span className="block text-[10px] font-semibold uppercase text-newsfeed-muted">{qty > 1 ? `Total · ${qty} items` : "Price"}</span>
-                         <span className="block truncate text-[21px] font-extrabold text-newsfeed-ink">{productDisplay(product, baseCurrency).value === 0 ? "Free" : formatMoney(productDisplay(product, baseCurrency).value * qty, baseCurrency)}</span>
+                         <span className="block truncate text-[19px] font-extrabold text-newsfeed-ink">{productDisplay(product, baseCurrency).value === 0 ? "Free" : formatMoney(productDisplay(product, baseCurrency).value * qty, baseCurrency)}</span>
                        </div>
                       <button
                         onClick={startCheckout}
                         disabled={outOfStock}
-                          className={`inline-flex h-12 min-w-36 items-center justify-center gap-2 rounded-[10px] px-5 text-[13px] font-black transition-colors ${outOfStock ? "cursor-not-allowed bg-newsfeed-line text-newsfeed-muted" : "bg-newsfeed-coral text-newsfeed-on-accent hover:bg-newsfeed-coral/90"}`}
+                          className={`inline-flex h-11 min-w-32 items-center justify-center gap-2 rounded-[10px] px-5 text-[13px] font-black transition-colors ${outOfStock ? "cursor-not-allowed bg-newsfeed-line text-newsfeed-muted" : "bg-newsfeed-coral text-newsfeed-on-accent hover:bg-newsfeed-coral/90"}`}
                       >
                         <ShoppingCart className="w-4 h-4" />
                         <span>{outOfStock ? "Out of Stock" : isFree ? "Download" : "Buy Now"}</span>
