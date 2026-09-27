@@ -555,8 +555,6 @@ export function PayoutModal({ onClose }: { onClose: () => void }) {
         </div>
     </>
   );
-    </>
-  );
 
   const overlays = (
     <>
