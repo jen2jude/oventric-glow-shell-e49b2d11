@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
+  ArrowDownToLine,
+  ArrowUpFromLine,
   Bell,
   Compass,
   MessageCircle,
@@ -88,6 +90,18 @@ export function AppHome({
   const openProduct = (p: ProductDTO) => {
     haptic("select");
     navigate({ to: "/product/$id", params: { id: p.id } });
+  };
+
+  // Own profile & shop are keyed by the auth user id (the routes resolve
+  // id-or-slug), so resolve the session user right before navigating.
+  const openOwn = async (dest: "profile" | "shop") => {
+    const { data } = await supabase.auth.getSession();
+    const id = data.session?.user?.id;
+    if (!id) return;
+    navigate({
+      to: dest === "profile" ? "/profile/$id" : "/shop/$id",
+      params: { id },
+    });
   };
 
   return (
