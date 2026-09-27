@@ -36,6 +36,7 @@ import { ReferralCapture } from "@/components/oventric/ReferralCapture";
 
 import { useLiveFx } from "@/lib/useLiveFx";
 import { FeatureCarousel } from "@/components/oventric/FeatureCarousel";
+import { useSheetOpen } from "@/hooks/use-sheet-open";
 import { useFirstLaunch } from "@/hooks/useFirstLaunch";
 import { useLaunchContext } from "@/hooks/use-launch-context";
 import { unlockNotificationSound } from "@/lib/notification-sound";
@@ -437,7 +438,7 @@ function RootComponent() {
               <ReferralCapture />
 
                <BootSplash />
-                {show && hydrated && !isPc && isAppShell && <FeatureCarousel onComplete={markSeen} />}
+                {show && hydrated && !isPc && isAppShell && !sheetOpen && <FeatureCarousel onComplete={markSeen} />}
             </KycGateProvider>
           </OnboardingProvider>
         </AuthGateProvider>

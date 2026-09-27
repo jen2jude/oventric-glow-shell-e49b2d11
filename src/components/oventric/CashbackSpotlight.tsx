@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { useSheetOpen } from "@/hooks/use-sheet-open";
 
 import cashbackArt from "@/assets/cashback-spotlight.webp.asset.json";
 
@@ -9,9 +10,10 @@ const APPEAR_AFTER_MS = 2400;
 
 export function CashbackSpotlight({ active }: { active: boolean }) {
   const [visible, setVisible] = useState(false);
+  const sheetOpen = useSheetOpen();
 
   useEffect(() => {
-    if (!active) {
+    if (!active || sheetOpen) {
       setVisible(false);
       return;
     }
@@ -26,7 +28,7 @@ export function CashbackSpotlight({ active }: { active: boolean }) {
 
     const timer = window.setTimeout(() => setVisible(true), APPEAR_AFTER_MS);
     return () => window.clearTimeout(timer);
-  }, [active]);
+  }, [active, sheetOpen]);
 
   useEffect(() => {
     if (!visible) return;
@@ -58,6 +60,7 @@ export function CashbackSpotlight({ active }: { active: boolean }) {
     <div
       className="fixed inset-0 z-[1200] flex items-center justify-center bg-slate-950/45 px-4 backdrop-blur-[3px] animate-fade-in motion-reduce:animate-none"
       role="dialog"
+      data-onboarding-popup
       aria-modal="true"
       aria-label="Cashback offer: the more you shop, the less you pay"
       onMouseDown={(event) => {
