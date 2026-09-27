@@ -98,7 +98,7 @@ export function SellerDashboard() {
                 color="text-primary"
               />
               <MetricCard 
-                label="Views" 
+                label="Product views" 
                 value={metrics.totalViews} 
                 icon={Eye} 
                 color="text-primary"
@@ -106,8 +106,9 @@ export function SellerDashboard() {
             </div>
 
             {/* Engagement Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <MiniMetric label="Shop Visits" value={metrics.shopVisits} />
+              <MiniMetric label="Conversations" value={metrics.conversations} />
               <MiniMetric label="Conversion" value={`${metrics.conversionRate}%`} />
               <MiniMetric label="Engagement" value={`${metrics.engagementRate}%`} />
             </div>
