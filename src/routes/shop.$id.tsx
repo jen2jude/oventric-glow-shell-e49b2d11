@@ -145,6 +145,13 @@ function Rail({ children, web = false }: { children: React.ReactNode; web?: bool
 }
 
 function ShopPage() {
+  const isAppShell = useIsAppShell();
+  const { id } = Route.useParams();
+  if (isAppShell) return <AppShop idOrSlug={id} />;
+  return <WebShopPage />;
+}
+
+function WebShopPage() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const { baseCurrency } = useOnboarding();

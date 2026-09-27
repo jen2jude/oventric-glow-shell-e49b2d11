@@ -257,6 +257,13 @@ const SEARCH_PLACEHOLDER: Record<Tab, string> = {
 };
 
 function ProfilePage() {
+  const isAppShell = useIsAppShell();
+  const { id } = Route.useParams();
+  if (isAppShell) return <AppProfile idOrSlug={id} />;
+  return <WebProfilePage />;
+}
+
+function WebProfilePage() {
   const { id } = Route.useParams();
   const isAppShellView = useIsAppShell();
   const navigate = useNavigate();
