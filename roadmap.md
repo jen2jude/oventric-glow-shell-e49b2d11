@@ -50,3 +50,5 @@
 - [x] View counts for older showcase posts
 - [x] Exact profile-visit tracking from posts
 - [x] Dashboard listing prices in home currency
+- [x] Seller Hub visible to any signed-in user (was creator-only)
+- [x] App footer: Wallet tab replaced with Profile tab (opens Account screen)
