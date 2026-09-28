@@ -811,6 +811,16 @@ export function AppMessages({ initialThreadId, onClose }: AppMessagesProps) {
   if (!me) {
     return (
       <div className="relative flex h-full min-h-0 flex-col overflow-hidden bg-[#070A08] text-slate-200">
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close messages"
+            className="absolute right-4 top-4 z-10 grid size-9 place-items-center rounded-full border border-white/10 bg-white/[0.06] text-slate-300 hover:bg-white/10 hover:text-white active:scale-95 transition-transform"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
         <div className="flex flex-1 items-center justify-center p-8 text-center">
           <div className="max-w-sm">
             <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-full border border-white/10 bg-white/[0.06]">
