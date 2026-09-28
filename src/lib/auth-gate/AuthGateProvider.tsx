@@ -120,6 +120,14 @@ export function AuthGateProvider({ children }: { children: ReactNode }) {
   const [linkError, setLinkError] = useState<string | null>(null);
   const pendingRef = useRef<null | (() => void | Promise<void>)>(null);
   const splashCbRef = useRef<null | (() => void | Promise<void>)>(null);
+  // The "Verified." splash is an app-shell flourish — the website signs in
+  // without it. Tracked in a ref so the auth subscription below can read the
+  // current presentation without re-subscribing.
+  const isAppShell = useIsAppShell();
+  const appShellRef = useRef<boolean>(false);
+  useEffect(() => {
+    appShellRef.current = isAppShell === true;
+  }, [isAppShell]);
 
   // Detect magic-link failures returned by Supabase in the URL hash
   // (e.g. #error=access_denied&error_code=otp_expired&error_description=...).
