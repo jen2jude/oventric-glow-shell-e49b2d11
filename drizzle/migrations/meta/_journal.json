@@ -421,6 +421,13 @@
       "when": 1790608787377,
       "tag": "0059_coach_message_cards",
       "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1790613230652,
+      "tag": "0060_coach_faq_flag",
+      "breakpoints": true
     }
   ]
 }
