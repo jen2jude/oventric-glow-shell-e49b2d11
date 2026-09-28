@@ -15,7 +15,7 @@ export function buildCoachTools(sb: Sb, userId: string, currency: string, rate: 
       .from("products")
       .select("id, slug, name, category, price_usd, rating, reviews, cashback_pct, seller_id")
       .eq("status", "active")
-      .neq("kind", "physical");
+      .or("kind.is.null,kind.neq.physical");
 
   const sellerNames = async (ids: string[]) => {
     if (!ids.length) return new Map<string, { name: string; slug: string | null }>();
