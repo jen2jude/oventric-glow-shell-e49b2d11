@@ -1,0 +1,1 @@
+ALTER TABLE public.creator_coach_messages ADD COLUMN IF NOT EXISTS is_faq boolean NOT NULL DEFAULT false;
