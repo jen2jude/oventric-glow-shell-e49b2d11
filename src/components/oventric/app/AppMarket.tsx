@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
@@ -69,10 +69,33 @@ export function AppMarket() {
   }, [all, cat, categories]);
 
   // Section splits — boutique curation from the visible set.
-  const spotlight = useMemo(
-    () => visible.find((p) => p.promoted) ?? visible[0] ?? null,
-    [visible],
-  );
+  // The spotlight rotates: each fresh visit to the Market page shows the next
+  // product in the promoted pool (all products when nothing is promoted), so
+  // the same hero isn't always Edublink. The visit counter survives within the
+  // browser session; refetches inside one mount keep the same spotlight.
+  const spotlightPool = useMemo(() => {
+    const promoted = visible.filter((p) => p.promoted);
+    return promoted.length ? promoted : visible;
+  }, [visible]);
+  const poolKey = spotlightPool.map((p) => p.id).join("|");
+  const poolKeyRef = useRef<string | null>(null);
+  const spotlightIndexRef = useRef(0);
+  const spotlight = useMemo(() => {
+    if (!spotlightPool.length) return null;
+    if (poolKeyRef.current !== poolKey) {
+      poolKeyRef.current = poolKey;
+      let idx = 0;
+      try {
+        const prev = Number(sessionStorage.getItem("oventric:market-spotlight") ?? "0") || 0;
+        idx = prev % spotlightPool.length;
+        sessionStorage.setItem("oventric:market-spotlight", String(prev + 1));
+      } catch {
+        // storage unavailable — fall back to the first product
+      }
+      spotlightIndexRef.current = idx;
+    }
+    return spotlightPool[spotlightIndexRef.current] ?? null;
+  }, [spotlightPool, poolKey]);
   const fresh = useMemo(
     () => visible.filter((p) => p.id !== spotlight?.id).slice(0, 8),
     [visible, spotlight],
