@@ -430,7 +430,7 @@ function AuthGateModal({
         email: parsedEmail.data,
         options: {
           shouldCreateUser: true,
-          emailRedirectTo: window.location.origin,
+          emailRedirectTo: appShellRef.current ? `${window.location.origin}/?mode=app` : window.location.origin,
           data: username.trim() ? { username: username.trim() } : undefined,
         },
       });
@@ -468,7 +468,7 @@ function AuthGateModal({
         }
       }
       const res = await sendLoginOtpByIdentifier({
-        data: { identifier: raw, redirectTo: window.location.origin },
+        data: { identifier: raw, redirectTo: appShellRef.current ? `${window.location.origin}/?mode=app` : window.location.origin },
       });
       if (!res.sent) {
         throw new Error("No account found. Try signing up as a new user.");
