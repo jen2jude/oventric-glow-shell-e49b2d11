@@ -10,11 +10,11 @@
 <!-- LOVABLE:END -->
 
 ## App shell vs website
-`useIsAppShell()` chooses app on review hosts and web on public hosts. Reason: one codebase, shared routes and data.
+`useIsAppShell()` chooses app on review, installed/standalone, native, and `?mode=app` launches; ordinary public tabs use web. Reason: one codebase without website flashes on app launch.
 
 Installability is manifest-only; `push-sw.js` is messaging-only. Reason: avoid stale previews.
 
-Public install promotion stays paused; review hosts use app mode. Reason: changing preview hosts.
+Mobile public visitors may install the manifest-only app; review hosts always use app mode. Reason: app access is active without stale app-shell caches.
 
 App conversations sheet over inbox; web separate. Reason: preserve inbox scroll.
 

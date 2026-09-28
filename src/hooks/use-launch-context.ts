@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createIsomorphicFn } from "@tanstack/react-start";
-import { getRequestHost } from "@tanstack/react-start/server";
+import { getRequestHost, getRequestUrl } from "@tanstack/react-start/server";
 
 const PUBLIC_HOSTS = new Set(["oventric.com", "www.oventric.com", "oventric-glow-shell.lovable.app"]);
 
@@ -13,6 +13,11 @@ const getInitialContext = createIsomorphicFn()
   .server((): LaunchContext => {
     try {
       const host = (getRequestHost({ xForwardedHost: true }) || "").split(":")[0].toLowerCase();
+      const requested = getRequestUrl({ xForwardedHost: true }).searchParams.get("mode");
+      // Installed launches start at /?mode=app. Honour that on the server so
+      // the HTML already contains the app shell instead of briefly painting
+      // the public website before hydration.
+      if (requested === "app") return "app";
       return PUBLIC_HOSTS.has(host) ? "browser" : "app";
     } catch {
       return "browser";
@@ -69,14 +74,19 @@ function inIframe(): boolean {
 /** Resolve the launch context for this page view (client only). */
 export function resolveLaunchContext(): LaunchContext {
   if (typeof window === "undefined") return "browser";
-  if (!isAppReviewPreview()) return "browser";
-
-  // 1. Review environments are app-only while the app is being tightened.
-  // Ignore old URL and session overrides so the Lovable iframe cannot get
-  // stuck in the website presentation.
   const params = new URLSearchParams(window.location.search);
   const requested = params.get("mode");
-  if (requested === "app") {
+
+  // Review environments are app-only. Installed/native launches on public
+  // hosts must also remain in app mode rather than being forced to the site.
+  const native = Boolean(
+    (window as unknown as {
+      Capacitor?: { isNativePlatform?: () => boolean; isNative?: boolean };
+    }).Capacitor?.isNativePlatform?.() ||
+      (window as unknown as { Capacitor?: { isNative?: boolean } }).Capacitor?.isNative,
+  );
+  const installed = !inIframe() && isStandaloneDisplay();
+  if (isAppReviewPreview() || requested === "app" || native || installed) {
     try {
       window.sessionStorage.setItem(APP_MODE_KEY, "app");
     } catch {
@@ -85,11 +95,7 @@ export function resolveLaunchContext(): LaunchContext {
     return "app";
   }
 
-  // 2. Installed to the home screen (and not the editor iframe).
-  if (!inIframe() && isStandaloneDisplay()) return "app";
-
-  // 3. Sticky choice from earlier in this session. A stored "browser" pick
-  //    from the old preview switch is cleared so the app default wins.
+  // Keep app mode across hard navigations in the same installed session.
   try {
     const stored = window.sessionStorage.getItem(APP_MODE_KEY);
     if (stored === "app") return "app";
@@ -98,9 +104,7 @@ export function resolveLaunchContext(): LaunchContext {
     /* ignore */
   }
 
-  // 4. Preview hosts default to the app shell while we tighten things up;
-  //    the public site stays on the browser presentation.
-  return "app";
+  return "browser";
 }
 
 /** Null until hydration so server and client markup match. */
@@ -118,6 +122,7 @@ export function useLaunchContext(): LaunchContext | null {
   useEffect(() => {
     const next = resolveLaunchContext();
     hydratedContext = next;
+    document.documentElement.classList.toggle("standalone-app", next === "app");
     setCtx(next);
   }, []);
   return ctx;
