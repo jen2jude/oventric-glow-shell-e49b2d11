@@ -602,20 +602,21 @@ export function ProfileMessageModal({
 
             <div className="flex items-end gap-2">
               <input
+                id={`profile-chat-attachment-${recipient.userId}`}
                 ref={fileInputRef}
                 type="file"
                 accept="image/*,.pdf,.zip,.txt,.doc,.docx"
                 className="hidden"
                 onChange={(e) => void onPickFile(e.target.files?.[0])}
               />
-              <button
-                onClick={() => fileInputRef.current?.click()}
+              <label
+                htmlFor={`profile-chat-attachment-${recipient.userId}`}
                 aria-label="Attach a file"
-                disabled={sending || !!attachment}
-                className="shrink-0 p-2.5 rounded-[10px] text-slate-400 hover:text-white md:hover:text-slate-900 hover:bg-white/5 md:hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                aria-disabled={sending || !!attachment}
+                className={`shrink-0 cursor-pointer p-2.5 rounded-[10px] text-slate-400 hover:text-white md:hover:text-slate-900 hover:bg-white/5 md:hover:bg-slate-100 ${sending || attachment ? "pointer-events-none opacity-40" : ""}`}
               >
                 <Paperclip className="w-4 h-4" />
-              </button>
+              </label>
               <textarea
                 value={draft}
                 onChange={(e) => {
