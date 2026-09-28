@@ -182,11 +182,20 @@ export function CreatorCoachChat({ starter }: { starter?: string | null } = {}) 
   useEffect(() => {
     if (historyLoaded.current || !historyQuery.data) return;
     historyLoaded.current = true;
-    const restored: UIMessage[] = historyQuery.data.map((m) => ({
+    const restored = historyQuery.data.map((m) => ({
       id: m.id,
       role: m.role,
-      parts: [{ type: "text", text: m.content }],
-    }));
+      parts: [
+        ...(m.cards ?? []).map((c, i) => ({
+          type: c.type,
+          toolCallId: c.toolCallId ?? `${m.id}-${i}`,
+          state: "output-available",
+          input: {},
+          output: c.output,
+        })),
+        ...(m.content ? [{ type: "text", text: m.content }] : []),
+      ],
+    })) as unknown as UIMessage[];
     if (restored.length) setMessages(restored);
   }, [historyQuery.data, setMessages]);
 
