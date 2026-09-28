@@ -78,7 +78,7 @@ export function AppPurchases() {
   }
 
   return (
-    <div className="min-h-full bg-[#070A08] text-white px-4 pt-6 pb-28">
+    <div className="slide-up min-h-full bg-[#070A08] text-white px-4 pt-6 pb-28">
 
       {/* Buying / Selling toggle */}
       <div className="mt-4 flex rounded-full border border-white/[0.07] bg-white/[0.03] p-1">
