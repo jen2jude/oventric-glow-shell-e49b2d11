@@ -1015,22 +1015,21 @@ export function AppMessages({ initialThreadId, onClose }: AppMessagesProps) {
             </div>
           )}
           <div className="flex items-end gap-2">
-            <input
-              id="app-chat-attachment"
-              ref={fileInputRef}
-              type="file"
-              accept="image/*,video/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip"
-              className="hidden"
-              onChange={(e) => void onPickFile(e.target.files?.[0])}
-            />
             <label
-              htmlFor="app-chat-attachment"
               aria-label="Attach a photo, video or file"
               title="Attach a photo, video or file"
               aria-disabled={sending || !!attachment}
-              className={`grid size-10 shrink-0 cursor-pointer place-items-center rounded-full border border-white/10 bg-white/[0.06] text-slate-400 hover:text-slate-200 ${sending || attachment ? "pointer-events-none opacity-50" : ""}`}
+              className={`relative overflow-hidden grid size-10 shrink-0 cursor-pointer place-items-center rounded-full border border-white/10 bg-white/[0.06] text-slate-400 hover:text-slate-200 ${sending || attachment ? "pointer-events-none opacity-50" : ""}`}
             >
               <Paperclip className="w-4 h-4" />
+                <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*,video/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip"
+              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+              onChange={(e) => void onPickFile(e.target.files?.[0])}
+                              disabled={sending || !!attachment}
+                />
             </label>
             <textarea
               value={draft}

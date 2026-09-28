@@ -1240,22 +1240,21 @@ export function Messages({
                    className="min-h-16 text-sm"
                  />
                  <PromptInputFooter className="justify-between px-2 pb-2">
-                   <input
-                      id="web-chat-attachment"
-                     ref={fileInputRef}
-                     type="file"
-                     accept="image/*,video/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip"
-                     className="hidden"
-                     onChange={(e) => void onPickFile(e.target.files?.[0])}
-                   />
-                    <label
-                      htmlFor="web-chat-attachment"
+                   <label
                      aria-label="Attach a photo, video or file"
                      title="Attach a photo, video or file"
                       aria-disabled={sending || !!attachment}
-                      className={`inline-flex size-9 cursor-pointer items-center justify-center rounded-[10px] text-chat-muted hover:bg-chat-blue-soft hover:text-chat-blue ${sending || attachment ? "pointer-events-none opacity-50" : ""}`}
+                      className={`relative overflow-hidden inline-flex size-9 cursor-pointer items-center justify-center rounded-[10px] text-chat-muted hover:bg-chat-blue-soft hover:text-chat-blue ${sending || attachment ? "pointer-events-none opacity-50" : ""}`}
                    >
                      <Paperclip />
+                <input
+                     ref={fileInputRef}
+                     type="file"
+                     accept="image/*,video/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip"
+                     className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                     onChange={(e) => void onPickFile(e.target.files?.[0])}
+                                     disabled={sending || !!attachment}
+                />
                     </label>
                    <PromptInputSubmit
                      status={sending ? "submitted" : undefined}
