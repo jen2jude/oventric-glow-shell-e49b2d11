@@ -438,7 +438,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
     ) : active === "Profile" && isAppShell && !isDesktop ? (
       <AppAccount onSelect={openSection} />
     ) : active === "Messages" ? (
-      isAppShell ? <AppMessages /> : <Messages variant="page" />
+      isAppShell ? <AppMessages onClose={backSection} /> : <Messages variant="page" />
     ) : active === "Circles" ? (
       <AppOnlyGate
         title="Circles live in the app"
