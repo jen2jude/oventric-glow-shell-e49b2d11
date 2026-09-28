@@ -425,6 +425,9 @@ function RootComponent() {
               <Toaster position="top-center" richColors closeButton />
               <LiveNotificationToasts />
               <PushOptInPrompt />
+              {/* Mobile website visitors get the install invite; the installed
+                  app and desktop never see it (the prompt also self-guards). */}
+              {!isAppShell && !isPc ? <AppInstallPrompt /> : null}
               <AppBadgeSync />
               <OfflineBanner />
               <ReferralCapture />
