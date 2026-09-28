@@ -192,7 +192,7 @@ export function CreatorCoachChat({ starter }: { starter?: string | null } = {}) 
 
 export function CreatorCoachDrawer({ open, onClose, starter }: { open: boolean; onClose: () => void; starter?: string | null }) {
   return (
-    <VaulDrawer.Root open={open} onOpenChange={(o) => !o && onClose()}>
+    <VaulDrawer.Root repositionInputs={false} open={open} onOpenChange={(o) => !o && onClose()}>
       <VaulDrawer.Portal>
         <VaulDrawer.Overlay className="fixed inset-0 z-[90] bg-black/40 backdrop-blur-md" />
         <VaulDrawer.Content className="fixed inset-x-0 bottom-0 z-[91] flex h-[92dvh] flex-col rounded-t-3xl border-t border-white/10 bg-[#070A08] outline-none">

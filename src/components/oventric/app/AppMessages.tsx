@@ -1214,7 +1214,7 @@ export function AppMessages({ initialThreadId, onClose }: AppMessagesProps) {
           })
         )}
       </div>
-      <Drawer open={!!activePeer} onOpenChange={(open) => { if (!open) setActivePeer(null); }}>
+      <Drawer repositionInputs={false} open={!!activePeer} onOpenChange={(open) => { if (!open) setActivePeer(null); }}>
         <DrawerPortal>
           <DrawerOverlay className="fixed inset-0 z-[90] bg-black/40 backdrop-blur-md" />
           <VaulDrawer.Content
