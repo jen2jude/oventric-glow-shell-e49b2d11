@@ -110,7 +110,7 @@ export function AppWallet() {
       <div className="mt-4 grid grid-cols-2 gap-2">
         <button
           type="button"
-          onClick={guard(() => navigate({ to: "/wallet/history" }))}
+          onClick={guard(() => setHistoryOpen(true))}
           className="nav-tap flex items-center gap-2.5 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-3.5 py-3 text-left"
         >
           <History className="h-[18px] w-[18px] shrink-0 text-[#E5484D]" />
@@ -185,6 +185,7 @@ export function AppWallet() {
       )}
       {fundOpen && <AppAddFundsSheet onClose={() => setFundOpen(false)} />}
       {payoutOpen && <PayoutModal onClose={() => setPayoutOpen(false)} />}
+      {historyOpen && <AppWalletHistorySheet onClose={() => setHistoryOpen(false)} />}
     </div>
   );
 }
