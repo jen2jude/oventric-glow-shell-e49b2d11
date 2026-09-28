@@ -295,20 +295,29 @@ export async function releaseEscrow(
 
   const productName = (o.products?.name as string) ?? "your product";
   const admins = await adminUserIds(sb);
-  await sendChat(
-    sb,
-    o.buyer_id,
-    o.seller_id,
-    orderId,
-    `💰 Payment released — "${productName}"\n\nThe escrow hold has ended and your earnings are now available in your Oventric wallet.`,
-  );
+  // Release updates go to the seller's notifications only — never into the buyer/seller chat.
+  const { data: buyerProfile } = await sb
+    .from("profiles")
+    .select("display_name, username")
+    .eq("id", o.buyer_id)
+    .maybeSingle();
+  const buyerName =
+    (buyerProfile?.display_name as string) ||
+    (buyerProfile?.username ? `@${buyerProfile.username}` : "the buyer");
+  const amountText =
+    saleRow && Number(saleRow.amount ?? 0) > 0
+      ? `${String(saleRow.currency ?? "USD")} ${Number(saleRow.amount).toLocaleString("en-US", { maximumFractionDigits: 2 })}`
+      : share > 0
+        ? `USD ${share.toLocaleString("en-US", { maximumFractionDigits: 2 })}`
+        : null;
   await notify(sb, [
     {
       user_id: o.seller_id,
       kind: "order_payout_released",
-      title: "Earnings released",
-      body: `Escrow for "${productName}" has been released into your wallet.`,
+      title: "Oventric update · Payment released",
+      body: `Your earnings${amountText ? ` of ${amountText}` : ""} for "${productName}" bought by ${buyerName} (order #${orderId.slice(0, 8).toUpperCase()}) have been released into your wallet.`,
       link: `/order/${orderId}`,
+      from_user_id: o.buyer_id,
     },
     ...admins.map((uid) => ({
       user_id: uid,
