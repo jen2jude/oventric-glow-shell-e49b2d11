@@ -77,6 +77,17 @@ export function resolveLaunchContext(): LaunchContext {
   const params = new URLSearchParams(window.location.search);
   const requested = params.get("mode");
 
+  // Explicit ?mode=web always wins — lets phone visitors (and reviewers)
+  // choose the full website even where app mode would be forced.
+  if (requested === "web") {
+    try {
+      window.sessionStorage.setItem(APP_MODE_KEY, "browser");
+    } catch {
+      /* ignore */
+    }
+    return "browser";
+  }
+
   // Review environments are app-only. Installed/native launches on public
   // hosts must also remain in app mode rather than being forced to the site.
   const native = Boolean(
