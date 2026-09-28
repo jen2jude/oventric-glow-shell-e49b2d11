@@ -407,6 +407,13 @@
       "when": 1790513201882,
       "tag": "0057_purge_old_notifications",
       "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "7",
+      "when": 1790601185274,
+      "tag": "0058_chats_leave_notification_bell",
+      "breakpoints": true
     }
   ]
 }
