@@ -18,12 +18,21 @@ const getInitialContext = createIsomorphicFn()
       // the HTML already contains the app shell instead of briefly painting
       // the public website before hydration.
       if (requested === "app") return "app";
+      if (requested === "web") return "browser";
       return PUBLIC_HOSTS.has(host) ? "browser" : "app";
     } catch {
       return "browser";
     }
   })
-  .client((): LaunchContext => (isAppReviewPreview() ? "app" : "browser"));
+  .client((): LaunchContext => {
+    try {
+      if (new URLSearchParams(window.location.search).get("mode") === "web")
+        return "browser";
+    } catch {
+      /* ignore */
+    }
+    return isAppReviewPreview() ? "app" : "browser";
+  });
 
 /**
  * Oventric runs as one codebase with two presentations:
