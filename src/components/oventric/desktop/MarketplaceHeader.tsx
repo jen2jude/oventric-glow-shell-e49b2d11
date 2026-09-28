@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Search, User, Truck, RefreshCcw, Menu, X } from "lucide-react";
+import { Search, User, Truck, RefreshCcw, Menu, X, Bell, MessageSquare } from "lucide-react";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
+import { CountBadge } from "@/components/oventric/CountBadge";
+import { NotificationsDrawer, useUnreadNotificationsCount } from "@/components/oventric/NotificationsDrawer";
+import { useUnreadCounts } from "@/hooks/use-unread-counts";
 import { CurrencyPreviewToggle } from "@/components/oventric/CurrencyPreviewToggle";
 import { MegaMenu } from "@/components/oventric/MegaMenu";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
@@ -24,6 +27,18 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const unreadNotifications = useUnreadNotificationsCount();
+  const { messages } = useUnreadCounts();
+
+  const openNotifications = () => {
+    if (!isAuthenticated) { openGate("generic"); return; }
+    setNotificationsOpen(true);
+  };
+  const openMessages = () => {
+    if (!isAuthenticated) { openGate("generic"); return; }
+    window.dispatchEvent(new CustomEvent("oventric:open-messages"));
+  };
 
   const flag = country ? (COUNTRY_META[country]?.flag ?? "") : "";
 
@@ -103,8 +118,26 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-4 lg:gap-6 ml-auto">
+          <div className="flex items-center gap-1 sm:gap-4 lg:gap-6 ml-auto">
             <CurrencyPreviewToggle variant="light" className="hidden md:flex" />
+            <button
+              type="button"
+              onClick={openNotifications}
+              aria-label={isAuthenticated ? "Open notifications" : "Sign in to view notifications"}
+              className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-slate-700 lg:hidden"
+            >
+              <Bell className="h-4 w-4" />
+              <CountBadge count={unreadNotifications} ariaLabel={`${unreadNotifications} unread notifications`} />
+            </button>
+            <button
+              type="button"
+              onClick={openMessages}
+              aria-label={isAuthenticated ? "Open messages" : "Sign in to view messages"}
+              className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-slate-700 lg:hidden"
+            >
+              <MessageSquare className="h-4 w-4" />
+              <CountBadge count={messages ?? 0} ariaLabel={`${messages ?? 0} unread messages`} />
+            </button>
             {/* User Profile Link */}
             <div className="hidden lg:flex items-center gap-4">
               <button
@@ -188,6 +221,7 @@ export function MarketplaceHeader({ onSelect, avatarUrl, name, search, activeSec
       )}
 
       <MegaMenu open={megaOpen} onClose={() => setMegaOpen(false)} />
+      <NotificationsDrawer open={notificationsOpen} onClose={() => setNotificationsOpen(false)} />
     </div>
   );
 }
