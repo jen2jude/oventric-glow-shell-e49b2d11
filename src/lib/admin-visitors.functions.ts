@@ -45,6 +45,7 @@ export interface VisitorAnalytics {
   devices: Slice[];
   browsers: Slice[];
   operatingSystems: Slice[];
+  surfaces: Slice[];
   pages: Slice[];
   people: ActivePerson[];
 }
@@ -87,7 +88,7 @@ export const getVisitorAnalytics = createServerFn({ method: "GET" })
     const { data: rows, error } = await supabaseAdmin
       .from("visitor_events")
       .select(
-        "occurred_at, visitor_id, session_id, user_id, path, country, city, device, browser, os",
+        "occurred_at, visitor_id, session_id, user_id, path, country, city, device, browser, os, surface",
       )
       .gte("occurred_at", since.toISOString())
       .order("occurred_at", { ascending: false })
@@ -105,6 +106,7 @@ export const getVisitorAnalytics = createServerFn({ method: "GET" })
       device: string | null;
       browser: string | null;
       os: string | null;
+      surface: string | null;
     };
     const all = (rows ?? []) as Row[];
 
@@ -128,6 +130,7 @@ export const getVisitorAnalytics = createServerFn({ method: "GET" })
     const devices = new Map<string, Set<string>>();
     const browsers = new Map<string, Set<string>>();
     const oses = new Map<string, Set<string>>();
+    const surfaces = new Map<string, Set<string>>();
     const pages = new Map<string, Set<string>>();
     const perUser = new Map<string, { views: number; lastSeen: string; country: string | null }>();
 
@@ -156,6 +159,7 @@ export const getVisitorAnalytics = createServerFn({ method: "GET" })
       push(devices, r.device, r.visitor_id);
       push(browsers, r.browser, r.visitor_id);
       push(oses, r.os, r.visitor_id);
+      push(surfaces, r.surface === "app" ? "App (installed)" : "Website", r.visitor_id);
       push(pages, r.path, r.visitor_id);
 
       if (r.user_id) {
@@ -229,6 +233,7 @@ export const getVisitorAnalytics = createServerFn({ method: "GET" })
       devices: top(devices, 6),
       browsers: top(browsers, 8),
       operatingSystems: top(oses, 8),
+      surfaces: top(surfaces, 4),
       pages: top(pages, 12),
       people,
     };

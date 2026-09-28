@@ -80,9 +80,12 @@ export const Route = createFileRoute("/api/public/track")({
               ? Math.round(screenRaw)
               : null;
 
+          const surface = body.surface === "app" ? "app" : "web";
+
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
           await supabaseAdmin.from("visitor_events").insert({
             visitor_id: visitorId,
+            surface,
             session_id: sessionId,
             user_id: str(body.userId, 64),
             path,
