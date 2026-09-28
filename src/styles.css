@@ -1408,8 +1408,9 @@
   }
 }
 
-/* App marketplace publisher: shared fields and submission, native sheet. */
-.sell-asset-root {
+/* App marketplace publisher: shared fields and submission, native sheet.
+   Scoped to the app shell root so the website keeps its own light styling. */
+html.standalone-app .sell-asset-root {
   color-scheme: dark;
   font-family: var(--font-wallet-body);
   --background: oklch(0.13 0.005 270);
@@ -1438,59 +1439,59 @@
   --contact-whatsapp-soft: oklch(0.72 0.13 155 / 10%);
   --contact-on-whatsapp: var(--card);
 }
-.sell-asset-root .web-sell-panel {
+html.standalone-app .sell-asset-root .web-sell-panel {
   border-bottom: 0;
   background: var(--card);
   box-shadow: 0 -20px 60px oklch(0 0 0 / 50%);
 }
-.sell-asset-root > .absolute.inset-0 {
+html.standalone-app .sell-asset-root > .absolute.inset-0 {
   background: oklch(0 0 0 / 70%);
 }
-.sell-asset-root .sell-asset-scroll {
+html.standalone-app .sell-asset-root .sell-asset-scroll {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
 }
-.sell-asset-root .sell-asset-header {
+html.standalone-app .sell-asset-root .sell-asset-header {
   border-color: var(--border);
   background: var(--card);
 }
-.sell-asset-root .sell-asset-header > div:first-child > span:first-child {
+html.standalone-app .sell-asset-root .sell-asset-header > div:first-child > span:first-child {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 10px;
   background: color-mix(in oklab, var(--primary) 14%, transparent);
   color: var(--primary);
 }
-.sell-asset-root .sell-asset-header h2 {
+html.standalone-app .sell-asset-root .sell-asset-header h2 {
   font-family: var(--font-wallet-display);
   font-size: 1rem;
   letter-spacing: 0;
 }
-.sell-asset-root form > section {
+html.standalone-app .sell-asset-root form > section {
   border: 0;
   border-bottom: 1px solid var(--border);
   border-radius: 0;
   background: transparent;
   padding: 0.5rem 0 1.5rem;
 }
-.sell-asset-root form > section > p:first-child {
+html.standalone-app .sell-asset-root form > section > p:first-child {
   margin-bottom: 1rem;
   font-size: 0.7rem;
   letter-spacing: 0;
 }
-.sell-asset-root form :is(input:not([type="checkbox"]):not([type="file"]), select, textarea) {
+html.standalone-app .sell-asset-root form :is(input:not([type="checkbox"]):not([type="file"]), select, textarea) {
   min-height: 2.9rem;
   background: var(--muted);
   color: var(--foreground);
 }
-.sell-asset-root form :is(input, textarea)::placeholder { color: var(--muted-foreground); }
-.sell-asset-root form :is(input, textarea, select):focus { border-color: var(--primary); outline: none; }
-.sell-asset-root form select option { background: var(--card); color: var(--foreground); }
-.sell-asset-root form input[type="checkbox"] { accent-color: var(--primary); }
-.sell-asset-root .app-sell-actions { box-shadow: 0 -10px 25px oklch(0 0 0 / 15%); }
+html.standalone-app .sell-asset-root form :is(input, textarea)::placeholder { color: var(--muted-foreground); }
+html.standalone-app .sell-asset-root form :is(input, textarea, select):focus { border-color: var(--primary); outline: none; }
+html.standalone-app .sell-asset-root form select option { background: var(--card); color: var(--foreground); }
+html.standalone-app .sell-asset-root form input[type="checkbox"] { accent-color: var(--primary); }
+html.standalone-app .sell-asset-root .app-sell-actions { box-shadow: 0 -10px 25px oklch(0 0 0 / 15%); }
 @media (prefers-reduced-motion: reduce) {
-  .sell-asset-root .slide-up { animation: none !important; }
+  html.standalone-app .sell-asset-root .slide-up { animation: none !important; }
 }
 
 /* Brand accent remap: green/emerald utilities resolve to the sharp hero blue. */
