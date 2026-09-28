@@ -154,7 +154,7 @@ export function LiveNotificationToasts() {
               </span>
               {avatar && (
                 <span
-                  className={`absolute -bottom-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full ring-2 ring-popover ${ring}`}
+                  className={`absolute -bottom-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full ring-2 ring-[#151619] ${ring}`}
                   style={{ height: 18, width: 18 }}
                 >
                   <Icon className="h-2.5 w-2.5 text-white" strokeWidth={3} />
@@ -162,14 +162,14 @@ export function LiveNotificationToasts() {
               )}
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+              <span className="block text-[10px] font-semibold uppercase tracking-wide text-[#E5484D]">
                 {label}
               </span>
-              <span className="block text-sm font-semibold leading-snug text-foreground line-clamp-2">
+              <span className="block text-sm font-semibold leading-snug text-white line-clamp-2">
                 {row.title}
               </span>
               {row.body && (
-                <span className="mt-0.5 block text-xs leading-snug text-muted-foreground line-clamp-2">
+                <span className="mt-0.5 block text-xs leading-snug text-white/65 line-clamp-2">
                   {row.body}
                 </span>
               )}
