@@ -4228,6 +4228,7 @@ export type Database = {
           region: string | null
           screen_w: number | null
           session_id: string
+          surface: string
           user_agent: string | null
           user_id: string | null
           visitor_id: string
@@ -4247,6 +4248,7 @@ export type Database = {
           region?: string | null
           screen_w?: number | null
           session_id: string
+          surface?: string
           user_agent?: string | null
           user_id?: string | null
           visitor_id: string
@@ -4266,6 +4268,7 @@ export type Database = {
           region?: string | null
           screen_w?: number | null
           session_id?: string
+          surface?: string
           user_agent?: string | null
           user_id?: string | null
           visitor_id?: string
