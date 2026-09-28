@@ -12,7 +12,7 @@ import {
 
 const MODEL = "openai/gpt-6-astra";
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1";
-const DAILY_LIMIT = 20;
+const DAILY_LIMIT = 5;
 
 async function authenticate(request: Request) {
   const authHeader = request.headers.get("authorization");
