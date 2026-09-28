@@ -12,6 +12,7 @@ import {
 
 const MODEL = "openai/gpt-6-astra";
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1";
+const DAILY_LIMIT = 20;
 
 async function authenticate(request: Request) {
   const authHeader = request.headers.get("authorization");
@@ -148,6 +149,25 @@ export const Route = createFileRoute("/api/creator-coach")({
         const lastUser = [...messages].reverse().find((m) => m.role === "user");
         const userText = messageText(lastUser);
         if (!userText) return new Response("Empty message", { status: 400 });
+        if (userText.length > 1500) {
+          return new Response("That message is a bit long — please shorten it and try again.", { status: 400 });
+        }
+
+        // Daily cap per user (credit saver).
+        const dayStart = new Date();
+        dayStart.setUTCHours(0, 0, 0, 0);
+        const { count: todayCount } = await auth.supabase
+          .from("creator_coach_messages")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", auth.userId)
+          .eq("role", "user")
+          .gte("created_at", dayStart.toISOString());
+        if ((todayCount ?? 0) >= DAILY_LIMIT) {
+          return new Response(
+            `You've reached today's limit of ${DAILY_LIMIT} Coach messages. Come back tomorrow!`,
+            { status: 429 },
+          );
+        }
 
         // Persist the user message (one conversation per creator).
         const { error: saveError } = await auth.supabase
@@ -155,10 +175,13 @@ export const Route = createFileRoute("/api/creator-coach")({
           .insert({ user_id: auth.userId, role: "user", content: userText });
         if (saveError) console.error("[creator-coach] failed to save user message:", saveError.message);
 
-        const { system, homeCurrency, rate } = await buildCoachContext(auth.userId, page);
+        const { system: baseSystem, homeCurrency, rate } = await buildCoachContext(auth.userId, page);
+        const system = `${baseSystem}
+
+LENGTH RULE (strict): reply in 2–4 short sentences or up to 4 bullets unless the user explicitly asks for more detail. Use at most 2 tool calls per reply.`;
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const tools = buildCoachTools(supabaseAdmin, auth.userId, homeCurrency, rate);
-        const modelMessages = await convertToModelMessages(messages.slice(-30));
+        const modelMessages = await convertToModelMessages(messages.slice(-10));
 
         const runIdFetch = createLovableAiGatewayRunIdFetch(getLovableAiGatewayRunId(request));
         const provider = createOpenAI({
@@ -173,14 +196,15 @@ export const Route = createFileRoute("/api/creator-coach")({
           system,
           messages: modelMessages,
           tools,
-          stopWhen: stepCountIs(50),
+          stopWhen: stepCountIs(4),
+          maxOutputTokens: 1200,
+          maxRetries: 0,
           abortSignal: request.signal,
           providerOptions: {
             openai: {
               store: false,
               forceReasoning: true,
               reasoningEffort: "low",
-              reasoningSummary: "auto",
               include: ["reasoning.encrypted_content"],
             },
           },

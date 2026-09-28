@@ -287,7 +287,9 @@ export function CreatorCoachChat({ starter }: { starter?: string | null } = {}) 
           )}
           {error && (
             <p className="rounded-[10px] border border-[#E5484D]/30 bg-[#E5484D]/10 px-3 py-2 text-xs text-[#E5484D]">
-              Something went wrong — please try sending again.
+              {error.message && error.message.length < 200 && !error.message.trim().startsWith("{")
+                ? error.message
+                : "Coach is taking a break — please try again later."}
             </p>
           )}
         </ConversationContent>
