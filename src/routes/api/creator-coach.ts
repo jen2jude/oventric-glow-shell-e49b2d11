@@ -213,7 +213,8 @@ LENGTH RULE (strict): reply in 2–4 short sentences or up to 4 bullets unless t
         return withLovableAiGatewayRunIdHeader(
           result.toUIMessageStreamResponse({
             originalMessages: messages,
-            sendReasoning: true,
+            sendReasoning: false,
+            onError: () => "Coach is taking a break — please try again later.",
             onFinish: async ({ responseMessage }) => {
               const text = messageText(responseMessage);
               const cards = (responseMessage.parts as Array<{ type: string; state?: string; toolCallId?: string; output?: unknown }>)
