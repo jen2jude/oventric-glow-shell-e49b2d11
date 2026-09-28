@@ -1251,6 +1251,17 @@
 }
 
 /* The app's product detail is a native dark canvas; web keeps its editorial skin. */
+/* App-mode product page scrolls inside its own fixed layer because the
+   standalone shell locks body scrolling. */
+.web-product.app-product-scroll {
+  position: fixed;
+  inset: 0;
+  height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
 .web-product.app-product {
   color-scheme: dark;
   --newsfeed-canvas: #0a0a0b;
