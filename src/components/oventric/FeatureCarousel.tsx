@@ -7,7 +7,6 @@ import mockFeed from "@/assets/mock-feed.jpg";
 import mockMarketplace from "@/assets/mock-marketplace.jpg";
 import mockWallet from "@/assets/mock-wallet.jpg";
 import oventricFull from "@/assets/oventric-full-transparent.png";
-import oventricDark from "@/assets/oventric-logo-dark.png";
 import { JourneyOrbit } from "@/components/oventric/onboarding/JourneyOrbit";
 import { markCarouselSeen as markCarouselSeenFn } from "@/lib/carousel.functions";
 
@@ -25,34 +24,33 @@ const SLIDES: Slide[] = [
     image: mockCashback,
     title: "Cashback",
     description: "Earn up to 50% seller-funded cashback on eligible purchases.",
-    accent: "#3b82f6",
+    accent: "#E5484D",
   },
   {
     id: "feed",
     image: mockFeed,
     title: "Feed",
     description: "Follow creators and see what Africa's builders are shipping.",
-    accent: "#00c2ff",
+    accent: "#E5484D",
   },
   {
     id: "marketplace",
     image: mockMarketplace,
     title: "Marketplace",
     description: "Buy and sell digital products and earn real money.",
-    accent: "#ff4d6d",
+    accent: "#E5484D",
   },
   {
     id: "wallet",
     image: mockWallet,
     title: "Sovereign Wallet",
     description: "Earn real cash to your wallet and withdraw it to your bank.",
-    accent: "#7aa2ff",
+    accent: "#E5484D",
   },
 ];
 
 const CONGRATS_MS = 2400;
 const ENTER = "feature-carousel-enter 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards";
-const EXIT = "feature-carousel-exit 0.6s cubic-bezier(0.4, 0, 1, 1) forwards";
 const IN_FROM_RIGHT = "feature-carousel-in-right 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards";
 const IN_FROM_LEFT = "feature-carousel-in-left 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards";
 
@@ -144,7 +142,7 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[9990] flex flex-col items-center justify-center bg-[#121214] text-white"
+      className="fixed inset-0 z-[9990] flex flex-col items-center justify-center bg-[#0A0A0B] text-white"
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
@@ -155,36 +153,50 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
     >
       {phase === "journey" && (
         <div
-          className="absolute inset-0 flex flex-col w-full overflow-hidden bg-[#F5F2FC]"
+          className="absolute inset-0 flex flex-col w-full overflow-hidden bg-[#0A0A0B]"
           style={{ animation: ENTER }}
         >
+          {/* Ambient crimson glow */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(ellipse 90% 55% at 50% 118%, rgba(229,72,77,0.22), transparent 65%), radial-gradient(ellipse 70% 40% at 50% -8%, rgba(229,72,77,0.10), transparent 60%)",
+            }}
+          />
+
           {/* Header */}
-          <div className="relative flex items-center justify-center px-5 pt-6 pb-2 shrink-0">
+          <div className="relative flex items-center justify-center px-5 pt-10 pb-2 shrink-0">
             <img
               loading="eager"
               decoding="async"
-              src={oventricDark}
+              src={oventricFull}
               alt="Oventric"
-              className="h-7 w-auto select-none"
+              className="h-8 w-auto select-none drop-shadow-[0_0_18px_rgba(229,72,77,0.35)]"
               draggable={false}
             />
           </div>
 
           {/* Headline */}
-          <div className="relative px-6 pt-2 pb-2 shrink-0 text-center">
-            <h1 className="relative text-lg font-semibold tracking-tight text-[#1E1B4B]">
-              Digital Marketplace &amp; Community for Creators.
+          <div className="relative px-8 pt-4 pb-2 shrink-0 text-center">
+            <h1 className="relative text-[22px] leading-snug font-bold tracking-tight text-white">
+              Digital Marketplace &amp; Community{" "}
+              <span className="text-[#E5484D]">for Creators.</span>
             </h1>
+            <p className="mt-2 text-[13px] text-white/50 font-medium tracking-wide">
+              Buy. Sell. Earn. Belong.
+            </p>
           </div>
 
           <div className="relative flex-1 min-h-0 flex items-center justify-center px-5">
             <JourneyOrbit />
           </div>
 
-          <div className="relative px-6 pb-9 pt-2 shrink-0">
+          <div className="relative px-6 pb-10 pt-2 shrink-0">
             <button
               onClick={handleComplete}
-              className="w-full h-14 rounded-2xl bg-[#231C56] text-white font-semibold text-[15px] hover:bg-[#2c2469] transition-colors"
+              className="w-full h-14 rounded-[10px] bg-[#E5484D] text-white font-bold text-[15px] tracking-wide shadow-[0_12px_32px_-8px_rgba(229,72,77,0.55)] hover:bg-[#d13a3f] active:scale-[0.98] transition-all"
             >
               Get Started
             </button>
@@ -192,17 +204,16 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
         </div>
       )}
 
-
       {phase === "congrats" && (
         <div
           className="flex flex-col items-center text-center px-8 max-w-md"
           style={{ animation: ENTER }}
         >
-          <div className="h-20 w-20 rounded-full border-2 border-emerald-400 flex items-center justify-center mb-6">
-            <Check className="w-9 h-9 text-emerald-400" strokeWidth={3} />
+          <div className="h-20 w-20 rounded-full border-2 border-[#E5484D] bg-[#E5484D]/10 shadow-[0_0_40px_-6px_rgba(229,72,77,0.5)] flex items-center justify-center mb-6">
+            <Check className="w-9 h-9 text-[#E5484D]" strokeWidth={3} />
           </div>
-          <h2 className="text-3xl font-black mb-3">Congratulations!</h2>
-          <p className="text-base text-slate-300">You're all set — taking you into Oventric.</p>
+          <h2 className="text-3xl font-black mb-3">You're in.</h2>
+          <p className="text-base text-white/60">Welcome to Oventric — taking you home.</p>
         </div>
       )}
 
@@ -210,7 +221,9 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
         <div className="flex flex-col items-center w-full h-full">
           {/* Top bar */}
           <div className="absolute top-0 inset-x-0 flex items-center justify-between px-5 pt-5 pb-4 z-10">
-            <img loading="lazy" decoding="async"
+            <img
+              loading="lazy"
+              decoding="async"
               src={oventricFull}
               alt="Oventric"
               className="h-8 w-auto select-none"
@@ -218,7 +231,7 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
             />
             <button
               onClick={handleComplete}
-              className="flex items-center gap-1 text-sm font-medium text-slate-300 hover:text-white transition-colors"
+              className="flex items-center gap-1 text-sm font-medium text-white/50 hover:text-white transition-colors"
               aria-label="Skip introduction"
             >
               Skip <X className="w-4 h-4" strokeWidth={2.5} />
@@ -234,11 +247,10 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
                 animation: direction === 1 ? IN_FROM_RIGHT : IN_FROM_LEFT,
               }}
             >
-              <div
-                className="relative w-full aspect-[4/3] mb-7 rounded-2xl overflow-hidden bg-[#1E1E24] border border-white/10"
-                style={{ boxShadow: `0 0 40px -14px ${slide.accent}55` }}
-              >
-                <img loading="lazy" decoding="async"
+              <div className="relative w-full aspect-[4/3] mb-7 rounded-[10px] overflow-hidden bg-[#151619] border border-white/[0.08] shadow-[0_24px_60px_-20px_rgba(229,72,77,0.35)]">
+                <img
+                  loading="lazy"
+                  decoding="async"
                   src={slide.image}
                   alt={`${slide.title} preview on desktop and mobile`}
                   width={1024}
@@ -246,15 +258,20 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
                   className="w-full h-full object-cover select-none"
                   draggable={false}
                 />
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(to top, rgba(10,10,11,0.35), transparent 40%)",
+                  }}
+                />
               </div>
 
-              <div
-                className="w-12 h-1 rounded-full mb-5"
-                style={{ backgroundColor: slide.accent }}
-              />
+              <div className="w-12 h-1 rounded-full mb-5 bg-[#E5484D]" />
 
               <h2 className="text-3xl sm:text-4xl font-black text-white mb-3">{slide.title}</h2>
-              <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-sm">
+              <p className="text-base sm:text-lg text-white/60 leading-relaxed max-w-sm">
                 {slide.description}
               </p>
             </div>
@@ -268,9 +285,8 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
                   key={s.id}
                   onClick={() => goTo(i)}
                   className={`h-2 rounded-full transition-all duration-300 ${
-                    i === index ? "w-8" : "w-2 bg-white/25 hover:bg-white/40"
+                    i === index ? "w-8 bg-[#E5484D]" : "w-2 bg-white/20 hover:bg-white/35"
                   }`}
-                  style={{ backgroundColor: i === index ? slide.accent : undefined }}
                   aria-label={`Go to slide ${i + 1}`}
                   aria-current={i === index ? "true" : undefined}
                 />
@@ -280,7 +296,7 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
             <div className="flex items-center gap-3">
               <button
                 onClick={prev}
-                className="h-12 w-12 rounded-full bg-[#1E1E24] border border-white/10 flex items-center justify-center text-white hover:bg-[#2a2a2a] transition-colors"
+                className="h-12 w-12 rounded-full bg-[#151619] border border-white/[0.08] flex items-center justify-center text-white hover:bg-[#1d1f23] transition-colors"
                 aria-label="Previous slide"
               >
                 <ChevronLeft className="w-5 h-5" strokeWidth={2.5} />
@@ -288,14 +304,14 @@ export function FeatureCarousel({ onComplete }: { onComplete: () => void }) {
 
               <button
                 onClick={isLast ? handleComplete : next}
-                className="flex-1 h-12 rounded-full bg-white text-black font-bold text-sm hover:bg-slate-200 transition-colors"
+                className="flex-1 h-12 rounded-[10px] bg-[#E5484D] text-white font-bold text-sm shadow-[0_10px_28px_-8px_rgba(229,72,77,0.55)] hover:bg-[#d13a3f] active:scale-[0.98] transition-all"
               >
                 {isLast ? "Get started" : "Next"}
               </button>
 
               <button
                 onClick={next}
-                className="h-12 w-12 rounded-full bg-[#1E1E24] border border-white/10 flex items-center justify-center text-white hover:bg-[#2a2a2a] transition-colors"
+                className="h-12 w-12 rounded-full bg-[#151619] border border-white/[0.08] flex items-center justify-center text-white hover:bg-[#1d1f23] transition-colors"
                 aria-label="Next slide"
               >
                 <ChevronRight className="w-5 h-5" strokeWidth={2.5} />
