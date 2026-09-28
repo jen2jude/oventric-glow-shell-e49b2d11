@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Give the app Privacy policy a compact dark reading view without changing the website page
+
 - [x] Stop Support Desk alerts persisting after support conversations are read; keep unresolved tickets highlighted
 
 - [x] Remove Wallet from desktop header only

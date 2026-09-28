@@ -356,7 +356,7 @@ function AppPrivacyPage() {
         <Button variant="ghost" size="icon" onClick={back} aria-label="Back" className="size-10 shrink-0 text-foreground hover:bg-muted hover:text-foreground"><ArrowLeft className="size-5" /></Button>
         <span className="font-wallet-display text-base font-bold">Privacy policy</span>
       </header>
-      <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-8 [scrollbar-width:none]" style={{ WebkitOverflowScrolling: "touch" }}>
+      <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-8 [scrollbar-width:none]">
         <div className="mx-auto max-w-2xl font-wallet-body">
           <div className="mb-8 border-b border-border pb-8">
             <span className="inline-flex size-12 items-center justify-center rounded-[10px] bg-primary/15 text-primary"><ShieldCheck className="size-6" /></span>
