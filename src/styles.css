@@ -3818,6 +3818,8 @@ html.light input::placeholder, html.light textarea::placeholder {
 html.standalone-app,
 html.standalone-app body {
   overscroll-behavior-y: none;
+  height: 100%;
+  overflow: hidden;
   -webkit-user-select: none;
   user-select: none;
 }
@@ -3828,8 +3830,35 @@ html.standalone-app [contenteditable="true"] {
   user-select: text;
 }
 html.standalone-app body {
-  /* Respect device safe areas so content never sits under the notch. */
-  padding-top: env(safe-area-inset-top);
+  /* App chrome owns the safe areas; body padding makes the whole shell
+     scrollable and can push the header out of the installed viewport. */
+  padding-top: 0;
+}
+
+/* Keep app chrome outside every content scroller. Using a fixed viewport root
+   prevents browser rubber-banding from moving the header while preserving the
+   dedicated <main> scroller. An opaque header avoids Android compositor loss
+   caused by backdrop-filter during aggressive scroll gestures. */
+.app-shell-root {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  isolation: isolate;
+}
+
+.app-shell-header {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  opacity: 1;
+  contain: layout paint;
+  transform: none;
+  -webkit-transform: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 /* Coach chat messages stay copyable: long-press select + copy button. */
