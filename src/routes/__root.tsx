@@ -28,6 +28,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ProfileSettingsLauncher } from "@/components/oventric/ProfileDropdown";
 import { LiveNotificationToasts } from "@/components/oventric/LiveNotificationToasts";
 import { PushOptInPrompt } from "@/components/oventric/PushOptInPrompt";
+import { AppInstallPrompt } from "@/components/oventric/app/AppInstallPrompt";
 import { AppBadgeSync } from "@/components/oventric/app/AppBadgeSync";
 import { BootSplash } from "@/components/oventric/BootSplash";
 import logoFull from "@/assets/oventric-full-transparent.png";
@@ -154,6 +155,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
       // Start fetching the splash wordmark before the app code runs, so the
       // splash shows the logo from its first frame.
       { rel: "preload", as: "image", href: logoFull, fetchPriority: "high" as const },
@@ -423,6 +425,9 @@ function RootComponent() {
               <Toaster position="top-center" richColors closeButton />
               <LiveNotificationToasts />
               <PushOptInPrompt />
+              {/* Mobile website visitors get the install invite; the installed
+                  app and desktop never see it (the prompt also self-guards). */}
+              {!isAppShell && !isPc ? <AppInstallPrompt /> : null}
               <AppBadgeSync />
               <OfflineBanner />
               <ReferralCapture />
