@@ -43,7 +43,6 @@ import { CommunityRail } from "@/components/oventric/hub/CommunityRail";
 import { AddCapitalModal } from "@/components/oventric/wallet/AddCapitalModal";
 import { PayoutModal } from "@/components/oventric/wallet/PayoutModal";
 import { MegaMenu } from "@/components/oventric/MegaMenu";
-import { InstallAppSection } from "@/components/oventric/InstallAppSection";
 import { getWalletBalances } from "@/lib/wallet.functions";
 import logoFull from "@/assets/oventric-full-transparent.png";
 
@@ -450,9 +449,6 @@ export function HomeHub({ onSelect, onCreate, onOpenMessages, returnedToHub }: H
 
         <CommunityRail onOpenFeed={() => onSelect("Feed")} />
       </section>
-
-      {/* Install the app (website only — hidden once installed) */}
-      <InstallAppSection />
 
       {/* Floating Action Button for Create */}
       <div className="fixed bottom-24 right-6 z-50">

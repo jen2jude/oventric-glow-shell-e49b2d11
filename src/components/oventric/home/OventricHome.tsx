@@ -47,6 +47,7 @@ import { visualForCategory } from "@/components/oventric/marketplace-discovery/u
 import { COUNTRY_META, normalizeCountryCode } from "@/lib/currency/africa";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { CashbackBadge } from "@/components/oventric/CashbackBadge";
+import { InstallAppSection } from "@/components/oventric/InstallAppSection";
 import heroImage from "@/assets/home-hero.jpg";
 import heroVideo from "@/assets/oventric-hero-loop.mp4.asset.json";
 import heroVideoWebm from "@/assets/oventric-hero-loop.webm.asset.json";
@@ -770,6 +771,11 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             ))}
           </ul>
         </section>
+
+        {/* ----------------------------------------------------- install the app */}
+        <div className="mt-10 lg:mt-14">
+          <InstallAppSection />
+        </div>
       </main>
 
       <HomeFooter />

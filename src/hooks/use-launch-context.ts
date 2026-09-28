@@ -18,12 +18,21 @@ const getInitialContext = createIsomorphicFn()
       // the HTML already contains the app shell instead of briefly painting
       // the public website before hydration.
       if (requested === "app") return "app";
+      if (requested === "web") return "browser";
       return PUBLIC_HOSTS.has(host) ? "browser" : "app";
     } catch {
       return "browser";
     }
   })
-  .client((): LaunchContext => (isAppReviewPreview() ? "app" : "browser"));
+  .client((): LaunchContext => {
+    try {
+      if (new URLSearchParams(window.location.search).get("mode") === "web")
+        return "browser";
+    } catch {
+      /* ignore */
+    }
+    return isAppReviewPreview() ? "app" : "browser";
+  });
 
 /**
  * Oventric runs as one codebase with two presentations:
@@ -76,6 +85,17 @@ export function resolveLaunchContext(): LaunchContext {
   if (typeof window === "undefined") return "browser";
   const params = new URLSearchParams(window.location.search);
   const requested = params.get("mode");
+
+  // Explicit ?mode=web always wins — lets phone visitors (and reviewers)
+  // choose the full website even where app mode would be forced.
+  if (requested === "web") {
+    try {
+      window.sessionStorage.setItem(APP_MODE_KEY, "browser");
+    } catch {
+      /* ignore */
+    }
+    return "browser";
+  }
 
   // Review environments are app-only. Installed/native launches on public
   // hosts must also remain in app mode rather than being forced to the site.
