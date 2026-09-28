@@ -1622,6 +1622,7 @@ export type Database = {
       }
       creator_coach_messages: {
         Row: {
+          cards: Json | null
           content: string
           created_at: string
           id: string
@@ -1629,6 +1630,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          cards?: Json | null
           content: string
           created_at?: string
           id?: string
@@ -1636,6 +1638,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          cards?: Json | null
           content?: string
           created_at?: string
           id?: string
