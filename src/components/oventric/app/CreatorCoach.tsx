@@ -66,11 +66,11 @@ function MessageCopyButton({ text }: { text: string }) {
 }
 
 const SUGGESTIONS = [
-  "How did I do this week?",
-  "What should I post next?",
-  "When is the best time for me to post?",
-  "Help me price my next product",
-  "Write a caption for my new post",
+  "Help me find a digital product I need",
+  "How do escrow and cashback work?",
+  "What's my wallet balance?",
+  "How do I start selling on Oventric?",
+  "Help me write a good post",
 ];
 
 function useAccessToken() {
