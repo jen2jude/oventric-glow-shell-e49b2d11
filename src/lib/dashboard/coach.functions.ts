@@ -4,7 +4,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 export interface CoachSavedCard {
   type: string;
   toolCallId?: string;
-  output: unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  output: any;
 }
 
 export interface CoachHistoryMessage {
