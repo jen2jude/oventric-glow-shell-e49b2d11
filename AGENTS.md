@@ -26,7 +26,7 @@ App post composer shares web logic in a keyboard-safe root sheet. Reason: one pu
 
 App product upload shares web fields in a fixed-action sheet. Reason: preserve selling rules.
 
-Main mobile app sections share `AppPageHeader` in `AppSurface`; detail pages and Messages keep contextual headers. Reason: consistent access without duplicate chrome.
+Keep app chrome outside the main scroller; use `app-scroll-header` on inner sticky bars. Reason: prevent header loss during hard mobile scrolling.
 
 ## Creator Coach (AI)
 - Creator Coach is app-exclusive: chat UI in `src/components/oventric/app/CreatorCoach.tsx`, streaming route `src/routes/api/creator-coach.ts` (openai/gpt-6-astra via Responses, reasoning low), history in `creator_coach_messages` (one conversation per creator, account-saved). Reason: a real reason to install the app; web stays without it.

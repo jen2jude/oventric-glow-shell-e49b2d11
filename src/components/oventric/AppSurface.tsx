@@ -466,7 +466,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   const isMessages = active === "Messages";
 
   return (
-    <div className={`relative h-screen h-[100dvh] overflow-hidden ${isMessages && !isAppShell ? "bg-muted" : isAppShell ? "bg-[#070A08]" : "bg-white"} text-slate-200`}>
+    <div className={`${isAppShell ? "app-shell-root" : "relative h-screen h-[100dvh] overflow-hidden"} ${isMessages && !isAppShell ? "bg-muted" : isAppShell ? "bg-[#070A08]" : "bg-white"} text-slate-200`}>
       <div className="pointer-events-none fixed top-0 inset-x-0 h-[2px] z-50  hidden md:block" />
       <div className="pointer-events-none fixed bottom-0 inset-x-0 h-[2px] z-50  hidden md:block" />
 

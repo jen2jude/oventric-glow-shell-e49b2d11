@@ -421,7 +421,7 @@ export function AppFeed() {
       />
       {/* Stick within the feed's scroll area, directly beneath the app header.
           Unlike a viewport-fixed bar, this occupies space above the first post. */}
-      <div className="sticky top-0 z-30 w-full border-b border-white/10 bg-[#070A08]/95 shadow-[0_8px_24px_rgba(0,0,0,0.24)] backdrop-blur-xl">
+      <div className="app-scroll-header sticky top-0 z-30 w-full border-b border-white/10 bg-[#070A08] shadow-[0_8px_24px_rgba(0,0,0,0.24)]">
         <div className="mx-auto flex h-12 w-full max-w-md items-center justify-evenly px-2">
           {(
             [

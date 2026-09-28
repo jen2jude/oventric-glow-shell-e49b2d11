@@ -44,7 +44,7 @@ export function AppPageHeader({ section, name, avatarUrl, onBack, onOpenMessages
 
   return (
     <>
-      <header className="relative z-40 flex h-[calc(3.5rem+env(safe-area-inset-top))] shrink-0 items-center gap-3 border-b border-white/10 bg-[#070A08]/95 px-4 pt-[env(safe-area-inset-top)] text-white backdrop-blur-xl">
+      <header className="app-shell-header relative z-50 flex h-[calc(3.5rem+env(safe-area-inset-top))] shrink-0 items-center gap-3 border-b border-white/10 bg-[#070A08] px-4 pt-[env(safe-area-inset-top)] text-white">
         {showBrand ? (
           <Link to="/" aria-label="Oventric home" className="nav-tap flex min-w-0 flex-1 items-center">
             <img src={logoFull} alt="Oventric" className="h-8 w-auto max-w-full object-contain" />
