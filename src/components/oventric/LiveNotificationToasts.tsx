@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { topicForKind, isNotificationTopic } from "@/lib/notifications/topics";
+import { isSoundMuted, playNotificationSound } from "@/lib/notification-sound";
 import {
   Bell,
   MessageCircle,
@@ -120,6 +121,14 @@ export function LiveNotificationToasts() {
 
       const { Icon, ring, label } = styleForKind(row.kind ?? "");
 
+      // Sound + gentle buzz for every live alert (respects the mute switch).
+      playNotificationSound(row.kind === "direct_message" ? "message" : "notification");
+      try {
+        if (!isSoundMuted()) navigator.vibrate?.([30, 40, 30]);
+      } catch {
+        /* ignore */
+      }
+
       toast.custom(
         (id) => (
           <button
@@ -128,7 +137,8 @@ export function LiveNotificationToasts() {
               toast.dismiss(id);
               go(row.link);
             }}
-            className="w-full max-w-sm text-left flex items-start gap-3 rounded-2xl border border-border bg-popover px-3.5 py-3 shadow-lg shadow-black/20 transition-transform active:scale-[0.98]"
+            style={{ marginTop: "env(safe-area-inset-top)" }}
+            className="w-[calc(100vw-24px)] max-w-md text-left flex items-start gap-3 rounded-[14px] border border-white/10 border-l-[3px] border-l-[#E5484D] bg-[#151619] px-3.5 py-3 text-white shadow-2xl shadow-black/50 transition-transform active:scale-[0.98] animate-in slide-in-from-top-4 fade-in duration-300"
           >
             <span className="relative shrink-0">
               <span className="block h-11 w-11 rounded-full overflow-hidden">
@@ -144,7 +154,7 @@ export function LiveNotificationToasts() {
               </span>
               {avatar && (
                 <span
-                  className={`absolute -bottom-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full ring-2 ring-popover ${ring}`}
+                  className={`absolute -bottom-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full ring-2 ring-[#151619] ${ring}`}
                   style={{ height: 18, width: 18 }}
                 >
                   <Icon className="h-2.5 w-2.5 text-white" strokeWidth={3} />
@@ -152,14 +162,14 @@ export function LiveNotificationToasts() {
               )}
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+              <span className="block text-[10px] font-semibold uppercase tracking-wide text-[#E5484D]">
                 {label}
               </span>
-              <span className="block text-sm font-semibold leading-snug text-foreground line-clamp-2">
+              <span className="block text-sm font-semibold leading-snug text-white line-clamp-2">
                 {row.title}
               </span>
               {row.body && (
-                <span className="mt-0.5 block text-xs leading-snug text-muted-foreground line-clamp-2">
+                <span className="mt-0.5 block text-xs leading-snug text-white/65 line-clamp-2">
                   {row.body}
                 </span>
               )}
