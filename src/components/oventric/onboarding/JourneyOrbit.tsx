@@ -30,19 +30,27 @@ const NODES: Node[] = [
   { id: "o6", x: 130, y: 172, r: 12, image: mockWallet, delay: 1.6 },
 
   // accent dots
-  { id: "d1", x: 66, y: 96, r: 6, color: "#22c55e", delay: 0.2 },
+  { id: "d1", x: 66, y: 96, r: 6, color: "#E5484D", delay: 0.2 },
   { id: "d2", x: 40, y: 108, r: 4, color: "#f59e0b", delay: 1.5 },
-  { id: "d3", x: 174, y: 96, r: 5, color: "#ec4899", delay: 0.7 },
+  { id: "d3", x: 174, y: 96, r: 5, color: "#E5484D", delay: 0.7 },
   { id: "d4", x: 104, y: 186, r: 4, color: "#3b82f6", delay: 2.0 },
 ];
 
 /**
- * Orbit of Oventric worlds — soft concentric rings with floating avatar nodes,
- * mirroring the onboarding reference.
+ * Orbit of Oventric worlds — dark premium concentric rings with floating
+ * avatar nodes, crimson-tinted to match the app identity.
  */
 export function JourneyOrbit() {
   return (
     <div className="relative w-full max-w-[340px] mx-auto aspect-square select-none" aria-hidden>
+      {/* Crimson halo behind the orbit */}
+      <div
+        className="absolute inset-0 rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle at 50% 50%, rgba(229,72,77,0.16), transparent 62%)",
+        }}
+      />
       <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full ov-orbit">
         <defs>
           {NODES.filter((n) => n.image).map((n) => (
@@ -53,16 +61,16 @@ export function JourneyOrbit() {
         </defs>
 
         {/* Soft filled orbit rings */}
-        <circle cx={CENTER.x} cy={CENTER.y} r={86} fill="rgba(124,58,237,0.05)" stroke="rgba(124,58,237,0.18)" strokeWidth={0.7} />
-        <circle cx={CENTER.x} cy={CENTER.y} r={58} fill="rgba(124,58,237,0.08)" stroke="rgba(124,58,237,0.22)" strokeWidth={0.7} />
-        <circle cx={CENTER.x} cy={CENTER.y} r={32} fill="rgba(124,58,237,0.14)" stroke="rgba(124,58,237,0.28)" strokeWidth={0.7} />
+        <circle cx={CENTER.x} cy={CENTER.y} r={86} fill="rgba(229,72,77,0.04)" stroke="rgba(255,255,255,0.10)" strokeWidth={0.7} />
+        <circle cx={CENTER.x} cy={CENTER.y} r={58} fill="rgba(229,72,77,0.07)" stroke="rgba(229,72,77,0.25)" strokeWidth={0.7} />
+        <circle cx={CENTER.x} cy={CENTER.y} r={32} fill="rgba(229,72,77,0.12)" stroke="rgba(229,72,77,0.35)" strokeWidth={0.7} />
 
         {/* Nodes */}
         {NODES.map((n) => (
           <g key={n.id} style={{ animation: `ov-node-float ${5 + (n.delay % 3)}s ease-in-out ${n.delay}s infinite` }}>
             {n.image ? (
               <>
-                <circle cx={n.x} cy={n.y} r={n.r + 1.6} fill="#ffffff" />
+                <circle cx={n.x} cy={n.y} r={n.r + 1.6} fill="#151619" stroke="rgba(255,255,255,0.14)" strokeWidth={0.6} />
                 <image
                   href={n.image}
                   x={n.x - n.r}
