@@ -167,7 +167,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
   ];
 
   return (
-
+    <div className="px-4 pb-28 pt-[calc(1rem+env(safe-area-inset-top))] text-white">
       {/* Identity card */}
       <button
         type="button"
@@ -197,25 +197,40 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
       </button>
 
       {/* Balance strip */}
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => {
           haptic("select");
           setSheet("wallet");
         }}
-        className="mt-3 grid w-full grid-cols-2 divide-x divide-white/[0.06] rounded-[16px] border border-white/[0.06] bg-gradient-to-br from-[#E5484D]/15 to-transparent py-3 text-left"
+        className="mt-3 flex w-full items-center rounded-[16px] border border-white/[0.06] bg-gradient-to-br from-[#E5484D]/15 to-transparent py-3 text-left active:bg-white/[0.05]"
       >
-        <span className="px-4">
-          <span className="block text-[10px] uppercase tracking-wider text-white/45">Available</span>
-          <span className="block text-[16px] font-semibold tabular-nums">{money(available)}</span>
-          {available !== null && usdEquivalent(available, currency, balancesHidden) && <span className="block text-[10px] text-white/45">{usdEquivalent(available, currency, balancesHidden)}</span>}
+        <span className="grid flex-1 grid-cols-2 divide-x divide-white/[0.06]">
+          <span className="px-4">
+            <span className="block text-[10px] uppercase tracking-wider text-white/45">Available</span>
+            <span className="block text-[16px] font-semibold tabular-nums">{money(available)}</span>
+            {available !== null && usdEquivalent(available, currency, balancesHidden) && <span className="block text-[10px] text-white/45">{usdEquivalent(available, currency, balancesHidden)}</span>}
+          </span>
+          <span className="px-4">
+            <span className="block text-[10px] uppercase tracking-wider text-white/45">In escrow</span>
+            <span className="block text-[16px] font-semibold tabular-nums">{money(escrow)}</span>
+            {escrow !== null && usdEquivalent(escrow, currency, balancesHidden) && <span className="block text-[10px] text-white/45">{usdEquivalent(escrow, currency, balancesHidden)}</span>}
+          </span>
         </span>
-        <span className="px-4">
-          <span className="block text-[10px] uppercase tracking-wider text-white/45">In escrow</span>
-          <span className="block text-[16px] font-semibold tabular-nums">{money(escrow)}</span>
-          {escrow !== null && usdEquivalent(escrow, currency, balancesHidden) && <span className="block text-[10px] text-white/45">{usdEquivalent(escrow, currency, balancesHidden)}</span>}
-        </span>
-      </button>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            haptic("select");
+            toggleBalancesHidden();
+          }}
+          aria-label={balancesHidden ? "Show amounts" : "Hide amounts"}
+          className="mr-3 grid size-8 shrink-0 place-items-center rounded-full bg-white/[0.06] text-white/70"
+        >
+          {balancesHidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+        </button>
+      </div>
 
       {/* Seller Hub spotlight — visible to any signed-in user */}
       {isAuthenticated && (
