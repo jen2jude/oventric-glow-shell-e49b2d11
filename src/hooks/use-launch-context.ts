@@ -4,6 +4,16 @@ import { getRequestHeader, getRequestHost, getRequestUrl } from "@tanstack/react
 
 const PUBLIC_HOSTS = new Set(["oventric.com", "www.oventric.com", "oventric-glow-shell.lovable.app"]);
 
+/** Hosts that show the website by default (`?mode=app` opts into the app shell). */
+function isWebDefaultHost(host: string): boolean {
+  return (
+    PUBLIC_HOSTS.has(host) ||
+    host.endsWith(".lovable.app") ||
+    host === "localhost" ||
+    host === "127.0.0.1"
+  );
+}
+
 /**
  * First-render context, identical on server and client: review hosts render
  * the app shell straight from the server so the website never shows while
@@ -25,9 +35,7 @@ const getInitialContext = createIsomorphicFn()
       if (requested === "web") return "browser";
       // Lovable editor/dev preview hosts show the website by default;
       // `?mode=app` opts back into the app shell.
-      return PUBLIC_HOSTS.has(host) || host.endsWith(".lovable.app")
-        ? "browser"
-        : "app";
+      return isWebDefaultHost(host) ? "browser" : "app";
     } catch {
       return "browser";
     }
