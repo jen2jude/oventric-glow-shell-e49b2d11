@@ -80,6 +80,8 @@ import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { useSectionLiveCounter } from "@/lib/useSectionLiveCounter";
 import { getMyFullProfile } from "@/lib/profiles.functions";
 import { Search } from "lucide-react";
+import { PullToRefresh } from "@/components/oventric/app/PullToRefresh";
+import { invalidateCache } from "@/lib/swr-cache";
 
 /** Lightweight skeleton shown while a section chunk streams in. */
 function SectionFallback() {
@@ -152,6 +154,13 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   const [q, setQ] = useState("");
   const [returnedToHub, setReturnedToHub] = useState(false);
   const prevActiveRef = useRef<string | null>(null);
+  const mainRef = useRef<HTMLElement | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const refreshApp = useCallback(async () => {
+    invalidateCache();
+    window.dispatchEvent(new CustomEvent("oventric:refresh"));
+    setRefreshKey((k) => k + 1);
+  }, []);
 
   usePrefetchSections();
   const launchCtx = useLaunchContext();
@@ -430,7 +439,11 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
       <Feed />
     );
 
-  const view = <Suspense fallback={<SectionFallback />}>{rawView}</Suspense>;
+  const view = (
+    <Suspense fallback={<SectionFallback />}>
+      <div key={refreshKey} className="contents">{rawView}</div>
+    </Suspense>
+  );
 
 
 
@@ -480,7 +493,13 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
           )}
           {isDesktop && !desktopLanding && !isMessages && liveSection(active) !== "Wallet" && <DesktopAppSidebar onSelect={setActive} />}
 
+          <PullToRefresh
+            scrollRef={mainRef}
+            enabled={isAppShell === true && !isDesktop && !isMessages}
+            onRefresh={refreshApp}
+          />
           <main
+            ref={mainRef}
             id={desktopLanding ? "desktop-home-scroll" : undefined}
             className={`flex-1 min-w-0 min-h-0 overscroll-y-contain ${isMessages ? "overflow-hidden md:p-6" : "overflow-y-auto"} ${isMessages ? "" : "pb-20 md:pb-0"} ${isMessages && !isAppShell ? "web-chat bg-muted" : isAppShell ? "bg-[#070A08]" : "bg-white"}`}
           >
