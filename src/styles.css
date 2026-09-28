@@ -3861,6 +3861,17 @@ html.standalone-app body {
   -webkit-backdrop-filter: none;
 }
 
+.app-scroll-header {
+  isolation: isolate;
+  opacity: 1;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform;
+  contain: layout paint;
+}
+
 /* Coach chat messages stay copyable: long-press select + copy button. */
 html.standalone-app .coach-chat-selectable,
 html.standalone-app .coach-chat-selectable * {

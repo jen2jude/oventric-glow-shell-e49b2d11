@@ -244,7 +244,7 @@ export function AppShop({ idOrSlug }: { idOrSlug: string }) {
       </div>
 
       {/* Tabs */}
-      <div className="sticky top-0 z-20 mt-4 flex border-b border-white/[0.06] bg-[#0A0A0B]/95 backdrop-blur">
+      <div className="app-scroll-header sticky top-0 z-20 mt-4 flex border-b border-white/[0.06] bg-[#0A0A0B]">
         {(
           [
             ["shop", "Shop"],

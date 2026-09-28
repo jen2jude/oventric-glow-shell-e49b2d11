@@ -129,7 +129,7 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
   return (
     <div className="min-h-screen bg-[#0A0A0B] pb-24 text-white">
       {/* ------------------------------------------------ search + tabs */}
-      <div className="sticky top-0 z-30 border-b border-white/[0.06] bg-[#0A0A0B]/95 px-4 pb-3 pt-4 backdrop-blur-xl">
+      <div className="app-scroll-header sticky top-0 z-30 border-b border-white/[0.06] bg-[#0A0A0B] px-4 pb-3 pt-4">
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
           <input
