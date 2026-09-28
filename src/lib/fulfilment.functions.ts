@@ -299,7 +299,7 @@ export const markOrderDelivered = createServerFn({ method: "POST" })
     const chatBody =
       `✅ Delivered — "${name}"\n\n` +
       (data.note ? `${data.note}\n\n` : "") +
-      `Please check it over and tap "Confirm receipt" to release the escrowed payment. ` +
+      `Please check it over and tap "Confirm receipt". ` +
       `It auto-confirms in ${CONFIRM_WINDOW_HOURS} hours if you don't act. ` +
       `Keep everything in this chat — we can only mediate trades completed on Oventric.`;
     try {
