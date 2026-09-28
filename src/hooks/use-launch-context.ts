@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createIsomorphicFn } from "@tanstack/react-start";
-import { getRequestHost, getRequestUrl } from "@tanstack/react-start/server";
+import { getRequestHeader, getRequestHost, getRequestUrl } from "@tanstack/react-start/server";
 
 const PUBLIC_HOSTS = new Set(["oventric.com", "www.oventric.com", "oventric-glow-shell.lovable.app"]);
 
@@ -18,6 +18,10 @@ const getInitialContext = createIsomorphicFn()
       // the HTML already contains the app shell instead of briefly painting
       // the public website before hydration.
       if (requested === "app") return "app";
+      // Installed app windows carry the ov_app cookie (set by the launch
+      // script), so every in-app page is server-rendered as the app.
+      const cookie = getRequestHeader("cookie") || "";
+      if (/(?:^|;\s*)ov_app=1(?:;|$)/.test(cookie)) return "app";
       if (requested === "web") return "browser";
       return PUBLIC_HOSTS.has(host) ? "browser" : "app";
     } catch {
@@ -25,9 +29,12 @@ const getInitialContext = createIsomorphicFn()
     }
   })
   .client((): LaunchContext => {
+    // Mirror the server decision exactly so hydration never mismatches.
     try {
-      if (new URLSearchParams(window.location.search).get("mode") === "web")
-        return "browser";
+      const mode = new URLSearchParams(window.location.search).get("mode");
+      if (mode === "app") return "app";
+      if (/(?:^|;\s*)ov_app=1(?:;|$)/.test(document.cookie)) return "app";
+      if (mode === "web") return "browser";
     } catch {
       /* ignore */
     }
@@ -86,19 +93,8 @@ export function resolveLaunchContext(): LaunchContext {
   const params = new URLSearchParams(window.location.search);
   const requested = params.get("mode");
 
-  // Explicit ?mode=web always wins — lets phone visitors (and reviewers)
-  // choose the full website even where app mode would be forced.
-  if (requested === "web") {
-    try {
-      window.sessionStorage.setItem(APP_MODE_KEY, "browser");
-    } catch {
-      /* ignore */
-    }
-    return "browser";
-  }
-
-  // Review environments are app-only. Installed/native launches on public
-  // hosts must also remain in app mode rather than being forced to the site.
+  // Installed / native windows are ALWAYS the app — nothing (not even
+  // ?mode=web or a stray link) may show the website inside the PWA.
   const native = Boolean(
     (window as unknown as {
       Capacitor?: { isNativePlatform?: () => boolean; isNative?: boolean };
@@ -106,12 +102,26 @@ export function resolveLaunchContext(): LaunchContext {
       (window as unknown as { Capacitor?: { isNative?: boolean } }).Capacitor?.isNative,
   );
   const installed = !inIframe() && isStandaloneDisplay();
-  if (isAppReviewPreview() || requested === "app" || native || installed) {
+  const remember = (v: LaunchContext) => {
     try {
-      window.sessionStorage.setItem(APP_MODE_KEY, "app");
+      window.sessionStorage.setItem(APP_MODE_KEY, v);
     } catch {
       /* ignore */
     }
+  };
+  if (native || installed) {
+    remember("app");
+    return "app";
+  }
+
+  // Explicit ?mode=web lets browser visitors (and reviewers) see the site.
+  if (requested === "web") {
+    remember("browser");
+    return "browser";
+  }
+
+  if (isAppReviewPreview() || requested === "app") {
+    remember("app");
     return "app";
   }
 
