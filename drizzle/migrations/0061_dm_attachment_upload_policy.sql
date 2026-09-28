@@ -1,0 +1,2 @@
+create policy "post-media: users upload own dm attachments" on storage.objects for insert to authenticated
+with check (bucket_id = 'post-media' and (storage.foldername(name))[1] = 'dm' and (storage.foldername(name))[2] = (auth.uid())::text);
