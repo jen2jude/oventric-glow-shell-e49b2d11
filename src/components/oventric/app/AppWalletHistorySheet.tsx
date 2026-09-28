@@ -111,7 +111,7 @@ export function AppWalletHistorySheet({ onClose }: { onClose: () => void }) {
       />
       {/* Sheet */}
       <div
-        className={`absolute inset-x-0 bottom-0 mx-auto flex max-h-[92dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-3xl border-t border-white/[0.08] bg-[#101013] text-white shadow-[0_-20px_60px_-20px_rgba(0,0,0,0.8)] transition-transform duration-300 ease-out ${visible ? "translate-y-0" : "translate-y-full"}`}
+        className={`absolute inset-x-0 bottom-0 mx-auto flex h-[88dvh] max-h-[92dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-3xl will-change-transform border-t border-white/[0.08] bg-[#101013] text-white shadow-[0_-20px_60px_-20px_rgba(0,0,0,0.8)] transition-transform duration-[380ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${visible ? "translate-y-0" : "translate-y-full"}`}
       >
         {/* Handle + header */}
         <div className="shrink-0 pt-2.5">
