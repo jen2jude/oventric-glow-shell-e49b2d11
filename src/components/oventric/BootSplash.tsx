@@ -63,9 +63,19 @@ export function BootSplash() {
 
   useEffect(() => {
     setHydrated(true);
+    // The static pre-paint splash (injected by the inline script in __root)
+    // is replaced by this component the moment it decides to show — or
+    // removed outright if this session should not show a splash at all.
+    const removeStatic = () => {
+      const st = document.getElementById("oventric-boot-static");
+      if (st) st.remove();
+    };
     if (!splashConsumed && isStandaloneLaunch()) {
       splashConsumed = true;
       setEnabled(true);
+      removeStatic();
+    } else {
+      removeStatic();
     }
 
     const onLoad = () => setDocLoaded(true);
