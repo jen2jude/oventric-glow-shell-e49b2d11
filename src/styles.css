@@ -3832,6 +3832,13 @@ html.standalone-app body {
   padding-top: env(safe-area-inset-top);
 }
 
+/* Coach chat messages stay copyable: long-press select + copy button. */
+html.standalone-app .coach-chat-selectable,
+html.standalone-app .coach-chat-selectable * {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 /* =========================================================================
    TIMELESS PASS — global calm-design layer.
    No glows, no glassmorphism, no neon gradients. Subtle shadows, clean
