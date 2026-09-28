@@ -65,7 +65,7 @@ export function InstallAppSection() {
   return (
     <section className="px-1">
       <div className="relative overflow-hidden rounded-[24px] bg-slate-900 text-white shadow-[0_24px_50px_-30px_rgba(15,23,42,0.8)]">
-        <div className="h-1.5 w-full bg-gradient-to-r from-[#22C55E] via-[#3B82F6] and-[#A855F7] to-[#F59E0B] bg-gradient-to-r" />
+        <div className="h-1.5 w-full bg-gradient-to-r from-[#22C55E] via-[#3B82F6] to-[#F59E0B]" />
         <div className="p-5 sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
