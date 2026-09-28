@@ -428,6 +428,13 @@
       "when": 1790613230652,
       "tag": "0060_coach_faq_flag",
       "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1790614353837,
+      "tag": "0061_dm_attachment_upload_policy",
+      "breakpoints": true
     }
   ]
 }

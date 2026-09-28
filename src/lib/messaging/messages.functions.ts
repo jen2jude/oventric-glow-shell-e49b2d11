@@ -417,9 +417,20 @@ export const getMessageAttachmentUrls = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ paths: z.array(z.string().max(500)).max(50) }).parse(d))
   .handler(async ({ data, context }): Promise<Record<string, string>> => {
-    const unique = [...new Set(data.paths)];
+    const requested = [...new Set(data.paths)];
+    if (!requested.length) return {};
+    // Only sign attachments from messages the caller sent or received.
+    const { data: rows, error: rowsErr } = await context.supabase
+      .from("direct_messages")
+      .select("media_path")
+      .in("media_path", requested)
+      .or(`sender_id.eq.${context.userId},recipient_id.eq.${context.userId}`);
+    if (rowsErr) throw rowsErr;
+    const allowed = new Set((rows ?? []).map((r: { media_path: string | null }) => r.media_path));
+    const unique = requested.filter((p) => allowed.has(p) || p.startsWith(`${context.userId}/`) || p.startsWith(`dm/${context.userId}/`));
     if (!unique.length) return {};
-    const { data: signed, error } = await context.supabase.storage
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: signed, error } = await supabaseAdmin.storage
       .from("post-media")
       .createSignedUrls(unique, 60 * 60 * 6);
     if (error) throw error;
