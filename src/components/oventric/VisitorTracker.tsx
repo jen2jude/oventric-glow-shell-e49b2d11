@@ -39,6 +39,19 @@ function sessionId(): string {
   }
 }
 
+/** "app" when running as the installed PWA / app shell, else "web". */
+function surface(): "app" | "web" {
+  try {
+    if (new URLSearchParams(window.location.search).get("mode") === "app") return "app";
+    if (window.sessionStorage.getItem("oventric:launch-mode") === "app") return "app";
+    if (window.matchMedia?.("(display-mode: standalone)").matches) return "app";
+    if ((window.navigator as unknown as { standalone?: boolean }).standalone === true) return "app";
+  } catch {
+    /* ignore */
+  }
+  return "web";
+}
+
 /**
  * Records one page view per route change. Ids live in the browser's own
  * storage; everything geographic is resolved server-side from the request.
@@ -78,6 +91,7 @@ export function VisitorTracker() {
             referrer: document.referrer || null,
             language: navigator.language || null,
             screenW: window.screen?.width ?? window.innerWidth,
+            surface: surface(),
           }),
         });
       } catch {
