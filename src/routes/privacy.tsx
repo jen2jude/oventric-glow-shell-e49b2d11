@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
+  ArrowLeft,
   ArrowRight,
   BadgeCheck,
   Cookie,
@@ -21,6 +22,7 @@ import {
 } from "lucide-react";
 import { PublicChrome } from "@/components/oventric/PublicChrome";
 import { Button } from "@/components/ui/button";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 import legalImage from "@/assets/public-pages/legal-editorial.jpg";
 
 export const Route = createFileRoute("/privacy")({
@@ -143,6 +145,9 @@ const rights = [
 ];
 
 function PrivacyPage() {
+  const isAppShell = useIsAppShell();
+  if (isAppShell) return <AppPrivacyPage />;
+
   return (
     <PublicChrome lightDesktop>
       <div className="help-editorial bg-newsfeed-canvas text-newsfeed-ink">
@@ -323,5 +328,93 @@ function PrivacyPage() {
         </section>
       </div>
     </PublicChrome>
+  );
+}
+
+const sharing = [
+  { icon: Globe2, title: "People using Oventric", body: "Profile information, posts, listings, creator showcases, reviews and other content you publish may be visible to others as shown in the experience." },
+  { icon: ServerCog, title: "Service providers", body: "Limited information may be handled by vetted providers supporting payments, hosting, storage, authentication, communications, analytics and platform operations." },
+  { icon: ShieldCheck, title: "Legal and safety needs", body: "Information may be preserved or disclosed when reasonably necessary to comply with law, prevent fraud, protect rights or investigate harmful activity." },
+];
+
+const safeguards = [
+  { icon: KeyRound, title: "Security", body: "Oventric uses access controls, authentication protections and restricted data access to protect accounts and platform records. No online service can promise absolute security, so keep your own sign-in details private." },
+  { icon: Cookie, title: "Cookies and sessions", body: "Essential cookies and similar technologies keep you signed in, maintain sessions and protect the service. Limited analytics may help Oventric understand performance and improve the experience." },
+  { icon: Trash2, title: "Retention", body: "Information is kept while your account is active and as needed for the purposes described here. Account deletion includes a 30-day recovery period. Some transaction, fraud-prevention or legal records may be retained where required." },
+];
+
+function AppPrivacyPage() {
+  const navigate = useNavigate();
+  const back = () => {
+    if (window.history.length > 1) window.history.back();
+    else navigate({ to: "/" });
+  };
+
+  return (
+    <div className="app-connections fixed inset-0 flex h-[100dvh] flex-col overflow-hidden bg-background text-foreground">
+      <header className="app-shell-header z-40 flex h-[calc(3.5rem+env(safe-area-inset-top))] shrink-0 items-center gap-3 border-b border-border bg-background px-4 pt-[env(safe-area-inset-top)]">
+        <Button variant="ghost" size="icon" onClick={back} aria-label="Back" className="size-10 shrink-0 text-foreground hover:bg-muted hover:text-foreground"><ArrowLeft className="size-5" /></Button>
+        <span className="font-wallet-display text-base font-bold">Privacy policy</span>
+      </header>
+      <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-8 [scrollbar-width:none]">
+        <div className="mx-auto max-w-2xl font-wallet-body">
+          <div className="mb-8 border-b border-border pb-8">
+            <span className="inline-flex size-12 items-center justify-center rounded-[10px] bg-primary/15 text-primary"><ShieldCheck className="size-6" /></span>
+            <p className="mt-5 text-xs font-bold uppercase text-primary">Privacy & trust</p>
+            <h1 className="mt-2 font-wallet-display text-3xl font-bold leading-tight">Your information. Clearly explained.</h1>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">This policy explains what Oventric collects, why it is needed, how it supports your experience, and the choices available to you.</p>
+            <p className="mt-4 flex items-center gap-2 text-sm text-foreground"><LockKeyhole className="size-4 text-primary" /> Oventric does not sell your personal information.</p>
+          </div>
+
+          <section className="border-b border-border pb-7" aria-labelledby="privacy-summary">
+            <h2 id="privacy-summary" className="font-wallet-display text-xl font-bold">The short version</h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">Oventric processes information to provide the experience you use, maintain trustworthy records and protect the people taking part.</p>
+            <div className="mt-5 space-y-4">
+              {privacyOverview.map(({ icon: Icon, title, body }) => (
+                <div key={title} className="flex gap-3"><Icon className="mt-0.5 size-5 shrink-0 text-primary" /><div><h3 className="text-sm font-semibold">{title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{body}</p></div></div>
+              ))}
+            </div>
+          </section>
+
+          <section className="border-b border-border py-7" aria-labelledby="privacy-information">
+            <h2 id="privacy-information" className="font-wallet-display text-xl font-bold">Information we process</h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">Records depend on whether you create an account, publish, buy, sell, communicate or request a payout.</p>
+            <div className="mt-5 divide-y divide-border border-y border-border">
+              {informationGroups.map(({ icon: Icon, title, body }) => (
+                <article key={title} className="flex gap-3 py-4"><Icon className="mt-0.5 size-5 shrink-0 text-primary" /><div><h3 className="text-sm font-semibold">{title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{body}</p></div></article>
+              ))}
+            </div>
+          </section>
+
+          <section className="border-b border-border py-7" aria-labelledby="privacy-use">
+            <h2 id="privacy-use" className="font-wallet-display text-xl font-bold">Why information is used</h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">To run Oventric and protect the journey.</p>
+            <ul className="mt-5 space-y-3">{useCases.map((item) => <li key={item} className="flex gap-3 text-sm leading-6"><BadgeCheck className="mt-1 size-4 shrink-0 text-primary" /><span>{item}</span></li>)}</ul>
+          </section>
+
+          <section className="border-b border-border py-7" aria-labelledby="privacy-sharing">
+            <h2 id="privacy-sharing" className="font-wallet-display text-xl font-bold">Sharing & visibility</h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">Oventric limits sharing to what is needed for the service, required by law, or intentionally made public by you.</p>
+            <div className="mt-5 space-y-5">{sharing.map(({ icon: Icon, title, body }) => <article key={title} className="flex gap-3"><Icon className="mt-0.5 size-5 shrink-0 text-primary" /><div><h3 className="text-sm font-semibold">{title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{body}</p></div></article>)}</div>
+          </section>
+
+          <section className="border-b border-border py-7" aria-labelledby="privacy-choices">
+            <h2 id="privacy-choices" className="font-wallet-display text-xl font-bold">Your choices</h2>
+            <div className="mt-5 space-y-5">{rights.map(({ icon: Icon, title, body }) => <article key={title} className="flex gap-3"><Icon className="mt-0.5 size-5 shrink-0 text-primary" /><div><h3 className="text-sm font-semibold">{title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{body}</p></div></article>)}</div>
+          </section>
+
+          <section className="border-b border-border py-7" aria-labelledby="privacy-protection">
+            <h2 id="privacy-protection" className="font-wallet-display text-xl font-bold">Protection & retention</h2>
+            <div className="mt-5 space-y-5">{safeguards.map(({ icon: Icon, title, body }) => <article key={title} className="flex gap-3"><Icon className="mt-0.5 size-5 shrink-0 text-primary" /><div><h3 className="text-sm font-semibold">{title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{body}</p></div></article>)}</div>
+          </section>
+
+          <section className="py-7" aria-labelledby="privacy-support">
+            <h2 id="privacy-support" className="font-wallet-display text-xl font-bold">Questions about your information?</h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">Ask about access, correction, deletion or another privacy concern. Do not include passwords or private sign-in codes. This policy may be updated as Oventric changes; material updates will be reflected here.</p>
+            <div className="mt-5 flex flex-wrap gap-3"><Button asChild><Link to="/report-problem">Contact support <ArrowRight /></Link></Button><Button asChild variant="outline"><Link to="/terms">Read Terms</Link></Button></div>
+          </section>
+        </div>
+      </main>
+    </div>
   );
 }

@@ -10,13 +10,13 @@
 <!-- LOVABLE:END -->
 
 ## App shell vs website
-`useIsAppShell()` chooses app on installed/standalone, native, and `?mode=app`; Lovable previews and public tabs use web. Reason: preview shows website; `?mode=app` previews the app shell.
+`useIsAppShell()` chooses app on installed/native/`?mode=app`; previews and public tabs use web. Why: preserve both views.
 
 App mode always uses dark theme; keep saved light preference for web only. Reason: light text remapping obscures dark app cards.
 
 Installability is manifest-only; `push-sw.js` is messaging-only. Reason: avoid stale previews.
 
-Lovable preview hosts default to website view; `?mode=app` shows the app. Reason: app access stays active without stale app-shell caches.
+Preview hosts default to web; `?mode=app` shows app. Why: avoid stale app caches.
 
 App conversations sheet over inbox; web separate. Reason: preserve inbox scroll.
 
@@ -26,7 +26,9 @@ App post composer shares web logic in a keyboard-safe root sheet. Reason: one pu
 
 App product upload shares web fields in a fixed-action sheet. Reason: preserve selling rules.
 
-Keep app chrome outside the main scroller; use `app-scroll-header` on inner sticky bars. Reason: prevent header loss during hard mobile scrolling.
+Keep app chrome outside the main scroller; use `app-scroll-header` inside. Why: prevent header loss.
+
+Privacy uses a dark app reading view and retains the separate web editorial view. Why: no website chrome in app.
 
 ## Creator Coach (AI)
 - Creator Coach is app-exclusive: chat UI in `src/components/oventric/app/CreatorCoach.tsx`, streaming route `src/routes/api/creator-coach.ts` (openai/gpt-6-astra via Responses, reasoning low), history in `creator_coach_messages` (one conversation per creator, account-saved). Reason: a real reason to install the app; web stays without it.
