@@ -7,7 +7,6 @@ import { useUnreadCounts } from "@/hooks/use-unread-counts";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
-import { navigateInApp } from "@/lib/navigate-in-app";
 import logoFull from "@/assets/oventric-full-transparent.png";
 
 const TITLES: Record<string, string> = {
@@ -18,10 +17,11 @@ const TITLES: Record<string, string> = {
 // Sub-screens reached from Home/nav get a back-to-previous button instead of the avatar.
 const BACK_SECTIONS = new Set(["Explore", "Wallet", "Purchases"]);
 
-export function AppPageHeader({ section, name, avatarUrl, onOpenMessages }: {
+export function AppPageHeader({ section, name, avatarUrl, onBack, onOpenMessages }: {
   section: string;
   name: string;
   avatarUrl: string | null;
+  onBack: () => void;
   onOpenMessages: () => void;
 }) {
   const navigate = useNavigate();
@@ -33,12 +33,6 @@ export function AppPageHeader({ section, name, avatarUrl, onOpenMessages }: {
   const showBack = BACK_SECTIONS.has(section);
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-
-  const goBack = () => {
-    haptic("select");
-    if (window.history.length > 1) window.history.back();
-    else navigateInApp("/");
-  };
 
   const openProfile = async () => {
     haptic("select");
@@ -58,7 +52,7 @@ export function AppPageHeader({ section, name, avatarUrl, onOpenMessages }: {
         ) : (
           <>
             {showBack ? (
-              <Button variant="ghost" size="icon" onClick={goBack} aria-label="Back" className="nav-tap h-10 w-10 shrink-0 rounded-full border border-white/10 bg-white/[0.06] p-0 text-white/80 hover:bg-white/10 hover:text-white">
+              <Button variant="ghost" size="icon" onClick={() => { haptic("select"); onBack(); }} aria-label="Back" className="nav-tap h-10 w-10 shrink-0 rounded-full border border-white/10 bg-white/[0.06] p-0 text-white/80 hover:bg-white/10 hover:text-white">
                 <ArrowLeft className="h-[18px] w-[18px]" />
               </Button>
             ) : (
