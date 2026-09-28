@@ -69,7 +69,7 @@ export function AppWallet() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-xl px-4 pb-28 pt-4 text-white">
+    <div className="slide-up mx-auto w-full max-w-xl px-4 pb-28 pt-4 text-white">
       {/* Balance card with crimson glow */}
       <div className="relative mt-4 overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#17171B] to-[#0C0C0E] p-5">
         <div
