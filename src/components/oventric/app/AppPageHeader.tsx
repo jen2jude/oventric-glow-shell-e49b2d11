@@ -1,18 +1,22 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Bell, MessageCircle } from "lucide-react";
+import { ArrowLeft, Bell, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NotificationsDrawer } from "@/components/oventric/NotificationsDrawer";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
+import { navigateInApp } from "@/lib/navigate-in-app";
 import logoFull from "@/assets/oventric-full-transparent.png";
 
 const TITLES: Record<string, string> = {
   Feed: "Newsfeed", Marketplace: "Market", Explore: "Explore",
   Wallet: "Wallet", Purchases: "Purchases", Profile: "Account",
 };
+
+// Sub-screens reached from Home/nav get a back-to-previous button instead of the avatar.
+const BACK_SECTIONS = new Set(["Explore", "Wallet", "Purchases"]);
 
 export function AppPageHeader({ section, name, avatarUrl, onOpenMessages }: {
   section: string;
@@ -26,8 +30,15 @@ export function AppPageHeader({ section, name, avatarUrl, onOpenMessages }: {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const firstName = name.split(" ")[0] || "there";
   const showBrand = section === "Marketplace" || section === "Feed" || section === "Profile";
+  const showBack = BACK_SECTIONS.has(section);
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+
+  const goBack = () => {
+    haptic("select");
+    if (window.history.length > 1) window.history.back();
+    else navigateInApp("/");
+  };
 
   const openProfile = async () => {
     haptic("select");
