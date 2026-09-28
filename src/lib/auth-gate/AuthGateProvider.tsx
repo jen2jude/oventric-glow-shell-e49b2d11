@@ -27,7 +27,7 @@ import {
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useIsAppShell } from "@/hooks/use-launch-context";
+import { useIsAppShell, resolveLaunchContext } from "@/hooks/use-launch-context";
 import {
   sendLoginOtpByIdentifier as sendLoginOtpByIdentifierFn,
   signInWithIdentifierPassword as signInWithIdentifierPasswordFn,
@@ -430,7 +430,7 @@ function AuthGateModal({
         email: parsedEmail.data,
         options: {
           shouldCreateUser: true,
-          emailRedirectTo: window.location.origin,
+          emailRedirectTo: resolveLaunchContext() === "app" ? `${window.location.origin}/?mode=app` : window.location.origin,
           data: username.trim() ? { username: username.trim() } : undefined,
         },
       });
@@ -468,7 +468,7 @@ function AuthGateModal({
         }
       }
       const res = await sendLoginOtpByIdentifier({
-        data: { identifier: raw, redirectTo: window.location.origin },
+        data: { identifier: raw, redirectTo: resolveLaunchContext() === "app" ? `${window.location.origin}/?mode=app` : window.location.origin },
       });
       if (!res.sent) {
         throw new Error("No account found. Try signing up as a new user.");
