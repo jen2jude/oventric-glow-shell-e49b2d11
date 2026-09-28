@@ -354,10 +354,27 @@ function RootShell({ children }: { children: ReactNode }) {
     var native=!!(window.Capacitor&&(typeof window.Capacitor.isNativePlatform==='function'?window.Capacitor.isNativePlatform():window.Capacitor.isNative));
     var standalone=((window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true)&&window.matchMedia('(max-width: 767px)').matches;
      appShell=review?true:(forced==='app'&&(native||standalone));
-  }catch(e){}
-  window.__oventricStandalone=!!appShell;
-  if(appShell)document.documentElement.classList.add('standalone-app');
-}catch(e){}})();`,
+   }catch(e){}
+   window.__oventricStandalone=!!appShell;
+   if(appShell)document.documentElement.classList.add('standalone-app');
+   if(appShell){
+     // Pre-paint splash: drawn synchronously before the first frame so the
+     // phone's icon launch screen flows straight into the app splash with no
+     // blank or website flash in between. Same layout/colors as BootSplash,
+     // which replaces it on hydration (it removes this node).
+     try{
+       var st=document.createElement('div');
+       st.id='oventric-boot-static';
+       st.setAttribute('aria-hidden','true');
+       st.style.cssText='position:fixed;inset:0;z-index:9998;background:oklch(0.2 0.006 270);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px';
+       var dots='';
+       for(var i=0;i<6;i++){dots+='<span style="width:16px;height:16px;border-radius:50%;background:#fff;opacity:0.08;display:block"></span>';}
+       st.innerHTML='<img src="/oventric-full-transparent.png" alt="Oventric" draggable="false" style="height:48px;width:auto;user-select:none;-webkit-user-drag:none">'
+         +'<div style="display:flex;align-items:center;gap:8px">'+dots+'</div>';
+       document.body.appendChild(st);
+     }catch(e){}
+   }
+ }catch(e){}})();`,
           }}
         />
         {children}
