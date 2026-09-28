@@ -149,6 +149,22 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   const [messagesPeer, setMessagesPeer] = useState<string | undefined>(undefined);
   const [active, setActiveSection] = useState<string>(liveSection(initialSection));
   const setActive = useCallback((section: string) => setActiveSection(liveSection(section)), []);
+  // In-app section history: powers the back button on Explore/Wallet/Purchases.
+  const sectionStack = useRef<string[]>([]);
+  const activeRef = useRef<string>(liveSection(initialSection));
+  useEffect(() => { activeRef.current = active; }, [active]);
+  const openSection = useCallback((section: string) => {
+    const next = liveSection(section);
+    if (next === activeRef.current) return;
+    sectionStack.current.push(activeRef.current);
+    activeRef.current = next;
+    setActiveSection(next);
+  }, []);
+  const backSection = useCallback(() => {
+    const prev = sectionStack.current.pop() ?? "Home";
+    activeRef.current = prev;
+    setActiveSection(prev);
+  }, []);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [name, setName] = useState<string>("");
   const [q, setQ] = useState("");
