@@ -505,7 +505,7 @@ function ProductPage() {
   return (
     <div
       style={{ touchAction: "pan-y", overscrollBehaviorY: "auto" }}
-      className={`web-product oventric-web min-h-screen bg-newsfeed-canvas text-newsfeed-ink ${isAppShell ? "app-product" : ""}`}
+      className={`web-product oventric-web min-h-screen bg-newsfeed-canvas text-newsfeed-ink ${isAppShell ? "app-product app-product-scroll" : ""}`}
     >
       {!isAppShell && <Header onOpenMessages={() => {}} forceSiteNavbar={!isAppShell} />}
       <main className={`mx-auto w-full max-w-[1440px] pb-32 sm:px-6 lg:px-11 lg:pt-8 ${isAppShell ? "px-0 pt-0" : "px-3 pt-3 sm:pt-6"}`}>
