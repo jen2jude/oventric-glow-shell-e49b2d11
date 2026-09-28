@@ -10,13 +10,13 @@
 <!-- LOVABLE:END -->
 
 ## App shell vs website
-`useIsAppShell()` chooses app on review, installed/standalone, native, and `?mode=app` launches; ordinary public tabs use web. Reason: one codebase without website flashes on app launch.
+`useIsAppShell()` chooses app on installed/standalone, native, and `?mode=app`; Lovable previews and public tabs use web. Reason: preview shows website; `?mode=app` previews the app shell.
 
 App mode always uses dark theme; keep saved light preference for web only. Reason: light text remapping obscures dark app cards.
 
 Installability is manifest-only; `push-sw.js` is messaging-only. Reason: avoid stale previews.
 
-Mobile public visitors may install the manifest-only app; review hosts always use app mode. Reason: app access is active without stale app-shell caches.
+Lovable preview hosts default to website view; `?mode=app` shows the app. Reason: app access stays active without stale app-shell caches.
 
 App conversations sheet over inbox; web separate. Reason: preserve inbox scroll.
 
