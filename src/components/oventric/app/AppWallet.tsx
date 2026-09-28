@@ -4,7 +4,6 @@ import { AppWalletHistorySheet } from "@/components/oventric/app/AppWalletHistor
 import { AppWalletLedgerSheet } from "@/components/oventric/app/AppWalletLedgerSheet";
 import { PayoutModal } from "@/components/oventric/wallet/PayoutModal";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import {
   ArrowDownToLine,
   ArrowUpFromLine,
@@ -32,7 +31,6 @@ import { haptic } from "@/lib/haptics";
  * pages, one tap deeper.
  */
 export function AppWallet() {
-  const navigate = useNavigate();
   const { homeCurrency, balancesHidden, toggleBalancesHidden } = useOnboarding();
   const { isAuthenticated, openGate } = useAuthGate();
   const currency = (homeCurrency ?? "USD") as Currency;
