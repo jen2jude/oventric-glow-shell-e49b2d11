@@ -20,6 +20,12 @@ export function useFirstLaunch() {
 
   useEffect(() => {
     try {
+      const forcePreview = new URLSearchParams(window.location.search).get("onboarding") === "1";
+      if (forcePreview) {
+        setShow(true);
+        setHydrated(true);
+        return;
+      }
       const seen = localStorage.getItem(STORAGE_KEY);
       setShow(seen !== "true");
     } catch {
