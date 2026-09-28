@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -44,7 +45,136 @@ const FILTERS: Array<[Filter, string]> = [
   ["failed", "Failed"],
 ];
 
+function AppTopupHistory({
+  rows,
+  filtered,
+  error,
+  filter,
+  setFilter,
+  counts,
+  summary,
+}: {
+  rows: PaystackTopupRow[] | null;
+  filtered: PaystackTopupRow[];
+  error: string | null;
+  filter: Filter;
+  setFilter: (f: Filter) => void;
+  counts: Record<Filter, number>;
+  summary: { currency: string | null | undefined; paidAmount: number; paidCount: number; pendingCount: number };
+}) {
+  const navigate = useNavigate();
+  const fmt = (n: number) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return (
+    <div className="min-h-screen bg-[#0A0A0B] pb-24 text-white">
+      <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-white/[0.06] bg-[#0A0A0B]/90 px-3 backdrop-blur-xl" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+        <button
+          type="button"
+          onClick={() => navigate({ to: "/wallet" })}
+          aria-label="Back to wallet"
+          className="nav-tap flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.05]"
+        >
+          <ArrowLeft className="h-[18px] w-[18px]" />
+        </button>
+        <h1 className="text-[15px] font-semibold">Top-up history</h1>
+      </header>
+
+      <div className="px-4 pt-4">
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] px-3.5 py-3">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-white/45">Paid</p>
+            <p className="mt-1 text-[14px] font-bold text-emerald-400">
+              {summary.currency ? `${summary.currency} ${fmt(summary.paidAmount)}` : `${summary.paidCount} top-ups`}
+            </p>
+          </div>
+          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] px-3.5 py-3">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-white/45">Pending</p>
+            <p className="mt-1 text-[14px] font-bold">{summary.pendingCount} top-ups</p>
+          </div>
+        </div>
+
+        <div className="no-scrollbar mt-4 flex gap-2 overflow-x-auto">
+          {FILTERS.map(([key, label]) => {
+            const active = filter === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setFilter(key)}
+                className={`nav-tap flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold ${
+                  active ? "bg-[#E5484D] text-white" : "bg-white/[0.05] text-white/60"
+                }`}
+              >
+                {key === "all" ? "All" : key === "pending" ? "Pending" : label}
+                <span className={active ? "text-white/80" : "text-white/35"}>{counts[key]}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-4">
+          {error ? (
+            <p className="py-16 text-center text-[13px] text-white/50">{error}</p>
+          ) : rows === null ? (
+            <div className="space-y-2">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="h-16 animate-pulse rounded-2xl bg-white/[0.04]" />
+              ))}
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="flex flex-col items-center py-16 text-center">
+              <span className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.05] text-white/50">
+                <Landmark className="h-5 w-5" />
+              </span>
+              <p className="text-[13px] font-semibold">No top-ups here yet</p>
+              <p className="mt-1 text-[12px] text-white/45">Your wallet funding will appear here.</p>
+            </div>
+          ) : (
+            <ul className="space-y-2">
+              {filtered.map((row) => {
+                const date = new Date(row.created_at);
+                const tone =
+                  row.status === "success"
+                    ? { label: "Paid", Icon: CheckCircle2, cls: "bg-emerald-500/15 text-emerald-400" }
+                    : row.status === "failed"
+                      ? { label: "Failed", Icon: XCircle, cls: "bg-[#E5484D]/15 text-[#E5484D]" }
+                      : { label: "Pending", Icon: Clock, cls: "bg-amber-500/15 text-amber-400" };
+                return (
+                  <li key={row.id} className="flex items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-3 py-3">
+                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${tone.cls}`}>
+                      <tone.Icon className="h-[18px] w-[18px]" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-bold">
+                        {row.currency} {fmt(row.amount)}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => navigator.clipboard.writeText(row.reference).then(() => toast.success("Reference copied"))}
+                        className="mt-0.5 flex max-w-full items-center gap-1 text-[11px] text-white/40"
+                      >
+                        <span className="truncate font-mono">{row.reference}</span>
+                        <Copy className="h-3 w-3 shrink-0" />
+                      </button>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${tone.cls}`}>{tone.label}</span>
+                      <p className="mt-1 text-[10px] text-white/40">
+                        {date.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                      </p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TopupHistoryPage() {
+  const isApp = useIsAppShell();
   const fetchTopups = useServerFn(listMyPaystackTopups);
   const [rows, setRows] = useState<PaystackTopupRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -95,6 +225,20 @@ function TopupHistoryPage() {
       pendingCount: counts.pending,
     };
   }, [rows, counts.pending]);
+
+  if (isApp) {
+    return (
+      <AppTopupHistory
+        rows={rows}
+        filtered={filtered}
+        error={error}
+        filter={filter}
+        setFilter={setFilter}
+        counts={counts}
+        summary={summary}
+      />
+    );
+  }
 
   return (
     <div className="web-ledger min-h-screen bg-background pb-16 text-foreground">
