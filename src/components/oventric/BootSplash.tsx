@@ -28,6 +28,9 @@ function isStandaloneLaunch() {
     navigator: Navigator & { standalone?: boolean };
   };
   if (typeof w.__oventricStandalone === "boolean") return w.__oventricStandalone;
+  // Native store wrapper always gets the animated splash first.
+  const cap = (window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
+  if (cap?.isNativePlatform?.()) return true;
   try {
     const host = window.location.hostname.toLowerCase();
     const publicHost = host === "oventric.com" ||
