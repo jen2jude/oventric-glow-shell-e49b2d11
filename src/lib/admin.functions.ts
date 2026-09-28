@@ -99,19 +99,22 @@ export const getAdminStats = createServerFn({ method: "GET" })
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = supabaseAdmin as any;
 
-    const [users, products, orders, activeCampaigns, pendingReports, bounties] = await Promise.all([
+    const [users, products, orders, activeCampaigns, pendingReports, bounties, revenue] = await Promise.all([
       sb.from("profiles").select("*", { count: "exact", head: true }).is("deleted_at", null),
       sb.from("products").select("*", { count: "exact", head: true }),
-      sb.from("orders").select("total_usd, status", { count: "exact" }),
+      sb.from("orders").select("id", { count: "exact", head: true }),
       sb.from("ad_campaigns").select("*", { count: "exact", head: true }).eq("status", "active"),
       sb.from("post_reports").select("*", { count: "exact", head: true }).eq("status", "pending"),
       sb.from("wallet_transactions").select("*", { count: "exact", head: true }),
+      // Platform revenue = Oventric's 20% share credited to the system wallet on each settled sale.
+      sb.from("system_wallet_transactions").select("amount_usd").limit(100000),
     ]);
 
-    const paid = ((orders.data ?? []) as Array<{ total_usd: number; status: string }>).filter(
-      (o) => o.status === "paid",
+    const revenueUsd = Number(
+      ((revenue.data ?? []) as Array<{ amount_usd: number }>)
+        .reduce((s, r) => s + Number(r.amount_usd ?? 0), 0)
+        .toFixed(2),
     );
-    const revenueUsd = paid.reduce((s, o) => s + Number(o.total_usd ?? 0), 0);
 
     return {
       users: users.count ?? 0,
