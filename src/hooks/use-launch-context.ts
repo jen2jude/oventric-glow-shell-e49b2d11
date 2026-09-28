@@ -51,11 +51,7 @@ const getInitialContext = createIsomorphicFn()
       /* ignore */
     }
     const host = window.location.hostname.toLowerCase();
-    return PUBLIC_HOSTS.has(host) || host.endsWith(".lovable.app")
-      ? "browser"
-      : isAppReviewPreview()
-        ? "app"
-        : "browser";
+    return isWebDefaultHost(host) ? "browser" : "app";
   });
 
 /**
@@ -77,8 +73,7 @@ export const APP_MODE_KEY = "oventric:launch-mode";
 /** True only for genuinely unknown hosts (not public, not a Lovable preview). */
 export function isAppReviewPreview(): boolean {
   if (typeof window === "undefined") return false;
-  const host = window.location.hostname.toLowerCase();
-  return !PUBLIC_HOSTS.has(host) && !host.endsWith(".lovable.app");
+  return !isWebDefaultHost(window.location.hostname.toLowerCase());
 }
 
 /** True when the page is running in an installed / standalone window. */
