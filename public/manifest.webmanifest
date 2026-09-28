@@ -9,7 +9,7 @@
   "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
   "theme_color": "#0A0A0B",
-  "background_color": "#0A0A0B",
+  "background_color": "#151619",
   "categories": ["shopping", "business", "social", "finance"],
   "lang": "en",
   "dir": "ltr",
