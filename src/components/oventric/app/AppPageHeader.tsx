@@ -25,7 +25,7 @@ export function AppPageHeader({ section, name, avatarUrl, onOpenMessages }: {
   const { messages, total } = useUnreadCounts();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const firstName = name.split(" ")[0] || "there";
-  const showBrand = section === "Marketplace" || section === "Feed";
+  const showBrand = section === "Marketplace" || section === "Feed" || section === "Profile";
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
