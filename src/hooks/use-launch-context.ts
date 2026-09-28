@@ -23,7 +23,11 @@ const getInitialContext = createIsomorphicFn()
       const cookie = getRequestHeader("cookie") || "";
       if (/(?:^|;\s*)ov_app=1(?:;|$)/.test(cookie)) return "app";
       if (requested === "web") return "browser";
-      return PUBLIC_HOSTS.has(host) ? "browser" : "app";
+      // Lovable editor/dev preview hosts show the website by default;
+      // `?mode=app` opts back into the app shell.
+      return PUBLIC_HOSTS.has(host) || host.endsWith(".lovable.app")
+        ? "browser"
+        : "app";
     } catch {
       return "browser";
     }
@@ -38,7 +42,12 @@ const getInitialContext = createIsomorphicFn()
     } catch {
       /* ignore */
     }
-    return isAppReviewPreview() ? "app" : "browser";
+    const host = window.location.hostname.toLowerCase();
+    return PUBLIC_HOSTS.has(host) || host.endsWith(".lovable.app")
+      ? "browser"
+      : isAppReviewPreview()
+        ? "app"
+        : "browser";
   });
 
 /**
