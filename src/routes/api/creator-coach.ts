@@ -1,8 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import { createOpenAI } from "@ai-sdk/openai";
-import { convertToModelMessages, stepCountIs, streamText, type UIMessage } from "ai";
+import {
+  convertToModelMessages,
+  createUIMessageStream,
+  createUIMessageStreamResponse,
+  stepCountIs,
+  streamText,
+  type UIMessage,
+} from "ai";
 import { buildCoachTools } from "@/lib/ai/coach-tools.server";
+import { matchCoachFaq } from "@/lib/ai/coach-faq";
 import { buildCreatorHubData } from "@/lib/dashboard/creator.functions";
 import {
   createLovableAiGatewayRunIdFetch,
@@ -153,7 +161,26 @@ export const Route = createFileRoute("/api/creator-coach")({
           return new Response("That message is a bit long — please shorten it and try again.", { status: 400 });
         }
 
-        // Daily cap per user (credit saver).
+        // Instant pre-written answer (no AI, no credits, doesn't count toward cap).
+        const faqAnswer = matchCoachFaq(userText);
+        if (faqAnswer) {
+          await auth.supabase.from("creator_coach_messages").insert([
+            { user_id: auth.userId, role: "user", content: userText, is_faq: true },
+            { user_id: auth.userId, role: "assistant", content: faqAnswer, is_faq: true },
+          ]);
+          const stream = createUIMessageStream({
+            originalMessages: messages,
+            execute: ({ writer }) => {
+              const id = crypto.randomUUID();
+              writer.write({ type: "text-start", id });
+              writer.write({ type: "text-delta", id, delta: faqAnswer });
+              writer.write({ type: "text-end", id });
+            },
+          });
+          return createUIMessageStreamResponse({ stream });
+        }
+
+        // Daily cap per user (credit saver) — counts only AI-answered messages.
         const dayStart = new Date();
         dayStart.setUTCHours(0, 0, 0, 0);
         const { count: todayCount } = await auth.supabase
@@ -161,6 +188,7 @@ export const Route = createFileRoute("/api/creator-coach")({
           .select("id", { count: "exact", head: true })
           .eq("user_id", auth.userId)
           .eq("role", "user")
+          .eq("is_faq", false)
           .gte("created_at", dayStart.toISOString());
         if ((todayCount ?? 0) >= DAILY_LIMIT) {
           return new Response(
