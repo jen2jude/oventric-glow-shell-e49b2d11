@@ -421,7 +421,7 @@ export const getMessageAttachmentUrls = createServerFn({ method: "POST" })
     if (!requested.length) return {};
     // Only sign attachments from messages the caller sent or received.
     const { data: rows, error: rowsErr } = await context.supabase
-      .from("messages")
+      .from("direct_messages")
       .select("media_path")
       .in("media_path", requested)
       .or(`sender_id.eq.${context.userId},recipient_id.eq.${context.userId}`);
