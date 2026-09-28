@@ -1,0 +1,1 @@
+ALTER TABLE public.creator_coach_messages ADD COLUMN IF NOT EXISTS cards jsonb;

@@ -192,10 +192,13 @@ export const Route = createFileRoute("/api/creator-coach")({
             sendReasoning: true,
             onFinish: async ({ responseMessage }) => {
               const text = messageText(responseMessage);
-              if (!text) return;
+              const cards = (responseMessage.parts as Array<{ type: string; state?: string; toolCallId?: string; output?: unknown }>)
+                .filter((p) => p.type.startsWith("tool-") && p.state === "output-available" && p.output)
+                .map((p) => ({ type: p.type, toolCallId: p.toolCallId, output: p.output }));
+              if (!text && !cards.length) return;
               const { error } = await auth.supabase
                 .from("creator_coach_messages")
-                .insert({ user_id: auth.userId, role: "assistant", content: text });
+                .insert({ user_id: auth.userId, role: "assistant", content: text || "", cards: cards.length ? (cards as never) : null });
               if (error) console.error("[creator-coach] failed to save assistant message:", error.message);
             },
           }),

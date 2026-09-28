@@ -414,6 +414,13 @@
       "when": 1790601185274,
       "tag": "0058_chats_leave_notification_bell",
       "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1790608787377,
+      "tag": "0059_coach_message_cards",
+      "breakpoints": true
     }
   ]
 }
