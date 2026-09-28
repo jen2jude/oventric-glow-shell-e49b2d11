@@ -149,6 +149,22 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   const [messagesPeer, setMessagesPeer] = useState<string | undefined>(undefined);
   const [active, setActiveSection] = useState<string>(liveSection(initialSection));
   const setActive = useCallback((section: string) => setActiveSection(liveSection(section)), []);
+  // In-app section history: powers the back button on Explore/Wallet/Purchases.
+  const sectionStack = useRef<string[]>([]);
+  const activeRef = useRef<string>(liveSection(initialSection));
+  useEffect(() => { activeRef.current = active; }, [active]);
+  const openSection = useCallback((section: string) => {
+    const next = liveSection(section);
+    if (next === activeRef.current) return;
+    sectionStack.current.push(activeRef.current);
+    activeRef.current = next;
+    setActiveSection(next);
+  }, []);
+  const backSection = useCallback(() => {
+    const prev = sectionStack.current.pop() ?? "Home";
+    activeRef.current = prev;
+    setActiveSection(prev);
+  }, []);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [name, setName] = useState<string>("");
   const [q, setQ] = useState("");
@@ -297,7 +313,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   useEffect(() => {
     const onNav = (e: Event) => {
       const detail = (e as CustomEvent<{ section?: string }>).detail;
-      if (detail?.section) setActive(detail.section);
+      if (detail?.section) openSection(detail.section);
     };
     const onOpenDM = (e: Event) => {
       const detail = (e as CustomEvent<{ peerId?: string }>).detail;
@@ -365,7 +381,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   const rawView =
     active === "Home" && isAppShell && !isDesktop ? (
       <AppHome
-        onSelect={setActive}
+        onSelect={openSection}
         onCreate={() => handleCreate("sell")}
       />
     ) : active === "Home" ? (
@@ -392,7 +408,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
       )
     ) : active === "Explore" ? (
       isAppShell && !isDesktop ? (
-        <AppExplore onSelect={setActive} />
+        <AppExplore onSelect={openSection} />
       ) : (
         <ExplorePage onSelect={setActive} />
       )
@@ -420,7 +436,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         <Bounties />
       </AppOnlyGate>
     ) : active === "Profile" && isAppShell && !isDesktop ? (
-      <AppAccount onSelect={setActive} />
+      <AppAccount onSelect={openSection} />
     ) : active === "Messages" ? (
       isAppShell ? <AppMessages /> : <Messages variant="page" />
     ) : active === "Circles" ? (
@@ -482,7 +498,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         ) : null}
 
         {isAppShell && !isDesktop && !isMessages && (
-          <AppPageHeader section={active} name={name} avatarUrl={avatarUrl} onOpenMessages={() => setMessagesOpen(true)} />
+          <AppPageHeader section={active} name={name} avatarUrl={avatarUrl} onBack={backSection} onOpenMessages={() => setMessagesOpen(true)} />
         )}
 
         <div
@@ -531,7 +547,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
             active={active === "Marketplace" ? "Market" : active}
             onSelect={(l) => {
               if (l === "Chats") setMessagesOpen(true);
-              else setActive(l === "Market" ? "Marketplace" : l);
+              else openSection(l === "Market" ? "Marketplace" : l);
             }}
             counts={{
               Feed: feedCount.count,
