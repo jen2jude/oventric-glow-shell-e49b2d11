@@ -180,12 +180,17 @@ export function AuthGateProvider({ children }: { children: ReactNode }) {
       setSession(next);
       setChecked(true);
       if (event === "SIGNED_IN" && next) {
-        // Fire the subtle success splash, then run the pending action once
-        // the animation has finished.
+        // Fire the subtle success splash (app shell only), then run the
+        // pending action once the animation has finished. On the website the
+        // pending action runs immediately with no splash.
         const cb = pendingRef.current;
         pendingRef.current = null;
-        splashCbRef.current = cb;
-        setSplash(true);
+        if (appShellRef.current) {
+          splashCbRef.current = cb;
+          setSplash(true);
+        } else if (cb) {
+          void cb();
+        }
         setGateOpen(false);
       }
     });
