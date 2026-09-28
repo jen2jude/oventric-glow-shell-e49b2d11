@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Drawer as VaulDrawer } from "vaul";
 import { motion, useReducedMotion } from "motion/react";
-import { Sparkles, X, Loader2 } from "lucide-react";
+import { Sparkles, X, Loader2, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { getCreatorCoachHistory } from "@/lib/dashboard/coach.functions";
@@ -16,6 +16,53 @@ import { Message, MessageContent, MessageResponse } from "@/components/ai-elemen
 import { PromptInput, PromptInputBody, PromptInputTextarea, PromptInputFooter, PromptInputSubmit } from "@/components/ai-elements/prompt-input";
 import { coachPageKey, pickCoachPrompt, type CoachPrompt } from "@/lib/coach-page-prompts";
 import { playNotificationSound } from "@/lib/notification-sound";
+
+async function copyTextToClipboard(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    // Fall through to the legacy path (some in-app browsers restrict it).
+  }
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.append(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    ta.remove();
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
+function MessageCopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    if (!copied) return;
+    const t = window.setTimeout(() => setCopied(false), 1600);
+    return () => window.clearTimeout(t);
+  }, [copied]);
+  return (
+    <button
+      type="button"
+      aria-label={copied ? "Copied" : "Copy message"}
+      onClick={async () => {
+        const ok = await copyTextToClipboard(text);
+        if (ok) setCopied(true);
+      }}
+      className="mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-full text-white/35 transition-colors hover:bg-white/10 hover:text-white/70 active:bg-white/10"
+    >
+      {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+    </button>
+  );
+}
 
 const SUGGESTIONS = [
   "How did I do this week?",
@@ -144,13 +191,20 @@ export function CreatorCoachChat({ starter }: { starter?: string | null } = {}) 
             return (
               <Message key={m.id} from={m.role}>
                 {m.role === "user" ? (
-                  <div className="ml-auto max-w-[85%] rounded-[22px] rounded-br-lg bg-gradient-to-br from-violet-500 to-[#E5484D] px-3.5 py-2 text-[13px] leading-relaxed text-white">
+                  <div
+                    className="coach-chat-selectable ml-auto max-w-[85%] rounded-[22px] rounded-br-lg bg-gradient-to-br from-violet-500 to-[#E5484D] px-3.5 py-2 text-[13px] leading-relaxed text-white"
+                  >
                     {text}
                   </div>
                 ) : (
-                  <MessageContent className="max-w-[92%] text-[13px] leading-relaxed text-white/90 [&_strong]:text-white">
-                    <MessageResponse>{text}</MessageResponse>
-                  </MessageContent>
+                  <>
+                    <MessageContent className="coach-chat-selectable max-w-[92%] text-[13px] leading-relaxed text-white/90 [&_strong]:text-white">
+                      <MessageResponse>{text}</MessageResponse>
+                    </MessageContent>
+                    <div className="flex justify-start">
+                      <MessageCopyButton text={text} />
+                    </div>
+                  </>
                 )}
               </Message>
             );
