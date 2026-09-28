@@ -120,6 +120,14 @@ export function AuthGateProvider({ children }: { children: ReactNode }) {
   const [linkError, setLinkError] = useState<string | null>(null);
   const pendingRef = useRef<null | (() => void | Promise<void>)>(null);
   const splashCbRef = useRef<null | (() => void | Promise<void>)>(null);
+  // The "Verified." splash is an app-shell flourish — the website signs in
+  // without it. Tracked in a ref so the auth subscription below can read the
+  // current presentation without re-subscribing.
+  const isAppShell = useIsAppShell();
+  const appShellRef = useRef<boolean>(false);
+  useEffect(() => {
+    appShellRef.current = isAppShell === true;
+  }, [isAppShell]);
 
   // Detect magic-link failures returned by Supabase in the URL hash
   // (e.g. #error=access_denied&error_code=otp_expired&error_description=...).
@@ -172,12 +180,17 @@ export function AuthGateProvider({ children }: { children: ReactNode }) {
       setSession(next);
       setChecked(true);
       if (event === "SIGNED_IN" && next) {
-        // Fire the subtle success splash, then run the pending action once
-        // the animation has finished.
+        // Fire the subtle success splash (app shell only), then run the
+        // pending action once the animation has finished. On the website the
+        // pending action runs immediately with no splash.
         const cb = pendingRef.current;
         pendingRef.current = null;
-        splashCbRef.current = cb;
-        setSplash(true);
+        if (appShellRef.current) {
+          splashCbRef.current = cb;
+          setSplash(true);
+        } else if (cb) {
+          void cb();
+        }
         setGateOpen(false);
       }
     });
