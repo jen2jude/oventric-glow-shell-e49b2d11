@@ -34,3 +34,5 @@ Keep app chrome outside the main scroller; use `app-scroll-header` on inner stic
 - Coach greetings use local time: onboarding waits for publishing, existing creators get a device welcome, then dedupe hourly per account/device. Reason: orient creators without interruption.
 
 - Oventric Coach is open to all signed-in app users; page-aware nudges come from a local randomized pool in src/lib/coach-page-prompts.ts (5s dwell, once per page per session, 10s auto-hide). Why: instant, free, no AI call per nudge.
+
+- Native store builds use Capacitor wrapping the live site (capacitor.config.ts, server.url oventric.com/?mode=app). Why: custom launch screen, instant web updates.
