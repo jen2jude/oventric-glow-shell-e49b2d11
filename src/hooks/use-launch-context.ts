@@ -95,15 +95,6 @@ export function resolveLaunchContext(): LaunchContext {
     return "app";
   }
 
-  if (requested === "app") {
-    try {
-      window.sessionStorage.setItem(APP_MODE_KEY, "app");
-    } catch {
-      /* ignore */
-    }
-    return "app";
-  }
-
   // Keep app mode across hard navigations in the same installed session.
   try {
     const stored = window.sessionStorage.getItem(APP_MODE_KEY);
