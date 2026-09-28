@@ -4,6 +4,16 @@ import { getRequestHeader, getRequestHost, getRequestUrl } from "@tanstack/react
 
 const PUBLIC_HOSTS = new Set(["oventric.com", "www.oventric.com", "oventric-glow-shell.lovable.app"]);
 
+/** Hosts that show the website by default (`?mode=app` opts into the app shell). */
+function isWebDefaultHost(host: string): boolean {
+  return (
+    PUBLIC_HOSTS.has(host) ||
+    host.endsWith(".lovable.app") ||
+    host === "localhost" ||
+    host === "127.0.0.1"
+  );
+}
+
 /**
  * First-render context, identical on server and client: review hosts render
  * the app shell straight from the server so the website never shows while
@@ -23,7 +33,9 @@ const getInitialContext = createIsomorphicFn()
       const cookie = getRequestHeader("cookie") || "";
       if (/(?:^|;\s*)ov_app=1(?:;|$)/.test(cookie)) return "app";
       if (requested === "web") return "browser";
-      return PUBLIC_HOSTS.has(host) ? "browser" : "app";
+      // Lovable editor/dev preview hosts show the website by default;
+      // `?mode=app` opts back into the app shell.
+      return isWebDefaultHost(host) ? "browser" : "app";
     } catch {
       return "browser";
     }
@@ -38,7 +50,8 @@ const getInitialContext = createIsomorphicFn()
     } catch {
       /* ignore */
     }
-    return isAppReviewPreview() ? "app" : "browser";
+    const host = window.location.hostname.toLowerCase();
+    return isWebDefaultHost(host) ? "browser" : "app";
   });
 
 /**
@@ -57,11 +70,10 @@ export type LaunchContext = "browser" | "app";
 
 export const APP_MODE_KEY = "oventric:launch-mode";
 
-/** Keep the unfinished app presentation off Oventric's public addresses. */
+/** True only for genuinely unknown hosts (not public, not a Lovable preview). */
 export function isAppReviewPreview(): boolean {
   if (typeof window === "undefined") return false;
-  const host = window.location.hostname.toLowerCase();
-  return !PUBLIC_HOSTS.has(host);
+  return !isWebDefaultHost(window.location.hostname.toLowerCase());
 }
 
 /** True when the page is running in an installed / standalone window. */
