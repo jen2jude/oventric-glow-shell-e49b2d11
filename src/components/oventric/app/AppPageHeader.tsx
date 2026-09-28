@@ -57,9 +57,15 @@ export function AppPageHeader({ section, name, avatarUrl, onOpenMessages }: {
           </Link>
         ) : (
           <>
-            <Button variant="ghost" size="icon" onClick={() => void openProfile()} aria-label="Your social profile" className="nav-tap h-10 w-10 shrink-0 overflow-hidden rounded-full border border-white/10 bg-white/[0.06] p-0 text-white/70 hover:bg-white/10 hover:text-white">
-              {avatarUrl ? <img src={avatarUrl} alt="" className="h-full w-full object-cover" /> : <span className="text-sm font-bold">{firstName.slice(0, 1).toUpperCase()}</span>}
-            </Button>
+            {showBack ? (
+              <Button variant="ghost" size="icon" onClick={goBack} aria-label="Back" className="nav-tap h-10 w-10 shrink-0 rounded-full border border-white/10 bg-white/[0.06] p-0 text-white/80 hover:bg-white/10 hover:text-white">
+                <ArrowLeft className="h-[18px] w-[18px]" />
+              </Button>
+            ) : (
+              <Button variant="ghost" size="icon" onClick={() => void openProfile()} aria-label="Your social profile" className="nav-tap h-10 w-10 shrink-0 overflow-hidden rounded-full border border-white/10 bg-white/[0.06] p-0 text-white/70 hover:bg-white/10 hover:text-white">
+                {avatarUrl ? <img src={avatarUrl} alt="" className="h-full w-full object-cover" /> : <span className="text-sm font-bold">{firstName.slice(0, 1).toUpperCase()}</span>}
+              </Button>
+            )}
             <div className="min-w-0 flex-1">
               {section === "Home" ? <><p className="text-[11px] font-medium text-white/40">{greeting},</p><p className="truncate text-[15px] font-bold">{firstName}</p></> : <p className="truncate text-[17px] font-bold">{TITLES[section] ?? section}</p>}
             </div>
