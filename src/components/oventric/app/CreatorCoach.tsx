@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
+import { navigateInApp } from "@/lib/navigate-in-app";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -90,6 +91,64 @@ function useAccessToken() {
   return token;
 }
 
+// Latest page the user is on, sent with every Coach message.
+let coachPage: { section: string; feedTab: string | null; path: string; title: string } = { section: "Home", feedTab: null, path: "/", title: "" };
+
+type CardProduct = { id: string; name: string; price: number; currency: string; cashbackPct: number; rating: number; seller: string; url: string };
+type CardSeller = { id: string; name: string; bio: string; url: string };
+
+function openCoachLink(url: string) {
+  const m = url.match(/^\/\?section=(\w+)$/);
+  if (m) window.dispatchEvent(new CustomEvent("oventric:navigate", { detail: { section: m[1] } }));
+  else navigateInApp(url);
+}
+
+function CoachToolPart({ part }: { part: { type: string; state?: string; output?: unknown } }) {
+  if (part.state !== "output-available" || !part.output || typeof part.output !== "object") return null;
+  const out = part.output as { products?: CardProduct[]; sellers?: CardSeller[]; label?: string; url?: string; orders?: Array<{ id: string; product: string; status: string; amount: number; currency: string; url: string }> };
+  const money = (n: number, c: string) => { try { return new Intl.NumberFormat(undefined, { style: "currency", currency: c, maximumFractionDigits: 2 }).format(n); } catch { return `${c} ${n}`; } };
+  if (out.products?.length) return (
+    <div className="flex gap-2 overflow-x-auto pb-1">
+      {out.products.map((p) => (
+        <button key={p.id} type="button" onClick={() => openCoachLink(p.url)} className="w-[150px] shrink-0 rounded-[10px] border border-white/10 bg-white/5 p-2.5 text-left active:bg-white/10">
+          <p className="line-clamp-2 text-[12px] font-semibold text-white">{p.name}</p>
+          <p className="mt-1 truncate text-[11px] text-white/50">{p.seller}</p>
+          <p className="mt-1.5 text-[13px] font-bold text-white">{money(p.price, p.currency)}</p>
+          <div className="mt-1 flex items-center gap-1.5 text-[10px] text-white/60">
+            {p.rating > 0 && <span>★ {p.rating.toFixed(1)}</span>}
+            {p.cashbackPct > 0 && <span className="rounded bg-amber-400/15 px-1 text-amber-300">{p.cashbackPct}% back</span>}
+          </div>
+          <p className="mt-1.5 text-[11px] font-semibold text-[#E5484D]">View product</p>
+        </button>
+      ))}
+    </div>
+  );
+  if (out.sellers?.length) return (
+    <div className="flex flex-col gap-1.5">
+      {out.sellers.map((s) => (
+        <button key={s.id} type="button" onClick={() => openCoachLink(s.url)} className="rounded-[10px] border border-white/10 bg-white/5 px-3 py-2 text-left active:bg-white/10">
+          <p className="text-[12px] font-semibold text-white">{s.name}</p>
+          {s.bio && <p className="line-clamp-1 text-[11px] text-white/50">{s.bio}</p>}
+        </button>
+      ))}
+    </div>
+  );
+  if (out.orders?.length) return (
+    <div className="flex flex-col gap-1.5">
+      {out.orders.slice(0, 5).map((o) => (
+        <button key={o.id} type="button" onClick={() => openCoachLink(o.url)} className="flex items-center justify-between gap-2 rounded-[10px] border border-white/10 bg-white/5 px-3 py-2 text-left active:bg-white/10">
+          <span className="min-w-0"><span className="block truncate text-[12px] font-semibold text-white">{o.product}</span><span className="text-[11px] capitalize text-white/50">{o.status}</span></span>
+          <span className="shrink-0 text-[12px] font-bold text-white">{money(o.amount, o.currency)}</span>
+        </button>
+      ))}
+    </div>
+  );
+  if (out.label && out.url) return (
+    <button type="button" onClick={() => openCoachLink(out.url!)} className="self-start rounded-full bg-gradient-to-br from-violet-500 to-[#E5484D] px-3.5 py-1.5 text-[12px] font-semibold text-white">{out.label}</button>
+  );
+  return null;
+}
+
 export function CreatorCoachChat({ starter }: { starter?: string | null } = {}) {
   const token = useAccessToken();
   const fetchHistory = useServerFn(getCreatorCoachHistory);
@@ -101,6 +160,7 @@ export function CreatorCoachChat({ starter }: { starter?: string | null } = {}) 
         ? new DefaultChatTransport({
             api: "/api/creator-coach",
             headers: { Authorization: `Bearer ${token}` },
+            body: () => ({ page: { ...coachPage, path: window.location.pathname, title: document.title } }),
           })
         : undefined,
     [token],
@@ -168,7 +228,7 @@ export function CreatorCoachChat({ starter }: { starter?: string | null } = {}) 
               <div>
                 <p className="text-base font-bold text-white">Your Oventric Coach</p>
                 <p className="mt-1 max-w-[260px] text-xs text-white/50">
-                  I know your real numbers — audience, posts, watch time, downloads and sales. Ask me anything.
+                  Ask me about products, sellers, your wallet, orders, cashback, posting or selling — I use your real Oventric data.
                 </p>
               </div>
               <div className="mt-2 flex w-full flex-col gap-2">
@@ -187,7 +247,8 @@ export function CreatorCoachChat({ starter }: { starter?: string | null } = {}) 
           )}
           {messages.map((m) => {
             const text = m.parts.filter((p) => p.type === "text").map((p) => p.text).join("\n");
-            if (!text) return null;
+            const toolParts = m.parts.filter((p) => p.type.startsWith("tool-")) as Array<{ type: string; state?: string; output?: unknown }>;
+            if (!text && !toolParts.length) return null;
             return (
               <Message key={m.id} from={m.role}>
                 {m.role === "user" ? (
@@ -199,10 +260,11 @@ export function CreatorCoachChat({ starter }: { starter?: string | null } = {}) 
                 ) : (
                   <>
                     <MessageContent className="coach-chat-selectable max-w-[92%] text-[13px] leading-relaxed text-white/90 [&_strong]:text-white">
-                      <MessageResponse>{text}</MessageResponse>
+                      {text && <MessageResponse>{text}</MessageResponse>}
                     </MessageContent>
+                    {toolParts.map((p, i) => <CoachToolPart key={i} part={p} />)}
                     <div className="flex justify-start">
-                      <MessageCopyButton text={text} />
+                      {text && <MessageCopyButton text={text} />}
                     </div>
                   </>
                 )}
@@ -342,6 +404,7 @@ export function CreatorCoachLauncher({ section = "Home" }: { section?: string })
 
   // Page-aware nudge: after 5s on a page, once per page per session.
   const pageKey = coachPageKey(section, feedTab);
+  useEffect(() => { coachPage = { ...coachPage, section, feedTab }; }, [section, feedTab]);
   useEffect(() => {
     setNudge(null);
     if (!user?.userId || open) return;
