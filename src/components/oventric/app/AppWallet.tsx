@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { AppAddFundsSheet } from "@/components/oventric/app/AppAddFundsSheet";
+import { AppWalletHistorySheet } from "@/components/oventric/app/AppWalletHistorySheet";
 import { PayoutModal } from "@/components/oventric/wallet/PayoutModal";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
@@ -37,6 +38,7 @@ export function AppWallet() {
 
   const [fundOpen, setFundOpen] = useState(false);
   const [payoutOpen, setPayoutOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const fetchBalances = useServerFn(getWalletBalances);
   const fetchTx = useServerFn(listWalletTransactions);
 
