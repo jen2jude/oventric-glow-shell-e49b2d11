@@ -134,6 +134,9 @@ function AdminVisitors() {
         <Card title="Cities">
           <Bars rows={data.cities} />
         </Card>
+        <Card title="Website vs App">
+          <Bars rows={data.surfaces} />
+        </Card>
         <Card title="Device type">
           <Bars rows={data.devices} />
         </Card>
