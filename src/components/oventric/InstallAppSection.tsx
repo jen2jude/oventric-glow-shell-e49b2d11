@@ -120,7 +120,7 @@ export function InstallAppSection() {
           </div>
         )}
       </div>
-      <div className="home-install-visual pointer-events-none relative mx-auto mt-4 aspect-square w-full max-w-[380px] sm:max-w-[430px] lg:absolute lg:bottom-0 lg:right-[1%] lg:mt-0 lg:h-[122%] lg:w-auto lg:max-w-none" aria-hidden="true">
+      <div className="home-install-visual pointer-events-none relative mx-auto mt-3 aspect-square w-full max-w-[300px] sm:max-w-[380px] lg:absolute lg:bottom-0 lg:right-[1%] lg:mt-0 lg:h-[122%] lg:w-auto lg:max-w-none" aria-hidden="true">
         <div className="home-install-ring absolute inset-[12%] rounded-full" />
         <div className="home-install-hand relative h-full w-full">
           <img src={phoneHand} alt="" width={1024} height={1024} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
