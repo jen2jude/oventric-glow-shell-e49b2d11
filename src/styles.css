@@ -414,6 +414,7 @@
 }
 .home-install-cta {
   background: linear-gradient(100deg, var(--home-pop-red), var(--newsfeed-coral));
+  color: var(--primary-foreground);
   box-shadow: 0 14px 28px -16px color-mix(in oklab, var(--home-pop-red) 70%, transparent);
   transition: transform 180ms ease, box-shadow 180ms ease;
 }

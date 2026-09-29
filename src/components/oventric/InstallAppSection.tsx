@@ -10,7 +10,7 @@ import {
   triggerInstall,
 } from "@/lib/install-app";
 import phoneHand from "@/assets/install-phone-hand.png";
-import wordmark from "@/assets/oventric-full.asset.json";
+import wordmark from "@/assets/oventric-logo-dark.png";
 
 function AndroidMark({ className }: { className?: string }) {
   return (
@@ -68,7 +68,7 @@ export function InstallAppSection() {
     <section aria-labelledby="install-app-title" className="home-install relative isolate overflow-hidden rounded-[10px] bg-home-surface px-5 py-9 text-home-ink sm:px-10 sm:py-12 lg:min-h-[620px] lg:px-12 lg:py-14 xl:min-h-[680px] xl:px-16">
       <div className="home-install-dots pointer-events-none absolute right-6 top-7 hidden h-24 w-24 opacity-50 lg:block" aria-hidden="true" />
       <div className="relative z-10 lg:max-w-[54%]">
-        <img src={wordmark.url} alt="Oventric" width={280} height={90} loading="lazy" className="h-11 w-auto max-w-[200px] object-contain object-left sm:h-14 sm:max-w-[240px]" />
+        <img src={wordmark} alt="Oventric" width={280} height={90} loading="lazy" className="h-11 w-auto max-w-[200px] object-contain object-left sm:h-14 sm:max-w-[240px]" />
         <p className="mt-9 inline-flex items-center rounded-full bg-newsfeed-coral-soft px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.18em] text-home-ink sm:mt-12">
           App now available
         </p>
@@ -92,7 +92,7 @@ export function InstallAppSection() {
         </div>
 
         <div className="mt-9 flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-6">
-          <Button type="button" onClick={() => void onInstall()} className="home-install-cta h-auto min-h-16 w-full whitespace-normal rounded-full px-5 py-3 text-base font-bold text-primary-foreground sm:w-auto sm:min-w-[19rem] sm:text-lg">
+          <Button type="button" onClick={() => void onInstall()} className="home-install-cta h-auto min-h-16 w-full whitespace-normal rounded-full px-5 py-3 text-base font-bold sm:w-auto sm:min-w-[19rem] sm:text-lg">
             <Download className="!size-6" aria-hidden="true" />
             <span className="flex-1 text-left">{canPrompt || isIosDevice() ? "Install app on your phone" : "Get the app on your phone"}</span>
             <ArrowRight className="!size-5" aria-hidden="true" />
