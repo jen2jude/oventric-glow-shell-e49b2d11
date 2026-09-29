@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Restore vertical scrolling on user shop profiles in the app
+
 - [x] Add the "In this agreement" quick section index to the app Terms view
 
 - [x] Give Report a Problem an app-native dark view while keeping the website presentation
