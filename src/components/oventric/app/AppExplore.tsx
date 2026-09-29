@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { Link, useSearch } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -28,7 +28,6 @@ import { searchGlobal, type SearchResults } from "@/lib/search.functions";
 import { AppSearchSuggestions, rememberSearch } from "./AppSearchSuggestions";
 import { visualForCategory } from "@/components/oventric/marketplace-discovery/utils";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
-import { CashbackBadge } from "@/components/oventric/CashbackBadge";
 import { haptic } from "@/lib/haptics";
 import { AppSellerLeaderboardSheet } from "./AppSellerLeaderboardSheet";
 import { AppPeopleLeaderboardSheet } from "./AppPeopleLeaderboardSheet";
@@ -54,7 +53,6 @@ const TILE_TINTS = [
  * data paths.
  */
 export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") => void }) {
-  const navigate = useNavigate();
   const [boardOpen, setBoardOpen] = useState(false);
   const [peopleBoardOpen, setPeopleBoardOpen] = useState(false);
   const [selectedProductCategory, setSelectedProductCategory] = useState<CategoryNode | null>(null);
