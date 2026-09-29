@@ -25,6 +25,7 @@ import {
 } from "@/lib/marketplace.functions";
 import type { SellerLite } from "@/components/oventric/marketplace-discovery/cards";
 import { CashbackBadge } from "@/components/oventric/CashbackBadge";
+import { OutOfStockTag } from "@/components/oventric/StockBadge";
 
 type Kind = "all" | "digital";
 type SortKey = "popular" | "newest" | "price_asc" | "price_desc" | "top_rated";
@@ -580,8 +581,13 @@ function WebProductCard({
               : `${product.stockQuantity} in stock`}
         </p>
         <div className="mt-auto flex items-end justify-between pt-3">
-          <span className="text-[16px] font-black text-primary">{price}</span>
-          <span className="flex items-center gap-0.5 text-[11.5px] font-bold text-slate-500">
+          <span className="flex min-w-0 flex-wrap items-center gap-1.5">
+            <span className={`text-[16px] font-black ${product.inStock === false ? "text-slate-400" : "text-primary"}`}>
+              {price}
+            </span>
+            {product.inStock === false && <OutOfStockTag light />}
+          </span>
+          <span className="flex shrink-0 items-center gap-0.5 text-[11.5px] font-bold text-slate-500">
             <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
             {product.rating > 0 ? product.rating.toFixed(1) : "5.0"}
             <span className="text-slate-400">({product.reviews})</span>
@@ -597,7 +603,7 @@ function SellerIdentity({ seller, vendor }: { seller?: SellerLite; vendor: strin
 }
 
 function SellerProductCard({ product, seller, price, onClick }: { product: ProductDTO; seller?: SellerLite; price: string; onClick: () => void }) {
-  return <button type="button" onClick={onClick} className="group w-[78vw] max-w-[310px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-border bg-card text-left transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg sm:w-auto sm:max-w-none"><SellerIdentity seller={seller} vendor={product.vendor} /><div className="relative mx-3 aspect-video overflow-hidden rounded-[8px] bg-muted">{product.coverUrl && <img loading="lazy" decoding="async" src={product.coverUrl} alt={product.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />}<CashbackBadge percentage={product.cashbackPct} className="absolute bottom-2 left-2" /></div><div className="p-4"><p className="line-clamp-2 min-h-10 text-[13.5px] font-bold leading-snug">{product.name}</p><div className="mt-4 flex items-center justify-between border-t border-border pt-3"><div><span className="block text-[9px] font-bold uppercase text-muted-foreground">Price</span><span className="text-[17px] font-extrabold text-primary">{price}</span></div><span className="grid h-9 w-9 place-items-center rounded-[8px] bg-muted text-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground"><ArrowRight className="h-4 w-4" /></span></div></div></button>;
+  return <button type="button" onClick={onClick} className="group w-[78vw] max-w-[310px] shrink-0 snap-start overflow-hidden rounded-[10px] border border-border bg-card text-left transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg sm:w-auto sm:max-w-none"><SellerIdentity seller={seller} vendor={product.vendor} /><div className="relative mx-3 aspect-video overflow-hidden rounded-[8px] bg-muted">{product.coverUrl && <img loading="lazy" decoding="async" src={product.coverUrl} alt={product.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />}{product.inStock === false && <span className="absolute left-2 top-2 rounded-[6px] bg-slate-900/85 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-white">Out of stock</span>}<CashbackBadge percentage={product.cashbackPct} className="absolute bottom-2 left-2" /></div><div className="p-4"><p className="line-clamp-2 min-h-10 text-[13.5px] font-bold leading-snug">{product.name}</p><div className="mt-4 flex items-center justify-between border-t border-border pt-3"><div><span className="block text-[9px] font-bold uppercase text-muted-foreground">Price</span><span className={`flex items-center gap-1.5 text-[17px] font-extrabold ${product.inStock === false ? "text-slate-400" : "text-primary"}`}>{price}{product.inStock === false && <OutOfStockTag light />}</span></div><span className="grid h-9 w-9 place-items-center rounded-[8px] bg-muted text-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground"><ArrowRight className="h-4 w-4" /></span></div></div></button>;
 }
 
 function SellerCard({ seller, onClick }: { seller: SellerLite; onClick: () => void }) {

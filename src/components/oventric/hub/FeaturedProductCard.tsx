@@ -4,6 +4,7 @@ import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { visibleProductPrice } from "@/lib/money-visibility";
 import type { ProductDTO } from "@/lib/marketplace.functions";
 import { CashbackBadge } from "@/components/oventric/CashbackBadge";
+import { OutOfStockTag } from "@/components/oventric/StockBadge";
 
 export function FeaturedProductCard({ product }: { product: ProductDTO }) {
   const { baseCurrency, balancesHidden } = useOnboarding();
@@ -62,7 +63,12 @@ export function FeaturedProductCard({ product }: { product: ProductDTO }) {
 
         <div className="flex items-end justify-between gap-1">
           <div className="min-w-0 space-y-0.5">
-            <p className="truncate text-[11.5px] font-bold tracking-tight text-slate-900">{price}</p>
+            <div className="flex flex-wrap items-center gap-1">
+              <span className={`truncate text-[11.5px] font-bold tracking-tight ${product.inStock === false ? "text-slate-400" : "text-slate-900"}`}>
+                {price}
+              </span>
+              {product.inStock === false && <OutOfStockTag light />}
+            </div>
             {rating > 0 ? (
               <div className="flex items-center gap-1 text-[9px] font-semibold text-amber-500">
                 <Star className="h-2 w-2 fill-current" />

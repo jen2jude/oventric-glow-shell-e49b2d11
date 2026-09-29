@@ -16,6 +16,7 @@ import { getShopBranding, getShopDiscovery } from "@/lib/shop.functions";
 import { getLiveProfileTab, getProfileSocialCounts } from "@/lib/profiles.functions";
 import type { ProfileListing } from "@/lib/profiles/mockProfiles";
 import { visibleProductPrice } from "@/lib/money-visibility";
+import { OutOfStockTag } from "@/components/oventric/StockBadge";
 import { haptic } from "@/lib/haptics";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { ProductQuickView } from "./ProductQuickView";
@@ -314,7 +315,12 @@ export function AppShop({ idOrSlug }: { idOrSlug: string }) {
                     <p className="text-[14px] font-bold text-white line-clamp-1">{selected.title}</p>
                     <p className="mt-0.5 text-[11px] text-white/45 line-clamp-2">{selected.blurb || selected.category}</p>
                   </div>
-                  <p className="shrink-0 text-[14px] font-bold text-[#E5484D]">{price(selected.priceUsd, selected)}</p>
+                  <p className="flex shrink-0 flex-wrap items-center justify-end gap-1 text-[14px] font-bold">
+                    <span className={selected.inStock === false ? "text-white/35" : "text-[#E5484D]"}>
+                      {price(selected.priceUsd, selected)}
+                    </span>
+                    {selected.inStock === false && <OutOfStockTag />}
+                  </p>
                 </div>
               </button>
             </Section>
@@ -330,7 +336,12 @@ export function AppShop({ idOrSlug }: { idOrSlug: string }) {
                     </div>
                     <div className="flex items-center justify-between gap-2 p-3">
                       <p className="text-[12px] font-semibold text-white line-clamp-1">{p.title}</p>
-                      <p className="shrink-0 text-[12px] font-bold text-[#E5484D]">{price(p.priceUsd, p)}</p>
+                      <p className="flex shrink-0 flex-wrap items-center gap-1 text-[12px] font-bold">
+                        <span className={p.inStock === false ? "text-white/35" : "text-[#E5484D]"}>
+                          {price(p.priceUsd, p)}
+                        </span>
+                        {p.inStock === false && <OutOfStockTag />}
+                      </p>
                     </div>
                   </button>
                 ))}
@@ -351,7 +362,12 @@ export function AppShop({ idOrSlug }: { idOrSlug: string }) {
                       <p className="text-[12px] font-semibold text-white line-clamp-1">{p.title}</p>
                       {(p.sales ?? 0) > 0 && <p className="text-[10px] text-white/40">{compact(p.sales)} sold</p>}
                     </div>
-                    <p className="shrink-0 text-[12px] font-bold text-[#E5484D]">{price(p.priceUsd, p)}</p>
+                    <p className="flex shrink-0 flex-wrap items-center gap-1 text-[12px] font-bold">
+                      <span className={p.inStock === false ? "text-white/35" : "text-[#E5484D]"}>
+                        {price(p.priceUsd, p)}
+                      </span>
+                      {p.inStock === false && <OutOfStockTag />}
+                    </p>
                   </button>
                 ))}
               </div>
@@ -458,7 +474,12 @@ function Mini({ p, price, onClick }: { p: ProfileListing; price: PriceFn; onClic
       </div>
       <div className="p-2">
         <p className="text-[11px] font-semibold leading-snug text-white line-clamp-2">{p.title}</p>
-        <p className="mt-0.5 text-[11px] font-bold text-[#E5484D]">{price(p.priceUsd, p)}</p>
+        <p className="mt-0.5 flex flex-wrap items-center gap-1 text-[11px] font-bold">
+          <span className={p.inStock === false ? "text-white/35" : "text-[#E5484D]"}>
+            {price(p.priceUsd, p)}
+          </span>
+          {p.inStock === false && <OutOfStockTag />}
+        </p>
       </div>
     </button>
   );
@@ -480,7 +501,12 @@ function Card({ p, price, onClick }: { p: ProfileListing; price: PriceFn; onClic
       <div className="p-2.5">
         <p className="text-[12px] font-semibold text-white line-clamp-1">{p.title}</p>
         <div className="mt-0.5 flex items-center justify-between">
-          <p className="text-[12px] font-bold text-[#E5484D]">{price(p.priceUsd, p)}</p>
+          <p className="flex flex-wrap items-center gap-1 text-[12px] font-bold">
+            <span className={p.inStock === false ? "text-white/35" : "text-[#E5484D]"}>
+              {price(p.priceUsd, p)}
+            </span>
+            {p.inStock === false && <OutOfStockTag />}
+          </p>
           {(p.rating ?? 0) > 0 && (
             <span className="flex items-center gap-0.5 text-[10px] text-white/40">
               <Star className="h-3 w-3 fill-amber-400 text-amber-400" />

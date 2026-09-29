@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Star } from "lucide-react";
 
 import { CashbackBadge } from "@/components/oventric/CashbackBadge";
+import { OutOfStockTag } from "@/components/oventric/StockBadge";
 import { computeDisplayPrice } from "@/lib/fx-display";
 import type { ProductDTO } from "@/lib/marketplace.functions";
 
@@ -46,7 +47,12 @@ export function AppProductCard({ product, currency }: { product: ProductDTO; cur
           {product.rating ? product.rating.toFixed(1) : "New"}
           {product.reviews ? <span className="font-normal text-white/35">({product.reviews})</span> : null}
         </p>
-        <p className="mt-auto pt-1 text-sm font-extrabold text-white">{price}</p>
+        <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-1">
+          <span className={`text-sm font-extrabold ${product.inStock === false ? "text-white/35" : "text-white"}`}>
+            {price}
+          </span>
+          {product.inStock === false && <OutOfStockTag />}
+        </div>
       </div>
     </div>
   );

@@ -29,6 +29,8 @@ export interface ProfileListing {
   /** Publish-time currency + FX snapshot so prices match the marketplace. */
   originalCurrency?: string | null;
   originalAmount?: number | null;
+  /** False when the seller marked the listing out of stock. */
+  inStock?: boolean;
   fxSnapshot?: {
     base?: string;
     rates?: Record<string, number>;
