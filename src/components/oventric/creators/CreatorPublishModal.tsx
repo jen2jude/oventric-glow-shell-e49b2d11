@@ -190,6 +190,8 @@ export function CreatorPublishModal({
       }
     }
 
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setBusy(true);
     try {
       const { data: userRes } = await supabase.auth.getUser();
@@ -199,7 +201,11 @@ export function CreatorPublishModal({
       let mediaPaths: string[] | undefined;
       let mediaType: "image" | "video" | undefined;
       let coverImage: File | null = null;
-      if (attachments.length > 0) {
+      if (savedRef.current.mediaPaths) {
+        mediaPaths = savedRef.current.mediaPaths;
+        mediaType = savedRef.current.mediaType;
+        coverImage = attachments.find((a) => a.kind === "image")?.file ?? null;
+      } else if (attachments.length > 0) {
         const uploaded: string[] = [];
         for (const a of attachments) {
           const ext = (a.file.name.split(".").pop() || "bin").toLowerCase().slice(0, 8);
@@ -230,12 +236,14 @@ export function CreatorPublishModal({
         }
         mediaPaths = uploaded;
         mediaType = attachments[0].kind;
+        savedRef.current.mediaPaths = mediaPaths;
+        savedRef.current.mediaType = mediaType;
       }
 
       // The sellable asset becomes a normal marketplace listing: same review,
       // same 80/20 split, same wallet + dashboard reporting, instant download.
-      let productId: string | undefined;
-      if (hasAsset) {
+      let productId: string | undefined = savedRef.current.productId;
+      if (hasAsset && !productId) {
         let filePath: string | null = null;
         if (assetFile) {
           const safe = assetFile.name.replace(/[^\w.\-]+/g, "_");
@@ -298,6 +306,7 @@ export function CreatorPublishModal({
           },
         });
         productId = created.id;
+        savedRef.current.productId = productId;
       }
 
       await publish({
@@ -321,6 +330,7 @@ export function CreatorPublishModal({
       console.error(e);
       toast.error(e instanceof Error ? e.message : "Couldn't publish. Try again.");
     } finally {
+      submittingRef.current = false;
       setBusy(false);
     }
   };
