@@ -11,13 +11,6 @@ import phoneHand from "@/assets/install-phone-hand-clean.png";
 import appScreen from "@/assets/app-home-mock-screen.png";
 import wordmark from "@/assets/oventric-logo-dark.png";
 
-function AndroidMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M7.2 16.8c0 .66.54 1.2 1.2 1.2h.9v2.4a1.2 1.2 0 0 0 2.4 0V18h1.2v2.4a1.2 1.2 0 0 0 2.4 0V18h.3c.66 0 1.2-.54 1.2-1.2V9H7.2v7.8ZM5.4 9a1.2 1.2 0 0 0-1.2 1.2v4.8a1.2 1.2 0 0 0 2.4 0v-4.8A1.2 1.2 0 0 0 5.4 9Zm13.2 0a1.2 1.2 0 0 0-1.2 1.2v4.8A1.2 1.2 0 0 0 18.6 9Zm-3.42-3.36.84-1.26a.3.3 0 0 0-.5-.33l-.9 1.35a7.2 7.2 0 0 0-5.64 0l-.9-1.35a.3.3 0 1 0-.5.33l.84 1.26A6.6 6.6 0 0 0 7.2 8.4h9.6a6.6 6.6 0 0 0-1.62-2.76ZM10 6.9a.6.6 0 1 1 .6-.6.6.6 0 0 1-.6.6Zm4 0a.6.6 0 1 1 .6-.6.6.6 0 0 1-.6.6Z" />
-    </svg>
-  );
-}
 
 function AppStoreTile({ className }: { className?: string }) {
   return (
@@ -43,14 +36,6 @@ function PlayStoreTile({ className }: { className?: string }) {
         <path d="M48 24l7.4 4.1c3 1.7 3 6.1 0 7.8L48 40l-8-8Z" fill="#FFC800" />
       </svg>
     </span>
-  );
-}
-
-function AppleMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M16.36 12.76c.03 3.06 2.68 4.08 2.71 4.09-.02.07-.42 1.45-1.4 2.87-.84 1.23-1.72 2.46-3.1 2.48-1.36.03-1.79-.8-3.34-.8-1.55 0-2.04.78-3.32.83-1.33.05-2.35-1.33-3.2-2.55C2.97 17.04 1.7 12.45 3.6 9.5a4.9 4.9 0 0 1 4.12-2.5c1.29-.02 2.5.87 3.29.87.79 0 2.27-1.07 3.83-.92.65.03 2.48.26 3.65 1.98-.09.06-2.18 1.28-2.16 3.83l.03-.01ZM14.16 5.2c.7-.85 1.18-2.04 1.05-3.2-1.02.04-2.25.68-2.98 1.53-.66.76-1.23 1.97-1.08 3.13 1.14.09 2.3-.58 3.01-1.46Z" />
-    </svg>
   );
 }
 
@@ -120,11 +105,6 @@ export function InstallAppSection() {
             <span className="flex-1 text-left">Click here to download app to your phone</span>
             <ArrowRight className="!size-5" aria-hidden="true" />
           </Button>
-          <div className="flex items-center gap-4 border-home-line sm:border-l sm:pl-5">
-            <span className="text-xs leading-tight text-home-copy">Works on<br />your phone</span>
-            <span className="flex items-center gap-2 text-home-ink" title="iOS"><AppleMark className="size-6" /><span className="text-sm font-semibold">iOS</span></span>
-            <span className="flex items-center gap-2 text-newsfeed-green" title="Android"><AndroidMark className="size-6" /><span className="text-sm font-semibold text-home-ink">Android</span></span>
-          </div>
         </div>
 
         {iosGuide && (
