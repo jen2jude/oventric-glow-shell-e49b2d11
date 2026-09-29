@@ -19,6 +19,33 @@ function AndroidMark({ className }: { className?: string }) {
   );
 }
 
+function AppStoreTile({ className }: { className?: string }) {
+  return (
+    <span className={`home-install-os-tile grid place-items-center rounded-[22%] bg-home-surface ${className ?? ""}`}>
+      <svg viewBox="0 0 64 64" className="h-[62%] w-[62%]" aria-hidden="true">
+        <defs><linearGradient id="ov-as" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#18BFFB" /><stop offset="1" stopColor="#2072F3" /></linearGradient></defs>
+        <rect width="64" height="64" rx="15" fill="url(#ov-as)" />
+        <g stroke="#fff" strokeWidth="4.2" strokeLinecap="round" fill="none">
+          <path d="M36 14 22 40" /><path d="M28 14l14 26" /><path d="M16 40h32" /><path d="M19 47l-2.5 4" /><path d="M44 45l3.5 6" />
+        </g>
+      </svg>
+    </span>
+  );
+}
+
+function PlayStoreTile({ className }: { className?: string }) {
+  return (
+    <span className={`home-install-os-tile grid place-items-center rounded-[22%] bg-home-surface ${className ?? ""}`}>
+      <svg viewBox="0 0 64 64" className="h-[58%] w-[58%]" aria-hidden="true">
+        <path d="M10 5l30 27L10 59c-1.5-.7-2.5-2.2-2.5-4V9c0-1.8 1-3.3 2.5-4Z" fill="#00D7FE" />
+        <path d="M10 5c1.2-.6 2.8-.5 4.1.2L48 24l-8 8Z" fill="#00F076" />
+        <path d="M10 59l30-27 8 8-33.9 18.8c-1.3.7-2.9.8-4.1.2Z" fill="#F83A4B" />
+        <path d="M48 24l7.4 4.1c3 1.7 3 6.1 0 7.8L48 40l-8-8Z" fill="#FFC800" />
+      </svg>
+    </span>
+  );
+}
+
 function AppleMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
@@ -61,24 +88,24 @@ export function InstallAppSection() {
   };
 
   return (
-    <section aria-labelledby="install-app-title" className="home-install relative isolate overflow-hidden rounded-[10px] bg-home-surface px-5 py-9 text-home-ink sm:px-10 sm:py-12 lg:min-h-[620px] lg:px-12 lg:py-14 xl:min-h-[680px] xl:px-16">
+    <section aria-labelledby="install-app-title" className="home-install relative isolate overflow-hidden rounded-[10px] bg-home-surface px-5 py-8 text-home-ink sm:px-10 sm:py-10 lg:mt-40 lg:overflow-visible lg:px-12 lg:py-10 xl:px-14">
       <div className="home-install-dots pointer-events-none absolute right-6 top-7 hidden h-24 w-24 opacity-50 lg:block" aria-hidden="true" />
       <div className="relative z-10 lg:max-w-[54%]">
-        <img src={wordmark} alt="Oventric" width={280} height={90} loading="lazy" className="h-11 w-auto max-w-[200px] object-contain object-left sm:h-14 sm:max-w-[240px]" />
-        <p className="mt-9 inline-flex items-center rounded-full bg-newsfeed-coral-soft px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.18em] text-home-ink sm:mt-12">
+        <img src={wordmark} alt="Oventric" width={280} height={90} loading="lazy" className="h-10 w-auto max-w-[180px] object-contain object-left sm:h-11 sm:max-w-[200px]" />
+        <p className="mt-6 inline-flex items-center rounded-full bg-newsfeed-coral-soft px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.18em] text-home-ink sm:mt-7">
           App now available
         </p>
-        <h2 id="install-app-title" className="mt-5 font-wallet-display text-[clamp(2.35rem,4vw,4.2rem)] font-extrabold leading-[1.05] text-home-ink">
+        <h2 id="install-app-title" className="mt-5 font-wallet-display text-[clamp(2.2rem,3.4vw,3.5rem)] font-extrabold leading-[1.05] text-home-ink">
           Get the Oventric <span className="home-install-title-accent block">Mobile App</span>
         </h2>
         <p className="mt-4 max-w-[34rem] text-base leading-snug text-home-copy sm:text-lg lg:text-xl">
           Discover, shop, connect, create and earn — anytime, anywhere.
         </p>
 
-        <div className="mt-7 grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-4 sm:gap-x-4">
+        <div className="mt-6 grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-4 sm:gap-x-4">
           {benefits.map(({ title, description, icon: Icon, color }) => (
             <div key={title} className="min-w-0 text-center">
-              <span className={`mx-auto grid size-14 place-items-center rounded-[10px] sm:size-16 ${color}`}>
+              <span className={`mx-auto grid size-12 place-items-center rounded-[10px] sm:size-14 ${color}`}>
                 <Icon className="size-7" strokeWidth={2.1} aria-hidden="true" />
               </span>
               <h3 className="mt-2 text-sm font-extrabold text-home-ink sm:text-base">{title}</h3>
@@ -87,7 +114,7 @@ export function InstallAppSection() {
           ))}
         </div>
 
-        <div className="mt-9 flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-6">
+        <div className="mt-7 flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-6">
           <Button type="button" onClick={() => void onInstall()} className="home-install-cta h-auto min-h-16 w-full whitespace-normal rounded-full px-5 py-3 text-base font-bold sm:w-auto sm:min-w-[19rem] sm:text-lg">
             <Download className="!size-6" aria-hidden="true" />
             <span className="flex-1 text-left">Click here to download app to your phone</span>
@@ -113,16 +140,16 @@ export function InstallAppSection() {
           </div>
         )}
       </div>
-      <div className="pointer-events-none relative mx-auto mt-5 aspect-square w-full max-w-[480px] sm:max-w-[560px] lg:absolute lg:right-0 lg:top-1/2 lg:h-full lg:w-auto lg:max-w-none lg:-translate-y-1/2" aria-hidden="true">
+      <div className="home-install-visual pointer-events-none relative mx-auto mt-5 aspect-square w-full max-w-[480px] sm:max-w-[540px] lg:absolute lg:bottom-0 lg:right-[1%] lg:mt-0 lg:h-[138%] lg:w-auto lg:max-w-none" aria-hidden="true">
         <div className="home-install-ring absolute inset-[12%] rounded-full" />
-        <AppleMark className="home-install-platform-mark absolute left-[6.5%] top-1/2 size-9 -translate-y-1/2 sm:size-12 lg:size-14" />
-        <AndroidMark className="home-install-platform-mark absolute right-[6.5%] top-1/2 size-9 -translate-y-1/2 sm:size-12 lg:size-14" />
-        <div className="relative h-full w-full lg:scale-[1.12]">
+        <div className="home-install-hand relative h-full w-full">
           <img src={phoneHand} alt="" width={1024} height={1024} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute overflow-hidden rounded-[9%/4%]" style={{ left: "38.97%", top: "15.43%", width: "21.09%", height: "48.15%" }}>
             <img src={appScreen} alt="" className="h-full w-full object-cover" />
           </div>
         </div>
+        <AppStoreTile className="home-install-os home-install-os-left absolute left-[12%] top-[46%] size-16 sm:size-20 lg:size-24" />
+        <PlayStoreTile className="home-install-os home-install-os-right absolute right-[12%] top-[40%] size-16 sm:size-20 lg:size-24" />
       </div>
     </section>
   );
