@@ -748,6 +748,11 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         </div>
         </section>
 
+        {/* ----------------------------------------------------- install the app */}
+        <div className="mt-10 lg:mt-14">
+          <InstallAppSection />
+        </div>
+
         {/* ----------------------------------------------------- secure payments */}
         <section className="home-pop-payments mt-10 overflow-hidden rounded-[10px] border px-5 py-9 text-center sm:px-8 lg:mt-14 lg:py-12">
           <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-crimson">
@@ -771,11 +776,6 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             ))}
           </ul>
         </section>
-
-        {/* ----------------------------------------------------- install the app */}
-        <div className="mt-10 lg:mt-14">
-          <InstallAppSection />
-        </div>
       </main>
 
       <HomeFooter />
