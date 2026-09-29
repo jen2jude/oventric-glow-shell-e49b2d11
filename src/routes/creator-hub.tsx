@@ -35,7 +35,7 @@ function CreatorHubPage() {
 
   if (isApp) {
     return (
-      <div className="min-h-screen pb-28">
+      <div className="h-dvh overflow-y-auto overscroll-contain pb-28 [-webkit-overflow-scrolling:touch]">
         <header className="sticky top-0 z-30 flex items-center gap-3 px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] backdrop-blur bg-background/80">
           <button type="button" aria-label="Back" onClick={back} className="rounded-full p-2 -ml-2">
             <ArrowLeft className="size-5" />

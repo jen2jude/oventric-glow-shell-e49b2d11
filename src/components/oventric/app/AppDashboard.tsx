@@ -240,7 +240,7 @@ export function AppDashboard({ initialTab }: { initialTab?: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#070A08] text-white pb-[calc(5.5rem+env(safe-area-inset-bottom))]">
+    <div className="h-dvh overflow-y-auto overscroll-contain bg-[#070A08] text-white pb-[calc(5.5rem+env(safe-area-inset-bottom))] [-webkit-overflow-scrolling:touch]">
       {/* Sticky header */}
       <header className="app-scroll-header sticky top-0 z-40 bg-[#070A08] border-b border-white/5 pt-[env(safe-area-inset-top)]">
         <div className="flex items-center gap-3 px-4 h-14">
