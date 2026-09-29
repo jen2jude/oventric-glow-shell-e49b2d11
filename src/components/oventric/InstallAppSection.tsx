@@ -104,6 +104,7 @@ export function InstallAppSection() {
             <Download className="!size-6" aria-hidden="true" />
             <span className="flex-1 text-left">Click here to download app to your phone</span>
             <ArrowRight className="!size-5" aria-hidden="true" />
+          </Button>
         </div>
 
         {iosGuide && (
