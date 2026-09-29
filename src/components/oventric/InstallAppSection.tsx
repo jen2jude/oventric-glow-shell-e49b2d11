@@ -5,8 +5,6 @@ import { isStandaloneDisplay } from "@/hooks/use-launch-context";
 import {
   isAndroidDevice,
   isIosDevice,
-  onInstallPromptChange,
-  getDeferredInstallPrompt,
   triggerInstall,
 } from "@/lib/install-app";
 import phoneHand from "@/assets/install-phone-hand.png";
@@ -38,15 +36,12 @@ const benefits = [
 /** Website invitation only. Installed app stays unchanged. */
 export function InstallAppSection() {
   const [hidden, setHidden] = useState(true);
-  const [canPrompt, setCanPrompt] = useState(false);
   const [iosGuide, setIosGuide] = useState(false);
   const [fallback, setFallback] = useState(false);
 
   useEffect(() => {
     if (isStandaloneDisplay()) return;
     setHidden(false);
-    setCanPrompt(Boolean(getDeferredInstallPrompt()));
-    return onInstallPromptChange(() => setCanPrompt(Boolean(getDeferredInstallPrompt())));
   }, []);
 
   if (hidden) return null;
