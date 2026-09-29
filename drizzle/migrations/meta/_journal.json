@@ -435,6 +435,13 @@
       "when": 1790614353837,
       "tag": "0061_dm_attachment_upload_policy",
       "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1790673260192,
+      "tag": "0062_notify_all_on_creator_post",
+      "breakpoints": true
     }
   ]
 }
