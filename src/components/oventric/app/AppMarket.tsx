@@ -14,6 +14,7 @@ import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { haptic } from "@/lib/haptics";
 import { ProductQuickView } from "./ProductQuickView";
 import { AppSearchSheet } from "./AppSearchSheet";
+import { OutOfStockTag } from "@/components/oventric/StockBadge";
 
 /**
  * Native app Market — Curated Boutique layout. Search pill + category chips on
@@ -346,7 +347,12 @@ export function AppMarket() {
                 <div className="p-2.5">
                   <p className="line-clamp-1 text-[12px] font-semibold">{p.name}</p>
                   <p className="mt-0.5 line-clamp-1 text-[10px] text-white/35">{p.vendor}</p>
-                  <p className="mt-1 text-[12px] font-bold text-[#E5484D]">{priceOf(p)}</p>
+                  <p className="mt-1 flex flex-wrap items-center gap-1">
+                    <span className={`text-[12px] font-bold ${p.inStock === false ? "text-white/35" : "text-[#E5484D]"}`}>
+                      {priceOf(p)}
+                    </span>
+                    {p.inStock === false && <OutOfStockTag />}
+                  </p>
                 </div>
               </button>
             ))}
