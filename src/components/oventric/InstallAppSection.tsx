@@ -113,7 +113,7 @@ export function InstallAppSection() {
           </div>
         )}
       </div>
-      <div className="pointer-events-none relative mx-auto mt-5 aspect-square w-full max-w-[480px] sm:max-w-[560px] lg:absolute lg:right-[-7%] lg:top-1/2 lg:h-full lg:w-auto lg:max-w-none lg:-translate-y-1/2" aria-hidden="true">
+      <div className="pointer-events-none relative mx-auto mt-5 aspect-square w-full max-w-[480px] sm:max-w-[560px] lg:absolute lg:right-0 lg:top-1/2 lg:h-full lg:w-auto lg:max-w-none lg:-translate-y-1/2" aria-hidden="true">
         <div className="home-install-ring absolute inset-[12%] rounded-full" />
         <AppleMark className="home-install-platform-mark absolute left-[6.5%] top-1/2 size-9 -translate-y-1/2 sm:size-12 lg:size-14" />
         <AndroidMark className="home-install-platform-mark absolute right-[6.5%] top-1/2 size-9 -translate-y-1/2 sm:size-12 lg:size-14" />
