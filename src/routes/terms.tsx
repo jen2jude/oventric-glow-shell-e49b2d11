@@ -474,6 +474,24 @@ function AppTermsPage() {
             </div>
           </section>
 
+          <section className="border-b border-border py-7" aria-labelledby="terms-app-index">
+            <h2 id="terms-app-index" className="font-wallet-display text-xl font-bold">In this agreement</h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">Jump straight to any section.</p>
+            <nav aria-label="Terms sections" className="mt-4 grid grid-cols-2 gap-2">
+              {sectionLinks.map(([number, label, id]) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => document.getElementById(`terms-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                  className="flex items-center gap-2 rounded-[10px] border border-border bg-card px-3 py-2.5 text-left transition-colors hover:bg-muted"
+                >
+                  <span className="font-wallet-display text-[10px] font-extrabold text-primary">{number}</span>
+                  <span className="text-xs font-semibold leading-tight">{label}</span>
+                </button>
+              ))}
+            </nav>
+          </section>
+
           <section className="border-b border-border py-7" aria-labelledby="terms-how-payment-moves">
             <h2 id="terms-how-payment-moves" className="font-wallet-display text-xl font-bold">How a marketplace payment moves</h2>
             <div className="mt-5 space-y-4">

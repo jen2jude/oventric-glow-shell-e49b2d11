@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Add the "In this agreement" quick section index to the app Terms view
+
 - [x] Give Report a Problem an app-native dark view while keeping the website presentation
 
 - [x] Keep prefilled product edit fields readable against the dark app sheet
