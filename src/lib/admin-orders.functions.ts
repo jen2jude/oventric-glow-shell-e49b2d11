@@ -193,7 +193,8 @@ export const adminListOrders = createServerFn({ method: "POST" })
         [r.buyer_id, r.seller_id].filter(Boolean),
       ) as string[],
     );
-    return ((rows ?? []) as Array<Record<string, unknown>>).map((r) => mapRow(r, names));
+    const products = await productNamesFor(sb, (rows ?? []) as Array<Record<string, unknown>>);
+    return ((rows ?? []) as Array<Record<string, unknown>>).map((r) => mapRow(r, names, products));
   });
 
 export const adminGetOrderDetail = createServerFn({ method: "POST" })
@@ -215,7 +216,8 @@ export const adminGetOrderDetail = createServerFn({ method: "POST" })
     if (!row) throw new Error("Order not found");
 
     const names = await namesFor(sb, [row.buyer_id, row.seller_id].filter(Boolean) as string[]);
-    const base = mapRow(row as Record<string, unknown>, names);
+    const products = await productNamesFor(sb, [row as Record<string, unknown>]);
+    const base = mapRow(row as Record<string, unknown>, names, products);
 
     // Coupon + cashback are read back from the records settlement actually wrote,
     // never recomputed here.
