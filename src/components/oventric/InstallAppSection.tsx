@@ -115,8 +115,8 @@ export function InstallAppSection() {
       </div>
       <div className="pointer-events-none relative mx-auto mt-5 aspect-square w-full max-w-[480px] sm:max-w-[560px] lg:absolute lg:right-[-7%] lg:top-1/2 lg:h-full lg:w-auto lg:max-w-none lg:-translate-y-1/2" aria-hidden="true">
         <div className="home-install-ring absolute inset-[12%] rounded-full" />
-        <AppleMark className="home-install-platform-mark absolute left-[1%] top-[46%] size-9 -translate-y-1/2 sm:size-12 lg:size-14" />
-        <AndroidMark className="home-install-platform-mark absolute right-[1%] top-[46%] size-9 -translate-y-1/2 sm:size-12 lg:size-14" />
+        <AppleMark className="home-install-platform-mark absolute left-[6.5%] top-1/2 size-9 -translate-y-1/2 sm:size-12 lg:size-14" />
+        <AndroidMark className="home-install-platform-mark absolute right-[6.5%] top-1/2 size-9 -translate-y-1/2 sm:size-12 lg:size-14" />
         <div className="relative h-full w-full lg:scale-[1.12]">
           <img src={phoneHand} alt="" width={1024} height={1024} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute overflow-hidden rounded-[9%/4%]" style={{ left: "38.97%", top: "15.43%", width: "21.09%", height: "48.15%" }}>
