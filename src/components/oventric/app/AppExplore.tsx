@@ -17,7 +17,9 @@ import { computeDisplayPrice } from "@/lib/fx-display";
 import {
   getMarketplaceDiscovery,
   listMarketplaceCategories,
+  listProducts,
   getTopSellers,
+  type CategoryNode,
   type ProductDTO,
   type TopSellerDTO,
 } from "@/lib/marketplace.functions";
@@ -30,10 +32,10 @@ import { CashbackBadge } from "@/components/oventric/CashbackBadge";
 import { haptic } from "@/lib/haptics";
 import { AppSellerLeaderboardSheet } from "./AppSellerLeaderboardSheet";
 import { AppPeopleLeaderboardSheet } from "./AppPeopleLeaderboardSheet";
+import { AppProductCard } from "./AppProductCard";
+import { AppProductCategorySheet } from "./AppProductCategorySheet";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { listFollowing, type PersonSummary } from "@/lib/follows.functions";
-
-type CategoryNode = { id: string; slug: string; name: string };
 
 const TABS = ["All", "Categories", "Products", "Shops", "People"] as const;
 type Tab = (typeof TABS)[number];
@@ -55,6 +57,7 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
   const navigate = useNavigate();
   const [boardOpen, setBoardOpen] = useState(false);
   const [peopleBoardOpen, setPeopleBoardOpen] = useState(false);
+  const [selectedProductCategory, setSelectedProductCategory] = useState<CategoryNode | null>(null);
   const { isAuthenticated, session } = useAuthGate();
   const { baseCurrency } = useOnboarding();
   const currency = baseCurrency ?? "USD";
@@ -63,6 +66,7 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
 
   const fetchDiscovery = useServerFn(getMarketplaceDiscovery);
   const fetchCategories = useServerFn(listMarketplaceCategories);
+  const fetchProducts = useServerFn(listProducts);
   const fetchSellers = useServerFn(getTopSellers);
   const fetchPeers = useServerFn(getDiscoveryFeed);
   const fetchFollowing = useServerFn(listFollowing);
@@ -77,6 +81,11 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
     queryKey: ["explore-categories"],
     queryFn: () => fetchCategories() as Promise<CategoryNode[]>,
     staleTime: 5 * 60_000,
+  });
+  const { data: catalog = [] } = useQuery({
+    queryKey: ["explore-product-catalog"],
+    queryFn: () => fetchProducts(),
+    staleTime: 60_000,
   });
   const { data: sellers = [] } = useQuery({
     queryKey: ["explore-sellers"],
@@ -128,6 +137,20 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
     () => categories.filter((c) => !query || c.name.toLowerCase().includes(query)),
     [categories, query],
   );
+  const productsByCategory = useMemo(() => {
+    const allProducts = catalog as ProductDTO[];
+    return new Map(
+      categories.map((category) => {
+        const accepted = new Set(
+          [category, ...category.children].flatMap((node) => [node.slug, node.name].map((value) => value.trim().toLowerCase())),
+        );
+        return [
+          category.id,
+          allProducts.filter((product) => accepted.has(product.category.trim().toLowerCase())),
+        ] as const;
+      }),
+    );
+  }, [catalog, categories]);
   const shownSellers = useMemo(
     () =>
       (sellers as TopSellerDTO[]).filter((s) => !query || s.name.toLowerCase().includes(query)),
@@ -154,6 +177,13 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
     <>
       <AppSellerLeaderboardSheet open={boardOpen} onClose={() => setBoardOpen(false)} />
       <AppPeopleLeaderboardSheet open={peopleBoardOpen} onClose={() => setPeopleBoardOpen(false)} />
+      <AppProductCategorySheet
+        open={selectedProductCategory !== null}
+        onClose={() => setSelectedProductCategory(null)}
+        title={selectedProductCategory?.name.trim() ?? "Products"}
+        products={selectedProductCategory ? productsByCategory.get(selectedProductCategory.id) ?? [] : []}
+        currency={currency}
+      />
     <div className="min-h-screen bg-[#0A0A0B] pb-24 text-white">
       {/* ------------------------------------------------ search + tabs */}
       <div className="app-scroll-header sticky top-0 z-30 border-b border-white/[0.06] bg-[#0A0A0B] px-4 pb-3 pt-4">
@@ -253,15 +283,15 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
             )}
 
             {/* ------------------------------------------------- trending */}
-            {show("Products") && (
+            {tab === "All" && (
               <section className="mt-7">
                 <SectionHead
                   title="Trending right now"
                   action={{ label: "View all", onClick: () => onSelect("Marketplace") }}
                 />
                 <div className="grid grid-cols-2 gap-3">
-                  {trending.slice(0, tab === "Products" ? 40 : 6).map((p) => (
-                    <ProductCard key={p.id} product={p} currency={currency} />
+                  {trending.slice(0, 6).map((p) => (
+                    <AppProductCard key={p.id} product={p} currency={currency} />
                   ))}
                   {trending.length === 0 && <EmptyNote>Nothing trending yet.</EmptyNote>}
                 </div>
@@ -309,19 +339,42 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
             )}
 
             {/* ----------------------------------------------------- fresh */}
-            {show("Products") && (
+            {tab === "All" && (
               <section className="mt-7">
                 <SectionHead
                   title="Fresh in the market"
                   action={{ label: "View all", onClick: () => onSelect("Marketplace") }}
                 />
                 <div className="grid grid-cols-2 gap-3">
-                  {newArrivals.slice(0, tab === "Products" ? 40 : 6).map((p) => (
-                    <ProductCard key={p.id} product={p} currency={currency} />
+                  {newArrivals.slice(0, 6).map((p) => (
+                    <AppProductCard key={p.id} product={p} currency={currency} />
                   ))}
                   {newArrivals.length === 0 && <EmptyNote>No new listings yet.</EmptyNote>}
                 </div>
               </section>
+            )}
+
+            {tab === "Products" && (
+              <div className="pb-2">
+                {categories.map((category) => {
+                  const products = productsByCategory.get(category.id) ?? [];
+                  return (
+                    <section key={category.id} className="mt-7">
+                      <SectionHead
+                        title={category.name.trim()}
+                        action={{ label: "View all", onClick: () => setSelectedProductCategory(category) }}
+                      />
+                      <div className="grid grid-cols-2 gap-3">
+                        {products.slice(0, 4).map((product) => (
+                          <AppProductCard key={product.id} product={product} currency={currency} />
+                        ))}
+                        {products.length === 0 && <EmptyNote>No products in this category yet.</EmptyNote>}
+                      </div>
+                    </section>
+                  );
+                })}
+                {categories.length === 0 && <EmptyNote>No product categories are available.</EmptyNote>}
+              </div>
             )}
 
             {/* ---------------------------------------------------- people */}
@@ -556,49 +609,3 @@ function SearchResultsView({
   );
 }
 
-function ProductCard({ product, currency }: { product: ProductDTO; currency: string }) {
-  const price = computeDisplayPrice(
-    {
-      price_usd: product.priceUSD,
-      original_currency: product.originalCurrency,
-      original_amount: product.originalAmount,
-      fx_snapshot: product.fxSnapshot,
-    },
-    currency,
-  ).formatted;
-
-  return (
-    <div className="group flex flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.03] active:scale-[0.99]">
-      <Link
-        to="/product/$id"
-        params={{ id: product.id }}
-        className="relative block aspect-[4/3] w-full overflow-hidden bg-white/[0.05]"
-      >
-        {product.coverUrl ? (
-          <img
-            src={product.coverUrl}
-            alt={product.name}
-            loading="lazy"
-            className="h-full w-full object-cover"
-          />
-        ) : null}
-        <CashbackBadge percentage={product.cashbackPct} className="absolute left-2 top-2" />
-      </Link>
-
-      <div className="flex flex-1 flex-col gap-1.5 p-3">
-        <Link to="/product/$id" params={{ id: product.id }} className="min-w-0">
-          <h3 className="line-clamp-2 text-[13px] font-bold leading-snug text-white">
-            {product.name}
-          </h3>
-        </Link>
-        <p className="truncate text-[11px] text-white/45">{product.vendor}</p>
-        <p className="inline-flex items-center gap-1 text-[11px] font-semibold text-white/55">
-          <Star className="h-3 w-3 fill-[#F2C14E] text-[#F2C14E]" />
-          {product.rating ? product.rating.toFixed(1) : "New"}
-          {product.reviews ? <span className="font-normal text-white/35">({product.reviews})</span> : null}
-        </p>
-        <p className="mt-auto pt-1 text-sm font-extrabold text-white">{price}</p>
-      </div>
-    </div>
-  );
-}
