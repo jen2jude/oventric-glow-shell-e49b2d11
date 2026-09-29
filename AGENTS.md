@@ -31,9 +31,9 @@ Keep app chrome outside the main scroller; use `app-scroll-header` inside. Why: 
 Privacy and Report a Problem use dark app views and retain separate web editorial views. Why: no website chrome in app.
 
 ## Creator Coach (AI)
-- Creator Coach is app-exclusive: chat UI in `src/components/oventric/app/CreatorCoach.tsx`, streaming route `src/routes/api/creator-coach.ts` (openai/gpt-6-astra via Responses, reasoning low), history in `creator_coach_messages` (one conversation per creator, account-saved). Reason: a real reason to install the app; web stays without it.
+- Creator Coach is app-exclusive: chat UI in `src/components/oventric/app/CreatorCoach.tsx`, streaming route `src/routes/api/creator-coach.ts` (openai/gpt-6-astra via Responses, reasoning low), history in `creator_coach_messages` (one conversation per creator, account-saved). Reason: install incentive.
 - Coach answers from live stats: route builds context via `buildCreatorHubData` (exported from creator.functions.ts) + seller snapshot; never invent numbers.
-- Coach greetings use local time: onboarding waits for publishing, existing creators get a device welcome, then dedupe hourly per account/device. Reason: orient creators without interruption.
+- Coach greetings use local time: onboarding waits for publishing, existing creators get a device welcome, then dedupe hourly per account/device. Reason: orient creators.
 
 - Oventric Coach is open to all signed-in app users; page-aware nudges come from a local randomized pool in src/lib/coach-page-prompts.ts (5s dwell, once per page per session, 10s auto-hide). Why: instant, free, no AI call per nudge.
 
