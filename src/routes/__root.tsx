@@ -27,6 +27,7 @@ import { GlobalMobileNav } from "@/components/oventric/GlobalMobileNav";
 import { Toaster } from "@/components/ui/sonner";
 import { ProfileSettingsLauncher } from "@/components/oventric/ProfileDropdown";
 import { LiveNotificationToasts } from "@/components/oventric/LiveNotificationToasts";
+import { CreatorPostDeepLink } from "@/components/oventric/creators/CreatorPostDeepLink";
 import { PushOptInPrompt } from "@/components/oventric/PushOptInPrompt";
 import { AppInstallPrompt } from "@/components/oventric/app/AppInstallPrompt";
 import { AppBadgeSync } from "@/components/oventric/app/AppBadgeSync";
@@ -449,6 +450,7 @@ function RootComponent() {
               {!isAppShell ? null : <GlobalMobileNav />}
               <Toaster position="top-center" richColors closeButton />
               <LiveNotificationToasts />
+              <CreatorPostDeepLink />
               <PushOptInPrompt />
               {/* Mobile website visitors get the install invite; the installed
                   app and desktop never see it (the prompt also self-guards). */}
