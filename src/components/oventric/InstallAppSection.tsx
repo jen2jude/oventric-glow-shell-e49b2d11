@@ -39,14 +39,6 @@ function PlayStoreTile({ className }: { className?: string }) {
   );
 }
 
-function AppleMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M16.36 12.76c.03 3.06 2.68 4.08 2.71 4.09-.02.07-.42 1.45-1.4 2.87-.84 1.23-1.72 2.46-3.1 2.48-1.36.03-1.79-.8-3.34-.8-1.55 0-2.04.78-3.32.83-1.33.05-2.35-1.33-3.2-2.55C2.97 17.04 1.7 12.45 3.6 9.5a4.9 4.9 0 0 1 4.12-2.5c1.29-.02 2.5.87 3.29.87.79 0 2.27-1.07 3.83-.92.65.03 2.48.26 3.65 1.98-.09.06-2.18 1.28-2.16 3.83l.03-.01ZM14.16 5.2c.7-.85 1.18-2.04 1.05-3.2-1.02.04-2.25.68-2.98 1.53-.66.76-1.23 1.97-1.08 3.13 1.14.09 2.3-.58 3.01-1.46Z" />
-    </svg>
-  );
-}
-
 const benefits = [
   { title: "Shop", description: "Digital products from top creators", icon: ShoppingBag, color: "text-newsfeed-coral bg-newsfeed-coral-soft" },
   { title: "Connect", description: "Join a vibrant creator community", icon: UsersRound, color: "text-newsfeed-violet bg-newsfeed-violet-soft" },
