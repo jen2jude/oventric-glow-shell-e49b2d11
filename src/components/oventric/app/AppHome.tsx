@@ -27,6 +27,7 @@ import { ProductQuickView } from "./ProductQuickView";
 import { AppSearchSheet } from "./AppSearchSheet";
 import { AppAddFundsSheet } from "@/components/oventric/app/AppAddFundsSheet";
 import { PayoutModal } from "@/components/oventric/wallet/PayoutModal";
+import { OutOfStockTag } from "@/components/oventric/StockBadge";
 
 /**
  * Native app Home — a dark, compact dashboard that replaces the web marketing
@@ -298,8 +299,9 @@ export function AppHome({
                   )}
                 </div>
                 <p className="mt-1.5 line-clamp-1 text-[12px] font-semibold">{p.name}</p>
-                <p className="text-[11px] font-bold text-[#E5484D]">
-                  {priceOf(p)}
+                <p className={`flex items-center gap-1.5 text-[11px] font-bold ${p.inStock === false ? "text-white/35" : "text-[#E5484D]"}`}>
+                  <span className="truncate">{priceOf(p)}</span>
+                  {p.inStock === false && <OutOfStockTag />}
                 </p>
               </button>
             ))}
@@ -331,8 +333,9 @@ export function AppHome({
                 <div className="p-2.5">
                   <p className="line-clamp-1 text-[12px] font-semibold">{p.name}</p>
                   <p className="mt-0.5 line-clamp-1 text-[10px] text-white/35">{p.vendor}</p>
-                  <p className="mt-1 text-[12px] font-bold text-[#E5484D]">
-                    {priceOf(p)}
+                  <p className={`mt-1 flex items-center gap-1.5 text-[12px] font-bold ${p.inStock === false ? "text-white/35" : "text-[#E5484D]"}`}>
+                    <span className="truncate">{priceOf(p)}</span>
+                    {p.inStock === false && <OutOfStockTag />}
                   </p>
                 </div>
               </button>
