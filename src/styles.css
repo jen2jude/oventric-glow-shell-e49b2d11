@@ -427,6 +427,10 @@
   background: conic-gradient(var(--newsfeed-violet), var(--newsfeed-coral), var(--newsfeed-gold), var(--newsfeed-violet));
   mask: radial-gradient(transparent 60%, black 61%);
 }
+.home-install-platform-mark {
+  color: var(--home-ink);
+  filter: drop-shadow(0 10px 16px color-mix(in oklab, var(--home-pop-red) 28%, transparent));
+}
 .home-install-dots {
   background-image: radial-gradient(var(--home-line) 1px, transparent 1px);
   background-size: 16px 16px;
