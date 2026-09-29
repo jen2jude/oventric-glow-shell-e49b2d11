@@ -29,6 +29,12 @@ export interface SuggestedPerson extends PersonSummary {
   reputation: number;
 }
 
+export interface PeopleLeaderboardPerson extends PersonSummary {
+  followersCount: number;
+  followingCount: number;
+  verified: boolean;
+}
+
 async function signAvatarPaths(supabase: any, paths: (string | null | undefined)[]): Promise<Map<string, string>> {
   const unique = Array.from(new Set(paths.filter((p): p is string => !!p)));
   const map = new Map<string, string>();
@@ -276,6 +282,69 @@ export const listFollowing = createServerFn({ method: "GET" })
     const map = await loadPeople(context.supabase, (rows ?? []).map((r: any) => r.followee_id));
     return (rows ?? []).map((r: any) => map.get(r.followee_id)!).filter(Boolean);
   });
+
+/** Public people leaderboard ranked by live follower count. */
+export const getPeopleLeaderboard = createServerFn({ method: "GET" }).handler(
+  async (): Promise<PeopleLeaderboardPerson[]> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const [{ data: profileRows, error: profileError }, { data: followRows, error: followError }] =
+      await Promise.all([
+        supabaseAdmin
+          .from("profiles")
+          .select(
+            "user_id, display_name, username, slug, avatar_path, bio, verification_tier, profile_completed_at, banned_at, deleted_at",
+          )
+          .not("profile_completed_at", "is", null)
+          .limit(500),
+        supabaseAdmin.from("follows").select("follower_id, followee_id").limit(20000),
+      ]);
+
+    if (profileError) throw profileError;
+    if (followError) throw followError;
+
+    const followers = new Map<string, number>();
+    const following = new Map<string, number>();
+    (followRows ?? []).forEach((row: any) => {
+      const followerId = row.follower_id as string;
+      const followeeId = row.followee_id as string;
+      if (followeeId) followers.set(followeeId, (followers.get(followeeId) ?? 0) + 1);
+      if (followerId) following.set(followerId, (following.get(followerId) ?? 0) + 1);
+    });
+
+    const visible = (profileRows ?? []).filter(
+      (profile: any) =>
+        profile.user_id &&
+        profile.slug &&
+        !profile.banned_at &&
+        !profile.deleted_at &&
+        !/^user-[a-f0-9]+$/i.test(profile.slug as string),
+    );
+    const signed = await signAvatarPaths(supabaseAdmin, visible.map((profile: any) => profile.avatar_path));
+
+    return visible
+      .map((profile: any) => {
+        const userId = profile.user_id as string;
+        const tier = String(profile.verification_tier ?? "").toLowerCase();
+        return {
+          userId,
+          displayName: profile.display_name || profile.username || "Oventric member",
+          username: profile.username ?? null,
+          slug: profile.slug ?? null,
+          avatarUrl: profile.avatar_path ? signed.get(profile.avatar_path) ?? null : null,
+          bio: profile.bio ?? null,
+          followersCount: followers.get(userId) ?? 0,
+          followingCount: following.get(userId) ?? 0,
+          verified: !!tier && tier !== "none",
+        } satisfies PeopleLeaderboardPerson;
+      })
+      .sort(
+        (a, b) =>
+          b.followersCount - a.followersCount ||
+          b.followingCount - a.followingCount ||
+          a.displayName.localeCompare(b.displayName),
+      );
+  },
+);
 
 
 export interface IncomingFollowRequest {
