@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
+  ArrowLeft,
   ArrowRight,
   BadgeCheck,
   BookOpenCheck,
@@ -23,6 +24,7 @@ import {
 } from "lucide-react";
 import { PublicChrome } from "@/components/oventric/PublicChrome";
 import { Button } from "@/components/ui/button";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 import helpImage from "@/assets/public-pages/help-editorial.jpg";
 
 export const Route = createFileRoute("/help")({
@@ -178,6 +180,11 @@ const supportSteps = [
 ];
 
 function HelpPage() {
+  const isAppShell = useIsAppShell();
+  return isAppShell ? <AppHelpPage /> : <WebHelpPage />;
+}
+
+function WebHelpPage() {
   return (
     <PublicChrome lightDesktop>
       <div className="help-editorial bg-newsfeed-canvas text-newsfeed-ink">
@@ -341,5 +348,132 @@ function HelpPage() {
         </section>
       </div>
     </PublicChrome>
+  );
+}
+
+const appHelpTopics = [
+  ...helpTopics,
+  {
+    icon: MessageCircleMore,
+    title: "Orders & support",
+    body: "Order conversations, delivery concerns, disputes and support reports.",
+  },
+];
+
+const appHelpEssentials = [
+  {
+    icon: ShoppingBag,
+    title: "Digital orders only",
+    body: "Oventric supports digital products. Review the product, seller and delivery method before paying.",
+  },
+  {
+    icon: ReceiptText,
+    title: "Check the activity record",
+    body: "For an order or money concern, check the purchase, order conversation and wallet transaction first.",
+  },
+  {
+    icon: LockKeyhole,
+    title: "Keep private details private",
+    body: "Never share your password, withdrawal PIN or one-time sign-in codes with anyone, including support.",
+  },
+];
+
+function AppHelpPage() {
+  const navigate = useNavigate();
+  const back = () => {
+    if (window.history.length > 1) window.history.back();
+    else navigate({ to: "/" });
+  };
+
+  return (
+    <div className="app-connections fixed inset-0 flex h-[100dvh] flex-col overflow-hidden bg-background text-foreground">
+      <header className="app-shell-header z-40 flex h-[calc(3.5rem+env(safe-area-inset-top))] shrink-0 items-center gap-3 border-b border-border bg-background px-4 pt-[env(safe-area-inset-top)]">
+        <Button variant="ghost" size="icon" onClick={back} aria-label="Back" className="size-10 shrink-0 text-foreground hover:bg-muted hover:text-foreground">
+          <ArrowLeft className="size-5" />
+        </Button>
+        <span className="font-wallet-display text-base font-bold">Help Center</span>
+      </header>
+
+      <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-6 [scrollbar-width:none]">
+        <div className="mx-auto max-w-2xl font-wallet-body">
+          <section className="border-b border-border pb-7">
+            <span className="inline-flex size-12 items-center justify-center rounded-[10px] bg-primary/15 text-primary">
+              <Headphones className="size-6" />
+            </span>
+            <p className="mt-5 text-xs font-bold uppercase text-primary">Oventric support</p>
+            <h1 className="mt-2 font-wallet-display text-3xl font-bold leading-tight">How can we help?</h1>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              Find practical guidance for your account, digital purchases, selling, wallet activity and creator profile.
+            </p>
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <Button asChild className="h-11 rounded-[10px]">
+                <Link to="/faq">Read FAQs</Link>
+              </Button>
+              <Button asChild variant="outline" className="h-11 rounded-[10px] border-border bg-card text-foreground hover:bg-muted hover:text-foreground">
+                <Link to="/report-problem">Get support</Link>
+              </Button>
+            </div>
+          </section>
+
+          <section className="border-b border-border py-7" aria-labelledby="app-help-topics">
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <p className="text-xs font-bold uppercase text-primary">Help topics</p>
+                <h2 id="app-help-topics" className="mt-1 font-wallet-display text-xl font-bold">Choose what you need</h2>
+              </div>
+              <CircleHelp className="size-5 shrink-0 text-muted-foreground" />
+            </div>
+            <div className="mt-5 divide-y divide-border border-y border-border">
+              {appHelpTopics.map(({ icon: Icon, title, body }) => (
+                <article key={title} className="flex gap-3 py-4">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-[10px] bg-card text-primary">
+                    <Icon className="size-5" />
+                  </span>
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-semibold">{title}</h3>
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">{body}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="border-b border-border py-7" aria-labelledby="app-help-start">
+            <p className="text-xs font-bold uppercase text-primary">Before contacting support</p>
+            <h2 id="app-help-start" className="mt-1 font-wallet-display text-xl font-bold">Start with these checks</h2>
+            <div className="mt-5 space-y-5">
+              {appHelpEssentials.map(({ icon: Icon, title, body }, index) => (
+                <article key={title} className="flex gap-3">
+                  <span className="relative grid size-10 shrink-0 place-items-center rounded-[10px] bg-primary/10 text-primary">
+                    <Icon className="size-5" />
+                    <span className="absolute -right-1 -top-1 grid size-4 place-items-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">{index + 1}</span>
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-semibold">{title}</h3>
+                    <p className="mt-1 text-sm leading-6 text-muted-foreground">{body}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="py-7" aria-labelledby="app-help-contact">
+            <span className="inline-flex size-11 items-center justify-center rounded-[10px] bg-primary/15 text-primary">
+              <HeartHandshake className="size-5" />
+            </span>
+            <h2 id="app-help-contact" className="mt-4 font-wallet-display text-xl font-bold">Still need a hand?</h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              Tell us what happened and include the relevant order or transaction details so the team can review the right activity.
+            </p>
+            <Button asChild className="mt-5 h-11 w-full rounded-[10px]">
+              <Link to="/report-problem">Report a problem <ArrowRight className="size-4" /></Link>
+            </Button>
+            <Button asChild variant="link" className="mt-2 h-10 w-full text-primary">
+              <Link to="/help-board">Open Support Center</Link>
+            </Button>
+          </section>
+        </div>
+      </main>
+    </div>
   );
 }
