@@ -113,8 +113,8 @@ function mapRow(
     paymentMethod: (r.payment_method as string) ?? null,
     reference: ref,
     productName:
-      (r.product_name_snapshot as string) ??
-      (r.product_id ? products.get(r.product_id as string) ?? null : null) ??
+      (r.product_name_snapshot as string | null) ||
+      (r.product_id ? products.get(r.product_id as string) : undefined) ||
       "Deleted product",
     productId: (r.product_id as string) ?? null,
     buyerId: r.buyer_id as string,
