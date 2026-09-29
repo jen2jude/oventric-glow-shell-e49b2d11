@@ -5897,3 +5897,14 @@ html.oventric-app .attach-accent { color: #FF3EB5; }
   from { transform: translateX(-60px); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
 }
+
+/* Chat message text is always copyable (web + installed app, long-press on phones). */
+.chat-selectable,
+.chat-selectable *,
+html.standalone-app .chat-selectable,
+html.standalone-app .chat-selectable * {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+  -webkit-touch-callout: default !important;
+  cursor: text;
+}

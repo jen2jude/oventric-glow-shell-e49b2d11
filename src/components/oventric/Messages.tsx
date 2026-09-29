@@ -203,7 +203,7 @@ function MessageBubble({
         <div className="mb-1.5 flex items-center gap-1.5 text-xs font-bold text-chat-blue">
           <ShieldCheck className="size-3.5" aria-hidden="true" /> Oventric update
         </div>
-        <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">{msg.body}</div>
+        <div className="chat-selectable whitespace-pre-wrap break-words text-sm leading-relaxed">{msg.body}</div>
         <div className="mt-2 text-[10px] text-chat-muted">{formatTime(msg.created_at)}</div>
       </div>
     );
@@ -218,7 +218,7 @@ function MessageBubble({
         }`}
       >
         {stripProductLink(msg.body) && (
-          <div className="leading-relaxed whitespace-pre-wrap break-words">
+          <div className="chat-selectable leading-relaxed whitespace-pre-wrap break-words">
             {stripProductLink(msg.body)}
           </div>
         )}

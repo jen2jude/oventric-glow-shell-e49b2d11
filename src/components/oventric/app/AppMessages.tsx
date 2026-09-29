@@ -126,7 +126,7 @@ function Bubble({
         <div className="mb-1.5 flex items-center gap-1.5 text-xs font-bold text-sky-300">
           <ShieldCheck className="size-3.5" aria-hidden="true" /> Oventric update
         </div>
-        <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">{msg.body}</div>
+        <div className="chat-selectable whitespace-pre-wrap break-words text-sm leading-relaxed">{msg.body}</div>
       </div>
     );
   }
@@ -140,7 +140,7 @@ function Bubble({
         }`}
       >
         {stripProductLink(msg.body) && (
-          <div className="leading-relaxed whitespace-pre-wrap break-words">
+          <div className="chat-selectable leading-relaxed whitespace-pre-wrap break-words">
             {stripProductLink(msg.body)}
           </div>
         )}

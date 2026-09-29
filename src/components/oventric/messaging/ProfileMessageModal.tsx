@@ -437,7 +437,7 @@ export function ProfileMessageModal({
                       <div className="mb-1.5 flex items-center gap-1.5 text-xs font-bold text-chat-blue">
                         <ShoppingBag className="size-3.5" aria-hidden="true" /> Oventric update
                       </div>
-                      <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">{m.body}</div>
+                      <div className="chat-selectable whitespace-pre-wrap break-words text-sm leading-relaxed">{m.body}</div>
                       <div className="mt-2 text-[10px] text-chat-muted">{formatTime(m.created_at)}</div>
                     </div>
                   );
@@ -464,7 +464,7 @@ export function ProfileMessageModal({
                         return (
                           <>
                             {text && (
-                              <div className="leading-relaxed whitespace-pre-wrap break-words">
+                              <div className="chat-selectable leading-relaxed whitespace-pre-wrap break-words">
                                 {text}
                               </div>
                             )}
