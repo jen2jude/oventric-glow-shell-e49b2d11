@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Rebuild the app Support Center with compact cases, FAQs, live chat, and feedback sheets
+
 - [x] Rebuild the Help Center as a dark app-native support page while preserving the website version
 
 - [x] Show every product category in Explore with four previews and slide-up View all lists

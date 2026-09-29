@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import {
   Receipt,
@@ -17,12 +17,16 @@ import {
   Clock3,
   HeartHandshake,
   LifeBuoy,
+  ArrowLeft,
+  Send,
 } from "lucide-react";
 import { PublicChrome } from "@/components/oventric/PublicChrome";
 import { SupportLiveChat } from "@/components/oventric/SupportLiveChat";
 import { Button } from "@/components/ui/button";
 import { submitSupportTicket, submitSupportFeedback } from "@/lib/support.functions";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
+import { useIsAppShell } from "@/hooks/use-launch-context";
+import { AppSheet } from "@/components/oventric/app/AppSheet";
 import supportHeadset from "@/assets/support-headset.png.asset.json";
 
 export const Route = createFileRoute("/help-board")({
@@ -98,6 +102,8 @@ const FAQS = [
 ];
 
 function HelpBoardPage() {
+  const isAppShell = useIsAppShell();
+  const navigate = useNavigate();
   const { isAuthenticated, openGate } = useAuthGate();
   const ticketFn = useServerFn(submitSupportTicket);
   const feedbackFn = useServerFn(submitSupportFeedback);
@@ -163,6 +169,103 @@ function HelpBoardPage() {
     }
     setFeedbackBusy(false);
   };
+
+  if (isAppShell) {
+    const back = () => {
+      if (window.history.length > 1) window.history.back();
+      else navigate({ to: "/" });
+    };
+
+    return (
+      <div className="app-connections fixed inset-0 flex h-[100dvh] flex-col overflow-hidden bg-background text-foreground">
+        <header className="app-shell-header z-40 flex h-[calc(3.5rem+env(safe-area-inset-top))] shrink-0 items-center gap-3 border-b border-border bg-background px-4 pt-[env(safe-area-inset-top)]">
+          <Button variant="ghost" size="icon" onClick={back} aria-label="Back" className="size-10 shrink-0 text-foreground hover:bg-muted hover:text-foreground">
+            <ArrowLeft className="size-5" />
+          </Button>
+          <span className="font-wallet-display text-base font-bold">Support Center</span>
+        </header>
+
+        <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-6 [scrollbar-width:none]">
+          <div className="mx-auto max-w-2xl font-wallet-body">
+            <section className="border-b border-border pb-7">
+              <div className="flex items-start justify-between gap-4">
+                <span className="grid size-12 place-items-center rounded-[10px] bg-primary/15 text-primary"><LifeBuoy className="size-6" /></span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold text-foreground">
+                  <span className="size-2 rounded-full bg-emerald-400" /> Online · 24/7
+                </span>
+              </div>
+              <p className="mt-5 text-xs font-bold uppercase text-primary">Oventric support</p>
+              <h1 className="mt-2 font-wallet-display text-3xl font-bold leading-tight">Help is closer than you think.</h1>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">Open a support case, find a quick answer, or start a private conversation with our team.</p>
+              <Button onClick={() => setChatOpen(true)} className="mt-5 h-11 w-full rounded-[10px]"><MessageCircle className="size-4" /> Start live chat</Button>
+            </section>
+
+            <section className="border-b border-border py-7" aria-labelledby="app-support-case">
+              <p className="text-xs font-bold uppercase text-primary">Resolve an issue</p>
+              <h2 id="app-support-case" className="mt-1 font-wallet-display text-xl font-bold">Open a support case</h2>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">Choose the closest match so your case reaches the right team.</p>
+              <div className="mt-5 divide-y divide-border border-y border-border">
+                {DISPUTES.map((dispute) => (
+                  <Button key={dispute.key} variant="ghost" onClick={() => startDispute(dispute.key)} className="h-auto min-h-16 w-full justify-start gap-3 whitespace-normal rounded-none px-0 py-4 text-left text-foreground hover:bg-transparent hover:text-foreground">
+                    <span className="grid size-10 shrink-0 place-items-center rounded-[10px] bg-card text-primary"><dispute.icon className="size-5" /></span>
+                    <span className="min-w-0 flex-1"><span className="block text-sm font-semibold">{dispute.label}</span><span className="mt-1 block text-xs font-normal leading-5 text-muted-foreground">{dispute.copy}</span></span>
+                    <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
+                  </Button>
+                ))}
+              </div>
+              {ticketDone && <p className="mt-4 flex items-center gap-2 rounded-[10px] bg-primary/10 px-4 py-3 text-sm font-semibold text-primary"><Check className="size-4" /> Case submitted. Our team will follow up shortly.</p>}
+            </section>
+
+            <section className="border-b border-border py-7" aria-labelledby="app-support-faq">
+              <div className="flex items-center justify-between gap-4"><div><p className="text-xs font-bold uppercase text-primary">Quick answers</p><h2 id="app-support-faq" className="mt-1 font-wallet-display text-xl font-bold">Frequently asked</h2></div><BadgeHelp className="size-5 text-muted-foreground" /></div>
+              <div className="mt-4 divide-y divide-border border-y border-border">
+                {FAQS.map((faq, index) => (
+                  <div key={faq.q}>
+                    <Button variant="ghost" onClick={() => setFaqOpen(faqOpen === index ? null : index)} className="h-auto min-h-14 w-full justify-between whitespace-normal rounded-none px-0 py-4 text-left text-foreground hover:bg-transparent hover:text-foreground" aria-expanded={faqOpen === index}>
+                      <span className="pr-4 text-sm font-semibold">{faq.q}</span><ChevronDown className={`size-4 shrink-0 text-muted-foreground transition-transform ${faqOpen === index ? "rotate-180" : ""}`} />
+                    </Button>
+                    {faqOpen === index && <p className="pb-4 pr-7 text-sm leading-6 text-muted-foreground">{faq.a}</p>}
+                  </div>
+                ))}
+              </div>
+              <Button asChild variant="link" className="mt-3 h-auto px-0 text-primary"><Link to="/faq">Browse all FAQs <ArrowRight className="size-4" /></Link></Button>
+            </section>
+
+            <section className="py-7" aria-labelledby="app-support-more">
+              <span className="grid size-11 place-items-center rounded-[10px] bg-primary/15 text-primary"><HeartHandshake className="size-5" /></span>
+              <h2 id="app-support-more" className="mt-4 font-wallet-display text-xl font-bold">How was your support experience?</h2>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">Your feedback helps us improve the support you receive.</p>
+              <Button variant="outline" onClick={() => { setFeedbackOpen(true); setFeedbackDone(false); }} className="mt-5 h-11 w-full rounded-[10px] border-border bg-card text-foreground hover:bg-muted hover:text-foreground"><Star className="size-4" /> Share feedback</Button>
+              <div className="mt-5 flex justify-center gap-5 text-sm"><Link to="/help" className="text-primary">Help Center</Link><Link to="/report-problem" className="text-primary">Report a problem</Link></div>
+            </section>
+          </div>
+        </main>
+
+        <AppSheet open={Boolean(activeDispute)} onClose={() => setOpenDispute(null)} header={activeDispute ? <div className="flex items-center gap-3 border-b border-white/10 px-5 pb-4 pt-2"><span className="grid size-10 place-items-center rounded-[10px] bg-white/[0.06] text-primary"><activeDispute.icon className="size-5" /></span><div><p className="text-xs text-white/45">Support case</p><h2 className="font-wallet-display text-base font-bold">{activeDispute.label}</h2></div></div> : undefined}>
+          {activeDispute && <div className="px-5 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-5">
+            <label htmlFor="app-case-subject" className="text-sm font-semibold">Subject</label>
+            <input id="app-case-subject" value={subject} onChange={(event) => setSubject(event.target.value)} placeholder="Order number or product name" className="mt-2 h-11 w-full rounded-[10px] border border-white/10 bg-white/[0.06] px-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-primary" />
+            <label htmlFor="app-case-details" className="mt-5 block text-sm font-semibold">What happened?</label>
+            <textarea id="app-case-details" value={details} onChange={(event) => setDetails(event.target.value)} rows={5} placeholder="Add the details our team should review." className="mt-2 w-full resize-none rounded-[10px] border border-white/10 bg-white/[0.06] p-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-primary" />
+            <Button onClick={() => void sendTicket()} disabled={ticketBusy || subject.trim().length < 3 || details.trim().length < 5} className="mt-5 h-11 w-full rounded-[10px]"><Send className="size-4" /> {ticketBusy ? "Submitting…" : "Submit case"}</Button>
+          </div>}
+        </AppSheet>
+
+        <AppSheet open={feedbackOpen} onClose={() => setFeedbackOpen(false)} header={<div className="border-b border-white/10 px-5 pb-4 pt-2"><p className="text-xs text-white/45">Support Center</p><h2 className="font-wallet-display text-base font-bold">Share feedback</h2></div>}>
+          <div className="px-5 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-5">
+            {feedbackDone ? <div className="py-8 text-center"><span className="mx-auto grid size-12 place-items-center rounded-full bg-primary/15 text-primary"><Check className="size-6" /></span><p className="mt-4 font-semibold">Thanks for the feedback!</p></div> : <>
+              <p className="text-sm text-white/60">How would you rate your experience?</p>
+              <div className="mt-3 flex justify-center gap-2">{[1, 2, 3, 4, 5].map((number) => <Button key={number} variant="ghost" size="icon" onClick={() => setRating(number)} aria-label={`${number} star`} className="size-11 text-white/35 hover:bg-white/[0.06]"><Star className={number <= rating ? "fill-primary text-primary" : ""} /></Button>)}</div>
+              <textarea value={feedbackText} onChange={(event) => setFeedbackText(event.target.value)} rows={4} placeholder="Tell us about your experience…" className="mt-4 w-full resize-none rounded-[10px] border border-white/10 bg-white/[0.06] p-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-primary" />
+              <Button onClick={() => void sendFeedback()} disabled={feedbackBusy || rating < 1 || feedbackText.trim().length < 3} className="mt-4 h-11 w-full rounded-[10px]">{feedbackBusy ? "Sending…" : "Send feedback"}</Button>
+            </>}
+          </div>
+        </AppSheet>
+
+        <SupportLiveChat open={chatOpen} onClose={() => setChatOpen(false)} />
+      </div>
+    );
+  }
 
   return (
     <PublicChrome lightDesktop>

@@ -22,7 +22,7 @@ App conversations, profile forms, composer, and product upload use app-scoped sh
 
 Keep app chrome outside the main scroller; use `app-scroll-header` inside. Why: prevent header loss.
 
-Privacy, Terms, and Report a Problem use dark app views and retain separate web editorial views. Why: no website chrome in app.
+Privacy, Terms, Report a Problem, Help, and Support Center use dark app views and retain separate web views. Why: no website chrome in app.
 
 ## Creator Coach (AI)
 - Creator Coach is app-exclusive: chat UI in `src/components/oventric/app/CreatorCoach.tsx`, streaming route `src/routes/api/creator-coach.ts` (openai/gpt-6-astra via Responses, reasoning low), history in `creator_coach_messages` (one conversation per creator, account-saved). Reason: install incentive.
