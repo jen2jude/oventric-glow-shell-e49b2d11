@@ -1,8 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
   AlertTriangle,
+  ArrowLeft,
   ArrowRight,
   Ban,
   Bug,
@@ -23,6 +24,7 @@ import { PublicChrome } from "@/components/oventric/PublicChrome";
 import { Button } from "@/components/ui/button";
 import { submitReport } from "@/lib/reports.functions";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 import helpImage from "@/assets/public-pages/help-editorial.jpg";
 
 export const Route = createFileRoute("/report-problem")({
@@ -117,6 +119,7 @@ const includePoints = [
 function ReportPage() {
   const submit = useServerFn(submitReport);
   const { isAuthenticated, openGate } = useAuthGate();
+  const isAppShell = useIsAppShell();
   const [reason, setReason] = useState<Reason>("scam");
   const [note, setNote] = useState("");
   const [sending, setSending] = useState(false);
@@ -142,6 +145,10 @@ function ReportPage() {
       setSending(false);
     }
   };
+
+  if (isAppShell) {
+    return <AppReportPage reason={reason} setReason={setReason} note={note} setNote={setNote} sending={sending} onSubmit={onSubmit} />;
+  }
 
   return (
     <PublicChrome lightDesktop>
@@ -402,5 +409,70 @@ function ReportPage() {
         </div>
       </div>
     </PublicChrome>
+  );
+}
+
+function AppReportPage({ reason, setReason, note, setNote, sending, onSubmit }: {
+  reason: Reason;
+  setReason: (reason: Reason) => void;
+  note: string;
+  setNote: (note: string) => void;
+  sending: boolean;
+  onSubmit: () => Promise<void>;
+}) {
+  const navigate = useNavigate();
+  const back = () => {
+    if (window.history.length > 1) window.history.back();
+    else navigate({ to: "/" });
+  };
+
+  return (
+    <div className="app-connections fixed inset-0 flex h-[100dvh] flex-col overflow-hidden bg-background text-foreground">
+      <header className="app-shell-header z-40 flex h-[calc(3.5rem+env(safe-area-inset-top))] shrink-0 items-center gap-3 border-b border-border bg-background px-4 pt-[env(safe-area-inset-top)]">
+        <Button variant="ghost" size="icon" onClick={back} aria-label="Back" className="size-10 shrink-0 text-foreground hover:bg-muted hover:text-foreground"><ArrowLeft className="size-5" /></Button>
+        <span className="font-wallet-display text-base font-bold">Report a problem</span>
+      </header>
+      <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-8 [scrollbar-width:none]">
+        <div className="mx-auto max-w-2xl font-wallet-body">
+          <div className="border-b border-border pb-7">
+            <span className="inline-flex size-12 items-center justify-center rounded-[10px] bg-primary/15 text-primary"><ShieldAlert className="size-6" /></span>
+            <h1 className="mt-5 font-wallet-display text-3xl font-bold leading-tight">Tell us what happened.</h1>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">Report a technical issue, unsafe behavior, infringement or a payment concern. Our team will review it and follow up with you.</p>
+          </div>
+
+          <section className="py-7" aria-labelledby="app-report-category">
+            <h2 id="app-report-category" className="font-wallet-display text-lg font-bold">What are you reporting?</h2>
+            <div className="mt-4 space-y-2">
+              {issues.map((issue) => (
+                <Button key={issue.key} type="button" variant="outline" onClick={() => setReason(issue.key)} aria-pressed={reason === issue.key}
+                  className={`h-auto min-h-16 w-full justify-start gap-3 whitespace-normal rounded-[10px] px-4 py-3 text-left ${reason === issue.key ? "border-primary bg-primary/10 text-foreground" : "border-border bg-card text-foreground hover:bg-muted hover:text-foreground"}`}>
+                  <issue.icon className={`size-5 shrink-0 ${reason === issue.key ? "text-primary" : "text-muted-foreground"}`} />
+                  <span className="min-w-0 flex-1"><span className="block text-sm font-semibold">{issue.title}</span><span className="mt-0.5 block text-xs font-normal leading-5 text-muted-foreground">{issue.body}</span></span>
+                  {reason === issue.key && <Check className="size-4 shrink-0 text-primary" />}
+                </Button>
+              ))}
+            </div>
+          </section>
+
+          <section className="border-t border-border pt-7" aria-labelledby="app-report-description">
+            <h2 id="app-report-description" className="font-wallet-display text-lg font-bold">What happened?</h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">Include the product, order or profile involved if there is one.</p>
+            <label htmlFor="app-report-note" className="sr-only">Describe the issue</label>
+            <textarea id="app-report-note" value={note} onChange={(event) => setNote(event.target.value.slice(0, 280))}
+              placeholder="What were you doing, and what happened instead?" rows={5} maxLength={280}
+              className="mt-4 w-full resize-none rounded-[10px] border border-border bg-card p-4 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20" />
+            <p className="mt-1 text-right text-xs text-muted-foreground">{note.length} / 280</p>
+            <Button onClick={onSubmit} disabled={sending} className="mt-5 h-11 w-full gap-2 rounded-[10px]"><Send className="size-4" />{sending ? "Sending..." : "Send report"}</Button>
+            <p className="mt-4 flex items-start gap-2 text-xs leading-5 text-muted-foreground"><MailCheck className="mt-0.5 size-4 shrink-0" />You will need to sign in before submitting so we can follow up securely.</p>
+          </section>
+
+          <div className="mt-7 border-t border-border pt-6 text-sm leading-6 text-muted-foreground">
+            <p>For an order issue, use “Report a problem” on the order page to attach its record automatically.</p>
+            <p className="mt-3">Never include your password, PIN or one-time codes.</p>
+            <Button asChild variant="link" className="mt-3 h-auto p-0 text-primary"><Link to="/help">Visit the Help center <ArrowRight className="size-4" /></Link></Button>
+          </div>
+        </div>
+      </main>
+    </div>
   );
 }

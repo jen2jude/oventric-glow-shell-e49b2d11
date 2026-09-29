@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Give Report a Problem an app-native dark view while keeping the website presentation
+
 - [x] Keep prefilled product edit fields readable against the dark app sheet
 
 - [x] Give the app Privacy policy a compact dark reading view without changing the website page
