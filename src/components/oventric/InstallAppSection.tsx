@@ -94,7 +94,7 @@ export function InstallAppSection() {
         <div className="mt-9 flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-6">
           <Button type="button" onClick={() => void onInstall()} className="home-install-cta h-auto min-h-16 w-full whitespace-normal rounded-full px-5 py-3 text-base font-bold sm:w-auto sm:min-w-[19rem] sm:text-lg">
             <Download className="!size-6" aria-hidden="true" />
-            <span className="flex-1 text-left">{canPrompt || isIosDevice() ? "Install app on your phone" : "Get the app on your phone"}</span>
+            <span className="flex-1 text-left">Click here to download app to your phone</span>
             <ArrowRight className="!size-5" aria-hidden="true" />
           </Button>
           <div className="flex items-center gap-4 border-home-line sm:border-l sm:pl-5">

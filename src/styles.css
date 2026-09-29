@@ -413,11 +413,12 @@
   background-clip: text;
 }
 .home-install-cta {
-  background: linear-gradient(100deg, var(--home-pop-red), var(--newsfeed-coral));
-  color: var(--primary-foreground);
+  background: linear-gradient(100deg, var(--home-pop-red), var(--wallet-crimson));
+  color: var(--home-surface);
   box-shadow: 0 14px 28px -16px color-mix(in oklab, var(--home-pop-red) 70%, transparent);
   transition: transform 180ms ease, box-shadow 180ms ease;
 }
+.home-install .home-install-cta { color: var(--home-surface); }
 .home-install-cta:hover {
   transform: translateY(-2px);
   box-shadow: 0 20px 32px -17px color-mix(in oklab, var(--home-pop-red) 75%, transparent);
