@@ -218,7 +218,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
 
   return (
     <div
-      className="modal-light fixed inset-0 z-[70] flex items-end justify-center sm:items-center"
+      className="edit-listing-modal modal-light fixed inset-0 z-[70] flex items-end justify-center sm:items-center"
       role="dialog"
       aria-modal="true"
     >

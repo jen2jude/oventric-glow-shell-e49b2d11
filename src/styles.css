@@ -4796,6 +4796,29 @@ section + section {
 .app-product .text-white\/10 { color: rgb(255 255 255 / 0.1); }
 .app-product .text-white\/5 { color: rgb(255 255 255 / 0.05); }
 
+/* The product page keeps the website skin for its content, but its app edit
+   sheet must not inherit the website's white field backgrounds. */
+.app-product .edit-listing-modal > .slide-up {
+  background-color: var(--card);
+  color: var(--foreground);
+}
+.app-product .edit-listing-modal .bg-\[\#121214\] {
+  background-color: var(--background);
+  box-shadow: none;
+}
+.app-product .edit-listing-modal form :is(input:not([type="file"]), textarea, select) {
+  background-color: var(--background);
+  color: var(--foreground);
+  border-color: var(--border);
+  color-scheme: dark;
+}
+.app-product .edit-listing-modal form select option {
+  background-color: var(--card);
+  color: var(--foreground);
+}
+.app-product .edit-listing-modal .text-slate-400 { color: var(--muted-foreground); }
+.app-product .edit-listing-modal .text-slate-500 { color: var(--muted-foreground); }
+
 
 /* Chat drawer open — hide the mobile bottom navigation so the reply
    composer is fully reachable on small screens. */
