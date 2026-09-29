@@ -28,6 +28,7 @@ import { visualForCategory } from "@/components/oventric/marketplace-discovery/u
 import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { CashbackBadge } from "@/components/oventric/CashbackBadge";
 import { haptic } from "@/lib/haptics";
+import { AppSellerLeaderboardSheet } from "./AppSellerLeaderboardSheet";
 
 type CategoryNode = { id: string; slug: string; name: string };
 
@@ -49,6 +50,7 @@ const TILE_TINTS = [
  */
 export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") => void }) {
   const navigate = useNavigate();
+  const [boardOpen, setBoardOpen] = useState(false);
   const { baseCurrency } = useOnboarding();
   const currency = baseCurrency ?? "USD";
 
@@ -127,6 +129,8 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
   const show = (t: Tab) => tab === "All" || tab === t;
 
   return (
+    <>
+      <AppSellerLeaderboardSheet open={boardOpen} onClose={() => setBoardOpen(false)} />
     <div className="min-h-screen bg-[#0A0A0B] pb-24 text-white">
       {/* ------------------------------------------------ search + tabs */}
       <div className="app-scroll-header sticky top-0 z-30 border-b border-white/[0.06] bg-[#0A0A0B] px-4 pb-3 pt-4">
@@ -246,7 +250,7 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
               <section className="mt-7">
                 <SectionHead
                   title="Top sellers"
-                  action={{ label: "View all", onClick: () => navigate({ to: "/sellers" }) }}
+                  action={{ label: "View all", onClick: () => setBoardOpen(true) }}
                 />
                 <div className="space-y-2">
                   {shownSellers.slice(0, tab === "Shops" ? 40 : 5).map((s) => (
@@ -327,6 +331,7 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
         )}
       </div>
     </div>
+    </>
   );
 }
 
