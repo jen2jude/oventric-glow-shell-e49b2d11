@@ -3,6 +3,7 @@ import type { ProductDTO } from "@/lib/marketplace.functions";
 import { visibleProductPrice } from "@/lib/money-visibility";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { CashbackBadge } from "@/components/oventric/CashbackBadge";
+import { OutOfStockTag } from "@/components/oventric/StockBadge";
 
 export function usePrice() {
   const { baseCurrency, balancesHidden } = useOnboarding();
@@ -78,7 +79,16 @@ export function RowCard({ product, onClick }: { product: ProductDTO; onClick: ()
         </span>
 
         <div className="mt-1.5 flex items-center gap-2">
-          <span className="truncate text-[14px] font-black text-[#E5484D]">{price(product)}</span>
+          <span className="flex min-w-0 items-center gap-1.5">
+            <span
+              className={`truncate text-[14px] font-black ${
+                product.inStock === false ? "text-white/35" : "text-[#E5484D]"
+              }`}
+            >
+              {price(product)}
+            </span>
+            {product.inStock === false && <OutOfStockTag />}
+          </span>
           <span className="ml-auto flex shrink-0 items-center gap-0.5 text-[11.5px] font-bold text-white/40">
             <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
             {product.rating > 0 ? product.rating.toFixed(1) : "5.0"}
@@ -105,7 +115,16 @@ export function GridCard({ product, onClick }: { product: ProductDTO; onClick: (
         {product.name}
       </p>
       <div className="mt-1 flex items-center justify-between gap-2">
-        <span className="truncate text-[14px] font-black text-[#E5484D]">{price(product)}</span>
+        <span className="flex min-w-0 items-center gap-1.5">
+          <span
+            className={`truncate text-[14px] font-black ${
+              product.inStock === false ? "text-white/35" : "text-[#E5484D]"
+            }`}
+          >
+            {price(product)}
+          </span>
+          {product.inStock === false && <OutOfStockTag />}
+        </span>
         <span className="flex shrink-0 items-center gap-0.5 text-[11.5px] font-bold text-white/40">
           <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
           {product.rating > 0 ? product.rating.toFixed(1) : "5.0"}
