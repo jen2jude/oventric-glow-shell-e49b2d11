@@ -75,8 +75,14 @@ export function CreatorPublishModal({
       .catch(() => {});
   }, [open, loadCats]);
 
+  // Survive a failed publish: a retry reuses what was already saved instead
+  // of creating another copy of the product or re-uploading media.
+  const savedRef = useRef<{ productId?: string; mediaPaths?: string[]; mediaType?: "image" | "video"; coverPath?: string | null }>({});
+  const submittingRef = useRef(false);
+
   useEffect(() => {
     if (open) return;
+    savedRef.current = {};
     setTitle("");
     setCaption("");
     setAttachments([]);
