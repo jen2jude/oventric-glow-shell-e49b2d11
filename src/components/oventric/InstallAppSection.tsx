@@ -11,13 +11,6 @@ import phoneHand from "@/assets/install-phone-hand-clean.png";
 import appScreen from "@/assets/app-home-mock-screen.png";
 import wordmark from "@/assets/oventric-logo-dark.png";
 
-function AndroidMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M7.2 16.8c0 .66.54 1.2 1.2 1.2h.9v2.4a1.2 1.2 0 0 0 2.4 0V18h1.2v2.4a1.2 1.2 0 0 0 2.4 0V18h.3c.66 0 1.2-.54 1.2-1.2V9H7.2v7.8ZM5.4 9a1.2 1.2 0 0 0-1.2 1.2v4.8a1.2 1.2 0 0 0 2.4 0v-4.8A1.2 1.2 0 0 0 5.4 9Zm13.2 0a1.2 1.2 0 0 0-1.2 1.2v4.8A1.2 1.2 0 0 0 18.6 9Zm-3.42-3.36.84-1.26a.3.3 0 0 0-.5-.33l-.9 1.35a7.2 7.2 0 0 0-5.64 0l-.9-1.35a.3.3 0 1 0-.5.33l.84 1.26A6.6 6.6 0 0 0 7.2 8.4h9.6a6.6 6.6 0 0 0-1.62-2.76ZM10 6.9a.6.6 0 1 1 .6-.6.6.6 0 0 1-.6.6Zm4 0a.6.6 0 1 1 .6-.6.6.6 0 0 1-.6.6Z" />
-    </svg>
-  );
-}
 
 function AppStoreTile({ className }: { className?: string }) {
   return (
@@ -119,12 +112,6 @@ export function InstallAppSection() {
             <Download className="!size-6" aria-hidden="true" />
             <span className="flex-1 text-left">Click here to download app to your phone</span>
             <ArrowRight className="!size-5" aria-hidden="true" />
-          </Button>
-          <div className="flex items-center gap-4 border-home-line sm:border-l sm:pl-5">
-            <span className="text-xs leading-tight text-home-copy">Works on<br />your phone</span>
-            <span className="flex items-center gap-2 text-home-ink" title="iOS"><AppleMark className="size-6" /><span className="text-sm font-semibold">iOS</span></span>
-            <span className="flex items-center gap-2 text-newsfeed-green" title="Android"><AndroidMark className="size-6" /><span className="text-sm font-semibold text-home-ink">Android</span></span>
-          </div>
         </div>
 
         {iosGuide && (
