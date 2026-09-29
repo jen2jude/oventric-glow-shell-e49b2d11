@@ -10,6 +10,7 @@ import type { Currency } from "@/lib/onboarding/OnboardingContext";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { haptic } from "@/lib/haptics";
 import { AppSheet } from "./AppSheet";
+import { OutOfStockTag } from "@/components/oventric/StockBadge";
 
 /**
  * Product quick-view bottom sheet for the app shell. Tapping a product card
@@ -103,9 +104,12 @@ export function ProductQuickView({
           </div>
 
           {/* Price */}
-          <p className="mt-3 text-[22px] font-extrabold tracking-tight text-[#E5484D]">
-            {price(p)}
-          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className={`text-[22px] font-extrabold tracking-tight ${p.inStock === false ? "text-white/35" : "text-[#E5484D]"}`}>
+              {price(p)}
+            </span>
+            {p.inStock === false && <OutOfStockTag />}
+          </div>
 
           {/* Description */}
           {p.description && (
@@ -119,9 +123,12 @@ export function ProductQuickView({
             <button
               type="button"
               onClick={() => go("/checkout/$id")}
-              className="nav-tap flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-[#E5484D] py-3 text-[14px] font-bold text-white shadow-[0_8px_24px_-8px_rgba(229,72,77,0.6)]"
+              disabled={p.inStock === false}
+              className={`nav-tap flex flex-1 items-center justify-center gap-1.5 rounded-xl py-3 text-[14px] font-bold text-white shadow-[0_8px_24px_-8px_rgba(229,72,77,0.6)] ${
+                p.inStock === false ? "bg-white/10 text-white/35 shadow-none" : "bg-[#E5484D]"
+              }`}
             >
-              <ShoppingBag className="h-4 w-4" /> Buy now
+              <ShoppingBag className="h-4 w-4" /> {p.inStock === false ? "Out of stock" : "Buy now"}
             </button>
             <button
               type="button"
