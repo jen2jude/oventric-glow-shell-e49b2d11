@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
-import { Download, Share, Plus, Smartphone, Zap, Bell, X } from "lucide-react";
+import { ArrowRight, Download, Share, Plus, ShoppingBag, UsersRound, Wallet, Rocket, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { isStandaloneDisplay } from "@/hooks/use-launch-context";
 import {
   isAndroidDevice,
   isIosDevice,
-  onInstallPromptChange,
-  getDeferredInstallPrompt,
   triggerInstall,
 } from "@/lib/install-app";
+import phoneHand from "@/assets/install-phone-hand.png";
+import wordmark from "@/assets/oventric-logo-dark.png";
 
 function AndroidMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M7.2 16.8c0 .66.54 1.2 1.2 1.2h.9v2.4a1.2 1.2 0 0 0 2.4 0V18h1.2v2.4a1.2 1.2 0 0 0 2.4 0V18h.3c.66 0 1.2-.54 1.2-1.2V9H7.2v7.8ZM5.4 9a1.2 1.2 0 0 0-1.2 1.2v4.8a1.2 1.2 0 0 0 2.4 0v-4.8A1.2 1.2 0 0 0 5.4 9Zm13.2 0a1.2 1.2 0 0 0-1.2 1.2v4.8a1.2 1.2 0 0 0 2.4 0v-4.8A1.2 1.2 0 0 0 18.6 9Zm-3.42-3.36.84-1.26a.3.3 0 0 0-.5-.33l-.9 1.35a7.2 7.2 0 0 0-5.64 0l-.9-1.35a.3.3 0 1 0-.5.33l.84 1.26A6.6 6.6 0 0 0 7.2 8.4h9.6a6.6 6.6 0 0 0-1.62-2.76ZM10 6.9a.6.6 0 1 1 .6-.6.6.6 0 0 1-.6.6Zm4 0a.6.6 0 1 1 .6-.6.6.6 0 0 1-.6.6Z" />
+      <path d="M7.2 16.8c0 .66.54 1.2 1.2 1.2h.9v2.4a1.2 1.2 0 0 0 2.4 0V18h1.2v2.4a1.2 1.2 0 0 0 2.4 0V18h.3c.66 0 1.2-.54 1.2-1.2V9H7.2v7.8ZM5.4 9a1.2 1.2 0 0 0-1.2 1.2v4.8a1.2 1.2 0 0 0 2.4 0v-4.8A1.2 1.2 0 0 0 5.4 9Zm13.2 0a1.2 1.2 0 0 0-1.2 1.2v4.8A1.2 1.2 0 0 0 18.6 9Zm-3.42-3.36.84-1.26a.3.3 0 0 0-.5-.33l-.9 1.35a7.2 7.2 0 0 0-5.64 0l-.9-1.35a.3.3 0 1 0-.5.33l.84 1.26A6.6 6.6 0 0 0 7.2 8.4h9.6a6.6 6.6 0 0 0-1.62-2.76ZM10 6.9a.6.6 0 1 1 .6-.6.6.6 0 0 1-.6.6Zm4 0a.6.6 0 1 1 .6-.6.6.6 0 0 1-.6.6Z" />
     </svg>
   );
 }
@@ -25,25 +26,22 @@ function AppleMark({ className }: { className?: string }) {
   );
 }
 
-/**
- * Website-only home page section inviting visitors to install the app.
- * One CTA works for both platforms: Android/Chrome fires the native
- * install dialog; iOS expands the Share → Add to Home Screen guide.
- * Hidden entirely once the app is installed (standalone display).
- */
+const benefits = [
+  { title: "Shop", description: "Digital products from top creators", icon: ShoppingBag, color: "text-newsfeed-coral bg-newsfeed-coral-soft" },
+  { title: "Connect", description: "Join a vibrant creator community", icon: UsersRound, color: "text-newsfeed-violet bg-newsfeed-violet-soft" },
+  { title: "Earn", description: "Get cashback and rewards", icon: Wallet, color: "text-newsfeed-gold bg-newsfeed-gold-soft" },
+  { title: "Create", description: "Showcase and sell your products", icon: Rocket, color: "text-newsfeed-green bg-newsfeed-green-soft" },
+];
+
+/** Website invitation only. Installed app stays unchanged. */
 export function InstallAppSection() {
   const [hidden, setHidden] = useState(true);
-  const [canPrompt, setCanPrompt] = useState(false);
   const [iosGuide, setIosGuide] = useState(false);
   const [fallback, setFallback] = useState(false);
 
   useEffect(() => {
     if (isStandaloneDisplay()) return;
     setHidden(false);
-    setCanPrompt(Boolean(getDeferredInstallPrompt()));
-    return onInstallPromptChange(() =>
-      setCanPrompt(Boolean(getDeferredInstallPrompt())),
-    );
   }, []);
 
   if (hidden) return null;
@@ -56,97 +54,67 @@ export function InstallAppSection() {
     }
     const result = await triggerInstall();
     if (result === "unavailable") {
-      // No native prompt available (desktop browser, or already offered).
       setFallback(true);
       setIosGuide(false);
     }
   };
 
   return (
-    <section className="px-1">
-      <div className="relative overflow-hidden rounded-[24px] bg-slate-900 text-white shadow-[0_24px_50px_-30px_rgba(15,23,42,0.8)]">
-        <div className="h-1.5 w-full bg-gradient-to-r from-[#22C55E] via-[#3B82F6] to-[#F59E0B]" />
-        <div className="p-5 sm:p-6">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-400">
-                Better in the app
-              </p>
-              <h2 className="mt-1.5 text-[19px] font-black leading-tight">
-                Get the Oventric app
-              </h2>
-              <p className="mt-1.5 text-[12.5px] leading-relaxed text-slate-300">
-                Full screen, faster, with real alerts for chats, orders and
-                sales — straight from your home screen.
-              </p>
+    <section aria-labelledby="install-app-title" className="home-install relative isolate overflow-hidden rounded-[10px] bg-home-surface px-5 py-9 text-home-ink sm:px-10 sm:py-12 lg:min-h-[620px] lg:px-12 lg:py-14 xl:min-h-[680px] xl:px-16">
+      <div className="home-install-dots pointer-events-none absolute right-6 top-7 hidden h-24 w-24 opacity-50 lg:block" aria-hidden="true" />
+      <div className="relative z-10 lg:max-w-[54%]">
+        <img src={wordmark} alt="Oventric" width={280} height={90} loading="lazy" className="h-11 w-auto max-w-[200px] object-contain object-left sm:h-14 sm:max-w-[240px]" />
+        <p className="mt-9 inline-flex items-center rounded-full bg-newsfeed-coral-soft px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.18em] text-home-ink sm:mt-12">
+          App now available
+        </p>
+        <h2 id="install-app-title" className="mt-5 font-wallet-display text-[clamp(2.35rem,4vw,4.2rem)] font-extrabold leading-[1.05] text-home-ink">
+          Get the Oventric <span className="home-install-title-accent block">Mobile App</span>
+        </h2>
+        <p className="mt-4 max-w-[34rem] text-base leading-snug text-home-copy sm:text-lg lg:text-xl">
+          Discover, shop, connect, create and earn — anytime, anywhere.
+        </p>
+
+        <div className="mt-7 grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-4 sm:gap-x-4">
+          {benefits.map(({ title, description, icon: Icon, color }) => (
+            <div key={title} className="min-w-0 text-center">
+              <span className={`mx-auto grid size-14 place-items-center rounded-[10px] sm:size-16 ${color}`}>
+                <Icon className="size-7" strokeWidth={2.1} aria-hidden="true" />
+              </span>
+              <h3 className="mt-2 text-sm font-extrabold text-home-ink sm:text-base">{title}</h3>
+              <p className="mx-auto mt-0.5 max-w-[9.5rem] text-xs leading-snug text-home-copy sm:text-[13px]">{description}</p>
             </div>
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-white/10">
-              <Smartphone className="h-5 w-5 text-emerald-300" />
-            </span>
-          </div>
-
-          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] font-semibold text-slate-400">
-            <span className="inline-flex items-center gap-1.5">
-              <Zap className="h-3.5 w-3.5 text-amber-400" /> Opens instantly
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <Bell className="h-3.5 w-3.5 text-sky-400" /> Real notifications
-            </span>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => void onInstall()}
-            className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-[14px] bg-white text-[13px] font-black uppercase tracking-widest text-slate-900 active:scale-[0.98] transition-transform"
-          >
-            <Download className="h-4 w-4" strokeWidth={2.6} />
-            {canPrompt || isIosDevice() ? "Install the app" : "Get the app"}
-          </button>
-
-          <div className="mt-3 flex items-center justify-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.06] px-3 py-1.5 text-[11px] font-bold text-slate-200">
-              <AndroidMark className="h-3.5 w-3.5 text-[#3DDC84]" /> Android
-            </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.06] px-3 py-1.5 text-[11px] font-bold text-slate-200">
-              <AppleMark className="h-3.5 w-3.5 text-white" /> iOS
-            </span>
-          </div>
-
-          {iosGuide && (
-            <div className="mt-3 rounded-[14px] border border-white/10 bg-white/[0.05] p-3">
-              <div className="flex items-start justify-between gap-2">
-                <p className="text-[11.5px] font-bold text-slate-200">
-                  On iPhone it takes two taps:
-                </p>
-                <button
-                  type="button"
-                  aria-label="Close guide"
-                  onClick={() => setIosGuide(false)}
-                  className="rounded-[8px] p-0.5 text-slate-500"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              </div>
-              <div className="mt-2 flex items-center gap-2 text-[11px] font-semibold text-slate-300">
-                <span className="inline-flex items-center gap-1 rounded-[10px] border border-white/10 bg-white/[0.06] px-2 py-1.5">
-                  <Share className="h-3.5 w-3.5" /> Share
-                </span>
-                <span className="text-slate-500">→</span>
-                <span className="inline-flex items-center gap-1 rounded-[10px] border border-white/10 bg-white/[0.06] px-2 py-1.5">
-                  <Plus className="h-3.5 w-3.5" /> Add to Home Screen
-                </span>
-              </div>
-            </div>
-          )}
-
-          {fallback && (
-            <p className="mt-3 rounded-[14px] border border-white/10 bg-white/[0.05] p-3 text-[11.5px] leading-relaxed text-slate-300">
-              Open <span className="font-bold text-white">oventric.com</span> on
-              your {isAndroidDevice() ? "Android" : "phone"} browser and tap
-              install when prompted — the same one tap works on Android and iOS.
-            </p>
-          )}
+          ))}
         </div>
+
+        <div className="mt-9 flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-6">
+          <Button type="button" onClick={() => void onInstall()} className="home-install-cta h-auto min-h-16 w-full whitespace-normal rounded-full px-5 py-3 text-base font-bold sm:w-auto sm:min-w-[19rem] sm:text-lg">
+            <Download className="!size-6" aria-hidden="true" />
+            <span className="flex-1 text-left">Click here to download app to your phone</span>
+            <ArrowRight className="!size-5" aria-hidden="true" />
+          </Button>
+          <div className="flex items-center gap-4 border-home-line sm:border-l sm:pl-5">
+            <span className="text-xs leading-tight text-home-copy">Works on<br />your phone</span>
+            <span className="flex items-center gap-2 text-home-ink" title="iOS"><AppleMark className="size-6" /><span className="text-sm font-semibold">iOS</span></span>
+            <span className="flex items-center gap-2 text-newsfeed-green" title="Android"><AndroidMark className="size-6" /><span className="text-sm font-semibold text-home-ink">Android</span></span>
+          </div>
+        </div>
+
+        {iosGuide && (
+          <div className="mt-5 flex max-w-lg items-start justify-between gap-3 rounded-[10px] border border-home-line bg-newsfeed-canvas p-4 text-sm text-home-copy" role="status">
+            <p>On iPhone, tap <Share className="inline size-4" aria-label="Share" /> Share in Safari, then <Plus className="inline size-4" aria-label="Add" /> Add to Home Screen.</p>
+            <Button variant="ghost" size="icon-sm" type="button" aria-label="Close iPhone guide" onClick={() => setIosGuide(false)}><X /></Button>
+          </div>
+        )}
+        {fallback && (
+          <div className="mt-5 flex max-w-lg items-start justify-between gap-3 rounded-[10px] border border-home-line bg-newsfeed-canvas p-4 text-sm text-home-copy" role="status">
+            <p>{isAndroidDevice() ? "Open oventric.com in Chrome on your Android phone and choose Install app from the browser menu." : "Open oventric.com on your phone. On iPhone, use Safari’s Share → Add to Home Screen; on Android, choose Install app in Chrome."}</p>
+            <Button variant="ghost" size="icon-sm" type="button" aria-label="Close install guide" onClick={() => setFallback(false)}><X /></Button>
+          </div>
+        )}
+      </div>
+      <div className="pointer-events-none relative mx-auto mt-5 aspect-square w-full max-w-[480px] sm:max-w-[560px] lg:absolute lg:inset-y-0 lg:right-[-7%] lg:mt-0 lg:h-full lg:w-[58%] lg:max-w-none" aria-hidden="true">
+        <div className="home-install-ring absolute inset-[12%] rounded-full" />
+        <img src={phoneHand} alt="" width={1024} height={1024} loading="lazy" className="absolute inset-0 h-full w-full object-contain object-bottom lg:scale-[1.16]" />
       </div>
     </section>
   );
