@@ -204,9 +204,16 @@ export function AppMarket() {
                 {spotlight.promoted ? "Featured" : "Spotlight"}
               </span>
               <h2 className="text-[17px] font-bold leading-tight">{spotlight.name}</h2>
-              <p className="mt-0.5 text-[11px] text-white/60">
+              <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11px] text-white/60">
                 {spotlight.vendor} ·{" "}
-                <span className="font-bold text-[#E5484D]">{priceOf(spotlight)}</span>
+                <span
+                  className={`font-bold ${
+                    spotlight.inStock === false ? "text-white/35" : "text-[#E5484D]"
+                  }`}
+                >
+                  {priceOf(spotlight)}
+                </span>
+                {spotlight.inStock === false && <OutOfStockTag />}
               </p>
             </div>
           </button>
@@ -246,7 +253,12 @@ export function AppMarket() {
                 </div>
                 <div>
                   <p className="truncate text-[11px] font-medium text-white/90">{p.name}</p>
-                  <p className="text-[11px] font-bold text-[#E5484D]">{priceOf(p)}</p>
+                  <p className="flex flex-wrap items-center gap-1">
+                    <span className={`text-[11px] font-bold ${p.inStock === false ? "text-white/35" : "text-[#E5484D]"}`}>
+                      {priceOf(p)}
+                    </span>
+                    {p.inStock === false && <OutOfStockTag />}
+                  </p>
                 </div>
               </button>
             ))}
@@ -292,7 +304,12 @@ export function AppMarket() {
                     </div>
                     <p className="mt-0.5 line-clamp-1 text-[10px] text-white/40">{p.vendor}</p>
                   </div>
-                  <p className="text-[13px] font-bold text-white">{priceOf(p)}</p>
+                  <p className="flex flex-wrap items-center gap-1.5 text-[13px] font-bold">
+                    <span className={p.inStock === false ? "text-white/35" : "text-white"}>
+                      {priceOf(p)}
+                    </span>
+                    {p.inStock === false && <OutOfStockTag />}
+                  </p>
                 </div>
               </button>
             ))}

@@ -25,6 +25,7 @@ import {
 } from "@/lib/marketplace.functions";
 import type { SellerLite } from "@/components/oventric/marketplace-discovery/cards";
 import { CashbackBadge } from "@/components/oventric/CashbackBadge";
+import { OutOfStockTag } from "@/components/oventric/StockBadge";
 
 type Kind = "all" | "digital";
 type SortKey = "popular" | "newest" | "price_asc" | "price_desc" | "top_rated";
