@@ -298,7 +298,7 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
         <div className="relative z-10 mx-auto flex w-full max-w-[1280px] flex-col justify-center gap-6 px-4 py-14 sm:px-6 sm:py-20 lg:min-h-[520px] lg:px-8 lg:py-28">
           <div>
             <span className="home-pop-strip mb-4 block" aria-hidden="true" />
-            <h1 className="font-wallet-display text-[26px] font-extrabold leading-[1.05] text-home-ink sm:text-[48px] lg:text-[58px]">
+            <h1 className="home-anim-rise font-wallet-display text-[26px] font-extrabold leading-[1.05] text-home-ink sm:text-[48px] lg:text-[58px]">
               1st Africa Digital
               <span className="block text-crimson">Marketplace & Community</span>
               <span className="block">for creators</span>
@@ -354,8 +354,8 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
           </div>
 
           <ul className="hidden flex-wrap gap-x-5 gap-y-2 md:flex">
-            {HANDWRITTEN.map((word) => (
-              <li key={word} className="text-[18px] font-semibold italic text-slate-500 lg:text-[20px]">
+            {HANDWRITTEN.map((word, i) => (
+              <li key={word} style={{ animationDelay: `${i * 2}s` }} className="home-anim-word text-[18px] font-semibold italic text-slate-500 lg:text-[20px]">
                 {word}
               </li>
             ))}
@@ -769,7 +769,8 @@ export function OventricHome({ onSelect, onCreate }: OventricHomeProps) {
             {PAY_METHODS.map((m) => (
               <li
                 key={m.name}
-                className="home-pop-payment flex h-14 shrink-0 items-center justify-center rounded-xl border bg-white px-6"
+                style={{ animationDelay: `${PAY_METHODS.indexOf(m) * 0.6}s` }}
+                className="home-pop-payment home-anim-float flex h-14 shrink-0 items-center justify-center rounded-xl border bg-white px-6"
               >
                 <img src={m.src} alt={m.name} loading="lazy" className="h-8 w-auto max-w-[110px] object-contain" />
               </li>

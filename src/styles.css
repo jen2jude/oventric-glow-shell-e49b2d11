@@ -5908,3 +5908,27 @@ html.standalone-app .chat-selectable * {
   -webkit-touch-callout: default !important;
   cursor: text;
 }
+
+/* Soft homepage motion (website) */
+@keyframes home-anim-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes home-anim-word { 0%, 14%, 100% { color: rgb(100 116 139); transform: none; } 4%, 10% { color: var(--newsfeed-coral); transform: translateY(-2px); } }
+@keyframes home-anim-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+@keyframes home-anim-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes home-anim-shimmer { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+.home-anim-rise { animation: home-anim-rise 0.8s cubic-bezier(.2,.7,.2,1) both; }
+.home-anim-word { animation: home-anim-word 10s ease-in-out infinite; }
+.home-anim-float { animation: home-anim-bob 4.5s ease-in-out infinite; }
+.home-pop-icon { animation: home-anim-breathe 4s ease-in-out infinite; }
+.home-pop-trust-card:nth-child(2) .home-pop-icon { animation-delay: 1s; }
+.home-pop-trust-card:nth-child(3) .home-pop-icon { animation-delay: 2s; }
+.home-pop-trust-card:nth-child(4) .home-pop-icon { animation-delay: 3s; }
+.home-pop-category > :first-child { animation: home-anim-bob 5s ease-in-out infinite; }
+.home-pop-category:nth-child(3n+2) > :first-child { animation-delay: 1.2s; }
+.home-pop-category:nth-child(3n) > :first-child { animation-delay: 2.4s; }
+.home-pop-strip { background-size: 200% 100% !important; animation: home-anim-shimmer 8s linear infinite; }
+@supports (animation-timeline: view()) {
+  .home-pop-step, .home-pop-reason { animation: home-anim-rise linear both; animation-timeline: view(); animation-range: entry 0% entry 40%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-anim-rise, .home-anim-word, .home-anim-float, .home-pop-icon, .home-pop-category > :first-child, .home-pop-strip, .home-pop-step, .home-pop-reason { animation: none !important; }
+}
