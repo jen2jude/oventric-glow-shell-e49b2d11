@@ -331,6 +331,7 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
         )}
       </div>
     </div>
+    </>
   );
 }
 
