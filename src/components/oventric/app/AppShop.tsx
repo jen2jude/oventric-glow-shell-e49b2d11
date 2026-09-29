@@ -140,7 +140,7 @@ export function AppShop({ idOrSlug }: { idOrSlug: string }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-dvh bg-[#0A0A0B] pb-32">
+      <div className="h-dvh overflow-y-auto overscroll-contain bg-[#0A0A0B] pb-32 [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
         <div className="h-32 bg-white/[0.04] animate-pulse" />
         <div className="px-4 pt-12 space-y-3">
           <div className="h-5 w-44 rounded bg-white/[0.06] animate-pulse" />
@@ -152,7 +152,7 @@ export function AppShop({ idOrSlug }: { idOrSlug: string }) {
 
   if (!shop) {
     return (
-      <div className="min-h-dvh bg-[#0A0A0B] pb-32 flex flex-col items-center justify-center gap-3 px-8 text-center">
+      <div className="flex h-dvh flex-col items-center justify-center gap-3 overflow-y-auto overscroll-contain bg-[#0A0A0B] px-8 pb-32 text-center [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
         <Store className="h-8 w-8 text-white/20" />
         <p className="text-white/80 text-sm font-semibold">Shop not found</p>
         <button
@@ -166,7 +166,7 @@ export function AppShop({ idOrSlug }: { idOrSlug: string }) {
   }
 
   return (
-    <div className="min-h-dvh bg-[#0A0A0B] pb-32">
+    <div className="h-dvh overflow-y-auto overscroll-contain bg-[#0A0A0B] pb-[calc(8rem+env(safe-area-inset-bottom))] [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
       {/* Cover */}
       <div className="relative h-28 overflow-hidden">
         {shop.coverUrl ? (
