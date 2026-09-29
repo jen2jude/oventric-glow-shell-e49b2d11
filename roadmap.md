@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Show every product category in Explore with four previews and slide-up View all lists
+
 - [x] Add an app People leaderboard sheet and show five followed people in Explore
 
 - [x] Restore vertical scrolling on user shop profiles in the app
