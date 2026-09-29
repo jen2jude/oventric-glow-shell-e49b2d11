@@ -1,3 +1,4 @@
+import { useLongPressCopy } from "@/hooks/use-long-press-copy";
 import { Fragment, useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Link } from "@tanstack/react-router";
 import { Drawer as VaulDrawer } from "vaul";
@@ -116,6 +117,7 @@ function Bubble({
   attachmentUrl?: string | null;
 }) {
   const productId = extractProductId(msg.body);
+  const pressCopy = useLongPressCopy((msg.is_system ? msg.body : stripProductLink(msg.body)) ?? "");
   if (msg.is_system) {
     return (
       <div
@@ -126,7 +128,7 @@ function Bubble({
         <div className="mb-1.5 flex items-center gap-1.5 text-xs font-bold text-sky-300">
           <ShieldCheck className="size-3.5" aria-hidden="true" /> Oventric update
         </div>
-        <div className="chat-selectable whitespace-pre-wrap break-words text-sm leading-relaxed">{msg.body}</div>
+        <div {...pressCopy} className="chat-selectable whitespace-pre-wrap break-words text-sm leading-relaxed">{msg.body}</div>
       </div>
     );
   }
@@ -140,7 +142,7 @@ function Bubble({
         }`}
       >
         {stripProductLink(msg.body) && (
-          <div className="chat-selectable leading-relaxed whitespace-pre-wrap break-words">
+          <div {...pressCopy} className="chat-selectable leading-relaxed whitespace-pre-wrap break-words">
             {stripProductLink(msg.body)}
           </div>
         )}
