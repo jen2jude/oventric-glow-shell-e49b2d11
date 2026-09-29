@@ -163,19 +163,18 @@ export function AppFeed() {
   const loadFollowers = useServerFn(listFollowers);
   const [quickViewId, setQuickViewId] = useState<string | null>(null);
   const [creatorSheet, setCreatorSheet] = useState<CreatorPostDTO | null>(null);
-  // Deep link from "New creator content" notifications: ?creatorPost=<id>
-  const [pendingCreatorPost, setPendingCreatorPost] = useState<string | null>(null);
+  // "New creator content" links: the global CreatorPostDeepLink opens the
+  // player; here we just jump to the Creators tab.
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("creatorPost");
-    if (!id) return;
-    setPendingCreatorPost(id);
-    setTab("creators");
-    params.delete("creatorPost");
-    const qs = params.toString();
-    window.history.replaceState({}, "", `${window.location.pathname}${qs ? `?${qs}` : ""}${window.location.hash}`);
-  });
+    const w = window as unknown as { __oventricOpenCreators?: boolean };
+    const go = () => {
+      w.__oventricOpenCreators = false;
+      setTab("creators");
+    };
+    if (w.__oventricOpenCreators) go();
+    window.addEventListener("oventric:open-creators", go);
+    return () => window.removeEventListener("oventric:open-creators", go);
+  }, []);
   const fetchProducts = useServerFn(listProducts);
   const fetchCreatorFeed = useServerFn(listCreatorFeed);
   const fetchTopCreators = useServerFn(getTopCreators);
@@ -189,12 +188,6 @@ export function AppFeed() {
     staleTime: 60_000,
     enabled: tab === "creators",
   });
-  useEffect(() => {
-    if (!pendingCreatorPost || !creatorPosts) return;
-    const found = (creatorPosts as CreatorPostDTO[]).find((p) => p.id === pendingCreatorPost);
-    if (found) setCreatorSheet(found);
-    setPendingCreatorPost(null);
-  }, [pendingCreatorPost, creatorPosts]);
   const { data: topCreators } = useQuery({
     queryKey: ["app-feed-top-creators"],
     queryFn: () => fetchTopCreators(),
