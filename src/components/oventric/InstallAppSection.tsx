@@ -7,7 +7,8 @@ import {
   isIosDevice,
   triggerInstall,
 } from "@/lib/install-app";
-import phoneHand from "@/assets/install-phone-hand.png";
+import phoneHand from "@/assets/install-phone-hand-clean.png";
+import appScreen from "@/assets/app-home-mock-screen.png";
 import wordmark from "@/assets/oventric-logo-dark.png";
 
 function AndroidMark({ className }: { className?: string }) {
@@ -112,9 +113,14 @@ export function InstallAppSection() {
           </div>
         )}
       </div>
-      <div className="pointer-events-none relative mx-auto mt-5 aspect-square w-full max-w-[480px] sm:max-w-[560px] lg:absolute lg:inset-y-0 lg:right-[-7%] lg:mt-0 lg:h-full lg:w-[58%] lg:max-w-none" aria-hidden="true">
+      <div className="pointer-events-none relative mx-auto mt-5 aspect-square w-full max-w-[480px] sm:max-w-[560px] lg:absolute lg:right-[-7%] lg:top-1/2 lg:h-full lg:w-auto lg:max-w-none lg:-translate-y-1/2" aria-hidden="true">
         <div className="home-install-ring absolute inset-[12%] rounded-full" />
-        <img src={phoneHand} alt="" width={1024} height={1024} loading="lazy" className="absolute inset-0 h-full w-full object-contain object-bottom lg:scale-[1.16]" />
+        <div className="relative h-full w-full lg:scale-[1.12]">
+          <img src={phoneHand} alt="" width={1024} height={1024} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+          <div className="absolute overflow-hidden rounded-[9%/4%]" style={{ left: "38.97%", top: "15.43%", width: "21.09%", height: "48.15%" }}>
+            <img src={appScreen} alt="" className="h-full w-full object-cover" />
+          </div>
+        </div>
       </div>
     </section>
   );
