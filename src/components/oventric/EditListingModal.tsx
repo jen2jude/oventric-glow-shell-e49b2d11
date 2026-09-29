@@ -13,6 +13,7 @@ import {
 import { StockToggleField } from "@/components/oventric/StockToggleField";
 import { snapshotFxRates } from "@/lib/fx.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 
 interface Props {
   product: ProductDTO;
@@ -26,6 +27,7 @@ interface Props {
  * the product moves back to `pending` and admins are notified.
  */
 export function EditListingModal({ product, onClose, onResubmitted }: Props) {
+  const isAppShell = useIsAppShell();
   const persist = useServerFn(updateAndResubmitProduct);
   const snapshotFx = useServerFn(snapshotFxRates);
   const { homeCurrency } = useOnboarding();
@@ -218,7 +220,7 @@ export function EditListingModal({ product, onClose, onResubmitted }: Props) {
 
   return (
     <div
-      className="edit-listing-modal modal-light fixed inset-0 z-[70] flex items-end justify-center sm:items-center"
+      className={`edit-listing-modal fixed inset-0 z-[70] flex items-end justify-center sm:items-center ${isAppShell ? "" : "modal-light"}`}
       role="dialog"
       aria-modal="true"
     >
