@@ -17,6 +17,13 @@ function notify() {
   listeners.forEach((fn) => fn());
 }
 
+// Capture the browser's install event as early as possible — if it fires
+// before any surface asks for it, the deferred prompt would be lost forever
+// and every install button would fall back to manual instructions.
+if (typeof window !== "undefined") {
+  ensureInstallListener();
+}
+
 export function ensureInstallListener() {
   if (listening || typeof window === "undefined") return;
   listening = true;
