@@ -88,33 +88,33 @@ export function InstallAppSection() {
   };
 
   return (
-    <section aria-labelledby="install-app-title" className="home-install relative isolate overflow-hidden rounded-[10px] bg-home-surface px-5 py-8 text-home-ink sm:px-10 sm:py-10 lg:mt-40 lg:overflow-visible lg:px-12 lg:py-10 xl:px-14">
+    <section aria-labelledby="install-app-title" className="home-install relative isolate overflow-hidden rounded-[10px] bg-home-surface px-5 py-8 text-home-ink sm:px-10 sm:py-10 lg:mt-40 lg:overflow-visible lg:px-12 lg:py-9 xl:px-14">
       <div className="home-install-dots pointer-events-none absolute right-6 top-7 hidden h-24 w-24 opacity-50 lg:block" aria-hidden="true" />
-      <div className="relative z-10 lg:max-w-[54%]">
-        <img src={wordmark} alt="Oventric" width={280} height={90} loading="lazy" className="h-10 w-auto max-w-[180px] object-contain object-left sm:h-11 sm:max-w-[200px]" />
-        <p className="mt-6 inline-flex items-center rounded-full bg-newsfeed-coral-soft px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.18em] text-home-ink sm:mt-7">
+      <div className="relative z-10 lg:max-w-[50%]">
+        <img src={wordmark} alt="Oventric" width={280} height={90} loading="lazy" className="h-10 w-auto max-w-[180px] lg:hidden object-contain object-left sm:h-11 sm:max-w-[200px]" />
+        <p className="mt-6 lg:mt-0 inline-flex items-center rounded-full bg-newsfeed-coral-soft px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.18em] text-home-ink sm:mt-7">
           App now available
         </p>
-        <h2 id="install-app-title" className="mt-5 font-wallet-display text-[clamp(2.2rem,3.4vw,3.5rem)] font-extrabold leading-[1.05] text-home-ink">
+        <h2 id="install-app-title" className="mt-5 font-wallet-display text-[clamp(2.2rem,3vw,3rem)] lg:mt-4 font-extrabold leading-[1.05] text-home-ink">
           Get the Oventric <span className="home-install-title-accent block">Mobile App</span>
         </h2>
-        <p className="mt-4 max-w-[34rem] text-base leading-snug text-home-copy sm:text-lg lg:text-xl">
+        <p className="mt-4 max-w-[34rem] text-base leading-snug text-home-copy sm:text-lg">
           Discover, shop, connect, create and earn — anytime, anywhere.
         </p>
 
-        <div className="mt-6 grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-4 sm:gap-x-4">
+        <div className="mt-6 grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-4 sm:gap-x-4 lg:mt-5 lg:gap-y-0">
           {benefits.map(({ title, description, icon: Icon, color }) => (
             <div key={title} className="min-w-0 text-center">
-              <span className={`mx-auto grid size-12 place-items-center rounded-[10px] sm:size-14 ${color}`}>
+              <span className={`mx-auto grid size-12 place-items-center rounded-[10px] sm:size-14 lg:size-11 ${color}`}>
                 <Icon className="size-7" strokeWidth={2.1} aria-hidden="true" />
               </span>
               <h3 className="mt-2 text-sm font-extrabold text-home-ink sm:text-base">{title}</h3>
-              <p className="mx-auto mt-0.5 max-w-[9.5rem] text-xs leading-snug text-home-copy sm:text-[13px]">{description}</p>
+              <p className="mx-auto mt-0.5 max-w-[9.5rem] text-xs leading-snug text-home-copy sm:text-[13px] lg:hidden">{description}</p>
             </div>
           ))}
         </div>
 
-        <div className="mt-7 flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-6">
+        <div className="mt-7 lg:mt-6 flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-6">
           <Button type="button" onClick={() => void onInstall()} className="home-install-cta h-auto min-h-16 w-full whitespace-normal rounded-full px-5 py-3 text-base font-bold sm:w-auto sm:min-w-[19rem] sm:text-lg">
             <Download className="!size-6" aria-hidden="true" />
             <span className="flex-1 text-left">Click here to download app to your phone</span>
@@ -140,7 +140,7 @@ export function InstallAppSection() {
           </div>
         )}
       </div>
-      <div className="home-install-visual pointer-events-none relative mx-auto mt-5 aspect-square w-full max-w-[480px] sm:max-w-[540px] lg:absolute lg:bottom-0 lg:right-[1%] lg:mt-0 lg:h-[138%] lg:w-auto lg:max-w-none" aria-hidden="true">
+      <div className="home-install-visual pointer-events-none relative mx-auto mt-5 aspect-square w-full max-w-[480px] sm:max-w-[540px] lg:absolute lg:bottom-0 lg:right-[1%] lg:mt-0 lg:h-[150%] lg:w-auto lg:max-w-none" aria-hidden="true">
         <div className="home-install-ring absolute inset-[12%] rounded-full" />
         <div className="home-install-hand relative h-full w-full">
           <img src={phoneHand} alt="" width={1024} height={1024} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
