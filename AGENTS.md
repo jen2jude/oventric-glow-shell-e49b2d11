@@ -12,7 +12,7 @@
 ## App shell vs website
 `useIsAppShell()` chooses app on installed/native/`?mode=app`; previews and public tabs use web. Why: preserve both views.
 
-App mode always uses dark theme; keep saved light preference for web only. Reason: light text remapping obscures dark app cards.
+App mode is dark-only; saved light preference is web-only. Reason: light text remapping obscures dark app cards.
 
 Installability is manifest-only; `push-sw.js` is messaging-only. Reason: avoid stale previews.
 
