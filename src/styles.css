@@ -406,6 +406,34 @@
   );
 }
 
+/* Website app invitation — editorial white surface with a spectrum device halo. */
+.home-install-title-accent {
+  background: linear-gradient(90deg, var(--newsfeed-coral), var(--home-pop-red), var(--home-pop-yellow));
+  color: transparent;
+  background-clip: text;
+}
+.home-install-cta {
+  background: linear-gradient(100deg, var(--home-pop-red), var(--newsfeed-coral));
+  box-shadow: 0 14px 28px -16px color-mix(in oklab, var(--home-pop-red) 70%, transparent);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.home-install-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 32px -17px color-mix(in oklab, var(--home-pop-red) 75%, transparent);
+}
+.home-install-ring {
+  background: conic-gradient(var(--newsfeed-violet), var(--newsfeed-coral), var(--newsfeed-gold), var(--newsfeed-violet));
+  mask: radial-gradient(transparent 60%, black 61%);
+}
+.home-install-dots {
+  background-image: radial-gradient(var(--home-line) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-install-cta { transition: none; }
+  .home-install-cta:hover { transform: none; }
+}
+
 
 .home-pop-hero::before,
 .home-pop-hero::after {

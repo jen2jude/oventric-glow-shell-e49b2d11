@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Redesign the website Get the Oventric app section to match the supplied visual reference without changing the app view
+
 - [x] Rebuild the app Support Center with compact cases, FAQs, live chat, and feedback sheets
 
 - [x] Rebuild the Help Center as a dark app-native support page while preserving the website version
