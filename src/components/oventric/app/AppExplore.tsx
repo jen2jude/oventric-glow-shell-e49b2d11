@@ -29,6 +29,9 @@ import { AvatarImage } from "@/components/oventric/AvatarImage";
 import { CashbackBadge } from "@/components/oventric/CashbackBadge";
 import { haptic } from "@/lib/haptics";
 import { AppSellerLeaderboardSheet } from "./AppSellerLeaderboardSheet";
+import { AppPeopleLeaderboardSheet } from "./AppPeopleLeaderboardSheet";
+import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
+import { listFollowing, type PersonSummary } from "@/lib/follows.functions";
 
 type CategoryNode = { id: string; slug: string; name: string };
 
@@ -51,6 +54,8 @@ const TILE_TINTS = [
 export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") => void }) {
   const navigate = useNavigate();
   const [boardOpen, setBoardOpen] = useState(false);
+  const [peopleBoardOpen, setPeopleBoardOpen] = useState(false);
+  const { isAuthenticated, session } = useAuthGate();
   const { baseCurrency } = useOnboarding();
   const currency = baseCurrency ?? "USD";
 
@@ -60,6 +65,7 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
   const fetchCategories = useServerFn(listMarketplaceCategories);
   const fetchSellers = useServerFn(getTopSellers);
   const fetchPeers = useServerFn(getDiscoveryFeed);
+  const fetchFollowing = useServerFn(listFollowing);
   const runSearch = useServerFn(searchGlobal);
 
   const { data: discovery } = useQuery({
@@ -80,6 +86,12 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
   const { data: peerFeed } = useQuery({
     queryKey: ["explore-peers"],
     queryFn: () => fetchPeers(),
+    staleTime: 60_000,
+  });
+  const { data: following = [] } = useQuery({
+    queryKey: ["explore-following", session?.user?.id],
+    queryFn: () => fetchFollowing({ data: { userId: session?.user?.id ?? "" } }),
+    enabled: isAuthenticated && !!session?.user?.id,
     staleTime: 60_000,
   });
 
@@ -125,12 +137,23 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
     () => allPeers.filter((p) => !query || p.name.toLowerCase().includes(query)),
     [allPeers, query],
   );
+  const followedPeople = useMemo(
+    () =>
+      (following as PersonSummary[]).filter(
+        (person) =>
+          !query ||
+          person.displayName.toLowerCase().includes(query) ||
+          person.username?.toLowerCase().includes(query),
+      ),
+    [following, query],
+  );
 
   const show = (t: Tab) => tab === "All" || tab === t;
 
   return (
     <>
       <AppSellerLeaderboardSheet open={boardOpen} onClose={() => setBoardOpen(false)} />
+      <AppPeopleLeaderboardSheet open={peopleBoardOpen} onClose={() => setPeopleBoardOpen(false)} />
     <div className="min-h-screen bg-[#0A0A0B] pb-24 text-white">
       {/* ------------------------------------------------ search + tabs */}
       <div className="app-scroll-header sticky top-0 z-30 border-b border-white/[0.06] bg-[#0A0A0B] px-4 pb-3 pt-4">
@@ -304,26 +327,39 @@ export function AppExplore({ onSelect }: { onSelect: (section: "Marketplace") =>
             {/* ---------------------------------------------------- people */}
             {show("People") && (
               <section className="mt-7">
-                <SectionHead title="People on Oventric" />
-                <div className="grid grid-cols-3 gap-3">
-                  {peers.slice(0, tab === "People" ? 40 : 6).map((p) => (
+                <SectionHead
+                  title="People on Oventric"
+                  action={{ label: "View all", onClick: () => setPeopleBoardOpen(true) }}
+                />
+                <div className="space-y-2">
+                  {(isAuthenticated ? followedPeople : peers).slice(0, 5).map((person) => {
+                    const id = "userId" in person ? person.userId : person.id;
+                    const name = "displayName" in person ? person.displayName : person.name;
+                    return (
                     <Link
-                      key={p.id}
+                      key={id}
                       to="/profile/$id"
-                      params={{ id: p.slug }}
-                      className="flex flex-col items-center gap-2 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4 text-center active:scale-[0.98]"
+                      params={{ id: person.slug || id }}
+                      className="flex items-center gap-3 rounded-[10px] border border-white/[0.06] bg-white/[0.03] p-3 active:scale-[0.99]"
                     >
-                      <div className="h-14 w-14 overflow-hidden rounded-full border border-white/[0.08] bg-white/[0.05]">
-                        <AvatarImage src={p.avatarUrl} alt={p.name} />
+                      <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full border border-white/[0.08] bg-white/[0.05]">
+                        <AvatarImage src={person.avatarUrl} alt={name} />
                       </div>
-                      <p className="max-w-full truncate text-xs font-bold text-white">{p.name}</p>
-                      <p className="inline-flex items-center gap-1 text-[10px] font-semibold text-white/50">
-                        <Star className="h-3 w-3 fill-[#F2C14E] text-[#F2C14E]" />
-                        {p.stars.toFixed(1)}
-                      </p>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-bold text-white">{name}</p>
+                        <p className="truncate text-[11px] text-white/45">
+                          {person.username ? `@${person.username}` : "Oventric member"}
+                        </p>
+                      </div>
+                      <ArrowRight className="h-4 w-4 shrink-0 text-white/30" />
                     </Link>
-                  ))}
-                  {peers.length === 0 && <EmptyNote>No people match.</EmptyNote>}
+                    );
+                  })}
+                  {(isAuthenticated ? followedPeople : peers).length === 0 && (
+                    <EmptyNote>
+                      {isAuthenticated ? "You aren't following anyone yet." : "No people match."}
+                    </EmptyNote>
+                  )}
                 </div>
               </section>
             )}

@@ -18,13 +18,7 @@ Installability is manifest-only; `push-sw.js` is messaging-only. Reason: avoid s
 
 Preview hosts default to web; `?mode=app` shows app. Why: avoid stale app caches.
 
-App conversations sheet over inbox; web separate. Reason: preserve inbox scroll.
-
-App profile forms use app-scoped sheets. Reason: shared writes.
-
-App post composer shares web logic in a keyboard-safe root sheet. Reason: one publishing flow.
-
-App product upload shares web fields in a fixed-action sheet. Reason: preserve selling rules.
+App conversations, profile forms, composer, and product upload use app-scoped sheets; web stays separate. Why: preserve context and shared logic.
 
 Keep app chrome outside the main scroller; use `app-scroll-header` inside. Why: prevent header loss.
 
@@ -38,3 +32,4 @@ Privacy, Terms, and Report a Problem use dark app views and retain separate web 
 - Oventric Coach is open to all signed-in app users; page-aware nudges come from a local randomized pool in src/lib/coach-page-prompts.ts (5s dwell, once per page per session, 10s auto-hide). Why: instant, free, no AI call per nudge.
 
 - Native store builds use Capacitor wrapping the live site (capacitor.config.ts, server.url oventric.com/?mode=app). Why: custom launch screen, instant web updates.
+- Explore leaderboards use app sheets; People previews five followed profiles and ranks everyone by followers. Why: preserve context.

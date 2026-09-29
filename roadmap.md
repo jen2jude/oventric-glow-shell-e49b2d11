@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Add an app People leaderboard sheet and show five followed people in Explore
+
 - [x] Restore vertical scrolling on user shop profiles in the app
 
 - [x] Add the "In this agreement" quick section index to the app Terms view
