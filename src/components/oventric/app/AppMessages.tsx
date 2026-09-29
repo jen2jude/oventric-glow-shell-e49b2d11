@@ -117,7 +117,7 @@ function Bubble({
   attachmentUrl?: string | null;
 }) {
   const productId = extractProductId(msg.body);
-  const pressCopy = useLongPressCopy(msg.is_system ? msg.body : stripProductLink(msg.body));
+  const pressCopy = useLongPressCopy((msg.is_system ? msg.body : stripProductLink(msg.body)) ?? "");
   if (msg.is_system) {
     return (
       <div
