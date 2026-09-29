@@ -853,7 +853,7 @@ export const getLiveProfileTab = createServerFn({ method: "GET" })
       let q = supabase
         .from("products")
         .select(
-          "id, name, category, price_usd, original_currency, original_amount, fx_snapshot, created_at, cover_path, image_paths, rating, description, promoted, cashback_pct",
+          "id, name, category, price_usd, original_currency, original_amount, fx_snapshot, created_at, cover_path, image_paths, rating, description, promoted, cashback_pct, in_stock",
           { count: "exact" },
         )
         .eq("seller_id", userId)
@@ -901,6 +901,7 @@ export const getLiveProfileTab = createServerFn({ method: "GET" })
         blurb: ((r as { description?: string | null }).description ?? null),
         promoted: !!(r as { promoted?: boolean }).promoted,
         cashbackPct: Math.max(0, Math.min(50, Number((r as { cashback_pct?: number }).cashback_pct ?? 0))),
+        inStock: (r as { in_stock?: boolean }).in_stock !== false,
       }));
       if (data.sort === "most_sold") items = [...items].sort((a, b) => b.sales - a.sales);
       const total = count ?? items.length;
