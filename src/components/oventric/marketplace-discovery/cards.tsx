@@ -39,7 +39,16 @@ export function TileCard({ product, onClick }: { product: ProductDTO; onClick: (
         {product.name}
       </p>
       <div className="mt-1 flex items-center justify-between gap-1.5">
-        <span className="truncate text-[13.5px] font-black text-[#E5484D]">{price(product)}</span>
+        <span className="flex min-w-0 items-center gap-1.5">
+          <span
+            className={`truncate text-[13.5px] font-black ${
+              product.inStock === false ? "text-white/35" : "text-[#E5484D]"
+            }`}
+          >
+            {price(product)}
+          </span>
+          {product.inStock === false && <OutOfStockTag />}
+        </span>
         <span className="flex shrink-0 items-center gap-0.5 text-[11px] font-bold text-white/40">
           <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
           {product.rating > 0 ? product.rating.toFixed(1) : "5.0"}
