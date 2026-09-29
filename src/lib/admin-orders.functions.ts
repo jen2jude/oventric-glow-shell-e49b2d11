@@ -82,7 +82,27 @@ async function namesFor(sb: any, ids: string[]) {
   return map;
 }
 
-function mapRow(r: Record<string, unknown>, names: Map<string, string>): AdminOrderRow {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function productNamesFor(sb: any, rows: Array<Record<string, unknown>>) {
+  const map = new Map<string, string>();
+  const ids = Array.from(
+    new Set(rows.filter((r) => !r.product_name_snapshot && r.product_id).map((r) => r.product_id as string)),
+  );
+  if (ids.length === 0) return map;
+  const { data } = await sb.from("products").select("id, name").in("id", ids);
+  for (const p of (data ?? []) as Array<{ id: string; name: string }>) map.set(p.id, p.name);
+  return map;
+}
+
+function mapRow(
+  r: Record<string, unknown>,
+  names: Map<string, string>,
+  products: Map<string, string> = new Map(),
+): AdminOrderRow {
+  const id = r.id as string;
+  const ref =
+    (r.paystack_ref as string) ??
+    (r.payment_method === "wallet" ? `WAL-${id.slice(0, 8).toUpperCase()}` : null);
   return {
     id: r.id as string,
     createdAt: r.created_at as string,
@@ -91,8 +111,11 @@ function mapRow(r: Record<string, unknown>, names: Map<string, string>): AdminOr
     escrowStatus: (r.escrow_status as string) ?? null,
     disputeStatus: (r.dispute_status as string) ?? null,
     paymentMethod: (r.payment_method as string) ?? null,
-    reference: (r.paystack_ref as string) ?? null,
-    productName: (r.product_name_snapshot as string) ?? null,
+    reference: ref,
+    productName:
+      (r.product_name_snapshot as string) ??
+      (r.product_id ? products.get(r.product_id as string) ?? null : null) ??
+      "Deleted product",
     productId: (r.product_id as string) ?? null,
     buyerId: r.buyer_id as string,
     buyerName: names.get(r.buyer_id as string) || null,
