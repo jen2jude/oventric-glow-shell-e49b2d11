@@ -360,7 +360,9 @@ function TermsPage() {
             <div className="space-y-5">
               {termsSections.map((section) => (
                 <div key={section.id} className="contents">
-                  <TermsSection {...section} />
+                  <TermsSection id={section.id} number={section.number} icon={section.icon} title={section.title} tone={section.tone}>
+                    {section.paragraphs}
+                  </TermsSection>
                   {section.id === "checkout" && (
                     <div className="rounded-[10px] border border-newsfeed-line bg-newsfeed-surface p-5 sm:p-7">
                       <p className="font-wallet-display text-sm font-bold text-newsfeed-green">HOW A MARKETPLACE PAYMENT MOVES</p>
