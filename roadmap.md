@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Keep the app homepage search sheet full-height after the mobile keyboard closes
+
 - [x] Redesign the website Get the Oventric app section to match the supplied visual reference without changing the app view
 
 - [x] Rebuild the app Support Center with compact cases, FAQs, live chat, and feedback sheets
