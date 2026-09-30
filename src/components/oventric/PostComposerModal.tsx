@@ -462,6 +462,9 @@ export function PostComposerModal({
     onClose();
 
     void (async () => {
+      const w = window as unknown as { __ovPublishing?: number };
+      w.__ovPublishing = (w.__ovPublishing ?? 0) + 1;
+      window.dispatchEvent(new CustomEvent("oventric:publishing", { detail: w.__ovPublishing }));
       try {
         let mediaPath: string | undefined;
         let mediaType: "image" | "video" | undefined;
@@ -536,6 +539,9 @@ export function PostComposerModal({
             : e?.message || "Couldn't publish. Try again.";
         toast.error(msg);
         onPostFailed?.(tempId, msg);
+      } finally {
+        w.__ovPublishing = Math.max(0, (w.__ovPublishing ?? 1) - 1);
+        window.dispatchEvent(new CustomEvent("oventric:publishing", { detail: w.__ovPublishing }));
       }
     })();
   };

@@ -52,6 +52,14 @@ export function AppTabBar({
 }) {
   const [hubOpen, setHubOpen] = useState(false);
   const chatOpen = useChatOpen();
+  const [publishing, setPublishing] = useState(false);
+  useEffect(() => {
+    const w = window as unknown as { __ovPublishing?: number };
+    setPublishing((w.__ovPublishing ?? 0) > 0);
+    const on = (e: Event) => setPublishing(((e as CustomEvent<number>).detail ?? 0) > 0);
+    window.addEventListener("oventric:publishing", on);
+    return () => window.removeEventListener("oventric:publishing", on);
+  }, []);
 
   useEffect(() => {
     if (!hubOpen) return;
@@ -121,10 +129,13 @@ export function AppTabBar({
             haptic("medium");
             onCreate();
           }}
-          aria-label="Create"
-          className="nav-tap mx-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] border border-white/[0.10] bg-white"
+          aria-label={publishing ? "Create (publishing post…)" : "Create"}
+          className="nav-tap relative mx-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] border border-white/[0.10] bg-white"
         >
-          <Plus className="h-5 w-5 text-black" strokeWidth={2.6} />
+          {publishing && (
+            <span aria-hidden className="app-publish-ring pointer-events-none absolute -inset-[4px] rounded-[13px]" />
+          )}
+          <Plus className="relative h-5 w-5 text-black" strokeWidth={2.6} />
         </button>
 
         <button
