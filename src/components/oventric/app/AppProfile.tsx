@@ -216,7 +216,7 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-dvh bg-[#0A0A0B] pb-32">
+      <div className="h-dvh overflow-y-auto overscroll-contain bg-[#0A0A0B] pb-32 [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
         <div className="h-28 bg-white/[0.04] animate-pulse" />
         <div className="px-4 pt-12 space-y-3">
           <div className="h-5 w-40 rounded bg-white/[0.06] animate-pulse" />
@@ -228,7 +228,7 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
 
   if (!profile) {
     return (
-      <div className="min-h-dvh bg-[#0A0A0B] pb-32 flex flex-col items-center justify-center gap-3 px-8 text-center">
+      <div className="flex h-dvh flex-col items-center justify-center gap-3 overflow-y-auto overscroll-contain bg-[#0A0A0B] px-8 pb-32 text-center [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
         <p className="text-white/80 text-sm font-semibold">Profile not found</p>
         <p className="text-white/40 text-xs">
           This profile may have been removed or the link is wrong.
@@ -247,7 +247,7 @@ export function AppProfile({ idOrSlug }: { idOrSlug: string }) {
     !!profile.verificationTier && profile.verificationTier !== "TIER_0";
 
   return (
-    <div className="min-h-dvh bg-[#0A0A0B] pb-32">
+    <div className="h-dvh overflow-y-auto overscroll-contain bg-[#0A0A0B] pb-32 [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
       {/* Cover */}
       <div className="relative h-28 overflow-hidden">
         {profile.coverUrl ? (
