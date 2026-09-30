@@ -236,7 +236,7 @@ export const adminListPayments = createServerFn({ method: "POST" })
       if (data.provider !== "all" && r.provider !== data.provider) return false;
       if (!term) return true;
       if (matchedUserIds.includes(r.userId)) return true;
-      return [r.reference, r.orderId, r.userName, r.counterpartyName]
+      return [r.reference, r.orderId, r.productName, r.userName, r.counterpartyName]
         .filter(Boolean)
         .some((v) => (v as string).toLowerCase().includes(term));
     });
