@@ -129,7 +129,7 @@ function AdminPaymentsPage() {
                     {r.reference ?? "No reference"}
                   </div>
                   <div className="text-[11px] text-slate-500 truncate">
-                    {r.purpose === "order" ? "Marketplace order" : "Wallet funding"} ·{" "}
+                    {r.purpose === "order" ? (r.productName ?? "Marketplace order") : "Wallet funding"} ·{" "}
                     {r.userName ?? r.userId.slice(0, 8)}
                     {r.counterpartyName ? ` → ${r.counterpartyName}` : ""} ·{" "}
                     {new Date(r.createdAt).toLocaleString()}
@@ -138,7 +138,7 @@ function AdminPaymentsPage() {
                 <div className="text-right shrink-0">
                   <div className="text-white font-mono text-sm">{money(r.amount, r.currency)}</div>
                   <div className="text-[10px] uppercase tracking-widest font-bold text-slate-400">
-                    {r.provider} · {r.status} {r.settled ? "· settled" : ""}
+                    {r.provider === "free" ? "free download · delivered" : `${r.provider} · ${r.status}${r.settled ? " · settled" : ""}`}
                   </div>
                 </div>
               </button>

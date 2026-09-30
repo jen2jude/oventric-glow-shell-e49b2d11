@@ -70,13 +70,14 @@ export interface AdminPaymentRow {
   purpose: PaymentPurpose;
   reference: string | null;
   orderId: string | null;
+  productName?: string | null;
   userId: string;
   userName: string | null;
   counterpartyName: string | null;
   amount: number | null;
   currency: string | null;
   amountUsd: number | null;
-  provider: "flutterwave" | "paystack" | "unknown";
+  provider: "flutterwave" | "paystack" | "wallet" | "free" | "unknown";
   method: string | null;
   status: string;
   settled: boolean;
@@ -125,7 +126,7 @@ export const adminListPayments = createServerFn({ method: "POST" })
       let q = sb
         .from("orders")
         .select(
-          "id, buyer_id, seller_id, paystack_ref, display_total, display_currency, total_usd, payment_method, status, escrow_status, seller_share_usd, created_at, paid_at, product_name_snapshot",
+          "id, buyer_id, seller_id, product_id, paystack_ref, display_total, display_currency, total_usd, payment_method, status, escrow_status, seller_share_usd, created_at, paid_at, product_name_snapshot",
         )
         .order("created_at", { ascending: false })
         .limit(500);
@@ -142,22 +143,49 @@ export const adminListPayments = createServerFn({ method: "POST" })
         ]),
       );
 
-      for (const o of (orders ?? []) as Array<Record<string, unknown>>) {
+      const orderRows = (orders ?? []) as Array<Record<string, unknown>>;
+      const missingIds = Array.from(
+        new Set(orderRows.filter((o) => !o.product_name_snapshot && o.product_id).map((o) => o.product_id as string)),
+      );
+      const prodNames: Record<string, string> = {};
+      if (missingIds.length) {
+        const { data: prods } = await sb.from("products").select("id, name").in("id", missingIds);
+        for (const p of (prods ?? []) as Array<{ id: string; name: string }>) prodNames[p.id] = p.name;
+      }
+
+      for (const o of orderRows) {
+        const id = o.id as string;
+        const ref = (o.paystack_ref as string) ?? null;
+        const isFree = Number(o.total_usd ?? 0) === 0 && !ref;
+        const isWallet = !ref && o.payment_method === "wallet";
+        const reference =
+          ref ?? (isFree ? `FREE-${id.slice(0, 8).toUpperCase()}` : isWallet ? `WAL-${id.slice(0, 8).toUpperCase()}` : null);
+        const provider: AdminPaymentRow["provider"] = ref
+          ? providerOf(ref)
+          : isFree
+            ? "free"
+            : isWallet
+              ? "wallet"
+              : "unknown";
         rows.push({
-          key: `order:${o.id as string}`,
+          key: `order:${id}`,
           purpose: "order",
-          reference: (o.paystack_ref as string) ?? null,
-          orderId: o.id as string,
+          reference,
+          orderId: id,
+          productName:
+            (o.product_name_snapshot as string) ??
+            (o.product_id ? prodNames[o.product_id as string] ?? "Deleted product" : "Deleted product"),
           userId: o.buyer_id as string,
           userName: names[o.buyer_id as string] ?? null,
           counterpartyName: names[o.seller_id as string] ?? null,
           amount: o.display_total == null ? null : Number(o.display_total),
           currency: (o.display_currency as string) ?? null,
           amountUsd: o.total_usd == null ? null : Number(o.total_usd),
-          provider: providerOf((o.paystack_ref as string) ?? null),
-          method: (o.payment_method as string) ?? null,
+          provider,
+          method: isFree ? "free download" : ((o.payment_method as string) ?? null),
           status: (o.status as string) ?? "unknown",
-          settled: o.status === "paid" && o.seller_share_usd != null,
+          // Free downloads have no money to settle.
+          settled: !isFree && o.status === "paid" && o.seller_share_usd != null,
           createdAt: (o.created_at as string) ?? (o.paid_at as string),
         });
       }
@@ -208,7 +236,7 @@ export const adminListPayments = createServerFn({ method: "POST" })
       if (data.provider !== "all" && r.provider !== data.provider) return false;
       if (!term) return true;
       if (matchedUserIds.includes(r.userId)) return true;
-      return [r.reference, r.orderId, r.userName, r.counterpartyName]
+      return [r.reference, r.orderId, r.productName, r.userName, r.counterpartyName]
         .filter(Boolean)
         .some((v) => (v as string).toLowerCase().includes(term));
     });
