@@ -799,6 +799,30 @@ export function AppFeed() {
                     </button>
                     <span className="shrink-0 text-[12px] text-white/40">· {ago(p.created_at)}</span>
                   </div>
+                  {p.mentions.length > 0 && (
+                    <p className="text-[12px] leading-snug text-white/50">
+                      is with{" "}
+                      {p.mentions.slice(0, 2).map((m, i) => (
+                        <span key={m.user_id}>
+                          {i > 0 && (p.mentions.length === 2 ? " and " : ", ")}
+                          <button
+                            onClick={() => navigate({ to: "/profile/$id", params: { id: m.slug ?? m.user_id } })}
+                            className="font-semibold text-white/85"
+                          >
+                            {m.name}
+                          </button>
+                        </span>
+                      ))}
+                      {p.mentions.length > 2 && (
+                        <>
+                          {" and "}
+                          <span className="font-semibold text-white/85">
+                            {p.mentions.length - 2 >= 10 ? "10+" : p.mentions.length - 2} other{p.mentions.length - 2 === 1 ? "" : "s"}
+                          </span>
+                        </>
+                      )}
+                    </p>
+                  )}
 
                   {/* Text — long posts truncate with a View more toggle */}
                   {p.text &&
@@ -877,10 +901,11 @@ export function AppFeed() {
                     );
                     return (
                       <button
+                        key={pa.id}
                         onClick={() =>
                           navigate({ to: "/product/$id", params: { id: pa.id } })
                         }
-                        className="mt-2.5 flex w-full items-stretch overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] text-left active:bg-white/[0.06]"
+                        className={`flex items-stretch overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] text-left active:bg-white/[0.06] ${widthCls}`}
                       >
                         <div className="w-20 shrink-0 bg-neutral-900">
                           {pa.coverUrl ? (
@@ -916,7 +941,9 @@ export function AppFeed() {
                         </div>
                       </button>
                     );
-                  })()}
+                  })}
+                  </div>
+                  )}
 
                   {/* Action row */}
                   <div className="mt-2 flex items-center justify-between pr-2">
