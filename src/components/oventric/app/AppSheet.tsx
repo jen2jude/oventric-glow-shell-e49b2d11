@@ -26,7 +26,7 @@ export function AppSheet({
   header?: React.ReactNode;
 }) {
   return (
-    <Drawer open={open} onOpenChange={(o) => !o && onClose()}>
+    <Drawer repositionInputs={false} open={open} onOpenChange={(o) => !o && onClose()}>
       <DrawerPortal>
         <DrawerOverlay className="fixed inset-0 z-50 bg-black/40 backdrop-blur-md" />
         <DrawerContent

@@ -18,7 +18,7 @@ Installability is manifest-only; `push-sw.js` is messaging-only. Reason: avoid s
 
 Preview hosts default to web; `?mode=app` shows app. Why: avoid stale app caches.
 
-App conversations, profile forms, composer, and product upload use app-scoped sheets; web stays separate. Why: preserve context and shared logic.
+App forms use app-scoped sheets with input repositioning off; web stays separate. Why: preserve context and keyboard-stable heights.
 
 Keep app chrome outside the main scroller; use `app-scroll-header` inside. Why: prevent header loss.
 
