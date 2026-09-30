@@ -1,4 +1,3 @@
-import { useLongPressCopy } from "@/hooks/use-long-press-copy";
 import { Fragment, useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Link } from "@tanstack/react-router";
 import { Drawer as VaulDrawer } from "vaul";
@@ -117,7 +116,7 @@ function Bubble({
   attachmentUrl?: string | null;
 }) {
   const productId = extractProductId(msg.body);
-  const pressCopy = useLongPressCopy((msg.is_system ? msg.body : stripProductLink(msg.body)) ?? "");
+
   if (msg.is_system) {
     return (
       <div
