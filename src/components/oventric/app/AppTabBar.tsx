@@ -52,6 +52,14 @@ export function AppTabBar({
 }) {
   const [hubOpen, setHubOpen] = useState(false);
   const chatOpen = useChatOpen();
+  const [publishing, setPublishing] = useState(false);
+  useEffect(() => {
+    const w = window as unknown as { __ovPublishing?: number };
+    setPublishing((w.__ovPublishing ?? 0) > 0);
+    const on = (e: Event) => setPublishing(((e as CustomEvent<number>).detail ?? 0) > 0);
+    window.addEventListener("oventric:publishing", on);
+    return () => window.removeEventListener("oventric:publishing", on);
+  }, []);
 
   useEffect(() => {
     if (!hubOpen) return;
