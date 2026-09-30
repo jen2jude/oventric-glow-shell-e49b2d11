@@ -847,12 +847,15 @@ export function AppFeed() {
                     </button>
                   )}
 
-                  {/* Product attachment — rich card, matches the web feed */}
-                  {p.product_attachments?.[0] && (() => {
-                    const pa = p.product_attachments![0];
+                  {/* Product attachments — swipe sideways when several are tagged */}
+                  {(p.product_attachments?.length ?? 0) > 0 && (
+                  <div className="-mr-4 mt-2.5 flex snap-x snap-mandatory gap-2 overflow-x-auto pr-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                  {p.product_attachments!.map((pa) => {
+                    const multi = p.product_attachments!.length > 1;
+                    const widthCls = multi ? "w-[82%] shrink-0 snap-start" : "w-full";
                     if (pa.available === false) {
                       return (
-                        <div className="mt-2.5 flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-3">
+                        <div key={pa.id} className={`flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-3 ${widthCls}`}>
                           <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/[0.04]">
                             <ShoppingBag className="h-4 w-4 text-white/20" />
                           </div>
