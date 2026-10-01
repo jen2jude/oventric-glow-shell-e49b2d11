@@ -62,6 +62,22 @@ export interface CreatorPostDTO {
   createdAt: string;
   viewCount: number;
   asset: CreatorAssetDTO | null;
+  contentType?: string;
+  category?: string | null;
+  postTools?: string[];
+  tags?: string[];
+  visibility?: "public" | "unlisted";
+  resource?: { type: string | null; license: string[]; licenseNote: string | null } | null;
+  showcaseProduct?: {
+    id: string;
+    slug: string | null;
+    name: string;
+    coverUrl: string | null;
+    priceUsd: number;
+    originalCurrency: string | null;
+    originalAmount: number | null;
+    fxSnapshot: { base: string; rates: Record<string, number> } | null;
+  } | null;
   author: {
     userId: string;
     name: string;
@@ -617,10 +633,12 @@ async function loadCreatorPosts(postId?: string, authorId?: string, limit = 40):
     let query = sb
       .from("creator_posts")
       .select(
-        "id, author_id, title, caption, media_paths, media_type, community_link, full_video_url, external_url, external_provider, product_id, fields, created_at, view_count",
+        "id, author_id, title, caption, media_paths, media_type, community_link, full_video_url, external_url, external_provider, product_id, fields, created_at, view_count, content_type, category, tools, tags, visibility, resource_type, resource_license, resource_license_note, showcase_product_id",
       )
       .eq("status", "published");
     if (postId) query = query.eq("id", postId);
+    // Unlisted posts open by direct link only — never in feeds or profiles.
+    else query = query.eq("visibility", "public");
     if (authorId) query = query.eq("author_id", authorId);
     const { data: rows, error } = await query.order("created_at", { ascending: false }).limit(postId ? 1 : limit);
     if (error || !rows || rows.length === 0) return [];
@@ -665,6 +683,30 @@ async function loadCreatorPosts(postId?: string, authorId?: string, limit = 40):
       });
     }
 
+
+    const showcaseIds = Array.from(
+      new Set(rows.map((r) => r.showcase_product_id).filter((id): id is string => !!id)),
+    );
+    const showcase = new Map<string, NonNullable<CreatorPostDTO["showcaseProduct"]>>();
+    if (showcaseIds.length > 0) {
+      const { data: sp } = await sb
+        .from("products")
+        .select("id, slug, name, cover_path, price_usd, original_currency, original_amount, fx_snapshot")
+        .in("id", showcaseIds)
+        .eq("status", "active");
+      (sp ?? []).forEach((p) => {
+        showcase.set(p.id, {
+          id: p.id,
+          slug: (p.slug as string | null) ?? null,
+          name: p.name as string,
+          coverUrl: p.cover_path ? (/^https?:\/\//.test(p.cover_path) ? p.cover_path : stableImageUrl("product-covers", p.cover_path)) : null,
+          priceUsd: Number(p.price_usd) || 0,
+          originalCurrency: (p.original_currency as string) ?? null,
+          originalAmount: p.original_amount === null ? null : Number(p.original_amount),
+          fxSnapshot: (p.fx_snapshot as { base: string; rates: Record<string, number> } | null) ?? null,
+        });
+      });
+    }
 
     const authorIds = Array.from(new Set(rows.map((r) => r.author_id)));
     // Read only the public creator identity fields needed by the feed. The
@@ -753,6 +795,15 @@ async function loadCreatorPosts(postId?: string, authorId?: string, limit = 40):
               downloadCount: downloadCounts.get(r.product_id) ?? 0,
             })
           : null,
+        contentType: r.content_type ?? "showcase",
+        category: r.category ?? null,
+        postTools: r.tools ?? [],
+        tags: r.tags ?? [],
+        visibility: (r.visibility as "public" | "unlisted") ?? "public",
+        resource: r.product_id
+          ? { type: r.resource_type ?? null, license: r.resource_license ?? [], licenseNote: r.resource_license_note ?? null }
+          : null,
+        showcaseProduct: r.showcase_product_id ? (showcase.get(r.showcase_product_id) ?? null) : null,
 
         author: {
           userId: r.author_id,
