@@ -1623,6 +1623,111 @@ export type Database = {
         }
         Relationships: []
       }
+      creator_challenge_submissions: {
+        Row: {
+          challenge_id: string
+          created_at: string
+          featured: boolean
+          id: string
+          moderation_note: string | null
+          post_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          created_at?: string
+          featured?: boolean
+          id?: string
+          moderation_note?: string | null
+          post_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          created_at?: string
+          featured?: boolean
+          id?: string
+          moderation_note?: string | null
+          post_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_challenge_submissions_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "creator_challenges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_challenge_submissions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "creator_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_challenges: {
+        Row: {
+          category: string | null
+          cover_url: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          ends_at: string
+          id: string
+          prize_details: string | null
+          prize_title: string | null
+          required_tools: string[]
+          rules: string
+          starts_at: string
+          status: string
+          submission_requirements: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          cover_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          ends_at: string
+          id?: string
+          prize_details?: string | null
+          prize_title?: string | null
+          required_tools?: string[]
+          rules?: string
+          starts_at?: string
+          status?: string
+          submission_requirements?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          cover_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          ends_at?: string
+          id?: string
+          prize_details?: string | null
+          prize_title?: string | null
+          required_tools?: string[]
+          rules?: string
+          starts_at?: string
+          status?: string
+          submission_requirements?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       creator_coach_messages: {
         Row: {
           cards: Json | null

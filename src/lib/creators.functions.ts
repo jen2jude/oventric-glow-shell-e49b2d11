@@ -628,7 +628,12 @@ export const saveCreatorPostToCollection = createServerFn({ method: "POST" })
     return { ok: true, alreadySaved: false };
   });
 
-async function loadCreatorPosts(postId?: string, authorId?: string, limit = 40): Promise<CreatorPostDTO[]> {
+/** Published public creator posts by id (used by challenges). */
+export function loadCreatorPostsByIds(ids: string[]) {
+  return loadCreatorPosts(undefined, undefined, Math.max(1, ids.length), ids);
+}
+
+async function loadCreatorPosts(postId?: string, authorId?: string, limit = 40, ids?: string[]): Promise<CreatorPostDTO[]> {
     const sb = publicClient();
     let query = sb
       .from("creator_posts")
@@ -640,6 +645,7 @@ async function loadCreatorPosts(postId?: string, authorId?: string, limit = 40):
     // Unlisted posts open by direct link only — never in feeds or profiles.
     else query = query.eq("visibility", "public");
     if (authorId) query = query.eq("author_id", authorId);
+    if (ids) query = query.in("id", ids.length ? ids : ["00000000-0000-0000-0000-000000000000"]);
     const { data: rows, error } = await query.order("created_at", { ascending: false }).limit(postId ? 1 : limit);
     if (error || !rows || rows.length === 0) return [];
 

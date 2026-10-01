@@ -85,6 +85,7 @@ import { Route as AdminCoursesRouteImport } from './routes/admin.courses'
 import { Route as AdminCouponsRouteImport } from './routes/admin.coupons'
 import { Route as AdminCommunicationsRouteImport } from './routes/admin.communications'
 import { Route as AdminCircleCategoriesRouteImport } from './routes/admin.circle-categories'
+import { Route as AdminChallengesRouteImport } from './routes/admin.challenges'
 import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
 import { Route as AdminCashbackWalletRouteImport } from './routes/admin.cashback-wallet'
 import { Route as AdminCampaignsRouteImport } from './routes/admin.campaigns'
@@ -97,6 +98,7 @@ import { Route as DotwellKnownAssetlinksDotjsonRouteImport } from './routes/[.]w
 import { Route as DotwellKnownAppleAppSiteAssociationRouteImport } from './routes/[.]well-known.apple-app-site-association'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
 import { Route as CreatorsCollectionsIdRouteImport } from './routes/creators_.collections.$id'
+import { Route as CreatorsChallengesIdRouteImport } from './routes/creators_.challenges.$id'
 import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack-webhook'
 import { Route as ApiPublicPaymentReturnRouteImport } from './routes/api/public/payment-return'
@@ -494,6 +496,11 @@ const AdminCircleCategoriesRoute = AdminCircleCategoriesRouteImport.update({
   path: '/circle-categories',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminChallengesRoute = AdminChallengesRouteImport.update({
+  id: '/challenges',
+  path: '/challenges',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
@@ -554,6 +561,11 @@ const AdminBlogIndexRoute = AdminBlogIndexRouteImport.update({
 const CreatorsCollectionsIdRoute = CreatorsCollectionsIdRouteImport.update({
   id: '/creators_/collections/$id',
   path: '/creators/collections/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreatorsChallengesIdRoute = CreatorsChallengesIdRouteImport.update({
+  id: '/creators_/challenges/$id',
+  path: '/creators/challenges/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
@@ -679,6 +691,7 @@ export interface FileRoutesByFullPath {
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cashback-wallet': typeof AdminCashbackWalletRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/challenges': typeof AdminChallengesRoute
   '/admin/circle-categories': typeof AdminCircleCategoriesRoute
   '/admin/communications': typeof AdminCommunicationsRoute
   '/admin/coupons': typeof AdminCouponsRoute
@@ -731,6 +744,7 @@ export interface FileRoutesByFullPath {
   '/api/public/payment-return': typeof ApiPublicPaymentReturnRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/creators/challenges/$id': typeof CreatorsChallengesIdRoute
   '/creators/collections/$id': typeof CreatorsCollectionsIdRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/api/public/hooks/auto-release-orders': typeof ApiPublicHooksAutoReleaseOrdersRoute
@@ -781,6 +795,7 @@ export interface FileRoutesByTo {
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cashback-wallet': typeof AdminCashbackWalletRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/challenges': typeof AdminChallengesRoute
   '/admin/circle-categories': typeof AdminCircleCategoriesRoute
   '/admin/communications': typeof AdminCommunicationsRoute
   '/admin/coupons': typeof AdminCouponsRoute
@@ -833,6 +848,7 @@ export interface FileRoutesByTo {
   '/api/public/payment-return': typeof ApiPublicPaymentReturnRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/creators/challenges/$id': typeof CreatorsChallengesIdRoute
   '/creators/collections/$id': typeof CreatorsCollectionsIdRoute
   '/admin/blog': typeof AdminBlogIndexRoute
   '/api/public/hooks/auto-release-orders': typeof ApiPublicHooksAutoReleaseOrdersRoute
@@ -887,6 +903,7 @@ export interface FileRoutesById {
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cashback-wallet': typeof AdminCashbackWalletRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/challenges': typeof AdminChallengesRoute
   '/admin/circle-categories': typeof AdminCircleCategoriesRoute
   '/admin/communications': typeof AdminCommunicationsRoute
   '/admin/coupons': typeof AdminCouponsRoute
@@ -939,6 +956,7 @@ export interface FileRoutesById {
   '/api/public/payment-return': typeof ApiPublicPaymentReturnRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/creators_/challenges/$id': typeof CreatorsChallengesIdRoute
   '/creators_/collections/$id': typeof CreatorsCollectionsIdRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/api/public/hooks/auto-release-orders': typeof ApiPublicHooksAutoReleaseOrdersRoute
@@ -994,6 +1012,7 @@ export interface FileRouteTypes {
     | '/admin/campaigns'
     | '/admin/cashback-wallet'
     | '/admin/categories'
+    | '/admin/challenges'
     | '/admin/circle-categories'
     | '/admin/communications'
     | '/admin/coupons'
@@ -1046,6 +1065,7 @@ export interface FileRouteTypes {
     | '/api/public/payment-return'
     | '/api/public/paystack-webhook'
     | '/api/public/track'
+    | '/creators/challenges/$id'
     | '/creators/collections/$id'
     | '/admin/blog/'
     | '/api/public/hooks/auto-release-orders'
@@ -1096,6 +1116,7 @@ export interface FileRouteTypes {
     | '/admin/campaigns'
     | '/admin/cashback-wallet'
     | '/admin/categories'
+    | '/admin/challenges'
     | '/admin/circle-categories'
     | '/admin/communications'
     | '/admin/coupons'
@@ -1148,6 +1169,7 @@ export interface FileRouteTypes {
     | '/api/public/payment-return'
     | '/api/public/paystack-webhook'
     | '/api/public/track'
+    | '/creators/challenges/$id'
     | '/creators/collections/$id'
     | '/admin/blog'
     | '/api/public/hooks/auto-release-orders'
@@ -1201,6 +1223,7 @@ export interface FileRouteTypes {
     | '/admin/campaigns'
     | '/admin/cashback-wallet'
     | '/admin/categories'
+    | '/admin/challenges'
     | '/admin/circle-categories'
     | '/admin/communications'
     | '/admin/coupons'
@@ -1253,6 +1276,7 @@ export interface FileRouteTypes {
     | '/api/public/payment-return'
     | '/api/public/paystack-webhook'
     | '/api/public/track'
+    | '/creators_/challenges/$id'
     | '/creators_/collections/$id'
     | '/admin/blog/'
     | '/api/public/hooks/auto-release-orders'
@@ -1317,6 +1341,7 @@ export interface RootRouteChildren {
   ApiPublicPaymentReturnRoute: typeof ApiPublicPaymentReturnRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
   ApiPublicTrackRoute: typeof ApiPublicTrackRoute
+  CreatorsChallengesIdRoute: typeof CreatorsChallengesIdRoute
   CreatorsCollectionsIdRoute: typeof CreatorsCollectionsIdRoute
   ApiPublicHooksAutoReleaseOrdersRoute: typeof ApiPublicHooksAutoReleaseOrdersRoute
   ApiPublicHooksPurgeDeletedAccountsRoute: typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -1862,6 +1887,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCircleCategoriesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/challenges': {
+      id: '/admin/challenges'
+      path: '/challenges'
+      fullPath: '/admin/challenges'
+      preLoaderRoute: typeof AdminChallengesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/categories': {
       id: '/admin/categories'
       path: '/categories'
@@ -1944,6 +1976,13 @@ declare module '@tanstack/react-router' {
       path: '/creators/collections/$id'
       fullPath: '/creators/collections/$id'
       preLoaderRoute: typeof CreatorsCollectionsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creators_/challenges/$id': {
+      id: '/creators_/challenges/$id'
+      path: '/creators/challenges/$id'
+      fullPath: '/creators/challenges/$id'
+      preLoaderRoute: typeof CreatorsChallengesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/track': {
@@ -2077,6 +2116,7 @@ interface AdminRouteChildren {
   AdminCampaignsRoute: typeof AdminCampaignsRoute
   AdminCashbackWalletRoute: typeof AdminCashbackWalletRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
+  AdminChallengesRoute: typeof AdminChallengesRoute
   AdminCircleCategoriesRoute: typeof AdminCircleCategoriesRoute
   AdminCommunicationsRoute: typeof AdminCommunicationsRoute
   AdminCouponsRoute: typeof AdminCouponsRoute
@@ -2117,6 +2157,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCampaignsRoute: AdminCampaignsRoute,
   AdminCashbackWalletRoute: AdminCashbackWalletRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
+  AdminChallengesRoute: AdminChallengesRoute,
   AdminCircleCategoriesRoute: AdminCircleCategoriesRoute,
   AdminCommunicationsRoute: AdminCommunicationsRoute,
   AdminCouponsRoute: AdminCouponsRoute,
@@ -2241,6 +2282,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicPaymentReturnRoute: ApiPublicPaymentReturnRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
   ApiPublicTrackRoute: ApiPublicTrackRoute,
+  CreatorsChallengesIdRoute: CreatorsChallengesIdRoute,
   CreatorsCollectionsIdRoute: CreatorsCollectionsIdRoute,
   ApiPublicHooksAutoReleaseOrdersRoute: ApiPublicHooksAutoReleaseOrdersRoute,
   ApiPublicHooksPurgeDeletedAccountsRoute:
