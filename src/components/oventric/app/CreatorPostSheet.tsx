@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
 import { Download, Eye, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
+import { CreatorPostActions, CreatorPostDetails, CreatorProductAttachment, CreatorResourceCard } from "@/components/oventric/creators/CreatorResourceCard";
 import { AppSheet } from "@/components/oventric/app/AppSheet";
 import { createOrder, getOrderWithDownload } from "@/lib/marketplace.functions";
 import type { CreatorPostDTO } from "@/lib/creators.functions";
@@ -212,7 +213,9 @@ export function CreatorPostSheet({
               )}
             </div>
 
+            <CreatorPostDetails post={post} dark />
             <ShowcaseEngagement postId={post.id} authorId={post.author.userId} dark />
+            <CreatorPostActions post={post} dark />
 
             {links.length > 0 && (
               <div className="mt-3 flex gap-2 overflow-x-auto [scrollbar-width:none]">
@@ -231,43 +234,8 @@ export function CreatorPostSheet({
               </div>
             )}
 
-            {/* Final CTA */}
-            {asset &&
-              (asset.available ? (
-                asset.isFree ? (
-                  <button
-                    type="button"
-                    disabled={downloading}
-                    onClick={() => {
-                      haptic("select");
-                      void downloadAsset();
-                    }}
-                    className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#E5484D] py-3 text-[13.5px] font-bold active:opacity-80 disabled:opacity-50"
-                    style={{ color: "#ffffff" }}
-                  >
-                    <Download className="h-4 w-4" />
-                    {downloading ? "Starting download…" : "Get it free"}
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      haptic("select");
-                      onClose();
-                      navigate({ to: "/product/$id", params: { id: asset.productId } });
-                    }}
-                    className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#E5484D] py-3 text-[13.5px] font-bold active:opacity-80"
-                    style={{ color: "#ffffff" }}
-                  >
-                    <ShoppingBag className="h-4 w-4" />
-                    Buy now · {price}
-                  </button>
-                )
-              ) : (
-                <div className="mt-5 rounded-2xl border border-white/10 px-4 py-3 text-center text-[12px] font-semibold text-white/40">
-                  This asset is pending review
-                </div>
-              ))}
+            <CreatorProductAttachment post={post} dark />
+            <CreatorResourceCard post={post} dark onDone={onClose} />
           </div>
         </div>
       )}

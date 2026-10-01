@@ -11,6 +11,7 @@ import { computeDisplayPrice } from "@/lib/fx-display";
 import { createOrder, getOrderWithDownload } from "@/lib/marketplace.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { CreatorPostMenu } from "./CreatorPostMenu";
+import { CreatorPostActions, CreatorPostDetails, CreatorProductAttachment, CreatorResourceCard } from "./CreatorResourceCard";
 import { logCreatorEvent, useWatchTime } from "@/lib/creator-events";
 import { getHiddenPosts } from "@/components/oventric/PostActionsMenu";
 
@@ -474,7 +475,9 @@ export function CreatorCard({
           </div>
         )}
 
-        <div className="mt-3">{post.asset && <AssetCta asset={post.asset} />}</div>
+        <CreatorPostDetails post={post} />
+        <CreatorProductAttachment post={post} />
+        {post.asset && <CreatorResourceCard post={post} />}
 
         {post.externalEmbedUrl && (
           <ViewportEmbed src={post.externalEmbedUrl} title={post.title} />
@@ -482,6 +485,7 @@ export function CreatorCard({
 
       <LinkDock post={post} />
       <ShowcaseEngagement postId={post.id} authorId={post.author.userId} />
+      <CreatorPostActions post={post} isOwner={isOwner} />
       </div>
     </article>
   );
