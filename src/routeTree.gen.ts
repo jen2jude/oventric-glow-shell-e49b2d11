@@ -50,6 +50,8 @@ import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as PostIdRouteImport } from './routes/post.$id'
 import { Route as PaymentReturnRouteImport } from './routes/payment.return'
 import { Route as OrderIdRouteImport } from './routes/order.$id'
+import { Route as CreatorsFollowingRouteImport } from './routes/creators_.following'
+import { Route as CreatorsDiscoverRouteImport } from './routes/creators_.discover'
 import { Route as CheckoutIdRouteImport } from './routes/checkout.$id'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiCreatorCoachRouteImport } from './routes/api/creator-coach'
@@ -312,6 +314,16 @@ const PaymentReturnRoute = PaymentReturnRouteImport.update({
 const OrderIdRoute = OrderIdRouteImport.update({
   id: '/order/$id',
   path: '/order/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreatorsFollowingRoute = CreatorsFollowingRouteImport.update({
+  id: '/creators_/following',
+  path: '/creators/following',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreatorsDiscoverRoute = CreatorsDiscoverRouteImport.update({
+  id: '/creators_/discover',
+  path: '/creators/discover',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutIdRoute = CheckoutIdRouteImport.update({
@@ -687,6 +699,8 @@ export interface FileRoutesByFullPath {
   '/api/creator-coach': typeof ApiCreatorCoachRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/checkout/$id': typeof CheckoutIdRoute
+  '/creators/discover': typeof CreatorsDiscoverRoute
+  '/creators/following': typeof CreatorsFollowingRoute
   '/order/$id': typeof OrderIdRoute
   '/payment/return': typeof PaymentReturnRoute
   '/post/$id': typeof PostIdRoute
@@ -785,6 +799,8 @@ export interface FileRoutesByTo {
   '/api/creator-coach': typeof ApiCreatorCoachRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/checkout/$id': typeof CheckoutIdRoute
+  '/creators/discover': typeof CreatorsDiscoverRoute
+  '/creators/following': typeof CreatorsFollowingRoute
   '/order/$id': typeof OrderIdRoute
   '/payment/return': typeof PaymentReturnRoute
   '/post/$id': typeof PostIdRoute
@@ -887,6 +903,8 @@ export interface FileRoutesById {
   '/api/creator-coach': typeof ApiCreatorCoachRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/checkout/$id': typeof CheckoutIdRoute
+  '/creators_/discover': typeof CreatorsDiscoverRoute
+  '/creators_/following': typeof CreatorsFollowingRoute
   '/order/$id': typeof OrderIdRoute
   '/payment/return': typeof PaymentReturnRoute
   '/post/$id': typeof PostIdRoute
@@ -990,6 +1008,8 @@ export interface FileRouteTypes {
     | '/api/creator-coach'
     | '/blog/$slug'
     | '/checkout/$id'
+    | '/creators/discover'
+    | '/creators/following'
     | '/order/$id'
     | '/payment/return'
     | '/post/$id'
@@ -1088,6 +1108,8 @@ export interface FileRouteTypes {
     | '/api/creator-coach'
     | '/blog/$slug'
     | '/checkout/$id'
+    | '/creators/discover'
+    | '/creators/following'
     | '/order/$id'
     | '/payment/return'
     | '/post/$id'
@@ -1189,6 +1211,8 @@ export interface FileRouteTypes {
     | '/api/creator-coach'
     | '/blog/$slug'
     | '/checkout/$id'
+    | '/creators_/discover'
+    | '/creators_/following'
     | '/order/$id'
     | '/payment/return'
     | '/post/$id'
@@ -1254,6 +1278,8 @@ export interface RootRouteChildren {
   ApiCreatorCoachRoute: typeof ApiCreatorCoachRoute
   BlogSlugRoute: typeof BlogSlugRoute
   CheckoutIdRoute: typeof CheckoutIdRoute
+  CreatorsDiscoverRoute: typeof CreatorsDiscoverRoute
+  CreatorsFollowingRoute: typeof CreatorsFollowingRoute
   OrderIdRoute: typeof OrderIdRoute
   PaymentReturnRoute: typeof PaymentReturnRoute
   PostIdRoute: typeof PostIdRoute
@@ -1563,6 +1589,20 @@ declare module '@tanstack/react-router' {
       path: '/order/$id'
       fullPath: '/order/$id'
       preLoaderRoute: typeof OrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creators_/following': {
+      id: '/creators_/following'
+      path: '/creators/following'
+      fullPath: '/creators/following'
+      preLoaderRoute: typeof CreatorsFollowingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creators_/discover': {
+      id: '/creators_/discover'
+      path: '/creators/discover'
+      fullPath: '/creators/discover'
+      preLoaderRoute: typeof CreatorsDiscoverRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout/$id': {
@@ -2146,6 +2186,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCreatorCoachRoute: ApiCreatorCoachRoute,
   BlogSlugRoute: BlogSlugRoute,
   CheckoutIdRoute: CheckoutIdRoute,
+  CreatorsDiscoverRoute: CreatorsDiscoverRoute,
+  CreatorsFollowingRoute: CreatorsFollowingRoute,
   OrderIdRoute: OrderIdRoute,
   PaymentReturnRoute: PaymentReturnRoute,
   PostIdRoute: PostIdRoute,

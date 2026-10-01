@@ -43,6 +43,8 @@ export interface CreatorAssetDTO {
   originalAmount: number | null;
   fxSnapshot: { base: string; rates: Record<string, number> } | null;
   downloadCount: number;
+  /** Marketplace category of the linked resource (e.g. Templates). */
+  category?: string | null;
 }
 
 export interface CreatorPostDTO {
@@ -66,6 +68,8 @@ export interface CreatorPostDTO {
     slug: string | null;
     avatarUrl: string | null;
     workLinks: string[];
+    /** Tools the creator listed during onboarding. */
+    tools?: string[];
   };
 }
 
@@ -421,7 +425,7 @@ async function loadCreatorPosts(postId?: string): Promise<CreatorPostDTO[]> {
 
       const { data: prods } = await sb
         .from("products")
-        .select("id, price_usd, original_currency, original_amount, fx_snapshot")
+        .select("id, price_usd, original_currency, original_amount, fx_snapshot, category")
         .in("id", productIds)
         .eq("status", "active");
       (prods ?? []).forEach((p) => {
@@ -435,6 +439,7 @@ async function loadCreatorPosts(postId?: string): Promise<CreatorPostDTO[]> {
           originalAmount: p.original_amount === null ? null : Number(p.original_amount),
           fxSnapshot: (p.fx_snapshot as { base: string; rates: Record<string, number> } | null) ?? null,
           downloadCount: downloadCounts.get(p.id) ?? 0,
+          category: (p as { category?: string | null }).category ?? null,
         });
       });
     }
@@ -446,7 +451,7 @@ async function loadCreatorPosts(postId?: string): Promise<CreatorPostDTO[]> {
     const { supabaseAdmin: adminForProfiles } = await import("@/integrations/supabase/client.server");
     const { data: profiles } = await adminForProfiles
       .from("profiles")
-      .select("user_id, display_name, slug, avatar_path, creator_profile")
+      .select("user_id, display_name, slug, avatar_path, creator_profile, tools")
       .in("user_id", authorIds);
     const byAuthor = new Map((profiles ?? []).map((p) => [p.user_id, p]));
 
@@ -534,6 +539,9 @@ async function loadCreatorPosts(postId?: string): Promise<CreatorPostDTO[]> {
           slug: prof?.slug ?? null,
           avatarUrl: avatar,
           workLinks: readCreatorProfile((prof as { creator_profile?: unknown } | undefined)?.creator_profile).workLinks,
+          tools: Array.isArray((prof as { tools?: unknown } | undefined)?.tools)
+            ? ((prof as { tools: unknown[] }).tools.filter((x): x is string => typeof x === "string").slice(0, 6))
+            : [],
         },
       } satisfies CreatorPostDTO;
     });
@@ -556,15 +564,23 @@ export interface TopCreatorDTO {
   viewsCount: number;
   /** Creator fields they post in most (top 3). */
   fields: string[];
+  /** Tools listed on the creator profile. */
+  tools?: string[];
+  /** Date of the creator's first published post. */
+  firstPostAt?: string | null;
 }
 
 /** Live leaderboard of showcase creators ranked by followers, with post counts and views. */
-export const getTopCreators = createServerFn({ method: "GET" }).handler(
-  async (): Promise<TopCreatorDTO[]> => {
+export const getTopCreators = createServerFn({ method: "GET" })
+  .inputValidator((input: unknown) =>
+    z.object({ limit: z.number().int().min(1).max(100).optional() }).parse(input ?? {}),
+  )
+  .handler(
+  async ({ data: input }): Promise<TopCreatorDTO[]> => {
     const sb = publicClient();
     const { data: postRows } = await sb
       .from("creator_posts")
-      .select("author_id, fields, view_count")
+      .select("author_id, fields, view_count, created_at")
       .eq("status", "published")
       .limit(2000);
     if (!postRows || postRows.length === 0) return [];
@@ -572,10 +588,13 @@ export const getTopCreators = createServerFn({ method: "GET" }).handler(
     const postsByAuthor = new Map<string, number>();
     const viewsByAuthor = new Map<string, number>();
     const fieldsByAuthor = new Map<string, Map<string, number>>();
+    const firstByAuthor = new Map<string, string>();
     postRows.forEach((r) => {
       const aid = r.author_id as string;
       if (!aid) return;
       postsByAuthor.set(aid, (postsByAuthor.get(aid) ?? 0) + 1);
+      const at = (r as { created_at?: string }).created_at;
+      if (at && (!firstByAuthor.has(aid) || at < firstByAuthor.get(aid)!)) firstByAuthor.set(aid, at);
       viewsByAuthor.set(aid, (viewsByAuthor.get(aid) ?? 0) + Number(r.view_count ?? 0));
       (r.fields ?? []).forEach((f) => {
         const counts = fieldsByAuthor.get(aid) ?? new Map<string, number>();
@@ -589,7 +608,7 @@ export const getTopCreators = createServerFn({ method: "GET" }).handler(
     const [profileRes, followRes] = await Promise.all([
       supabaseAdmin
         .from("profiles")
-        .select("user_id, display_name, slug, avatar_path, country, verification_tier, banned_at, deleted_at")
+        .select("user_id, display_name, slug, avatar_path, country, verification_tier, banned_at, deleted_at, tools")
         .in("user_id", authorIds),
       sb.from("follows").select("followee_id").in("followee_id", authorIds).limit(10000),
     ]);
@@ -641,10 +660,12 @@ export const getTopCreators = createServerFn({ method: "GET" }).handler(
           postsCount: postsByAuthor.get(aid) ?? 0,
           viewsCount: viewsByAuthor.get(aid) ?? 0,
           fields,
+          tools: Array.isArray(p.tools) ? (p.tools as unknown[]).filter((x): x is string => typeof x === "string").slice(0, 6) : [],
+          firstPostAt: firstByAuthor.get(aid) ?? null,
         } satisfies TopCreatorDTO;
       })
       .sort((a, b) => b.followersCount - a.followersCount || b.postsCount - a.postsCount)
-      .slice(0, 10);
+      .slice(0, input.limit ?? 10);
   },
 );
 
