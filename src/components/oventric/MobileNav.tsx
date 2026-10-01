@@ -35,11 +35,7 @@ export function MobileNav({
   const right = isAppShell
     ? [
         { icon: Images, label: "Feed" },
-         { icon: Clapperboard, label: "Creators" },
-      ]
-    : [
-        { icon: MessageCircle, label: "Chats" },
-        { icon: Clapperboard, label: "Creators" },
+        { icon: Clapperboard, label: "Creator's Hub" },
         { icon: Wallet, label: "Wallet" },
       ];
   const chatOpen = useChatOpen();

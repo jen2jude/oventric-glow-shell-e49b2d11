@@ -183,7 +183,7 @@ export function CreatorHubPage() {
             Oventric
           </p>
           <h1 className={`font-wallet-display font-extrabold leading-none ${isApp ? "mt-1 text-[25px]" : "mt-2 text-[44px] tracking-tight sm:text-[64px] lg:text-[84px]"}`}>
-            CREATORS
+            Creator's Hub
           </h1>
           <p className={`font-wallet-display font-semibold ${isApp ? "mt-1 text-[13px] text-white/75" : "mt-3 text-[17px] sm:text-[22px]"}`}>
             Create. Share. Teach. Sell. Grow.
