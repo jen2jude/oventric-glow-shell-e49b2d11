@@ -373,7 +373,7 @@ function ProfileEditor({ data, t, reload }: { data: CreatorStudioDTO; t: Theme; 
         <input ref={coverRef} type="file" accept="image/*" hidden onChange={(e) => upload("cover", e.target.files?.[0])} />
       </div>
 
-      <div><label className={label}>Bio</label><textarea rows={3} maxLength={500} value={bio} onChange={(e) => setBio(e.target.value)} className={field} /></div>
+      <div><label className={label}>Bio</label><textarea rows={3} maxLength={280} value={bio} onChange={(e) => setBio(e.target.value)} className={field} /></div>
       <div><label className={label}>Creator category</label>
         <select value={category} onChange={(e) => setCategory(e.target.value)} className={field}><option value="">Choose…</option>{Array.from(new Set([...CATEGORIES, ...(category ? [category] : [])])).map((c) => <option key={c}>{c}</option>)}</select>
       </div>
