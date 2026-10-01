@@ -213,7 +213,32 @@ export const recordCreatorPostView = createServerFn({ method: "POST" })
     return { ok: true, recorded: true };
   });
 
+export const CREATOR_CONTENT_TYPES = [
+  { key: "showcase", label: "Showcase" },
+  { key: "tutorial", label: "Tutorial" },
+  { key: "tip", label: "Tip" },
+  { key: "educational", label: "Educational" },
+  { key: "behind_the_scenes", label: "Behind the Scenes" },
+  { key: "resource", label: "Resource Post" },
+  { key: "product_showcase", label: "Product Showcase" },
+] as const;
+export type CreatorContentType = (typeof CREATOR_CONTENT_TYPES)[number]["key"];
+
+export const CREATOR_RESOURCE_TYPES = [
+  "PDF", "Video", "ZIP", "Canva template", "CapCut project", "Figma file", "Preset",
+  "Ebook", "Checklist", "Prompt pack", "Audio", "Other digital asset",
+] as const;
+
+export const CREATOR_LICENSES = ["Personal Use", "Commercial Use", "No Redistribution", "Editable", "Other"] as const;
+
+const ContentTypeEnum = z.enum([
+  "showcase", "tutorial", "tip", "educational", "behind_the_scenes", "resource", "product_showcase",
+]);
+
 const PublishInput = z.object({
+  /** When set, updates the creator's own existing post (draft or published). */
+  postId: z.string().uuid().optional(),
+  status: z.enum(["draft", "published"]).default("published"),
   title: z.string().trim().min(2).max(120),
   caption: z.string().trim().max(2000).optional(),
   mediaPaths: z.array(z.string().trim().max(300)).max(10).optional(),
@@ -223,9 +248,31 @@ const PublishInput = z.object({
   externalUrl: z.string().trim().max(500).optional(),
   /** Marketplace product created by the same creator, sold as an instant download. */
   productId: z.string().uuid().optional(),
+  contentType: ContentTypeEnum.default("showcase"),
+  category: z.string().trim().max(60).optional(),
+  tools: z.array(z.string().trim().min(1).max(40)).max(12).optional(),
+  tags: z.array(z.string().trim().min(1).max(30)).max(10).optional(),
+  visibility: z.enum(["public", "unlisted"]).default("public"),
+  resourceType: z.string().trim().max(40).optional(),
+  resourceLicense: z.array(z.string().trim().max(40)).max(5).optional(),
+  resourceLicenseNote: z.string().trim().max(300).optional(),
+  rightsConfirmed: z.boolean().optional(),
+  /** An existing Oventric product of the creator to feature with this post. */
+  showcaseProductId: z.string().uuid().optional().nullable(),
 });
 
-/** Publishes a creator showcase item. */
+async function assertOwnProduct(productId: string, userId: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: prod } = await supabaseAdmin
+    .from("products")
+    .select("id, seller_id")
+    .eq("id", productId)
+    .maybeSingle();
+  if (!prod || prod.seller_id !== userId) throw new Error("That product isn't yours");
+  return prod.id as string;
+}
+
+/** Creates or updates a creator post — as a draft or published. */
 export const publishCreatorPost = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => PublishInput.parse(input ?? {}))
@@ -246,33 +293,72 @@ export const publishCreatorPost = createServerFn({ method: "POST" })
 
     // Only the creator's own listing may be attached — never a product id a
     // client hands us for someone else's asset.
-    let productId: string | null = null;
-    if (data.productId) {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const { data: prod } = await supabaseAdmin
-        .from("products")
-        .select("id, seller_id")
-        .eq("id", data.productId)
+    const productId = data.productId ? await assertOwnProduct(data.productId, userId) : null;
+    const showcaseProductId = data.showcaseProductId
+      ? await assertOwnProduct(data.showcaseProductId, userId)
+      : null;
+
+    let existing: { id: string; product_id: string | null; rights_confirmed_at: string | null } | null = null;
+    if (data.postId) {
+      const { data: row } = await supabase
+        .from("creator_posts")
+        .select("id, author_id, product_id, rights_confirmed_at")
+        .eq("id", data.postId)
         .maybeSingle();
-      if (!prod || prod.seller_id !== userId) throw new Error("That asset isn't yours");
-      productId = prod.id;
+      if (!row || row.author_id !== userId) throw new Error("That post isn't yours");
+      existing = row;
+    }
+    const finalProductId = productId ?? existing?.product_id ?? null;
+    let rightsAt = existing?.rights_confirmed_at ?? null;
+    if (data.rightsConfirmed) rightsAt = rightsAt ?? new Date().toISOString();
+    if (data.status === "published" && finalProductId && !rightsAt) {
+      throw new Error("Confirm you own the rights to this resource before publishing");
+    }
+
+    const meta = {
+      title: data.title,
+      caption: data.caption ?? null,
+      community_link: data.communityLink || null,
+      content_type: data.contentType,
+      category: data.category || null,
+      tools: data.tools ?? [],
+      tags: (data.tags ?? []).map((t) => t.replace(/^#/, "").toLowerCase()),
+      visibility: data.visibility,
+      resource_type: finalProductId ? data.resourceType || null : null,
+      resource_license: finalProductId ? data.resourceLicense ?? [] : [],
+      resource_license_note: finalProductId ? data.resourceLicenseNote || null : null,
+      rights_confirmed_at: rightsAt,
+      showcase_product_id: showcaseProductId,
+      status: data.status,
+      product_id: finalProductId,
+    };
+
+    if (existing) {
+      const patch: Record<string, unknown> = { ...meta };
+      if (data.mediaPaths) {
+        patch.media_paths = data.mediaPaths;
+        patch.media_type = data.mediaType ?? null;
+      }
+      // Re-publishing a draft surfaces it as new.
+      const { error } = await supabase.from("creator_posts").update(patch).eq("id", existing.id).eq("author_id", userId);
+      if (error) {
+        console.error("[publishCreatorPost:update]", error);
+        throw new Error(error.message || "Couldn't save. Try again.");
+      }
+      return { id: existing.id };
     }
 
     const { data: row, error } = await supabase
       .from("creator_posts")
       .insert({
         author_id: userId,
-        title: data.title,
-        caption: data.caption ?? null,
         media_paths: data.mediaPaths ?? [],
         media_type: data.mediaType ?? null,
-        community_link: data.communityLink || null,
         full_video_url: data.mediaType === "video" ? data.fullVideoUrl || null : null,
         external_url: embed?.url ?? null,
         external_provider: embed?.provider ?? null,
-        product_id: productId,
         fields,
-        status: "published",
+        ...meta,
       })
       .select("id")
       .maybeSingle();
@@ -281,6 +367,140 @@ export const publishCreatorPost = createServerFn({ method: "POST" })
       throw new Error("Couldn't publish. Try again.");
     }
     return { id: (row as { id: string } | null)?.id ?? null };
+  });
+
+export interface CreatorDraftDTO {
+  id: string;
+  status: "draft" | "published";
+  title: string;
+  caption: string | null;
+  communityLink: string | null;
+  contentType: CreatorContentType;
+  category: string | null;
+  tools: string[];
+  tags: string[];
+  visibility: "public" | "unlisted";
+  resourceType: string | null;
+  resourceLicense: string[];
+  resourceLicenseNote: string | null;
+  rightsConfirmed: boolean;
+  productId: string | null;
+  showcaseProductId: string | null;
+  mediaPaths: string[];
+  mediaType: "image" | "video" | null;
+  mediaUrls: string[];
+  updatedAt: string;
+}
+
+function toDraftDTO(r: Record<string, unknown>): CreatorDraftDTO {
+  const paths = ((r.media_paths as string[] | null) ?? []).filter(Boolean);
+  return {
+    id: r.id as string,
+    status: (r.status as "draft" | "published") ?? "draft",
+    title: (r.title as string) ?? "",
+    caption: (r.caption as string | null) ?? null,
+    communityLink: (r.community_link as string | null) ?? null,
+    contentType: ((r.content_type as CreatorContentType) ?? "showcase"),
+    category: (r.category as string | null) ?? null,
+    tools: (r.tools as string[] | null) ?? [],
+    tags: (r.tags as string[] | null) ?? [],
+    visibility: (r.visibility as "public" | "unlisted") ?? "public",
+    resourceType: (r.resource_type as string | null) ?? null,
+    resourceLicense: (r.resource_license as string[] | null) ?? [],
+    resourceLicenseNote: (r.resource_license_note as string | null) ?? null,
+    rightsConfirmed: !!r.rights_confirmed_at,
+    productId: (r.product_id as string | null) ?? null,
+    showcaseProductId: (r.showcase_product_id as string | null) ?? null,
+    mediaPaths: paths,
+    mediaType: (r.media_type as "image" | "video" | null) ?? null,
+    mediaUrls: paths.map((p) => (/^https?:\/\//.test(p) ? p : stableImageUrl("post-media", p) ?? "")).filter(Boolean),
+    updatedAt: (r.updated_at as string) ?? (r.created_at as string),
+  };
+}
+
+const DRAFT_COLS =
+  "id, author_id, status, title, caption, community_link, content_type, category, tools, tags, visibility, resource_type, resource_license, resource_license_note, rights_confirmed_at, product_id, showcase_product_id, media_paths, media_type, created_at, updated_at";
+
+/** The signed-in creator's unpublished drafts. */
+export const listMyCreatorDrafts = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<CreatorDraftDTO[]> => {
+    const { data, error } = await context.supabase
+      .from("creator_posts")
+      .select(DRAFT_COLS)
+      .eq("author_id", context.userId)
+      .eq("status", "draft")
+      .order("updated_at", { ascending: false })
+      .limit(50);
+    if (error) throw new Error("Couldn't load drafts");
+    return (data ?? []).map((r) => toDraftDTO(r as Record<string, unknown>));
+  });
+
+/** Owner-only full post for the composer's edit mode. */
+export const getMyCreatorPostForEdit = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ postId: z.string().uuid() }).parse(input ?? {}))
+  .handler(async ({ data, context }): Promise<CreatorDraftDTO> => {
+    const { data: row } = await context.supabase
+      .from("creator_posts")
+      .select(DRAFT_COLS)
+      .eq("id", data.postId)
+      .eq("author_id", context.userId)
+      .maybeSingle();
+    if (!row) throw new Error("Post not found");
+    return toDraftDTO(row as Record<string, unknown>);
+  });
+
+/**
+ * Secure resource access. Authorizes against authoritative order state:
+ * the creator themselves, or a buyer with a PAID order for the linked product.
+ * Never trusts the client. Returns a short-lived signed link.
+ */
+export const getCreatorResourceDownload = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ postId: z.string().uuid() }).parse(input ?? {}))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: post } = await supabaseAdmin
+      .from("creator_posts")
+      .select("id, author_id, status, product_id")
+      .eq("id", data.postId)
+      .maybeSingle();
+    if (!post?.product_id || (post.status !== "published" && post.author_id !== context.userId)) {
+      return { authorized: false as const, reason: "not_found" as const };
+    }
+    const { data: prod } = await supabaseAdmin
+      .from("products")
+      .select("id, seller_id, file_path, external_url, status, requires_manual_delivery")
+      .eq("id", post.product_id)
+      .maybeSingle();
+    if (!prod) return { authorized: false as const, reason: "not_found" as const };
+
+    let allowed = prod.seller_id === context.userId;
+    if (!allowed) {
+      const { data: order } = await supabaseAdmin
+        .from("orders")
+        .select("id")
+        .eq("buyer_id", context.userId)
+        .eq("product_id", prod.id)
+        .eq("status", "paid")
+        .limit(1)
+        .maybeSingle();
+      allowed = !!order;
+    }
+    if (!allowed) return { authorized: false as const, reason: "no_access" as const };
+
+    let url: string | null = null;
+    if (prod.file_path) {
+      const { data: signed } = await supabaseAdmin.storage
+        .from("product-files")
+        .createSignedUrl(prod.file_path as string, 60 * 10);
+      url = signed?.signedUrl ?? null;
+    } else if (prod.external_url) {
+      url = prod.external_url as string;
+    }
+    if (!url) return { authorized: false as const, reason: "unavailable" as const };
+    return { authorized: true as const, url };
   });
 
 
