@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { ArrowLeft, Bell, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NotificationsDrawer } from "@/components/oventric/NotificationsDrawer";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
-import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
-import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 import logoFull from "@/assets/oventric-full-transparent.png";
 
@@ -15,32 +13,23 @@ const TITLES: Record<string, string> = {
 };
 
 // Sub-screens reached from Home/nav get a back-to-previous button instead of the avatar.
-const BACK_SECTIONS = new Set(["Explore", "Wallet", "Purchases"]);
+const BACK_SECTIONS = new Set(["Explore", "Wallet", "Purchases", "Profile"]);
 
-export function AppPageHeader({ section, name, avatarUrl, onBack, onOpenMessages }: {
+export function AppPageHeader({ section, name, avatarUrl, onBack, onOpenAccount, onOpenMessages }: {
   section: string;
   name: string;
   avatarUrl: string | null;
   onBack: () => void;
+  onOpenAccount: () => void;
   onOpenMessages: () => void;
 }) {
-  const navigate = useNavigate();
-  const { isAuthenticated, openGate } = useAuthGate();
   const { messages, total } = useUnreadCounts();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const firstName = name.split(" ")[0] || "there";
-  const showBrand = section === "Marketplace" || section === "Feed" || section === "Profile";
+  const showBrand = section === "Marketplace" || section === "Feed";
   const showBack = BACK_SECTIONS.has(section);
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-
-  const openProfile = async () => {
-    haptic("select");
-    if (!isAuthenticated) { openGate("generic"); return; }
-    const { data } = await supabase.auth.getSession();
-    const id = data.session?.user?.id;
-    if (id) navigate({ to: "/profile/$id", params: { id } });
-  };
 
   return (
     <>
@@ -56,7 +45,7 @@ export function AppPageHeader({ section, name, avatarUrl, onBack, onOpenMessages
                 <ArrowLeft className="h-[18px] w-[18px]" />
               </Button>
             ) : (
-              <Button variant="ghost" size="icon" onClick={() => void openProfile()} aria-label="Your social profile" className="nav-tap h-10 w-10 shrink-0 overflow-hidden rounded-full border border-white/10 bg-white/[0.06] p-0 text-white/70 hover:bg-white/10 hover:text-white">
+               <Button variant="ghost" size="icon" onClick={() => { haptic("select"); onOpenAccount(); }} aria-label="Open account menu" className="nav-tap h-10 w-10 shrink-0 overflow-hidden rounded-full border border-white/10 bg-white/[0.06] p-0 text-white/70 hover:bg-white/10 hover:text-white">
                 {avatarUrl ? <img src={avatarUrl} alt="" className="h-full w-full object-cover" /> : <span className="text-sm font-bold">{firstName.slice(0, 1).toUpperCase()}</span>}
               </Button>
             )}

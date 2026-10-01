@@ -1,4 +1,6 @@
-import { Home, Images, MessageCircle, Plus, ShoppingBag, UserRound, Wallet } from "lucide-react";
+import { Clapperboard, Home, Images, MessageCircle, Plus, ShoppingBag, Wallet } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
+import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
 import { CountBadge } from "@/components/oventric/CountBadge";
 import { haptic } from "@/lib/haptics";
@@ -28,12 +30,14 @@ export function MobileNav({
   counts?: MobileNavCounts;
 }) {
   const isAppShell = useIsAppShell();
+  const navigate = useNavigate();
+  const { isAuthenticated, openGate } = useAuthGate();
   // In the app shell, chats live in the top bar — the dock carries the feed
   // instead. The website keeps its chat tab in the footer.
   const right = isAppShell
     ? [
         { icon: Images, label: "Feed" },
-        { icon: UserRound, label: "Profile" },
+         { icon: Clapperboard, label: "Creator Hub" },
       ]
     : [
         { icon: MessageCircle, label: "Chats" },
@@ -52,7 +56,10 @@ export function MobileNav({
         key={it.label}
         onClick={() => {
           haptic("select");
-          onSelect(it.label);
+          if (it.label === "Creator Hub") {
+            if (!isAuthenticated) openGate("generic");
+            else navigate({ to: "/creator-hub" });
+          } else onSelect(it.label);
         }}
         className={`nav-tap relative flex flex-col items-center justify-center gap-0.5 flex-1 py-1 min-w-0 ${
            isActive ? "text-[#E5484D]" : "text-white/45"
