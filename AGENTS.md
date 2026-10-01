@@ -22,7 +22,7 @@ App forms use app-scoped sheets with input repositioning off; web stays separate
 
 Keep app chrome outside the main scroller; use `app-scroll-header` inside. Why: prevent header loss.
 
-The app footer opens Creator Hub directly; the Home avatar opens Account with profile options. Why: keep creation and identity shortcuts distinct.
+Creators is an AppSurface section at /creators (web + app footers and desktop navbar link to it); Newsfeed has no Creators tab; the Home avatar opens Account. Why: Creators is a first-class destination reusing creator_posts data.
 
 Privacy, Terms, Report a Problem, Help, and Support Center use dark app views and retain separate web views. Why: no website chrome in app.
 
