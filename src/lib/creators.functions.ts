@@ -392,7 +392,7 @@ export const saveCreatorPostToCollection = createServerFn({ method: "POST" })
     return { ok: true, alreadySaved: false };
   });
 
-async function loadCreatorPosts(postId?: string): Promise<CreatorPostDTO[]> {
+async function loadCreatorPosts(postId?: string, authorId?: string, limit = 40): Promise<CreatorPostDTO[]> {
     const sb = publicClient();
     let query = sb
       .from("creator_posts")
@@ -401,7 +401,8 @@ async function loadCreatorPosts(postId?: string): Promise<CreatorPostDTO[]> {
       )
       .eq("status", "published");
     if (postId) query = query.eq("id", postId);
-    const { data: rows, error } = await query.order("created_at", { ascending: false }).limit(postId ? 1 : 40);
+    if (authorId) query = query.eq("author_id", authorId);
+    const { data: rows, error } = await query.order("created_at", { ascending: false }).limit(postId ? 1 : limit);
     if (error || !rows || rows.length === 0) return [];
 
     // Linked assets: only active (approved) listings are publicly readable, so
@@ -675,4 +676,119 @@ export const getCreatorPost = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<CreatorPostDTO | null> => {
     const posts = await loadCreatorPosts(data.postId);
     return posts[0] ?? null;
+  });
+
+
+// ---------------------------------------------------------------------------
+// Public creator profile (/creators/@username) — reuses the profiles identity.
+// ---------------------------------------------------------------------------
+
+export interface CreatorShopItemDTO {
+  id: string;
+  slug: string | null;
+  name: string;
+  coverUrl: string | null;
+  category: string;
+}
+
+export interface PublicCreatorProfileDTO {
+  userId: string;
+  slug: string | null;
+  username: string | null;
+  name: string;
+  bio: string | null;
+  avatarUrl: string | null;
+  coverUrl: string | null;
+  verified: boolean;
+  isCreator: boolean;
+  category: string | null;
+  fields: string[];
+  tools: string[];
+  stats: { followers: number; content: number; resources: number; downloads: number };
+  posts: CreatorPostDTO[];
+  shop: { count: number; items: CreatorShopItemDTO[] };
+}
+
+/** Public creator profile by @username / slug. Banned or deactivated accounts are hidden. */
+export const getPublicCreatorProfile = createServerFn({ method: "GET" })
+  .inputValidator((input: unknown) =>
+    z.object({ handle: z.string().trim().min(1).max(80).regex(/^@?[A-Za-z0-9._-]+$/) }).parse(input),
+  )
+  .handler(async ({ data }): Promise<PublicCreatorProfileDTO | null> => {
+    const handle = data.handle.replace(/^@/, "").toLowerCase();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row } = await supabaseAdmin
+      .from("profiles")
+      .select("user_id, slug, username, display_name, bio, avatar_path, cover_path, tools, creator_profile, verification_tier, banned_at, deleted_at")
+      .or(`slug.ilike.${handle},username.ilike.${handle}`)
+      .limit(1)
+      .maybeSingle();
+    if (!row || row.banned_at || row.deleted_at) return null;
+
+    const uid = row.user_id as string;
+    const sb = publicClient();
+    const [posts, followRes, prodRes] = await Promise.all([
+      loadCreatorPosts(undefined, uid, 60),
+      sb.from("follows").select("follower_id", { count: "exact", head: true }).eq("followee_id", uid),
+      sb
+        .from("products")
+        .select("id, slug, name, cover_path, category", { count: "exact" })
+        .eq("seller_id", uid)
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(8),
+    ]);
+
+    const cp = readCreatorProfile(row.creator_profile);
+    const resources = posts.filter((p) => p.asset?.available);
+    const downloads = resources.reduce((n, p) => n + (p.asset?.downloadCount ?? 0), 0);
+    const tools = Array.isArray(row.tools) ? (row.tools as unknown[]).filter((x): x is string => typeof x === "string").slice(0, 12) : [];
+    const pic = (bucket: string, path: string | null) =>
+      path ? (/^https?:\/\//.test(path) ? path : stableImageUrl(bucket, path) ?? null) : null;
+    const tier = String(row.verification_tier ?? "").toLowerCase();
+    const fields = cp.fields.length ? cp.fields : Array.from(new Set(posts.flatMap((p) => p.fields))).slice(0, 3);
+
+    return {
+      userId: uid,
+      slug: (row.slug as string | null) ?? null,
+      username: (row.username as string | null) ?? null,
+      name: ((row.display_name as string | null) ?? "").trim() || (row.username as string | null) || (row.slug as string | null) || "Creator",
+      bio: (row.bio as string | null) ?? null,
+      avatarUrl: pic("avatars", row.avatar_path as string | null),
+      coverUrl: pic("profile-covers", row.cover_path as string | null),
+      verified: !!tier && tier !== "none",
+      isCreator: cp.isCreator,
+      category: fields[0] ?? null,
+      fields,
+      tools,
+      stats: { followers: followRes.count ?? 0, content: posts.length, resources: resources.length, downloads },
+      posts,
+      shop: {
+        count: prodRes.count ?? 0,
+        items: (prodRes.data ?? []).map((p) => ({
+          id: p.id as string,
+          slug: (p.slug as string | null) ?? null,
+          name: p.name as string,
+          coverUrl: pic("product-covers", p.cover_path as string | null),
+          category: p.category as string,
+        })),
+      },
+    };
+  });
+
+/** Whether either side has blocked the other — mirrors existing block rules. */
+export const getCreatorBlockState = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ targetId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }): Promise<{ blocked: boolean }> => {
+    if (data.targetId === context.userId) return { blocked: false };
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows } = await supabaseAdmin
+      .from("user_blocks")
+      .select("id")
+      .or(
+        `and(blocker_id.eq.${context.userId},blocked_id.eq.${data.targetId}),and(blocker_id.eq.${data.targetId},blocked_id.eq.${context.userId})`,
+      )
+      .limit(1);
+    return { blocked: (rows ?? []).length > 0 };
   });
