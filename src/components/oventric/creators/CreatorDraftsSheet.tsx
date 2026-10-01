@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { FileText, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { deleteCreatorPost, listMyCreatorDrafts } from "@/lib/creators.functions";
@@ -56,10 +57,10 @@ export function CreatorDraftsSheet({
   const muted = isApp ? "text-white/45" : "text-slate-500";
   const row = isApp ? "border-white/10" : "border-slate-100";
 
-  return (
+  return createPortal(
     <div className={`fixed inset-0 z-[110] flex items-end justify-center sm:items-center ${isApp ? "bg-black/70" : "bg-black/50"}`} onClick={onClose}>
       <div
-        className={`flex w-full max-w-lg flex-col overflow-hidden border ${panel} ${isApp ? "max-h-[94dvh] rounded-t-[18px] rounded-b-none border-b-0" : "max-h-[80dvh] rounded-t-[18px] sm:rounded-[18px]"}`}
+        className={`flex w-full max-w-lg flex-col overflow-hidden border ${panel} ${isApp ? "h-[96dvh] rounded-t-[18px] rounded-b-none border-b-0" : "max-h-[80dvh] rounded-t-[18px] sm:rounded-[18px]"}`}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-label="Your drafts"
@@ -112,5 +113,5 @@ export function CreatorDraftsSheet({
         </div>
       </div>
     </div>
-  );
+  , document.body);
 }

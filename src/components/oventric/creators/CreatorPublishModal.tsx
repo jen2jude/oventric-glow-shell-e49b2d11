@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useServerFn } from "@tanstack/react-start";
 import { Download, FileUp, ImagePlus, Link2, Sparkles, X, Zap } from "lucide-react";
 import { toast } from "sonner";
@@ -468,9 +469,9 @@ export function CreatorPublishModal({
     }
   };
 
-  return (
-    <div className={`fixed inset-0 z-[120] flex items-start justify-center bg-slate-950/45 p-3 pt-[max(14px,env(safe-area-inset-top))] backdrop-blur-[2px] sm:items-center sm:p-6 ${isApp ? "app-creator-sheet" : ""}`}>
-      <div className="app-creator-sheet-panel flex max-h-[calc(100dvh-28px)] w-full max-w-lg flex-col overflow-hidden rounded-[18px] border border-white/80 bg-white shadow-2xl sm:max-h-[92vh]">
+  return createPortal(
+    <div className={`fixed inset-0 z-[120] flex items-start justify-center ${isApp ? "app-creator-sheet bg-black/80" : "bg-slate-950/45 p-3 pt-[max(14px,env(safe-area-inset-top))] backdrop-blur-[2px] sm:items-center sm:p-6"}`}>
+      <div className={`app-creator-sheet-panel flex w-full max-w-lg flex-col overflow-hidden rounded-[18px] border shadow-2xl ${isApp ? "h-[96dvh] bg-[#101013]" : "max-h-[calc(100dvh-28px)] border-white/80 bg-white sm:max-h-[92vh]"}`}>
         <div className="creator-spectrum grid h-1.5 shrink-0 grid-cols-5" aria-hidden="true">
           <span className="bg-emerald-500" />
           <span className="bg-sky-500" />
@@ -890,5 +891,5 @@ export function CreatorPublishModal({
         </div>
       </div>
     </div>
-  );
+  , document.body);
 }
