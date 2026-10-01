@@ -1,7 +1,7 @@
 import { useEffect, type RefObject } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-type Kind = "play" | "link_click" | "full_video_click";
+type Kind = "play" | "link_click" | "full_video_click" | "share";
 
 function viewerKey(): string {
   try {

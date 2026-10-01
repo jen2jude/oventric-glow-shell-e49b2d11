@@ -1,3 +1,4 @@
+import { logCreatorEvent } from "@/lib/creator-events";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -93,6 +94,7 @@ export function CreatorPostActions({ post, dark }: { post: CreatorPostDTO; dark?
         await navigator.clipboard.writeText(url);
         toast.success("Link copied");
       }
+      logCreatorEvent(post.id, "share", { target: navigator.share ? "native" : "copy" });
     } catch {
       /* user cancelled */
     }

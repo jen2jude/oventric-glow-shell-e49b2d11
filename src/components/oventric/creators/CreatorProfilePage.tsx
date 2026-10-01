@@ -1,3 +1,4 @@
+import { useProfileVisit } from "@/lib/seller-views";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -49,6 +50,7 @@ export function CreatorProfilePage({ profile }: { profile: PublicCreatorProfileD
   const [openPost, setOpenPost] = useState<CreatorPostDTO | null>(null);
   const [dmOpen, setDmOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  useProfileVisit(profile.userId);
 
   const fetchCollections = useServerFn(listPublicCollections);
   const fetchBlock = useServerFn(getCreatorBlockState);
