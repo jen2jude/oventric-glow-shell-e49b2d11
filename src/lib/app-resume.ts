@@ -80,3 +80,7 @@ export function pushBackLayer(close: () => void): () => void {
     }
   };
 }
+
+/** Captured once at startup, before this launch overwrites the saved screen. */
+export const launchedAsQuickResume =
+  typeof window !== "undefined" && readRecentScreen() !== null;

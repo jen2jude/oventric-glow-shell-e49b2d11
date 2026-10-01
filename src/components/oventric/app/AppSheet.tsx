@@ -4,6 +4,7 @@ import {
   DrawerOverlay,
   DrawerPortal,
 } from "@/components/ui/drawer";
+import { useBackClose } from "@/hooks/use-back-close";
 
 /**
  * Native app bottom sheet — the standard container for every sliding panel in
@@ -25,6 +26,7 @@ export function AppSheet({
   /** Pinned above the scrollable body — stays put while children scroll. */
   header?: React.ReactNode;
 }) {
+  useBackClose(open, onClose);
   return (
     <Drawer repositionInputs={false} open={open} onOpenChange={(o) => !o && onClose()}>
       <DrawerPortal>

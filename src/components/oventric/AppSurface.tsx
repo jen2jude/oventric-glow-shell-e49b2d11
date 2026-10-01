@@ -1,3 +1,4 @@
+import { useBackClose } from "@/hooks/use-back-close";
 import { lazy, Suspense, useEffect, useRef, useState, useCallback } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useRouterState } from "@tanstack/react-router";
@@ -165,6 +166,12 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
     activeRef.current = prev;
     setActiveSection(prev);
   }, []);
+  // Phone back button: close chat first, otherwise step back a section.
+  useBackClose(sectionStack.current.length > 0, backSection, active);
+  useBackClose(messagesOpen, () => {
+    setMessagesOpen(false);
+    setMessagesPeer(undefined);
+  });
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [name, setName] = useState<string>("");
   const [q, setQ] = useState("");
