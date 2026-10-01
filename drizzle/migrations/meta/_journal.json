@@ -470,6 +470,13 @@
       "when": 1790715113025,
       "tag": "0066_notify_product_out_of_stock",
       "breakpoints": true
+    },
+    {
+      "idx": 67,
+      "version": "7",
+      "when": 1790842981747,
+      "tag": "0067_notify_product_price_cashback_change",
+      "breakpoints": true
     }
   ]
 }
