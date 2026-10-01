@@ -93,3 +93,4 @@
 - [x] Give digital product upload an app-native sheet without changing website publishing or submission rules
 - [x] Creator's Hub Stage 1 — standalone /creators page
 - [x] Creator's Hub Stage 2 — home (featured, trending, watch & learn, free resources, rising, categories), /creators/discover, /creators/following
+- [x] Creator's Hub Stage 3 — public creator profiles at /creators/@username
