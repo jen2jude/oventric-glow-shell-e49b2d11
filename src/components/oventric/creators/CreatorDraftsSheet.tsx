@@ -57,9 +57,9 @@ export function CreatorDraftsSheet({
   const row = isApp ? "border-white/10" : "border-slate-100";
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-end justify-center bg-black/50 sm:items-center" onClick={onClose}>
+    <div className={`fixed inset-0 z-[110] flex items-end justify-center sm:items-center ${isApp ? "bg-black/70" : "bg-black/50"}`} onClick={onClose}>
       <div
-        className={`flex max-h-[80dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-[18px] border sm:rounded-[18px] ${panel}`}
+        className={`flex w-full max-w-lg flex-col overflow-hidden border ${panel} ${isApp ? "max-h-[94dvh] rounded-t-[18px] rounded-b-none border-b-0" : "max-h-[80dvh] rounded-t-[18px] sm:rounded-[18px]"}`}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-label="Your drafts"
