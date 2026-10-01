@@ -49,6 +49,7 @@ import { CreatorPostSheet } from "@/components/oventric/app/CreatorPostSheet";
 import { CreatorOnboardingModal } from "@/components/oventric/creators/CreatorOnboardingModal";
 import { CreatorPublishModal } from "@/components/oventric/creators/CreatorPublishModal";
 import { CreatorDraftsSheet } from "@/components/oventric/creators/CreatorDraftsSheet";
+import { CreatorCollectionsSheet } from "@/components/oventric/creators/CreatorCollectionsSheet";
 
 type HubTab = "home" | "discover" | "following" | "resources" | "challenges";
 
@@ -129,6 +130,7 @@ export function CreatorHubPage() {
   const [onboardOpen, setOnboardOpen] = useState(false);
   const [publishOpen, setPublishOpen] = useState(false);
   const [draftsOpen, setDraftsOpen] = useState(false);
+  const [collectionsOpen, setCollectionsOpen] = useState(false);
   const [editPostId, setEditPostId] = useState<string | null>(null);
   const [meId, setMeId] = useState<string | null>(null);
 
@@ -284,8 +286,8 @@ export function CreatorHubPage() {
           <p className={`font-wallet-display font-semibold ${isApp ? "mt-1 text-[13px] text-white/75" : "mt-3 text-[17px] sm:text-[22px]"}`}>
             Create. Share. Teach. Sell. Grow.
           </p>
-          <div className={`flex gap-2.5 sm:flex-row sm:items-center ${isApp ? "mt-3" : "mt-5 flex-col"}`}>
-            <label className={`flex flex-1 items-center gap-2 rounded-[10px] border px-3 ${isApp ? "h-10" : "h-12 px-4"} ${t.input}`}>
+          <div className={`flex gap-2.5 sm:flex-row sm:items-center ${isApp ? "mt-3 flex-wrap" : "mt-5 flex-col"}`}>
+            <label className={`flex flex-1 items-center gap-2 rounded-[10px] border px-3 ${isApp ? "h-10 min-w-0 basis-full" : "h-12 px-4"} ${t.input}`}>
               <Search className="h-4 w-4 shrink-0 opacity-60" />
               <input
                 value={q}
@@ -317,6 +319,15 @@ export function CreatorHubPage() {
                 aria-label="Your drafts"
               >
                 Drafts
+              </button>
+            )}
+            {isAuthenticated && (
+              <button
+                onClick={() => setCollectionsOpen(true)}
+                className={`inline-flex shrink-0 items-center justify-center rounded-[10px] border font-bold ${isApp ? "h-10 border-white/10 px-3 text-[11px] text-white/80" : "h-12 border-slate-200 px-4 text-[13px] text-slate-700"}`}
+                aria-label="Your collections"
+              >
+                Collections
               </button>
             )}
           </div>
@@ -452,6 +463,7 @@ export function CreatorHubPage() {
         }}
         onPublished={() => void refetchPosts()}
       />
+      <CreatorCollectionsSheet open={collectionsOpen} isApp={isApp} onClose={() => setCollectionsOpen(false)} />
       <CreatorDraftsSheet
         open={draftsOpen}
         isApp={isApp}

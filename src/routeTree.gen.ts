@@ -96,6 +96,7 @@ import { Route as AdminAdInquiriesRouteImport } from './routes/admin.ad-inquirie
 import { Route as DotwellKnownAssetlinksDotjsonRouteImport } from './routes/[.]well-known.assetlinks[.]json'
 import { Route as DotwellKnownAppleAppSiteAssociationRouteImport } from './routes/[.]well-known.apple-app-site-association'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
+import { Route as CreatorsCollectionsIdRouteImport } from './routes/creators_.collections.$id'
 import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack-webhook'
 import { Route as ApiPublicPaymentReturnRouteImport } from './routes/api/public/payment-return'
@@ -550,6 +551,11 @@ const AdminBlogIndexRoute = AdminBlogIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminBlogRoute,
 } as any)
+const CreatorsCollectionsIdRoute = CreatorsCollectionsIdRouteImport.update({
+  id: '/creators_/collections/$id',
+  path: '/creators/collections/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
   id: '/api/public/track',
   path: '/api/public/track',
@@ -725,6 +731,7 @@ export interface FileRoutesByFullPath {
   '/api/public/payment-return': typeof ApiPublicPaymentReturnRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/creators/collections/$id': typeof CreatorsCollectionsIdRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/api/public/hooks/auto-release-orders': typeof ApiPublicHooksAutoReleaseOrdersRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -826,6 +833,7 @@ export interface FileRoutesByTo {
   '/api/public/payment-return': typeof ApiPublicPaymentReturnRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/creators/collections/$id': typeof CreatorsCollectionsIdRoute
   '/admin/blog': typeof AdminBlogIndexRoute
   '/api/public/hooks/auto-release-orders': typeof ApiPublicHooksAutoReleaseOrdersRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -931,6 +939,7 @@ export interface FileRoutesById {
   '/api/public/payment-return': typeof ApiPublicPaymentReturnRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/creators_/collections/$id': typeof CreatorsCollectionsIdRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/api/public/hooks/auto-release-orders': typeof ApiPublicHooksAutoReleaseOrdersRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -1037,6 +1046,7 @@ export interface FileRouteTypes {
     | '/api/public/payment-return'
     | '/api/public/paystack-webhook'
     | '/api/public/track'
+    | '/creators/collections/$id'
     | '/admin/blog/'
     | '/api/public/hooks/auto-release-orders'
     | '/api/public/hooks/purge-deleted-accounts'
@@ -1138,6 +1148,7 @@ export interface FileRouteTypes {
     | '/api/public/payment-return'
     | '/api/public/paystack-webhook'
     | '/api/public/track'
+    | '/creators/collections/$id'
     | '/admin/blog'
     | '/api/public/hooks/auto-release-orders'
     | '/api/public/hooks/purge-deleted-accounts'
@@ -1242,6 +1253,7 @@ export interface FileRouteTypes {
     | '/api/public/payment-return'
     | '/api/public/paystack-webhook'
     | '/api/public/track'
+    | '/creators_/collections/$id'
     | '/admin/blog/'
     | '/api/public/hooks/auto-release-orders'
     | '/api/public/hooks/purge-deleted-accounts'
@@ -1305,6 +1317,7 @@ export interface RootRouteChildren {
   ApiPublicPaymentReturnRoute: typeof ApiPublicPaymentReturnRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
   ApiPublicTrackRoute: typeof ApiPublicTrackRoute
+  CreatorsCollectionsIdRoute: typeof CreatorsCollectionsIdRoute
   ApiPublicHooksAutoReleaseOrdersRoute: typeof ApiPublicHooksAutoReleaseOrdersRoute
   ApiPublicHooksPurgeDeletedAccountsRoute: typeof ApiPublicHooksPurgeDeletedAccountsRoute
   ApiPublicHooksPushDispatchRoute: typeof ApiPublicHooksPushDispatchRoute
@@ -1926,6 +1939,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBlogIndexRouteImport
       parentRoute: typeof AdminBlogRoute
     }
+    '/creators_/collections/$id': {
+      id: '/creators_/collections/$id'
+      path: '/creators/collections/$id'
+      fullPath: '/creators/collections/$id'
+      preLoaderRoute: typeof CreatorsCollectionsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/track': {
       id: '/api/public/track'
       path: '/api/public/track'
@@ -2221,6 +2241,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicPaymentReturnRoute: ApiPublicPaymentReturnRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
   ApiPublicTrackRoute: ApiPublicTrackRoute,
+  CreatorsCollectionsIdRoute: CreatorsCollectionsIdRoute,
   ApiPublicHooksAutoReleaseOrdersRoute: ApiPublicHooksAutoReleaseOrdersRoute,
   ApiPublicHooksPurgeDeletedAccountsRoute:
     ApiPublicHooksPurgeDeletedAccountsRoute,

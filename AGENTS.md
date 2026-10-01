@@ -39,3 +39,4 @@ Privacy, Terms, Report a Problem, Help, and Support Center use dark app views an
 - Explore uses app sheets for leaderboards and category product lists; People previews five follows, Products previews four per category. Why: compact discovery.
 - Public creator profiles live at /creators/@username, built on the existing profiles row, follows, messaging, collections and shop; banned/deactivated accounts 404 and mutual blocks hide content. Why: one identity system.
 - Creator resource downloads are authorized only by `getCreatorResourceDownload` (seller or PAID order, short-lived signed link); paid resources sell as existing products. Why: no second payment system, never trust the client.
+- Creator Collections reuse the existing collections/collection_items tables; public pages at /creators/collections/$id hide unpublished boards, unavailable products and non-public posts. Why: one collections system, never expose private items.

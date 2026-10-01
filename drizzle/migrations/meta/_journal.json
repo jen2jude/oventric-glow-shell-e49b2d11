@@ -491,6 +491,13 @@
       "when": 1790848919821,
       "tag": "0069_creator_posts_validate_legacy",
       "breakpoints": true
+    },
+    {
+      "idx": 70,
+      "version": "7",
+      "when": 1790850971816,
+      "tag": "0070_collections_category",
+      "breakpoints": true
     }
   ]
 }

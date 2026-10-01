@@ -1063,3 +1063,183 @@ export const getCreatorBlockState = createServerFn({ method: "GET" })
       .limit(1);
     return { blocked: (rows ?? []).length > 0 };
   });
+
+// ---------------------------------------------------------------------------
+// Stage 5 — Creator Collections. Built on the existing collections tables.
+// ---------------------------------------------------------------------------
+
+export interface CollectionPickerDTO {
+  posts: { id: string; title: string; thumb: string | null; isResource: boolean }[];
+  products: { id: string; slug: string | null; name: string; coverUrl: string | null }[];
+}
+
+const postThumb = (p: CreatorPostDTO) => {
+  const m = p.media[0];
+  return m?.type === "video" ? (m.posterUrl ?? null) : (m?.url ?? null);
+};
+
+/** The signed-in creator's own published content and active products, for adding to a collection. */
+export const getMyCollectionPicker = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<CollectionPickerDTO> => {
+    const posts = await loadCreatorPosts(undefined, context.userId, 100);
+    const { data: prods } = await context.supabase
+      .from("products")
+      .select("id, slug, name, cover_path")
+      .eq("seller_id", context.userId)
+      .eq("status", "active")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    return {
+      posts: posts.map((p) => ({ id: p.id, title: p.title || "Untitled", thumb: postThumb(p), isResource: !!p.asset })),
+      products: (prods ?? []).map((r) => ({
+        id: r.id as string,
+        slug: (r.slug as string | null) ?? null,
+        name: (r.name as string) ?? "Product",
+        coverUrl: r.cover_path ? stableImageUrl("product-covers", r.cover_path as string) : null,
+      })),
+    };
+  });
+
+/** Owner-only reorder of a collection's items. */
+export const reorderCollectionItems = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ collectionId: z.string().uuid(), itemIds: z.array(z.string().uuid()).max(300) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { data: board } = await context.supabase
+      .from("collections")
+      .select("id")
+      .eq("id", data.collectionId)
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    if (!board) throw new Error("Collection not found");
+    for (let i = 0; i < data.itemIds.length; i++) {
+      const { error } = await context.supabase
+        .from("collection_items")
+        .update({ sort_order: i })
+        .eq("id", data.itemIds[i])
+        .eq("collection_id", data.collectionId)
+        .eq("user_id", context.userId);
+      if (error) throw new Error("Couldn't reorder");
+    }
+    return { ok: true };
+  });
+
+export interface PublicCollectionItemDTO {
+  id: string;
+  kind: "post" | "resource" | "product" | "link";
+  title: string;
+  imageUrl: string | null;
+  note: string | null;
+  url: string | null;
+  post: CreatorPostDTO | null;
+  product: { id: string; slug: string | null; name: string; coverUrl: string | null; category: string | null } | null;
+}
+
+export interface PublicCollectionDTO {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string | null;
+  coverUrl: string | null;
+  creator: { userId: string; name: string; slug: string | null; username: string | null; avatarUrl: string | null; shopCount: number };
+  items: PublicCollectionItemDTO[];
+}
+
+/** A published collection with its creator and live item data. Unpublished → null. */
+export const getPublicCollection = createServerFn({ method: "GET" })
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input ?? {}))
+  .handler(async ({ data }): Promise<PublicCollectionDTO | null> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: board } = await supabaseAdmin
+      .from("collections")
+      .select("id, user_id, title, description, cover_url, category, is_public")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (!board || !board.is_public) return null;
+    const ownerId = board.user_id as string;
+
+    const { data: prof } = await supabaseAdmin
+      .from("profiles")
+      .select("user_id, display_name, username, slug, avatar_path, banned_at, deleted_at")
+      .eq("user_id", ownerId)
+      .maybeSingle();
+    const pr = prof as Record<string, string | null> | null;
+    if (!pr || pr.banned_at || pr.deleted_at) return null;
+
+    const [{ data: rows }, { count: shopCount }] = await Promise.all([
+      supabaseAdmin
+        .from("collection_items")
+        .select("id, kind, ref_id, url, title, image_url, note")
+        .eq("collection_id", data.id)
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: false }),
+      supabaseAdmin
+        .from("products")
+        .select("id", { count: "exact", head: true })
+        .eq("seller_id", ownerId)
+        .eq("status", "active"),
+    ]);
+    const items = rows ?? [];
+    const refIds = items.map((i) => i.ref_id as string | null).filter((x): x is string => !!x);
+
+    const posts = refIds.length ? await loadCreatorPosts(undefined, ownerId, 100) : [];
+    const postMap = new Map(posts.map((p) => [p.id, p]));
+    const productIds = items.filter((i) => i.kind === "product" && i.ref_id).map((i) => i.ref_id as string);
+    const productMap = new Map<string, PublicCollectionItemDTO["product"]>();
+    if (productIds.length) {
+      const { data: prods } = await supabaseAdmin
+        .from("products")
+        .select("id, slug, name, cover_path, category")
+        .in("id", productIds)
+        .eq("status", "active");
+      (prods ?? []).forEach((r) =>
+        productMap.set(r.id as string, {
+          id: r.id as string,
+          slug: (r.slug as string | null) ?? null,
+          name: (r.name as string) ?? "Product",
+          coverUrl: r.cover_path ? stableImageUrl("product-covers", r.cover_path as string) : null,
+          category: (r.category as string | null) ?? null,
+        }),
+      );
+    }
+
+    const out: PublicCollectionItemDTO[] = [];
+    for (const i of items) {
+      const ref = i.ref_id as string | null;
+      if (i.kind === "product") {
+        const product = ref ? productMap.get(ref) : null;
+        if (!product) continue; // unavailable products are hidden
+        out.push({ id: i.id as string, kind: "product", title: product.name, imageUrl: product.coverUrl, note: (i.note as string | null) ?? null, url: null, post: null, product });
+        continue;
+      }
+      const post = ref ? postMap.get(ref) : undefined;
+      if (post) {
+        out.push({ id: i.id as string, kind: post.asset ? "resource" : "post", title: post.title || (i.title as string) || "Untitled", imageUrl: postThumb(post) ?? (i.image_url as string | null), note: (i.note as string | null) ?? null, url: null, post, product: null });
+        continue;
+      }
+      if (i.kind === "post" || ref) continue; // unpublished / removed content is hidden
+      const url = (i.url as string | null) ?? null;
+      if (!url || !/^https?:\/\//.test(url)) continue;
+      out.push({ id: i.id as string, kind: "link", title: (i.title as string) || url, imageUrl: (i.image_url as string | null) ?? null, note: (i.note as string | null) ?? null, url, post: null, product: null });
+    }
+
+    return {
+      id: board.id as string,
+      title: board.title as string,
+      description: (board.description as string | null) ?? null,
+      category: (board.category as string | null) ?? null,
+      coverUrl: (board.cover_url as string | null) ?? out.find((x) => x.imageUrl)?.imageUrl ?? null,
+      creator: {
+        userId: ownerId,
+        name: (pr.display_name || pr.username || pr.slug || "Creator") as string,
+        slug: pr.slug,
+        username: pr.username,
+        avatarUrl: pr.avatar_path ? stableImageUrl("avatars", pr.avatar_path) : null,
+        shopCount: shopCount ?? 0,
+      },
+      items: out,
+    };
+  });

@@ -23,6 +23,7 @@ export interface CollectionDTO {
   description: string | null;
   coverUrl: string | null;
   isPublic: boolean;
+  category: string | null;
   itemCount: number;
   items: CollectionItemDTO[];
 }
@@ -34,6 +35,7 @@ type Row = {
   description: string | null;
   cover_url: string | null;
   is_public: boolean;
+  category?: string | null;
 };
 
 type ItemRow = {
@@ -57,6 +59,7 @@ function shape(boards: Row[], items: ItemRow[]): CollectionDTO[] {
       description: b.description,
       coverUrl: b.cover_url ?? own.find((i) => i.image_url)?.image_url ?? null,
       isPublic: b.is_public,
+      category: b.category ?? null,
       itemCount: own.length,
       items: own.map((i) => ({
         id: i.id,
@@ -93,7 +96,7 @@ export const listPublicCollections = createServerFn({ method: "GET" })
 
     const { data: boards } = await supabase
       .from("collections")
-      .select("id, title, slug, description, cover_url, is_public")
+      .select("id, title, slug, description, cover_url, is_public, category")
       .eq("user_id", userId)
       .eq("is_public", true)
       .order("sort_order", { ascending: true })
@@ -121,7 +124,7 @@ export const listMyCollections = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<CollectionDTO[]> => {
     const { data: boards } = await context.supabase
       .from("collections")
-      .select("id, title, slug, description, cover_url, is_public")
+      .select("id, title, slug, description, cover_url, is_public, category")
       .eq("user_id", context.userId)
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: false });
@@ -155,6 +158,7 @@ const BoardInput = z.object({
   description: z.string().trim().max(500).optional().nullable(),
   coverUrl: z.string().trim().max(1000).optional().nullable(),
   isPublic: z.boolean().optional(),
+  category: z.string().trim().max(40).optional().nullable(),
 });
 
 /** Create or update one of the signed-in member's boards. */
@@ -169,6 +173,7 @@ export const saveCollection = createServerFn({ method: "POST" })
       description: data.description || null,
       cover_url: data.coverUrl || null,
       is_public: data.isPublic ?? false,
+      category: data.category || null,
     };
 
     if (data.id) {
@@ -226,6 +231,11 @@ export const addCollectionItem = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!board) throw new Error("Board not found");
 
+    const { count } = await context.supabase
+      .from("collection_items")
+      .select("id", { count: "exact", head: true })
+      .eq("collection_id", data.collectionId);
+
     const { data: row, error } = await context.supabase
       .from("collection_items")
       .insert({
@@ -237,6 +247,7 @@ export const addCollectionItem = createServerFn({ method: "POST" })
         title: data.title || null,
         image_url: data.imageUrl || null,
         note: data.note || null,
+        sort_order: count ?? 0,
       })
       .select("id")
       .single();

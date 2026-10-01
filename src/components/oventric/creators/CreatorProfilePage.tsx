@@ -296,15 +296,15 @@ export function CreatorProfilePage({ profile }: { profile: PublicCreatorProfileD
                   {publicCollections.map((c) => {
                     const cover = c.coverUrl ?? c.items.find((i) => i.imageUrl)?.imageUrl ?? null;
                     return (
-                      <div key={c.id} className={`overflow-hidden rounded-[10px] border ${t.card}`}>
+                      <Link key={c.id} to="/creators/collections/$id" params={{ id: c.id }} className={`overflow-hidden rounded-[10px] border ${t.card}`}>
                         <div className="aspect-[4/3] bg-black/10">
                           {cover ? <img src={cover} alt="" loading="lazy" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center"><FolderHeart className="h-7 w-7 opacity-40" /></div>}
                         </div>
                         <div className="p-2.5">
                           <p className="truncate font-wallet-display text-[13px] font-bold">{c.title}</p>
-                          <p className={`text-[11px] ${t.muted}`}>{c.itemCount} items</p>
+                          <p className={`text-[11px] ${t.muted}`}>{c.category ? `${c.category} · ` : ""}{c.itemCount} items</p>
                         </div>
-                      </div>
+                      </Link>
                     );
                   })}
                 </div>

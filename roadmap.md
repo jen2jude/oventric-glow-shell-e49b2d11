@@ -95,3 +95,4 @@
 - [x] Creator's Hub Stage 2 — home (featured, trending, watch & learn, free resources, rising, categories), /creators/discover, /creators/following
 - [x] Creator's Hub Stage 3 — public creator profiles at /creators/@username
 - [x] Creator's Hub Stage 4 — composer (types, category, tools, tags, visibility), resources with license + rights, secure downloads, drafts, edit/delete, share/save/follow
+- [x] Creator Hub Stage 5 — Collections + shop integration

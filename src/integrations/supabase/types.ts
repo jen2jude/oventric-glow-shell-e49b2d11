@@ -1215,6 +1215,7 @@ export type Database = {
       }
       collections: {
         Row: {
+          category: string | null
           cover_url: string | null
           created_at: string
           description: string | null
@@ -1227,6 +1228,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          category?: string | null
           cover_url?: string | null
           created_at?: string
           description?: string | null
@@ -1239,6 +1241,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          category?: string | null
           cover_url?: string | null
           created_at?: string
           description?: string | null
