@@ -202,7 +202,7 @@ export function CreatorHubPage() {
     () =>
       [...filteredPosts]
         .sort((a, b) => Number(isVideoPost(b) || !!thumbOf(b)) - Number(isVideoPost(a) || !!thumbOf(a)) || b.viewCount - a.viewCount)
-        .slice(0, 7),
+        .slice(0, 5),
     [filteredPosts],
   );
   const learn = useMemo(() => filteredPosts.filter((p) => LEARN_RE.test(postText(p))).slice(0, 8), [filteredPosts]);
