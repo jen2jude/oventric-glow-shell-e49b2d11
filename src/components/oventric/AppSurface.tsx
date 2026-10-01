@@ -532,7 +532,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
             className={`flex-1 min-w-0 min-h-0 overscroll-y-contain ${isMessages ? "overflow-hidden md:p-6" : "overflow-y-auto"} ${isMessages ? "" : "pb-20 md:pb-0"} ${isMessages && !isAppShell ? "web-chat bg-muted" : isAppShell ? "bg-[#070A08]" : "bg-white"}`}
           >
             {view}
-            {desktopLanding && active !== "Feed" && active !== "Home" && active !== "Creators" && !isAppShell && <SiteFooterAuto />}
+            {desktopLanding && active !== "Feed" && active !== "Home" && !isAppShell && <SiteFooterAuto />}
           </main>
         </div>
         {isAppShell && !desktopLanding && !isMessages && (

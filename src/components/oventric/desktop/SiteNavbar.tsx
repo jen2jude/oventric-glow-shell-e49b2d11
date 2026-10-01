@@ -13,6 +13,7 @@ import {
   User,
   WalletCards,
   X,
+  Clapperboard,
 } from "lucide-react";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
