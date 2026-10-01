@@ -175,6 +175,7 @@ function EnterSheet({ challenge, isApp, onClose, onChanged }: { challenge: Chall
     : { panel: "bg-white text-slate-900 border-slate-200", row: "border-slate-200", muted: "text-slate-500", cta: "bg-slate-900 text-white", ghost: "border-slate-200" };
 
   return createPortal(
+    <>
     <div className="fixed inset-0 z-[90] flex items-end justify-center bg-black/70 md:items-center" onClick={onClose}>
       <div onClick={(e) => e.stopPropagation()} className={`flex max-h-[90dvh] w-full flex-col rounded-t-[18px] border md:max-w-lg md:rounded-[14px] ${s.panel}`}>
         <div className="flex items-center justify-between p-4 pb-2">
@@ -198,8 +199,9 @@ function EnterSheet({ challenge, isApp, onClose, onChanged }: { challenge: Chall
           })}
         </div>
       </div>
-      <CreatorPublishModal open={composer} onClose={() => setComposer(false)} onPublished={() => void refresh()} />
-    </div>,
+    </div>
+    <CreatorPublishModal open={composer} onClose={() => setComposer(false)} onPublished={() => void refresh()} />
+    </>,
     document.body,
   );
 }
