@@ -505,6 +505,13 @@
       "when": 1790851625383,
       "tag": "0071_creator_challenges",
       "breakpoints": true
+    },
+    {
+      "idx": 72,
+      "version": "7",
+      "when": 1790852820415,
+      "tag": "0072_creator_share_event",
+      "breakpoints": true
     }
   ]
 }
