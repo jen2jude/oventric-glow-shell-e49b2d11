@@ -94,7 +94,7 @@ export function CreatorPostActions({ post, dark }: { post: CreatorPostDTO; dark?
         await navigator.clipboard.writeText(url);
         toast.success("Link copied");
       }
-      logCreatorEvent(post.id, "share", { target: navigator.share ? "native" : "copy" });
+      logCreatorEvent(post.id, "share", { target: "share" });
     } catch {
       /* user cancelled */
     }
