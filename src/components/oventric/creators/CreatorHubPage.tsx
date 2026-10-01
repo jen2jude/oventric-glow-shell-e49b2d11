@@ -331,6 +331,14 @@ export function CreatorHubPage() {
                 Collections
               </button>
             )}
+            {isAuthenticated && (
+              <Link
+                to="/creators/studio"
+                className={`inline-flex shrink-0 items-center justify-center rounded-[10px] border font-bold ${isApp ? "h-10 border-white/10 px-3 text-[11px] text-white/80" : "h-12 border-slate-200 px-4 text-[13px] text-slate-700"}`}
+              >
+                Studio
+              </Link>
+            )}
           </div>
         </div>
       </header>

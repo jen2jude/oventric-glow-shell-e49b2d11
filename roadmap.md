@@ -97,3 +97,4 @@
 - [x] Creator's Hub Stage 4 — composer (types, category, tools, tags, visibility), resources with license + rights, secure downloads, drafts, edit/delete, share/save/follow
 - [x] Creator Hub Stage 5 — Collections + shop integration
 - [x] Creator Hub Stage 6 — Challenges (built; live create/enter not tested)
+- [x] Creator Hub Stage 7 — Creator Studio
