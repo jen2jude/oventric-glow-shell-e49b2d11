@@ -1,5 +1,4 @@
 import { Clapperboard, Home, Images, MessageCircle, Plus, ShoppingBag, Wallet } from "lucide-react";
-import { useNavigate } from "@tanstack/react-router";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
 import { CountBadge } from "@/components/oventric/CountBadge";
@@ -30,7 +29,6 @@ export function MobileNav({
   counts?: MobileNavCounts;
 }) {
   const isAppShell = useIsAppShell();
-  const navigate = useNavigate();
   const { isAuthenticated, openGate } = useAuthGate();
   // In the app shell, chats live in the top bar — the dock carries the feed
   // instead. The website keeps its chat tab in the footer.
