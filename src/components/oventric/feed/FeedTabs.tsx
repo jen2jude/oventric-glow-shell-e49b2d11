@@ -20,13 +20,6 @@ const TABS = [
     idle: "text-newsfeed-muted border-transparent hover:text-newsfeed-violet",
   },
   {
-    key: "creators",
-    label: "Creators",
-    icon: BadgeCheck,
-    active: "text-newsfeed-green border-newsfeed-green",
-    idle: "text-newsfeed-muted border-transparent hover:text-newsfeed-green",
-  },
-  {
     key: "shops",
     label: "Shops",
     icon: Store,

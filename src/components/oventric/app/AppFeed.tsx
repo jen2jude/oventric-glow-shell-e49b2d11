@@ -165,16 +165,6 @@ export function AppFeed() {
   const [creatorSheet, setCreatorSheet] = useState<CreatorPostDTO | null>(null);
   // "New creator content" links: the global CreatorPostDeepLink opens the
   // player; here we just jump to the Creators tab.
-  useEffect(() => {
-    const w = window as unknown as { __oventricOpenCreators?: boolean };
-    const go = () => {
-      w.__oventricOpenCreators = false;
-      setTab("creators");
-    };
-    if (w.__oventricOpenCreators) go();
-    window.addEventListener("oventric:open-creators", go);
-    return () => window.removeEventListener("oventric:open-creators", go);
-  }, []);
   const fetchProducts = useServerFn(listProducts);
   const fetchCreatorFeed = useServerFn(listCreatorFeed);
   const fetchTopCreators = useServerFn(getTopCreators);

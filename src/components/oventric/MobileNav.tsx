@@ -35,10 +35,11 @@ export function MobileNav({
   const right = isAppShell
     ? [
         { icon: Images, label: "Feed" },
-         { icon: Clapperboard, label: "Creator Hub" },
+         { icon: Clapperboard, label: "Creators" },
       ]
     : [
         { icon: MessageCircle, label: "Chats" },
+        { icon: Clapperboard, label: "Creators" },
         { icon: Wallet, label: "Wallet" },
       ];
   const chatOpen = useChatOpen();
@@ -54,16 +55,7 @@ export function MobileNav({
         key={it.label}
         onClick={() => {
           haptic("select");
-          if (it.label === "Creator Hub") {
-            // Opens the newsfeed Creators tab (not the Creator's Dashboard).
-            if (!isAuthenticated) openGate("generic");
-            else {
-              const w = window as unknown as { __oventricOpenCreators?: boolean };
-              w.__oventricOpenCreators = true;
-              window.dispatchEvent(new CustomEvent("oventric:open-creators"));
-              onSelect("Feed");
-            }
-          } else onSelect(it.label);
+          onSelect(it.label);
         }}
         className={`nav-tap relative flex flex-col items-center justify-center gap-0.5 flex-1 py-1 min-w-0 ${
            isActive ? "text-[#E5484D]" : "text-white/45"

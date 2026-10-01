@@ -137,7 +137,7 @@ export function CreatorHubPage() {
         .slice(0, 8),
     [filteredCreators],
   );
-  const followingIds = useMemo(() => new Set((following ?? []).map((p) => p.id)), [following]);
+  const followingIds = useMemo(() => new Set((following ?? []).map((p) => p.userId)), [following]);
   const followingPosts = filteredPosts.filter((p) => followingIds.has(p.author.userId));
 
   const t = isApp

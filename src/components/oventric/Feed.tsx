@@ -394,16 +394,6 @@ export function Feed({ homepageMenuVisible = false }: { homepageMenuVisible?: bo
   const [meAvatarUrl, setMeAvatarUrl] = useState<string | null>(null);
   const [meInitials, setMeInitials] = useState<string>("Me");
   const [feedTab, setFeedTab] = useState<FeedTab>("foryou");
-  useEffect(() => {
-    const w = window as unknown as { __oventricOpenCreators?: boolean };
-    const go = () => {
-      w.__oventricOpenCreators = false;
-      setFeedTab("creators" as FeedTab);
-    };
-    if (w.__oventricOpenCreators) go();
-    window.addEventListener("oventric:open-creators", go);
-    return () => window.removeEventListener("oventric:open-creators", go);
-  }, []);
   const [searchOpen, setSearchOpen] = useState(false);
   const [sellPanelOpen, setSellPanelOpen] = useState(false);
   const [creatorOnboardOpen, setCreatorOnboardOpen] = useState(false);
