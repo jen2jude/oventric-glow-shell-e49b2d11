@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Bookmark, Download, FileText, Lock, Share2, ShoppingBag } from "lucide-react";
+import { Bookmark, Download, FileText, Lock, Pencil, Share2, ShoppingBag, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
   CREATOR_CONTENT_TYPES,
+  deleteCreatorPost,
   getCreatorResourceDownload,
   saveCreatorPostToCollection,
   type CreatorPostDTO,
@@ -14,6 +15,7 @@ import { createOrder } from "@/lib/marketplace.functions";
 import { useOnboarding, type Currency } from "@/lib/onboarding/OnboardingContext";
 import { visibleProductPrice } from "@/lib/money-visibility";
 import { FollowButton } from "@/components/oventric/FollowButton";
+import { CreatorPublishModal } from "./CreatorPublishModal";
 
 const CRIMSON = "#E5484D";
 
@@ -58,9 +60,27 @@ export function CreatorPostDetails({ post, dark }: { post: CreatorPostDTO; dark?
 }
 
 /** Share, Save and Follow — reuses existing collections and follow systems. */
-export function CreatorPostActions({ post, dark, isOwner }: { post: CreatorPostDTO; dark?: boolean; isOwner?: boolean }) {
+export function CreatorPostActions({ post, dark }: { post: CreatorPostDTO; dark?: boolean; isOwner?: boolean }) {
   const save = useServerFn(saveCreatorPostToCollection);
+  const remove = useServerFn(deleteCreatorPost);
   const [saving, setSaving] = useState(false);
+  const [meId, setMeId] = useState<string | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
+  useEffect(() => {
+    void supabase.auth.getUser().then(({ data }) => setMeId(data.user?.id ?? null));
+  }, []);
+  const isOwner = !!meId && meId === post.author.userId;
+
+  const onDelete = async () => {
+    if (!window.confirm("Delete this post? This can't be undone.")) return;
+    try {
+      await remove({ data: { postId: post.id } });
+      toast.success("Post deleted");
+      window.location.reload();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't delete");
+    }
+  };
   const btn = dark
     ? "border-white/10 bg-white/[0.04] text-white/80"
     : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50";
@@ -102,7 +122,19 @@ export function CreatorPostActions({ post, dark, isOwner }: { post: CreatorPostD
       <button type="button" disabled={saving} onClick={onSave} className={`inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-[11.5px] font-bold disabled:opacity-50 ${btn}`}>
         <Bookmark className="h-3.5 w-3.5" /> Save
       </button>
-      {!isOwner && <FollowButton targetId={post.author.userId} compact={dark} className="!h-8 !px-3 !py-0 !text-[11.5px]" />}
+      {isOwner ? (
+        <>
+          <button type="button" onClick={() => setEditOpen(true)} className={`inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-[11.5px] font-bold ${btn}`}>
+            <Pencil className="h-3.5 w-3.5" /> Edit
+          </button>
+          <button type="button" onClick={onDelete} className={`inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-[11.5px] font-bold ${btn}`}>
+            <Trash2 className="h-3.5 w-3.5" /> Delete
+          </button>
+          <CreatorPublishModal open={editOpen} editPostId={post.id} onClose={() => setEditOpen(false)} onPublished={() => window.location.reload()} />
+        </>
+      ) : (
+        <FollowButton targetId={post.author.userId} compact={dark} className="!h-8 !px-3 !py-0 !text-[11.5px]" />
+      )}
     </div>
   );
 }
