@@ -52,6 +52,7 @@ import { Route as PaymentReturnRouteImport } from './routes/payment.return'
 import { Route as OrderIdRouteImport } from './routes/order.$id'
 import { Route as CreatorsFollowingRouteImport } from './routes/creators_.following'
 import { Route as CreatorsDiscoverRouteImport } from './routes/creators_.discover'
+import { Route as CreatorsHandleRouteImport } from './routes/creators_.$handle'
 import { Route as CheckoutIdRouteImport } from './routes/checkout.$id'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiCreatorCoachRouteImport } from './routes/api/creator-coach'
@@ -324,6 +325,11 @@ const CreatorsFollowingRoute = CreatorsFollowingRouteImport.update({
 const CreatorsDiscoverRoute = CreatorsDiscoverRouteImport.update({
   id: '/creators_/discover',
   path: '/creators/discover',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreatorsHandleRoute = CreatorsHandleRouteImport.update({
+  id: '/creators_/$handle',
+  path: '/creators/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutIdRoute = CheckoutIdRouteImport.update({
@@ -699,6 +705,7 @@ export interface FileRoutesByFullPath {
   '/api/creator-coach': typeof ApiCreatorCoachRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/checkout/$id': typeof CheckoutIdRoute
+  '/creators/$handle': typeof CreatorsHandleRoute
   '/creators/discover': typeof CreatorsDiscoverRoute
   '/creators/following': typeof CreatorsFollowingRoute
   '/order/$id': typeof OrderIdRoute
@@ -799,6 +806,7 @@ export interface FileRoutesByTo {
   '/api/creator-coach': typeof ApiCreatorCoachRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/checkout/$id': typeof CheckoutIdRoute
+  '/creators/$handle': typeof CreatorsHandleRoute
   '/creators/discover': typeof CreatorsDiscoverRoute
   '/creators/following': typeof CreatorsFollowingRoute
   '/order/$id': typeof OrderIdRoute
@@ -903,6 +911,7 @@ export interface FileRoutesById {
   '/api/creator-coach': typeof ApiCreatorCoachRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/checkout/$id': typeof CheckoutIdRoute
+  '/creators_/$handle': typeof CreatorsHandleRoute
   '/creators_/discover': typeof CreatorsDiscoverRoute
   '/creators_/following': typeof CreatorsFollowingRoute
   '/order/$id': typeof OrderIdRoute
@@ -1008,6 +1017,7 @@ export interface FileRouteTypes {
     | '/api/creator-coach'
     | '/blog/$slug'
     | '/checkout/$id'
+    | '/creators/$handle'
     | '/creators/discover'
     | '/creators/following'
     | '/order/$id'
@@ -1108,6 +1118,7 @@ export interface FileRouteTypes {
     | '/api/creator-coach'
     | '/blog/$slug'
     | '/checkout/$id'
+    | '/creators/$handle'
     | '/creators/discover'
     | '/creators/following'
     | '/order/$id'
@@ -1211,6 +1222,7 @@ export interface FileRouteTypes {
     | '/api/creator-coach'
     | '/blog/$slug'
     | '/checkout/$id'
+    | '/creators_/$handle'
     | '/creators_/discover'
     | '/creators_/following'
     | '/order/$id'
@@ -1278,6 +1290,7 @@ export interface RootRouteChildren {
   ApiCreatorCoachRoute: typeof ApiCreatorCoachRoute
   BlogSlugRoute: typeof BlogSlugRoute
   CheckoutIdRoute: typeof CheckoutIdRoute
+  CreatorsHandleRoute: typeof CreatorsHandleRoute
   CreatorsDiscoverRoute: typeof CreatorsDiscoverRoute
   CreatorsFollowingRoute: typeof CreatorsFollowingRoute
   OrderIdRoute: typeof OrderIdRoute
@@ -1603,6 +1616,13 @@ declare module '@tanstack/react-router' {
       path: '/creators/discover'
       fullPath: '/creators/discover'
       preLoaderRoute: typeof CreatorsDiscoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creators_/$handle': {
+      id: '/creators_/$handle'
+      path: '/creators/$handle'
+      fullPath: '/creators/$handle'
+      preLoaderRoute: typeof CreatorsHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout/$id': {
@@ -2186,6 +2206,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCreatorCoachRoute: ApiCreatorCoachRoute,
   BlogSlugRoute: BlogSlugRoute,
   CheckoutIdRoute: CheckoutIdRoute,
+  CreatorsHandleRoute: CreatorsHandleRoute,
   CreatorsDiscoverRoute: CreatorsDiscoverRoute,
   CreatorsFollowingRoute: CreatorsFollowingRoute,
   OrderIdRoute: OrderIdRoute,

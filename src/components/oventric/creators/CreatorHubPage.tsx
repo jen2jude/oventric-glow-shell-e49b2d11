@@ -513,7 +513,7 @@ function Avatar({ name, url, size, t, accent }: { name: string; url: string | nu
 
 function ProfileLink({ slug, children, className }: { slug: string | null; children: React.ReactNode; className?: string }) {
   return slug ? (
-    <Link to="/profile/$id" params={{ id: slug }} className={className}>
+    <Link to="/creators/$handle" params={{ handle: `@${slug}` }} className={className}>
       {children}
     </Link>
   ) : (
