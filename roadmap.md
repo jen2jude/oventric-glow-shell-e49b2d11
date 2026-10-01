@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Separate Creator Hub styling: compact dark app with crimson and slide-up sheets; white multicolour website unchanged
+
 - [x] Show the app by default in Lovable previews while preserving the published website view
 
 - [x] Replace the app footer Profile shortcut with Creator Hub and open the account options from the homepage avatar

@@ -5945,3 +5945,79 @@ html.standalone-app .chat-selectable * {
 }
 @keyframes ov-ring-spin { to { --ov-ring-angle: 360deg; } }
 @media (prefers-reduced-motion: reduce) { .app-publish-ring { animation-duration: 3s; } }
+
+/* Creator flows follow the native app's compact dark sheet language. Website
+   rendering keeps the light Bright Spectrum presentation above unchanged. */
+.app-creator-sheet {
+  align-items: flex-end !important;
+  padding: 0 !important;
+  background: oklch(0 0 0 / 58%) !important;
+  color-scheme: dark;
+}
+.app-creator-sheet-panel {
+  width: 100% !important;
+  max-width: 36rem !important;
+  max-height: 92dvh !important;
+  border: 1px solid oklch(1 0 0 / 10%) !important;
+  border-bottom: 0 !important;
+  border-radius: 1.5rem 1.5rem 0 0 !important;
+  background: #101013 !important;
+  color: oklch(0.97 0 0) !important;
+  box-shadow: 0 -20px 60px oklch(0 0 0 / 55%) !important;
+}
+.app-creator-sheet-panel::before {
+  content: "";
+  display: block;
+  width: 2.5rem;
+  height: 0.25rem;
+  flex: none;
+  margin: 0.625rem auto 0.25rem;
+  border-radius: 999px;
+  background: oklch(1 0 0 / 16%);
+}
+.app-creator-sheet .creator-spectrum { display: none; }
+.app-creator-sheet .bg-white,
+.app-creator-sheet .bg-slate-50\/40,
+.app-creator-sheet .bg-slate-50,
+.app-creator-sheet .bg-emerald-50,
+.app-creator-sheet .bg-emerald-50\/50,
+.app-creator-sheet .bg-sky-50\/60,
+.app-creator-sheet .bg-violet-50\/55,
+.app-creator-sheet .bg-violet-50\/60 {
+  background-color: oklch(1 0 0 / 4%) !important;
+}
+.app-creator-sheet .bg-slate-100,
+.app-creator-sheet .bg-sky-100,
+.app-creator-sheet .bg-violet-50 {
+  background-color: oklch(1 0 0 / 7%) !important;
+}
+.app-creator-sheet .text-slate-900 { color: oklch(0.97 0 0) !important; }
+.app-creator-sheet .text-slate-700,
+.app-creator-sheet .text-slate-600 { color: oklch(1 0 0 / 72%) !important; }
+.app-creator-sheet .text-slate-500,
+.app-creator-sheet .text-slate-400 { color: oklch(1 0 0 / 46%) !important; }
+.app-creator-sheet .text-emerald-600,
+.app-creator-sheet .text-sky-600,
+.app-creator-sheet .text-violet-600 { color: #E5484D !important; }
+.app-creator-sheet .border-slate-100,
+.app-creator-sheet .border-slate-200,
+.app-creator-sheet .border-emerald-100,
+.app-creator-sheet .border-sky-200,
+.app-creator-sheet .border-violet-100,
+.app-creator-sheet .border-violet-300 { border-color: oklch(1 0 0 / 9%) !important; }
+.app-creator-sheet input,
+.app-creator-sheet textarea,
+.app-creator-sheet select {
+  background-color: oklch(1 0 0 / 5%) !important;
+  color: oklch(0.97 0 0) !important;
+}
+.app-creator-sheet input::placeholder,
+.app-creator-sheet textarea::placeholder { color: oklch(1 0 0 / 34%) !important; }
+.app-creator-sheet input:focus,
+.app-creator-sheet textarea:focus,
+.app-creator-sheet select:focus { border-color: oklch(0.65 0.2 22 / 55%) !important; }
+.app-creator-sheet .bg-emerald-500,
+.app-creator-sheet .bg-emerald-600,
+.app-creator-sheet .bg-violet-600 { background-color: #E5484D !important; }
+.app-creator-sheet .border-emerald-500 { border-color: #E5484D !important; }
+.app-creator-sheet .shadow-violet-200\/70 { --tw-shadow-color: transparent !important; }

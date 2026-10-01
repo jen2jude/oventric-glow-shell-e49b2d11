@@ -14,6 +14,7 @@ import {
 import { snapshotFxRates } from "@/lib/fx.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { Button } from "@/components/ui/button";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 
 interface Attachment {
   file: File;
@@ -43,6 +44,7 @@ export function CreatorPublishModal({
   const snapshotFx = useServerFn(snapshotFxRates);
   const loadCats = useServerFn(listMarketplaceCategories);
   const { homeCurrency } = useOnboarding();
+  const isApp = useIsAppShell();
 
   const fileRef = useRef<HTMLInputElement>(null);
   const assetRef = useRef<HTMLInputElement>(null);
@@ -336,9 +338,9 @@ export function CreatorPublishModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-start justify-center bg-slate-950/45 p-3 pt-[max(14px,env(safe-area-inset-top))] backdrop-blur-[2px] sm:items-center sm:p-6">
-      <div className="flex max-h-[calc(100dvh-28px)] w-full max-w-lg flex-col overflow-hidden rounded-[18px] border border-white/80 bg-white shadow-2xl sm:max-h-[92vh]">
-        <div className="grid h-1.5 shrink-0 grid-cols-5" aria-hidden="true">
+    <div className={`fixed inset-0 z-[120] flex items-start justify-center bg-slate-950/45 p-3 pt-[max(14px,env(safe-area-inset-top))] backdrop-blur-[2px] sm:items-center sm:p-6 ${isApp ? "app-creator-sheet" : ""}`}>
+      <div className="app-creator-sheet-panel flex max-h-[calc(100dvh-28px)] w-full max-w-lg flex-col overflow-hidden rounded-[18px] border border-white/80 bg-white shadow-2xl sm:max-h-[92vh]">
+        <div className="creator-spectrum grid h-1.5 shrink-0 grid-cols-5" aria-hidden="true">
           <span className="bg-emerald-500" />
           <span className="bg-sky-500" />
           <span className="bg-violet-500" />
