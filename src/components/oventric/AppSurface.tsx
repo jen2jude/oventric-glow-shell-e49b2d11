@@ -230,6 +230,8 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
     if (typeof window === "undefined") return;
     const path = SECTION_PATHS[active];
     if (!path || window.location.pathname === path) return;
+    // Creator sub-pages (/creators/discover, /creators/following) keep their URL.
+    if (active === "Creators" && window.location.pathname.startsWith("/creators/")) return;
     window.history.replaceState(
       {},
       "",
