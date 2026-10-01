@@ -49,6 +49,7 @@ import { CreatorPostSheet } from "@/components/oventric/app/CreatorPostSheet";
 import { CreatorOnboardingModal } from "@/components/oventric/creators/CreatorOnboardingModal";
 import { CreatorPublishModal } from "@/components/oventric/creators/CreatorPublishModal";
 import { CreatorDraftsSheet } from "@/components/oventric/creators/CreatorDraftsSheet";
+import { CreatorCollectionsSheet } from "@/components/oventric/creators/CreatorCollectionsSheet";
 
 type HubTab = "home" | "discover" | "following" | "resources" | "challenges";
 
@@ -129,6 +130,7 @@ export function CreatorHubPage() {
   const [onboardOpen, setOnboardOpen] = useState(false);
   const [publishOpen, setPublishOpen] = useState(false);
   const [draftsOpen, setDraftsOpen] = useState(false);
+  const [collectionsOpen, setCollectionsOpen] = useState(false);
   const [editPostId, setEditPostId] = useState<string | null>(null);
   const [meId, setMeId] = useState<string | null>(null);
 
@@ -319,6 +321,15 @@ export function CreatorHubPage() {
                 Drafts
               </button>
             )}
+            {isAuthenticated && (
+              <button
+                onClick={() => setCollectionsOpen(true)}
+                className={`inline-flex shrink-0 items-center justify-center rounded-[10px] border font-bold ${isApp ? "h-10 border-white/10 px-3 text-[11px] text-white/80" : "h-12 border-slate-200 px-4 text-[13px] text-slate-700"}`}
+                aria-label="Your collections"
+              >
+                Collections
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -452,6 +463,7 @@ export function CreatorHubPage() {
         }}
         onPublished={() => void refetchPosts()}
       />
+      <CreatorCollectionsSheet open={collectionsOpen} isApp={isApp} onClose={() => setCollectionsOpen(false)} />
       <CreatorDraftsSheet
         open={draftsOpen}
         isApp={isApp}
