@@ -8,6 +8,7 @@ import { MobileNav } from "@/components/oventric/MobileNav";
 import { getCurrentFeedTab } from "@/lib/create-context";
 import { CreatorCoachLauncher } from "@/components/oventric/app/CreatorCoach";
 const AppFeed = lazy(() => import("@/components/oventric/app/AppFeed").then((m) => ({ default: m.AppFeed })));
+const CreatorHubPage = lazy(() => import("@/components/oventric/creators/CreatorHubPage").then((m) => ({ default: m.CreatorHubPage })));
 const Feed = lazy(() => import("@/components/oventric/Feed").then((m) => ({ default: m.Feed })));
 const Wallet = lazy(() =>
   import("@/components/oventric/Wallet").then((m) => ({ default: m.Wallet })),
@@ -130,6 +131,7 @@ const SECTION_PATHS: Record<string, string> = {
   Home: "/",
   Explore: "/explore",
   Feed: "/feed",
+  Creators: "/creators",
   Marketplace: "/marketplace",
   Wallet: "/wallet",
   Purchases: "/",
@@ -357,6 +359,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
       "Home",
       "Explore",
       "Feed",
+      "Creators",
       "Marketplace",
       "Wallet",
       "Messages",
@@ -381,7 +384,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
   // Browser visitors retain the full Hub experience. Installed/native app
   // launches use the social feed as their Home screen.
   const desktopLanding =
-    (active === "Home" || active === "Explore" || active === "Marketplace" || active === "Feed") &&
+    (active === "Home" || active === "Explore" || active === "Marketplace" || active === "Feed" || active === "Creators") &&
     (isDesktop || !isAppShell);
   const isMarketplace = active === "Marketplace";
 
@@ -413,6 +416,8 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
           returnedToHub={returnedToHub}
         />
       )
+    ) : active === "Creators" ? (
+      <CreatorHubPage />
     ) : active === "Explore" ? (
       isAppShell && !isDesktop ? (
         <AppExplore onSelect={openSection} />
@@ -535,6 +540,10 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
             onCreate={() => {
               // Context-aware +: the screen decides what gets created.
               if (active === "Marketplace") return handleCreate("sell");
+              if (active === "Creators") {
+                window.dispatchEvent(new CustomEvent("oventric:create", { detail: { kind: "creator" } }));
+                return;
+              }
               if (active === "Feed") {
                 const tab = getCurrentFeedTab();
                 if (tab === "shop") return handleCreate("sell");

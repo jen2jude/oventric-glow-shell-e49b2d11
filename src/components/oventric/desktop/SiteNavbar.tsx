@@ -13,6 +13,7 @@ import {
   User,
   WalletCards,
   X,
+  Clapperboard,
 } from "lucide-react";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { AvatarImage } from "@/components/oventric/AvatarImage";
@@ -32,6 +33,7 @@ const DESKTOP_NAV_ITEMS = [
   { label: "Home", section: "Home", icon: Home },
   { label: "Explore", section: "Explore", icon: Compass },
   { label: "Newsfeed", section: "Feed", icon: Newspaper },
+  { label: "Creators", section: "Creators", icon: Clapperboard },
 ] as const;
 
 const MOBILE_NAV_ITEMS = [

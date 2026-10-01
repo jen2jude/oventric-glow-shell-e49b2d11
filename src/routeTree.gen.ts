@@ -28,6 +28,7 @@ import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as EscrowRouteImport } from './routes/escrow'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CreatorsRouteImport } from './routes/creators'
 import { Route as CreatorHubRouteImport } from './routes/creator-hub'
 import { Route as CirclesRouteImport } from './routes/circles'
 import { Route as BountiesRouteImport } from './routes/bounties'
@@ -201,6 +202,11 @@ const EscrowRoute = EscrowRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreatorsRoute = CreatorsRouteImport.update({
+  id: '/creators',
+  path: '/creators',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CreatorHubRoute = CreatorHubRouteImport.update({
@@ -619,6 +625,7 @@ export interface FileRoutesByFullPath {
   '/bounties': typeof BountiesRoute
   '/circles': typeof CirclesRoute
   '/creator-hub': typeof CreatorHubRoute
+  '/creators': typeof CreatorsRoute
   '/dashboard': typeof DashboardRoute
   '/escrow': typeof EscrowRoute
   '/explore': typeof ExploreRoute
@@ -718,6 +725,7 @@ export interface FileRoutesByTo {
   '/bounties': typeof BountiesRoute
   '/circles': typeof CirclesRoute
   '/creator-hub': typeof CreatorHubRoute
+  '/creators': typeof CreatorsRoute
   '/dashboard': typeof DashboardRoute
   '/escrow': typeof EscrowRoute
   '/explore': typeof ExploreRoute
@@ -817,6 +825,7 @@ export interface FileRoutesById {
   '/bounties': typeof BountiesRoute
   '/circles': typeof CirclesRoute
   '/creator-hub': typeof CreatorHubRoute
+  '/creators': typeof CreatorsRoute
   '/dashboard': typeof DashboardRoute
   '/escrow': typeof EscrowRoute
   '/explore': typeof ExploreRoute
@@ -919,6 +928,7 @@ export interface FileRouteTypes {
     | '/bounties'
     | '/circles'
     | '/creator-hub'
+    | '/creators'
     | '/dashboard'
     | '/escrow'
     | '/explore'
@@ -1018,6 +1028,7 @@ export interface FileRouteTypes {
     | '/bounties'
     | '/circles'
     | '/creator-hub'
+    | '/creators'
     | '/dashboard'
     | '/escrow'
     | '/explore'
@@ -1116,6 +1127,7 @@ export interface FileRouteTypes {
     | '/bounties'
     | '/circles'
     | '/creator-hub'
+    | '/creators'
     | '/dashboard'
     | '/escrow'
     | '/explore'
@@ -1217,6 +1229,7 @@ export interface RootRouteChildren {
   BountiesRoute: typeof BountiesRoute
   CirclesRoute: typeof CirclesRoute
   CreatorHubRoute: typeof CreatorHubRoute
+  CreatorsRoute: typeof CreatorsRoute
   DashboardRoute: typeof DashboardRoute
   EscrowRoute: typeof EscrowRoute
   ExploreRoute: typeof ExploreRoute
@@ -1396,6 +1409,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creators': {
+      id: '/creators'
+      path: '/creators'
+      fullPath: '/creators'
+      preLoaderRoute: typeof CreatorsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/creator-hub': {
@@ -2100,6 +2120,7 @@ const rootRouteChildren: RootRouteChildren = {
   BountiesRoute: BountiesRoute,
   CirclesRoute: CirclesRoute,
   CreatorHubRoute: CreatorHubRoute,
+  CreatorsRoute: CreatorsRoute,
   DashboardRoute: DashboardRoute,
   EscrowRoute: EscrowRoute,
   ExploreRoute: ExploreRoute,

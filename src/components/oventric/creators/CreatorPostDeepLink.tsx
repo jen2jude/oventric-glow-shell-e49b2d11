@@ -6,8 +6,8 @@ import { getCreatorPost, type CreatorPostDTO } from "@/lib/creators.functions";
 
 /**
  * Global handler for `?creatorPost=<id>` links (e.g. "New creator content"
- * notifications). Works on any page, app or website: switches the feed to the
- * Creators tab and opens the exact post in the slide-up player with sound.
+ * notifications). Works on any page, app or website: switches to the Creator
+ * Hub and opens the exact post in the slide-up player with sound.
  */
 export function CreatorPostDeepLink() {
   const search = useRouterState({ select: (s) => s.location.searchStr });
@@ -21,8 +21,7 @@ export function CreatorPostDeepLink() {
     if (!id) return;
     url.searchParams.delete("creatorPost");
     window.history.replaceState(window.history.state, "", url.toString());
-    (window as unknown as { __oventricOpenCreators?: boolean }).__oventricOpenCreators = true;
-    window.dispatchEvent(new CustomEvent("oventric:open-creators"));
+    window.dispatchEvent(new CustomEvent("oventric:navigate", { detail: { section: "Creators" } }));
     void load({ data: { postId: id } })
       .then((p) => p && setPost(p))
       .catch(() => {});
