@@ -8,7 +8,7 @@ import { haptic } from "@/lib/haptics";
 import logoFull from "@/assets/oventric-full-transparent.png";
 
 const TITLES: Record<string, string> = {
-  Feed: "Newsfeed", Creators: "Creators", Marketplace: "Market", Explore: "Explore",
+  Feed: "Newsfeed", Creators: "Creator's Hub", Marketplace: "Market", Explore: "Explore",
   Wallet: "Wallet", Purchases: "Purchases", Profile: "Account",
 };
 
