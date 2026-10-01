@@ -3,7 +3,14 @@ import { useServerFn } from "@tanstack/react-start";
 import { Download, FileUp, ImagePlus, Link2, Sparkles, X, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { publishCreatorPost } from "@/lib/creators.functions";
+import {
+  CREATOR_CONTENT_TYPES,
+  CREATOR_LICENSES,
+  CREATOR_RESOURCE_TYPES,
+  getMyCreatorPostForEdit,
+  publishCreatorPost,
+  type CreatorContentType,
+} from "@/lib/creators.functions";
 import { isCommunityLink } from "@/lib/video-embed";
 import {
   createProduct,
@@ -23,6 +30,8 @@ interface Attachment {
 }
 
 const MAX_ASSET_MB = 50;
+const POST_CATEGORIES = ["Video", "Design", "AI", "Photography", "Writing", "Marketing", "Education", "Development", "Animation", "Music", "Digital Products"];
+const TOOL_PRESETS = ["Canva", "CapCut", "Figma", "Photoshop", "Premiere Pro", "ChatGPT", "Veo"];
 /** Uploaded showcase clips stay short and light — 1 min 30s / 50MB max. */
 const MAX_CLIP_SECONDS = 90;
 const MAX_CLIP_LABEL = "1 min 30s";
@@ -34,11 +43,15 @@ export function CreatorPublishModal({
   open,
   onClose,
   onPublished,
+  editPostId = null,
 }: {
   open: boolean;
   onClose: () => void;
   onPublished: () => void;
+  /** Opens the composer on the creator's own draft or post. */
+  editPostId?: string | null;
 }) {
+  const loadForEdit = useServerFn(getMyCreatorPostForEdit);
   const publish = useServerFn(publishCreatorPost);
   const persistProduct = useServerFn(createProduct);
   const snapshotFx = useServerFn(snapshotFxRates);
@@ -65,6 +78,72 @@ export function CreatorPublishModal({
   const [priceInput, setPriceInput] = useState("");
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [category, setCategory] = useState<ProductCategory | "">("");
+
+  // Stage 4 publishing fields
+  const [contentType, setContentType] = useState<CreatorContentType>("showcase");
+  const [postCategory, setPostCategory] = useState("");
+  const [tools, setTools] = useState<string[]>([]);
+  const [toolInput, setToolInput] = useState("");
+  const [tagsInput, setTagsInput] = useState("");
+  const [visibility, setVisibility] = useState<"public" | "unlisted">("public");
+  const [resourceType, setResourceType] = useState<string>(CREATOR_RESOURCE_TYPES[0]);
+  const [license, setLicense] = useState<string[]>(["Personal Use"]);
+  const [licenseNote, setLicenseNote] = useState("");
+  const [rightsConfirmed, setRightsConfirmed] = useState(false);
+  const [showcaseProductId, setShowcaseProductId] = useState("");
+  const [ownProducts, setOwnProducts] = useState<{ id: string; name: string }[]>([]);
+  const [editing, setEditing] = useState<{ id: string; status: "draft" | "published"; productId: string | null; mediaUrls: string[] } | null>(null);
+  const [loadingEdit, setLoadingEdit] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    let alive = true;
+    supabase.auth.getUser().then(async ({ data }) => {
+      const uid = data.user?.id;
+      if (!uid) return;
+      const { data: rows } = await supabase
+        .from("products")
+        .select("id, name")
+        .eq("seller_id", uid)
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      if (alive) setOwnProducts((rows ?? []) as { id: string; name: string }[]);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open || !editPostId) return;
+    let alive = true;
+    setLoadingEdit(true);
+    loadForEdit({ data: { postId: editPostId } })
+      .then((d) => {
+        if (!alive) return;
+        setEditing({ id: d.id, status: d.status, productId: d.productId, mediaUrls: d.mediaUrls });
+        setTitle(d.title);
+        setCaption(d.caption ?? "");
+        setCommunity(d.communityLink ?? "");
+        setContentType(d.contentType);
+        setPostCategory(d.category ?? "");
+        setTools(d.tools);
+        setTagsInput(d.tags.map((t) => `#${t}`).join(" "));
+        setVisibility(d.visibility);
+        if (d.resourceType) setResourceType(d.resourceType);
+        if (d.resourceLicense.length) setLicense(d.resourceLicense);
+        setLicenseNote(d.resourceLicenseNote ?? "");
+        setRightsConfirmed(d.rightsConfirmed);
+        setShowcaseProductId(d.showcaseProductId ?? "");
+        if (d.productId) savedRef.current.productId = d.productId;
+      })
+      .catch((e) => toast.error(e instanceof Error ? e.message : "Couldn't open this post"))
+      .finally(() => alive && setLoadingEdit(false));
+    return () => {
+      alive = false;
+    };
+  }, [open, editPostId, loadForEdit]);
 
   useEffect(() => {
     if (!open) return;
@@ -95,6 +174,18 @@ export function CreatorPublishModal({
     setAssetLink("");
     setIsFree(true);
     setPriceInput("");
+    setContentType("showcase");
+    setPostCategory("");
+    setTools([]);
+    setToolInput("");
+    setTagsInput("");
+    setVisibility("public");
+    setResourceType(CREATOR_RESOURCE_TYPES[0]);
+    setLicense(["Personal Use"]);
+    setLicenseNote("");
+    setRightsConfirmed(false);
+    setShowcaseProductId("");
+    setEditing(null);
   }, [open]);
 
   useEffect(() => {
@@ -161,7 +252,7 @@ export function CreatorPublishModal({
     setAttachments(next[0]?.kind === "video" ? next.slice(0, 1) : next);
   };
 
-  const submit = async () => {
+  const submit = async (status: "draft" | "published" = "published") => {
     if (title.trim().length < 2) {
       toast.error("Add a title");
       return;
@@ -175,7 +266,18 @@ export function CreatorPublishModal({
       return;
     }
 
-    const hasAsset = Boolean(assetFile) || assetLink.trim().length > 0;
+    const hasAsset = !editing?.productId && (Boolean(assetFile) || assetLink.trim().length > 0);
+    const hasResource = hasAsset || !!editing?.productId;
+    if (hasResource && status === "published") {
+      if (license.length === 0) {
+        toast.error("Pick at least one license for your resource");
+        return;
+      }
+      if (!rightsConfirmed) {
+        toast.error("Confirm you own the rights to this resource");
+        return;
+      }
+    }
     const priceLocal = Number(priceInput);
     if (hasAsset) {
       if (assetLink.trim() && !/^https?:\/\//i.test(assetLink.trim())) {
@@ -311,8 +413,29 @@ export function CreatorPublishModal({
         savedRef.current.productId = productId;
       }
 
+      const tags = Array.from(
+        new Set(
+          tagsInput
+            .split(/[\s,]+/)
+            .map((t) => t.replace(/^#/, "").trim())
+            .filter((t) => t.length > 0)
+            .map((t) => t.slice(0, 30)),
+        ),
+      ).slice(0, 10);
       await publish({
         data: {
+          postId: editing?.id,
+          status,
+          contentType,
+          category: postCategory || undefined,
+          tools,
+          tags,
+          visibility,
+          resourceType: hasResource ? resourceType : undefined,
+          resourceLicense: hasResource ? license : undefined,
+          resourceLicenseNote: hasResource && licenseNote.trim() ? licenseNote.trim() : undefined,
+          rightsConfirmed: hasResource ? rightsConfirmed : undefined,
+          showcaseProductId: showcaseProductId || null,
           title: title.trim(),
           caption: caption.trim() || undefined,
           mediaPaths,
@@ -325,7 +448,15 @@ export function CreatorPublishModal({
           productId,
         },
       });
-      toast.success(hasAsset ? "Published — your asset is on its way to the shop" : "Published to Creators");
+      toast.success(
+        status === "draft"
+          ? "Draft saved"
+          : editing?.status === "published"
+            ? "Changes saved"
+            : hasAsset
+              ? "Published — your resource is in review"
+              : "Published to Creators",
+      );
       onPublished();
       onClose();
     } catch (e) {
@@ -353,7 +484,7 @@ export function CreatorPublishModal({
               <Sparkles className="h-4.5 w-4.5" />
             </span>
             <div className="min-w-0">
-              <p className="text-sm font-black text-slate-900">Showcase your work</p>
+              <p className="text-sm font-black text-slate-900">{editing ? (editing.status === "draft" ? "Edit draft" : "Edit post") : "Create on Creator's Hub"}</p>
               <p className="truncate text-[11px] font-semibold text-slate-500">Share the craft behind your creator profile</p>
             </div>
           </div>
@@ -376,6 +507,96 @@ export function CreatorPublishModal({
             rows={3}
             className="w-full resize-none rounded-[10px] border border-slate-200 px-3 py-3 text-sm text-slate-900 outline-none focus:border-emerald-400"
           />
+
+          {loadingEdit && <p className="text-xs font-bold text-slate-500">Loading your post…</p>}
+
+          <div>
+            <p className="mb-1.5 text-[11px] font-black uppercase text-slate-500">Content type</p>
+            <div className="flex flex-wrap gap-1.5">
+              {CREATOR_CONTENT_TYPES.map((c) => (
+                <button
+                  key={c.key}
+                  type="button"
+                  onClick={() => setContentType(c.key)}
+                  className={`rounded-full border px-3 py-1.5 text-[11.5px] font-bold ${contentType === c.key ? "creator-chip-on border-slate-900 bg-slate-900 text-white" : "creator-chip border-slate-200 bg-white text-slate-600"}`}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <select
+              value={postCategory}
+              onChange={(e) => setPostCategory(e.target.value)}
+              aria-label="Category"
+              className="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none"
+            >
+              <option value="">Category</option>
+              {POST_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <select
+              value={visibility}
+              onChange={(e) => setVisibility(e.target.value as "public" | "unlisted")}
+              aria-label="Visibility"
+              className="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none"
+            >
+              <option value="public">Public</option>
+              <option value="unlisted">Unlisted (link only)</option>
+            </select>
+          </div>
+
+          <div>
+            <p className="mb-1.5 text-[11px] font-black uppercase text-slate-500">Tools used</p>
+            <div className="flex flex-wrap gap-1.5">
+              {Array.from(new Set([...TOOL_PRESETS, ...tools])).map((t) => {
+                const on = tools.includes(t);
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setTools((prev) => (on ? prev.filter((x) => x !== t) : prev.length >= 12 ? prev : [...prev, t]))}
+                    className={`rounded-full border px-3 py-1.5 text-[11.5px] font-bold ${on ? "creator-chip-on border-slate-900 bg-slate-900 text-white" : "creator-chip border-slate-200 bg-white text-slate-600"}`}
+                  >
+                    {t}
+                  </button>
+                );
+              })}
+            </div>
+            <input
+              value={toolInput}
+              onChange={(e) => setToolInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && toolInput.trim()) {
+                  e.preventDefault();
+                  const t = toolInput.trim().slice(0, 40);
+                  setTools((prev) => (prev.includes(t) || prev.length >= 12 ? prev : [...prev, t]));
+                  setToolInput("");
+                }
+              }}
+              placeholder="Add another tool and press Enter"
+              className="mt-2 w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none"
+            />
+          </div>
+
+          <input
+            value={tagsInput}
+            onChange={(e) => setTagsInput(e.target.value)}
+            placeholder="Tags, e.g. #reels #editing"
+            className="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none"
+          />
+
+          {editing && editing.mediaUrls.length > 0 && attachments.length === 0 && (
+            <div className="grid grid-cols-3 gap-2">
+              {editing.mediaUrls.slice(0, 6).map((u) => (
+                <div key={u} className="h-20 overflow-hidden rounded-[10px] bg-slate-100">
+                  <img src={u} alt="" className="h-full w-full object-cover" onError={(e) => ((e.target as HTMLImageElement).style.display = "none")} />
+                </div>
+              ))}
+              <p className="col-span-3 text-[11px] text-slate-500">Current media is kept unless you add new media below.</p>
+            </div>
+          )}
 
           <div className="rounded-[10px] border border-dashed border-sky-200 bg-sky-50/60 p-3">
             <input
@@ -463,11 +684,17 @@ export function CreatorPublishModal({
           <div className="space-y-3 rounded-[10px] border border-emerald-100 bg-emerald-50/50 p-3">
             <div className="flex items-center gap-2">
               <Zap className="h-4 w-4 text-emerald-600" />
-              <p className="text-xs font-black text-slate-900">Sell this asset (optional)</p>
+              <p className="text-xs font-black text-slate-900">Attach a resource (optional)</p>
             </div>
             <p className="text-[11px] leading-relaxed text-slate-500">
-              Premade files only — buyers download instantly, no manual delivery.
+              PDF, ZIP, templates, presets, prompt packs and more. Premade files only — people download instantly.
             </p>
+            {editing?.productId ? (
+              <p className="rounded-[10px] border border-slate-200 bg-white px-3 py-2.5 text-[12px] font-bold text-slate-700">
+                Resource attached. To change its file or price, edit the listing in your dashboard.
+              </p>
+            ) : (
+            <>
 
             <input
               ref={assetRef}
@@ -564,9 +791,69 @@ export function CreatorPublishModal({
 
             <p className="flex items-start gap-1.5 text-[11px] text-slate-500">
               <Download className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" />
-              Paid assets follow the normal marketplace rules — 80/20 split, earnings in your wallet and dashboard.
+              Paid resources use Oventric checkout — 80/20 split, earnings in your wallet and dashboard.
             </p>
+            </>
+            )}
+
+            {(editing?.productId || assetFile || assetLink.trim()) && (
+              <div className="space-y-2 border-t border-emerald-100 pt-3">
+                <select
+                  value={resourceType}
+                  onChange={(e) => setResourceType(e.target.value)}
+                  aria-label="Resource type"
+                  className="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none"
+                >
+                  {CREATOR_RESOURCE_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+                <p className="text-[11px] font-black uppercase text-slate-500">License</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {CREATOR_LICENSES.map((l) => {
+                    const on = license.includes(l);
+                    return (
+                      <button
+                        key={l}
+                        type="button"
+                        onClick={() => setLicense((prev) => (on ? prev.filter((x) => x !== l) : [...prev, l]))}
+                        className={`rounded-full border px-3 py-1.5 text-[11.5px] font-bold ${on ? "creator-chip-on border-slate-900 bg-slate-900 text-white" : "creator-chip border-slate-200 bg-white text-slate-600"}`}
+                      >
+                        {l}
+                      </button>
+                    );
+                  })}
+                </div>
+                {license.includes("Other") && (
+                  <input
+                    value={licenseNote}
+                    onChange={(e) => setLicenseNote(e.target.value)}
+                    placeholder="Describe the license terms"
+                    className="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none"
+                  />
+                )}
+                <label className="flex items-start gap-2 text-[11.5px] font-semibold text-slate-700">
+                  <input
+                    type="checkbox"
+                    checked={rightsConfirmed}
+                    onChange={(e) => setRightsConfirmed(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 accent-[#E5484D]"
+                  />
+                  I confirm I created this resource or have the rights to share and sell it.
+                </label>
+              </div>
+            )}
           </div>
+
+          {ownProducts.length > 0 && (
+            <select
+              value={showcaseProductId}
+              onChange={(e) => setShowcaseProductId(e.target.value)}
+              aria-label="Feature an Oventric product"
+              className="w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none"
+            >
+              <option value="">Feature one of your Oventric products (optional)</option>
+              {ownProducts.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+          )}
 
           <div className="flex items-center gap-2 rounded-[10px] border border-violet-100 bg-violet-50/55 px-3 py-2.5 focus-within:border-violet-300">
             <Link2 className="h-4 w-4 shrink-0 text-violet-600" />
@@ -580,13 +867,26 @@ export function CreatorPublishModal({
         </div>
 
         <div className="border-t border-slate-100 bg-white p-4 pb-[max(16px,env(safe-area-inset-bottom))]">
-          <Button
-            disabled={busy}
-            onClick={submit}
-            className="h-12 w-full rounded-[10px] bg-violet-600 text-base font-black text-white shadow-lg shadow-violet-200/70 hover:bg-violet-700"
-          >
-            {busy ? "Publishing…" : "Publish"}
-          </Button>
+          <div className="flex gap-2">
+            {editing?.status !== "published" && (
+              <Button
+                type="button"
+                variant="outline"
+                disabled={busy || loadingEdit}
+                onClick={() => void submit("draft")}
+                className="creator-draft-btn h-12 flex-1 rounded-[10px] border-slate-200 text-sm font-black text-slate-700"
+              >
+                Save draft
+              </Button>
+            )}
+            <Button
+              disabled={busy || loadingEdit}
+              onClick={() => void submit("published")}
+              className="h-12 flex-[2] rounded-[10px] bg-violet-600 text-base font-black text-white shadow-lg shadow-violet-200/70 hover:bg-violet-700"
+            >
+              {busy ? "Saving…" : editing?.status === "published" ? "Save changes" : "Publish"}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
