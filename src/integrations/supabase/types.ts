@@ -1788,7 +1788,9 @@ export type Database = {
         Row: {
           author_id: string
           caption: string | null
+          category: string | null
           community_link: string | null
+          content_type: string
           created_at: string
           external_provider: string | null
           external_url: string | null
@@ -1798,15 +1800,25 @@ export type Database = {
           media_paths: string[]
           media_type: string | null
           product_id: string | null
+          resource_license: string[]
+          resource_license_note: string | null
+          resource_type: string | null
+          rights_confirmed_at: string | null
+          showcase_product_id: string | null
           status: string
+          tags: string[]
           title: string
+          tools: string[]
           updated_at: string
           view_count: number
+          visibility: string
         }
         Insert: {
           author_id: string
           caption?: string | null
+          category?: string | null
           community_link?: string | null
+          content_type?: string
           created_at?: string
           external_provider?: string | null
           external_url?: string | null
@@ -1816,15 +1828,25 @@ export type Database = {
           media_paths?: string[]
           media_type?: string | null
           product_id?: string | null
+          resource_license?: string[]
+          resource_license_note?: string | null
+          resource_type?: string | null
+          rights_confirmed_at?: string | null
+          showcase_product_id?: string | null
           status?: string
+          tags?: string[]
           title: string
+          tools?: string[]
           updated_at?: string
           view_count?: number
+          visibility?: string
         }
         Update: {
           author_id?: string
           caption?: string | null
+          category?: string | null
           community_link?: string | null
+          content_type?: string
           created_at?: string
           external_provider?: string | null
           external_url?: string | null
@@ -1834,15 +1856,30 @@ export type Database = {
           media_paths?: string[]
           media_type?: string | null
           product_id?: string | null
+          resource_license?: string[]
+          resource_license_note?: string | null
+          resource_type?: string | null
+          rights_confirmed_at?: string | null
+          showcase_product_id?: string | null
           status?: string
+          tags?: string[]
           title?: string
+          tools?: string[]
           updated_at?: string
           view_count?: number
+          visibility?: string
         }
         Relationships: [
           {
             foreignKeyName: "creator_posts_product_id_fkey"
             columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_posts_showcase_product_id_fkey"
+            columns: ["showcase_product_id"]
             isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
