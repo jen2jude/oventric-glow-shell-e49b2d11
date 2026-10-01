@@ -398,7 +398,7 @@ export function AppFeed() {
     const dx = t.clientX - start.x;
     const dy = t.clientY - start.y;
     if (dragX === null && (Math.abs(dx) < 12 || Math.abs(dx) < Math.abs(dy))) return; // vertical scroll stays scrolling
-    const idx = FEED_TABS.indexOf(tab);
+    const idx = (FEED_TABS as readonly string[]).indexOf(tab);
     const atEdge = (dx < 0 && idx === FEED_TABS.length - 1) || (dx > 0 && idx === 0);
     setDragX(atEdge ? dx * 0.25 : dx); // damped resistance at the first/last tab
   };
@@ -411,7 +411,7 @@ export function AppFeed() {
     const t = e.changedTouches[0];
     const dy = t.clientY - start.y;
     if (Math.abs(dx) < 64 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
-    const idx = FEED_TABS.indexOf(tab);
+    const idx = (FEED_TABS as readonly string[]).indexOf(tab);
     const next = dx < 0 ? idx + 1 : idx - 1;
     if (next < 0 || next >= FEED_TABS.length) return;
     haptic("select");
