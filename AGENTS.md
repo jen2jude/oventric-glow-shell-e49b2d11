@@ -16,7 +16,7 @@ App mode is dark-only; saved light preference is web-only. Reason: light text re
 
 Installability is manifest-only; `push-sw.js` is messaging-only. Reason: avoid stale previews.
 
-Preview hosts default to web; `?mode=app` shows app. Why: avoid stale app caches.
+Preview hosts default to app; `?mode=web` shows website. Published browser hosts remain web. Why: review app changes without changing the public website.
 
 App forms use app-scoped sheets with input repositioning off; web stays separate. Why: preserve context and keyboard-stable heights.
 
