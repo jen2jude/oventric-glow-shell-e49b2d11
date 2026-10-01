@@ -138,7 +138,7 @@ export function CreatorProfilePage({ profile }: { profile: PublicCreatorProfileD
   ];
 
   return (
-    <div className={`min-h-screen pb-24 font-wallet-body ${t.page}`} data-testid="creator-profile" data-app-view={isApp || undefined}>
+    <div className={`${isApp ? "fixed inset-0 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]" : "min-h-screen"} pb-24 font-wallet-body ${t.page}`} data-testid="creator-profile" data-app-view={isApp || undefined}>
       {isApp ? (
         <div className="sticky top-0 z-30 flex items-center gap-3 border-b border-white/10 bg-[#070A08]/95 px-4 py-3 backdrop-blur">
           <button onClick={back} aria-label="Back" className="grid h-9 w-9 place-items-center rounded-full bg-white/[0.06]">
