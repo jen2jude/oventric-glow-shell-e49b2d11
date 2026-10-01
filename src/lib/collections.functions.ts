@@ -231,6 +231,11 @@ export const addCollectionItem = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!board) throw new Error("Board not found");
 
+    const { count } = await context.supabase
+      .from("collection_items")
+      .select("id", { count: "exact", head: true })
+      .eq("collection_id", data.collectionId);
+
     const { data: row, error } = await context.supabase
       .from("collection_items")
       .insert({
@@ -242,6 +247,7 @@ export const addCollectionItem = createServerFn({ method: "POST" })
         title: data.title || null,
         image_url: data.imageUrl || null,
         note: data.note || null,
+        sort_order: count ?? 0,
       })
       .select("id")
       .single();
