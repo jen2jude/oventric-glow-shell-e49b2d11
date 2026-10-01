@@ -350,7 +350,7 @@ export const publishCreatorPost = createServerFn({ method: "POST" })
     };
 
     if (existing) {
-      const patch: Record<string, unknown> = { ...meta };
+      const patch: Database["public"]["Tables"]["creator_posts"]["Update"] = { ...meta };
       if (data.mediaPaths) {
         patch.media_paths = data.mediaPaths;
         patch.media_type = data.mediaType ?? null;
