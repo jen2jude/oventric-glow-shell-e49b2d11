@@ -85,6 +85,7 @@ import { Route as AdminCoursesRouteImport } from './routes/admin.courses'
 import { Route as AdminCouponsRouteImport } from './routes/admin.coupons'
 import { Route as AdminCommunicationsRouteImport } from './routes/admin.communications'
 import { Route as AdminCircleCategoriesRouteImport } from './routes/admin.circle-categories'
+import { Route as AdminChallengesRouteImport } from './routes/admin.challenges'
 import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
 import { Route as AdminCashbackWalletRouteImport } from './routes/admin.cashback-wallet'
 import { Route as AdminCampaignsRouteImport } from './routes/admin.campaigns'
@@ -494,6 +495,11 @@ const AdminCircleCategoriesRoute = AdminCircleCategoriesRouteImport.update({
   path: '/circle-categories',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminChallengesRoute = AdminChallengesRouteImport.update({
+  id: '/challenges',
+  path: '/challenges',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
@@ -679,6 +685,7 @@ export interface FileRoutesByFullPath {
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cashback-wallet': typeof AdminCashbackWalletRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/challenges': typeof AdminChallengesRoute
   '/admin/circle-categories': typeof AdminCircleCategoriesRoute
   '/admin/communications': typeof AdminCommunicationsRoute
   '/admin/coupons': typeof AdminCouponsRoute
@@ -781,6 +788,7 @@ export interface FileRoutesByTo {
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cashback-wallet': typeof AdminCashbackWalletRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/challenges': typeof AdminChallengesRoute
   '/admin/circle-categories': typeof AdminCircleCategoriesRoute
   '/admin/communications': typeof AdminCommunicationsRoute
   '/admin/coupons': typeof AdminCouponsRoute
@@ -887,6 +895,7 @@ export interface FileRoutesById {
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/cashback-wallet': typeof AdminCashbackWalletRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/challenges': typeof AdminChallengesRoute
   '/admin/circle-categories': typeof AdminCircleCategoriesRoute
   '/admin/communications': typeof AdminCommunicationsRoute
   '/admin/coupons': typeof AdminCouponsRoute
@@ -994,6 +1003,7 @@ export interface FileRouteTypes {
     | '/admin/campaigns'
     | '/admin/cashback-wallet'
     | '/admin/categories'
+    | '/admin/challenges'
     | '/admin/circle-categories'
     | '/admin/communications'
     | '/admin/coupons'
@@ -1096,6 +1106,7 @@ export interface FileRouteTypes {
     | '/admin/campaigns'
     | '/admin/cashback-wallet'
     | '/admin/categories'
+    | '/admin/challenges'
     | '/admin/circle-categories'
     | '/admin/communications'
     | '/admin/coupons'
@@ -1201,6 +1212,7 @@ export interface FileRouteTypes {
     | '/admin/campaigns'
     | '/admin/cashback-wallet'
     | '/admin/categories'
+    | '/admin/challenges'
     | '/admin/circle-categories'
     | '/admin/communications'
     | '/admin/coupons'
@@ -1862,6 +1874,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCircleCategoriesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/challenges': {
+      id: '/admin/challenges'
+      path: '/challenges'
+      fullPath: '/admin/challenges'
+      preLoaderRoute: typeof AdminChallengesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/categories': {
       id: '/admin/categories'
       path: '/categories'
@@ -2077,6 +2096,7 @@ interface AdminRouteChildren {
   AdminCampaignsRoute: typeof AdminCampaignsRoute
   AdminCashbackWalletRoute: typeof AdminCashbackWalletRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
+  AdminChallengesRoute: typeof AdminChallengesRoute
   AdminCircleCategoriesRoute: typeof AdminCircleCategoriesRoute
   AdminCommunicationsRoute: typeof AdminCommunicationsRoute
   AdminCouponsRoute: typeof AdminCouponsRoute
@@ -2117,6 +2137,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCampaignsRoute: AdminCampaignsRoute,
   AdminCashbackWalletRoute: AdminCashbackWalletRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
+  AdminChallengesRoute: AdminChallengesRoute,
   AdminCircleCategoriesRoute: AdminCircleCategoriesRoute,
   AdminCommunicationsRoute: AdminCommunicationsRoute,
   AdminCouponsRoute: AdminCouponsRoute,
