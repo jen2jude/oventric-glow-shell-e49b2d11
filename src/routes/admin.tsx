@@ -139,6 +139,7 @@ const NAV: NavItem[] = [
   { to: "/admin/reports", label: "Reports", icon: ShieldCheck, group: "Community" },
   { to: "/admin/reviews", label: "Reviews", icon: Star, group: "Community" },
   { to: "/admin/product-tags", label: "Product Tags", icon: Tag, group: "Community" },
+  { to: "/admin/challenges", label: "Creator Challenges", icon: Trophy, group: "Community" },
   { to: "/admin/communications", label: "Communications", icon: Radio, group: "Community" },
   { to: "/admin/support", label: "Support Desk", icon: LifeBuoy, group: "Community" },
 

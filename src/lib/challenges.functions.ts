@@ -89,9 +89,12 @@ function toDTO(r: Row, subs: { user_id: string }[] = []): ChallengeDTO {
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 async function staffRoles(ctx: { supabase: any; userId: string }) {
-  const { data } = await ctx.supabase.from("user_roles").select("role").eq("user_id", ctx.userId);
-  const roles = new Set<string>((data ?? []).map((r: { role: string }) => r.role));
-  return { canManage: roles.has("admin") || roles.has("content"), canModerate: roles.has("admin") || roles.has("content") || roles.has("moderator") };
+  const check = async (role: string) => {
+    const { data } = await ctx.supabase.rpc("has_role", { _user_id: ctx.userId, _role: role });
+    return Boolean(data);
+  };
+  const [admin, content, moderator] = await Promise.all([check("admin"), check("content"), check("moderator")]);
+  return { canManage: admin || content, canModerate: admin || content || moderator };
 }
 
 /** Public: live and past challenges with real submission counts. */
