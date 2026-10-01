@@ -37,6 +37,11 @@ export function MobileNav({
         { icon: Images, label: "Feed" },
         { icon: Clapperboard, label: "Creator's Hub" },
         { icon: Wallet, label: "Wallet" },
+      ]
+    : [
+        { icon: MessageCircle, label: "Chats" },
+        { icon: Clapperboard, label: "Creator's Hub" },
+        { icon: Wallet, label: "Wallet" },
       ];
   const chatOpen = useChatOpen();
   const chromeHidden = useChromeHidden();
