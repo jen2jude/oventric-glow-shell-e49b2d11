@@ -50,6 +50,7 @@ import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as PostIdRouteImport } from './routes/post.$id'
 import { Route as PaymentReturnRouteImport } from './routes/payment.return'
 import { Route as OrderIdRouteImport } from './routes/order.$id'
+import { Route as CreatorsStudioRouteImport } from './routes/creators_.studio'
 import { Route as CreatorsFollowingRouteImport } from './routes/creators_.following'
 import { Route as CreatorsDiscoverRouteImport } from './routes/creators_.discover'
 import { Route as CreatorsHandleRouteImport } from './routes/creators_.$handle'
@@ -318,6 +319,11 @@ const PaymentReturnRoute = PaymentReturnRouteImport.update({
 const OrderIdRoute = OrderIdRouteImport.update({
   id: '/order/$id',
   path: '/order/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreatorsStudioRoute = CreatorsStudioRouteImport.update({
+  id: '/creators_/studio',
+  path: '/creators/studio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CreatorsFollowingRoute = CreatorsFollowingRouteImport.update({
@@ -727,6 +733,7 @@ export interface FileRoutesByFullPath {
   '/creators/$handle': typeof CreatorsHandleRoute
   '/creators/discover': typeof CreatorsDiscoverRoute
   '/creators/following': typeof CreatorsFollowingRoute
+  '/creators/studio': typeof CreatorsStudioRoute
   '/order/$id': typeof OrderIdRoute
   '/payment/return': typeof PaymentReturnRoute
   '/post/$id': typeof PostIdRoute
@@ -831,6 +838,7 @@ export interface FileRoutesByTo {
   '/creators/$handle': typeof CreatorsHandleRoute
   '/creators/discover': typeof CreatorsDiscoverRoute
   '/creators/following': typeof CreatorsFollowingRoute
+  '/creators/studio': typeof CreatorsStudioRoute
   '/order/$id': typeof OrderIdRoute
   '/payment/return': typeof PaymentReturnRoute
   '/post/$id': typeof PostIdRoute
@@ -939,6 +947,7 @@ export interface FileRoutesById {
   '/creators_/$handle': typeof CreatorsHandleRoute
   '/creators_/discover': typeof CreatorsDiscoverRoute
   '/creators_/following': typeof CreatorsFollowingRoute
+  '/creators_/studio': typeof CreatorsStudioRoute
   '/order/$id': typeof OrderIdRoute
   '/payment/return': typeof PaymentReturnRoute
   '/post/$id': typeof PostIdRoute
@@ -1048,6 +1057,7 @@ export interface FileRouteTypes {
     | '/creators/$handle'
     | '/creators/discover'
     | '/creators/following'
+    | '/creators/studio'
     | '/order/$id'
     | '/payment/return'
     | '/post/$id'
@@ -1152,6 +1162,7 @@ export interface FileRouteTypes {
     | '/creators/$handle'
     | '/creators/discover'
     | '/creators/following'
+    | '/creators/studio'
     | '/order/$id'
     | '/payment/return'
     | '/post/$id'
@@ -1259,6 +1270,7 @@ export interface FileRouteTypes {
     | '/creators_/$handle'
     | '/creators_/discover'
     | '/creators_/following'
+    | '/creators_/studio'
     | '/order/$id'
     | '/payment/return'
     | '/post/$id'
@@ -1329,6 +1341,7 @@ export interface RootRouteChildren {
   CreatorsHandleRoute: typeof CreatorsHandleRoute
   CreatorsDiscoverRoute: typeof CreatorsDiscoverRoute
   CreatorsFollowingRoute: typeof CreatorsFollowingRoute
+  CreatorsStudioRoute: typeof CreatorsStudioRoute
   OrderIdRoute: typeof OrderIdRoute
   PaymentReturnRoute: typeof PaymentReturnRoute
   PostIdRoute: typeof PostIdRoute
@@ -1640,6 +1653,13 @@ declare module '@tanstack/react-router' {
       path: '/order/$id'
       fullPath: '/order/$id'
       preLoaderRoute: typeof OrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creators_/studio': {
+      id: '/creators_/studio'
+      path: '/creators/studio'
+      fullPath: '/creators/studio'
+      preLoaderRoute: typeof CreatorsStudioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/creators_/following': {
@@ -2270,6 +2290,7 @@ const rootRouteChildren: RootRouteChildren = {
   CreatorsHandleRoute: CreatorsHandleRoute,
   CreatorsDiscoverRoute: CreatorsDiscoverRoute,
   CreatorsFollowingRoute: CreatorsFollowingRoute,
+  CreatorsStudioRoute: CreatorsStudioRoute,
   OrderIdRoute: OrderIdRoute,
   PaymentReturnRoute: PaymentReturnRoute,
   PostIdRoute: PostIdRoute,
