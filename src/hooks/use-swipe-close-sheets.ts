@@ -14,7 +14,7 @@ function findPanel(target: HTMLElement): HTMLElement | null {
   const vh = window.innerHeight;
   while (el && el !== document.body) {
     if (el.closest("[data-vaul-drawer]")) return null;
-    const parent = el.parentElement;
+    const parent: HTMLElement | null = el.parentElement;
     if (parent && getComputedStyle(parent).position === "fixed") {
       const r = el.getBoundingClientRect();
       const radius = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
