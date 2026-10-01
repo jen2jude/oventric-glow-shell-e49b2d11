@@ -1,4 +1,4 @@
-import { Clapperboard, Home, Images, MessageCircle, Plus, ShoppingBag, Wallet } from "lucide-react";
+import { Clapperboard, Home, Images, MessageCircle, Plus, ShoppingBag } from "lucide-react";
 import { useAuthGate } from "@/lib/auth-gate/AuthGateProvider";
 import { useUnreadCounts } from "@/hooks/use-unread-counts";
 import { CountBadge } from "@/components/oventric/CountBadge";
@@ -36,12 +36,10 @@ export function MobileNav({
     ? [
         { icon: Images, label: "Feed" },
         { icon: Clapperboard, label: "Creator's Hub" },
-        { icon: Wallet, label: "Wallet" },
       ]
     : [
         { icon: MessageCircle, label: "Chats" },
         { icon: Clapperboard, label: "Creator's Hub" },
-        { icon: Wallet, label: "Wallet" },
       ];
   const chatOpen = useChatOpen();
   const chromeHidden = useChromeHidden();
