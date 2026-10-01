@@ -383,9 +383,11 @@ export function AppFeed() {
       return followingIds.has(p.author_id) || followerIds.has(p.author_id);
     });
 
-  // Swipe left = next tab, swipe right = previous tab (For you ↔ Following ↔ Shop ↔ Creators).
-  const FEED_TABS = ["foryou", "following", "shop", "creators"] as const;
+  // Swipe left = next tab, swipe right = previous tab (For you ↔ Following ↔ Shop).
+  // Creators is its own Creator Hub screen (footer button), not a feed tab.
+  const FEED_TABS = ["foryou", "following", "shop"] as const;
   const onFeedTouchStart = (e: React.TouchEvent) => {
+    if (tab === "creators") return;
     const t = e.touches[0];
     swipeStart.current = { x: t.clientX, y: t.clientY };
   };
@@ -434,13 +436,17 @@ export function AppFeed() {
       {/* Stick within the feed's scroll area, directly beneath the app header.
           Unlike a viewport-fixed bar, this occupies space above the first post. */}
       <div className="app-scroll-header sticky top-0 z-30 w-full border-b border-white/10 bg-[#070A08] shadow-[0_8px_24px_rgba(0,0,0,0.24)]">
+        {tab === "creators" ? (
+          <div className="mx-auto flex h-12 w-full max-w-md items-center justify-center px-4 text-[14px] font-bold text-white">
+            Creator Hub
+          </div>
+        ) : (
         <div className="mx-auto flex h-12 w-full max-w-md items-center justify-evenly px-2">
           {(
             [
               { key: "foryou", label: "For you" },
               { key: "following", label: "Following" },
               { key: "shop", label: "Shop" },
-              { key: "creators", label: "Creators" },
             ] as const
           ).map((t) => (
             <button
@@ -459,6 +465,7 @@ export function AppFeed() {
             </button>
           ))}
         </div>
+        )}
       </div>
 
       {/* Tab content: follows the finger while swiping, slides in on tab change */}
