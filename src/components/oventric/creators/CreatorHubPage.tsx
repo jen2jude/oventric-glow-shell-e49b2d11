@@ -286,8 +286,8 @@ export function CreatorHubPage() {
           <p className={`font-wallet-display font-semibold ${isApp ? "mt-1 text-[13px] text-white/75" : "mt-3 text-[17px] sm:text-[22px]"}`}>
             Create. Share. Teach. Sell. Grow.
           </p>
-          <div className={`flex gap-2.5 sm:flex-row sm:items-center ${isApp ? "mt-3" : "mt-5 flex-col"}`}>
-            <label className={`flex flex-1 items-center gap-2 rounded-[10px] border px-3 ${isApp ? "h-10" : "h-12 px-4"} ${t.input}`}>
+          <div className={`flex gap-2.5 sm:flex-row sm:items-center ${isApp ? "mt-3 flex-wrap" : "mt-5 flex-col"}`}>
+            <label className={`flex flex-1 items-center gap-2 rounded-[10px] border px-3 ${isApp ? "h-10 min-w-0 basis-full" : "h-12 px-4"} ${t.input}`}>
               <Search className="h-4 w-4 shrink-0 opacity-60" />
               <input
                 value={q}
