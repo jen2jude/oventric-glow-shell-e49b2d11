@@ -88,7 +88,10 @@ export function CreatorHubPage() {
 
   const { data: following } = useQuery({
     queryKey: ["creator-hub-following", meId],
-    queryFn: () => fetchFollowing({ data: { userId: meId! } }),
+    queryFn: () => {
+      if (!meId) return Promise.resolve([]);
+      return fetchFollowing({ data: { userId: meId } });
+    },
     enabled: !!meId && tab === "following",
     staleTime: 60_000,
   });
@@ -150,6 +153,7 @@ export function CreatorHubPage() {
         tabIdle: "text-white/50 border-white/10",
         tabActive: "bg-white text-[#070A08] border-white",
         bar: "bg-[#070A08]/95 border-white/10",
+        app: true,
       }
     : {
         page: "bg-white text-slate-900",
@@ -160,41 +164,42 @@ export function CreatorHubPage() {
         tabIdle: "text-slate-500 border-slate-200 hover:text-slate-900",
         tabActive: "bg-slate-900 text-white border-slate-900",
         bar: "bg-white/95 border-slate-200",
+        app: false,
       };
 
   const loading = !posts || !creators;
 
   return (
-    <div className={`min-h-full pb-28 font-wallet-body ${t.page}`} data-testid="creator-hub">
+    <div className={`min-h-full pb-28 font-wallet-body ${t.page}`} data-testid="creator-hub" data-app-view={isApp || undefined}>
       {/* Editorial header */}
       <header className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-x-0 top-0 flex h-1.5">
-          {ACCENTS.map((c) => (
-            <span key={c} className="flex-1" style={{ background: c }} />
-          ))}
-        </div>
-        <div className="mx-auto max-w-6xl px-4 pb-6 pt-8 sm:px-6 md:pt-14 lg:px-8">
-          <p className="font-wallet-display text-[11px] font-bold uppercase tracking-[0.32em]" style={{ color: "#E5484D" }}>
+        {!isApp && (
+          <div className="pointer-events-none absolute inset-x-0 top-0 flex h-1.5">
+            {ACCENTS.map((c) => <span key={c} className="flex-1" style={{ background: c }} />)}
+          </div>
+        )}
+        <div className={`mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 ${isApp ? "pb-4 pt-5" : "pb-6 pt-8 md:pt-14"}`}>
+          <p className={`font-wallet-display text-[10px] font-bold uppercase ${isApp ? "text-[#E5484D]" : "tracking-[0.32em]"}`} style={isApp ? undefined : { color: "#E5484D" }}>
             Oventric
           </p>
-          <h1 className="mt-2 font-wallet-display text-[44px] font-extrabold leading-[0.95] tracking-tight sm:text-[64px] lg:text-[84px]">
+          <h1 className={`font-wallet-display font-extrabold leading-none ${isApp ? "mt-1 text-[25px]" : "mt-2 text-[44px] tracking-tight sm:text-[64px] lg:text-[84px]"}`}>
             CREATORS
           </h1>
-          <p className="mt-3 font-wallet-display text-[17px] font-semibold sm:text-[22px]">
+          <p className={`font-wallet-display font-semibold ${isApp ? "mt-1 text-[13px] text-white/75" : "mt-3 text-[17px] sm:text-[22px]"}`}>
             Create. Share. Teach. Sell. Grow.
           </p>
-          <p className={`mt-2 max-w-2xl text-[14px] leading-relaxed sm:text-[15px] ${t.muted}`}>
+          <p className={`max-w-2xl leading-relaxed ${isApp ? "mt-1.5 text-[11.5px]" : "mt-2 text-[14px] sm:text-[15px]"} ${t.muted}`}>
             Discover creators, learn new skills, find useful resources and explore digital work from the Oventric creator community.
           </p>
-          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <label className={`flex h-12 flex-1 items-center gap-2 rounded-[10px] border px-4 ${t.input}`}>
+          <div className={`flex gap-2.5 sm:flex-row sm:items-center ${isApp ? "mt-3" : "mt-5 flex-col"}`}>
+            <label className={`flex flex-1 items-center gap-2 rounded-[10px] border px-3 ${isApp ? "h-10" : "h-12 px-4"} ${t.input}`}>
               <Search className="h-4 w-4 shrink-0 opacity-60" />
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Search creators, content & resources"
                 aria-label="Search creators, content & resources"
-                className="h-full min-w-0 flex-1 bg-transparent text-[14px] outline-none"
+                className={`h-full min-w-0 flex-1 bg-transparent outline-none ${isApp ? "text-[12px]" : "text-[14px]"}`}
               />
             </label>
             <button
@@ -202,10 +207,10 @@ export function CreatorHubPage() {
                 haptic("medium");
                 startCreate();
               }}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-[10px] px-5 text-[14px] font-bold"
-              style={{ background: "#E5484D", color: "#ffffff" }}
+              className={`inline-flex shrink-0 items-center justify-center gap-2 rounded-[10px] bg-[#E5484D] font-bold text-white ${isApp ? "h-10 w-10 px-0" : "h-12 px-5 text-[14px]"}`}
+              aria-label="Share your work"
             >
-              <Plus className="h-4 w-4" /> Share your work
+              <Plus className="h-4 w-4" /> <span className={isApp ? "sr-only" : undefined}>Share your work</span>
             </button>
           </div>
         </div>
@@ -213,7 +218,7 @@ export function CreatorHubPage() {
 
       {/* Creator navigation */}
       <nav className={`app-scroll-header sticky top-0 z-20 border-b backdrop-blur ${t.bar}`} aria-label="Creator navigation">
-        <div className="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-4 py-3 sm:px-6 lg:px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className={`mx-auto flex max-w-6xl overflow-x-auto px-4 sm:px-6 lg:px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${isApp ? "gap-1.5 py-2" : "gap-2 py-3"}`}>
           {TABS.map(({ key, label, icon: Icon }) => (
             <button
               key={key}
@@ -222,7 +227,7 @@ export function CreatorHubPage() {
                 setTab(key);
               }}
               aria-current={tab === key ? "page" : undefined}
-              className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-bold transition-colors ${
+              className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border font-bold transition-colors ${isApp ? "px-3 py-1.5 text-[11px]" : "px-4 py-2 text-[13px]"} ${
                 tab === key ? t.tabActive : t.tabIdle
               }`}
             >
@@ -232,7 +237,7 @@ export function CreatorHubPage() {
         </div>
       </nav>
 
-      <div className="mx-auto max-w-6xl space-y-10 px-4 pt-6 sm:px-6 lg:px-8">
+      <div className={`mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 ${isApp ? "space-y-6 pt-4" : "space-y-10 pt-6"}`}>
         {loading ? (
           <div className="flex justify-center py-20">
             <Loader2 className="h-6 w-6 animate-spin" style={{ color: "#E5484D" }} />
@@ -297,7 +302,7 @@ export function CreatorHubPage() {
   );
 }
 
-type Theme = { card: string; muted: string; faint: string };
+type Theme = { card: string; muted: string; faint: string; app: boolean };
 
 function Section({
   title,
@@ -314,11 +319,14 @@ function Section({
 }) {
   return (
     <section>
-      <div className="mb-4 flex items-center gap-2.5">
-        <span className="grid h-8 w-8 place-items-center rounded-[10px]" style={{ background: `${accent}1F`, color: accent }}>
+      <div className={`flex items-center ${t.app ? "mb-3 gap-2" : "mb-4 gap-2.5"}`}>
+        <span
+          className={`grid place-items-center rounded-[10px] ${t.app ? "h-7 w-7 bg-[#E5484D]/12 text-[#E5484D]" : "h-8 w-8"}`}
+          style={t.app ? undefined : { background: `${accent}1F`, color: accent }}
+        >
           <Icon className="h-4 w-4" />
         </span>
-        <h2 className="font-wallet-display text-[20px] font-extrabold tracking-tight sm:text-[24px]">{title}</h2>
+        <h2 className={`font-wallet-display font-extrabold ${t.app ? "text-[15px]" : "text-[20px] tracking-tight sm:text-[24px]"}`}>{title}</h2>
       </div>
       {children}
     </section>
@@ -332,23 +340,23 @@ function Empty({ t, children }: { t: Theme; children: React.ReactNode }) {
 function CreatorRail({ creators, t, empty }: { creators: TopCreatorDTO[]; t: Theme; empty: string }) {
   if (creators.length === 0) return <Empty t={t}>{empty}</Empty>;
   return (
-    <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className={`-mx-4 flex snap-x overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${t.app ? "gap-2" : "gap-3"}`}>
       {creators.map((c, i) => {
-        const accent = ACCENTS[i % ACCENTS.length];
+        const accent = t.app ? "#E5484D" : ACCENTS[i % ACCENTS.length];
         const inner = (
-          <div className={`flex h-full w-[150px] shrink-0 snap-start flex-col items-center rounded-[10px] border p-4 text-center sm:w-auto ${t.card}`}>
-            <span className="relative h-16 w-16 overflow-hidden rounded-full" style={{ boxShadow: `0 0 0 3px ${accent}` }}>
+          <div className={`flex h-full shrink-0 snap-start flex-col items-center rounded-[10px] border text-center sm:w-auto ${t.app ? "w-[132px] p-3" : "w-[150px] p-4"} ${t.card}`}>
+            <span className={`relative overflow-hidden rounded-full ${t.app ? "h-12 w-12 ring-1 ring-white/15" : "h-16 w-16"}`} style={t.app ? undefined : { boxShadow: `0 0 0 3px ${accent}` }}>
               {c.avatarUrl ? (
                 <img src={c.avatarUrl} alt={c.name} loading="lazy" className="h-full w-full object-cover" />
               ) : (
-                <span className="flex h-full w-full items-center justify-center text-[20px] font-bold" style={{ background: accent, color: "#ffffff" }}>
+                <span className={`flex h-full w-full items-center justify-center font-bold text-white ${t.app ? "bg-white/10 text-[16px]" : "text-[20px]"}`} style={t.app ? undefined : { background: accent }}>
                   {c.name.slice(0, 1).toUpperCase()}
                 </span>
               )}
             </span>
             <span className="mt-3 flex max-w-full items-center gap-1">
               <span className="truncate font-wallet-display text-[14px] font-bold">{c.name}</span>
-              {c.verified && <BadgeCheck className="h-3.5 w-3.5 shrink-0" style={{ color: accent }} />}
+              {c.verified && <BadgeCheck className={`h-3.5 w-3.5 shrink-0 ${t.app ? "text-[#E5484D]" : ""}`} style={t.app ? undefined : { color: accent }} />}
             </span>
             {c.fields[0] && <span className={`mt-0.5 truncate text-[11.5px] ${t.muted}`}>{c.fields[0]}</span>}
             <span className={`mt-2 text-[11px] ${t.faint}`}>
@@ -383,7 +391,7 @@ function PostGrid({
 }) {
   if (posts.length === 0) return <Empty t={t}>{empty}</Empty>;
   return (
-    <div className={`grid gap-4 ${large ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" : "grid-cols-2 lg:grid-cols-4"}`}>
+    <div className={`grid ${t.app ? "gap-2.5" : "gap-4"} ${large ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" : "grid-cols-2 lg:grid-cols-4"}`}>
       {posts.map((p, i) => {
         const m = p.media[0];
         const thumb = m?.type === "video" ? (m.posterUrl ?? null) : (m?.url ?? null);
@@ -404,8 +412,8 @@ function PostGrid({
               ) : m?.type === "video" ? (
                 <video src={m.url} muted playsInline preload="metadata" className="h-full w-full object-cover" />
               ) : (
-                <div className="flex h-full w-full items-center justify-center" style={{ background: `${ACCENTS[i % ACCENTS.length]}22` }}>
-                  <Sparkles className="h-8 w-8" style={{ color: ACCENTS[i % ACCENTS.length] }} />
+                <div className={`flex h-full w-full items-center justify-center ${t.app ? "bg-white/[0.04]" : ""}`} style={t.app ? undefined : { background: `${ACCENTS[i % ACCENTS.length]}22` }}>
+                  <Sparkles className={`h-8 w-8 ${t.app ? "text-[#E5484D]" : ""}`} style={t.app ? undefined : { color: ACCENTS[i % ACCENTS.length] }} />
                 </div>
               )}
               {isVideo && (
@@ -414,12 +422,12 @@ function PostGrid({
                 </span>
               )}
               {p.asset?.available && p.asset.isFree && (
-                <span className="absolute right-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: "#16A34A", color: "#ffffff" }}>
+                <span className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-bold ${t.app ? "bg-black/60 text-white" : ""}`} style={t.app ? undefined : { background: "#16A34A", color: "#ffffff" }}>
                   FREE
                 </span>
               )}
             </div>
-            <div className="p-3">
+            <div className={t.app ? "p-2.5" : "p-3"}>
               <p className={`line-clamp-2 font-wallet-display font-bold ${featured ? "text-[17px]" : "text-[13.5px]"}`}>
                 {p.title || p.caption || "Untitled"}
               </p>
