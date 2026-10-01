@@ -15,6 +15,7 @@ import { formatMoney, usdRate } from "@/lib/fx-display";
 import { Header } from "@/components/oventric/Header";
 import { getCreatorStudio, saveCreatorStudioProfile, type CreatorStudioDTO, type StudioPostDTO } from "@/lib/creator-studio.functions";
 import { deleteCreatorPost } from "@/lib/creators.functions";
+import { getCreatorAnalytics, type AnalyticsRange } from "@/lib/creator-analytics.functions";
 import { updateMyProfile } from "@/lib/profiles.functions";
 import { CreatorPublishModal } from "./CreatorPublishModal";
 import { CreatorCollectionsSheet } from "./CreatorCollectionsSheet";
@@ -200,30 +201,7 @@ function StudioBody({ tab, data, t, isApp, setTab, reload }: { tab: Tab; data: C
       </>
     );
   } else if (tab === "analytics") {
-    const top = [...published].sort((a, b) => b.views - a.views).slice(0, 10);
-    const max = Math.max(1, ...top.map((p) => p.views));
-    body = (
-      <>
-        <div className={`grid gap-2 ${isApp ? "grid-cols-2" : "grid-cols-4"}`}>
-          {stat("Published", String(s.published), FileText)}
-          {stat("Drafts", String(s.drafts), Pencil)}
-          {stat("Avg views / post", s.published ? Math.round(s.views / s.published).toLocaleString() : "0", Eye)}
-          {stat("Downloads", s.downloads.toLocaleString(), Download)}
-        </div>
-        <Title>Top content by views</Title>
-        {top.length ? (
-          <div className={`space-y-2 rounded-[10px] border p-3 ${t.card}`}>
-            {top.map((p) => (
-              <div key={p.id}>
-                <div className="flex justify-between text-[12px]"><span className="truncate pr-2 font-semibold">{p.title}</span><span className={t.muted}>{p.views.toLocaleString()}</span></div>
-                <div className="mt-1 h-1.5 rounded-full bg-black/10"><div className={`h-1.5 rounded-full ${isApp ? "bg-[#E5484D]" : "bg-violet-500"}`} style={{ width: `${(p.views / max) * 100}%` }} /></div>
-              </div>
-            ))}
-          </div>
-        ) : empty("No views yet.")}
-        <p className={`mt-2 text-[11px] ${t.muted}`}>Lifetime totals only — day-by-day history isn't recorded yet.</p>
-      </>
-    );
+    body = <AnalyticsPanel t={t} isApp={isApp} />;
   } else if (tab === "profile") {
     body = <ProfileEditor data={data} t={t} reload={reload} />;
   } else {
@@ -392,6 +370,103 @@ function ProfileEditor({ data, t, reload }: { data: CreatorStudioDTO; t: Theme; 
         <select value={featuredRes} onChange={(e) => setFeaturedRes(e.target.value)} className={field}><option value="">None</option>{resourcePosts.map((r) => <option key={r.postId} value={r.postId}>{r.title}</option>)}</select>
       </div>
       <button disabled={busy === "save"} onClick={save} className={`w-full rounded-[10px] px-4 py-3 text-[14px] font-bold md:w-auto ${t.cta}`}>{busy === "save" ? "Saving…" : "Save profile"}</button>
+    </div>
+  );
+}
+
+const RANGES: { v: AnalyticsRange; label: string }[] = [
+  { v: 7, label: "7 days" },
+  { v: 30, label: "30 days" },
+  { v: 90, label: "90 days" },
+  { v: 0, label: "All time" },
+];
+
+function AnalyticsPanel({ t, isApp }: { t: Theme; isApp: boolean }) {
+  const [range, setRange] = useState<AnalyticsRange>(30);
+  const load = useServerFn(getCreatorAnalytics);
+  const { data: a, isLoading, error } = useQuery({ queryKey: ["creator-analytics", range], queryFn: () => load({ data: { range } }), staleTime: 30_000 });
+  const n = (x: number) => x.toLocaleString();
+  const tile = (label: string, value: string, note?: string) => (
+    <div className={`rounded-[10px] border p-3 ${t.card}`}>
+      <div className={`text-[11px] font-semibold ${t.muted}`}>{label}</div>
+      <div className="mt-1 text-[20px] font-black">{value}</div>
+      {note && <div className={`text-[10px] ${t.muted}`}>{note}</div>}
+    </div>
+  );
+  const grid = `grid gap-2 ${isApp ? "grid-cols-2" : "grid-cols-3"}`;
+  const H = ({ children }: { children: React.ReactNode }) => <h3 className="mb-2 mt-5 text-[13px] font-black uppercase tracking-wide">{children}</h3>;
+  const bar = isApp ? "bg-[#E5484D]" : "bg-violet-500";
+  return (
+    <div>
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {RANGES.map((r) => (
+          <button key={r.v} onClick={() => setRange(r.v)} className={`shrink-0 rounded-[10px] px-3 py-1.5 text-[12px] font-bold ${range === r.v ? t.chipOn : t.chipOff}`}>{r.label}</button>
+        ))}
+      </div>
+      {isLoading ? <Loader2 className="mx-auto mt-8 h-5 w-5 animate-spin" /> : error || !a ? (
+        <p className={`mt-6 text-center text-[13px] ${t.muted}`}>Couldn't load analytics.</p>
+      ) : (
+        <>
+          <H>Content</H>
+          <div className={grid}>
+            {tile("Views", n(a.content.views))}
+            {tile("Likes", n(a.content.likes))}
+            {tile("Comments", n(a.content.comments))}
+            {tile("Shares", n(a.content.shares), a.sharesTrackedSince ? undefined : "Counting from today")}
+            {tile("Saves", n(a.content.saves))}
+            {tile("Followers gained", n(a.content.followersGained))}
+          </div>
+          <H>Resources</H>
+          {a.resources.count === 0 ? <p className={`text-[12px] ${t.muted}`}>No published resources yet.</p> : (
+            <div className={grid}>
+              {tile("Resource views", n(a.resources.views))}
+              {tile("Downloads", n(a.resources.downloads))}
+              {tile("Product views", n(a.resources.productViews))}
+              {tile("Purchases", n(a.resources.purchases))}
+              {tile("Conversion", a.resources.conversionRate == null ? "—" : `${a.resources.conversionRate}%`, a.resources.conversionRate == null ? "Needs 20+ product views" : "Purchases ÷ product views")}
+            </div>
+          )}
+          <H>Profile</H>
+          <div className={grid}>
+            {tile("Profile views", n(a.profile.profileViews))}
+            {tile("Total followers", n(a.profile.followersTotal))}
+          </div>
+          {a.profile.followerSeries.length > 0 && (() => {
+            const max = Math.max(1, ...a.profile.followerSeries.map((d) => d.gained));
+            return (
+              <div className={`mt-2 rounded-[10px] border p-3 ${t.card}`}>
+                <div className={`mb-2 text-[11px] font-semibold ${t.muted}`}>New followers per day</div>
+                <div className="flex h-20 items-end gap-[2px]">
+                  {a.profile.followerSeries.map((d) => (
+                    <div key={d.date} title={`${d.date}: +${d.gained} (total ${d.total})`} className={`flex-1 rounded-sm ${d.gained ? bar : "bg-current opacity-10"}`} style={{ height: `${Math.max(4, (d.gained / max) * 100)}%` }} />
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+          <H>Performance</H>
+          <div className={grid}>
+            {tile("Top content", a.performance.topContent?.title ?? "—", a.performance.topContent ? `${n(a.performance.topContent.views)} views` : "No activity yet")}
+            {tile("Top resource", a.performance.topResource?.title ?? "—", a.performance.topResource ? `${n(a.performance.topResource.downloads)} downloads` : "No activity yet")}
+            {tile("Top category", a.performance.topCategory?.name ?? "—", a.performance.topCategory ? `${n(a.performance.topCategory.views)} views` : "Set categories on posts")}
+            {tile("Top tool", a.performance.topTool?.name ?? "—", a.performance.topTool ? `${n(a.performance.topTool.views)} views` : "Add tools to posts")}
+          </div>
+          {a.posts.some((p) => p.views + p.likes + p.comments > 0) && (
+            <>
+              <H>Posts in this period</H>
+              <div className={`divide-y rounded-[10px] border ${t.card} ${isApp ? "divide-white/10" : "divide-slate-100"}`}>
+                {a.posts.map((p) => (
+                  <div key={p.id} className="px-3 py-2">
+                    <div className="truncate text-[13px] font-semibold">{p.title}</div>
+                    <div className={`text-[11px] ${t.muted}`}>{n(p.views)} views · {n(p.likes)} likes · {n(p.comments)} comments · {n(p.shares)} shares · {n(p.saves)} saves</div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+          <p className={`mt-3 text-[11px] ${t.muted}`}>Counts of real activity on your published posts. Your own likes, comments and saves aren't counted. Viewers stay anonymous.</p>
+        </>
+      )}
     </div>
   );
 }

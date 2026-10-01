@@ -98,3 +98,4 @@
 - [x] Creator Hub Stage 5 — Collections + shop integration
 - [x] Creator Hub Stage 6 — Challenges (built; live create/enter not tested)
 - [x] Creator Hub Stage 7 — Creator Studio
+- [x] Stage 8 — Creator Analytics
