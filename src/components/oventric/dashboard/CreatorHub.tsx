@@ -25,7 +25,7 @@ export function CreatorHub() {
   });
 
   if (isLoading) return <div className="grid place-items-center py-16"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
-  if (error || !data) return <p className="py-10 text-center text-sm text-muted-foreground">Couldn't load your Creator Hub. Please try again.</p>;
+  if (error || !data) return <p className="py-10 text-center text-sm text-muted-foreground">Couldn't load your Creator's Dashboard. Please try again.</p>;
 
   const money = (usd: number) => visibleMoney(computeDisplayPrice({ original_currency: "USD", original_amount: usd }, currency).value, currency, balancesHidden);
   const usd = (v: number) => currency === "USD" ? null : balancesHidden ? "••••" : `≈ ${formatMoney(v, "USD")}`;
@@ -56,7 +56,7 @@ export function CreatorHub() {
       )}
       {isAppShell && <CreatorCoachDrawer open={coachOpen} onClose={() => setCoachOpen(false)} />}
       <div className="rounded-[14px] bg-gradient-to-br from-violet-500 to-[#E5484D] p-4 text-white">
-        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider opacity-90"><Sparkles className="h-4 w-4" /> Creator Hub</div>
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider opacity-90"><Sparkles className="h-4 w-4" /> Creator's Dashboard</div>
         <div className="mt-2 flex items-end gap-6">
           <div><div className="text-3xl font-bold">{n(data.followers)}</div><div className="text-xs opacity-85">Followers</div></div>
           <div><div className="text-xl font-bold">+{n(data.newFollowers7d)}</div><div className="text-xs opacity-85">This week</div></div>
