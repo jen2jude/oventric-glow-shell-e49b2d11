@@ -36,12 +36,7 @@ function isStandaloneLaunch() {
     const host = window.location.hostname.toLowerCase();
     const publicHost = host === "oventric.com" ||
       host === "www.oventric.com" ||
-      host === "oventric-glow-shell.lovable.app" ||
-      // Lovable editor/dev preview hosts and localhost show the website by
-      // default, so no app splash there either.
-      host.endsWith(".lovable.app") ||
-      host === "localhost" ||
-      host === "127.0.0.1";
+       host === "oventric-glow-shell.lovable.app";
     if (!publicHost) return true;
     const standalone =
       window.matchMedia?.("(display-mode: standalone)").matches || w.navigator.standalone === true;

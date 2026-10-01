@@ -350,7 +350,7 @@ function RootShell({ children }: { children: ReactNode }) {
   try{
     var params=new URLSearchParams(window.location.search);
      var host=window.location.hostname.toLowerCase();
-     var publicHost=host==='oventric.com'||host==='www.oventric.com'||host==='oventric-glow-shell.lovable.app'||host.slice(-11)==='.lovable.app'||host==='localhost'||host==='127.0.0.1';
+      var publicHost=host==='oventric.com'||host==='www.oventric.com'||host==='oventric-glow-shell.lovable.app';
      var review=!publicHost;
      var forced=params.get('mode');
     var native=!!(window.Capacitor&&(typeof window.Capacitor.isNativePlatform==='function'?window.Capacitor.isNativePlatform():window.Capacitor.isNative));

@@ -4,14 +4,9 @@ import { getRequestHeader, getRequestHost, getRequestUrl } from "@tanstack/react
 
 const PUBLIC_HOSTS = new Set(["oventric.com", "www.oventric.com", "oventric-glow-shell.lovable.app"]);
 
-/** Hosts that show the website by default (`?mode=app` opts into the app shell). */
+/** Only the published site defaults to web; Lovable previews default to app. */
 function isWebDefaultHost(host: string): boolean {
-  return (
-    PUBLIC_HOSTS.has(host) ||
-    host.endsWith(".lovable.app") ||
-    host === "localhost" ||
-    host === "127.0.0.1"
-  );
+  return PUBLIC_HOSTS.has(host);
 }
 
 /**
@@ -33,8 +28,7 @@ const getInitialContext = createIsomorphicFn()
       const cookie = getRequestHeader("cookie") || "";
       if (/(?:^|;\s*)ov_app=1(?:;|$)/.test(cookie)) return "app";
       if (requested === "web") return "browser";
-      // Lovable editor/dev preview hosts show the website by default;
-      // `?mode=app` opts back into the app shell.
+      // Published site stays web; Lovable previews (including localhost) are app.
       return isWebDefaultHost(host) ? "browser" : "app";
     } catch {
       return "browser";
@@ -59,7 +53,7 @@ const getInitialContext = createIsomorphicFn()
  *
  *  - "browser"  → the marketing/web experience (desktop site, SEO pages)
  *  - "app"      → the native-feeling app shell (installed PWA on a phone,
- *                 or an explicit `?mode=app` preview from the web build)
+  *                 or a Lovable preview)
  *
  * The app shell is activated when the page is running in a standalone
  * window (installed to the home screen) or when the visitor explicitly asked
@@ -70,7 +64,7 @@ export type LaunchContext = "browser" | "app";
 
 export const APP_MODE_KEY = "oventric:launch-mode";
 
-/** True only for genuinely unknown hosts (not public, not a Lovable preview). */
+/** True for preview and other non-published hosts. */
 export function isAppReviewPreview(): boolean {
   if (typeof window === "undefined") return false;
   return !isWebDefaultHost(window.location.hostname.toLowerCase());
@@ -146,7 +140,7 @@ export function resolveLaunchContext(): LaunchContext {
     /* ignore */
   }
 
-  return "browser";
+  return isWebDefaultHost(window.location.hostname.toLowerCase()) ? "browser" : "app";
 }
 
 /** Null until hydration so server and client markup match. */
