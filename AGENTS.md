@@ -24,6 +24,8 @@ Keep app chrome outside the main scroller; use `app-scroll-header` inside. Why: 
 
 Creators is an AppSurface section at /creators (web + app footers and desktop navbar link to it); Newsfeed has no Creators tab; the Home avatar opens Account. Why: Creators is a first-class destination reusing creator_posts data.
 
+Creator Hub presentation is intentionally split: app is compact dark with restrained crimson and app-native sheets; website is white with Bright Spectrum accents. Why: preserve Oventric's established platform-specific design standards.
+
 Privacy, Terms, Report a Problem, Help, and Support Center use dark app views and retain separate web views. Why: no website chrome in app.
 
 ## Creator Coach (AI)

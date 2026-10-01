@@ -5,6 +5,7 @@ import { listToolLibrary, type ToolDTO } from "@/lib/tools.functions";
 import { saveCreatorOnboarding, CREATOR_FIELDS } from "@/lib/creators.functions";
 import { toolIconUrl } from "@/lib/profiles/tools";
 import { Button } from "@/components/ui/button";
+import { useIsAppShell } from "@/hooks/use-launch-context";
 
 const TINTS = [
   "border-sky-200 bg-sky-50 text-sky-700",
@@ -30,6 +31,7 @@ export function CreatorOnboardingModal({
 }) {
   const save = useServerFn(saveCreatorOnboarding);
   const loadLibrary = useServerFn(listToolLibrary);
+  const isApp = useIsAppShell();
   const [step, setStep] = useState(0);
   const [fields, setFields] = useState<string[]>([]);
   const [otherField, setOtherField] = useState("");
@@ -98,8 +100,8 @@ export function CreatorOnboardingModal({
   const canNext = step === 0 ? true : step === 1 ? chosenFields.length > 0 : true;
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-end justify-center bg-black/50 backdrop-blur-[2px] sm:items-center sm:p-6">
-      <div className="flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl bg-white sm:rounded-3xl">
+    <div className={`fixed inset-0 z-[120] flex items-end justify-center bg-black/50 backdrop-blur-[2px] sm:items-center sm:p-6 ${isApp ? "app-creator-sheet" : ""}`}>
+      <div className="app-creator-sheet-panel flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl bg-white sm:rounded-3xl">
         <div className="flex items-center gap-3 border-b border-slate-100 px-4 py-3">
           {step > 0 ? (
             <button type="button" onClick={() => setStep((s) => s - 1)} aria-label="Back" className="text-slate-500">
