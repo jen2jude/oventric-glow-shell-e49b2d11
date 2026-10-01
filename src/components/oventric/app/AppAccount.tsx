@@ -269,7 +269,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
             <Sparkles className="h-5 w-5 text-white" />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-[15px] font-semibold">Creator Hub</span>
+            <span className="block text-[15px] font-semibold">Creator's Dashboard</span>
             <span className="block truncate text-[11px] text-white/50">
               Audience, post performance, reach and sales from posts
             </span>
@@ -393,7 +393,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
 
       {/* Creator Hub quick glance */}
       <AppSheet open={sheet === "creator"} onClose={() => setSheet(null)}
-        header={<h2 className="px-4 pb-2 text-[15px] font-semibold text-white">Creator Hub</h2>}>
+        header={<h2 className="px-4 pb-2 text-[15px] font-semibold text-white">Creator's Dashboard</h2>}>
         <div className="px-4 pb-8">
           <div className="rounded-[14px] border border-fuchsia-400/20 bg-gradient-to-br from-fuchsia-500/20 via-violet-500/10 to-transparent p-4">
             <div className="text-[10px] uppercase tracking-wider text-white/45">Sales from your showcase</div>
@@ -430,7 +430,7 @@ export function AppAccount({ onSelect }: { onSelect: (section: string) => void }
             }}
             className="mt-4 flex w-full items-center justify-center gap-2 rounded-[12px] bg-gradient-to-r from-fuchsia-500 to-violet-500 py-3 text-[14px] font-semibold text-white active:opacity-85"
           >
-            Explore your Creator Hub <ChevronRight className="h-4 w-4" />
+            Explore your Creator's Dashboard <ChevronRight className="h-4 w-4" />
           </button>
         </div>
       </AppSheet>

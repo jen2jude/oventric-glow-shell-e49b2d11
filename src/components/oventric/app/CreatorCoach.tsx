@@ -481,7 +481,7 @@ export function CreatorCoachLauncher({ section = "Home" }: { section?: string })
               className="pointer-events-none absolute inset-0 flex flex-col justify-center px-4 pr-14"
             >
               <span className="text-[13px] font-bold leading-tight text-foreground">
-                {greeting === "welcome" ? `Hi ${name}, welcome to your Creator Hub!` : `Good ${timeOfDay}, ${name}.`}
+                {greeting === "welcome" ? `Hi ${name}, welcome to your Creator's Dashboard!` : `Good ${timeOfDay}, ${name}.`}
               </span>
               <span className="mt-1 text-[11px] leading-snug text-muted-foreground">
                 I’m your Coach. I’m here to help you make the most of your work.

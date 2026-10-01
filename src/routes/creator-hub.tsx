@@ -7,9 +7,9 @@ import { useIsAppShell } from "@/hooks/use-launch-context";
 export const Route = createFileRoute("/creator-hub")({
   head: () => ({
     meta: [
-      { title: "Creator Hub — Oventric" },
+      { title: "Creator's Dashboard — Oventric" },
       { name: "description", content: "Your audience growth, content performance and reach on Oventric." },
-      { property: "og:title", content: "Creator Hub — Oventric" },
+      { property: "og:title", content: "Creator's Dashboard — Oventric" },
       { property: "og:description", content: "Your audience growth, content performance and reach on Oventric." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -29,7 +29,7 @@ function CreatorHubPage() {
   const title = (
     <div className="flex items-center gap-2">
       <Sparkles className="size-4 text-newsfeed-violet" />
-      <h1 className="text-base font-semibold">Creator Hub</h1>
+      <h1 className="text-base font-semibold">Creator's Dashboard</h1>
     </div>
   );
 
