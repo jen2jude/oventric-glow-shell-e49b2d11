@@ -48,6 +48,7 @@ import { FollowButton } from "@/components/oventric/FollowButton";
 import { CreatorPostSheet } from "@/components/oventric/app/CreatorPostSheet";
 import { CreatorOnboardingModal } from "@/components/oventric/creators/CreatorOnboardingModal";
 import { CreatorPublishModal } from "@/components/oventric/creators/CreatorPublishModal";
+import { CreatorDraftsSheet } from "@/components/oventric/creators/CreatorDraftsSheet";
 
 type HubTab = "home" | "discover" | "following" | "resources" | "challenges";
 
@@ -127,6 +128,8 @@ export function CreatorHubPage() {
   const [openPost, setOpenPost] = useState<CreatorPostDTO | null>(null);
   const [onboardOpen, setOnboardOpen] = useState(false);
   const [publishOpen, setPublishOpen] = useState(false);
+  const [draftsOpen, setDraftsOpen] = useState(false);
+  const [editPostId, setEditPostId] = useState<string | null>(null);
   const [meId, setMeId] = useState<string | null>(null);
 
   const fetchFeed = useServerFn(listCreatorFeed);
@@ -307,6 +310,15 @@ export function CreatorHubPage() {
             >
               <Plus className="h-4 w-4" /> <span className={isApp ? "sr-only" : undefined}>Creator's Hub</span>
             </button>
+            {isAuthenticated && (
+              <button
+                onClick={() => setDraftsOpen(true)}
+                className={`inline-flex shrink-0 items-center justify-center rounded-[10px] border font-bold ${isApp ? "h-10 border-white/10 px-3 text-[11px] text-white/80" : "h-12 border-slate-200 px-4 text-[13px] text-slate-700"}`}
+                aria-label="Your drafts"
+              >
+                Drafts
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -431,7 +443,25 @@ export function CreatorHubPage() {
           setPublishOpen(true);
         }}
       />
-      <CreatorPublishModal open={publishOpen} onClose={() => setPublishOpen(false)} onPublished={() => void refetchPosts()} />
+      <CreatorPublishModal
+        open={publishOpen}
+        editPostId={editPostId}
+        onClose={() => {
+          setPublishOpen(false);
+          setEditPostId(null);
+        }}
+        onPublished={() => void refetchPosts()}
+      />
+      <CreatorDraftsSheet
+        open={draftsOpen}
+        isApp={isApp}
+        onClose={() => setDraftsOpen(false)}
+        onEdit={(id) => {
+          setDraftsOpen(false);
+          setEditPostId(id);
+          setPublishOpen(true);
+        }}
+      />
     </div>
   );
 }

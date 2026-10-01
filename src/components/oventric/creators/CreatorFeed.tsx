@@ -11,6 +11,7 @@ import { computeDisplayPrice } from "@/lib/fx-display";
 import { createOrder, getOrderWithDownload } from "@/lib/marketplace.functions";
 import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
 import { CreatorPostMenu } from "./CreatorPostMenu";
+import { CreatorPostActions, CreatorPostDetails, CreatorProductAttachment, CreatorResourceCard } from "./CreatorResourceCard";
 import { logCreatorEvent, useWatchTime } from "@/lib/creator-events";
 import { getHiddenPosts } from "@/components/oventric/PostActionsMenu";
 
@@ -158,99 +159,6 @@ function ViewportEmbed({ src, title }: { src: string; title: string }) {
         </div>
       )}
     </div>
-  );
-}
-
-/** Buy / download call-to-action for a showcase item that has a listed asset. */
-function AssetCta({ asset }: { asset: NonNullable<CreatorPostDTO["asset"]> }) {
-  const { baseCurrency } = useOnboarding();
-  const createFreeOrder = useServerFn(createOrder);
-  const loadDownload = useServerFn(getOrderWithDownload);
-  const [downloading, setDownloading] = useState(false);
-  if (!asset.available) {
-    return (
-      <div className="mb-3 inline-flex rounded-full border border-border bg-muted px-3 py-1.5 text-[11px] font-bold text-muted-foreground">
-        Asset pending review
-      </div>
-    );
-  }
-  const price = computeDisplayPrice(
-        {
-          price_usd: asset.priceUsd,
-          original_currency: asset.originalCurrency,
-          original_amount: asset.originalAmount,
-          fx_snapshot: asset.fxSnapshot,
-        },
-        baseCurrency,
-      ).formatted;
-
-  const downloadAsset = async () => {
-    if (downloading) return;
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) {
-      toast.error("Sign in to download this asset");
-      return;
-    }
-    setDownloading(true);
-    try {
-      const result = await createFreeOrder({
-        data: {
-          productId: asset.productId,
-          quantity: 1,
-          displayCurrency: baseCurrency,
-          paymentMethod: "wallet",
-          couponCode: null,
-          deliveryEmail: null,
-          deliveryWhatsapp: null,
-          applyCashbackUSD: 0,
-        },
-      });
-      const downloadable = await loadDownload({ data: { orderId: result.order.id } });
-      const href = downloadable.downloadUrl ?? downloadable.order.externalUrl;
-      if (!href) throw new Error("This download is not available yet");
-
-      const anchor = document.createElement("a");
-      anchor.href = href;
-      anchor.download = "";
-      anchor.target = "_blank";
-      anchor.rel = "noopener noreferrer";
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-      toast.success("Download started", {
-        description: "This asset is saved in your dashboard for later.",
-      });
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Couldn't start the download");
-    } finally {
-      setDownloading(false);
-    }
-  };
-
-  return asset.isFree ? (
-    <Button
-      type="button"
-      variant="outline"
-      size="sm"
-      disabled={downloading}
-      onClick={downloadAsset}
-      className="mb-3 h-8 rounded-full border-emerald-200 bg-emerald-50 px-3 text-[11px] font-black text-emerald-700 shadow-none hover:bg-emerald-100 hover:text-emerald-800"
-    >
-      <span className="text-[10px] font-black">{compactNumber(asset.downloadCount)}</span>
-      <Download className="h-3.5 w-3.5" />
-      {downloading ? "Starting…" : "Download this asset"}
-    </Button>
-  ) : (
-    <Link
-      to="/product/$id"
-      params={{ id: asset.productId }}
-      className="mb-3 inline-flex h-8 items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 text-[11px] font-black text-rose-700 transition-colors hover:bg-rose-100"
-    >
-      <span className="text-[10px] font-black">{compactNumber(asset.downloadCount)}</span>
-      <ShoppingBag className="h-3.5 w-3.5" />
-      <span>Buy</span>
-      <span className="border-l border-rose-200 pl-2 text-[10px]">{price}</span>
-    </Link>
   );
 }
 
@@ -474,7 +382,9 @@ export function CreatorCard({
           </div>
         )}
 
-        <div className="mt-3">{post.asset && <AssetCta asset={post.asset} />}</div>
+        <CreatorPostDetails post={post} />
+        <CreatorProductAttachment post={post} />
+        {post.asset && <CreatorResourceCard post={post} />}
 
         {post.externalEmbedUrl && (
           <ViewportEmbed src={post.externalEmbedUrl} title={post.title} />
@@ -482,6 +392,7 @@ export function CreatorCard({
 
       <LinkDock post={post} />
       <ShowcaseEngagement postId={post.id} authorId={post.author.userId} />
+      <CreatorPostActions post={post} isOwner={isOwner} />
       </div>
     </article>
   );

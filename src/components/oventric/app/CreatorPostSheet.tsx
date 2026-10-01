@@ -1,18 +1,12 @@
 import { ShowcaseEngagement } from "@/components/oventric/creators/ShowcaseEngagement";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { logCreatorEvent, useWatchTime } from "@/lib/creator-events";
-import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
-import { Download, Eye, ShoppingBag } from "lucide-react";
-import { toast } from "sonner";
+import { Download, Eye } from "lucide-react";
+import { CreatorPostActions, CreatorPostDetails, CreatorProductAttachment, CreatorResourceCard } from "@/components/oventric/creators/CreatorResourceCard";
 import { AppSheet } from "@/components/oventric/app/AppSheet";
-import { createOrder, getOrderWithDownload } from "@/lib/marketplace.functions";
 import type { CreatorPostDTO } from "@/lib/creators.functions";
-import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
-import { useOnboarding } from "@/lib/onboarding/OnboardingContext";
-import type { Currency } from "@/lib/onboarding/OnboardingContext";
-import { visibleProductPrice } from "@/lib/money-visibility";
 
 function compact(n: number) {
   return n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : String(n);
@@ -38,11 +32,7 @@ export function CreatorPostSheet({
   post: CreatorPostDTO | null;
   onClose: () => void;
 }) {
-  const { baseCurrency, homeCurrency, balancesHidden } = useOnboarding();
   const navigate = useNavigate();
-  const createFreeOrder = useServerFn(createOrder);
-  const loadDownload = useServerFn(getOrderWithDownload);
-  const [downloading, setDownloading] = useState(false);
 
   const asset = post?.asset ?? null;
   const media = post?.media[0] ?? null;
@@ -54,64 +44,6 @@ export function CreatorPostSheet({
   if (post?.communityLink) links.push({ href: post.communityLink, label: "Community", kind: "link_click" });
   if (post?.externalUrl && !post.externalEmbedUrl) links.push({ href: post.externalUrl, label: "Watch", kind: "link_click" });
   for (const w of post?.author.workLinks ?? []) if (w && !links.some((l) => l.href === w)) links.push({ href: w, label: "View work", kind: "link_click" });
-
-  const price = asset
-    ? asset.isFree
-      ? "Free"
-       : visibleProductPrice(
-          {
-            price_usd: asset.priceUsd,
-            original_currency: asset.originalCurrency ?? "USD",
-            original_amount: asset.originalAmount ?? asset.priceUsd,
-            fx_snapshot: asset.fxSnapshot,
-          },
-           (homeCurrency ?? "USD") as Currency,
-           balancesHidden,
-         )
-    : null;
-
-  const downloadAsset = async () => {
-    if (!asset || downloading) return;
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) {
-      toast.error("Sign in to download this asset");
-      return;
-    }
-    setDownloading(true);
-    try {
-      const result = await createFreeOrder({
-        data: {
-          productId: asset.productId,
-          quantity: 1,
-          displayCurrency: baseCurrency,
-          paymentMethod: "wallet",
-          couponCode: null,
-          deliveryEmail: null,
-          deliveryWhatsapp: null,
-          applyCashbackUSD: 0,
-        },
-      });
-      const downloadable = await loadDownload({ data: { orderId: result.order.id } });
-      const href = downloadable.downloadUrl ?? downloadable.order.externalUrl;
-      if (!href) throw new Error("This download is not available yet");
-      const anchor = document.createElement("a");
-      anchor.href = href;
-      anchor.download = "";
-      anchor.target = "_blank";
-      anchor.rel = "noopener noreferrer";
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-      toast.success("Download started", {
-        description: "This asset is saved in your dashboard for later.",
-      });
-      onClose();
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Couldn't start the download");
-    } finally {
-      setDownloading(false);
-    }
-  };
 
   return (
     <AppSheet
@@ -212,7 +144,9 @@ export function CreatorPostSheet({
               )}
             </div>
 
+            <CreatorPostDetails post={post} dark />
             <ShowcaseEngagement postId={post.id} authorId={post.author.userId} dark />
+            <CreatorPostActions post={post} dark />
 
             {links.length > 0 && (
               <div className="mt-3 flex gap-2 overflow-x-auto [scrollbar-width:none]">
@@ -231,43 +165,8 @@ export function CreatorPostSheet({
               </div>
             )}
 
-            {/* Final CTA */}
-            {asset &&
-              (asset.available ? (
-                asset.isFree ? (
-                  <button
-                    type="button"
-                    disabled={downloading}
-                    onClick={() => {
-                      haptic("select");
-                      void downloadAsset();
-                    }}
-                    className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#E5484D] py-3 text-[13.5px] font-bold active:opacity-80 disabled:opacity-50"
-                    style={{ color: "#ffffff" }}
-                  >
-                    <Download className="h-4 w-4" />
-                    {downloading ? "Starting download…" : "Get it free"}
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      haptic("select");
-                      onClose();
-                      navigate({ to: "/product/$id", params: { id: asset.productId } });
-                    }}
-                    className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#E5484D] py-3 text-[13.5px] font-bold active:opacity-80"
-                    style={{ color: "#ffffff" }}
-                  >
-                    <ShoppingBag className="h-4 w-4" />
-                    Buy now · {price}
-                  </button>
-                )
-              ) : (
-                <div className="mt-5 rounded-2xl border border-white/10 px-4 py-3 text-center text-[12px] font-semibold text-white/40">
-                  This asset is pending review
-                </div>
-              ))}
+            <CreatorProductAttachment post={post} dark />
+            <CreatorResourceCard post={post} dark onDone={onClose} />
           </div>
         </div>
       )}

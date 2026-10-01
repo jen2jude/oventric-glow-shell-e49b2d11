@@ -477,6 +477,20 @@
       "when": 1790842981747,
       "tag": "0067_notify_product_price_cashback_change",
       "breakpoints": true
+    },
+    {
+      "idx": 68,
+      "version": "7",
+      "when": 1790848898314,
+      "tag": "0068_creator_posts_stage4",
+      "breakpoints": true
+    },
+    {
+      "idx": 69,
+      "version": "7",
+      "when": 1790848919821,
+      "tag": "0069_creator_posts_validate_legacy",
+      "breakpoints": true
     }
   ]
 }
