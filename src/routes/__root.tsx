@@ -359,11 +359,11 @@ function RootShell({ children }: { children: ReactNode }) {
     var standalone=!framed&&(mm('(display-mode: standalone)')||mm('(display-mode: fullscreen)')||mm('(display-mode: minimal-ui)')||navigator.standalone===true);
     // Installed/native windows are ALWAYS the app, whatever the URL says.
     appShell=review||native||standalone||forced==='app';
-    if(publicHost&&forced==='web'&&!native&&!standalone)appShell=false;
+    if(forced==='web'&&!native&&!standalone)appShell=false;
     // Remember installed launches in a cookie so the server renders the app
     // on every in-app page (payment returns, email links, deep links).
     if(native||standalone){document.cookie='ov_app=1; path=/; max-age=31536000; samesite=lax';}
-    else if(publicHost&&forced!=='app'){document.cookie='ov_app=; path=/; max-age=0; samesite=lax';}
+    else if(forced!=='app'){document.cookie='ov_app=; path=/; max-age=0; samesite=lax';}
    }catch(e){}
    window.__oventricStandalone=!!appShell;
    if(appShell)document.documentElement.classList.add('standalone-app');

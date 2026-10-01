@@ -26,8 +26,8 @@ const getInitialContext = createIsomorphicFn()
       // Installed app windows carry the ov_app cookie (set by the launch
       // script), so every in-app page is server-rendered as the app.
       const cookie = getRequestHeader("cookie") || "";
-      if (/(?:^|;\s*)ov_app=1(?:;|$)/.test(cookie)) return "app";
       if (requested === "web") return "browser";
+      if (/(?:^|;\s*)ov_app=1(?:;|$)/.test(cookie)) return "app";
       // Published site stays web; Lovable previews (including localhost) are app.
       return isWebDefaultHost(host) ? "browser" : "app";
     } catch {
@@ -39,8 +39,8 @@ const getInitialContext = createIsomorphicFn()
     try {
       const mode = new URLSearchParams(window.location.search).get("mode");
       if (mode === "app") return "app";
-      if (/(?:^|;\s*)ov_app=1(?:;|$)/.test(document.cookie)) return "app";
       if (mode === "web") return "browser";
+      if (/(?:^|;\s*)ov_app=1(?:;|$)/.test(document.cookie)) return "app";
     } catch {
       /* ignore */
     }
