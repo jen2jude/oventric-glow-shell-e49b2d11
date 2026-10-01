@@ -45,7 +45,6 @@ export function CreatorStudioPage() {
   const t = isApp
     ? { page: "fixed inset-0 overflow-y-auto overscroll-contain bg-[#070A08] text-white [-webkit-overflow-scrolling:touch]", card: "bg-white/[0.04] border-white/10", muted: "text-white/55", cta: "bg-[#E5484D] text-white", ghost: "border-white/15 text-white", chipOn: "bg-white text-black", chipOff: "border border-white/10 text-white/75", input: "bg-white/[0.05] border-white/10 text-white placeholder:text-white/35", accent: "text-[#E5484D]" }
     : { page: "min-h-screen bg-slate-50 text-slate-900", card: "bg-white border-slate-200", muted: "text-slate-500", cta: "bg-slate-900 text-white", ghost: "border-slate-200 text-slate-900", chipOn: "bg-slate-900 text-white", chipOff: "border border-slate-200 text-slate-600", input: "bg-white border-slate-200 text-slate-900", accent: "text-violet-600" };
-  type T = typeof t;
 
   const back = () => (window.history.length > 1 ? window.history.back() : navigate({ to: "/creators" }));
 
@@ -81,7 +80,7 @@ export function CreatorStudioPage() {
               ))}
             </nav>
             <div className="min-w-0">
-              <Body tab={tab} data={data} t={t} isApp={isApp} setTab={setTab} reload={() => refetch()} />
+              <StudioBody tab={tab} data={data} t={t} isApp={isApp} setTab={setTab} reload={() => refetch()} />
             </div>
           </div>
         )}
@@ -89,9 +88,6 @@ export function CreatorStudioPage() {
     </div>
   );
 
-  function Body(p: { tab: Tab; data: CreatorStudioDTO; t: T; isApp: boolean; setTab: (x: Tab) => void; reload: () => void }) {
-    return <StudioBody {...p} />;
-  }
 }
 
 type Theme = { card: string; muted: string; cta: string; ghost: string; chipOn: string; chipOff: string; input: string; accent: string };
