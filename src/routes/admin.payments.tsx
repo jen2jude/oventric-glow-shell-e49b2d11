@@ -21,7 +21,7 @@ export const Route = createFileRoute("/admin/payments")({
   errorComponent: ({ error, reset }) => (
     <div className="p-6 text-red-300">
       <div className="font-bold mb-2">Payments error</div>
-      <div className="text-sm text-red-200/80 mb-3">{error.message}</div>
+      <div className="text-sm text-red-200/80 mb-3">{(error as Error).message}</div>
       <button onClick={reset} className="px-3 py-1.5 rounded-[10px] border border-red-500/40 text-sm">
         Retry
       </button>
