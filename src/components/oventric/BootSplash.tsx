@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { launchedAsQuickResume } from "@/lib/app-resume";
 import { useRouterState } from "@tanstack/react-router";
 import { ShoppingCart, Banknote, Target, GraduationCap, Wallet, MessageCircle } from "lucide-react";
 import logoFull from "@/assets/oventric-full-transparent.png";
@@ -78,7 +79,7 @@ export function BootSplash() {
       const st = document.getElementById("oventric-boot-static");
       if (st) st.remove();
     };
-    if (!splashConsumed && isStandaloneLaunch()) {
+    if (!splashConsumed && !launchedAsQuickResume && isStandaloneLaunch()) {
       splashConsumed = true;
       setEnabled(true);
       removeStatic();

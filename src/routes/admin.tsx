@@ -56,7 +56,7 @@ export const Route = createFileRoute("/admin")({
     ],
   }),
   component: AdminLayout,
-  errorComponent: AdminError,
+  errorComponent: AdminError as never,
   notFoundComponent: () => <div className="p-6 text-slate-300">Not found.</div>,
 });
 

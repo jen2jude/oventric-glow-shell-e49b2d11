@@ -129,7 +129,7 @@ export const Route = createFileRoute("/profile/$id/item/$kind/$itemId")({
     <Shell>
       <ErrorPanel
         title="We couldn't load this item"
-        message={error.message || "Something went wrong while fetching this content."}
+        message={(error as Error).message || "Something went wrong while fetching this content."}
         onRetry={reset}
       />
     </Shell>

@@ -32,6 +32,7 @@ import { PushOptInPrompt } from "@/components/oventric/PushOptInPrompt";
 import { AppInstallPrompt } from "@/components/oventric/app/AppInstallPrompt";
 import { AppBadgeSync } from "@/components/oventric/app/AppBadgeSync";
 import { BootSplash } from "@/components/oventric/BootSplash";
+import { AppResume } from "@/components/oventric/app/AppResume";
 import logoFull from "@/assets/oventric-full-transparent.png";
 
 import { OfflineBanner } from "@/components/oventric/pwa/OfflineBanner";
@@ -207,7 +208,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
-  errorComponent: ErrorComponent,
+  errorComponent: ErrorComponent as never,
 });
 
 function RootShell({ children }: { children: ReactNode }) {
@@ -451,6 +452,7 @@ function RootComponent() {
               <Toaster position="top-center" richColors closeButton />
               <LiveNotificationToasts />
               <CreatorPostDeepLink />
+              <AppResume />
               <PushOptInPrompt />
               {/* Mobile website visitors get the install invite; the installed
                   app and desktop never see it (the prompt also self-guards). */}

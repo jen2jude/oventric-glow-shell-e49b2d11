@@ -38,7 +38,7 @@ export const Route = createFileRoute("/admin/reports")({
         <div className="max-w-md text-center">
           <AlertCircle className="w-8 h-8 text-red-400 mx-auto mb-3" />
           <h2 className="text-lg font-bold text-white">Couldn't load reports</h2>
-          <p className="text-sm text-slate-400 mt-1">{error.message}</p>
+          <p className="text-sm text-slate-400 mt-1">{(error as Error).message}</p>
           <button
             onClick={() => {
               reset();

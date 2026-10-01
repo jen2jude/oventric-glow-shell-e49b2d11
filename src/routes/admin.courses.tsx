@@ -25,7 +25,7 @@ import { ResponsiveImage } from "@/components/ui/responsive-image";
 export const Route = createFileRoute("/admin/courses")({
   head: () => ({ meta: [{ title: "Courses · Admin" }, { name: "robots", content: "noindex" }] }),
   component: AdminCourses,
-  errorComponent: AdminCoursesError,
+  errorComponent: AdminCoursesError as never,
 });
 
 function AdminCoursesError({ error, reset }: { error: Error; reset: () => void }) {
