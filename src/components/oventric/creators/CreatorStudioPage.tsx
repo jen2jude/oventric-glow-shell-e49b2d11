@@ -200,30 +200,7 @@ function StudioBody({ tab, data, t, isApp, setTab, reload }: { tab: Tab; data: C
       </>
     );
   } else if (tab === "analytics") {
-    const top = [...published].sort((a, b) => b.views - a.views).slice(0, 10);
-    const max = Math.max(1, ...top.map((p) => p.views));
-    body = (
-      <>
-        <div className={`grid gap-2 ${isApp ? "grid-cols-2" : "grid-cols-4"}`}>
-          {stat("Published", String(s.published), FileText)}
-          {stat("Drafts", String(s.drafts), Pencil)}
-          {stat("Avg views / post", s.published ? Math.round(s.views / s.published).toLocaleString() : "0", Eye)}
-          {stat("Downloads", s.downloads.toLocaleString(), Download)}
-        </div>
-        <Title>Top content by views</Title>
-        {top.length ? (
-          <div className={`space-y-2 rounded-[10px] border p-3 ${t.card}`}>
-            {top.map((p) => (
-              <div key={p.id}>
-                <div className="flex justify-between text-[12px]"><span className="truncate pr-2 font-semibold">{p.title}</span><span className={t.muted}>{p.views.toLocaleString()}</span></div>
-                <div className="mt-1 h-1.5 rounded-full bg-black/10"><div className={`h-1.5 rounded-full ${isApp ? "bg-[#E5484D]" : "bg-violet-500"}`} style={{ width: `${(p.views / max) * 100}%` }} /></div>
-              </div>
-            ))}
-          </div>
-        ) : empty("No views yet.")}
-        <p className={`mt-2 text-[11px] ${t.muted}`}>Lifetime totals only — day-by-day history isn't recorded yet.</p>
-      </>
-    );
+    body = <AnalyticsPanel t={t} isApp={isApp} />;
   } else if (tab === "profile") {
     body = <ProfileEditor data={data} t={t} reload={reload} />;
   } else {
