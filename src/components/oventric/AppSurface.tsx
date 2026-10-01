@@ -505,7 +505,7 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
         ) : null}
 
         {isAppShell && !isDesktop && !isMessages && (
-          <AppPageHeader section={active} name={name} avatarUrl={avatarUrl} onBack={backSection} onOpenMessages={() => setMessagesOpen(true)} />
+          <AppPageHeader section={active} name={name} avatarUrl={avatarUrl} onBack={backSection} onOpenAccount={() => openSection("Profile")} onOpenMessages={() => setMessagesOpen(true)} />
         )}
 
         <div

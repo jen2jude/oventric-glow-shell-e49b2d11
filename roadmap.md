@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Replace the app footer Profile shortcut with Creator Hub and open the account options from the homepage avatar
+
 - [x] Restore vertical scrolling on user profiles in the app
 
 - [x] Keep the app homepage search sheet full-height after the mobile keyboard closes
