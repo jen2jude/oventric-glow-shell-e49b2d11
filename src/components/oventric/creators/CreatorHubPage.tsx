@@ -208,9 +208,9 @@ export function CreatorHubPage() {
                 startCreate();
               }}
               className={`inline-flex shrink-0 items-center justify-center gap-2 rounded-[10px] bg-[#E5484D] font-bold text-white ${isApp ? "h-10 w-10 px-0" : "h-12 px-5 text-[14px]"}`}
-              aria-label="Share your work"
+              aria-label="Creator's Hub"
             >
-              <Plus className="h-4 w-4" /> <span className={isApp ? "sr-only" : undefined}>Share your work</span>
+              <Plus className="h-4 w-4" /> <span className={isApp ? "sr-only" : undefined}>Creator's Hub</span>
             </button>
           </div>
         </div>
