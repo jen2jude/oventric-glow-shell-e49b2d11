@@ -498,6 +498,13 @@
       "when": 1790850971816,
       "tag": "0070_collections_category",
       "breakpoints": true
+    },
+    {
+      "idx": 71,
+      "version": "7",
+      "when": 1790851625383,
+      "tag": "0071_creator_challenges",
+      "breakpoints": true
     }
   ]
 }
