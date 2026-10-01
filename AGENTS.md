@@ -37,3 +37,4 @@ Privacy, Terms, Report a Problem, Help, and Support Center use dark app views an
 
 - Native store builds use Capacitor wrapping the live site (capacitor.config.ts, server.url oventric.com/?mode=app). Why: custom launch screen, instant web updates.
 - Explore uses app sheets for leaderboards and category product lists; People previews five follows, Products previews four per category. Why: compact discovery.
+- Public creator profiles live at /creators/@username, built on the existing profiles row, follows, messaging, collections and shop; banned/deactivated accounts 404 and mutual blocks hide content. Why: one identity system.

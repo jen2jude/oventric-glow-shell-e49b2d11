@@ -167,7 +167,7 @@ export function CreatorProfilePage({ profile }: { profile: PublicCreatorProfileD
         </div>
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-end md:gap-6">
-            <span className={`-mt-10 block shrink-0 overflow-hidden rounded-full border-4 ${isApp ? "h-20 w-20 border-[#070A08]" : "h-24 w-24 border-white md:-mt-14 md:h-32 md:w-32"}`}>
+            <span className={`relative z-10 -mt-10 block shrink-0 overflow-hidden rounded-full border-4 ${isApp ? "h-20 w-20 border-[#070A08]" : "h-24 w-24 border-white md:-mt-14 md:h-32 md:w-32"}`}>
               {profile.avatarUrl ? (
                 <img src={profile.avatarUrl} alt={profile.name} className="h-full w-full object-cover" />
               ) : (
