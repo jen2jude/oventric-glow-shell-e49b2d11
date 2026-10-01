@@ -6021,3 +6021,15 @@ html.standalone-app .chat-selectable * {
 .app-creator-sheet .bg-violet-600 { background-color: #E5484D !important; }
 .app-creator-sheet .border-emerald-500 { border-color: #E5484D !important; }
 .app-creator-sheet .shadow-violet-200\/70 { --tw-shadow-color: transparent !important; }
+
+/* Creator composer chips (Stage 4) — crimson selection in the app */
+.app-creator-sheet .creator-chip-on {
+  background-color: #E5484D !important;
+  border-color: #E5484D !important;
+  color: #ffffff !important;
+}
+.app-creator-sheet .creator-draft-btn {
+  background-color: oklch(1 0 0 / 4%) !important;
+  color: oklch(1 0 0 / 80%) !important;
+}
+.app-creator-sheet select option { background: #121214; color: #fff; }
