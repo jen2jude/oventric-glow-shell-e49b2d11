@@ -5957,7 +5957,7 @@ html.standalone-app .chat-selectable * {
 .app-creator-sheet-panel {
   width: 100% !important;
   max-width: 36rem !important;
-  max-height: 92dvh !important;
+  max-height: 96dvh !important;
   border: 1px solid oklch(1 0 0 / 10%) !important;
   border-bottom: 0 !important;
   border-radius: 1.5rem 1.5rem 0 0 !important;
