@@ -891,5 +891,5 @@ export function CreatorPublishModal({
         </div>
       </div>
     </div>
-  );
+  , document.body);
 }

@@ -1,3 +1,4 @@
+import { useSwipeCloseSheets } from "@/hooks/use-swipe-close-sheets";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -404,6 +405,7 @@ function RootComponent() {
   // plain browser visitors get the marketing site instead.
   const launchCtx = useLaunchContext();
   const isAppShell = launchCtx === "app";
+  useSwipeCloseSheets(isAppShell);
   // Welcome slides are a mobile-first onboarding experience; skip them on PC.
   const [isPc, setIsPc] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth >= 1024 : false,
