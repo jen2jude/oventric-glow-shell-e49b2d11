@@ -25,7 +25,7 @@ export const Route = createFileRoute("/admin/challenges")({
   component: AdminChallengesPage,
 });
 
-const CATEGORIES = ["Design", "Video", "Photography", "Writing", "Music", "AI", "Marketing", "Business", "Education", "Development", "Lifestyle"];
+const CATEGORIES = ["Video", "Design", "AI", "Photography", "Writing", "Marketing", "Education", "Development", "Animation", "Music", "Digital Products"];
 const inputCls = "w-full rounded-[10px] border border-slate-700 bg-[#0E0E10] px-3 py-2 text-sm text-white outline-none focus:border-emerald-500";
 
 type Form = {
