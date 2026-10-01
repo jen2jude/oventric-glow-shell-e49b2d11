@@ -50,6 +50,7 @@ import { CreatorOnboardingModal } from "@/components/oventric/creators/CreatorOn
 import { CreatorPublishModal } from "@/components/oventric/creators/CreatorPublishModal";
 import { CreatorDraftsSheet } from "@/components/oventric/creators/CreatorDraftsSheet";
 import { CreatorCollectionsSheet } from "@/components/oventric/creators/CreatorCollectionsSheet";
+import { CreatorChallengesList } from "@/components/oventric/creators/CreatorChallengesList";
 
 type HubTab = "home" | "discover" | "following" | "resources" | "challenges";
 
@@ -440,7 +441,7 @@ export function CreatorHubPage() {
           </Section>
         ) : (
           <Section title="Challenges" icon={Trophy} accent={ACCENTS[3]} t={t}>
-            <Empty t={t}>Creator challenges are coming soon. Check back for themed briefs and community showcases.</Empty>
+            <CreatorChallengesList isApp={isApp} />
           </Section>
         )}
       </div>

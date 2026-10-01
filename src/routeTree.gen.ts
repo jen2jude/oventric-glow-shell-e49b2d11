@@ -98,6 +98,7 @@ import { Route as DotwellKnownAssetlinksDotjsonRouteImport } from './routes/[.]w
 import { Route as DotwellKnownAppleAppSiteAssociationRouteImport } from './routes/[.]well-known.apple-app-site-association'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
 import { Route as CreatorsCollectionsIdRouteImport } from './routes/creators_.collections.$id'
+import { Route as CreatorsChallengesIdRouteImport } from './routes/creators_.challenges.$id'
 import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack-webhook'
 import { Route as ApiPublicPaymentReturnRouteImport } from './routes/api/public/payment-return'
@@ -562,6 +563,11 @@ const CreatorsCollectionsIdRoute = CreatorsCollectionsIdRouteImport.update({
   path: '/creators/collections/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreatorsChallengesIdRoute = CreatorsChallengesIdRouteImport.update({
+  id: '/creators_/challenges/$id',
+  path: '/creators/challenges/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
   id: '/api/public/track',
   path: '/api/public/track',
@@ -738,6 +744,7 @@ export interface FileRoutesByFullPath {
   '/api/public/payment-return': typeof ApiPublicPaymentReturnRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/creators/challenges/$id': typeof CreatorsChallengesIdRoute
   '/creators/collections/$id': typeof CreatorsCollectionsIdRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/api/public/hooks/auto-release-orders': typeof ApiPublicHooksAutoReleaseOrdersRoute
@@ -841,6 +848,7 @@ export interface FileRoutesByTo {
   '/api/public/payment-return': typeof ApiPublicPaymentReturnRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/creators/challenges/$id': typeof CreatorsChallengesIdRoute
   '/creators/collections/$id': typeof CreatorsCollectionsIdRoute
   '/admin/blog': typeof AdminBlogIndexRoute
   '/api/public/hooks/auto-release-orders': typeof ApiPublicHooksAutoReleaseOrdersRoute
@@ -948,6 +956,7 @@ export interface FileRoutesById {
   '/api/public/payment-return': typeof ApiPublicPaymentReturnRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/creators_/challenges/$id': typeof CreatorsChallengesIdRoute
   '/creators_/collections/$id': typeof CreatorsCollectionsIdRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/api/public/hooks/auto-release-orders': typeof ApiPublicHooksAutoReleaseOrdersRoute
@@ -1056,6 +1065,7 @@ export interface FileRouteTypes {
     | '/api/public/payment-return'
     | '/api/public/paystack-webhook'
     | '/api/public/track'
+    | '/creators/challenges/$id'
     | '/creators/collections/$id'
     | '/admin/blog/'
     | '/api/public/hooks/auto-release-orders'
@@ -1159,6 +1169,7 @@ export interface FileRouteTypes {
     | '/api/public/payment-return'
     | '/api/public/paystack-webhook'
     | '/api/public/track'
+    | '/creators/challenges/$id'
     | '/creators/collections/$id'
     | '/admin/blog'
     | '/api/public/hooks/auto-release-orders'
@@ -1265,6 +1276,7 @@ export interface FileRouteTypes {
     | '/api/public/payment-return'
     | '/api/public/paystack-webhook'
     | '/api/public/track'
+    | '/creators_/challenges/$id'
     | '/creators_/collections/$id'
     | '/admin/blog/'
     | '/api/public/hooks/auto-release-orders'
@@ -1329,6 +1341,7 @@ export interface RootRouteChildren {
   ApiPublicPaymentReturnRoute: typeof ApiPublicPaymentReturnRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
   ApiPublicTrackRoute: typeof ApiPublicTrackRoute
+  CreatorsChallengesIdRoute: typeof CreatorsChallengesIdRoute
   CreatorsCollectionsIdRoute: typeof CreatorsCollectionsIdRoute
   ApiPublicHooksAutoReleaseOrdersRoute: typeof ApiPublicHooksAutoReleaseOrdersRoute
   ApiPublicHooksPurgeDeletedAccountsRoute: typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -1965,6 +1978,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreatorsCollectionsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/creators_/challenges/$id': {
+      id: '/creators_/challenges/$id'
+      path: '/creators/challenges/$id'
+      fullPath: '/creators/challenges/$id'
+      preLoaderRoute: typeof CreatorsChallengesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/track': {
       id: '/api/public/track'
       path: '/api/public/track'
@@ -2262,6 +2282,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicPaymentReturnRoute: ApiPublicPaymentReturnRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
   ApiPublicTrackRoute: ApiPublicTrackRoute,
+  CreatorsChallengesIdRoute: CreatorsChallengesIdRoute,
   CreatorsCollectionsIdRoute: CreatorsCollectionsIdRoute,
   ApiPublicHooksAutoReleaseOrdersRoute: ApiPublicHooksAutoReleaseOrdersRoute,
   ApiPublicHooksPurgeDeletedAccountsRoute:
