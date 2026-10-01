@@ -560,10 +560,10 @@ export function AppSurface({ initialSection = "Home" }: { initialSection?: strin
               }
               return handleCreate();
             }}
-            active={active === "Marketplace" ? "Market" : active}
+            active={active === "Marketplace" ? "Market" : active === "Creators" ? "Creator's Hub" : active}
             onSelect={(l) => {
               if (l === "Chats") setMessagesOpen(true);
-              else openSection(l === "Market" ? "Marketplace" : l);
+              else openSection(l === "Market" ? "Marketplace" : l === "Creator's Hub" ? "Creators" : l);
             }}
             counts={{
               Feed: feedCount.count,

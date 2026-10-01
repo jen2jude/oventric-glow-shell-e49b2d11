@@ -5,7 +5,7 @@ const ITEMS = [
   { label: "Home", section: "Home", Icon: Home },
   { label: "Explore", section: "Explore", Icon: Compass },
   { label: "Marketplace", section: "Marketplace", Icon: ShoppingBag },
-  { label: "Creators", section: "Creators", Icon: Clapperboard },
+  { label: "Creator's Hub", section: "Creators", Icon: Clapperboard },
   { label: "Feed", section: "Feed", Icon: Newspaper },
 ] as const;
 
